@@ -1,3 +1,6 @@
 [submodule "thirdparty/glfw"]
 	path = thirdparty/glfw
 	url = https://github.com/glfw/glfw
+[submodule "thirdparty/packcc"]
+	path = thirdparty/packcc
+	url = https://github.com/arithy/packcc
