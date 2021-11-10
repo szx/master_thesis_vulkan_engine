@@ -1,27 +1,29 @@
 #define GLFW_INCLUDE_VULKAN
+#include "calc.h"
 #include <GLFW/glfw3.h>
 
 #include <iostream>
 
-const char *WINDOW_TITLE = "Window title";
-int WINDOW_WIDTH = 640;
-int WINDOW_HEIGHT = 480;
+static const char *windowTitle = "Window title";
+int windowWidth = 640;
+int windowHeight = 480;
 
 int main() {
   GLFWwindow *window;
 
   /* Initialize the library */
-  if (!glfwInit())
+  if (glfwInit() == GLFW_FALSE) {
     return -1;
+  }
 
-  if (glfwVulkanSupported()) {
+  if (glfwVulkanSupported() == GLFW_TRUE) {
     std::cout << "Vulkan supported" << std::endl;
   }
 
   /* Create a windowed mode window and its OpenGL context */
   window =
-      glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, NULL, NULL);
-  if (!window) {
+      glfwCreateWindow(windowWidth, windowHeight, windowTitle, NULL, NULL);
+  if (window == nullptr) {
     glfwTerminate();
     return -1;
   }
@@ -30,7 +32,7 @@ int main() {
   glfwMakeContextCurrent(window);
 
   /* Loop until the user closes the window */
-  while (!glfwWindowShouldClose(window)) {
+  while (glfwWindowShouldClose(window) == 0) {
     /* Render here */
     // glClear(GL_COLOR_BUFFER_BIT);
 
