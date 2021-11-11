@@ -4,9 +4,9 @@
 
 #include <iostream>
 
-static const char *windowTitle = "Window title";
-int windowWidth = 640;
-int windowHeight = 480;
+const char *const window_title = "Window title";
+const int window_width = 640;
+const int window_height = 480;
 
 int main() {
   GLFWwindow *window;
@@ -22,7 +22,7 @@ int main() {
 
   /* Create a windowed mode window and its OpenGL context */
   window =
-      glfwCreateWindow(windowWidth, windowHeight, windowTitle, NULL, NULL);
+      glfwCreateWindow(window_width, window_height, window_title, NULL, NULL);
   if (window == nullptr) {
     glfwTerminate();
     return -1;
