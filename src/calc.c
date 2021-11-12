@@ -1811,7 +1811,7 @@ void calc_destroy(calc_context_t *ctx) {
     pcc_context__destroy(ctx);
 }
 
-int main4() {
+int main3() {
     calc_context_t *ctx = calc_create(NULL);
     while (calc_parse(ctx, NULL));
     calc_destroy(ctx);

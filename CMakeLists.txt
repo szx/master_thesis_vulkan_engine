@@ -5,13 +5,18 @@ project(cpptest LANGUAGES CXX C)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# add headers from Vulkan SDK
+set(VULKAN_INCLUDE_PATH "$ENV{VULKAN_SDK}/include")
+set(VULKAN_LIBRARY_PATH "$ENV{VULKAN_SDK}/lib/vulkan-1.lib")
+
 # add external library glfw
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory( thirdparty/glfw )
 
-set(EXTERNAL_INCLUDES "")
+set(EXTERNAL_INCLUDE_PATHS ${VULKAN_INCLUDE_PATH})
+set(EXTERNAL_LIBRARY_PATHS ${VULKAN_LIBRARY_PATH})
 set(EXTERNAL_LIBRARIES glfw)
 
 
@@ -73,7 +78,8 @@ set_source_files_properties(${CPP_GENERATOR_OUTPUTS} PROPERTIES GENERATED TRUE)
 
 # define executable
 add_executable(cpptest ${CPP_MAIN_PATH} ${CPP_SOURCES} ${CPP_HEADERS} ${CPP_GENERATOR_OUTPUTS})
-target_include_directories(cpptest PUBLIC ${EXTERNAL_INCLUDES})
+target_include_directories(cpptest PUBLIC ${EXTERNAL_INCLUDE_PATHS})
+target_link_directories(cpptest PUBLIC ${EXTERNAL_LIBRARY_PATHS})
 target_link_libraries(cpptest LINK_PUBLIC ${EXTERNAL_LIBRARIES})
 add_dependencies(cpptest codegen_packcc)
 
