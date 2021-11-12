@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(cpptest LANGUAGES CXX C)
+project(cpptest LANGUAGES C)
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 
 # add headers from Vulkan SDK
 set(VULKAN_INCLUDE_PATH "$ENV{VULKAN_SDK}/include")
@@ -22,19 +22,19 @@ set(EXTERNAL_LIBRARIES glfw)
 
 # build packcc during configure
 if (WIN32)
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
         set(PACKCC_VERSION "mingw-gcc")
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    elseif (CMAKE_C_COMPILER_ID STREQUAL "Clang")
         set(PACKCC_VERSION "mingw-clang")
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    elseif (CMAKE_C_COMPILER_ID STREQUAL "MSVC")
         set(PACKCC_VERSION "msvc")
     else()
         message(FATAL_ERROR "packcc: unsupported compiler")
     endif()
 else()
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
         set(PACKCC_VERSION "gcc")
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    elseif (CMAKE_C_COMPILER_ID STREQUAL "Clang")
         set(PACKCC_VERSION "clang")
     else()
         message(FATAL_ERROR "packcc: unsupported compiler")
@@ -46,16 +46,16 @@ message(STATUS "PACKCC_BIN: ${PACKCC_BIN}")
 
 
 # define source files
-file(GLOB_RECURSE CPP_SOURCES "src/*.cpp")
-file(GLOB_RECURSE CPP_HEADERS "src/*.h")
-get_filename_component(CPP_MAIN_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp ABSOLUTE)
-list(REMOVE_ITEM CPP_SOURCES "${CPP_MAIN_PATH}")
+file(GLOB_RECURSE C_SOURCES "src/*.c")
+file(GLOB_RECURSE C_HEADERS "src/*.h")
+get_filename_component(C_MAIN_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src/main.c ABSOLUTE)
+list(REMOVE_ITEM C_SOURCES "${C_MAIN_PATH}")
 
 
 # define packcc parser generation
-file(GLOB_RECURSE CPP_GENERATOR_PEGS "src/*.peg")
-set(CPP_GENERATOR_OUTPUTS)
-foreach(PEG ${CPP_GENERATOR_PEGS})
+file(GLOB_RECURSE C_GENERATOR_PEGS "src/*.peg")
+set(C_GENERATOR_OUTPUTS)
+foreach(PEG ${C_GENERATOR_PEGS})
     string(REGEX REPLACE "[.]peg$" ".c" OUTPUT_SOURCE ${PEG})
     string(REGEX REPLACE "[.]peg$" ".h" OUTPUT_HEADER ${PEG})
     add_custom_command(
@@ -65,19 +65,19 @@ foreach(PEG ${CPP_GENERATOR_PEGS})
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src
         COMMENT "Generating ${PEG} outputs"
         VERBATIM)
-    list(APPEND CPP_GENERATOR_OUTPUTS ${OUTPUT_SOURCE} ${OUTPUT_HEADER})
+    list(APPEND C_GENERATOR_OUTPUTS ${OUTPUT_SOURCE} ${OUTPUT_HEADER})
 endforeach()
-message(STATUS "CPP_GENERATOR_OUTPUTS: ${CPP_GENERATOR_OUTPUTS}")
+message(STATUS "C_GENERATOR_OUTPUTS: ${C_GENERATOR_OUTPUTS}")
 add_custom_target(
     codegen_packcc
     ALL
-    DEPENDS ${CPP_GENERATOR_PEGS}
-    SOURCES ${CPP_GENERATOR_PEGS})
-set_source_files_properties(${CPP_GENERATOR_OUTPUTS} PROPERTIES GENERATED TRUE)
+    DEPENDS ${C_GENERATOR_PEGS}
+    SOURCES ${C_GENERATOR_PEGS})
+set_source_files_properties(${C_GENERATOR_OUTPUTS} PROPERTIES GENERATED TRUE)
 
 
 # define executable
-add_executable(cpptest ${CPP_MAIN_PATH} ${CPP_SOURCES} ${CPP_HEADERS} ${CPP_GENERATOR_OUTPUTS})
+add_executable(cpptest ${C_MAIN_PATH} ${C_SOURCES} ${C_HEADERS} ${C_GENERATOR_OUTPUTS})
 target_include_directories(cpptest PUBLIC ${EXTERNAL_INCLUDE_PATHS})
 target_link_directories(cpptest PUBLIC ${EXTERNAL_LIBRARY_PATHS})
 target_link_libraries(cpptest LINK_PUBLIC ${EXTERNAL_LIBRARIES})

@@ -2,15 +2,15 @@
 #include "vulkan/vulkan.h"
 #include <GLFW/glfw3.h>
 
-#include <iostream>
+#include <stdio.h>
 
 const char *const window_title = "Window title";
 const int window_width = 640;
 const int window_height = 480;
 
 int main(int argc, char *argv[]) {
-  std::cout << "argc: " << argc << std::endl;
-  std::cout << "argv[0]: " << argv[0] << std::endl;
+  printf("argc: %d\n", argc);
+  printf("argv[0]: %s\n", argv[0]);
 
   GLFWwindow *window;
 
@@ -20,13 +20,13 @@ int main(int argc, char *argv[]) {
   }
 
   if (glfwVulkanSupported() == GLFW_TRUE) {
-    std::cout << "Vulkan supported" << std::endl;
+    printf("Vulkan supported\n");
   }
 
   // Create a windowed mode window and its OpenGL context
   window =
       glfwCreateWindow(window_width, window_height, window_title, NULL, NULL);
-  if (window == nullptr) {
+  if (window == NULL) {
     glfwTerminate();
     return -1;
   }
