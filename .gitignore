@@ -1,5 +1,6 @@
-build*/
+*build*/
 CMakeLists.txt.user
+.idea/
 
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------
