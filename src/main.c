@@ -1,7 +1,6 @@
 #include "calc.h"
 #include "vulkan/vulkan.h"
 #include <GLFW/glfw3.h>
-
 #include <stdio.h>
 
 const char *const window_title = "Window title";
@@ -9,9 +8,6 @@ const int window_width = 640;
 const int window_height = 480;
 
 int main(int argc, char *argv[]) {
-  printf("argc: %d\n", argc);
-  printf("argv[0]: %s\n", argv[0]);
-
   GLFWwindow *window;
 
   // Initialize the library

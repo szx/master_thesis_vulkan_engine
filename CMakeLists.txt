@@ -15,7 +15,11 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory( thirdparty/glfw )
 
-set(EXTERNAL_INCLUDE_PATHS ${VULKAN_INCLUDE_PATH})
+# add external library greatest
+set(GREATEST_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/greatest")
+
+# prepare info about external libraries
+set(EXTERNAL_INCLUDE_PATHS ${VULKAN_INCLUDE_PATH} ${GREATEST_INCLUDE_PATH})
 set(EXTERNAL_LIBRARY_PATHS ${VULKAN_LIBRARY_PATH})
 set(EXTERNAL_LIBRARIES glfw)
 
@@ -40,17 +44,14 @@ else()
         message(FATAL_ERROR "packcc: unsupported compiler")
     endif()
 endif()
-execute_process(COMMAND make WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/packcc/build/${PACKCC_VERSION})
-set(PACKCC_BIN ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/packcc/build/${PACKCC_VERSION}/release/bin/packcc)
+execute_process(COMMAND make WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/packcc/build/${PACKCC_VERSION}")
+set(PACKCC_BIN "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/packcc/build/${PACKCC_VERSION}/release/bin/packcc")
 message(STATUS "PACKCC_BIN: ${PACKCC_BIN}")
 
 
 # define source files
 file(GLOB_RECURSE C_SOURCES "src/*.c")
 file(GLOB_RECURSE C_HEADERS "src/*.h")
-get_filename_component(C_MAIN_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src/main.c ABSOLUTE)
-list(REMOVE_ITEM C_SOURCES "${C_MAIN_PATH}")
-
 
 # define packcc parser generation
 file(GLOB_RECURSE C_GENERATOR_PEGS "src/*.peg")
@@ -77,12 +78,29 @@ set_source_files_properties(${C_GENERATOR_OUTPUTS} PROPERTIES GENERATED TRUE)
 
 
 # define executable
-add_executable(cpptest ${C_MAIN_PATH} ${C_SOURCES} ${C_HEADERS} ${C_GENERATOR_OUTPUTS})
-target_include_directories(cpptest PUBLIC ${EXTERNAL_INCLUDE_PATHS})
-target_link_directories(cpptest PUBLIC ${EXTERNAL_LIBRARY_PATHS})
-target_link_libraries(cpptest LINK_PUBLIC ${EXTERNAL_LIBRARIES})
-add_dependencies(cpptest codegen_packcc)
+set(C_MAIN_SOURCE_PATHS)
+foreach(C_SOURCE_PATH ${C_SOURCES})
+    file(READ "${C_SOURCE_PATH}" C_SOURCE)
+    string(FIND "${C_SOURCE}" "main(" FIND_RESULT) # TODO: Ugly CMake check for main() function.
+    if(NOT ${FIND_RESULT} EQUAL -1)
+        list(APPEND C_MAIN_SOURCE_PATHS ${C_SOURCE_PATH})
+    endif ()
+endforeach()
+message(STATUS "C_MAIN_SOURCE_PATHS: ${C_MAIN_SOURCE_PATHS}")
 
+foreach(C_MAIN_SOURCE_PATH ${C_MAIN_SOURCE_PATHS})
+    list(REMOVE_ITEM C_SOURCES "${C_MAIN_SOURCE_PATH}")
+endforeach()
+message(STATUS "C_SOURCES: ${C_SOURCES}")
+
+foreach(C_MAIN_SOURCE_PATH ${C_MAIN_SOURCE_PATHS})
+    get_filename_component(EXECUTABLE_NAME ${C_MAIN_SOURCE_PATH} NAME_WE)
+    add_executable(${EXECUTABLE_NAME} ${C_MAIN_SOURCE_PATH} ${C_SOURCES} ${C_HEADERS} ${C_GENERATOR_OUTPUTS})
+    target_include_directories(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_INCLUDE_PATHS})
+    target_link_directories(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_LIBRARY_PATHS})
+    target_link_libraries(${EXECUTABLE_NAME} LINK_PUBLIC ${EXTERNAL_LIBRARIES})
+    add_dependencies(${EXECUTABLE_NAME} codegen_packcc)
+endforeach()
 
 # add every file to VS project file structure
 macro(GroupSources curdir)

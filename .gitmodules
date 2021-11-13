@@ -4,3 +4,6 @@
 [submodule "thirdparty/packcc"]
 	path = thirdparty/packcc
 	url = https://github.com/arithy/packcc
+[submodule "thirdparty/greatest"]
+	path = thirdparty/greatest
+	url = https://github.com/silentbicycle/greatest

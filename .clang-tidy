@@ -104,6 +104,8 @@ CheckOptions:
     value:           '800'
   - key:             readability-function-cognitive-complexity.DescribeBasicIncrements
     value:           'true'
+  - key:             readability-function-cognitive-complexity.IgnoreMacros
+    value:           'true'
   - key:             llvm-qualified-auto.AddConstToQualified
     value:           'false'
   - key:             readability-suspicious-call-argument.MinimumIdentifierNameLength
