@@ -1,4 +1,3 @@
-#include "calc.h"
 #include "greatest.h"
 #include "vulkan/vulkan.h"
 #include <stdio.h>

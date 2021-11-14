@@ -1,4 +1,4 @@
-%prefix "calc"
+%prefix "c_parser"
 
 %source {
 #include <stdio.h>
@@ -27,11 +27,3 @@ primary <- < [0-9]+ >               { $$ = atoi($1); }
 
 _      <- [ \t]*
 EOL    <- '\n' / '\r\n' / '\r' / ';'
-
-%%
-int main3() {
-    calc_context_t *ctx = calc_create(NULL);
-    while (calc_parse(ctx, NULL));
-    calc_destroy(ctx);
-    return 0;
-}
