@@ -1,12 +1,51 @@
 %prefix "c_parser"
 
-%source {
-#include <stdio.h>
-#include <stdlib.h>
+%header {
+  typedef struct c_parser_state
+  {
+    // Input state
+    char *source;           // null-terminated string
+    size_t source_length;   // length of source
+    char *current;          // current character in source
+    size_t current_index;   // index of current character in source
+  } c_parser_state;
 }
 
-statement <- _ e:expression _ EOL { printf("answer=%d\n", e); }
-           / ( !EOL . )* EOL      { printf("error\n"); }
+%source {
+  #include <stdio.h>
+  #include <stdlib.h>
+
+  // Advances by 'n' characters.
+  static void c_parser_advance(c_parser_state *state, size_t n) {
+    state->current += n;
+    state->current_index += n;
+  }
+
+  // Returns next (or previous) n-th character.
+  static char c_parser_peek(c_parser_state *state, size_t n) {
+    // TODO: Probably doesn't work for really big documents.
+    if (((int)state->current_index + n < 0) ||
+        (state->current_index + n >= state->source_length)) {
+            return -1;
+    }
+    return state->current[n];
+  }
+
+  // Peeks current character and advances by 1 character.
+  static char c_parser_getchar(c_parser_state *state) {
+    char c = c_parser_peek(state, 0);
+    c_parser_advance(state, 1);
+    return c;
+  }
+
+  #define PCC_GETCHAR(auxil) c_parser_getchar((auxil))
+  //static const char *dbg_str[] = { "Evaluating rule", "Matched rule", "Abandoning rule" };
+  //#define PCC_DEBUG(auxil, event, rule, level, pos, buffer, length) \
+      fprintf(stderr, "%*s%s %s @%zu [%.*s]\n", (int)((level) * 2), "", dbg_str[event], rule, pos, (int)(length), buffer)
+}
+
+statement <- _ e:expression _ EOL* { printf("answer=%d\n", e); }
+           / .* EOF      { printf("eof\n"); }
 
 expression <- e:term { $$ = e; }
 
@@ -26,4 +65,5 @@ primary <- < [0-9]+ >               { $$ = atoi($1); }
          / '(' _ e:expression _ ')' { $$ = e; }
 
 _      <- [ \t]*
-EOL    <- '\n' / '\r\n' / '\r' / ';'
+EOL    <- '\n' / '\r\n' / '\r'
+EOF    <- !.

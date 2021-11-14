@@ -3,6 +3,14 @@
 #ifndef PCC_INCLUDED__HOME_SSZCZYRB_REPOS_CPPTEST_SRC_PEG_C_PARSER_H
 #define PCC_INCLUDED__HOME_SSZCZYRB_REPOS_CPPTEST_SRC_PEG_C_PARSER_H
 
+typedef struct c_parser_state
+{
+  // Input state
+  char *source;           // null-terminated string
+  size_t source_length;   // length of source
+  char *current;          // current character in source
+  size_t current_index;   // index of current character in source
+} c_parser_state;
 #ifdef __cplusplus
 extern "C" {
 #endif
