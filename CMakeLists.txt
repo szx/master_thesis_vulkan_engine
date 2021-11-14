@@ -18,8 +18,11 @@ add_subdirectory( thirdparty/glfw )
 # add external library greatest
 set(GREATEST_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/greatest")
 
+# add external library CLT
+set(CTL_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/ctl/ctl")
+
 # prepare info about external libraries
-set(EXTERNAL_INCLUDE_PATHS ${VULKAN_INCLUDE_PATH} ${GREATEST_INCLUDE_PATH})
+set(EXTERNAL_INCLUDE_PATHS ${VULKAN_INCLUDE_PATH} ${GREATEST_INCLUDE_PATH} ${CTL_INCLUDE_PATH})
 set(EXTERNAL_LIBRARY_PATHS ${VULKAN_LIBRARY_PATH})
 set(EXTERNAL_LIBRARIES glfw)
 

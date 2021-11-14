@@ -3,12 +3,65 @@
 #include "vulkan/vulkan.h"
 #include <stdio.h>
 
+#define P
+#define T int
+#include "vec.h"
+int vec_int_compare(int *a, int *b) { return *b < *a; }
+
+typedef struct image {
+  char *data;
+  size_t dataSize;
+} image;
+
+void image_free(image *self) {
+  free(self->data);
+  self->data = NULL;
+  self->dataSize = 0;
+}
+
+image image_copy(image *self) {
+  image copy = {};
+  copy.data = malloc(self->dataSize);
+  memcpy(copy.data, self->data, self->dataSize);
+  copy.dataSize = self->dataSize;
+  return copy;
+}
+
+#define T image
+#include "vec.h"
+
+image image_init(size_t data_count) {
+  image self = {.data = malloc(sizeof(*self.data) * data_count),
+                .dataSize = sizeof(*self.data) * data_count};
+  return self;
+}
+
 // Basic test template.
 TEST basic_test_template() { // NOLINT
-  int x = 1;
-  ASSERT_EQ(1, x);
-  ASSERT_EQm("x should equal 1", 1, x);
-  ASSERT_EQ_FMT(1, x, "%d");
+
+  vec_int a = vec_int_init();
+  vec_int_push_back(&a, 9);
+  vec_int_push_back(&a, 1);
+  vec_int_push_back(&a, 8);
+  vec_int_push_back(&a, 3);
+  vec_int_push_back(&a, 4);
+  vec_int_sort(&a, vec_int_compare);
+  for (size_t i = 0, last = 0; i < a.size; i++) {
+    ASSERT_LT(last, a.value[i]);
+    last = a.value[i];
+  }
+  vec_int_free(&a);
+
+  vec_image b = vec_image_init();
+  vec_image_push_back(&b, image_init(10));
+  vec_image_push_back(&b, image_init(10));
+  vec_image_push_back(&b, image_init(100));
+  vec_image b2 = vec_image_copy(&b);
+  for (size_t i = 0; i < b.size; i++) {
+    ASSERT_EQ(b.value[i].dataSize, b2.value[i].dataSize);
+    ASSERT_MEM_EQ(b.value[i].data, b2.value[i].data,
+                  sizeof(*b.value[i].data) * b.value[i].dataSize);
+  }
   PASS();
 }
 
@@ -19,7 +72,7 @@ TEST c_parser_preprocessor_parsing() { // NOLINT
   char *input = "2+2";
   c_parser_state state = {};
   state.source = input;
-  state.source_length = sizeof(input);
+  state.source_length = strlen(input);
   state.current = input;
   state.current_index = 0;
   c_parser_context_t *ctx = c_parser_create(&state);

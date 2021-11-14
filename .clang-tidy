@@ -1,10 +1,9 @@
 ---
-Checks:          'clang-diagnostic-*,clang-analyzer-*,-*,clang-*,readability-*'
+Checks:          'clang-diagnostic-*,clang-analyzer-*,-*,clang-*,readability-*',-readability-non-const-parameter
 WarningsAsErrors: ''
 HeaderFilterRegex: ''
 AnalyzeTemporaryDtors: false
 FormatStyle:     none
-User:            sszczyrb
 CheckOptions:
   - key:             readability-suspicious-call-argument.PrefixSimilarAbove
     value:           '30'
