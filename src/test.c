@@ -69,7 +69,7 @@ SUITE(basic_test_suite) { RUN_TEST(basic_test_template); }
 
 // Parsing C preprocessor directives.
 TEST c_parser_preprocessor_parsing() { // NOLINT
-  char *input = "2+2*3";
+  char *input = "2+++--abc1++*3++";
   c_parser_state state = {};
   state.source = input;
   state.source_length = strlen(input);
