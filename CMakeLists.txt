@@ -6,14 +6,15 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 # add headers from Vulkan SDK
-set(VULKAN_INCLUDE_PATH "$ENV{VULKAN_SDK}/include")
-set(VULKAN_LIBRARY_PATH "$ENV{VULKAN_SDK}/lib/vulkan-1.lib")
+set(VULKAN_SDK_PATH "$ENV{VULKAN_SDK}")
+set(VULKAN_INCLUDE_PATH "${VULKAN_SDK_PATH}/include")
+set(VULKAN_LIBRARY_PATH "${VULKAN_SDK_PATH}/lib")
 
 # add external library glfw
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-add_subdirectory( thirdparty/glfw )
+add_subdirectory(thirdparty/glfw)
 
 # add external library greatest
 set(GREATEST_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/greatest")
