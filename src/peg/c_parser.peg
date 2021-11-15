@@ -1,5 +1,8 @@
 %prefix "c_parser"
 
+%auxil "c_parser_state *"
+%value "c_parser_ast_node *"
+
 %header {
   typedef struct c_parser_state
   {
@@ -9,6 +12,78 @@
     char *current;          // current character in source
     size_t current_index;   // index of current character in source
   } c_parser_state;
+
+  typedef enum c_parser_ast_node_type {
+    c_parser_ast_node_type_Unknown, // UNKNOWN
+    c_parser_ast_node_type_String, // STRING
+    c_parser_ast_node_type_Identifier, // IDENTIFIER
+    c_parser_ast_node_type_Integer, // NUMBER
+
+    c_parser_ast_node_type_SingleComment, // //...
+    c_parser_ast_node_type_MultiComment, // /*...*/
+    c_parser_ast_node_type_PreprocessorDirective, // #directive
+
+    // bitwise operators
+    c_parser_ast_node_type_BitOr, // |
+    c_parser_ast_node_type_BitAnd, // &
+    c_parser_ast_node_type_BitXor, // ^
+    c_parser_ast_node_type_BitShiftLeft, // <<
+    c_parser_ast_node_type_BitShiftRight, // >>
+    c_parser_ast_node_type_BitNot, // ~
+
+    // logical operators
+    c_parser_ast_node_type_Not, // !
+    c_parser_ast_node_type_Or, // ||
+    c_parser_ast_node_type_And, // &&
+
+    // unary arithmetic operators
+    c_parser_ast_node_type_Plus, // +
+    c_parser_ast_node_type_Minus, // -
+    c_parser_ast_node_type_Inc, // ++
+    c_parser_ast_node_type_Dec, // --
+
+    // binary arithmetic operators
+    c_parser_ast_node_type_Add, // +
+    c_parser_ast_node_type_Sub, // -
+    c_parser_ast_node_type_Mul, // *
+    c_parser_ast_node_type_Div, // /
+    c_parser_ast_node_type_Mod, // %
+
+    // assignment operators
+    c_parser_ast_node_type_Assign, // ==
+    c_parser_ast_node_type_AssignAdd, // +=
+    c_parser_ast_node_type_AssignSub , // -=
+    c_parser_ast_node_type_AssignMul, // *=
+    c_parser_ast_node_type_AssignDiv, // /=
+    c_parser_ast_node_type_AssignMod, // %=
+    c_parser_ast_node_type_AssignBitOr, // |=
+    c_parser_ast_node_type_AssignBitAnd, // %=
+    c_parser_ast_node_type_AssignBitXor, // ^=
+    c_parser_ast_node_type_AssignBitLeftShift, // <<=
+    c_parser_ast_node_type_AssignBitRightShift, // >>=
+
+  // comparison operators
+    c_parser_ast_node_type_EQ, // ==
+    c_parser_ast_node_type_NE, // !=
+    c_parser_ast_node_type_LT, // <
+    c_parser_ast_node_type_GT, // >
+    c_parser_ast_node_type_LE, // <=
+    c_parser_ast_node_type_GE, // >=
+  } c_parser_ast_node_type;
+
+  typedef struct c_parser_str_range
+  {
+    size_t begin; // inclusive
+    size_t end;   // exclusive
+  } c_parser_str_range;
+
+  typedef struct c_parser_ast_node
+  {
+    c_parser_ast_node_type type;      // AST node type
+    c_parser_str_range range;
+    struct c_parser_ast_node *node1;  // first child node
+    struct c_parser_ast_node *node2;  // second child node
+  } c_parser_ast_node;
 }
 
 %source {
@@ -42,27 +117,83 @@
   //static const char *dbg_str[] = { "Evaluating rule", "Matched rule", "Abandoning rule" };
   //#define PCC_DEBUG(auxil, event, rule, level, pos, buffer, length) \
       fprintf(stderr, "%*s%s %s @%zu [%.*s]\n", (int)((level) * 2), "", dbg_str[event], rule, pos, (int)(length), buffer)
+
+  // Returns new string range.
+  static c_parser_str_range c_parser_str_range_init(size_t begin, size_t end) {
+    c_parser_str_range range = { begin, end };
+    return range;
+  }
+
+  // Returns newly allocated AST node.
+  static c_parser_ast_node *c_parser_ast_node_allocate(c_parser_state *state, c_parser_ast_node_type type, c_parser_str_range range) {
+    c_parser_ast_node *node = (c_parser_ast_node*)malloc(sizeof(c_parser_ast_node));
+    node->type = type;
+    node->range = range;
+    node->node1 = NULL;
+    node->node2 = NULL;
+    return node;
+  }
+
+  // Returns terminal AST node.
+  static c_parser_ast_node *c_parser_ast_node_init_terminal(c_parser_state *state, c_parser_ast_node_type type, c_parser_str_range range) {
+    c_parser_ast_node *node = c_parser_ast_node_allocate(state, type, range);
+    return node;
+  }
+
+  // Returns unary AST node.
+  static c_parser_ast_node *c_parser_ast_node_init_unary(c_parser_state *state, c_parser_ast_node_type type, c_parser_str_range range, c_parser_ast_node *node1) {
+    c_parser_ast_node *node = c_parser_ast_node_allocate(state, type, range);
+    node->node1 = node1;
+    return node;
+  }
+
+  // Returns binary AST node.
+  static c_parser_ast_node *c_parser_ast_node_init_binary(c_parser_state *state, c_parser_ast_node_type type, c_parser_str_range range, c_parser_ast_node *node1, c_parser_ast_node *node2) {
+    c_parser_ast_node *node = c_parser_ast_node_allocate(state, type, range);
+    node->node1 = node1;
+    node->node2 = node2;
+    return node;
+  }
+
+  static void c_parser_ast_node_debug_print(c_parser_state *state, c_parser_ast_node *node, size_t indentLevel) {
+    // TODO: Seperate header and source file.
+    int len = node->range.end - node->range.begin;
+    char *str = state->source + node->range.begin;
+    printf("%*s| node %d (%d, %d): %.*s\n", (int)indentLevel, "", (int)node->type, (int)node->range.begin, (int)node->range.end, len, str);
+    if (node->node1 != NULL) {
+      printf("%*s| node1:\n", (int)indentLevel, "");
+      c_parser_ast_node_debug_print(state, node->node1, indentLevel+4);
+    }
+    if (node->node2 != NULL) {
+      printf("%*s| node2:\n", (int)indentLevel, "");
+      c_parser_ast_node_debug_print(state, node->node2, indentLevel+4);
+    }
+  }
 }
 
-statement <- _ e:expression _ EOL* { printf("answer=%d\n", e); }
+statement <- _ e:expression _ EOL* { c_parser_ast_node_debug_print(auxil, e, 0); }
            / .* EOF      { printf("eof\n"); }
 
 expression <- e:term { $$ = e; }
 
-term <- l:term _ '+' _ r:factor { $$ = l + r; }
-      / l:term _ '-' _ r:factor { $$ = l - r; }
-      / e:factor                { $$ = e; }
+term <-
+  l:term _ '+' _ r:factor { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Add, c_parser_str_range_init($0s, $0e), l, r); }
+/ l:term _ '-' _ r:factor { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Sub, c_parser_str_range_init($0s, $0e), l, r); }
+/ e:factor                { $$ = e; }
 
-factor <- l:factor _ '*' _ r:unary { $$ = l * r; }
-        / l:factor _ '/' _ r:unary { $$ = l / r; }
-        / e:unary                  { $$ = e; }
+factor <-
+  l:factor _ '*' _ r:unary { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Mul, c_parser_str_range_init($0s, $0e), l, r); }
+/ l:factor _ '/' _ r:unary { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Div, c_parser_str_range_init($0s, $0e), l, r); }
+/ e:unary                  { $$ = e; }
 
-unary <- '+' _ e:unary { $$ = +e; }
-       / '-' _ e:unary { $$ = -e; }
-       / e:primary     { $$ = e; }
+unary <-
+  '+' _ e:unary { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Plus, c_parser_str_range_init($0s, $0e), e); }
+/ '-' _ e:unary { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Minus, c_parser_str_range_init($0s, $0e), e);; }
+/ e:primary     { $$ = e; }
 
-primary <- < [0-9]+ >               { $$ = atoi($1); }
-         / '(' _ e:expression _ ')' { $$ = e; }
+primary <-
+< [0-9]+ > { $$  = c_parser_ast_node_init_terminal(auxil, c_parser_ast_node_type_Integer, c_parser_str_range_init($0s, $0e)); }
+/ '(' _ e:expression _ ')' { $$ = e; }
 
 _      <- [ \t]*
 EOL    <- '\n' / '\r\n' / '\r'

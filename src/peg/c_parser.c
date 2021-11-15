@@ -53,6 +53,58 @@ static char c_parser_getchar(c_parser_state *state) {
 //static const char *dbg_str[] = { "Evaluating rule", "Matched rule", "Abandoning rule" };
 //#define PCC_DEBUG(auxil, event, rule, level, pos, buffer, length) \
     fprintf(stderr, "%*s%s %s @%zu [%.*s]\n", (int)((level) * 2), "", dbg_str[event], rule, pos, (int)(length), buffer)
+
+// Returns new string range.
+static c_parser_str_range c_parser_str_range_init(size_t begin, size_t end) {
+  c_parser_str_range range = { begin, end };
+  return range;
+}
+
+// Returns newly allocated AST node.
+static c_parser_ast_node *c_parser_ast_node_allocate(c_parser_state *state, c_parser_ast_node_type type, c_parser_str_range range) {
+  c_parser_ast_node *node = (c_parser_ast_node*)malloc(sizeof(c_parser_ast_node));
+  node->type = type;
+  node->range = range;
+  node->node1 = NULL;
+  node->node2 = NULL;
+  return node;
+}
+
+// Returns terminal AST node.
+static c_parser_ast_node *c_parser_ast_node_init_terminal(c_parser_state *state, c_parser_ast_node_type type, c_parser_str_range range) {
+  c_parser_ast_node *node = c_parser_ast_node_allocate(state, type, range);
+  return node;
+}
+
+// Returns unary AST node.
+static c_parser_ast_node *c_parser_ast_node_init_unary(c_parser_state *state, c_parser_ast_node_type type, c_parser_str_range range, c_parser_ast_node *node1) {
+  c_parser_ast_node *node = c_parser_ast_node_allocate(state, type, range);
+  node->node1 = node1;
+  return node;
+}
+
+// Returns binary AST node.
+static c_parser_ast_node *c_parser_ast_node_init_binary(c_parser_state *state, c_parser_ast_node_type type, c_parser_str_range range, c_parser_ast_node *node1, c_parser_ast_node *node2) {
+  c_parser_ast_node *node = c_parser_ast_node_allocate(state, type, range);
+  node->node1 = node1;
+  node->node2 = node2;
+  return node;
+}
+
+static void c_parser_ast_node_debug_print(c_parser_state *state, c_parser_ast_node *node, size_t indentLevel) {
+  // TODO: Seperate header and source file.
+  int len = node->range.end - node->range.begin;
+  char *str = state->source + node->range.begin;
+  printf("%*s| node %d (%d, %d): %.*s\n", (int)indentLevel, "", (int)node->type, (int)node->range.begin, (int)node->range.end, len, str);
+  if (node->node1 != NULL) {
+    printf("%*s| node1:\n", (int)indentLevel, "");
+    c_parser_ast_node_debug_print(state, node->node1, indentLevel+4);
+  }
+if (node->node2 != NULL) {
+  printf("%*s| node2:\n", (int)indentLevel, "");
+  c_parser_ast_node_debug_print(state, node->node2, indentLevel+4);
+}
+}
 #if !defined __has_attribute || defined _MSC_VER
 #define __attribute__(x)
 #endif
@@ -93,9 +145,9 @@ typedef struct pcc_range_tag {
     size_t end;
 } pcc_range_t;
 
-typedef int pcc_value_t;
+typedef c_parser_ast_node *pcc_value_t;
 
-typedef void *pcc_auxil_t;
+typedef c_parser_state *pcc_auxil_t;
 
 typedef struct pcc_value_table_tag {
     pcc_value_t *buf;
@@ -1070,7 +1122,7 @@ static void pcc_action_statement_0(c_parser_context_t *__pcc_ctx, pcc_thunk_t *_
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    printf("answer=%d\n", e);
+    c_parser_ast_node_debug_print(auxil, e, 0);
 #undef _0e
 #undef _0s
 #undef _0
@@ -1117,7 +1169,7 @@ static void pcc_action_term_0(c_parser_context_t *__pcc_ctx, pcc_thunk_t *__pcc_
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    __ = l + r;
+    __ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Add, c_parser_str_range_init(_0s, _0e), l, r);
 #undef _0e
 #undef _0s
 #undef _0
@@ -1135,7 +1187,7 @@ static void pcc_action_term_1(c_parser_context_t *__pcc_ctx, pcc_thunk_t *__pcc_
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    __ = l - r;
+    __ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Sub, c_parser_str_range_init(_0s, _0e), l, r);
 #undef _0e
 #undef _0s
 #undef _0
@@ -1169,7 +1221,7 @@ static void pcc_action_factor_0(c_parser_context_t *__pcc_ctx, pcc_thunk_t *__pc
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    __ = l * r;
+    __ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Mul, c_parser_str_range_init(_0s, _0e), l, r);
 #undef _0e
 #undef _0s
 #undef _0
@@ -1187,7 +1239,7 @@ static void pcc_action_factor_1(c_parser_context_t *__pcc_ctx, pcc_thunk_t *__pc
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    __ = l / r;
+    __ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Div, c_parser_str_range_init(_0s, _0e), l, r);
 #undef _0e
 #undef _0s
 #undef _0
@@ -1220,7 +1272,7 @@ static void pcc_action_unary_0(c_parser_context_t *__pcc_ctx, pcc_thunk_t *__pcc
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    __ = +e;
+    __ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Plus, c_parser_str_range_init(_0s, _0e), e);
 #undef _0e
 #undef _0s
 #undef _0
@@ -1236,7 +1288,7 @@ static void pcc_action_unary_1(c_parser_context_t *__pcc_ctx, pcc_thunk_t *__pcc
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    __ = -e;
+    __ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Minus, c_parser_str_range_init(_0s, _0e), e);;
 #undef _0e
 #undef _0s
 #undef _0
@@ -1270,7 +1322,7 @@ static void pcc_action_primary_0(c_parser_context_t *__pcc_ctx, pcc_thunk_t *__p
 #define _1 pcc_get_capture_string(__pcc_ctx, __pcc_in->data.leaf.capts.buf[0])
 #define _1s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capts.buf[0]->range.start))
 #define _1e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capts.buf[0]->range.end))
-    __ = atoi(_1);
+    __  = c_parser_ast_node_init_terminal(auxil, c_parser_ast_node_type_Integer, c_parser_str_range_init(_0s, _0e));
 #undef _1e
 #undef _1s
 #undef _1
@@ -1848,11 +1900,11 @@ L0000:;
     return NULL;
 }
 
-c_parser_context_t *c_parser_create(void *auxil) {
+c_parser_context_t *c_parser_create(c_parser_state *auxil) {
     return pcc_context__create(auxil);
 }
 
-int c_parser_parse(c_parser_context_t *ctx, int *ret) {
+int c_parser_parse(c_parser_context_t *ctx, c_parser_ast_node **ret) {
     if (pcc_apply_rule(ctx, pcc_evaluate_rule_statement, &ctx->thunks, ret))
         pcc_do_action(ctx, &ctx->thunks, ret);
     else

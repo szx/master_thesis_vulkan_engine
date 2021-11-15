@@ -69,15 +69,17 @@ SUITE(basic_test_suite) { RUN_TEST(basic_test_template); }
 
 // Parsing C preprocessor directives.
 TEST c_parser_preprocessor_parsing() { // NOLINT
-  char *input = "2+2";
+  char *input = "2+2*3";
   c_parser_state state = {};
   state.source = input;
   state.source_length = strlen(input);
   state.current = input;
   state.current_index = 0;
   c_parser_context_t *ctx = c_parser_create(&state);
-  int ret;
-  while (c_parser_parse(ctx, &ret)) {
+  c_parser_ast_node *ast;
+  int ret = c_parser_parse(ctx, &ast);
+  if (ret) {
+    FAILm("Detected remaining input text due to incompleteness of grammar.");
   }
   c_parser_destroy(ctx);
   // TODO: Construct AST for preprocessor.
