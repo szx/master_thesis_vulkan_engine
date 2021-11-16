@@ -7,12 +7,12 @@ typedef struct c_parser_state {
   // Input state
   char *source;         // null-terminated string
   size_t source_length; // length of source
+  // Parsing state
   char *current;        // current character in source
   size_t current_index; // index of current character in source
 } c_parser_state;
 
 typedef enum c_parser_ast_node_type {
-  c_parser_ast_node_type_Unknown,    // UNKNOWN
   c_parser_ast_node_type_String,     // STRING
   c_parser_ast_node_type_Identifier, // IDENTIFIER
   c_parser_ast_node_type_Integer,    // NUMBER
@@ -81,6 +81,10 @@ typedef struct c_parser_ast_node {
   struct c_parser_ast_node *node2; // second child node
 } c_parser_ast_node;
 
+typedef enum c_parser_error_type {
+  c_parser_error_type_UnclosedComment
+} c_parser_error_type;
+
 // Advances by 'n' characters.
 void c_parser_advance(c_parser_state *state, size_t n);
 
@@ -119,4 +123,12 @@ c_parser_ast_node *c_parser_ast_node_init_binary(c_parser_state *state,
 // Prints node debug info to stdout.
 void c_parser_ast_node_debug_print(c_parser_state *state,
                                    c_parser_ast_node *node, size_t indentLevel);
+
+// Stores new parser error in c_parser_state.
+void c_parser_handle_error(c_parser_state *state, c_parser_error_type type,
+                           c_parser_str_range range);
+
+// Stores new comment in c_parser_state.
+void c_parser_handle_comment(c_parser_state *state, c_parser_str_range range);
+
 #endif /* !C_PARSER_INTERNAL_H */

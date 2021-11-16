@@ -54,6 +54,13 @@ number <-
 
 ## TODO keywords ##
 
-_      <- [ \t]*
-EOL    <- '\n' / '\r\n' / '\r'
-EOF    <- !.
+_ <- ( whitespace / comment )*
+
+comment <-
+  '/*' ( !'*/' . )* '*/' { c_parser_handle_comment(auxil, c_parser_str_range_init($0s, $0e)); }
+/ '/*' ( !'*/' . )* { c_parser_handle_error(auxil, c_parser_error_type_UnclosedComment, c_parser_str_range_init($0s, $0e)); }
+
+whitespace <- ( blank / EOL )
+blank <- [ \t\v\f]
+EOL <- '\n' / '\r\n' / '\r'
+EOF <- !.

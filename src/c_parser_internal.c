@@ -84,3 +84,23 @@ void c_parser_ast_node_debug_print(c_parser_state *state,
     c_parser_ast_node_debug_print(state, node->node2, indentLevel + 4);
   }
 }
+
+void c_parser_handle_error(c_parser_state *state, c_parser_error_type type,
+                           c_parser_str_range range) {
+  // TODO: Store errors in c_parser_state.
+  if (type == c_parser_error_type_UnclosedComment) {
+    fprintf(stderr, "ERROR: Unclosed comment block:\n");
+  } else {
+    fprintf(stderr, "ERROR: Undefined error:\n");
+  }
+  int len = range.end - range.begin;
+  char *str = state->source + range.begin;
+  fprintf(stderr, "       %.*s\n", len, str);
+}
+
+void c_parser_handle_comment(c_parser_state *state, c_parser_str_range range) {
+  // TODO: Store comments in c_parser_state.
+  int len = range.end - range.begin;
+  char *str = state->source + range.begin;
+  fprintf(stderr, "Comment: %.*s\n", len, str);
+}
