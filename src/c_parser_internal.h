@@ -3,22 +3,11 @@
 #ifndef C_PARSER_INTERNAL_H
 #define C_PARSER_INTERNAL_H
 
-typedef struct c_parser_state {
-  // Input state
-  char *source;         // null-terminated string
-  size_t source_length; // length of source
-  // Parsing state
-  char *current;        // current character in source
-  size_t current_index; // index of current character in source
-} c_parser_state;
-
 typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_String,     // STRING
   c_parser_ast_node_type_Identifier, // IDENTIFIER
   c_parser_ast_node_type_Integer,    // NUMBER
 
-  c_parser_ast_node_type_SingleComment,         // //...
-  c_parser_ast_node_type_MultiComment,          // /*...*/
   c_parser_ast_node_type_PreprocessorDirective, // #directive
 
   // bitwise operators
@@ -69,21 +58,47 @@ typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_GE, // >=
 } c_parser_ast_node_type;
 
+typedef enum c_parser_error_type {
+  c_parser_error_type_UnclosedComment
+} c_parser_error_type;
+
 typedef struct c_parser_str_range {
   size_t begin; // inclusive
   size_t end;   // exclusive
 } c_parser_str_range;
 
+typedef struct c_parser_error {
+  c_parser_error_type type;
+  c_parser_str_range range;
+} c_parser_error;
+#define P
+#define T c_parser_error
+#include "vec.h" // vec_c_parser_error
+
+typedef struct c_parser_comment {
+  c_parser_str_range range;
+} c_parser_comment;
+#define P
+#define T c_parser_comment
+#include "vec.h" // vec_c_parser_comment
+
+typedef struct c_parser_state {
+  // Input state
+  char *source;         // null-terminated string
+  size_t source_length; // length of source
+  // Parsing state
+  char *current;                 // current character in source
+  size_t current_index;          // index of current character in source
+  vec_c_parser_error errors;     // every parsing error
+  vec_c_parser_comment comments; // every parsed comment
+} c_parser_state;
+
 typedef struct c_parser_ast_node {
-  c_parser_ast_node_type type; // AST node type
+  c_parser_ast_node_type type;
   c_parser_str_range range;
   struct c_parser_ast_node *node1; // first child node
   struct c_parser_ast_node *node2; // second child node
 } c_parser_ast_node;
-
-typedef enum c_parser_error_type {
-  c_parser_error_type_UnclosedComment
-} c_parser_error_type;
 
 // Advances by 'n' characters.
 void c_parser_advance(c_parser_state *state, size_t n);
@@ -130,5 +145,8 @@ void c_parser_handle_error(c_parser_state *state, c_parser_error_type type,
 
 // Stores new comment in c_parser_state.
 void c_parser_handle_comment(c_parser_state *state, c_parser_str_range range);
+
+// Prints parser state to stdout.
+void c_parser_debug_print(c_parser_state *state);
 
 #endif /* !C_PARSER_INTERNAL_H */

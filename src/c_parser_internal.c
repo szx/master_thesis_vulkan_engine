@@ -87,20 +87,33 @@ void c_parser_ast_node_debug_print(c_parser_state *state,
 
 void c_parser_handle_error(c_parser_state *state, c_parser_error_type type,
                            c_parser_str_range range) {
-  // TODO: Store errors in c_parser_state.
-  if (type == c_parser_error_type_UnclosedComment) {
-    fprintf(stderr, "ERROR: Unclosed comment block:\n");
-  } else {
-    fprintf(stderr, "ERROR: Undefined error:\n");
-  }
-  int len = range.end - range.begin;
-  char *str = state->source + range.begin;
-  fprintf(stderr, "       %.*s\n", len, str);
+  c_parser_error error = {.type = type, .range = range};
+  vec_c_parser_error_push_back(&state->errors, error);
 }
 
 void c_parser_handle_comment(c_parser_state *state, c_parser_str_range range) {
-  // TODO: Store comments in c_parser_state.
-  int len = range.end - range.begin;
-  char *str = state->source + range.begin;
-  fprintf(stderr, "Comment: %.*s\n", len, str);
+  c_parser_comment comment = {range};
+  vec_c_parser_comment_push_back(&state->comments, comment);
+}
+
+void c_parser_debug_print(c_parser_state *state) {
+  fprintf(stdout, "ERRORS:\n");
+  for (size_t i = 0; i < state->errors.size; i++) {
+    c_parser_error *error = &state->errors.value[i];
+    if (error->type == c_parser_error_type_UnclosedComment) {
+      fprintf(stdout, "ERROR: Unclosed comment block:\n");
+    } else {
+      fprintf(stdout, "ERROR: Undefined error:\n");
+    }
+    int len = error->range.end - error->range.begin;
+    char *str = state->source + error->range.begin;
+    fprintf(stdout, "       %.*s\n", len, str);
+  }
+  fprintf(stdout, "COMMENTS:\n");
+  for (size_t i = 0; i < state->comments.size; i++) {
+    c_parser_comment *comment = &state->comments.value[i];
+    int len = comment->range.end - comment->range.begin;
+    char *str = state->source + comment->range.begin;
+    fprintf(stdout, "COMMENT: %.*s\n", len, str);
+  }
 }

@@ -69,12 +69,14 @@ SUITE(basic_test_suite) { RUN_TEST(basic_test_template); }
 
 // Parsing C preprocessor directives.
 TEST c_parser_preprocessor_parsing() { // NOLINT
-  char *input = "/*abc*/2+++/*abc*/--abc1++*3++/*abc*/";
+  char *input = "/*abc*/2+++/*abc*/--abc1++*3++/*abc";
   c_parser_state state = {};
   state.source = input;
   state.source_length = strlen(input);
   state.current = input;
   state.current_index = 0;
+  state.errors = vec_c_parser_error_init();
+  state.comments = vec_c_parser_comment_init();
   c_parser_context_t *ctx = c_parser_create(&state);
   c_parser_ast_node *ast;
   int ret = c_parser_parse(ctx, &ast);
@@ -82,6 +84,7 @@ TEST c_parser_preprocessor_parsing() { // NOLINT
     FAILm("Detected remaining input text due to incompleteness of grammar.");
   }
   c_parser_destroy(ctx);
+  c_parser_debug_print(&state);
   // TODO: Construct AST for preprocessor.
   int x = 1;
   ASSERT_EQ(1, x);
