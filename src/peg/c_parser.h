@@ -4,6 +4,7 @@
 #define PCC_INCLUDED__HOME_SSZCZYRB_REPOS_CPPTEST_SRC_PEG_C_PARSER_H
 
 #include "../c_parser_internal.h"
+c_parser_state c_parser_execute(char *source);
 #ifdef __cplusplus
 extern "C" {
 #endif

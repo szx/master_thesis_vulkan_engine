@@ -3,6 +3,8 @@
 #ifndef C_PARSER_INTERNAL_H
 #define C_PARSER_INTERNAL_H
 
+#include <stdbool.h>
+
 typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_String,     // STRING
   c_parser_ast_node_type_Identifier, // IDENTIFIER
@@ -91,6 +93,8 @@ typedef struct c_parser_state {
   size_t current_index;          // index of current character in source
   vec_c_parser_error errors;     // every parsing error
   vec_c_parser_comment comments; // every parsed comment
+  bool isValid; // false if detected remaining source text due to incompleteness
+                // of grammar
 } c_parser_state;
 
 typedef struct c_parser_ast_node {
@@ -99,6 +103,9 @@ typedef struct c_parser_ast_node {
   struct c_parser_ast_node *node1; // first child node
   struct c_parser_ast_node *node2; // second child node
 } c_parser_ast_node;
+
+// Returns new parser.
+c_parser_state c_parser_state_init(char *source);
 
 // Advances by 'n' characters.
 void c_parser_advance(c_parser_state *state, size_t n);

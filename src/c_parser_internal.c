@@ -4,6 +4,18 @@
 
 #include "c_parser_internal.h"
 
+c_parser_state c_parser_state_init(char *source) {
+  c_parser_state state = {};
+  state.source = source;
+  state.source_length = strlen(source);
+  state.current = source;
+  state.current_index = 0;
+  state.errors = vec_c_parser_error_init();
+  state.comments = vec_c_parser_comment_init();
+  state.isValid = true;
+  return state;
+}
+
 void c_parser_advance(c_parser_state *state, size_t n) {
   state->current += n;
   state->current_index += n;
@@ -32,6 +44,7 @@ c_parser_str_range c_parser_str_range_init(size_t begin, size_t end) {
 c_parser_ast_node *c_parser_ast_node_allocate(c_parser_state *state,
                                               c_parser_ast_node_type type,
                                               c_parser_str_range range) {
+  (void)state;
   c_parser_ast_node *node =
       (c_parser_ast_node *)malloc(sizeof(c_parser_ast_node));
   node->type = type;
@@ -71,10 +84,10 @@ c_parser_ast_node *c_parser_ast_node_init_binary(c_parser_state *state,
 void c_parser_ast_node_debug_print(c_parser_state *state,
                                    c_parser_ast_node *node,
                                    size_t indentLevel) {
-  int len = node->range.end - node->range.begin;
+  size_t len = node->range.end - node->range.begin;
   char *str = state->source + node->range.begin;
   printf("%*s| node %d (%d, %d): %.*s\n", (int)indentLevel, "", (int)node->type,
-         (int)node->range.begin, (int)node->range.end, len, str);
+         (int)node->range.begin, (int)node->range.end, (int)len, str);
   if (node->node1 != NULL) {
     printf("%*s| node1:\n", (int)indentLevel, "");
     c_parser_ast_node_debug_print(state, node->node1, indentLevel + 4);
@@ -105,15 +118,16 @@ void c_parser_debug_print(c_parser_state *state) {
     } else {
       fprintf(stdout, "ERROR: Undefined error:\n");
     }
-    int len = error->range.end - error->range.begin;
+    size_t len = error->range.end - error->range.begin;
     char *str = state->source + error->range.begin;
-    fprintf(stdout, "       %.*s\n", len, str);
+    fprintf(stdout, "       %.*s\n", (int)len, str);
   }
   fprintf(stdout, "COMMENTS:\n");
   for (size_t i = 0; i < state->comments.size; i++) {
     c_parser_comment *comment = &state->comments.value[i];
-    int len = comment->range.end - comment->range.begin;
+    size_t len = comment->range.end - comment->range.begin;
     char *str = state->source + comment->range.begin;
-    fprintf(stdout, "COMMENT: %.*s\n", len, str);
+    fprintf(stdout, "COMMENT: %.*s\n", (int)len, str);
   }
+  fprintf(stdout, "IS_VALID: %s\n", (state->isValid ? "true" : "false"));
 }

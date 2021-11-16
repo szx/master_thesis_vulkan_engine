@@ -2395,3 +2395,16 @@ int c_parser_parse(c_parser_context_t *ctx, c_parser_ast_node **ret) {
 void c_parser_destroy(c_parser_context_t *ctx) {
     pcc_context__destroy(ctx);
 }
+
+// Returns parse state after parsing source text.
+c_parser_state c_parser_execute(char *source) {
+  c_parser_state state = c_parser_state_init(source);
+  c_parser_context_t *ctx = c_parser_create(&state);
+  c_parser_ast_node *ast;
+  int ret = c_parser_parse(ctx, &ast);
+  c_parser_destroy(ctx);
+  if (ret) {
+    state.isValid = false;
+  }
+  return state;
+}
