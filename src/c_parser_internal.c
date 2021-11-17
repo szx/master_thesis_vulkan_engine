@@ -89,8 +89,8 @@ c_parser_ast_node *c_parser_ast_node_init_binary(c_parser_state *state,
                                                  c_parser_ast_node *node1,
                                                  c_parser_ast_node *node2) {
   c_parser_ast_node *node = c_parser_ast_node_allocate(state, type, range);
-  c_parser_ast_node_push_front(node, node1);
   c_parser_ast_node_push_front(node, node2);
+  c_parser_ast_node_push_front(node, node1);
   return node;
 }
 
@@ -161,6 +161,12 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "Integer";
   case c_parser_ast_node_type_PreprocessorDirective:
     return "PreprocessorDirective";
+  case c_parser_ast_node_type_SubscriptAccess:
+    return "SubscriptAccess";
+  case c_parser_ast_node_type_MemberAccess:
+    return "MemberAccess";
+  case c_parser_ast_node_type_PointerAccess:
+    return "PointerAccess";
   case c_parser_ast_node_type_BitOr:
     return "BitOr";
   case c_parser_ast_node_type_BitAnd:

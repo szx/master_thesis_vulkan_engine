@@ -69,7 +69,9 @@ SUITE(basic_test_suite) { RUN_TEST(basic_test_template); }
 
 // Parsing C preprocessor directives.
 TEST c_parser_preprocessor_parsing() { // NOLINT
-  char *input = "/*abc*/2+++/*def*/--abc1++*3++;2+2;/*ghi";
+  char *input = "/*abc*/2+++/*def*/--abc1++*3++;"
+                "vec.x*vec.y+vec.z;"
+                "2+2;/*ghi";
   c_parser_state state = c_parser_execute(input);
   c_parser_debug_print(&state);
   int x = 1;

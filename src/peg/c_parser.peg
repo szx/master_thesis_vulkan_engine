@@ -33,9 +33,13 @@ statement_list <-
     c_parser_ast_node_push_front($$, s);
   }
 
-statement <- _ e:expression _ ';' { $$ = e; }
+statement <-
+  e:expression_statement { $$ = e; }
 ## TODO: More statements ##
 ## TODO: Error handling (missing semicolons) ##
+
+expression_statement <-
+  _ e:expression _ ';' { $$ = e; }
 
 expression <- e:term { $$ = e; }
 
@@ -57,10 +61,18 @@ unary <-
 / '--' _ e:unary { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Dec, c_parser_str_range_init($0s, $0e), e); }
 / e:unary _ '++' { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Inc, c_parser_str_range_init($0s, $0e), e); }
 / e:unary _ '--' { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Dec, c_parser_str_range_init($0s, $0e), e); }
-/ e:primary     { $$ = e; }
+/ e:postfix_expression { $$ = e; }
 
-primary <-
+postfix_expression <-
+  e:postfix_expression '[' i:expression ']' { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_SubscriptAccess, c_parser_str_range_init($0s, $0e), e, i); }
+/ e:postfix_expression '.' i:identifier { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_MemberAccess, c_parser_str_range_init($0s, $0e), e, i); }
+/ e:postfix_expression '->' i:identifier { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_PointerAccess, c_parser_str_range_init($0s, $0e), e, i); }
+## TODO: Function call ##
+/ e:primary_expression { $$ = e; }
+
+primary_expression <-
   e:identifier { $$ = e; }
+## TODO: Strings ##
 / e:number { $$ = e; }
 / '(' _ e:expression _ ')' { $$ = e; }
 

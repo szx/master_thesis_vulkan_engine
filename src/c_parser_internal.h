@@ -16,6 +16,11 @@ typedef enum c_parser_ast_node_type {
 
   c_parser_ast_node_type_PreprocessorDirective, // #directive
 
+  // access expression
+  c_parser_ast_node_type_SubscriptAccess, // e[i]
+  c_parser_ast_node_type_MemberAccess,    // e.i
+  c_parser_ast_node_type_PointerAccess,   // e->i
+
   // bitwise operators
   c_parser_ast_node_type_BitOr,         // |
   c_parser_ast_node_type_BitAnd,        // &
