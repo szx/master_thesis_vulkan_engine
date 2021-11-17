@@ -128,10 +128,16 @@ void c_parser_debug_print(c_parser_state *state) {
   fprintf(stdout, "ERRORS:\n");
   for (size_t i = 0; i < state->errors.size; i++) {
     c_parser_error *error = &state->errors.value[i];
-    if (error->type == c_parser_error_type_UnclosedComment) {
+    switch (error->type) {
+    case c_parser_error_type_UnclosedComment: {
       fprintf(stdout, "ERROR: Unclosed comment block:\n");
-    } else {
+    } break;
+    case c_parser_error_type_MissingSemicolonAfterExpression: {
+      fprintf(stdout, "ERROR: Missing semicolon after expression:\n");
+    } break;
+    default: {
       fprintf(stdout, "ERROR: Undefined error:\n");
+    } break;
     }
     size_t len = error->range.end - error->range.begin;
     char *str = state->source + error->range.begin;

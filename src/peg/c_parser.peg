@@ -36,10 +36,10 @@ statement_list <-
 statement <-
   e:expression_statement { $$ = e; }
 ## TODO: More statements ##
-## TODO: Error handling (missing semicolons) ##
 
 expression_statement <-
   _ e:expression _ ';' { $$ = e; }
+/ _ e:expression _ { c_parser_handle_error(auxil, c_parser_error_type_MissingSemicolon, c_parser_str_range_init($0s, $0e)); }
 
 expression <- e:term { $$ = e; }
 
