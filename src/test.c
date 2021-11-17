@@ -69,10 +69,9 @@ SUITE(basic_test_suite) { RUN_TEST(basic_test_template); }
 
 // Parsing C preprocessor directives.
 TEST c_parser_preprocessor_parsing() { // NOLINT
-  char *input = "/*abc*/2+++/*abc*/--abc1++*3++/*abc";
+  char *input = "/*abc*/2+++/*def*/--abc1++*3++;2+2;/*ghi";
   c_parser_state state = c_parser_execute(input);
   c_parser_debug_print(&state);
-  // TODO: Construct AST for preprocessor.
   int x = 1;
   ASSERT_EQ(1, x);
   ASSERT_EQm("x should equal 1", 1, x);

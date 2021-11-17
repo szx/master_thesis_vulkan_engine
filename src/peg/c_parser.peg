@@ -16,8 +16,26 @@
 
 }
 
-statement <- _ e:expression _ EOL* { c_parser_ast_node_debug_print(auxil, e, 0); }
-           / .* EOF      { printf("eof\n"); }
+program <-
+  _ l:statement_list _ EOF { $$ = l; }
+/ _ EOF { $$ = c_parser_ast_node_init_variadic(auxil, c_parser_ast_node_type_StatementList, c_parser_str_range_init($0s, $0e)); }
+
+statement_list <-
+  s:statement _ l:statement_list
+  {
+    $$ = l;
+    $$->range = c_parser_str_range_init($0s, $0e);
+    c_parser_ast_node_push_front($$, s);
+  }
+/ s:statement
+  {
+    $$ = c_parser_ast_node_init_variadic(auxil, c_parser_ast_node_type_StatementList, c_parser_str_range_init($0s, $0e));
+    c_parser_ast_node_push_front($$, s);
+  }
+
+statement <- _ e:expression _ ';' { $$ = e; }
+## TODO: More statements ##
+## TODO: Error handling (missing semicolons) ##
 
 expression <- e:term { $$ = e; }
 
@@ -47,13 +65,16 @@ primary <-
 / '(' _ e:expression _ ')' { $$ = e; }
 
 identifier <-
-  [a-zA-Z_]([a-zA-Z_]/[0-9])* { $$ = c_parser_ast_node_init_terminal(auxil, c_parser_ast_node_type_Identifier, c_parser_str_range_init($0s, $0e)); }
+  IDENT(IDENT/DEC)* { $$ = c_parser_ast_node_init_terminal(auxil, c_parser_ast_node_type_Identifier, c_parser_str_range_init($0s, $0e)); }
 
 number <-
-  [0-9]+ { $$ = c_parser_ast_node_init_terminal(auxil, c_parser_ast_node_type_Integer, c_parser_str_range_init($0s, $0e)); }
+  DEC+ { $$ = c_parser_ast_node_init_terminal(auxil, c_parser_ast_node_type_Integer, c_parser_str_range_init($0s, $0e)); }
 ## TODO floats ##
 
 ## TODO keywords ##
+
+DEC <- [0-9]
+IDENT <- [a-zA-Z_]
 
 _ <- ( whitespace / comment )*
 
@@ -73,6 +94,7 @@ c_parser_state c_parser_execute(char *source) {
   c_parser_context_t *ctx = c_parser_create(&state);
   c_parser_ast_node *ast;
   int ret = c_parser_parse(ctx, &ast);
+  state.programNode = ast;
   c_parser_destroy(ctx);
   if (ret) {
     state.isValid = false;

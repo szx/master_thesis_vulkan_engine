@@ -6,6 +6,10 @@
 #include <stdbool.h>
 
 typedef enum c_parser_ast_node_type {
+  // statements
+  c_parser_ast_node_type_StatementList,
+
+  // terminals
   c_parser_ast_node_type_String,     // STRING
   c_parser_ast_node_type_Identifier, // IDENTIFIER
   c_parser_ast_node_type_Integer,    // NUMBER
@@ -84,6 +88,8 @@ typedef struct c_parser_comment {
 #define T c_parser_comment
 #include "vec.h" // vec_c_parser_comment
 
+typedef struct c_parser_ast_node c_parser_ast_node;
+
 typedef struct c_parser_state {
   // Input state
   char *source;         // null-terminated string
@@ -95,14 +101,21 @@ typedef struct c_parser_state {
   vec_c_parser_comment comments; // every parsed comment
   bool isValid; // false if detected remaining source text due to incompleteness
                 // of grammar
+  c_parser_ast_node *programNode; // parsed program AST node.
 } c_parser_state;
 
-typedef struct c_parser_ast_node {
+typedef struct c_parser_ast_node_ptr {
+  c_parser_ast_node *node;
+} c_parser_ast_node_ptr;
+#define P
+#define T c_parser_ast_node_ptr
+#include "lst.h" // lst_c_parser_ast_node_ptr
+
+struct c_parser_ast_node {
   c_parser_ast_node_type type;
   c_parser_str_range range;
-  struct c_parser_ast_node *node1; // first child node
-  struct c_parser_ast_node *node2; // second child node
-} c_parser_ast_node;
+  lst_c_parser_ast_node_ptr childNodes;
+};
 
 // Returns new parser.
 c_parser_state c_parser_state_init(char *source);
@@ -124,6 +137,15 @@ c_parser_ast_node *c_parser_ast_node_allocate(c_parser_state *state,
                                               c_parser_ast_node_type type,
                                               c_parser_str_range range);
 
+// Returns variadic AST node.
+c_parser_ast_node *c_parser_ast_node_init_variadic(c_parser_state *state,
+                                                   c_parser_ast_node_type type,
+                                                   c_parser_str_range range);
+
+// Appends child AST node to AST node.
+void c_parser_ast_node_push_front(c_parser_ast_node *node,
+                                  c_parser_ast_node *child_node);
+
 // Returns terminal AST node.
 c_parser_ast_node *c_parser_ast_node_init_terminal(c_parser_state *state,
                                                    c_parser_ast_node_type type,
@@ -141,6 +163,9 @@ c_parser_ast_node *c_parser_ast_node_init_binary(c_parser_state *state,
                                                  c_parser_str_range range,
                                                  c_parser_ast_node *node1,
                                                  c_parser_ast_node *node2);
+
+// Returns debug string for AST node type.
+const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type);
 
 // Prints node debug info to stdout.
 void c_parser_ast_node_debug_print(c_parser_state *state,
