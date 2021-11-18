@@ -183,6 +183,8 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "String";
   case c_parser_ast_node_type_Identifier:
     return "Identifier";
+  case c_parser_ast_node_type_TypeName:
+    return "TypeName";
   case c_parser_ast_node_type_Integer:
     return "Integer";
   case c_parser_ast_node_type_PreprocessorDirective:
@@ -195,6 +197,14 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "PointerAccess";
   case c_parser_ast_node_type_FunctionCall:
     return "FunctionCall";
+  case c_parser_ast_node_type_Cast:
+    return "Cast";
+  case c_parser_ast_node_type_Deref:
+    return "Deref";
+  case c_parser_ast_node_type_Ref:
+    return "Ref";
+  case c_parser_ast_node_type_Sizeof:
+    return "Sizeof";
   case c_parser_ast_node_type_BitOr:
     return "BitOr";
   case c_parser_ast_node_type_BitAnd:
@@ -207,12 +217,12 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "BitShiftRight";
   case c_parser_ast_node_type_BitNot:
     return "BitNot";
-  case c_parser_ast_node_type_Not:
-    return "Not";
   case c_parser_ast_node_type_Or:
     return "Or";
   case c_parser_ast_node_type_And:
     return "And";
+  case c_parser_ast_node_type_Not:
+    return "Not";
   case c_parser_ast_node_type_Plus:
     return "Plus";
   case c_parser_ast_node_type_Minus:

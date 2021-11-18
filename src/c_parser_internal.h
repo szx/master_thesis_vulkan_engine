@@ -15,6 +15,7 @@ typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_String,     // STRING
   c_parser_ast_node_type_Identifier, // IDENTIFIER
   c_parser_ast_node_type_Integer,    // NUMBER
+  c_parser_ast_node_type_TypeName,   // TYPE NAME
 
   c_parser_ast_node_type_PreprocessorDirective, // #directive
 
@@ -24,18 +25,32 @@ typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_PointerAccess,   // e->i
   c_parser_ast_node_type_FunctionCall,    // e(i)
 
-  // bitwise operators
+  // cast expression
+  c_parser_ast_node_type_Cast, // (t)e
+
+  // unary pointer expressions
+  c_parser_ast_node_type_Deref, // *e
+  c_parser_ast_node_type_Ref,   // &e
+
+  // unary sizeof expression
+  c_parser_ast_node_type_Sizeof, // sizeof e
+
+  // binary bitwise operators
   c_parser_ast_node_type_BitOr,         // |
   c_parser_ast_node_type_BitAnd,        // &
   c_parser_ast_node_type_BitXor,        // ^
   c_parser_ast_node_type_BitShiftLeft,  // <<
   c_parser_ast_node_type_BitShiftRight, // >>
-  c_parser_ast_node_type_BitNot,        // ~
 
-  // logical operators
-  c_parser_ast_node_type_Not, // !
+  // unary bitwise operators
+  c_parser_ast_node_type_BitNot, // ~
+
+  // binary logical operators
   c_parser_ast_node_type_Or,  // ||
   c_parser_ast_node_type_And, // &&
+
+  // unary logical operators
+  c_parser_ast_node_type_Not, // !
 
   // unary arithmetic operators
   c_parser_ast_node_type_Plus,  // +

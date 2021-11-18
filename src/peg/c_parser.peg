@@ -90,18 +90,36 @@ additive_expression <-
 / e:multiplicative_expression                 { $$ = e; }
 
 multiplicative_expression  <-
-  l:multiplicative_expression  _ '*' _ r:unary_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Mul, c_parser_str_range_init($0s, $0e), l, r); }
-/ l:multiplicative_expression  _ '/' _ r:unary_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Div, c_parser_str_range_init($0s, $0e), l, r); }
-/ l:multiplicative_expression  _ '%' _ r:unary_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Mod, c_parser_str_range_init($0s, $0e), l, r); }
-/ e:unary_expression                  { $$ = e; }
+  l:multiplicative_expression  _ '*' _ r:cast_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Mul, c_parser_str_range_init($0s, $0e), l, r); }
+/ l:multiplicative_expression  _ '/' _ r:cast_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Div, c_parser_str_range_init($0s, $0e), l, r); }
+/ l:multiplicative_expression  _ '%' _ r:cast_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Mod, c_parser_str_range_init($0s, $0e), l, r); }
+/ e:cast_expression                  { $$ = e; }
+
+cast_expression <-
+  '(' _ t:type_name _ ')' e:cast_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Cast, c_parser_str_range_init($0s, $0e), t, e); }
+/ e:unary_expression { $$ = e; }
+
+## NOTE: PEGs do not support lexical state, but our parser does not aim to be compatible with ANSI C.##
+## We assume that type name is collection of identifiers and pointers. ##
+## NOTE: Fails for sizeof without parenthesis if type_name has no space - sizeof(point)(1) resolves to FunctionCall ##
+type_name <-
+  ( (identifier / '*') _ )+ { $$ = c_parser_ast_node_init_terminal(auxil, c_parser_ast_node_type_TypeName, c_parser_str_range_init($0s, $0e)); }
+
 
 unary_expression <-
   '++' _ e:unary_expression { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Inc, c_parser_str_range_init($0s, $0e), e); }
 / '--' _ e:unary_expression { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Dec, c_parser_str_range_init($0s, $0e), e); }
 / e:unary_expression _ '++' { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Inc, c_parser_str_range_init($0s, $0e), e); }
 / e:unary_expression _ '--' { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Dec, c_parser_str_range_init($0s, $0e), e); }
-/ '+' _ e:unary_expression { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Plus, c_parser_str_range_init($0s, $0e), e); }
-/ '-' _ e:unary_expression { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Minus, c_parser_str_range_init($0s, $0e), e); }
+/ '+' _ e:cast_expression { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Plus, c_parser_str_range_init($0s, $0e), e); }
+/ '-' _ e:cast_expression { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Minus, c_parser_str_range_init($0s, $0e), e); }
+/ '*' _ e:cast_expression { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Deref, c_parser_str_range_init($0s, $0e), e); }
+/ '&' _ e:cast_expression { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Ref, c_parser_str_range_init($0s, $0e), e); }
+/ '!' _ e:cast_expression { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Not, c_parser_str_range_init($0s, $0e), e); }
+/ '~' _ e:cast_expression { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_BitNot, c_parser_str_range_init($0s, $0e), e); }
+## NOTE: Our sizeof requires parentheses around expression. ##
+/ kw_sizeof _ '(' _ e:cast_expression _ ')' { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Sizeof, c_parser_str_range_init($0s, $0e), e); }
+
 / e:postfix_expression { $$ = e; }
 
 argument_expression_list <-
@@ -132,13 +150,18 @@ primary_expression <-
 / '(' _ e:expression _ ')' { $$ = e; }
 
 identifier <-
-  IDENT(IDENT/DEC)* { $$ = c_parser_ast_node_init_terminal(auxil, c_parser_ast_node_type_Identifier, c_parser_str_range_init($0s, $0e)); }
+  !keyword IDENT(IDENT/DEC)* { $$ = c_parser_ast_node_init_terminal(auxil, c_parser_ast_node_type_Identifier, c_parser_str_range_init($0s, $0e)); }
 
 number <-
   DEC+ { $$ = c_parser_ast_node_init_terminal(auxil, c_parser_ast_node_type_Integer, c_parser_str_range_init($0s, $0e)); }
 ## TODO floats ##
 
 ## TODO keywords ##
+keyword <-
+  kw_sizeof
+
+kw_sizeof <- 'sizeof' !(IDENT/DEC)
+
 
 DEC <- [0-9]
 IDENT <- [a-zA-Z_]
