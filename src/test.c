@@ -74,7 +74,7 @@ TEST c_parser_preprocessor_parsing() { // NOLINT
                 "++a = b + c;"
                 "abc(1,3+3,++a=foo(4)+2); // test\n"
                 "{}"
-                "{a;{b;foo(1);}}"
+                "{a;{b;foo(1);c;++d;e;}}"
                 "2+2;/*ghi";
   c_parser_state state = c_parser_execute(input);
   c_parser_debug_print(&state);

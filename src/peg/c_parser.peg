@@ -82,17 +82,17 @@ assignment_expression <-
 / e:arithmetic_expression { $$ = e; } ## TODO: Conditional expressions ##
 
 arithmetic_expression <-
-  e:term { $$ = e; }
+  e:additive_expression { $$ = e; }
 
-term <-
-  l:term _ '+' _ r:factor { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Add, c_parser_str_range_init($0s, $0e), l, r); }
-/ l:term _ '-' _ r:factor { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Sub, c_parser_str_range_init($0s, $0e), l, r); }
-/ e:factor                { $$ = e; }
+additive_expression <-
+  l:additive_expression _ '+' _ r:multiplicative_expression  { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Add, c_parser_str_range_init($0s, $0e), l, r); }
+/ l:additive_expression _ '-' _ r:multiplicative_expression  { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Sub, c_parser_str_range_init($0s, $0e), l, r); }
+/ e:multiplicative_expression                 { $$ = e; }
 
-factor <-
-  l:factor _ '*' _ r:unary_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Mul, c_parser_str_range_init($0s, $0e), l, r); }
-/ l:factor _ '/' _ r:unary_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Div, c_parser_str_range_init($0s, $0e), l, r); }
-/ l:factor _ '%' _ r:unary_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Mod, c_parser_str_range_init($0s, $0e), l, r); }
+multiplicative_expression  <-
+  l:multiplicative_expression  _ '*' _ r:unary_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Mul, c_parser_str_range_init($0s, $0e), l, r); }
+/ l:multiplicative_expression  _ '/' _ r:unary_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Div, c_parser_str_range_init($0s, $0e), l, r); }
+/ l:multiplicative_expression  _ '%' _ r:unary_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Mod, c_parser_str_range_init($0s, $0e), l, r); }
 / e:unary_expression                  { $$ = e; }
 
 unary_expression <-
