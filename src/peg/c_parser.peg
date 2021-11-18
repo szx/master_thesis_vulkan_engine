@@ -69,6 +69,16 @@ expression <-
 
 assignment_expression <-
   e:unary _ '=' _ l:assignment_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Assign, c_parser_str_range_init($0s, $0e), e, l); }
+/ e:unary _ '+=' _ l:assignment_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_AssignAdd, c_parser_str_range_init($0s, $0e), e, l); }
+/ e:unary _ '-=' _ l:assignment_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_AssignSub, c_parser_str_range_init($0s, $0e), e, l); }
+/ e:unary _ '*=' _ l:assignment_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_AssignMul, c_parser_str_range_init($0s, $0e), e, l); }
+/ e:unary _ '/=' _ l:assignment_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_AssignDiv, c_parser_str_range_init($0s, $0e), e, l); }
+/ e:unary _ '%=' _ l:assignment_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_AssignMod, c_parser_str_range_init($0s, $0e), e, l); }
+/ e:unary _ '|=' _ l:assignment_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_AssignBitOr, c_parser_str_range_init($0s, $0e), e, l); }
+/ e:unary _ '&=' _ l:assignment_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_AssignBitAnd, c_parser_str_range_init($0s, $0e), e, l); }
+/ e:unary _ '^=' _ l:assignment_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_AssignBitXor, c_parser_str_range_init($0s, $0e), e, l); }
+/ e:unary _ '<<=' _ l:assignment_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_AssignBitLeftShift, c_parser_str_range_init($0s, $0e), e, l); }
+/ e:unary _ '>>=' _ l:assignment_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_AssignBitRightShift, c_parser_str_range_init($0s, $0e), e, l); }
 / e:arithmetic_expression { $$ = e; } ## TODO: Conditional expressions ##
 
 arithmetic_expression <-
@@ -103,7 +113,7 @@ argument_expression_list <-
   }
 / e:assignment_expression
   {
-    $$ = c_parser_ast_node_init_variadic(auxil, c_parser_ast_node_type_ArgumentList, c_parser_str_range_init($0s, $0e));
+    $$ = c_parser_ast_node_init_variadic(auxil, c_parser_ast_node_type_ArgumentExpressionList, c_parser_str_range_init($0s, $0e));
     c_parser_ast_node_push_front($$, e);
   }
 
@@ -113,7 +123,6 @@ postfix_expression <-
 / e:postfix_expression _ '->' _ i:identifier { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_PointerAccess, c_parser_str_range_init($0s, $0e), e, i); }
 / e:postfix_expression _ '(' _ ')' { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_FunctionCall, c_parser_str_range_init($0s, $0e), e); }
 / e:postfix_expression _ '(' _ i:argument_expression_list _ ')' { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_FunctionCall, c_parser_str_range_init($0s, $0e), e, i); }
-## TODO: Function call ##
 / e:primary_expression { $$ = e; }
 
 primary_expression <-

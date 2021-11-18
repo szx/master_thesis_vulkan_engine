@@ -8,7 +8,7 @@
 typedef enum c_parser_ast_node_type {
   // lists
   c_parser_ast_node_type_StatementList,
-  c_parser_ast_node_type_ArgumentList,
+  c_parser_ast_node_type_ArgumentExpressionList,
   c_parser_ast_node_type_CompoundStatement,
 
   // terminals
@@ -58,7 +58,7 @@ typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_AssignDiv,           // /=
   c_parser_ast_node_type_AssignMod,           // %=
   c_parser_ast_node_type_AssignBitOr,         // |=
-  c_parser_ast_node_type_AssignBitAnd,        // %=
+  c_parser_ast_node_type_AssignBitAnd,        // &=
   c_parser_ast_node_type_AssignBitXor,        // ^=
   c_parser_ast_node_type_AssignBitLeftShift,  // <<=
   c_parser_ast_node_type_AssignBitRightShift, // >>=

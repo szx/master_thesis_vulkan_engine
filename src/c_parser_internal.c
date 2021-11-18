@@ -175,8 +175,8 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
   switch (type) {
   case c_parser_ast_node_type_StatementList:
     return "StatementList";
-  case c_parser_ast_node_type_ArgumentList:
-    return "ArgumentList";
+  case c_parser_ast_node_type_ArgumentExpressionList:
+    return "ArgumentExpressionList";
   case c_parser_ast_node_type_CompoundStatement:
     return "CompoundStatement";
   case c_parser_ast_node_type_String:
