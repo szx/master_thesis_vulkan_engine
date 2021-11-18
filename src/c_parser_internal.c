@@ -119,6 +119,19 @@ void c_parser_handle_error(c_parser_state *state, c_parser_error_type type,
   state->isValid = false;
 }
 
+void c_parser_handle_syntax_error(c_parser_state *state) {
+  static const size_t MAX_SHOWN_CHARS = 20;
+  c_parser_str_range range =
+      c_parser_str_range_init(0, state->current_index + 1);
+  if (state->current_index > MAX_SHOWN_CHARS) {
+    range.begin = state->current_index - MAX_SHOWN_CHARS;
+  }
+  c_parser_error error = {.type = c_parser_error_type_SyntaxError,
+                          .range = range};
+  vec_c_parser_error_push_back(&state->errors, error);
+  state->isValid = false;
+}
+
 void c_parser_handle_comment(c_parser_state *state, c_parser_str_range range) {
   c_parser_comment comment = {range};
   vec_c_parser_comment_push_back(&state->comments, comment);
@@ -129,6 +142,9 @@ void c_parser_debug_print(c_parser_state *state) {
   for (size_t i = 0; i < state->errors.size; i++) {
     c_parser_error *error = &state->errors.value[i];
     switch (error->type) {
+    case c_parser_error_type_SyntaxError: {
+      fprintf(stdout, "ERROR: Syntax error:\n");
+    } break;
     case c_parser_error_type_UnclosedComment: {
       fprintf(stdout, "ERROR: Unclosed comment block:\n");
     } break;
@@ -159,6 +175,8 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
   switch (type) {
   case c_parser_ast_node_type_StatementList:
     return "StatementList";
+  case c_parser_ast_node_type_ArgumentList:
+    return "ArgumentList";
   case c_parser_ast_node_type_String:
     return "String";
   case c_parser_ast_node_type_Identifier:
@@ -173,6 +191,8 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "MemberAccess";
   case c_parser_ast_node_type_PointerAccess:
     return "PointerAccess";
+  case c_parser_ast_node_type_FunctionCall:
+    return "FunctionCall";
   case c_parser_ast_node_type_BitOr:
     return "BitOr";
   case c_parser_ast_node_type_BitAnd:

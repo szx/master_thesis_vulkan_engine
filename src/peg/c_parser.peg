@@ -10,6 +10,7 @@
 
 %source {
   #define PCC_GETCHAR(auxil) c_parser_getchar((auxil))
+  #define PCC_ERROR(auxil) c_parser_handle_syntax_error((auxil))
   //static const char *dbg_str[] = { "Evaluating rule", "Matched rule", "Abandoning rule" };
   //#define PCC_DEBUG(auxil, event, rule, level, pos, buffer, length) \
       fprintf(stderr, "%*s%s %s @%zu [%.*s]\n", (int)((level) * 2), "", dbg_str[event], rule, pos, (int)(length), buffer)
@@ -39,9 +40,17 @@ statement <-
 
 expression_statement <-
   _ e:expression _ ';' { $$ = e; }
-/ _ e:expression _ { c_parser_handle_error(auxil, c_parser_error_type_MissingSemicolon, c_parser_str_range_init($0s, $0e)); }
+/ _ e:expression _ { c_parser_handle_error(auxil, c_parser_error_type_MissingSemicolonAfterExpression, c_parser_str_range_init($0s, $0e)); }
 
-expression <- e:term { $$ = e; }
+expression <-
+  e:assignment_expression { $$ = e; }
+
+assignment_expression <-
+  e:unary _ '=' _ l:assignment_expression { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Assign, c_parser_str_range_init($0s, $0e), e, l); }
+/ e:arithmetic_expression { $$ = e; } ## TODO: Conditional expressions ##
+
+arithmetic_expression <-
+  e:term { $$ = e; }
 
 term <-
   l:term _ '+' _ r:factor { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_Add, c_parser_str_range_init($0s, $0e), l, r); }
@@ -55,18 +64,33 @@ factor <-
 / e:unary                  { $$ = e; }
 
 unary <-
-  '+' _ e:unary { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Plus, c_parser_str_range_init($0s, $0e), e); }
-/ '-' _ e:unary { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Minus, c_parser_str_range_init($0s, $0e), e); }
-/ '++' _ e:unary { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Inc, c_parser_str_range_init($0s, $0e), e); }
+  '++' _ e:unary { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Inc, c_parser_str_range_init($0s, $0e), e); }
 / '--' _ e:unary { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Dec, c_parser_str_range_init($0s, $0e), e); }
 / e:unary _ '++' { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Inc, c_parser_str_range_init($0s, $0e), e); }
 / e:unary _ '--' { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Dec, c_parser_str_range_init($0s, $0e), e); }
+/ '+' _ e:unary { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Plus, c_parser_str_range_init($0s, $0e), e); }
+/ '-' _ e:unary { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_Minus, c_parser_str_range_init($0s, $0e), e); }
 / e:postfix_expression { $$ = e; }
 
+argument_expression_list <-
+  e:assignment_expression _ ',' _ l:argument_expression_list
+  {
+    $$ = l;
+    $$->range = c_parser_str_range_init($0s, $0e);
+    c_parser_ast_node_push_front($$, e);
+  }
+/ e:assignment_expression
+  {
+    $$ = c_parser_ast_node_init_variadic(auxil, c_parser_ast_node_type_ArgumentList, c_parser_str_range_init($0s, $0e));
+    c_parser_ast_node_push_front($$, e);
+  }
+
 postfix_expression <-
-  e:postfix_expression '[' i:expression ']' { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_SubscriptAccess, c_parser_str_range_init($0s, $0e), e, i); }
-/ e:postfix_expression '.' i:identifier { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_MemberAccess, c_parser_str_range_init($0s, $0e), e, i); }
-/ e:postfix_expression '->' i:identifier { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_PointerAccess, c_parser_str_range_init($0s, $0e), e, i); }
+  e:postfix_expression _ '[' _ i:expression _ ']' { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_SubscriptAccess, c_parser_str_range_init($0s, $0e), e, i); }
+/ e:postfix_expression _ '.' _ i:identifier { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_MemberAccess, c_parser_str_range_init($0s, $0e), e, i); }
+/ e:postfix_expression _ '->' _ i:identifier { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_PointerAccess, c_parser_str_range_init($0s, $0e), e, i); }
+/ e:postfix_expression _ '(' _ ')' { $$ = c_parser_ast_node_init_unary(auxil, c_parser_ast_node_type_FunctionCall, c_parser_str_range_init($0s, $0e), e); }
+/ e:postfix_expression _ '(' _ i:argument_expression_list _ ')' { $$ = c_parser_ast_node_init_binary(auxil, c_parser_ast_node_type_FunctionCall, c_parser_str_range_init($0s, $0e), e, i); }
 ## TODO: Function call ##
 / e:primary_expression { $$ = e; }
 
@@ -91,7 +115,8 @@ IDENT <- [a-zA-Z_]
 _ <- ( whitespace / comment )*
 
 comment <-
-  '/*' ( !'*/' . )* '*/' { c_parser_handle_comment(auxil, c_parser_str_range_init($0s, $0e)); }
+  '//' ( !EOL . )* EOL { c_parser_handle_comment(auxil, c_parser_str_range_init($0s, $0e)); }
+/ '/*' ( !'*/' . )* '*/' { c_parser_handle_comment(auxil, c_parser_str_range_init($0s, $0e)); }
 / '/*' ( !'*/' . )* { c_parser_handle_error(auxil, c_parser_error_type_UnclosedComment, c_parser_str_range_init($0s, $0e)); }
 
 whitespace <- ( blank / EOL )

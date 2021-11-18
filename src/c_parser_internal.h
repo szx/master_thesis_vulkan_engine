@@ -6,8 +6,9 @@
 #include <stdbool.h>
 
 typedef enum c_parser_ast_node_type {
-  // statements
+  // lists
   c_parser_ast_node_type_StatementList,
+  c_parser_ast_node_type_ArgumentList,
 
   // terminals
   c_parser_ast_node_type_String,     // STRING
@@ -20,6 +21,7 @@ typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_SubscriptAccess, // e[i]
   c_parser_ast_node_type_MemberAccess,    // e.i
   c_parser_ast_node_type_PointerAccess,   // e->i
+  c_parser_ast_node_type_FunctionCall,    // e(i)
 
   // bitwise operators
   c_parser_ast_node_type_BitOr,         // |
@@ -70,6 +72,7 @@ typedef enum c_parser_ast_node_type {
 } c_parser_ast_node_type;
 
 typedef enum c_parser_error_type {
+  c_parser_error_type_SyntaxError,
   c_parser_error_type_UnclosedComment,
   c_parser_error_type_MissingSemicolonAfterExpression
 } c_parser_error_type;
@@ -180,6 +183,10 @@ void c_parser_ast_node_debug_print(c_parser_state *state,
 // Stores new parser error in c_parser_state.
 void c_parser_handle_error(c_parser_state *state, c_parser_error_type type,
                            c_parser_str_range range);
+
+// Stores new parser syntax error in c_parser_state.
+// Used by PCC_ERROR() macro in PackCC parser.
+void c_parser_handle_syntax_error(c_parser_state *state);
 
 // Stores new comment in c_parser_state.
 void c_parser_handle_comment(c_parser_state *state, c_parser_str_range range);
