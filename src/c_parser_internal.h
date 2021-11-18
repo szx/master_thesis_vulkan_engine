@@ -92,6 +92,7 @@ typedef enum c_parser_ast_node_type {
 typedef enum c_parser_error_type {
   c_parser_error_type_SyntaxError,
   c_parser_error_type_UnclosedComment,
+  c_parser_error_type_UnclosedString,
   c_parser_error_type_MissingSemicolonAfterExpression
 } c_parser_error_type;
 

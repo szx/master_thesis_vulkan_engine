@@ -76,13 +76,12 @@ TEST c_parser_preprocessor_parsing() { // NOLINT
                 "{}"
                 "{a;{b;foo(1);c;++d;e;}}"
                 "sizeof((point)((const char*)2+*(int)cde+~4))+(&abc);"
-                "sizeof((point)01)+a*0xBADF00D;/*ghi";
+                "sizeof((point)01)+a*0xBADF00D;"
+                "foo(\"a\\\"bc\" + 2);"
+                "foo(\'a\\\'bc\' + 2);"
+                "/*ghi";
   c_parser_state state = c_parser_execute(input);
   c_parser_debug_print(&state);
-  int x = 1;
-  ASSERT_EQ(1, x);
-  ASSERT_EQm("x should equal 1", 1, x);
-  ASSERT_EQ_FMT(1, x, "%d");
   PASS();
 }
 

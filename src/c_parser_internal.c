@@ -148,6 +148,9 @@ void c_parser_debug_print(c_parser_state *state) {
     case c_parser_error_type_UnclosedComment: {
       fprintf(stdout, "ERROR: Unclosed comment block:\n");
     } break;
+    case c_parser_error_type_UnclosedString: {
+      fprintf(stdout, "ERROR: Unclosed string literal:\n");
+    } break;
     case c_parser_error_type_MissingSemicolonAfterExpression: {
       fprintf(stdout, "ERROR: Missing semicolon after expression:\n");
     } break;
