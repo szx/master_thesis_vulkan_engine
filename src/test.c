@@ -73,6 +73,8 @@ TEST c_parser_preprocessor_parsing() { // NOLINT
                 "vec.x*vec.y+foo()+vec.z;"
                 "++a = b + c;"
                 "abc(1,3+3,++a=foo(4)+2); // test\n"
+                "{}"
+                "{a;{b;foo(1);}}"
                 "2+2;/*ghi";
   c_parser_state state = c_parser_execute(input);
   c_parser_debug_print(&state);

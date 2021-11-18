@@ -9,6 +9,7 @@ typedef enum c_parser_ast_node_type {
   // lists
   c_parser_ast_node_type_StatementList,
   c_parser_ast_node_type_ArgumentList,
+  c_parser_ast_node_type_CompoundStatement,
 
   // terminals
   c_parser_ast_node_type_String,     // STRING

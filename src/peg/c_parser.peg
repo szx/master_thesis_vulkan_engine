@@ -35,8 +35,30 @@ statement_list <-
   }
 
 statement <-
-  e:expression_statement { $$ = e; }
+  e:compound_statement { $$ = e; }
+/ e:expression_statement { $$ = e; }
 ## TODO: More statements ##
+
+compound_statement <-
+  '{' _ '}' { $$ = c_parser_ast_node_init_terminal(auxil, c_parser_ast_node_type_CompoundStatement, c_parser_str_range_init($0s, $0e)); }
+/ '{' b:compound_statement_list '}' { $$ = b; }
+
+compound_statement_list <-
+  i:compound_item _ l:compound_statement_list
+  {
+    $$ = l;
+    $$->range = c_parser_str_range_init($0s, $0e);
+    c_parser_ast_node_push_front($$, i);
+  }
+/ i:compound_item
+  {
+    $$ = c_parser_ast_node_init_variadic(auxil, c_parser_ast_node_type_CompoundStatement, c_parser_str_range_init($0s, $0e));
+    c_parser_ast_node_push_front($$, i);
+  }
+
+compound_item <-
+  s:statement { $$ = s; }
+## TODO: Declaration ##
 
 expression_statement <-
   _ e:expression _ ';' { $$ = e; }

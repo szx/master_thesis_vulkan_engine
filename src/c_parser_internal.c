@@ -177,6 +177,8 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "StatementList";
   case c_parser_ast_node_type_ArgumentList:
     return "ArgumentList";
+  case c_parser_ast_node_type_CompoundStatement:
+    return "CompoundStatement";
   case c_parser_ast_node_type_String:
     return "String";
   case c_parser_ast_node_type_Identifier:
