@@ -185,8 +185,12 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "Identifier";
   case c_parser_ast_node_type_TypeName:
     return "TypeName";
-  case c_parser_ast_node_type_Integer:
-    return "Integer";
+  case c_parser_ast_node_type_IntegerDec:
+    return "IntegerDec";
+  case c_parser_ast_node_type_IntegerOct:
+    return "IntegerOct";
+  case c_parser_ast_node_type_IntegerHex:
+    return "IntegerHex";
   case c_parser_ast_node_type_PreprocessorDirective:
     return "PreprocessorDirective";
   case c_parser_ast_node_type_SubscriptAccess:

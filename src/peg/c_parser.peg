@@ -153,7 +153,10 @@ identifier <-
   !keyword IDENT(IDENT/DEC)* { $$ = c_parser_ast_node_init_terminal(auxil, c_parser_ast_node_type_Identifier, c_parser_str_range_init($0s, $0e)); }
 
 number <-
-  DEC+ { $$ = c_parser_ast_node_init_terminal(auxil, c_parser_ast_node_type_Integer, c_parser_str_range_init($0s, $0e)); }
+  '0'[xX]HEX+ { $$ = c_parser_ast_node_init_terminal(auxil, c_parser_ast_node_type_IntegerHex, c_parser_str_range_init($0s, $0e)); }
+/ '0'OCT+ { $$ = c_parser_ast_node_init_terminal(auxil, c_parser_ast_node_type_IntegerOct, c_parser_str_range_init($0s, $0e)); }
+/ !'0'DEC+ { $$ = c_parser_ast_node_init_terminal(auxil, c_parser_ast_node_type_IntegerDec, c_parser_str_range_init($0s, $0e)); }
+
 ## TODO floats ##
 
 ## TODO keywords ##
@@ -162,8 +165,9 @@ keyword <-
 
 kw_sizeof <- 'sizeof' !(IDENT/DEC)
 
-
 DEC <- [0-9]
+OCT <- [0-7]
+HEX <- [0-9a-fA-F]
 IDENT <- [a-zA-Z_]
 
 _ <- ( whitespace / comment )*

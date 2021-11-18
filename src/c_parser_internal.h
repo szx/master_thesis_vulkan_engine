@@ -12,10 +12,12 @@ typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_CompoundStatement,
 
   // terminals
-  c_parser_ast_node_type_String,     // STRING
-  c_parser_ast_node_type_Identifier, // IDENTIFIER
-  c_parser_ast_node_type_Integer,    // NUMBER
-  c_parser_ast_node_type_TypeName,   // TYPE NAME
+  c_parser_ast_node_type_String,
+  c_parser_ast_node_type_Identifier,
+  c_parser_ast_node_type_IntegerDec,
+  c_parser_ast_node_type_IntegerOct,
+  c_parser_ast_node_type_IntegerHex,
+  c_parser_ast_node_type_TypeName,
 
   c_parser_ast_node_type_PreprocessorDirective, // #directive
 

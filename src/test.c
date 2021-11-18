@@ -76,7 +76,7 @@ TEST c_parser_preprocessor_parsing() { // NOLINT
                 "{}"
                 "{a;{b;foo(1);c;++d;e;}}"
                 "sizeof((point)((const char*)2+*(int)cde+~4))+(&abc);"
-                "sizeof((point)1)+a;/*ghi";
+                "sizeof((point)01)+a*0xBADF00D;/*ghi";
   c_parser_state state = c_parser_execute(input);
   c_parser_debug_print(&state);
   int x = 1;
