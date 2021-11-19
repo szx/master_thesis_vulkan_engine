@@ -7,8 +7,10 @@
 
 typedef enum c_parser_ast_node_type {
   // lists
-  c_parser_ast_node_type_StatementList,
+  c_parser_ast_node_type_TranslationUnit,
   c_parser_ast_node_type_ArgumentExpressionList,
+  c_parser_ast_node_type_ParameterList,
+  c_parser_ast_node_type_DeclaratorAndInitializerList,
   c_parser_ast_node_type_CompoundStatement,
 
   // terminals
@@ -20,6 +22,14 @@ typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_TypeName,
 
   c_parser_ast_node_type_PreprocessorDirective, // #directive
+
+  // declarations
+  c_parser_ast_node_type_Declaration, // Specifiers (Declarator = Initializer)
+  c_parser_ast_node_type_DeclarationSpecifiers,    // Specifiers
+  c_parser_ast_node_type_DeclaratorAndInitializer, // Declarator (= Initializer)
+
+  // definitions
+  c_parser_ast_node_type_FunctionDefinition,
 
   // access expression
   c_parser_ast_node_type_SubscriptAccess, // e[i]
@@ -180,17 +190,30 @@ c_parser_ast_node *c_parser_ast_node_init_terminal(c_parser_state *state,
                                                    c_parser_str_range range);
 
 // Returns unary AST node.
-c_parser_ast_node *c_parser_ast_node_init_unary(c_parser_state *state,
-                                                c_parser_ast_node_type type,
-                                                c_parser_str_range range,
-                                                c_parser_ast_node *node1);
+c_parser_ast_node *c_parser_ast_node_init_1(c_parser_state *state,
+                                            c_parser_ast_node_type type,
+                                            c_parser_str_range range,
+                                            c_parser_ast_node *node1);
 
 // Returns binary AST node.
-c_parser_ast_node *c_parser_ast_node_init_binary(c_parser_state *state,
-                                                 c_parser_ast_node_type type,
-                                                 c_parser_str_range range,
-                                                 c_parser_ast_node *node1,
-                                                 c_parser_ast_node *node2);
+c_parser_ast_node *c_parser_ast_node_init_2(c_parser_state *state,
+                                            c_parser_ast_node_type type,
+                                            c_parser_str_range range,
+                                            c_parser_ast_node *node1,
+                                            c_parser_ast_node *node2);
+
+// Returns ternary AST node.
+c_parser_ast_node *
+c_parser_ast_node_init_3(c_parser_state *state, c_parser_ast_node_type type,
+                         c_parser_str_range range, c_parser_ast_node *node1,
+                         c_parser_ast_node *node2, c_parser_ast_node *node3);
+
+// Returns quaternary AST node.
+c_parser_ast_node *
+c_parser_ast_node_init_4(c_parser_state *state, c_parser_ast_node_type type,
+                         c_parser_str_range range, c_parser_ast_node *node1,
+                         c_parser_ast_node *node2, c_parser_ast_node *node3,
+                         c_parser_ast_node *node4);
 
 // Returns debug string for AST node type.
 const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type);

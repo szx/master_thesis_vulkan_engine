@@ -69,17 +69,22 @@ SUITE(basic_test_suite) { RUN_TEST(basic_test_template); }
 
 // Parsing C preprocessor directives.
 TEST c_parser_preprocessor_parsing() { // NOLINT
-  char *input = "/*abc*/2+++/*def*/--abc1++*3++;"
+  char *input = "void main(int argc, char *argv[]) {"
+                "/*abc*/2+++/*def*/--abc1++*3++;"
                 "vec.x*vec.y+foo()+vec.z;"
-                "++a = b + c;"
                 "abc(1,3+3,++a=foo(4)+2); // test\n"
+                "}"
+                "void foo(int a, int b, int c) {"
                 "{}"
                 "{a;{b;foo(1);c;++d;e;}}"
                 "sizeof((point)((const char*)2+*(int)cde+~4))+(&abc);"
                 "sizeof((point)01)+a*0xBADF00D;"
                 "foo(\"a\\\"bc\" + 2);"
                 "foo(\'a\\\'bc\' + 2);"
-                "/*ghi";
+                "++a = b + c;"
+                "a = b + c;"
+                "int a = b + c;"
+                "}/*ghi";
   c_parser_state state = c_parser_execute(input);
   c_parser_debug_print(&state);
   PASS();

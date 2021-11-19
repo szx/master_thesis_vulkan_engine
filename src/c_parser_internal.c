@@ -74,21 +74,45 @@ c_parser_ast_node *c_parser_ast_node_init_terminal(c_parser_state *state,
   return node;
 }
 
-c_parser_ast_node *c_parser_ast_node_init_unary(c_parser_state *state,
-                                                c_parser_ast_node_type type,
-                                                c_parser_str_range range,
-                                                c_parser_ast_node *node1) {
+c_parser_ast_node *c_parser_ast_node_init_1(c_parser_state *state,
+                                            c_parser_ast_node_type type,
+                                            c_parser_str_range range,
+                                            c_parser_ast_node *node1) {
   c_parser_ast_node *node = c_parser_ast_node_allocate(state, type, range);
   c_parser_ast_node_push_front(node, node1);
   return node;
 }
 
-c_parser_ast_node *c_parser_ast_node_init_binary(c_parser_state *state,
-                                                 c_parser_ast_node_type type,
-                                                 c_parser_str_range range,
-                                                 c_parser_ast_node *node1,
-                                                 c_parser_ast_node *node2) {
+c_parser_ast_node *c_parser_ast_node_init_2(c_parser_state *state,
+                                            c_parser_ast_node_type type,
+                                            c_parser_str_range range,
+                                            c_parser_ast_node *node1,
+                                            c_parser_ast_node *node2) {
   c_parser_ast_node *node = c_parser_ast_node_allocate(state, type, range);
+  c_parser_ast_node_push_front(node, node2);
+  c_parser_ast_node_push_front(node, node1);
+  return node;
+}
+
+c_parser_ast_node *
+c_parser_ast_node_init_3(c_parser_state *state, c_parser_ast_node_type type,
+                         c_parser_str_range range, c_parser_ast_node *node1,
+                         c_parser_ast_node *node2, c_parser_ast_node *node3) {
+  c_parser_ast_node *node = c_parser_ast_node_allocate(state, type, range);
+  c_parser_ast_node_push_front(node, node3);
+  c_parser_ast_node_push_front(node, node2);
+  c_parser_ast_node_push_front(node, node1);
+  return node;
+}
+
+c_parser_ast_node *
+c_parser_ast_node_init_4(c_parser_state *state, c_parser_ast_node_type type,
+                         c_parser_str_range range, c_parser_ast_node *node1,
+                         c_parser_ast_node *node2, c_parser_ast_node *node3,
+                         c_parser_ast_node *node4) {
+  c_parser_ast_node *node = c_parser_ast_node_allocate(state, type, range);
+  c_parser_ast_node_push_front(node, node4);
+  c_parser_ast_node_push_front(node, node3);
   c_parser_ast_node_push_front(node, node2);
   c_parser_ast_node_push_front(node, node1);
   return node;
@@ -176,10 +200,14 @@ void c_parser_debug_print(c_parser_state *state) {
 
 const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
   switch (type) {
-  case c_parser_ast_node_type_StatementList:
-    return "StatementList";
+  case c_parser_ast_node_type_TranslationUnit:
+    return "TranslationUnit";
   case c_parser_ast_node_type_ArgumentExpressionList:
     return "ArgumentExpressionList";
+  case c_parser_ast_node_type_ParameterList:
+    return "ParameterList";
+  case c_parser_ast_node_type_DeclaratorAndInitializerList:
+    return "DeclaratorAndInitializerList";
   case c_parser_ast_node_type_CompoundStatement:
     return "CompoundStatement";
   case c_parser_ast_node_type_String:
@@ -196,6 +224,14 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "IntegerHex";
   case c_parser_ast_node_type_PreprocessorDirective:
     return "PreprocessorDirective";
+  case c_parser_ast_node_type_Declaration:
+    return "Declaration";
+  case c_parser_ast_node_type_DeclarationSpecifiers:
+    return "DeclarationSpecifiers";
+  case c_parser_ast_node_type_DeclaratorAndInitializer:
+    return "DeclaratorAndInitializer";
+  case c_parser_ast_node_type_FunctionDefinition:
+    return "FunctionDefinition";
   case c_parser_ast_node_type_SubscriptAccess:
     return "SubscriptAccess";
   case c_parser_ast_node_type_MemberAccess:
