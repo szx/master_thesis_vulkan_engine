@@ -208,6 +208,8 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "ParameterList";
   case c_parser_ast_node_type_EnumeratorDeclarationList:
     return "EnumeratorDeclarationList";
+  case c_parser_ast_node_type_StructDeclarationList:
+    return "StructDeclarationList";
   case c_parser_ast_node_type_DeclaratorAndInitializerList:
     return "DeclaratorAndInitializerList";
   case c_parser_ast_node_type_IdentifierDeclarator:
@@ -220,6 +222,10 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "EnumerationDeclaration";
   case c_parser_ast_node_type_EnumeratorDeclaration:
     return "EnumeratorDeclaration";
+  case c_parser_ast_node_type_StructDeclaration:
+    return "StructDeclaration";
+  case c_parser_ast_node_type_TypedefStructDeclaration:
+    return "TypedefStructDeclaration";
   case c_parser_ast_node_type_CompoundStatement:
     return "CompoundStatement";
   case c_parser_ast_node_type_String:

@@ -1,3 +1,23 @@
+struct tag_name {
+   type member1;
+   type *member2;
+};
+typedef struct tag_name alias_name;
+
+typedef struct c_parser_state {
+  // Input state
+  char *source;         // null-terminated string
+  size_t source_length; // length of source
+  // Parsing state
+  char *current;                 // current character in source
+  size_t current_index;          // index of current character in source
+  vec_c_parser_error errors;     // every parsing error
+  vec_c_parser_comment comments; // every parsed comment
+  bool isValid; // false if detected remaining source text due to incompleteness
+                // of grammar
+  c_parser_ast_node *programNode; // parsed program AST node.
+} c_parser_state;
+
 enum state {
     state_init = 0,
     state_default,

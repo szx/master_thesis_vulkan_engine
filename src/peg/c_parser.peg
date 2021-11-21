@@ -89,10 +89,19 @@ expression_statement <-
 ## NOTE: We forbid declaration without init_declarator. ##
 ## NOTE: We forbid init_declarator_list. ##
 declaration <-
-  "enum" _ i:identifier _ "{" _ e:enumerator_list  _ "}" _ ";" { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_EnumerationDeclaration, c_parser_str_range_init($0s, $0e), i, e); }
+  e:typedef_declaration _ ";" { $$ = e; }
+/ e:enum_declaration _ ";" { $$ = e; }
+/ e:struct_declaration  _ ";" { $$ = e; }
 / s:declaration_specifiers _ i:init_declarator _ ';' { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_Declaration, c_parser_str_range_init($0s, $0e), s, i); }
 / s:declaration_specifiers _ d:declarator _ '(' _ p:parameter_list _ ')' _ ';' { $$ = c_parser_ast_node_init_3(auxil, c_parser_ast_node_type_FunctionDeclaration, c_parser_str_range_init($0s, $0e), s, d, p); }
-## TODO: struct/union declarationK. ##
+## TODO: struct/union declaration. ##
+
+typedef_declaration <-
+  kw_typedef _ kw_struct _ tag:identifier _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_TypedefStructDeclaration, c_parser_str_range_init($0s, $0e), tag, alias); }
+/ kw_typedef _ s:struct_declaration _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_TypedefStructDeclaration, c_parser_str_range_init($0s, $0e), s, alias); }
+
+enum_declaration <-
+  kw_enum _ tag:identifier _ "{" _ e:enumerator_list  _ "}" { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_EnumerationDeclaration, c_parser_str_range_init($0s, $0e), tag, e); }
 
 enumerator_list <-
   e:enumerator_declaration _ ',' _ l:enumerator_list
@@ -111,18 +120,34 @@ enumerator_declaration <-
   e:identifier _ '=' _ i:initializer { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_EnumeratorDeclaration, c_parser_str_range_init($0s, $0e), e, i); }
 / e:identifier { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_EnumeratorDeclaration, c_parser_str_range_init($0s, $0e), e); }
 
+struct_declaration <-
+  kw_struct _ tag:identifier _ "{" _ e:struct_declaration_list  _ "}" { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_StructDeclaration, c_parser_str_range_init($0s, $0e), tag, e); }
+
+struct_declaration_list <-
+  e:declaration _ l:struct_declaration_list
+  {
+    $$ = l;
+    $$->range = c_parser_str_range_init($0s, $0e);
+    c_parser_ast_node_push_front($$, e);
+  }
+/ e:declaration
+  {
+    $$ = c_parser_ast_node_init_variadic(auxil, c_parser_ast_node_type_StructDeclarationList, c_parser_str_range_init($0s, $0e));
+    c_parser_ast_node_push_front($$, e);
+  }
+
 ## TODO: We forbid declaration_specifiers for arrays, structs etc. ##
 declaration_specifiers <-
   storage_class_specifier? _ type_qualifier? _ identifier (_ '*')* { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_DeclarationSpecifiers, c_parser_str_range_init($0s, $0e)); }
 
 storage_class_specifier <-
-  "static"
-/ "extern"
+  kw_static
+/ kw_extern
 
 type_qualifier <-
-  "const"
-/ "restrict"
-/ "volatile"
+  kw_const
+/ kw_restrict
+/ kw_volatile
 
 init_declarator <-
   d:declarator _ '=' _ i:initializer { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_DeclaratorAndInitializer, c_parser_str_range_init($0s, $0e), d, i); }
@@ -236,8 +261,23 @@ number <-
 ## TODO keywords ##
 keyword <-
   kw_sizeof
+/ kw_typedef
+/ kw_enum
+/ kw_struct
+/ kw_static
+/ kw_extern
+/ kw_restrict
+/ kw_volatile
 
 kw_sizeof <- 'sizeof' !(IDENT/DEC)
+kw_typedef <- 'typedef' !(IDENT/DEC)
+kw_enum <- 'enum' !(IDENT/DEC)
+kw_struct <- 'struct' !(IDENT/DEC)
+kw_static <- 'static' !(IDENT/DEC)
+kw_extern <- 'extern' !(IDENT/DEC)
+kw_const <- 'const' !(IDENT/DEC)
+kw_restrict <- 'restrict' !(IDENT/DEC)
+kw_volatile <- 'volatile' !(IDENT/DEC)
 
 DEC <- [0-9]
 OCT <- [0-7]
