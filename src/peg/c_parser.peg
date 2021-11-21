@@ -168,7 +168,27 @@ declarator <-
 / e:identifier { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_IdentifierDeclarator, c_parser_str_range_init($0s, $0e)); }
 
 initializer <-
-  e:assignment_expression { $$ = e; }
+  '{' _ '}' { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_InitializerList, c_parser_str_range_init($0s, $0e)); }
+/ '{'_ i:initializer_list _ '}' { $$ = i; }
+/ e:assignment_expression { $$ = e; }
+
+initializer_list <-
+  i:initializer_item _ ',' _ l:initializer_list
+  {
+    $$ = l;
+    $$->range = c_parser_str_range_init($0s, $0e);
+    c_parser_ast_node_push_front($$, i);
+  }
+/ i:initializer_item (_ ',')?
+  {
+    $$ = c_parser_ast_node_init_variadic(auxil, c_parser_ast_node_type_InitializerList, c_parser_str_range_init($0s, $0e));
+    c_parser_ast_node_push_front($$, i);
+  }
+
+initializer_item <-
+  '.' i:init_declarator { $$ = i; }
+/ i:initializer { $$ = i; }
+## TODO: Designators can be nested ##
 
 expression <-
   e:assignment_expression { $$ = e; }
@@ -263,7 +283,7 @@ identifier <-
 number <-
   '0'[xX]HEX+ { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_IntegerHex, c_parser_str_range_init($0s, $0e)); }
 / '0'OCT+ { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_IntegerOct, c_parser_str_range_init($0s, $0e)); }
-/ !'0'DEC+/'0' { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_IntegerDec, c_parser_str_range_init($0s, $0e)); }
+/ ((!'0'DEC+)/'0') { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_IntegerDec, c_parser_str_range_init($0s, $0e)); }
 
 ## TODO floats ##
 

@@ -1,3 +1,18 @@
+
+c_parser_state c_parser_state_init(char *source) {
+  c_parser_state state = {};
+  div_t answer = {.quot = 2, .rem = -1 };
+  state.source = source;
+  state.source_length = strlen(source);
+  state.current = source;
+  state.current_index = 0;
+  state.errors = vec_c_parser_error_init();
+  state.comments = vec_c_parser_comment_init();
+  state.isValid = true;
+  state.programNode = NULL;
+  return state;
+}
+
 #define FOO
 #define BAR 1
 #define GREATEST_RUN_TEST(TEST)                                         \

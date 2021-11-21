@@ -93,8 +93,8 @@ char *ReadTextFile(char *path, size_t *source_length) {
 TEST c_parser_preprocessor_parsing() { // NOLINT
   size_t input_size;
   str input_path = str_init(getExecutableDirPath());
-  // str_append(&input_path, "/tests/c_parser_test.txt");
-  str_append(&input_path, "/tests/c_parser_test_functions.txt");
+  str_append(&input_path, "/tests/c_parser_test.txt");
+  // str_append(&input_path, "/tests/c_parser_test_functions.txt");
   char *input = ReadTextFile(str_c_str(&input_path), &input_size);
   str_free(&input_path);
   if (input == NULL) {

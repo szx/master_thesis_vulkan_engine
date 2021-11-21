@@ -12,7 +12,7 @@ typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_ParameterList,
   c_parser_ast_node_type_EnumeratorDeclarationList,
   c_parser_ast_node_type_StructDeclarationList,
-  c_parser_ast_node_type_DeclaratorAndInitializerList,
+  c_parser_ast_node_type_InitializerList,
   c_parser_ast_node_type_CompoundStatement,
 
   // terminals

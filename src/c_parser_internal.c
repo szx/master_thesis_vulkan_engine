@@ -210,8 +210,8 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "EnumeratorDeclarationList";
   case c_parser_ast_node_type_StructDeclarationList:
     return "StructDeclarationList";
-  case c_parser_ast_node_type_DeclaratorAndInitializerList:
-    return "DeclaratorAndInitializerList";
+  case c_parser_ast_node_type_InitializerList:
+    return "InitializerList";
   case c_parser_ast_node_type_IdentifierDeclarator:
     return "IdentifierDeclarator";
   case c_parser_ast_node_type_ArrayDeclarator:
