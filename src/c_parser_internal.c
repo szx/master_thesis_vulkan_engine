@@ -67,9 +67,9 @@ void c_parser_ast_node_push_front(c_parser_ast_node *node,
                                        (c_parser_ast_node_ptr){child_node});
 }
 
-c_parser_ast_node *c_parser_ast_node_init_terminal(c_parser_state *state,
-                                                   c_parser_ast_node_type type,
-                                                   c_parser_str_range range) {
+c_parser_ast_node *c_parser_ast_node_init_0(c_parser_state *state,
+                                            c_parser_ast_node_type type,
+                                            c_parser_str_range range) {
   c_parser_ast_node *node = c_parser_ast_node_allocate(state, type, range);
   return node;
 }
@@ -208,6 +208,12 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "ParameterList";
   case c_parser_ast_node_type_DeclaratorAndInitializerList:
     return "DeclaratorAndInitializerList";
+  case c_parser_ast_node_type_IdentifierDeclarator:
+    return "IdentifierDeclarator";
+  case c_parser_ast_node_type_ArrayDeclarator:
+    return "ArrayDeclarator";
+  case c_parser_ast_node_type_FunctionDeclarator:
+    return "FunctionDeclarator";
   case c_parser_ast_node_type_CompoundStatement:
     return "CompoundStatement";
   case c_parser_ast_node_type_String:

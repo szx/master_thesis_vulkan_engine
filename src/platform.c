@@ -6,7 +6,7 @@
 #include <linux/limits.h>
 #include <unistd.h>
 
-char *getExecutableDirPath() {
+const char *getExecutableDirPath() {
   static char result[PATH_MAX] = {0};
   ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
   assert(count != -1); // TODO: Custom assert + dialog?

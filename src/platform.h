@@ -15,4 +15,4 @@
 #include <stdlib.h>
 
 // Returns null-terminated path to directory with current executable.
-char *getExecutableDirPath();
+const char *getExecutableDirPath();

@@ -27,6 +27,9 @@ typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_Declaration, // Specifiers (Declarator = Initializer)
   c_parser_ast_node_type_DeclarationSpecifiers,    // Specifiers
   c_parser_ast_node_type_DeclaratorAndInitializer, // Declarator (= Initializer)
+  c_parser_ast_node_type_IdentifierDeclarator,
+  c_parser_ast_node_type_ArrayDeclarator,
+  c_parser_ast_node_type_FunctionDeclarator,
 
   // definitions
   c_parser_ast_node_type_FunctionDefinition,
@@ -185,9 +188,9 @@ void c_parser_ast_node_push_front(c_parser_ast_node *node,
                                   c_parser_ast_node *child_node);
 
 // Returns terminal AST node.
-c_parser_ast_node *c_parser_ast_node_init_terminal(c_parser_state *state,
-                                                   c_parser_ast_node_type type,
-                                                   c_parser_str_range range);
+c_parser_ast_node *c_parser_ast_node_init_0(c_parser_state *state,
+                                            c_parser_ast_node_type type,
+                                            c_parser_str_range range);
 
 // Returns unary AST node.
 c_parser_ast_node *c_parser_ast_node_init_1(c_parser_state *state,
