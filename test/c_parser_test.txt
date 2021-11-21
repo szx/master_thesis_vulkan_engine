@@ -1,3 +1,16 @@
+#define FOO
+#define BAR 1
+#define GREATEST_RUN_TEST(TEST)                                         \
+    do {                                                                \
+        if (greatest_test_pre(#TEST) == 1) {                            \
+            enum greatest_test_res res = GREATEST_SAVE_CONTEXT();       \
+            if (res == GREATEST_TEST_RES_PASS) {                        \
+                res = TEST();                                           \
+            }                                                           \
+            greatest_test_post(res);                                    \
+        }                                                               \
+    } while (0)
+
 struct tag_name {
    type member1;
    type *member2;

@@ -23,7 +23,9 @@ typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_IntegerHex,
   c_parser_ast_node_type_TypeName,
 
-  c_parser_ast_node_type_PreprocessorDirective, // #directive
+  // preprocessor directives
+  c_parser_ast_node_type_PreprocessorDirective,
+  c_parser_ast_node_type_PreprocessorDirectiveBody,
 
   // declarations
   c_parser_ast_node_type_Declaration, // Specifiers (Declarator = Initializer)
@@ -36,6 +38,7 @@ typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_EnumeratorDeclaration,
   c_parser_ast_node_type_StructDeclaration,
   c_parser_ast_node_type_TypedefStructDeclaration,
+  c_parser_ast_node_type_TypedefEnumDeclaration,
 
   // definitions
   c_parser_ast_node_type_FunctionDefinition,

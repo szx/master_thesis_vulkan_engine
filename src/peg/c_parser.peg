@@ -33,8 +33,16 @@ translation_unit <-
 
 
 external_declaration <-
-  e:function_definition { $$ = e; }
+  e:preprocessor_definition { $$ = e; }
+/ e:function_definition { $$ = e; }
 / e:declaration { $$ = e; }
+
+preprocessor_definition <-
+  '#' blank* i:identifier blank* b:preprocessor_definition_body EOL { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_PreprocessorDirective, c_parser_str_range_init($0s, $0e), i, b); }
+/ '#' blank* i:identifier blank* EOL { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_PreprocessorDirective, c_parser_str_range_init($0s, $0e), i); }
+
+preprocessor_definition_body <-
+  ('\\' EOL / !EOL .)* { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_PreprocessorDirectiveBody, c_parser_str_range_init($0s, $0e)); }
 
 function_definition <-
   s:declaration_specifiers _ d:declarator _ '(' _ p:parameter_list _ ')' _ e:compound_statement { $$ = c_parser_ast_node_init_4(auxil, c_parser_ast_node_type_FunctionDefinition, c_parser_str_range_init($0s, $0e), s, d, p, e); }
@@ -98,7 +106,8 @@ declaration <-
 
 typedef_declaration <-
   kw_typedef _ kw_struct _ tag:identifier _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_TypedefStructDeclaration, c_parser_str_range_init($0s, $0e), tag, alias); }
-/ kw_typedef _ s:struct_declaration _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_TypedefStructDeclaration, c_parser_str_range_init($0s, $0e), s, alias); }
+/ kw_typedef _ d:struct_declaration _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_TypedefStructDeclaration, c_parser_str_range_init($0s, $0e), d, alias); }
+/ kw_typedef _ d:enum_declaration _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_TypedefEnumDeclaration, c_parser_str_range_init($0s, $0e), d, alias); }
 
 enum_declaration <-
   kw_enum _ tag:identifier _ "{" _ e:enumerator_list  _ "}" { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_EnumerationDeclaration, c_parser_str_range_init($0s, $0e), tag, e); }
@@ -110,7 +119,7 @@ enumerator_list <-
     $$->range = c_parser_str_range_init($0s, $0e);
     c_parser_ast_node_push_front($$, e);
   }
-/ e:enumerator_declaration
+/ e:enumerator_declaration (_ ',')?
   {
     $$ = c_parser_ast_node_init_variadic(auxil, c_parser_ast_node_type_EnumeratorDeclarationList, c_parser_str_range_init($0s, $0e));
     c_parser_ast_node_push_front($$, e);

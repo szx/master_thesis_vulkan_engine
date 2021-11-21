@@ -226,6 +226,8 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "StructDeclaration";
   case c_parser_ast_node_type_TypedefStructDeclaration:
     return "TypedefStructDeclaration";
+  case c_parser_ast_node_type_TypedefEnumDeclaration:
+    return "TypedefStructDeclaration";
   case c_parser_ast_node_type_CompoundStatement:
     return "CompoundStatement";
   case c_parser_ast_node_type_String:
@@ -242,6 +244,8 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "IntegerHex";
   case c_parser_ast_node_type_PreprocessorDirective:
     return "PreprocessorDirective";
+  case c_parser_ast_node_type_PreprocessorDirectiveBody:
+    return "PreprocessorDirectiveBody";
   case c_parser_ast_node_type_Declaration:
     return "Declaration";
   case c_parser_ast_node_type_DeclarationSpecifiers:
