@@ -46,8 +46,8 @@ else()
         set(PACKCC_VERSION "clang")
     else()
         message(FATAL_ERROR "packcc: unsupported compiler")
-    endif()
-endif()
+    endif ()
+endif ()
 execute_process(COMMAND make WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/packcc/build/${PACKCC_VERSION}")
 set(PACKCC_BIN "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/packcc/build/${PACKCC_VERSION}/release/bin/packcc")
 message(STATUS "PACKCC_BIN: ${PACKCC_BIN}")
@@ -56,16 +56,18 @@ message(STATUS "PACKCC_BIN: ${PACKCC_BIN}")
 # define source files
 file(GLOB_RECURSE C_SOURCES "src/*.c")
 file(GLOB_RECURSE C_HEADERS "src/*.h")
+file(GLOB TEST_FILES_DIR "test")
+file(GLOB_RECURSE TEST_FILES "test/*.*")
 
 # define packcc parser generation
 file(GLOB_RECURSE C_GENERATOR_PEGS "src/*.peg")
 set(C_GENERATOR_OUTPUTS)
-foreach(PEG ${C_GENERATOR_PEGS})
+foreach (PEG ${C_GENERATOR_PEGS})
     string(REGEX REPLACE "[.]peg$" ".c" OUTPUT_SOURCE ${PEG})
     string(REGEX REPLACE "[.]peg$" ".h" OUTPUT_HEADER ${PEG})
     add_custom_command(
-        OUTPUT ${OUTPUT_SOURCE} ${OUTPUT_HEADER}
-        DEPENDS ${PEG}
+            OUTPUT ${OUTPUT_SOURCE} ${OUTPUT_HEADER}
+            DEPENDS ${PEG}
         COMMAND ${PACKCC_BIN} ${PEG}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src
         COMMENT "Generating ${PEG} outputs"
@@ -97,22 +99,28 @@ foreach(C_MAIN_SOURCE_PATH ${C_MAIN_SOURCE_PATHS})
 endforeach()
 message(STATUS "C_SOURCES: ${C_SOURCES}")
 
-foreach(C_MAIN_SOURCE_PATH ${C_MAIN_SOURCE_PATHS})
+foreach (C_MAIN_SOURCE_PATH ${C_MAIN_SOURCE_PATHS})
     get_filename_component(EXECUTABLE_NAME ${C_MAIN_SOURCE_PATH} NAME_WE)
     add_executable(${EXECUTABLE_NAME} ${C_MAIN_SOURCE_PATH} ${C_SOURCES} ${C_HEADERS} ${C_GENERATOR_OUTPUTS})
     target_include_directories(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_INCLUDE_PATHS})
     target_link_directories(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_LIBRARY_PATHS})
     target_link_libraries(${EXECUTABLE_NAME} LINK_PUBLIC ${EXTERNAL_LIBRARIES})
     add_dependencies(${EXECUTABLE_NAME} codegen_packcc)
-endforeach()
+endforeach ()
+
+# Copy resources to directory with executable.
+add_custom_target(copy_resources ALL DEPENDS ${TEST_FILES})
+add_custom_command(
+        TARGET copy_resources PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${TEST_FILES_DIR} ${CMAKE_CURRENT_BINARY_DIR}/tests)
 
 # add every file to VS project file structure
 macro(GroupSources curdir)
     file(GLOB children RELATIVE ${PROJECT_SOURCE_DIR}/${curdir} ${PROJECT_SOURCE_DIR}/${curdir}/*)
-    foreach(child ${children})
-        if(IS_DIRECTORY ${PROJECT_SOURCE_DIR}/${curdir}/${child})
+    foreach (child ${children})
+        if (IS_DIRECTORY ${PROJECT_SOURCE_DIR}/${curdir}/${child})
             GroupSources(${curdir}/${child})
-        else()
+        else ()
             string(REPLACE "/" "\\" groupname ${curdir})
             source_group(${groupname} FILES ${PROJECT_SOURCE_DIR}/${curdir}/${child})
         endif()

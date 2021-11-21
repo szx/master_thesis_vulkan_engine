@@ -1,6 +1,6 @@
+#include "platform.h"
 #include "vulkan/vulkan.h"
 #include <GLFW/glfw3.h>
-#include <stdio.h>
 
 const char *const window_title = "Window title";
 const int window_width = 640;

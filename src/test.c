@@ -1,7 +1,7 @@
 #include "greatest.h"
 #include "peg/c_parser.h"
+#include "platform.h"
 #include "vulkan/vulkan.h"
-#include <stdio.h>
 
 #define P
 #define T int
@@ -67,24 +67,38 @@ TEST basic_test_template() { // NOLINT
 
 SUITE(basic_test_suite) { RUN_TEST(basic_test_template); }
 
+#include <stdlib.h>
+// Returns null-terminated string.
+char *ReadTextFile(char *path, size_t *source_length) {
+  char *result = 0;
+
+  FILE *file = fopen(path, "rb");
+  if (file) {
+    fseek(file, 0, SEEK_END);
+    size_t size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    result = (char *)malloc(size + 1);
+    fread(result, size, 1, file);
+    result[size] = 0;
+    *source_length = size;
+
+    fclose(file);
+  }
+
+  return result;
+}
+
 // Parsing C preprocessor directives.
 TEST c_parser_preprocessor_parsing() { // NOLINT
-  char *input = "void main(int argc, char *argv[]) {"
-                "/*abc*/2+++/*def*/--abc1++*3++;"
-                "vec.x*vec.y+foo()+vec.z;"
-                "abc(1,3+3,++a=foo(4)+2); // test\n"
-                "}"
-                "void foo(int a, int b, int c) {"
-                "{}"
-                "{a;{b;foo(1);c;++d;e;}}"
-                "sizeof((point)((const char*)2+*(int)cde+~4))+(&abc);"
-                "sizeof((point)01)+a*0xBADF00D;"
-                "foo(\"a\\\"bc\" + 2);"
-                "foo(\'a\\\'bc\' + 2);"
-                "++a = b + c;"
-                "a = b + c;"
-                "int a = b + c;"
-                "}/*ghi";
+  size_t input_size;
+  str input_path = str_init(getExecutableDirPath());
+  str_append(&input_path, "/tests/c_parser_test.txt");
+  char *input = ReadTextFile(str_c_str(&input_path), &input_size);
+  str_free(&input_path);
+  if (input == NULL) {
+    FAILm("failed to load file");
+  }
   c_parser_state state = c_parser_execute(input);
   c_parser_debug_print(&state);
   PASS();
@@ -96,6 +110,14 @@ GREATEST_MAIN_DEFS(); // NOLINT
 
 int main(int argc, char *argv[]) {
   GREATEST_MAIN_BEGIN();
+
+#if defined(PLATFORM_LINUX)
+  printf("Platform: LINUX\n");
+#elif defined(PLATFORM_APPLE)
+  printf("Platform: APPLE\n");
+#elif defined(PLATFORM_WINDOWS)
+  printf("Platform: WINDOWS\n");
+#endif
 
   RUN_SUITE(basic_test_suite);
   RUN_SUITE(c_parser_suite);
