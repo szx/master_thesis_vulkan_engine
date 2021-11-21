@@ -1,3 +1,9 @@
+enum state {
+    state_init = 0,
+    state_default,
+    state_exit
+};
+
 void main(int argc, char *argv[]) {
 	/*abc*/2+++/*def*/--abc1++*3++;
 	vec.x*vec.y+foo()+vec.z;

@@ -206,14 +206,20 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "ArgumentExpressionList";
   case c_parser_ast_node_type_ParameterList:
     return "ParameterList";
+  case c_parser_ast_node_type_EnumeratorDeclarationList:
+    return "EnumeratorDeclarationList";
   case c_parser_ast_node_type_DeclaratorAndInitializerList:
     return "DeclaratorAndInitializerList";
   case c_parser_ast_node_type_IdentifierDeclarator:
     return "IdentifierDeclarator";
   case c_parser_ast_node_type_ArrayDeclarator:
     return "ArrayDeclarator";
-  case c_parser_ast_node_type_FunctionDeclarator:
-    return "FunctionDeclarator";
+  case c_parser_ast_node_type_FunctionDeclaration:
+    return "FunctionDeclaration";
+  case c_parser_ast_node_type_EnumerationDeclaration:
+    return "EnumerationDeclaration";
+  case c_parser_ast_node_type_EnumeratorDeclaration:
+    return "EnumeratorDeclaration";
   case c_parser_ast_node_type_CompoundStatement:
     return "CompoundStatement";
   case c_parser_ast_node_type_String:

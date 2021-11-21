@@ -11,10 +11,11 @@
 %source {
   #define PCC_GETCHAR(auxil) c_parser_getchar((auxil))
   #define PCC_ERROR(auxil) c_parser_handle_syntax_error((auxil))
-  //static const char *dbg_str[] = { "Evaluating rule", "Matched rule", "Abandoning rule" };
-  //#define PCC_DEBUG(auxil, event, rule, level, pos, buffer, length) \
+#if 0
+  static const char *dbg_str[] = { "Evaluating rule", "Matched rule", "Abandoning rule" };
+  #define PCC_DEBUG(auxil, event, rule, level, pos, buffer, length) \
       fprintf(stderr, "%*s%s %s @%zu [%.*s]\n", (int)((level) * 2), "", dbg_str[event], rule, pos, (int)(length), buffer)
-
+#endif
 }
 
 program <-
@@ -88,10 +89,29 @@ expression_statement <-
 ## NOTE: We forbid declaration without init_declarator. ##
 ## NOTE: We forbid init_declarator_list. ##
 declaration <-
-  s:declaration_specifiers _ i:init_declarator _ ';' { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_Declaration, c_parser_str_range_init($0s, $0e), s, i); }
-/ s:declaration_specifiers _ d:declarator _ '(' _ p:parameter_list _ ')' _ ';' { $$ = c_parser_ast_node_init_3(auxil, c_parser_ast_node_type_FunctionDeclarator, c_parser_str_range_init($0s, $0e), s, d, p); }
+  "enum" _ i:identifier _ "{" _ e:enumerator_list  _ "}" _ ";" { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_EnumerationDeclaration, c_parser_str_range_init($0s, $0e), i, e); }
+/ s:declaration_specifiers _ i:init_declarator _ ';' { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_Declaration, c_parser_str_range_init($0s, $0e), s, i); }
+/ s:declaration_specifiers _ d:declarator _ '(' _ p:parameter_list _ ')' _ ';' { $$ = c_parser_ast_node_init_3(auxil, c_parser_ast_node_type_FunctionDeclaration, c_parser_str_range_init($0s, $0e), s, d, p); }
+## TODO: struct/union declarationK. ##
 
-## TODO: We forbid declaration_specifiers for arrays, structs, static etc. ##
+enumerator_list <-
+  e:enumerator_declaration _ ',' _ l:enumerator_list
+  {
+    $$ = l;
+    $$->range = c_parser_str_range_init($0s, $0e);
+    c_parser_ast_node_push_front($$, e);
+  }
+/ e:enumerator_declaration
+  {
+    $$ = c_parser_ast_node_init_variadic(auxil, c_parser_ast_node_type_EnumeratorDeclarationList, c_parser_str_range_init($0s, $0e));
+    c_parser_ast_node_push_front($$, e);
+  }
+
+enumerator_declaration <-
+  e:identifier _ '=' _ i:initializer { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_EnumeratorDeclaration, c_parser_str_range_init($0s, $0e), e, i); }
+/ e:identifier { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_EnumeratorDeclaration, c_parser_str_range_init($0s, $0e), e); }
+
+## TODO: We forbid declaration_specifiers for arrays, structs etc. ##
 declaration_specifiers <-
   storage_class_specifier? _ type_qualifier? _ identifier (_ '*')* { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_DeclarationSpecifiers, c_parser_str_range_init($0s, $0e)); }
 
@@ -209,7 +229,7 @@ identifier <-
 number <-
   '0'[xX]HEX+ { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_IntegerHex, c_parser_str_range_init($0s, $0e)); }
 / '0'OCT+ { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_IntegerOct, c_parser_str_range_init($0s, $0e)); }
-/ !'0'DEC+ { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_IntegerDec, c_parser_str_range_init($0s, $0e)); }
+/ !'0'DEC+/'0' { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_IntegerDec, c_parser_str_range_init($0s, $0e)); }
 
 ## TODO floats ##
 

@@ -10,6 +10,7 @@ typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_TranslationUnit,
   c_parser_ast_node_type_ArgumentExpressionList,
   c_parser_ast_node_type_ParameterList,
+  c_parser_ast_node_type_EnumeratorDeclarationList,
   c_parser_ast_node_type_DeclaratorAndInitializerList,
   c_parser_ast_node_type_CompoundStatement,
 
@@ -29,7 +30,9 @@ typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_DeclaratorAndInitializer, // Declarator (= Initializer)
   c_parser_ast_node_type_IdentifierDeclarator,
   c_parser_ast_node_type_ArrayDeclarator,
-  c_parser_ast_node_type_FunctionDeclarator,
+  c_parser_ast_node_type_FunctionDeclaration,
+  c_parser_ast_node_type_EnumerationDeclaration,
+  c_parser_ast_node_type_EnumeratorDeclaration,
 
   // definitions
   c_parser_ast_node_type_FunctionDefinition,
