@@ -252,14 +252,34 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "DeclarationSpecifiers";
   case c_parser_ast_node_type_DeclaratorAndInitializer:
     return "DeclaratorAndInitializer";
+  case c_parser_ast_node_type_DeclaratorAndInitializerList:
+    return "DeclaratorAndInitializerList";
   case c_parser_ast_node_type_FunctionDefinition:
     return "FunctionDefinition";
+  case c_parser_ast_node_type_LabelStatement:
+    return "LabelStatement";
+  case c_parser_ast_node_type_CaseStatement:
+    return "CaseStatement";
+  case c_parser_ast_node_type_DefaultStatement:
+    return "DefaultStatement";
   case c_parser_ast_node_type_ReturnStatement:
     return "ReturnStatement";
+  case c_parser_ast_node_type_ContinueStatement:
+    return "ContinueStatement";
+  case c_parser_ast_node_type_BreakStatement:
+    return "BreakStatement";
+  case c_parser_ast_node_type_GotoStatement:
+    return "GotoStatement";
   case c_parser_ast_node_type_IfStatement:
     return "IfStatement";
   case c_parser_ast_node_type_SwitchStatement:
     return "SwitchStatement";
+  case c_parser_ast_node_type_ForStatement:
+    return "ForStatement";
+  case c_parser_ast_node_type_WhileStatement:
+    return "WhileStatement";
+  case c_parser_ast_node_type_DoWhileStatement:
+    return "DoWhileStatement";
   case c_parser_ast_node_type_SubscriptAccess:
     return "SubscriptAccess";
   case c_parser_ast_node_type_MemberAccess:

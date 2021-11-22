@@ -1,3 +1,76 @@
+static size_t pcc_get_char_as_utf32(c_parser_context_t *ctx, int *out) { /* with checking UTF-8 validity */
+    int c, u;
+    size_t n;
+    if (pcc_refill_buffer(ctx, 1) < 1) return 0;
+    c = (int)(unsigned char)ctx->buffer.buf[ctx->cur];
+    n = (c < 0x80) ? 1 :
+        ((c & 0xe0) == 0xc0) ? 2 :
+        ((c & 0xf0) == 0xe0) ? 3 :
+        ((c & 0xf8) == 0xf0) ? 4 : 0;
+    if (n < 1) return 0;
+    if (pcc_refill_buffer(ctx, n) < n) return 0;
+    switch (n) {
+    case 1:
+        u = c;
+        break;
+    case 2:
+        u = c & 0x1f;
+        c = (int)(unsigned char)ctx->buffer.buf[ctx->cur + 1];
+        if ((c & 0xc0) != 0x80) return 0;
+        u <<= 6; u |= c & 0x3f;
+        if (u < 0x80) return 0;
+        break;
+    case 3:
+        u = c & 0x0f;
+        c = (int)(unsigned char)ctx->buffer.buf[ctx->cur + 1];
+        if ((c & 0xc0) != 0x80) return 0;
+        u <<= 6; u |= c & 0x3f;
+        c = (int)(unsigned char)ctx->buffer.buf[ctx->cur + 2];
+        if ((c & 0xc0) != 0x80) return 0;
+        u <<= 6; u |= c & 0x3f;
+        if (u < 0x800) return 0;
+        break;
+    case 4:
+        u = c & 0x07;
+        c = (int)(unsigned char)ctx->buffer.buf[ctx->cur + 1];
+        if ((c & 0xc0) != 0x80) return 0;
+        u <<= 6; u |= c & 0x3f;
+        c = (int)(unsigned char)ctx->buffer.buf[ctx->cur + 2];
+        if ((c & 0xc0) != 0x80) return 0;
+        u <<= 6; u |= c & 0x3f;
+        c = (int)(unsigned char)ctx->buffer.buf[ctx->cur + 3];
+        if ((c & 0xc0) != 0x80) return 0;
+        u <<= 6; u |= c & 0x3f;
+        if (u < 0x10000 || u > 0x10ffff) return 0;
+        break;
+    default:
+        return 0;
+    }
+    if (out) *out = u;
+    return n;
+}
+
+static void pcc_lr_memo_map__put(pcc_auxil_t auxil, pcc_lr_memo_map_t *map, pcc_rule_t rule, pcc_lr_answer_t *answer) {
+    const size_t i = pcc_lr_memo_map__index(auxil, map, rule);
+    if (i != PCC_VOID_VALUE) {
+        pcc_lr_answer__destroy(auxil, map->buf[i].answer);
+        map->buf[i].answer = answer;
+    }
+    else {
+        if (map->max <= map->len) {
+            const size_t n = map->len + 1;
+            size_t m = map->max;
+            if (m == 0) m = PCC_ARRAYSIZE;
+            while (m < n && m != 0) m <<= 1;
+            if (m == 0) m = n;
+            map->buf = (pcc_lr_memo_t *)PCC_REALLOC(auxil, map->buf, sizeof(pcc_lr_memo_t) * m);
+            map->max = m;
+        }
+        map->buf[map->len].rule = rule;
+        map->buf[map->len].answer = answer;
+        map->len++;
+    }
+}
 
 c_parser_state c_parser_state_init(char *source) {
   c_parser_state state = {};
@@ -26,6 +99,14 @@ char c_parser_peek(c_parser_state *state, size_t n) {
     return -1;
   }
   return state->current[n];
+}
+
+static char *pcc_strndup_e(pcc_auxil_t auxil, const char *str, size_t len) {
+    const size_t m = strnlen(str, len);
+    char *const s = (char *)PCC_MALLOC(auxil, m + 1);
+    memcpy(s, str, m);
+    s[m] = '\0';
+    return s;
 }
 
 #define FOO

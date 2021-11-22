@@ -31,6 +31,7 @@ typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_Declaration, // Specifiers (Declarator = Initializer)
   c_parser_ast_node_type_DeclarationSpecifiers,    // Specifiers
   c_parser_ast_node_type_DeclaratorAndInitializer, // Declarator (= Initializer)
+  c_parser_ast_node_type_DeclaratorAndInitializerList,
   c_parser_ast_node_type_IdentifierDeclarator,
   c_parser_ast_node_type_ArrayDeclarator,
   c_parser_ast_node_type_FunctionDeclaration,
@@ -43,12 +44,23 @@ typedef enum c_parser_ast_node_type {
   // definitions
   c_parser_ast_node_type_FunctionDefinition,
 
+  // labeled statements
+  c_parser_ast_node_type_LabelStatement,
+  c_parser_ast_node_type_CaseStatement,
+  c_parser_ast_node_type_DefaultStatement,
+
   // jump statements
   c_parser_ast_node_type_ReturnStatement,
+  c_parser_ast_node_type_ContinueStatement,
+  c_parser_ast_node_type_BreakStatement,
+  c_parser_ast_node_type_GotoStatement,
 
   // selection statements
   c_parser_ast_node_type_IfStatement,
   c_parser_ast_node_type_SwitchStatement,
+  c_parser_ast_node_type_ForStatement,
+  c_parser_ast_node_type_WhileStatement,
+  c_parser_ast_node_type_DoWhileStatement,
 
   // access expression
   c_parser_ast_node_type_SubscriptAccess, // e[i]
