@@ -8,6 +8,7 @@
 typedef enum c_parser_ast_node_type {
   // lists
   c_parser_ast_node_type_TranslationUnit,
+  c_parser_ast_node_type_LanguageLinkage,
   c_parser_ast_node_type_ArgumentExpressionList,
   c_parser_ast_node_type_ParameterList,
   c_parser_ast_node_type_EnumeratorDeclarationList,

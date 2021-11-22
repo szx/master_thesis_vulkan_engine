@@ -1,27 +1,30 @@
-VKAPI_ATTR VkResult VKAPI_CALL vkCreateSamplerYcbcrConversion(
-    VkDevice                                    device,
-    const VkSamplerYcbcrConversionCreateInfo*   pCreateInfo,
-    const VkAllocationCallbacks*                pAllocator,
-    VkSamplerYcbcrConversion*                   pYcbcrConversion);
+extern "C" {
+    VKAPI_ATTR VkResult VKAPI_CALL vkCreateSamplerYcbcrConversion(
+        VkDevice                                    device,
+        const VkSamplerYcbcrConversionCreateInfo*   pCreateInfo,
+        const VkAllocationCallbacks*                pAllocator,
+        VkSamplerYcbcrConversion*                   pYcbcrConversion);
 
-MARK_USED_FUNC
-static void pcc_capture_table__resize(pcc_auxil_t auxil, pcc_capture_table_t *table, size_t len) {
-    size_t i;
-    for (i = len; i < table->len; i++) PCC_FREE(auxil, table->buf[i].string);
-    if (table->max < len) {
-        size_t m = table->max;
-        if (m == 0) m = PCC_ARRAYSIZE;
-        while (m < len && m != 0) m <<= 1;
-        if (m == 0) m = len;
-        table->buf = (pcc_capture_t *)PCC_REALLOC(auxil, table->buf, sizeof(pcc_capture_t) * m);
-        table->max = m;
+
+    MARK_USED_FUNC
+    static void pcc_capture_table__resize(pcc_auxil_t auxil, pcc_capture_table_t *table, size_t len) {
+        size_t i;
+        for (i = len; i < table->len; i++) PCC_FREE(auxil, table->buf[i].string);
+        if (table->max < len) {
+            size_t m = table->max;
+            if (m == 0) m = PCC_ARRAYSIZE;
+            while (m < len && m != 0) m <<= 1;
+            if (m == 0) m = len;
+            table->buf = (pcc_capture_t *)PCC_REALLOC(auxil, table->buf, sizeof(pcc_capture_t) * m);
+            table->max = m;
+        }
+        for (i = table->len; i < len; i++) {
+            table->buf[i].range.start = 0;
+            table->buf[i].range.end = 0;
+            table->buf[i].string = NULL;
+        }
+        table->len = len;
     }
-    for (i = table->len; i < len; i++) {
-        table->buf[i].range.start = 0;
-        table->buf[i].range.end = 0;
-        table->buf[i].string = NULL;
-    }
-    table->len = len;
 }
 
 MARK_USED_FUNC

@@ -202,6 +202,8 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
   switch (type) {
   case c_parser_ast_node_type_TranslationUnit:
     return "TranslationUnit";
+  case c_parser_ast_node_type_LanguageLinkage:
+    return "LanguageLinkage";
   case c_parser_ast_node_type_ArgumentExpressionList:
     return "ArgumentExpressionList";
   case c_parser_ast_node_type_ParameterList:

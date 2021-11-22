@@ -29,11 +29,15 @@ translation_unit <-
     $$->range = c_parser_str_range_init($0s, $0e);
     c_parser_ast_node_push_front($$, s);
   }
-/ _ EOF { $$ = c_parser_ast_node_init_variadic(auxil, c_parser_ast_node_type_TranslationUnit, c_parser_str_range_init($0s, $0e)); }
-
+/ s:external_declaration
+  {
+    $$ = c_parser_ast_node_init_variadic(auxil, c_parser_ast_node_type_TranslationUnit, c_parser_str_range_init($0s, $0e));
+    c_parser_ast_node_push_front($$, s);
+  }
 
 external_declaration <-
   e:preprocessor_definition { $$ = e; }
+/ e:linkage_specification { $$ = e; }
 / e:function_definition { $$ = e; }
 / e:declaration { $$ = e; }
 
@@ -43,6 +47,9 @@ preprocessor_definition <-
 
 preprocessor_definition_body <-
   ('\\' EOL / !EOL .)* { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_PreprocessorDirectiveBody, c_parser_str_range_init($0s, $0e)); }
+
+linkage_specification <-
+  kw_extern _ s:string _ '{' _ t:translation_unit _ '}' { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_LanguageLinkage, c_parser_str_range_init($0s, $0e), s, t); }
 
 function_definition <-
   s:declaration_specifiers _ d:declarator _ '(' _ p:parameter_list _ ')' _ e:compound_statement { $$ = c_parser_ast_node_init_4(auxil, c_parser_ast_node_type_FunctionDefinition, c_parser_str_range_init($0s, $0e), s, d, p, e); }
@@ -389,10 +396,7 @@ postfix_expression <-
 primary_expression <-
   e:identifier { $$ = e; }
 / e:number { $$ = e; }
-/ '"' ('\\' . / !'"' .)* '"' { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_String, c_parser_str_range_init($0s, $0e)); }
-/ '"' ('\\' . / !'"' .)* { c_parser_handle_error(auxil, c_parser_error_type_UnclosedString, c_parser_str_range_init($0s, $0e)); }
-/ '\'' ('\\' . / !'\'' .)* '\'' { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_String, c_parser_str_range_init($0s, $0e)); }
-/ '\'' ('\\' . / !'\'' .)* { c_parser_handle_error(auxil, c_parser_error_type_UnclosedString, c_parser_str_range_init($0s, $0e)); }
+/ e:string { $$ = e; }
 / '(' _ e:expression _ ')' { $$ = e; }
 
 identifier <-
@@ -402,6 +406,12 @@ number <-
   '0'[xX]HEX+ { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_IntegerHex, c_parser_str_range_init($0s, $0e)); }
 / '0'OCT+ { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_IntegerOct, c_parser_str_range_init($0s, $0e)); }
 / ((!'0'DEC+)/'0') { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_IntegerDec, c_parser_str_range_init($0s, $0e)); }
+
+string <-
+  '"' ('\\' . / !'"' .)* '"' { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_String, c_parser_str_range_init($0s, $0e)); }
+/ '"' ('\\' . / !'"' .)* { c_parser_handle_error(auxil, c_parser_error_type_UnclosedString, c_parser_str_range_init($0s, $0e)); }
+/ '\'' ('\\' . / !'\'' .)* '\'' { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_String, c_parser_str_range_init($0s, $0e)); }
+/ '\'' ('\\' . / !'\'' .)* { c_parser_handle_error(auxil, c_parser_error_type_UnclosedString, c_parser_str_range_init($0s, $0e)); }
 
 ## TODO floats ##
 
