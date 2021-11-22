@@ -1,247 +1,233 @@
-extern "C" {
-    VKAPI_ATTR VkResult VKAPI_CALL vkCreateSamplerYcbcrConversion(
-        VkDevice                                    device,
-        const VkSamplerYcbcrConversionCreateInfo*   pCreateInfo,
-        const VkAllocationCallbacks*                pAllocator,
-        VkSamplerYcbcrConversion*                   pYcbcrConversion);
+#ifndef VULKAN_CORE_H_
+#define VULKAN_CORE_H_ 1
+
+/*
+** Copyright 2015-2021 The Khronos Group Inc.
+**
+** SPDX-License-Identifier: Apache-2.0
+*/
+
+/*
+** This header is generated from the Khronos Vulkan XML API Registry.
+**
+*/
 
 
-    MARK_USED_FUNC
-    static void pcc_capture_table__resize(pcc_auxil_t auxil, pcc_capture_table_t *table, size_t len) {
-        size_t i;
-        for (i = len; i < table->len; i++) PCC_FREE(auxil, table->buf[i].string);
-        if (table->max < len) {
-            size_t m = table->max;
-            if (m == 0) m = PCC_ARRAYSIZE;
-            while (m < len && m != 0) m <<= 1;
-            if (m == 0) m = len;
-            table->buf = (pcc_capture_t *)PCC_REALLOC(auxil, table->buf, sizeof(pcc_capture_t) * m);
-            table->max = m;
-        }
-        for (i = table->len; i < len; i++) {
-            table->buf[i].range.start = 0;
-            table->buf[i].range.end = 0;
-            table->buf[i].string = NULL;
-        }
-        table->len = len;
-    }
-}
 
-MARK_USED_FUNC
-static pcc_bool_t pcc_apply_rule(c_parser_context_t *ctx, pcc_rule_t rule, pcc_thunk_array_t *thunks, pcc_value_t *value) {
-    static pcc_value_t null;
-    pcc_thunk_chunk_t *c = NULL;
-    const size_t p = ctx->pos + ctx->cur;
-    pcc_bool_t b = PCC_TRUE;
-    pcc_lr_answer_t *a = pcc_lr_table__get_answer(ctx->auxil, &ctx->lrtable, p, rule);
-    pcc_lr_head_t *h = pcc_lr_table__get_head(ctx->auxil, &ctx->lrtable, p);
-    if (h != NULL) {
-        if (a == NULL && rule != h->rule && pcc_rule_set__index(ctx->auxil, &h->invol, rule) == PCC_VOID_VALUE) {
-            b = PCC_FALSE;
-            c = NULL;
-        }
-        else if (pcc_rule_set__remove(ctx->auxil, &h->eval, rule)) {
-            b = PCC_FALSE;
-            c = rule(ctx);
-            a = pcc_lr_answer__create(ctx->auxil, PCC_LR_ANSWER_CHUNK, ctx->pos + ctx->cur);
-            a->data.chunk = c;
-            pcc_lr_table__hold_answer(ctx->auxil, &ctx->lrtable, p, a);
-        }
-    }
-    if (b) {
-        if (a != NULL) {
-            ctx->cur = a->pos - ctx->pos;
-            switch (a->type) {
-            case PCC_LR_ANSWER_LR:
-                if (a->data.lr->head == NULL) {
-                    a->data.lr->head = pcc_lr_head__create(ctx->auxil, rule);
-                    pcc_lr_table__hold_head(ctx->auxil, &ctx->lrtable, p, a->data.lr->head);
-                }
-                {
-                    size_t i = ctx->lrstack.len;
-                    while (i > 0) {
-                        i--;
-                        if (ctx->lrstack.buf[i]->head == a->data.lr->head) break;
-                        ctx->lrstack.buf[i]->head = a->data.lr->head;
-                        pcc_rule_set__add(ctx->auxil, &a->data.lr->head->invol, ctx->lrstack.buf[i]->rule);
-                    }
-                }
-                c = a->data.lr->seed;
-                break;
-            case PCC_LR_ANSWER_CHUNK:
-                c = a->data.chunk;
-                break;
-            default: /* unknown */
-                break;
-            }
-        }
-        else {
-            pcc_lr_entry_t *const e = pcc_lr_entry__create(ctx->auxil, rule);
-            pcc_lr_stack__push(ctx->auxil, &ctx->lrstack, e);
-            a = pcc_lr_answer__create(ctx->auxil, PCC_LR_ANSWER_LR, p);
-            a->data.lr = e;
-            pcc_lr_table__set_answer(ctx->auxil, &ctx->lrtable, p, rule, a);
-            c = rule(ctx);
-            pcc_lr_stack__pop(ctx->auxil, &ctx->lrstack);
-            a->pos = ctx->pos + ctx->cur;
-            if (e->head == NULL) {
-                pcc_lr_answer__set_chunk(ctx->auxil, a, c);
-            }
-            else {
-                e->seed = c;
-                h = a->data.lr->head;
-                if (h->rule != rule) {
-                    c = a->data.lr->seed;
-                    a = pcc_lr_answer__create(ctx->auxil, PCC_LR_ANSWER_CHUNK, ctx->pos + ctx->cur);
-                    a->data.chunk = c;
-                    pcc_lr_table__hold_answer(ctx->auxil, &ctx->lrtable, p, a);
-                }
-                else {
-                    pcc_lr_answer__set_chunk(ctx->auxil, a, a->data.lr->seed);
-                    if (a->data.chunk == NULL) {
-                        c = NULL;
-                    }
-                    else {
-                        pcc_lr_table__set_head(ctx->auxil, &ctx->lrtable, p, h);
-                        for (;;) {
-                            ctx->cur = p - ctx->pos;
-                            pcc_rule_set__copy(ctx->auxil, &h->eval, &h->invol);
-                            c = rule(ctx);
-                            if (c == NULL || ctx->pos + ctx->cur <= a->pos) break;
-                            pcc_lr_answer__set_chunk(ctx->auxil, a, c);
-                            a->pos = ctx->pos + ctx->cur;
-                        }
-                        pcc_thunk_chunk__destroy(ctx->auxil, c);
-                        pcc_lr_table__set_head(ctx->auxil, &ctx->lrtable, p, NULL);
-                        ctx->cur = a->pos - ctx->pos;
-                        c = a->data.chunk;
-                    }
-                }
-            }
-        }
-    }
-    if (c == NULL) return PCC_FALSE;
-    if (value == NULL) value = &null;
-    memset(value, 0, sizeof(pcc_value_t)); /* in case */
-    pcc_thunk_array__add(ctx->auxil, thunks, pcc_thunk__create_node(ctx->auxil, &c->thunks, value));
-    return PCC_TRUE;
-}
 
-static void pcc_lr_memo_map__put(pcc_auxil_t auxil, pcc_lr_memo_map_t *map, pcc_rule_t rule, pcc_lr_answer_t *answer) {
-    const size_t i = pcc_lr_memo_map__index(auxil, map, rule);
-    if (i != PCC_VOID_VALUE) {
-        pcc_lr_answer__destroy(auxil, map->buf[i].answer);
-        map->buf[i].answer = answer;
-    }
-    else {
-        if (map->max <= map->len) {
-            const size_t n = map->len + 1;
-            size_t m = map->max;
-            if (m == 0) m = PCC_ARRAYSIZE;
-            while (m < n && m != 0) m <<= 1;
-            if (m == 0) m = n;
-            map->buf = (pcc_lr_memo_t *)PCC_REALLOC(auxil, map->buf, sizeof(pcc_lr_memo_t) * m);
-            map->max = m;
-        }
-        map->buf[map->len].rule = rule;
-        map->buf[map->len].answer = answer;
-        map->len++;
-    }
-}
+#define VK_VERSION_1_0 1
+#include "vk_platform.h"
 
-c_parser_state c_parser_state_init(char *source) {
-  c_parser_state state = {};
-  div_t answer = {.quot = 2, .rem = -1 };
-  state.source = source;
-  state.source_length = strlen(source);
-  state.current = source;
-  state.current_index = 0;
-  state.errors = vec_c_parser_error_init();
-  state.comments = vec_c_parser_comment_init();
-  state.isValid = true;
-  state.programNode = NULL;
-  return state;
-  return;
-}
+#define VK_DEFINE_HANDLE(object) typedef struct object##_T* object;
 
-void c_parser_advance(c_parser_state *state, size_t n) {
-  state->current += n;
-  state->current_index += n;
-}
 
-char c_parser_peek(c_parser_state *state, size_t n) {
-  // TODO: Probably doesn't work for really big documents.
-  if (((int)state->current_index + n < 0) ||
-      (state->current_index + n >= state->source_length)) {
-    return -1;
-  }
-  return state->current[n];
-}
+#ifndef VK_USE_64_BIT_PTR_DEFINES
+    #if defined(__LP64__) || defined(_WIN64) || (defined(__x86_64__) && !defined(__ILP32__) ) || defined(_M_X64) || defined(__ia64) || defined (_M_IA64) || defined(__aarch64__) || defined(__powerpc64__)
+        #define VK_USE_64_BIT_PTR_DEFINES 1
+    #else
+        #define VK_USE_64_BIT_PTR_DEFINES 0
+    #endif
+#endif
 
-static char *pcc_strndup_e(pcc_auxil_t auxil, const char *str, size_t len) {
-    const size_t m = strnlen(str, len);
-    char *const s = (char *)PCC_MALLOC(auxil, m + 1);
-    memcpy(s, str, m);
-    s[m] = '\0';
-    return s;
-}
 
-#define FOO
-#define BAR 1
-#define GREATEST_RUN_TEST(TEST)                                         \
-    do {                                                                \
-        if (greatest_test_pre(#TEST) == 1) {                            \
-            enum greatest_test_res res = GREATEST_SAVE_CONTEXT();       \
-            if (res == GREATEST_TEST_RES_PASS) {                        \
-                res = TEST();                                           \
-            }                                                           \
-            greatest_test_post(res);                                    \
-        }                                                               \
-    } while (0)
+#ifndef VK_DEFINE_NON_DISPATCHABLE_HANDLE
+    #if (VK_USE_64_BIT_PTR_DEFINES==1)
+        #if (defined(__cplusplus) && (__cplusplus >= 201103L)) || (defined(_MSVC_LANG) && (_MSVC_LANG >= 201103L))
+            #define VK_NULL_HANDLE nullptr
+        #else
+            #define VK_NULL_HANDLE ((void*)0)
+        #endif
+    #else
+        #define VK_NULL_HANDLE 0ULL
+    #endif
+#endif
+#ifndef VK_NULL_HANDLE
+    #define VK_NULL_HANDLE 0
+#endif
 
-struct tag_name {
-   type member1;
-   type *member2;
-};
-typedef struct tag_name alias_name;
 
-typedef struct c_parser_state {
-  // Input state
-  char *source;         // null-terminated string
-  size_t source_length; // length of source
-  // Parsing state
-  char *current;                 // current character in source
-  size_t current_index;          // index of current character in source
-  vec_c_parser_error errors;     // every parsing error
-  vec_c_parser_comment comments; // every parsed comment
-  bool isValid; // false if detected remaining source text due to incompleteness
-                // of grammar
-  c_parser_ast_node *programNode; // parsed program AST node.
-} c_parser_state;
+#ifndef VK_DEFINE_NON_DISPATCHABLE_HANDLE
+    #if (VK_USE_64_BIT_PTR_DEFINES==1)
+        #define VK_DEFINE_NON_DISPATCHABLE_HANDLE(object) typedef struct object##_T *object;
+    #else
+        #define VK_DEFINE_NON_DISPATCHABLE_HANDLE(object) typedef uint64_t object;
+    #endif
+#endif
 
-enum state {
-    state_init = 0,
-    state_default,
-    state_exit
-};
+// DEPRECATED: This define is deprecated. VK_MAKE_API_VERSION should be used instead.
+#define VK_MAKE_VERSION(major, minor, patch) \
+    ((((uint32_t)(major)) << 22) | (((uint32_t)(minor)) << 12) | ((uint32_t)(patch)))
 
-void main(int argc, char *argv[]) {
-	/*abc*/2+++/*def*/--abc1++*3++;
-	vec.x*vec.y+foo()+vec.z;
-	abc(1,3+3,++a=foo(4)+2); // test
-}
+// DEPRECATED: This define has been removed. Specific version defines (e.g. VK_API_VERSION_1_0), or the VK_MAKE_VERSION macro, should be used instead.
+//#define VK_API_VERSION VK_MAKE_VERSION(1, 0, 0) // Patch version should always be set to 0
 
-void foo(int a, int b, int c) {
-	{}
-	{a;{b;foo(1);c;++d;e;}}
-	sizeof((point)((const char*)2+*(int)cde+~4))+(&abc);
-	sizeof((point)01)+a*0xBADF00D;
-	foo("a\"bc" + 2);
-	foo('a\'bc' + 2);
-	++a = b + c;
-	a = b + c;
-	int a = b + c;
-	const int a = b + c;
-}
+#define VK_MAKE_API_VERSION(variant, major, minor, patch) \
+    ((((uint32_t)(variant)) << 29) | (((uint32_t)(major)) << 22) | (((uint32_t)(minor)) << 12) | ((uint32_t)(patch)))
 
-/*ghi
+// Vulkan 1.0 version number
+#define VK_API_VERSION_1_0 VK_MAKE_API_VERSION(0, 1, 0, 0)// Patch version should always be set to 0
+
+// Version of this file
+#define VK_HEADER_VERSION 199
+
+// Complete version of this file
+#define VK_HEADER_VERSION_COMPLETE VK_MAKE_API_VERSION(0, 1, 2, VK_HEADER_VERSION)
+
+// DEPRECATED: This define is deprecated. VK_API_VERSION_MAJOR should be used instead.
+#define VK_VERSION_MAJOR(version) ((uint32_t)(version) >> 22)
+
+// DEPRECATED: This define is deprecated. VK_API_VERSION_MINOR should be used instead.
+#define VK_VERSION_MINOR(version) (((uint32_t)(version) >> 12) & 0x3FFU)
+
+// DEPRECATED: This define is deprecated. VK_API_VERSION_PATCH should be used instead.
+#define VK_VERSION_PATCH(version) ((uint32_t)(version) & 0xFFFU)
+
+#define VK_API_VERSION_VARIANT(version) ((uint32_t)(version) >> 29)
+#define VK_API_VERSION_MAJOR(version) (((uint32_t)(version) >> 22) & 0x7FU)
+#define VK_API_VERSION_MINOR(version) (((uint32_t)(version) >> 12) & 0x3FFU)
+#define VK_API_VERSION_PATCH(version) ((uint32_t)(version) & 0xFFFU)
+typedef uint32_t VkBool32;
+typedef uint64_t VkDeviceAddress;
+typedef uint64_t VkDeviceSize;
+typedef uint32_t VkFlags;
+typedef uint32_t VkSampleMask;
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkBuffer)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkImage)
+VK_DEFINE_HANDLE(VkInstance)
+VK_DEFINE_HANDLE(VkPhysicalDevice)
+VK_DEFINE_HANDLE(VkDevice)
+VK_DEFINE_HANDLE(VkQueue)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSemaphore)
+VK_DEFINE_HANDLE(VkCommandBuffer)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkFence)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDeviceMemory)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkEvent)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkQueryPool)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkBufferView)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkImageView)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkShaderModule)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPipelineCache)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPipelineLayout)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPipeline)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkRenderPass)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorSetLayout)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSampler)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorSet)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorPool)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkFramebuffer)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkCommandPool)
+#define VK_UUID_SIZE                      16U
+#define VK_ATTACHMENT_UNUSED              (~0U)
+#define VK_FALSE                          0U
+#define VK_LOD_CLAMP_NONE                 1000.0F
+#define VK_QUEUE_FAMILY_IGNORED           (~0U)
+#define VK_REMAINING_ARRAY_LAYERS         (~0U)
+#define VK_REMAINING_MIP_LEVELS           (~0U)
+#define VK_SUBPASS_EXTERNAL               (~0U)
+#define VK_TRUE                           1U
+#define VK_WHOLE_SIZE                     (~0ULL)
+#define VK_MAX_MEMORY_TYPES               32U
+#define VK_MAX_MEMORY_HEAPS               16U
+#define VK_MAX_PHYSICAL_DEVICE_NAME_SIZE  256U
+#define VK_MAX_EXTENSION_NAME_SIZE        256U
+#define VK_MAX_DESCRIPTION_SIZE           256U
+
+typedef enum VkResult {
+    VK_SUCCESS = 0,
+    VK_NOT_READY = 1,
+    VK_TIMEOUT = 2,
+    VK_EVENT_SET = 3,
+    VK_EVENT_RESET = 4,
+    VK_INCOMPLETE = 5,
+    VK_ERROR_OUT_OF_HOST_MEMORY = -1,
+    VK_ERROR_OUT_OF_DEVICE_MEMORY = -2,
+    VK_ERROR_INITIALIZATION_FAILED = -3,
+    VK_ERROR_DEVICE_LOST = -4,
+    VK_ERROR_MEMORY_MAP_FAILED = -5,
+    VK_ERROR_LAYER_NOT_PRESENT = -6,
+    VK_ERROR_EXTENSION_NOT_PRESENT = -7,
+    VK_ERROR_FEATURE_NOT_PRESENT = -8,
+    VK_ERROR_INCOMPATIBLE_DRIVER = -9,
+    VK_ERROR_TOO_MANY_OBJECTS = -10,
+    VK_ERROR_FORMAT_NOT_SUPPORTED = -11,
+    VK_ERROR_FRAGMENTED_POOL = -12,
+    VK_ERROR_UNKNOWN = -13,
+    VK_ERROR_OUT_OF_POOL_MEMORY = -1000069000,
+    VK_ERROR_INVALID_EXTERNAL_HANDLE = -1000072003,
+    VK_ERROR_FRAGMENTATION = -1000161000,
+    VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS = -1000257000,
+    VK_ERROR_SURFACE_LOST_KHR = -1000000000,
+    VK_ERROR_NATIVE_WINDOW_IN_USE_KHR = -1000000001,
+    VK_SUBOPTIMAL_KHR = 1000001003,
+    VK_ERROR_OUT_OF_DATE_KHR = -1000001004,
+    VK_ERROR_INCOMPATIBLE_DISPLAY_KHR = -1000003001,
+    VK_ERROR_VALIDATION_FAILED_EXT = -1000011001,
+    VK_ERROR_INVALID_SHADER_NV = -1000012000,
+    VK_ERROR_INVALID_DRM_FORMAT_MODIFIER_PLANE_LAYOUT_EXT = -1000158000,
+    VK_ERROR_NOT_PERMITTED_EXT = -1000174001,
+    VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT = -1000255000,
+    VK_THREAD_IDLE_KHR = 1000268000,
+    VK_THREAD_DONE_KHR = 1000268001,
+    VK_OPERATION_DEFERRED_KHR = 1000268002,
+    VK_OPERATION_NOT_DEFERRED_KHR = 1000268003,
+    VK_PIPELINE_COMPILE_REQUIRED_EXT = 1000297000,
+    VK_ERROR_OUT_OF_POOL_MEMORY_KHR = VK_ERROR_OUT_OF_POOL_MEMORY,
+    VK_ERROR_INVALID_EXTERNAL_HANDLE_KHR = VK_ERROR_INVALID_EXTERNAL_HANDLE,
+    VK_ERROR_FRAGMENTATION_EXT = VK_ERROR_FRAGMENTATION,
+    VK_ERROR_INVALID_DEVICE_ADDRESS_EXT = VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS,
+    VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS_KHR = VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS,
+    VK_ERROR_PIPELINE_COMPILE_REQUIRED_EXT = VK_PIPELINE_COMPILE_REQUIRED_EXT,
+    VK_RESULT_MAX_ENUM = 0x7FFFFFFF
+} VkResult;
+
+
+
+typedef enum VkImageLayout {
+    VK_IMAGE_LAYOUT_UNDEFINED = 0,
+    VK_IMAGE_LAYOUT_GENERAL = 1,
+    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL = 2,
+    VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL = 3,
+    VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL = 4,
+    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL = 5,
+    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL = 6,
+    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL = 7,
+    VK_IMAGE_LAYOUT_PREINITIALIZED = 8,
+    VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL = 1000117000,
+    VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL = 1000117001,
+    VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL = 1000241000,
+    VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL = 1000241001,
+    VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL = 1000241002,
+    VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL = 1000241003,
+    VK_IMAGE_LAYOUT_PRESENT_SRC_KHR = 1000001002,
+#ifdef VK_ENABLE_BETA_EXTENSIONS
+    VK_IMAGE_LAYOUT_VIDEO_DECODE_DST_KHR = 1000024000,
+#endif
+#ifdef VK_ENABLE_BETA_EXTENSIONS
+    VK_IMAGE_LAYOUT_VIDEO_DECODE_SRC_KHR = 1000024001,
+#endif
+#ifdef VK_ENABLE_BETA_EXTENSIONS
+    VK_IMAGE_LAYOUT_VIDEO_DECODE_DPB_KHR = 1000024002,
+#endif
+    VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR = 1000111000,
+    VK_IMAGE_LAYOUT_FRAGMENT_DENSITY_MAP_OPTIMAL_EXT = 1000218000,
+    VK_IMAGE_LAYOUT_FRAGMENT_SHADING_RATE_ATTACHMENT_OPTIMAL_KHR = 1000164003,
+#ifdef VK_ENABLE_BETA_EXTENSIONS
+    VK_IMAGE_LAYOUT_VIDEO_ENCODE_DST_KHR = 1000299000,
+#endif
+#ifdef VK_ENABLE_BETA_EXTENSIONS
+    VK_IMAGE_LAYOUT_VIDEO_ENCODE_SRC_KHR = 1000299001,
+#endif
+#ifdef VK_ENABLE_BETA_EXTENSIONS
+    VK_IMAGE_LAYOUT_VIDEO_ENCODE_DPB_KHR = 1000299002,
+#endif
+    VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL_KHR = 1000314000,
+    VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL_KHR = 1000314001,
+    VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL_KHR = VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL,
+    VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL_KHR = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL,
+    VK_IMAGE_LAYOUT_SHADING_RATE_OPTIMAL_NV = VK_IMAGE_LAYOUT_FRAGMENT_SHADING_RATE_ATTACHMENT_OPTIMAL_KHR,
+    VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL_KHR = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
+    VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL_KHR = VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL,
+    VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL_KHR = VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL,
+    VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL_KHR = VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL,
+    VK_IMAGE_LAYOUT_MAX_ENUM = 0x7FFFFFFF
+} VkImageLayout;
