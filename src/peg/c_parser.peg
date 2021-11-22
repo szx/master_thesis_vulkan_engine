@@ -87,7 +87,39 @@ selection_statement <-
 iteration_statement <-
   kw_while _ '(' _ e:expression _ ')' _ s:statement { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_WhileStatement, c_parser_str_range_init($0s, $0e), e, s); }
 / kw_do _ s:statement _'(' _ e:expression _ ')' { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_DoWhileStatement, c_parser_str_range_init($0s, $0e), e, s); }
-## TODO: For, jump statements, error handling. ##
+/ kw_for _ '(' _ e1:expression_statement _ e2:expression_statement _ ')' _ s:statement
+  {
+    $$ = c_parser_ast_node_init_4(auxil, c_parser_ast_node_type_ForStatement, c_parser_str_range_init($0s, $0e),
+      e1,
+      e2,
+      c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_EmptyStatement, c_parser_str_range_init($0s, $0e)),
+      s);
+  }
+/ kw_for _ '(' _ e1:expression_statement _ e2:expression_statement _ e3:expression _ ')' _ s:statement
+  {
+    $$ = c_parser_ast_node_init_4(auxil, c_parser_ast_node_type_ForStatement, c_parser_str_range_init($0s, $0e),
+      e1,
+      e2,
+      e3,
+      s);
+  }
+/ kw_for _ '(' _ e1:declaration _ e2:expression_statement _ ')' _ s:statement
+  {
+    $$ = c_parser_ast_node_init_4(auxil, c_parser_ast_node_type_ForStatement, c_parser_str_range_init($0s, $0e),
+      e1,
+      e2,
+      c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_EmptyStatement, c_parser_str_range_init($0s, $0e)),
+      s);
+  }
+/ kw_for _ '(' _ e1:declaration _ e2:expression_statement _ e3:expression _ ')' _ s:statement
+  {
+    $$ = c_parser_ast_node_init_4(auxil, c_parser_ast_node_type_ForStatement, c_parser_str_range_init($0s, $0e),
+      e1,
+      e2,
+      e3,
+      s);
+  }
+## TODO: error handling. ##
 
 jump_statement <-
   kw_goto _ i:identifier _ ';' { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_GotoStatement, c_parser_str_range_init($0s, $0e), i); }
@@ -123,7 +155,8 @@ compound_item <-
 / s:statement { $$ = s; }
 
 expression_statement <-
-  _ e:expression _ ';' { $$ = e; }
+  _ ';' { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_EmptyStatement, c_parser_str_range_init($0s, $0e)); }
+/ _ e:expression _ ';' { $$ = e; }
 / _ e:expression _ { c_parser_handle_error(auxil, c_parser_error_type_MissingSemicolonAfterStatement, c_parser_str_range_init($0s, $0e)); }
 
 ## NOTE: We forbid declaration without init_declarator. ##
@@ -178,7 +211,7 @@ struct_declaration_list <-
 
 ## TODO: We forbid declaration_specifiers for arrays, structs etc. ##
 declaration_specifiers <-
-  storage_class_specifier? _ type_qualifier? _ identifier ((_ '*')/(_ type_qualifier))* { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_DeclarationSpecifiers, c_parser_str_range_init($0s, $0e)); }
+  (macro_identifier whitespace)? _ storage_class_specifier? _ (macro_identifier whitespace)? _ type_qualifier? _ (macro_identifier whitespace)? _ identifier _ (macro_identifier whitespace)? _ ((_ '*')/(_ type_qualifier))* { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_DeclarationSpecifiers, c_parser_str_range_init($0s, $0e)); }
 
 storage_class_specifier <-
   kw_static
@@ -188,6 +221,10 @@ type_qualifier <-
   kw_const
 / kw_restrict
 / kw_volatile
+
+macro_identifier <-
+  MACRO_IDENT(MACRO_IDENT/DEC)* { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_MacroIdentifier, c_parser_str_range_init($0s, $0e)); }
+MACRO_IDENT <- [A-Z_]
 
 init_declarator_list <-
   i:init_declarator _ ',' _ l:init_declarator_list

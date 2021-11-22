@@ -234,6 +234,8 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "String";
   case c_parser_ast_node_type_Identifier:
     return "Identifier";
+  case c_parser_ast_node_type_MacroIdentifier:
+    return "MacroIdentifier";
   case c_parser_ast_node_type_TypeName:
     return "TypeName";
   case c_parser_ast_node_type_IntegerDec:
@@ -256,6 +258,8 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "DeclaratorAndInitializerList";
   case c_parser_ast_node_type_FunctionDefinition:
     return "FunctionDefinition";
+  case c_parser_ast_node_type_EmptyStatement:
+    return "EmptyStatement";
   case c_parser_ast_node_type_LabelStatement:
     return "LabelStatement";
   case c_parser_ast_node_type_CaseStatement:

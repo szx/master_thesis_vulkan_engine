@@ -18,6 +18,7 @@ typedef enum c_parser_ast_node_type {
   // terminals
   c_parser_ast_node_type_String,
   c_parser_ast_node_type_Identifier,
+  c_parser_ast_node_type_MacroIdentifier,
   c_parser_ast_node_type_IntegerDec,
   c_parser_ast_node_type_IntegerOct,
   c_parser_ast_node_type_IntegerHex,
@@ -43,6 +44,9 @@ typedef enum c_parser_ast_node_type {
 
   // definitions
   c_parser_ast_node_type_FunctionDefinition,
+
+  // empty statement
+  c_parser_ast_node_type_EmptyStatement,
 
   // labeled statements
   c_parser_ast_node_type_LabelStatement,
