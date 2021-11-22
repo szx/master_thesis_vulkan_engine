@@ -11,7 +11,7 @@
 %source {
   #define PCC_GETCHAR(auxil) c_parser_getchar((auxil))
   #define PCC_ERROR(auxil) c_parser_handle_syntax_error((auxil))
-#if 0
+#if 1
   static const char *dbg_str[] = { "Evaluating rule", "Matched rule", "Abandoning rule" };
   #define PCC_DEBUG(auxil, event, rule, level, pos, buffer, length) \
       fprintf(stderr, "%*s%s %s @%zu [%.*s]\n", (int)((level) * 2), "", dbg_str[event], rule, pos, (int)(length), buffer)
@@ -42,8 +42,10 @@ external_declaration <-
 / e:declaration { $$ = e; }
 
 preprocessor_definition <-
-  '#' blank* i:identifier blank* b:preprocessor_definition_body EOL { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_PreprocessorDirective, c_parser_str_range_init($0s, $0e), i, b); }
-/ '#' blank* i:identifier blank* EOL { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_PreprocessorDirective, c_parser_str_range_init($0s, $0e), i); }
+  '#' blank* i:raw_identifier blank* b:preprocessor_definition_body EOL { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_PreprocessorDirective, c_parser_str_range_init($0s, $0e), i, b); }
+/ '#' blank* i:raw_identifier blank* EOL { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_PreprocessorDirective, c_parser_str_range_init($0s, $0e), i); }
+/ i:macro_identifier blank* '(' blank* ')' (blank* ';')? { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_PreprocessorMacroCall, c_parser_str_range_init($0s, $0e), i); }
+/ i:macro_identifier blank* '(' blank* e:argument_expression_list blank* ')' (blank* ';')? { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_PreprocessorMacroCall, c_parser_str_range_init($0s, $0e), i, e); }
 
 preprocessor_definition_body <-
   ('\\' EOL / !EOL .)* { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_PreprocessorDirectiveBody, c_parser_str_range_init($0s, $0e)); }
@@ -179,6 +181,7 @@ typedef_declaration <-
   kw_typedef _ kw_struct _ tag:identifier _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_TypedefStructDeclaration, c_parser_str_range_init($0s, $0e), tag, alias); }
 / kw_typedef _ d:struct_declaration _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_TypedefStructDeclaration, c_parser_str_range_init($0s, $0e), d, alias); }
 / kw_typedef _ d:enum_declaration _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_TypedefEnumDeclaration, c_parser_str_range_init($0s, $0e), d, alias); }
+/ kw_typedef _ d:declaration_specifiers _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_TypedefTypeDeclaration, c_parser_str_range_init($0s, $0e), d, alias); }
 
 enum_declaration <-
   kw_enum _ tag:identifier _ "{" _ e:enumerator_list  _ "}" { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_EnumerationDeclaration, c_parser_str_range_init($0s, $0e), tag, e); }
@@ -400,7 +403,9 @@ primary_expression <-
 / '(' _ e:expression _ ')' { $$ = e; }
 
 identifier <-
-  !keyword IDENT(IDENT/DEC)* { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_Identifier, c_parser_str_range_init($0s, $0e)); }
+  !keyword raw_identifier { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_Identifier, c_parser_str_range_init($0s, $0e)); }
+raw_identifier <-
+  IDENT(IDENT/DEC)*
 
 number <-
   '0'[xX]HEX+ { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_IntegerHex, c_parser_str_range_init($0s, $0e)); }

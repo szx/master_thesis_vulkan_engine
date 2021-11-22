@@ -230,6 +230,8 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "TypedefStructDeclaration";
   case c_parser_ast_node_type_TypedefEnumDeclaration:
     return "TypedefStructDeclaration";
+  case c_parser_ast_node_type_TypedefTypeDeclaration:
+    return "TypedefTypeDeclaration";
   case c_parser_ast_node_type_CompoundStatement:
     return "CompoundStatement";
   case c_parser_ast_node_type_String:
@@ -250,6 +252,8 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "PreprocessorDirective";
   case c_parser_ast_node_type_PreprocessorDirectiveBody:
     return "PreprocessorDirectiveBody";
+  case c_parser_ast_node_type_PreprocessorMacroCall:
+    return "PreprocessorMacroCall";
   case c_parser_ast_node_type_Declaration:
     return "Declaration";
   case c_parser_ast_node_type_DeclarationSpecifiers:

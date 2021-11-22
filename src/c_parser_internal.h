@@ -28,6 +28,7 @@ typedef enum c_parser_ast_node_type {
   // preprocessor directives
   c_parser_ast_node_type_PreprocessorDirective,
   c_parser_ast_node_type_PreprocessorDirectiveBody,
+  c_parser_ast_node_type_PreprocessorMacroCall,
 
   // declarations
   c_parser_ast_node_type_Declaration, // Specifiers (Declarator = Initializer)
@@ -42,6 +43,7 @@ typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_StructDeclaration,
   c_parser_ast_node_type_TypedefStructDeclaration,
   c_parser_ast_node_type_TypedefEnumDeclaration,
+  c_parser_ast_node_type_TypedefTypeDeclaration,
 
   // definitions
   c_parser_ast_node_type_FunctionDefinition,
