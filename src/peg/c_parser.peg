@@ -11,7 +11,7 @@
 %source {
   #define PCC_GETCHAR(auxil) c_parser_getchar((auxil))
   #define PCC_ERROR(auxil) c_parser_handle_syntax_error((auxil))
-#if 1
+#if 0
   static const char *dbg_str[] = { "Evaluating rule", "Matched rule", "Abandoning rule" };
   #define PCC_DEBUG(auxil, event, rule, level, pos, buffer, length) \
       fprintf(stderr, "%*s%s %s @%zu [%.*s]\n", (int)((level) * 2), "", dbg_str[event], rule, pos, (int)(length), buffer)
@@ -175,7 +175,7 @@ declaration <-
 / e:struct_declaration  _ ";" { $$ = e; }
 / s:declaration_specifiers _ i:init_declarator_list _ ';' { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_Declaration, c_parser_str_range_init($0s, $0e), s, i); }
 / s:declaration_specifiers _ d:declarator _ '(' _ p:parameter_list _ ')' _ ';' { $$ = c_parser_ast_node_init_3(auxil, c_parser_ast_node_type_FunctionDeclaration, c_parser_str_range_init($0s, $0e), s, d, p); }
-## TODO: struct/union declaration. ##
+## TODO: union declaration. ##
 
 typedef_declaration <-
   kw_typedef _ kw_struct _ tag:identifier _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_TypedefStructDeclaration, c_parser_str_range_init($0s, $0e), tag, alias); }
@@ -185,6 +185,7 @@ typedef_declaration <-
 
 enum_declaration <-
   kw_enum _ tag:identifier _ "{" _ e:enumerator_list  _ "}" { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_EnumerationDeclaration, c_parser_str_range_init($0s, $0e), tag, e); }
+/ kw_enum _ tag:identifier { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_EnumerationDeclaration, c_parser_str_range_init($0s, $0e), tag); }
 
 enumerator_list <-
   e:enumerator_declaration _ ',' _ l:enumerator_list
@@ -205,6 +206,7 @@ enumerator_declaration <-
 
 struct_declaration <-
   kw_struct _ tag:identifier _ "{" _ e:struct_declaration_list  _ "}" { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_StructDeclaration, c_parser_str_range_init($0s, $0e), tag, e); }
+/ kw_struct _ tag:identifier { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_StructDeclaration, c_parser_str_range_init($0s, $0e), tag); }
 
 struct_declaration_list <-
   e:declaration _ l:struct_declaration_list
@@ -219,9 +221,9 @@ struct_declaration_list <-
     c_parser_ast_node_push_front($$, e);
   }
 
-## TODO: We forbid declaration_specifiers for arrays, structs etc. ##
+## TODO: We forbid declaration_specifiers for arrays etc. ##
 declaration_specifiers <-
-  (macro_identifier whitespace)? _ storage_class_specifier? _ (macro_identifier whitespace)? _ type_qualifier? _ (macro_identifier whitespace)? _ identifier _ (macro_identifier whitespace)? _ ((_ '*')/(_ type_qualifier))* { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_DeclarationSpecifiers, c_parser_str_range_init($0s, $0e)); }
+  (macro_identifier whitespace)? _ storage_class_specifier? _ (macro_identifier whitespace)? _ type_qualifier? _ (macro_identifier whitespace)? _ e:type_specifier _ (macro_identifier whitespace)? _ ((_ '*')/(_ type_qualifier))* { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_DeclarationSpecifiers, c_parser_str_range_init($0s, $0e), e); }
 
 storage_class_specifier <-
   kw_static
@@ -231,6 +233,10 @@ type_qualifier <-
   kw_const
 / kw_restrict
 / kw_volatile
+
+type_specifier <-
+  e:struct_declaration { $$ = e; }
+/ e:identifier { $$ = e; }
 
 macro_identifier <-
   MACRO_IDENT(MACRO_IDENT/DEC)* { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_MacroIdentifier, c_parser_str_range_init($0s, $0e)); }
@@ -470,7 +476,8 @@ OCT <- [0-7]
 HEX <- [0-9a-fA-F]
 IDENT <- [a-zA-Z_]
 
-_ <- ( whitespace / comment )*
+## NOTE: ##
+_ <- ( whitespace / comment / preprocessor_definition )*
 
 comment <-
   '//' ( !EOL . )* EOL { c_parser_handle_comment(auxil, c_parser_str_range_init($0s, $0e)); }
