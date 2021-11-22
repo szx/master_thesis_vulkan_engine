@@ -14,6 +14,20 @@ c_parser_state c_parser_state_init(char *source) {
   return;
 }
 
+void c_parser_advance(c_parser_state *state, size_t n) {
+  state->current += n;
+  state->current_index += n;
+}
+
+char c_parser_peek(c_parser_state *state, size_t n) {
+  // TODO: Probably doesn't work for really big documents.
+  if (((int)state->current_index + n < 0) ||
+      (state->current_index + n >= state->source_length)) {
+    return -1;
+  }
+  return state->current[n];
+}
+
 #define FOO
 #define BAR 1
 #define GREATEST_RUN_TEST(TEST)                                         \

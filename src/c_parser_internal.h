@@ -46,6 +46,10 @@ typedef enum c_parser_ast_node_type {
   // jump statements
   c_parser_ast_node_type_ReturnStatement,
 
+  // selection statements
+  c_parser_ast_node_type_IfStatement,
+  c_parser_ast_node_type_SwitchStatement,
+
   // access expression
   c_parser_ast_node_type_SubscriptAccess, // e[i]
   c_parser_ast_node_type_MemberAccess,    // e.i
@@ -72,13 +76,6 @@ typedef enum c_parser_ast_node_type {
   // unary bitwise operators
   c_parser_ast_node_type_BitNot, // ~
 
-  // binary logical operators
-  c_parser_ast_node_type_Or,  // ||
-  c_parser_ast_node_type_And, // &&
-
-  // unary logical operators
-  c_parser_ast_node_type_Not, // !
-
   // unary arithmetic operators
   c_parser_ast_node_type_Plus,  // +
   c_parser_ast_node_type_Minus, // -
@@ -104,6 +101,12 @@ typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_AssignBitXor,        // ^=
   c_parser_ast_node_type_AssignBitLeftShift,  // <<=
   c_parser_ast_node_type_AssignBitRightShift, // >>=
+
+  // logical operators
+  c_parser_ast_node_type_Or,      // ||
+  c_parser_ast_node_type_And,     // &&
+  c_parser_ast_node_type_Not,     // !
+  c_parser_ast_node_type_Ternary, // ?:
 
   // comparison operators
   c_parser_ast_node_type_EQ, // ==

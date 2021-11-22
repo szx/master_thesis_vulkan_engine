@@ -256,6 +256,10 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "FunctionDefinition";
   case c_parser_ast_node_type_ReturnStatement:
     return "ReturnStatement";
+  case c_parser_ast_node_type_IfStatement:
+    return "IfStatement";
+  case c_parser_ast_node_type_SwitchStatement:
+    return "SwitchStatement";
   case c_parser_ast_node_type_SubscriptAccess:
     return "SubscriptAccess";
   case c_parser_ast_node_type_MemberAccess:
@@ -284,12 +288,6 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "BitShiftRight";
   case c_parser_ast_node_type_BitNot:
     return "BitNot";
-  case c_parser_ast_node_type_Or:
-    return "Or";
-  case c_parser_ast_node_type_And:
-    return "And";
-  case c_parser_ast_node_type_Not:
-    return "Not";
   case c_parser_ast_node_type_Plus:
     return "Plus";
   case c_parser_ast_node_type_Minus:
@@ -330,6 +328,14 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "AssignBitLeftShift";
   case c_parser_ast_node_type_AssignBitRightShift:
     return "AssignBitRightShift";
+  case c_parser_ast_node_type_Or:
+    return "Or";
+  case c_parser_ast_node_type_And:
+    return "And";
+  case c_parser_ast_node_type_Not:
+    return "Not";
+  case c_parser_ast_node_type_Ternary:
+    return "Ternary";
   case c_parser_ast_node_type_EQ:
     return "EQ";
   case c_parser_ast_node_type_NE:
