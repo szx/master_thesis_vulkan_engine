@@ -43,6 +43,9 @@ typedef enum c_parser_ast_node_type {
   // definitions
   c_parser_ast_node_type_FunctionDefinition,
 
+  // jump statements
+  c_parser_ast_node_type_ReturnStatement,
+
   // access expression
   c_parser_ast_node_type_SubscriptAccess, // e[i]
   c_parser_ast_node_type_MemberAccess,    // e.i
@@ -115,7 +118,7 @@ typedef enum c_parser_error_type {
   c_parser_error_type_SyntaxError,
   c_parser_error_type_UnclosedComment,
   c_parser_error_type_UnclosedString,
-  c_parser_error_type_MissingSemicolonAfterExpression
+  c_parser_error_type_MissingSemicolonAfterStatement
 } c_parser_error_type;
 
 typedef struct c_parser_str_range {

@@ -65,9 +65,16 @@ parameter_declaration <-
 
 
 statement <-
-  e:compound_statement { $$ = e; }
+  e:return_statement { $$ = e; }
+/ e:compound_statement { $$ = e; }
 / e:expression_statement { $$ = e; }
 ## TODO: More statements ##
+
+return_statement <-
+  kw_return _ e:expression _ ';' { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_ReturnStatement, c_parser_str_range_init($0s, $0e), e); }
+/ kw_return _ e:expression _ { c_parser_handle_error(auxil, c_parser_error_type_MissingSemicolonAfterStatement, c_parser_str_range_init($0s, $0e)); }
+/ kw_return _ ';' { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_ReturnStatement, c_parser_str_range_init($0s, $0e)); }
+/ kw_return _ { c_parser_handle_error(auxil, c_parser_error_type_MissingSemicolonAfterStatement, c_parser_str_range_init($0s, $0e)); }
 
 compound_statement <-
   '{' _ '}' { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_CompoundStatement, c_parser_str_range_init($0s, $0e)); }
@@ -92,7 +99,7 @@ compound_item <-
 
 expression_statement <-
   _ e:expression _ ';' { $$ = e; }
-/ _ e:expression _ { c_parser_handle_error(auxil, c_parser_error_type_MissingSemicolonAfterExpression, c_parser_str_range_init($0s, $0e)); }
+/ _ e:expression _ { c_parser_handle_error(auxil, c_parser_error_type_MissingSemicolonAfterStatement, c_parser_str_range_init($0s, $0e)); }
 
 ## NOTE: We forbid declaration without init_declarator. ##
 ## NOTE: We forbid init_declarator_list. ##
@@ -297,6 +304,7 @@ keyword <-
 / kw_extern
 / kw_restrict
 / kw_volatile
+/ kw_return
 
 kw_sizeof <- 'sizeof' !(IDENT/DEC)
 kw_typedef <- 'typedef' !(IDENT/DEC)
@@ -307,6 +315,7 @@ kw_extern <- 'extern' !(IDENT/DEC)
 kw_const <- 'const' !(IDENT/DEC)
 kw_restrict <- 'restrict' !(IDENT/DEC)
 kw_volatile <- 'volatile' !(IDENT/DEC)
+kw_return <- 'return' !(IDENT/DEC)
 
 DEC <- [0-9]
 OCT <- [0-7]

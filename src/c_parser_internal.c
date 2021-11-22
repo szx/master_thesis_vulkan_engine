@@ -175,7 +175,7 @@ void c_parser_debug_print(c_parser_state *state) {
     case c_parser_error_type_UnclosedString: {
       fprintf(stdout, "ERROR: Unclosed string literal:\n");
     } break;
-    case c_parser_error_type_MissingSemicolonAfterExpression: {
+    case c_parser_error_type_MissingSemicolonAfterStatement: {
       fprintf(stdout, "ERROR: Missing semicolon after expression:\n");
     } break;
     default: {
@@ -254,6 +254,8 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "DeclaratorAndInitializer";
   case c_parser_ast_node_type_FunctionDefinition:
     return "FunctionDefinition";
+  case c_parser_ast_node_type_ReturnStatement:
+    return "ReturnStatement";
   case c_parser_ast_node_type_SubscriptAccess:
     return "SubscriptAccess";
   case c_parser_ast_node_type_MemberAccess:

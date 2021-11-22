@@ -11,6 +11,7 @@ c_parser_state c_parser_state_init(char *source) {
   state.isValid = true;
   state.programNode = NULL;
   return state;
+  return;
 }
 
 #define FOO
