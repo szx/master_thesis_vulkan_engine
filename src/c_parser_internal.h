@@ -12,7 +12,7 @@ typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_ArgumentExpressionList,
   c_parser_ast_node_type_ParameterList,
   c_parser_ast_node_type_EnumeratorDeclarationList,
-  c_parser_ast_node_type_StructDeclarationList,
+  c_parser_ast_node_type_StructOrUnionDeclarationList,
   c_parser_ast_node_type_InitializerList,
   c_parser_ast_node_type_CompoundStatement,
 
@@ -41,9 +41,14 @@ typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_EnumerationDeclaration,
   c_parser_ast_node_type_EnumeratorDeclaration,
   c_parser_ast_node_type_StructDeclaration,
+  c_parser_ast_node_type_UnionDeclaration,
+  c_parser_ast_node_type_BitFieldDeclaration,
   c_parser_ast_node_type_TypedefStructDeclaration,
+  c_parser_ast_node_type_TypedefUnionDeclaration,
   c_parser_ast_node_type_TypedefEnumDeclaration,
   c_parser_ast_node_type_TypedefTypeDeclaration,
+  c_parser_ast_node_type_TypedefFunctionPointerDeclaration,
+  c_parser_ast_node_type_FunctionPointerDeclarationSpecifiers,
 
   // definitions
   c_parser_ast_node_type_FunctionDefinition,

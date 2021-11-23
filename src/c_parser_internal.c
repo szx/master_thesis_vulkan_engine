@@ -144,7 +144,7 @@ void c_parser_handle_error(c_parser_state *state, c_parser_error_type type,
 }
 
 void c_parser_handle_syntax_error(c_parser_state *state) {
-  static const size_t MAX_SHOWN_CHARS = 20;
+  static const size_t MAX_SHOWN_CHARS = 100;
   c_parser_str_range range =
       c_parser_str_range_init(0, state->current_index + 1);
   if (state->current_index > MAX_SHOWN_CHARS) {
@@ -210,8 +210,8 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "ParameterList";
   case c_parser_ast_node_type_EnumeratorDeclarationList:
     return "EnumeratorDeclarationList";
-  case c_parser_ast_node_type_StructDeclarationList:
-    return "StructDeclarationList";
+  case c_parser_ast_node_type_StructOrUnionDeclarationList:
+    return "StructOrUnionDeclarationList";
   case c_parser_ast_node_type_InitializerList:
     return "InitializerList";
   case c_parser_ast_node_type_IdentifierDeclarator:
@@ -226,12 +226,22 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "EnumeratorDeclaration";
   case c_parser_ast_node_type_StructDeclaration:
     return "StructDeclaration";
+  case c_parser_ast_node_type_UnionDeclaration:
+    return "UnionDeclaration";
+  case c_parser_ast_node_type_BitFieldDeclaration:
+    return "BitFieldDeclaration";
   case c_parser_ast_node_type_TypedefStructDeclaration:
     return "TypedefStructDeclaration";
+  case c_parser_ast_node_type_TypedefUnionDeclaration:
+    return "TypedefUnionDeclaration";
   case c_parser_ast_node_type_TypedefEnumDeclaration:
-    return "TypedefStructDeclaration";
+    return "TypedefEnumDeclaration";
   case c_parser_ast_node_type_TypedefTypeDeclaration:
     return "TypedefTypeDeclaration";
+  case c_parser_ast_node_type_TypedefFunctionPointerDeclaration:
+    return "TypedefFunctionPointerDeclaration";
+  case c_parser_ast_node_type_FunctionPointerDeclarationSpecifiers:
+    return "FunctionPointerDeclarationSpecifiers";
   case c_parser_ast_node_type_CompoundStatement:
     return "CompoundStatement";
   case c_parser_ast_node_type_String:

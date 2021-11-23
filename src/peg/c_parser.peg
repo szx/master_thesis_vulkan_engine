@@ -56,6 +56,9 @@ linkage_specification <-
 function_definition <-
   s:declaration_specifiers _ d:declarator _ '(' _ p:parameter_list _ ')' _ e:compound_statement { $$ = c_parser_ast_node_init_4(auxil, c_parser_ast_node_type_FunctionDefinition, c_parser_str_range_init($0s, $0e), s, d, p, e); }
 
+function_declaration <-
+  s:declaration_specifiers _ d:declarator _ '(' _ p:parameter_list _ ')' { $$ = c_parser_ast_node_init_3(auxil, c_parser_ast_node_type_FunctionDeclaration, c_parser_str_range_init($0s, $0e), s, d, p); }
+
 parameter_list <-
   e:parameter_declaration _ ',' _ l:parameter_list
   {
@@ -68,10 +71,13 @@ parameter_list <-
     $$ = c_parser_ast_node_init_variadic(auxil, c_parser_ast_node_type_ParameterList, c_parser_str_range_init($0s, $0e));
     c_parser_ast_node_push_front($$, e);
   }
+/ 'void'
+  {
+    $$ = c_parser_ast_node_init_variadic(auxil, c_parser_ast_node_type_ParameterList, c_parser_str_range_init($0s, $0e));
+  }
 
 parameter_declaration <-
   s:declaration_specifiers _ i:init_declarator { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_Declaration, c_parser_str_range_init($0s, $0e), s, i); }
-
 
 statement <-
   e:labeled_statement { $$ = e; }
@@ -173,15 +179,23 @@ declaration <-
   e:typedef_declaration _ ";" { $$ = e; }
 / e:enum_declaration _ ";" { $$ = e; }
 / e:struct_declaration  _ ";" { $$ = e; }
+/ e:union_declaration  _ ";" { $$ = e; }
 / s:declaration_specifiers _ i:init_declarator_list _ ';' { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_Declaration, c_parser_str_range_init($0s, $0e), s, i); }
-/ s:declaration_specifiers _ d:declarator _ '(' _ p:parameter_list _ ')' _ ';' { $$ = c_parser_ast_node_init_3(auxil, c_parser_ast_node_type_FunctionDeclaration, c_parser_str_range_init($0s, $0e), s, d, p); }
+/ e:global_declaration _ ';' { $$ = e; }
+/ e:function_declaration _ ';' { $$ = e; }
 ## TODO: union declaration. ##
 
 typedef_declaration <-
   kw_typedef _ kw_struct _ tag:identifier _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_TypedefStructDeclaration, c_parser_str_range_init($0s, $0e), tag, alias); }
 / kw_typedef _ d:struct_declaration _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_TypedefStructDeclaration, c_parser_str_range_init($0s, $0e), d, alias); }
+/ kw_typedef _ kw_union _ tag:identifier _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_TypedefUnionDeclaration, c_parser_str_range_init($0s, $0e), tag, alias); }
+/ kw_typedef _ d:union_declaration _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_TypedefUnionDeclaration, c_parser_str_range_init($0s, $0e), d, alias); }
 / kw_typedef _ d:enum_declaration _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_TypedefEnumDeclaration, c_parser_str_range_init($0s, $0e), d, alias); }
 / kw_typedef _ d:declaration_specifiers _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_TypedefTypeDeclaration, c_parser_str_range_init($0s, $0e), d, alias); }
+/ t:function_pointer_typedef_declaration { $$ = t; }
+
+function_pointer_typedef_declaration <-
+  kw_typedef _ s1:declaration_specifiers _ '(' _ s2:function_pointer_declaration_specifiers _ alias:identifier _ ')' _ '(' _ p:parameter_list _ ')' { $$ = c_parser_ast_node_init_4(auxil, c_parser_ast_node_type_TypedefFunctionPointerDeclaration, c_parser_str_range_init($0s, $0e), s1, p, s2, alias); }
 
 enum_declaration <-
   kw_enum _ tag:identifier _ "{" _ e:enumerator_list  _ "}" { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_EnumerationDeclaration, c_parser_str_range_init($0s, $0e), tag, e); }
@@ -205,25 +219,42 @@ enumerator_declaration <-
 / e:identifier { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_EnumeratorDeclaration, c_parser_str_range_init($0s, $0e), e); }
 
 struct_declaration <-
-  kw_struct _ tag:identifier _ "{" _ e:struct_declaration_list  _ "}" { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_StructDeclaration, c_parser_str_range_init($0s, $0e), tag, e); }
+  kw_struct _ tag:identifier _ "{" _ e:struct_or_union_declaration_list  _ "}" { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_StructDeclaration, c_parser_str_range_init($0s, $0e), tag, e); }
 / kw_struct _ tag:identifier { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_StructDeclaration, c_parser_str_range_init($0s, $0e), tag); }
 
-struct_declaration_list <-
-  e:declaration _ l:struct_declaration_list
+struct_or_union_declaration_list <-
+  e:struct_or_union_declaration _ l:struct_or_union_declaration_list
   {
     $$ = l;
     $$->range = c_parser_str_range_init($0s, $0e);
     c_parser_ast_node_push_front($$, e);
   }
-/ e:declaration
+/ e:struct_or_union_declaration
   {
-    $$ = c_parser_ast_node_init_variadic(auxil, c_parser_ast_node_type_StructDeclarationList, c_parser_str_range_init($0s, $0e));
+    $$ = c_parser_ast_node_init_variadic(auxil, c_parser_ast_node_type_StructOrUnionDeclarationList, c_parser_str_range_init($0s, $0e));
     c_parser_ast_node_push_front($$, e);
   }
+
+struct_or_union_declaration <-
+  e:declaration { $$ = e; }
+
+union_declaration <-
+  kw_union _ tag:identifier _ "{" _ e:struct_or_union_declaration_list  _ "}" { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_UnionDeclaration, c_parser_str_range_init($0s, $0e), tag, e); }
+/ kw_union _ tag:identifier { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_UnionDeclaration, c_parser_str_range_init($0s, $0e), tag); }
+
+## NOTE: Use global_declaration_specifiers for UPPER_CASE declarators. ##
+global_declaration <-
+  s:global_declaration_specifiers _ i:init_declarator_list { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_Declaration, c_parser_str_range_init($0s, $0e), s, i); }
 
 ## TODO: We forbid declaration_specifiers for arrays etc. ##
 declaration_specifiers <-
   (macro_identifier whitespace)? _ storage_class_specifier? _ (macro_identifier whitespace)? _ type_qualifier? _ (macro_identifier whitespace)? _ e:type_specifier _ (macro_identifier whitespace)? _ ((_ '*')/(_ type_qualifier))* { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_DeclarationSpecifiers, c_parser_str_range_init($0s, $0e), e); }
+
+global_declaration_specifiers <-
+  (macro_identifier whitespace)? _ storage_class_specifier? _ (macro_identifier whitespace)? _ type_qualifier? _ (macro_identifier whitespace)? _ e:type_specifier ((_ '*')/(_ type_qualifier))* { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_DeclarationSpecifiers, c_parser_str_range_init($0s, $0e), e); }
+
+function_pointer_declaration_specifiers <-
+  (macro_identifier whitespace)? _ storage_class_specifier? _ (macro_identifier whitespace)? _ type_qualifier? _ (macro_identifier whitespace)? _ (macro_identifier whitespace)? _ ((_ '*')/(_ type_qualifier))* { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_FunctionPointerDeclarationSpecifiers, c_parser_str_range_init($0s, $0e)); }
 
 storage_class_specifier <-
   kw_static
@@ -236,6 +267,7 @@ type_qualifier <-
 
 type_specifier <-
   e:struct_declaration { $$ = e; }
+/ e:union_declaration { $$ = e; }
 / e:identifier { $$ = e; }
 
 macro_identifier <-
@@ -260,7 +292,8 @@ init_declarator <-
 / d:declarator { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_DeclaratorAndInitializer, c_parser_str_range_init($0s, $0e), d); }
 
 declarator <-
-  d:declarator _ '[' _ ']' { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_ArrayDeclarator, c_parser_str_range_init($0s, $0e), d); }
+  d:declarator _ ':' _ i:integer { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_BitFieldDeclaration, c_parser_str_range_init($0s, $0e), d, i); }
+/  d:declarator _ '[' _ ']' { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_ArrayDeclarator, c_parser_str_range_init($0s, $0e), d); }
 / d:declarator _ '[' _ i:expression _ ']' { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_ArrayDeclarator, c_parser_str_range_init($0s, $0e), d, i); }
 / e:identifier { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_IdentifierDeclarator, c_parser_str_range_init($0s, $0e)); }
 
@@ -404,7 +437,7 @@ postfix_expression <-
 
 primary_expression <-
   e:identifier { $$ = e; }
-/ e:number { $$ = e; }
+/ e:integer { $$ = e; }
 / e:string { $$ = e; }
 / '(' _ e:expression _ ')' { $$ = e; }
 
@@ -413,10 +446,15 @@ identifier <-
 raw_identifier <-
   IDENT(IDENT/DEC)*
 
-number <-
-  '0'[xX]HEX+ { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_IntegerHex, c_parser_str_range_init($0s, $0e)); }
-/ '0'OCT+ { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_IntegerOct, c_parser_str_range_init($0s, $0e)); }
-/ ((!'0'DEC+)/'0') { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_IntegerDec, c_parser_str_range_init($0s, $0e)); }
+integer <-
+  HEX_NUMBER INTEGER_SUFFIX? { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_IntegerHex, c_parser_str_range_init($0s, $0e)); }
+/ OCT_NUMBER INTEGER_SUFFIX? { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_IntegerOct, c_parser_str_range_init($0s, $0e)); }
+/ DEC_NUMBER INTEGER_SUFFIX? { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_IntegerDec, c_parser_str_range_init($0s, $0e)); }
+
+HEX_NUMBER <- '0'[xX]HEX+
+OCT_NUMBER <- '0'OCT+
+DEC_NUMBER <- ((!'0'DEC+)/'0')
+INTEGER_SUFFIX <- ('LL'/'ULL')
 
 string <-
   '"' ('\\' . / !'"' .)* '"' { $$ = c_parser_ast_node_init_0(auxil, c_parser_ast_node_type_String, c_parser_str_range_init($0s, $0e)); }
@@ -432,6 +470,7 @@ keyword <-
 / kw_typedef
 / kw_enum
 / kw_struct
+/ kw_union
 / kw_static
 / kw_extern
 / kw_restrict
@@ -453,6 +492,7 @@ kw_sizeof <- 'sizeof' !(IDENT/DEC)
 kw_typedef <- 'typedef' !(IDENT/DEC)
 kw_enum <- 'enum' !(IDENT/DEC)
 kw_struct <- 'struct' !(IDENT/DEC)
+kw_union <- 'union' !(IDENT/DEC)
 kw_static <- 'static' !(IDENT/DEC)
 kw_extern <- 'extern' !(IDENT/DEC)
 kw_const <- 'const' !(IDENT/DEC)
@@ -477,6 +517,7 @@ HEX <- [0-9a-fA-F]
 IDENT <- [a-zA-Z_]
 
 ## NOTE: _s skips preprocessor definitions in enums/structs ##
+## TODO: Handle preprocessor directives outside of translation unit.##
 _s <- ( whitespace / comment / preprocessor_definition )*
 _ <- ( whitespace / comment )*
 
