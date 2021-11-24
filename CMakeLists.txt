@@ -73,25 +73,31 @@ foreach (PEG ${C_GENERATOR_PEGS})
         COMMENT "Generating ${PEG} outputs"
         VERBATIM)
     list(APPEND C_GENERATOR_OUTPUTS ${OUTPUT_SOURCE} ${OUTPUT_HEADER})
-endforeach()
+endforeach ()
 message(STATUS "C_GENERATOR_OUTPUTS: ${C_GENERATOR_OUTPUTS}")
 add_custom_target(
-    codegen_packcc
-    ALL
-    DEPENDS ${C_GENERATOR_PEGS}
-    SOURCES ${C_GENERATOR_PEGS})
+        codegen_packcc
+        ALL
+        DEPENDS ${C_GENERATOR_PEGS}
+        SOURCES ${C_GENERATOR_PEGS})
 set_source_files_properties(${C_GENERATOR_OUTPUTS} PROPERTIES GENERATED TRUE)
 
+# copy resources to directory with executables
+add_custom_target(copy_resources ALL DEPENDS ${TEST_FILES})
+add_custom_command(
+        TARGET copy_resources PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${TEST_FILES_DIR} ${CMAKE_CURRENT_BINARY_DIR}/tests)
 
-# define executable
+
+# define executables
 set(C_MAIN_SOURCE_PATHS)
-foreach(C_SOURCE_PATH ${C_SOURCES})
+foreach (C_SOURCE_PATH ${C_SOURCES})
     file(READ "${C_SOURCE_PATH}" C_SOURCE)
     string(FIND "${C_SOURCE}" "main(" FIND_RESULT) # TODO: Ugly CMake check for main() function.
-    if(NOT ${FIND_RESULT} EQUAL -1)
+    if (NOT ${FIND_RESULT} EQUAL -1)
         list(APPEND C_MAIN_SOURCE_PATHS ${C_SOURCE_PATH})
     endif ()
-endforeach()
+endforeach ()
 message(STATUS "C_MAIN_SOURCE_PATHS: ${C_MAIN_SOURCE_PATHS}")
 
 foreach(C_MAIN_SOURCE_PATH ${C_MAIN_SOURCE_PATHS})
@@ -106,13 +112,8 @@ foreach (C_MAIN_SOURCE_PATH ${C_MAIN_SOURCE_PATHS})
     target_link_directories(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_LIBRARY_PATHS})
     target_link_libraries(${EXECUTABLE_NAME} LINK_PUBLIC ${EXTERNAL_LIBRARIES})
     add_dependencies(${EXECUTABLE_NAME} codegen_packcc)
+    add_dependencies(${EXECUTABLE_NAME} copy_resources)
 endforeach ()
-
-# Copy resources to directory with executable.
-add_custom_target(copy_resources ALL DEPENDS ${TEST_FILES})
-add_custom_command(
-        TARGET copy_resources PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${TEST_FILES_DIR} ${CMAKE_CURRENT_BINARY_DIR}/tests)
 
 # add every file to VS project file structure
 macro(GroupSources curdir)
