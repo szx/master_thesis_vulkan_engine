@@ -90,6 +90,10 @@ add_custom_command(
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${TEST_FILES_DIR} ${CMAKE_CURRENT_BINARY_DIR}/tests)
 
 
+# add preprocessor definitions
+ADD_DEFINITIONS(-DSRC_PATH="${CMAKE_CURRENT_SOURCE_DIR}")
+
+
 # define executables
 set(C_MAIN_SOURCE_PATHS)
 foreach (C_SOURCE_PATH ${C_SOURCES})

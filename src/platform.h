@@ -8,6 +8,11 @@
 #define PLATFORM_WINDOWS
 #endif
 
+#ifndef SRC_PATH
+#error "SRC_PATH should be defined by CMake"
+#define SRC_PATH "SRC_PATH should be defined by CMake"
+#endif
+
 #include "str.h"
 #include <assert.h>
 #include <stdbool.h>

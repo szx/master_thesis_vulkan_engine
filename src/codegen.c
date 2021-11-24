@@ -2,6 +2,7 @@
 #include "platform.h"
 
 int main(int argc, char *argv[]) {
+  printf("src path: %s\n", SRC_PATH);
   // TODO: Scan enums in headers and generate strings.
   size_t input_size;
   str input_path = str_init(getExecutableDirPath());
@@ -14,6 +15,6 @@ int main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
   c_parser_state state = c_parser_execute(input);
-  c_parser_debug_print(&state);
+  // c_parser_debug_print(&state);
   return 0;
 }
