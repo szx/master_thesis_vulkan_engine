@@ -24,6 +24,7 @@ typedef enum c_parser_ast_node_type {
   c_parser_ast_node_type_IntegerOct,
   c_parser_ast_node_type_IntegerHex,
   c_parser_ast_node_type_TypeName,
+  c_parser_ast_node_type_CompoundLiteral,
 
   // preprocessor directives
   c_parser_ast_node_type_PreprocessorDirective,

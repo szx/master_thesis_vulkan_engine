@@ -252,6 +252,8 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
     return "MacroIdentifier";
   case c_parser_ast_node_type_TypeName:
     return "TypeName";
+  case c_parser_ast_node_type_CompoundLiteral:
+    return "CompoundLiteral";
   case c_parser_ast_node_type_IntegerDec:
     return "IntegerDec";
   case c_parser_ast_node_type_IntegerOct:

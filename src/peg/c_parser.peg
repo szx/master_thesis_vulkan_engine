@@ -433,7 +433,11 @@ postfix_expression <-
 / e:postfix_expression _ '->' _ i:identifier { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_PointerAccess, c_parser_str_range_init($0s, $0e), e, i); }
 / e:postfix_expression _ '(' _ ')' { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_FunctionCall, c_parser_str_range_init($0s, $0e), e); }
 / e:postfix_expression _ '(' _ i:argument_expression_list _ ')' { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_FunctionCall, c_parser_str_range_init($0s, $0e), e, i); }
+/ e:compound_literal { $$ = e; }
 / e:primary_expression { $$ = e; }
+
+compound_literal <-
+  '(' _ t:cast_type_name _ ')' _ '{'_ i:initializer_list _ '}' { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_CompoundLiteral, c_parser_str_range_init($0s, $0e), t, i); }
 
 primary_expression <-
   e:identifier { $$ = e; }
