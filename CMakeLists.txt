@@ -61,26 +61,27 @@ file(GLOB_RECURSE TEST_FILES "test/*.*")
 
 # define packcc parser generation
 file(GLOB_RECURSE C_GENERATOR_PEGS "src/*.peg")
-set(C_GENERATOR_OUTPUTS)
+set(C_GENERATOR_PEGS_OUTPUTS)
 foreach (PEG ${C_GENERATOR_PEGS})
     string(REGEX REPLACE "[.]peg$" ".c" OUTPUT_SOURCE ${PEG})
     string(REGEX REPLACE "[.]peg$" ".h" OUTPUT_HEADER ${PEG})
     add_custom_command(
             OUTPUT ${OUTPUT_SOURCE} ${OUTPUT_HEADER}
             DEPENDS ${PEG}
-        COMMAND ${PACKCC_BIN} ${PEG}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src
-        COMMENT "Generating ${PEG} outputs"
-        VERBATIM)
-    list(APPEND C_GENERATOR_OUTPUTS ${OUTPUT_SOURCE} ${OUTPUT_HEADER})
+            COMMAND ${PACKCC_BIN} ${PEG}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src
+            COMMENT "Generating ${PEG} outputs"
+            VERBATIM)
+    list(APPEND C_GENERATOR_PEGS_OUTPUTS ${OUTPUT_SOURCE} ${OUTPUT_HEADER})
 endforeach ()
-message(STATUS "C_GENERATOR_OUTPUTS: ${C_GENERATOR_OUTPUTS}")
+message(STATUS "C_GENERATOR_PEGS_OUTPUTS: ${C_GENERATOR_PEGS_OUTPUTS}")
 add_custom_target(
         codegen_packcc
         ALL
         DEPENDS ${C_GENERATOR_PEGS}
         SOURCES ${C_GENERATOR_PEGS})
-set_source_files_properties(${C_GENERATOR_OUTPUTS} PROPERTIES GENERATED TRUE)
+set_source_files_properties(${C_GENERATOR_PEGS_OUTPUTS} PROPERTIES GENERATED TRUE)
+
 
 # copy resources to directory with executables
 add_custom_target(copy_resources ALL DEPENDS ${TEST_FILES})
@@ -107,13 +108,14 @@ message(STATUS "C_SOURCES: ${C_SOURCES}")
 
 foreach (C_MAIN_SOURCE_PATH ${C_MAIN_SOURCE_PATHS})
     get_filename_component(EXECUTABLE_NAME ${C_MAIN_SOURCE_PATH} NAME_WE)
-    add_executable(${EXECUTABLE_NAME} ${C_MAIN_SOURCE_PATH} ${C_SOURCES} ${C_HEADERS} ${C_GENERATOR_OUTPUTS})
+    add_executable(${EXECUTABLE_NAME} ${C_MAIN_SOURCE_PATH} ${C_SOURCES} ${C_HEADERS} ${C_GENERATOR_PEGS_OUTPUTS})
     target_include_directories(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_INCLUDE_PATHS})
     target_link_directories(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_LIBRARY_PATHS})
     target_link_libraries(${EXECUTABLE_NAME} LINK_PUBLIC ${EXTERNAL_LIBRARIES})
     add_dependencies(${EXECUTABLE_NAME} codegen_packcc)
     add_dependencies(${EXECUTABLE_NAME} copy_resources)
 endforeach ()
+
 
 # add every file to VS project file structure
 macro(GroupSources curdir)
