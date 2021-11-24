@@ -78,6 +78,7 @@ parameter_list <-
 
 parameter_declaration <-
   s:declaration_specifiers _ i:init_declarator { $$ = c_parser_ast_node_init_2(auxil, c_parser_ast_node_type_Declaration, c_parser_str_range_init($0s, $0e), s, i); }
+/ s:declaration_specifiers { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_Declaration, c_parser_str_range_init($0s, $0e), s); }
 
 statement <-
   e:labeled_statement { $$ = e; }
@@ -166,7 +167,8 @@ compound_statement_list <-
   }
 
 compound_item <-
-  d:declaration { $$ = d; }
+  e:preprocessor_definition { $$ = e; }
+/ d:declaration { $$ = d; }
 / s:statement { $$ = s; }
 
 expression_statement <-
@@ -412,6 +414,7 @@ unary_expression <-
 / '~' _ e:cast_expression { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_BitNot, c_parser_str_range_init($0s, $0e), e); }
 ## NOTE: Our sizeof requires parentheses around expression. ##
 / kw_sizeof _ '(' _ e:cast_expression _ ')' { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_Sizeof, c_parser_str_range_init($0s, $0e), e); }
+/ kw_sizeof _ '(' _ t:cast_type_name _ ')' { $$ = c_parser_ast_node_init_1(auxil, c_parser_ast_node_type_Sizeof, c_parser_str_range_init($0s, $0e), t); }
 / e:postfix_expression { $$ = e; }
 
 argument_expression_list <-
