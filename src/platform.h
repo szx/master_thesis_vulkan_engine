@@ -16,3 +16,6 @@
 
 // Returns null-terminated path to directory with current executable.
 const char *getExecutableDirPath();
+
+// Returns null-terminated string with text file content.
+char *ReadTextFile(char *path, size_t *source_length);

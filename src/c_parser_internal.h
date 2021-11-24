@@ -3,6 +3,7 @@
 #ifndef C_PARSER_INTERNAL_H
 #define C_PARSER_INTERNAL_H
 
+#include "platform.h"
 #include <stdbool.h>
 
 typedef enum c_parser_ast_node_type {

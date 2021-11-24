@@ -68,26 +68,6 @@ TEST basic_test_template() { // NOLINT
 SUITE(basic_test_suite) { RUN_TEST(basic_test_template); }
 
 #include <stdlib.h>
-// Returns null-terminated string.
-char *ReadTextFile(char *path, size_t *source_length) {
-  char *result = 0;
-
-  FILE *file = fopen(path, "rb");
-  if (file) {
-    fseek(file, 0, SEEK_END);
-    size_t size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    result = (char *)malloc(size + 1);
-    fread(result, size, 1, file);
-    result[size] = 0;
-    *source_length = size;
-
-    fclose(file);
-  }
-
-  return result;
-}
 
 // Parsing C preprocessor directives.
 TEST c_parser_preprocessor_parsing() { // NOLINT
@@ -111,14 +91,6 @@ GREATEST_MAIN_DEFS(); // NOLINT
 
 int main(int argc, char *argv[]) {
   GREATEST_MAIN_BEGIN();
-
-#if defined(PLATFORM_LINUX)
-  printf("Platform: LINUX\n");
-#elif defined(PLATFORM_APPLE)
-  printf("Platform: APPLE\n");
-#elif defined(PLATFORM_WINDOWS)
-  printf("Platform: WINDOWS\n");
-#endif
 
   RUN_SUITE(basic_test_suite);
   RUN_SUITE(c_parser_suite);

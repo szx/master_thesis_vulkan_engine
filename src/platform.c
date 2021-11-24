@@ -14,6 +14,26 @@ const char *getExecutableDirPath() {
   return path;
 }
 
+char *ReadTextFile(char *path, size_t *source_length) {
+  char *result = 0;
+  FILE *file = fopen(path, "rb");
+
+  if (file) {
+    fseek(file, 0, SEEK_END);
+    size_t size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    result = (char *)malloc(size + 1);
+    fread(result, size, 1, file);
+    result[size] = 0;
+    *source_length = size;
+
+    fclose(file);
+  }
+
+  return result;
+}
+
 #else
 #error "plaform.c does not support current platform"
 #endif
