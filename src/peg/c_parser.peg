@@ -71,7 +71,7 @@ parameter_list <-
     $$ = c_parser_ast_node_init_variadic(auxil, ParameterList, c_parser_str_range_init($0s, $0e));
     c_parser_ast_node_push_front($$, e);
   }
-/ 'void'
+/ ('void'/'')
   {
     $$ = c_parser_ast_node_init_variadic(auxil, ParameterList, c_parser_str_range_init($0s, $0e));
   }

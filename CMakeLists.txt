@@ -107,7 +107,7 @@ else ()
 endif ()
 
 # add preprocessor definitions
-ADD_DEFINITIONS(-DSRC_PATH="${CMAKE_CURRENT_SOURCE_DIR}")
+ADD_DEFINITIONS(-DSRC_PATH="${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 # define executables
 message(STATUS "C_HEADERS: ${C_HEADERS}")

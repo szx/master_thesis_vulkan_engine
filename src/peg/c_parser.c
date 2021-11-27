@@ -5118,35 +5118,34 @@ static pcc_thunk_chunk_t *pcc_evaluate_rule_parameter_list(c_parser_context_t *c
     L0003:;
         ctx->cur = p;
         pcc_thunk_array__revert(ctx->auxil, &chunk->thunks, n);
-        if (
-            pcc_refill_buffer(ctx, 4) < 4 ||
-            (ctx->buffer.buf + ctx->cur)[0] != 'v' ||
-            (ctx->buffer.buf + ctx->cur)[1] != 'o' ||
-            (ctx->buffer.buf + ctx->cur)[2] != 'i' ||
-            (ctx->buffer.buf + ctx->cur)[3] != 'd'
-        ) goto L0004;
-        ctx->cur += 4;
+        {
+            const size_t p = ctx->cur;
+            const size_t n = chunk->thunks.len;
+            if (
+                pcc_refill_buffer(ctx, 4) < 4 ||
+                (ctx->buffer.buf + ctx->cur)[0] != 'v' ||
+                (ctx->buffer.buf + ctx->cur)[1] != 'o' ||
+                (ctx->buffer.buf + ctx->cur)[2] != 'i' ||
+                (ctx->buffer.buf + ctx->cur)[3] != 'd'
+            ) goto L0006;
+            ctx->cur += 4;
+            goto L0005;
+        L0006:;
+            ctx->cur = p;
+            pcc_thunk_array__revert(ctx->auxil, &chunk->thunks, n);
+        L0005:;
+        }
         {
             pcc_thunk_t *const thunk = pcc_thunk__create_leaf(ctx->auxil, pcc_action_parameter_list_2, 2, 0);
             thunk->data.leaf.capt0.range.start = chunk->pos;
             thunk->data.leaf.capt0.range.end = ctx->cur;
             pcc_thunk_array__add(ctx->auxil, &chunk->thunks, thunk);
         }
-        goto L0001;
-    L0004:;
-        ctx->cur = p;
-        pcc_thunk_array__revert(ctx->auxil, &chunk->thunks, n);
-        goto L0000;
     L0001:;
     }
     ctx->level--;
     PCC_DEBUG(ctx->auxil, PCC_DBG_MATCH, "parameter_list", ctx->level, chunk->pos, (ctx->buffer.buf + chunk->pos), (ctx->cur - chunk->pos));
     return chunk;
-L0000:;
-    ctx->level--;
-    PCC_DEBUG(ctx->auxil, PCC_DBG_NOMATCH, "parameter_list", ctx->level, chunk->pos, (ctx->buffer.buf + chunk->pos), (ctx->cur - chunk->pos));
-    pcc_thunk_chunk__destroy(ctx->auxil, chunk);
-    return NULL;
 }
 
 static pcc_thunk_chunk_t *pcc_evaluate_rule_parameter_declaration(c_parser_context_t *ctx) {
