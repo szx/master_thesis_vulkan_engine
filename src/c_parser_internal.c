@@ -8,9 +8,9 @@ void c_parser_ast_node_free(c_parser_ast_node *pNode);
 c_parser_state c_parser_state_init(char *source) {
   c_parser_state state = {0};
   state.source = source;
-  state.source_length = strlen(source);
+  state.sourceLength = strlen(source);
   state.current = source;
-  state.current_index = 0;
+  state.currentIndex = 0;
   state.errors = vec_c_parser_error_init();
   state.comments = vec_c_parser_comment_init();
   state.isValid = true;
@@ -21,9 +21,9 @@ c_parser_state c_parser_state_init(char *source) {
 void c_parser_state_free(c_parser_state *state) {
   free(state->source);
   state->source = NULL;
-  state->source_length = 0;
+  state->sourceLength = 0;
   state->current = NULL;
-  state->current_index = 0;
+  state->currentIndex = 0;
   vec_c_parser_error_free(&state->errors);
   vec_c_parser_comment_free(&state->comments);
   state->isValid = false;
@@ -33,12 +33,12 @@ void c_parser_state_free(c_parser_state *state) {
 
 void c_parser_advance(c_parser_state *state, size_t n) {
   state->current += n;
-  state->current_index += n;
+  state->currentIndex += n;
 }
 
 char c_parser_peek(c_parser_state *state, size_t n) {
   // TODO: Probably doesn't work for really big documents.
-  if ((state->current_index + n >= state->source_length)) {
+  if ((state->currentIndex + n >= state->sourceLength)) {
     return -1;
   }
   return state->current[n];
@@ -147,8 +147,8 @@ void c_parser_ast_node_debug_print(c_parser_state *state,
   size_t len = node->range.end - node->range.begin;
   char *str = state->source + node->range.begin;
   printf("%*s| node %s (%d, %d): %.*s\n", (int)indentLevel, "",
-         c_parser_ast_node_type_debug_str(node->type), (int)node->range.begin,
-         (int)node->range.end, (int)len, str);
+         debug_str(node->type), (int)node->range.begin, (int)node->range.end,
+         (int)len, str);
   size_t childNodeNum = 0;
   foreach (lst_c_parser_ast_node_ptr, &node->childNodes, it) {
     if (it.ref->node != NULL) {
@@ -167,14 +167,13 @@ void c_parser_handle_error(c_parser_state *state, c_parser_error_type type,
 }
 
 void c_parser_handle_syntax_error(c_parser_state *state) {
-  static const size_t MAX_SHOWN_CHARS = 100;
+  static const size_t max_shown_chars = 100;
   c_parser_str_range range =
-      c_parser_str_range_init(0, state->current_index + 1);
-  if (state->current_index > MAX_SHOWN_CHARS) {
-    range.begin = state->current_index - MAX_SHOWN_CHARS;
+      c_parser_str_range_init(0, state->currentIndex + 1);
+  if (state->currentIndex > max_shown_chars) {
+    range.begin = state->currentIndex - max_shown_chars;
   }
-  c_parser_error error = {.type = c_parser_error_type_SyntaxError,
-                          .range = range};
+  c_parser_error error = {.type = SyntaxError, .range = range};
   vec_c_parser_error_push_back(&state->errors, error);
   state->isValid = false;
 }
@@ -189,16 +188,16 @@ void c_parser_debug_print(c_parser_state *state) {
   for (size_t i = 0; i < state->errors.size; i++) {
     c_parser_error *error = &state->errors.value[i];
     switch (error->type) {
-    case c_parser_error_type_SyntaxError: {
+    case SyntaxError: {
       fprintf(stdout, "ERROR: Syntax error:\n");
     } break;
-    case c_parser_error_type_UnclosedComment: {
+    case UnclosedComment: {
       fprintf(stdout, "ERROR: Unclosed comment block:\n");
     } break;
-    case c_parser_error_type_UnclosedString: {
+    case UnclosedString: {
       fprintf(stdout, "ERROR: Unclosed string literal:\n");
     } break;
-    case c_parser_error_type_MissingSemicolonAfterStatement: {
+    case MissingSemicolonAfterStatement: {
       fprintf(stdout, "ERROR: Missing semicolon after expression:\n");
     } break;
     default: {
@@ -221,197 +220,197 @@ void c_parser_debug_print(c_parser_state *state) {
   c_parser_ast_node_debug_print(state, state->programNode, 0);
 }
 
-const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
+const char *debug_str(c_parser_ast_node_type type) {
   switch (type) {
-  case c_parser_ast_node_type_TranslationUnit:
+  case TranslationUnit:
     return "TranslationUnit";
-  case c_parser_ast_node_type_LanguageLinkage:
+  case LanguageLinkage:
     return "LanguageLinkage";
-  case c_parser_ast_node_type_ArgumentExpressionList:
+  case ArgumentExpressionList:
     return "ArgumentExpressionList";
-  case c_parser_ast_node_type_ParameterList:
+  case ParameterList:
     return "ParameterList";
-  case c_parser_ast_node_type_EnumeratorDeclarationList:
+  case EnumeratorDeclarationList:
     return "EnumeratorDeclarationList";
-  case c_parser_ast_node_type_StructOrUnionDeclarationList:
+  case StructOrUnionDeclarationList:
     return "StructOrUnionDeclarationList";
-  case c_parser_ast_node_type_InitializerList:
+  case InitializerList:
     return "InitializerList";
-  case c_parser_ast_node_type_IdentifierDeclarator:
+  case IdentifierDeclarator:
     return "IdentifierDeclarator";
-  case c_parser_ast_node_type_ArrayDeclarator:
+  case ArrayDeclarator:
     return "ArrayDeclarator";
-  case c_parser_ast_node_type_FunctionDeclaration:
+  case FunctionDeclaration:
     return "FunctionDeclaration";
-  case c_parser_ast_node_type_EnumerationDeclaration:
+  case EnumerationDeclaration:
     return "EnumerationDeclaration";
-  case c_parser_ast_node_type_EnumeratorDeclaration:
+  case EnumeratorDeclaration:
     return "EnumeratorDeclaration";
-  case c_parser_ast_node_type_StructDeclaration:
+  case StructDeclaration:
     return "StructDeclaration";
-  case c_parser_ast_node_type_UnionDeclaration:
+  case UnionDeclaration:
     return "UnionDeclaration";
-  case c_parser_ast_node_type_BitFieldDeclaration:
+  case BitFieldDeclaration:
     return "BitFieldDeclaration";
-  case c_parser_ast_node_type_TypedefStructDeclaration:
+  case TypedefStructDeclaration:
     return "TypedefStructDeclaration";
-  case c_parser_ast_node_type_TypedefUnionDeclaration:
+  case TypedefUnionDeclaration:
     return "TypedefUnionDeclaration";
-  case c_parser_ast_node_type_TypedefEnumDeclaration:
+  case TypedefEnumDeclaration:
     return "TypedefEnumDeclaration";
-  case c_parser_ast_node_type_TypedefTypeDeclaration:
+  case TypedefTypeDeclaration:
     return "TypedefTypeDeclaration";
-  case c_parser_ast_node_type_TypedefFunctionPointerDeclaration:
+  case TypedefFunctionPointerDeclaration:
     return "TypedefFunctionPointerDeclaration";
-  case c_parser_ast_node_type_FunctionPointerDeclarationSpecifiers:
+  case FunctionPointerDeclarationSpecifiers:
     return "FunctionPointerDeclarationSpecifiers";
-  case c_parser_ast_node_type_CompoundStatement:
+  case CompoundStatement:
     return "CompoundStatement";
-  case c_parser_ast_node_type_String:
+  case String:
     return "String";
-  case c_parser_ast_node_type_Identifier:
+  case Identifier:
     return "Identifier";
-  case c_parser_ast_node_type_MacroIdentifier:
+  case MacroIdentifier:
     return "MacroIdentifier";
-  case c_parser_ast_node_type_TypeName:
+  case TypeName:
     return "TypeName";
-  case c_parser_ast_node_type_CompoundLiteral:
+  case CompoundLiteral:
     return "CompoundLiteral";
-  case c_parser_ast_node_type_IntegerDec:
+  case IntegerDec:
     return "IntegerDec";
-  case c_parser_ast_node_type_IntegerOct:
+  case IntegerOct:
     return "IntegerOct";
-  case c_parser_ast_node_type_IntegerHex:
+  case IntegerHex:
     return "IntegerHex";
-  case c_parser_ast_node_type_PreprocessorDirective:
+  case PreprocessorDirective:
     return "PreprocessorDirective";
-  case c_parser_ast_node_type_PreprocessorDirectiveBody:
+  case PreprocessorDirectiveBody:
     return "PreprocessorDirectiveBody";
-  case c_parser_ast_node_type_PreprocessorMacroCall:
+  case PreprocessorMacroCall:
     return "PreprocessorMacroCall";
-  case c_parser_ast_node_type_Declaration:
+  case Declaration:
     return "Declaration";
-  case c_parser_ast_node_type_DeclarationSpecifiers:
+  case DeclarationSpecifiers:
     return "DeclarationSpecifiers";
-  case c_parser_ast_node_type_DeclaratorAndInitializer:
+  case DeclaratorAndInitializer:
     return "DeclaratorAndInitializer";
-  case c_parser_ast_node_type_DeclaratorAndInitializerList:
+  case DeclaratorAndInitializerList:
     return "DeclaratorAndInitializerList";
-  case c_parser_ast_node_type_FunctionDefinition:
+  case FunctionDefinition:
     return "FunctionDefinition";
-  case c_parser_ast_node_type_EmptyStatement:
+  case EmptyStatement:
     return "EmptyStatement";
-  case c_parser_ast_node_type_LabelStatement:
+  case LabelStatement:
     return "LabelStatement";
-  case c_parser_ast_node_type_CaseStatement:
+  case CaseStatement:
     return "CaseStatement";
-  case c_parser_ast_node_type_DefaultStatement:
+  case DefaultStatement:
     return "DefaultStatement";
-  case c_parser_ast_node_type_ReturnStatement:
+  case ReturnStatement:
     return "ReturnStatement";
-  case c_parser_ast_node_type_ContinueStatement:
+  case ContinueStatement:
     return "ContinueStatement";
-  case c_parser_ast_node_type_BreakStatement:
+  case BreakStatement:
     return "BreakStatement";
-  case c_parser_ast_node_type_GotoStatement:
+  case GotoStatement:
     return "GotoStatement";
-  case c_parser_ast_node_type_IfStatement:
+  case IfStatement:
     return "IfStatement";
-  case c_parser_ast_node_type_SwitchStatement:
+  case SwitchStatement:
     return "SwitchStatement";
-  case c_parser_ast_node_type_ForStatement:
+  case ForStatement:
     return "ForStatement";
-  case c_parser_ast_node_type_WhileStatement:
+  case WhileStatement:
     return "WhileStatement";
-  case c_parser_ast_node_type_DoWhileStatement:
+  case DoWhileStatement:
     return "DoWhileStatement";
-  case c_parser_ast_node_type_SubscriptAccess:
+  case SubscriptAccess:
     return "SubscriptAccess";
-  case c_parser_ast_node_type_MemberAccess:
+  case MemberAccess:
     return "MemberAccess";
-  case c_parser_ast_node_type_PointerAccess:
+  case PointerAccess:
     return "PointerAccess";
-  case c_parser_ast_node_type_FunctionCall:
+  case FunctionCall:
     return "FunctionCall";
-  case c_parser_ast_node_type_Cast:
+  case Cast:
     return "Cast";
-  case c_parser_ast_node_type_Deref:
+  case Deref:
     return "Deref";
-  case c_parser_ast_node_type_Ref:
+  case Ref:
     return "Ref";
-  case c_parser_ast_node_type_Sizeof:
+  case Sizeof:
     return "Sizeof";
-  case c_parser_ast_node_type_BitOr:
+  case BitOr:
     return "BitOr";
-  case c_parser_ast_node_type_BitAnd:
+  case BitAnd:
     return "BitAnd";
-  case c_parser_ast_node_type_BitXor:
+  case BitXor:
     return "BitXor";
-  case c_parser_ast_node_type_BitShiftLeft:
+  case BitShiftLeft:
     return "BitShiftLeft";
-  case c_parser_ast_node_type_BitShiftRight:
+  case BitShiftRight:
     return "BitShiftRight";
-  case c_parser_ast_node_type_BitNot:
+  case BitNot:
     return "BitNot";
-  case c_parser_ast_node_type_Plus:
+  case Plus:
     return "Plus";
-  case c_parser_ast_node_type_Minus:
+  case Minus:
     return "Minus";
-  case c_parser_ast_node_type_Inc:
+  case Inc:
     return "Inc";
-  case c_parser_ast_node_type_Dec:
+  case Dec:
     return "Dec";
-  case c_parser_ast_node_type_Add:
+  case Add:
     return "Add";
-  case c_parser_ast_node_type_Sub:
+  case Sub:
     return "Sub";
-  case c_parser_ast_node_type_Mul:
+  case Mul:
     return "Mul";
-  case c_parser_ast_node_type_Div:
+  case Div:
     return "Div";
-  case c_parser_ast_node_type_Mod:
+  case Mod:
     return "Mod";
-  case c_parser_ast_node_type_Assign:
+  case Assign:
     return "Assign";
-  case c_parser_ast_node_type_AssignAdd:
+  case AssignAdd:
     return "AssignAdd";
-  case c_parser_ast_node_type_AssignSub:
+  case AssignSub:
     return "AssignSub";
-  case c_parser_ast_node_type_AssignMul:
+  case AssignMul:
     return "AssignMul";
-  case c_parser_ast_node_type_AssignDiv:
+  case AssignDiv:
     return "AssignDiv";
-  case c_parser_ast_node_type_AssignMod:
+  case AssignMod:
     return "AssignMod";
-  case c_parser_ast_node_type_AssignBitOr:
+  case AssignBitOr:
     return "AssignBitOr";
-  case c_parser_ast_node_type_AssignBitAnd:
+  case AssignBitAnd:
     return "AssignBitAnd";
-  case c_parser_ast_node_type_AssignBitXor:
+  case AssignBitXor:
     return "AssignBitXor";
-  case c_parser_ast_node_type_AssignBitLeftShift:
+  case AssignBitLeftShift:
     return "AssignBitLeftShift";
-  case c_parser_ast_node_type_AssignBitRightShift:
+  case AssignBitRightShift:
     return "AssignBitRightShift";
-  case c_parser_ast_node_type_Or:
+  case Or:
     return "Or";
-  case c_parser_ast_node_type_And:
+  case And:
     return "And";
-  case c_parser_ast_node_type_Not:
+  case Not:
     return "Not";
-  case c_parser_ast_node_type_Ternary:
+  case Ternary:
     return "Ternary";
-  case c_parser_ast_node_type_EQ:
+  case EQ:
     return "EQ";
-  case c_parser_ast_node_type_NE:
+  case NE:
     return "NE";
-  case c_parser_ast_node_type_LT:
+  case LT:
     return "LT";
-  case c_parser_ast_node_type_GT:
+  case GT:
     return "GT";
-  case c_parser_ast_node_type_LE:
+  case LE:
     return "LE";
-  case c_parser_ast_node_type_GE:
+  case GE:
     return "GE";
   default:
     return "UNKNOWN";

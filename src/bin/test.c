@@ -40,11 +40,11 @@ image image_init(size_t data_count) {
 TEST basic_test_template() { // NOLINT
 
   vec_int a = vec_int_init();
-  vec_int_push_back(&a, 9);
-  vec_int_push_back(&a, 1);
-  vec_int_push_back(&a, 8);
-  vec_int_push_back(&a, 3);
-  vec_int_push_back(&a, 4);
+  vec_int_push_back(&a, 9); // NOLINT
+  vec_int_push_back(&a, 1); // NOLINT
+  vec_int_push_back(&a, 8); // NOLINT
+  vec_int_push_back(&a, 3); // NOLINT
+  vec_int_push_back(&a, 4); // NOLINT
   vec_int_sort(&a, vec_int_compare);
   int last = 0;
   for (size_t i = 0; i < a.size; i++) {
@@ -54,9 +54,9 @@ TEST basic_test_template() { // NOLINT
   vec_int_free(&a);
 
   vec_image b = vec_image_init();
-  vec_image_push_back(&b, image_init(10));
-  vec_image_push_back(&b, image_init(10));
-  vec_image_push_back(&b, image_init(100));
+  vec_image_push_back(&b, image_init(10));  // NOLINT
+  vec_image_push_back(&b, image_init(10));  // NOLINT
+  vec_image_push_back(&b, image_init(100)); // NOLINT
   vec_image b2 = vec_image_copy(&b);
   for (size_t i = 0; i < b.size; i++) {
     ASSERT_EQ(b.value[i].dataSize, b2.value[i].dataSize);
@@ -71,12 +71,12 @@ SUITE(basic_test_suite) { RUN_TEST(basic_test_template); }
 #include <stdlib.h>
 
 // Parsing C preprocessor directives.
-TEST c_parser_preprocessor_parsing() { // NOLINT
-  size_t input_size;
-  platform_path input_path = get_executable_dir_path();
-  platform_path_append(&input_path, "/tests/c_parser_test.txt");
-  char *input = read_text_file(&input_path, &input_size);
-  platform_path_free(&input_path);
+TEST c_parser_preprocessor_parsing() {
+  size_t inputSize;
+  platform_path inputPath = get_executable_dir_path();
+  platform_path_append(&inputPath, "/tests/c_parser_test.txt");
+  char *input = read_text_file(&inputPath, &inputSize);
+  platform_path_free(&inputPath);
   if (input == NULL) {
     FAILm("failed to load file");
   }
