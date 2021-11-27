@@ -3,7 +3,7 @@
 // note(sszczyrb): We try to use GLib for cross-platform functionality.
 #include <glib.h>
 
-const char *getExecutableDirPath() {
+const char *get_executable_dir_path() {
 #if defined(PLATFORM_LINUX)
   static char *exeDir = NULL;
   char *exePath = g_file_read_link("/proc/self/exe", NULL);
@@ -15,7 +15,17 @@ const char *getExecutableDirPath() {
 #endif
 }
 
-char *ReadTextFile(char *path, size_t *source_length) {
+const char *get_dir_children(const char *dir_path) {
+#if defined(PLATFORM_LINUX)
+  static char *exeDir = NULL;
+  // TODO: implement
+  return exeDir;
+#else
+#error "plaform.c does not support current platform"
+#endif
+}
+
+char *read_text_file(char *path, size_t *source_length) {
   char *result = 0;
   FILE *file = fopen(path, "rb");
 

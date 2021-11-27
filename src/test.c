@@ -72,10 +72,10 @@ SUITE(basic_test_suite) { RUN_TEST(basic_test_template); }
 // Parsing C preprocessor directives.
 TEST c_parser_preprocessor_parsing() { // NOLINT
   size_t input_size;
-  str input_path = str_init(getExecutableDirPath());
+  str input_path = str_init(get_executable_dir_path());
   str_append(&input_path, "/tests/c_parser_test.txt");
   // str_append(&input_path, "/tests/c_parser_test_functions.txt");
-  char *input = ReadTextFile(str_c_str(&input_path), &input_size);
+  char *input = read_text_file(str_c_str(&input_path), &input_size);
   str_free(&input_path);
   if (input == NULL) {
     FAILm("failed to load file");

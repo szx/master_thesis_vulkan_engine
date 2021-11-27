@@ -20,7 +20,10 @@
 #include <stdlib.h>
 
 // Returns null-terminated path to directory with current executable.
-const char *getExecutableDirPath();
+const char *get_executable_dir_path();
+
+// Returns list of child paths.
+const char *get_dir_children(const char *dir_path);
 
 // Returns null-terminated string with text file content.
-char *ReadTextFile(char *path, size_t *source_length);
+char *read_text_file(char *path, size_t *source_length);

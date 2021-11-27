@@ -1,16 +1,16 @@
 ---
-Checks:          'clang-diagnostic-*,clang-analyzer-*,-*,clang-*,readability-*',-readability-non-const-parameter
-WarningsAsErrors: ''
+Checks: 'clang-diagnostic-*,clang-analyzer-*,-*,clang-*'
+WarningsAsErrors: 'readability-*,-readability-non-const-parameter'
 HeaderFilterRegex: ''
 AnalyzeTemporaryDtors: false
-FormatStyle:     none
+FormatStyle: none
 CheckOptions:
-  - key:             readability-suspicious-call-argument.PrefixSimilarAbove
-    value:           '30'
-  - key:             modernize-replace-auto-ptr.IncludeStyle
-    value:           llvm
-  - key:             readability-suspicious-call-argument.Prefix
-    value:           'true'
+  - key: readability-suspicious-call-argument.PrefixSimilarAbove
+    value: '30'
+  - key: modernize-replace-auto-ptr.IncludeStyle
+    value: llvm
+  - key: readability-suspicious-call-argument.Prefix
+    value: 'true'
   - key:             readability-simplify-boolean-expr.ChainedConditionalAssignment
     value:           'false'
   - key:             readability-static-accessed-through-instance.NameSpecifierNestingThreshold
@@ -172,6 +172,8 @@ CheckOptions:
   - key: readability-identifier-naming.StructCase
     value: lower_case
   - key: readability-identifier-naming.FunctionCase
+    value: lower_case
+  - key: readability-identifier-naming.GlobalFunctionCase
     value: lower_case
   - key: readability-identifier-naming.VariableCase
     value: camelBack
