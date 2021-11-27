@@ -74,8 +74,7 @@ SUITE(basic_test_suite) { RUN_TEST(basic_test_template); }
 TEST c_parser_preprocessor_parsing() { // NOLINT
   size_t input_size;
   platform_path input_path = get_executable_dir_path();
-  str_append(&input_path.data, "/tests/c_parser_test.txt"); // TODO: Replace
-  // str_append(&input_path, "/tests/c_parser_test_functions.txt");
+  platform_path_append(&input_path, "/tests/c_parser_test.txt");
   char *input = read_text_file(&input_path, &input_size);
   platform_path_free(&input_path);
   if (input == NULL) {

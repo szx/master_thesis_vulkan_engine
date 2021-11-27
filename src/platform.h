@@ -31,6 +31,8 @@ void platform_path_free(platform_path *self);
 
 platform_path platform_path_copy(platform_path *self);
 
+void platform_path_append(platform_path *self, const char *dir_or_file_name);
+
 #define T platform_path
 #include "vec.h" // vec_platform_path
 

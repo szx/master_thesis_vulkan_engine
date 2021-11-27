@@ -17,14 +17,18 @@ platform_path platform_path_copy(platform_path *self) {
   return copy;
 }
 
+void platform_path_append(platform_path *self, const char *dir_or_file_name) {
+  str_append(&self->data, dir_or_file_name);
+}
+
 platform_path get_executable_dir_path() {
 #if defined(PLATFORM_LINUX)
   char *exePath = g_file_read_link("/proc/self/exe", NULL);
   char *exeDir = g_path_get_dirname(exePath);
-  platform_path path = platform_path_init(exeDir);
+  platform_path path_a = platform_path_init(exeDir);
   g_free(exePath);
   g_free(exeDir);
-  return path;
+  return path_a;
 #else
 #error "plaform.c does not support current platform"
 #endif
@@ -33,8 +37,8 @@ platform_path get_executable_dir_path() {
 vec_platform_path get_dir_children(platform_path *dir_path) {
 #if defined(PLATFORM_LINUX)
   vec_platform_path paths = vec_platform_path_init();
-  platform_path childPath = platform_path_init("todo");
-  vec_platform_path_push_back(&paths, childPath);
+  platform_path child_path = platform_path_init("todo");
+  vec_platform_path_push_back(&paths, child_path);
   // TODO: implement
   return paths;
 #else
