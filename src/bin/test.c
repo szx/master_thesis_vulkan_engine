@@ -20,7 +20,7 @@ void image_free(image *self) {
 }
 
 image image_copy(image *self) {
-  image copy = {};
+  image copy = {0};
   copy.data = malloc(self->dataSize);
   memcpy(copy.data, self->data, self->dataSize);
   copy.dataSize = self->dataSize;
@@ -46,7 +46,8 @@ TEST basic_test_template() { // NOLINT
   vec_int_push_back(&a, 3);
   vec_int_push_back(&a, 4);
   vec_int_sort(&a, vec_int_compare);
-  for (size_t i = 0, last = 0; i < a.size; i++) {
+  int last = 0;
+  for (size_t i = 0; i < a.size; i++) {
     ASSERT_LT(last, a.value[i]);
     last = a.value[i];
   }
@@ -72,11 +73,11 @@ SUITE(basic_test_suite) { RUN_TEST(basic_test_template); }
 // Parsing C preprocessor directives.
 TEST c_parser_preprocessor_parsing() { // NOLINT
   size_t input_size;
-  str input_path = str_init(get_executable_dir_path());
-  str_append(&input_path, "/tests/c_parser_test.txt");
+  platform_path input_path = get_executable_dir_path();
+  str_append(&input_path.data, "/tests/c_parser_test.txt"); // TODO: Replace
   // str_append(&input_path, "/tests/c_parser_test_functions.txt");
-  char *input = read_text_file(str_c_str(&input_path), &input_size);
-  str_free(&input_path);
+  char *input = read_text_file(&input_path, &input_size);
+  platform_path_free(&input_path);
   if (input == NULL) {
     FAILm("failed to load file");
   }

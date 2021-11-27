@@ -5,7 +5,7 @@
 #include "c_parser_internal.h"
 
 c_parser_state c_parser_state_init(char *source) {
-  c_parser_state state = {};
+  c_parser_state state = {0};
   state.source = source;
   state.source_length = strlen(source);
   state.current = source;
@@ -24,8 +24,7 @@ void c_parser_advance(c_parser_state *state, size_t n) {
 
 char c_parser_peek(c_parser_state *state, size_t n) {
   // TODO: Probably doesn't work for really big documents.
-  if (((int)state->current_index + n < 0) ||
-      (state->current_index + n >= state->source_length)) {
+  if ((state->current_index + n >= state->source_length)) {
     return -1;
   }
   return state->current[n];

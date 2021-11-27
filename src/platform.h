@@ -1,4 +1,5 @@
-// note(sszczyrb): This file should be included only in source files.
+#ifndef PLATFORM_H
+#define PLATFORM_H
 
 #if defined(__linux) || defined(__linux__) || defined(linux)
 #define PLATFORM_LINUX
@@ -19,11 +20,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Returns null-terminated path to directory with current executable.
-const char *get_executable_dir_path();
+/* file system */
+typedef struct platform_path {
+  str data;
+} platform_path;
 
-// Returns list of child paths.
-const char *get_dir_children(const char *dir_path);
+platform_path platform_path_init(char *data);
+
+void platform_path_free(platform_path *self);
+
+platform_path platform_path_copy(platform_path *self);
+
+#define T platform_path
+#include "vec.h" // vec_platform_path
+
+// Returns new path to directory with current executable.
+platform_path get_executable_dir_path();
+
+// Returns new vector of child paths.
+vec_platform_path get_dir_children(platform_path *dir_path);
 
 // Returns null-terminated string with text file content.
-char *read_text_file(char *path, size_t *source_length);
+char *read_text_file(platform_path *path, size_t *source_length);
+
+#endif /* !PLATFORM_H */

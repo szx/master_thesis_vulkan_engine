@@ -97,6 +97,14 @@ add_custom_command(
         TARGET copy_resources PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${TEST_FILES_DIR} ${CMAKE_CURRENT_BINARY_DIR}/tests)
 
+# add compiler options
+if ((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
+    add_compile_options(-Wall -Wextra -pedantic -Werror -Wno-unused-parameter)
+elseif (CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+    add_compile_options(/W4 /WX)
+else ()
+    message(FATAL_ERROR "unsupported compiler")
+endif ()
 
 # add preprocessor definitions
 ADD_DEFINITIONS(-DSRC_PATH="${CMAKE_CURRENT_SOURCE_DIR}")
