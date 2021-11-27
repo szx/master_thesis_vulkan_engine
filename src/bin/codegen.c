@@ -1,5 +1,5 @@
-#include "peg/c_parser.h"
-#include "platform.h"
+#include "../peg/c_parser.h"
+#include "../platform.h"
 
 struct Foo {
   int a;

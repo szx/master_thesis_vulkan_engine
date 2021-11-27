@@ -59,6 +59,10 @@ message(STATUS "PACKCC_BIN: ${PACKCC_BIN}")
 
 # define source files
 file(GLOB_RECURSE C_SOURCES "src/*.c")
+file(GLOB_RECURSE C_BIN_SOURCES "src/bin/*.c")
+foreach (C_BIN_SOURCE_PATH ${C_BIN_SOURCES})
+    list(REMOVE_ITEM C_SOURCES "${C_BIN_SOURCE_PATH}")
+endforeach ()
 file(GLOB_RECURSE C_HEADERS "src/*.h")
 file(GLOB TEST_FILES_DIR "test")
 file(GLOB_RECURSE TEST_FILES "test/*.*")
@@ -97,26 +101,13 @@ add_custom_command(
 # add preprocessor definitions
 ADD_DEFINITIONS(-DSRC_PATH="${CMAKE_CURRENT_SOURCE_DIR}")
 
-
 # define executables
-set(C_MAIN_SOURCE_PATHS)
-foreach (C_SOURCE_PATH ${C_SOURCES})
-    file(READ "${C_SOURCE_PATH}" C_SOURCE)
-    string(FIND "${C_SOURCE}" "main(" FIND_RESULT) # TODO: Ugly CMake check for main() function.
-    if (NOT ${FIND_RESULT} EQUAL -1)
-        list(APPEND C_MAIN_SOURCE_PATHS ${C_SOURCE_PATH})
-    endif ()
-endforeach ()
-message(STATUS "C_MAIN_SOURCE_PATHS: ${C_MAIN_SOURCE_PATHS}")
-
-foreach(C_MAIN_SOURCE_PATH ${C_MAIN_SOURCE_PATHS})
-    list(REMOVE_ITEM C_SOURCES "${C_MAIN_SOURCE_PATH}")
-endforeach()
+message(STATUS "C_HEADERS: ${C_HEADERS}")
 message(STATUS "C_SOURCES: ${C_SOURCES}")
-
-foreach (C_MAIN_SOURCE_PATH ${C_MAIN_SOURCE_PATHS})
-    get_filename_component(EXECUTABLE_NAME ${C_MAIN_SOURCE_PATH} NAME_WE)
-    add_executable(${EXECUTABLE_NAME} ${C_MAIN_SOURCE_PATH} ${C_SOURCES} ${C_HEADERS} ${C_GENERATOR_PEGS_OUTPUTS})
+message(STATUS "C_BIN_SOURCES: ${C_BIN_SOURCES}")
+foreach (C_BIN_SOURCE_PATH ${C_BIN_SOURCES})
+    get_filename_component(EXECUTABLE_NAME ${C_BIN_SOURCE_PATH} NAME_WE)
+    add_executable(${EXECUTABLE_NAME} ${C_BIN_SOURCE_PATH} ${C_SOURCES} ${C_HEADERS} ${C_GENERATOR_PEGS_OUTPUTS})
     target_include_directories(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_INCLUDE_PATHS})
     target_link_directories(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_LIBRARY_PATHS})
     target_link_libraries(${EXECUTABLE_NAME} LINK_PUBLIC ${EXTERNAL_LIBRARIES})
