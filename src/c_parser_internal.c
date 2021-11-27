@@ -4,6 +4,7 @@
 
 #include "c_parser_internal.h"
 
+void c_parser_ast_node_free(c_parser_ast_node *pNode);
 c_parser_state c_parser_state_init(char *source) {
   c_parser_state state = {0};
   state.source = source;
@@ -15,6 +16,19 @@ c_parser_state c_parser_state_init(char *source) {
   state.isValid = true;
   state.programNode = NULL;
   return state;
+}
+
+void c_parser_state_free(c_parser_state *state) {
+  free(state->source);
+  state->source = NULL;
+  state->source_length = 0;
+  state->current = NULL;
+  state->current_index = 0;
+  vec_c_parser_error_free(&state->errors);
+  vec_c_parser_comment_free(&state->comments);
+  state->isValid = false;
+  c_parser_ast_node_free(state->programNode);
+  state->programNode = NULL;
 }
 
 void c_parser_advance(c_parser_state *state, size_t n) {
@@ -51,6 +65,16 @@ c_parser_ast_node *c_parser_ast_node_allocate(c_parser_state *state,
   node->range = range;
   node->childNodes = lst_c_parser_ast_node_ptr_init();
   return node;
+}
+
+void c_parser_ast_node_free(c_parser_ast_node *node) {
+  foreach (lst_c_parser_ast_node_ptr, &node->childNodes, it) {
+    if (it.ref->node != NULL) {
+      c_parser_ast_node_free(it.ref->node);
+    }
+  }
+  lst_c_parser_ast_node_ptr_free(&node->childNodes);
+  free(node);
 }
 
 c_parser_ast_node *c_parser_ast_node_init_variadic(c_parser_state *state,

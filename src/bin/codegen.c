@@ -19,5 +19,6 @@ int main(int argc, char *argv[]) {
   }
   c_parser_state state = c_parser_execute(input);
   c_parser_debug_print(&state);
+  c_parser_state_free(&state);
   return 0;
 }

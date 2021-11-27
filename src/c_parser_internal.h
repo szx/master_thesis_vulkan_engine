@@ -189,6 +189,7 @@ typedef struct c_parser_state {
 typedef struct c_parser_ast_node_ptr {
   c_parser_ast_node *node;
 } c_parser_ast_node_ptr;
+
 #define P
 #define T c_parser_ast_node_ptr
 #include "lst.h" // lst_c_parser_ast_node_ptr
@@ -200,7 +201,11 @@ struct c_parser_ast_node {
 };
 
 // Returns new parser.
+// Source becomes owned by parser.
 c_parser_state c_parser_state_init(char *source);
+
+// Frees parser and sets it to initial state.
+void c_parser_state_free(c_parser_state *state);
 
 // Advances by 'n' characters.
 void c_parser_advance(c_parser_state *state, size_t n);

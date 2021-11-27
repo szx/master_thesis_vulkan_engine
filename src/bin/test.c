@@ -83,6 +83,7 @@ TEST c_parser_preprocessor_parsing() { // NOLINT
   }
   c_parser_state state = c_parser_execute(input);
   c_parser_debug_print(&state);
+  c_parser_state_free(&state);
   PASS();
 }
 
