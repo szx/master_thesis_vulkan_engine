@@ -22,10 +22,14 @@ set(GREATEST_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/greatest")
 # add external library CLT
 set(CTL_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/ctl/ctl")
 
+# add external library GLib
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(deps REQUIRED IMPORTED_TARGET glib-2.0)
+
 # prepare info about external libraries
 set(EXTERNAL_INCLUDE_PATHS ${VULKAN_INCLUDE_PATH} ${GREATEST_INCLUDE_PATH} ${CTL_INCLUDE_PATH})
 set(EXTERNAL_LIBRARY_PATHS ${VULKAN_LIBRARY_PATH})
-set(EXTERNAL_LIBRARIES glfw)
+set(EXTERNAL_LIBRARIES glfw PkgConfig::deps)
 
 
 # build packcc during configure

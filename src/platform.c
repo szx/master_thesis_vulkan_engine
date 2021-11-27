@@ -1,17 +1,18 @@
 #include "platform.h"
 
-#if defined(PLATFORM_LINUX)
-
-#include <libgen.h>
-#include <linux/limits.h>
-#include <unistd.h>
+// note(sszczyrb): We try to use GLib for cross-platform functionality.
+#include <glib.h>
 
 const char *getExecutableDirPath() {
-  static char result[PATH_MAX] = {0};
-  ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
-  assert(count != -1); // TODO: Custom assert + dialog?
-  const char *path = dirname(result);
-  return path;
+#if defined(PLATFORM_LINUX)
+  static char *exeDir = NULL;
+  char *exePath = g_file_read_link("/proc/self/exe", NULL);
+  exeDir = g_path_get_dirname(exePath);
+  g_free(exePath);
+  return exeDir;
+#else
+#error "plaform.c does not support current platform"
+#endif
 }
 
 char *ReadTextFile(char *path, size_t *source_length) {
@@ -33,7 +34,3 @@ char *ReadTextFile(char *path, size_t *source_length) {
 
   return result;
 }
-
-#else
-#error "plaform.c does not support current platform"
-#endif
