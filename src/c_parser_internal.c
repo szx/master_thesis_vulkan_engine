@@ -264,6 +264,8 @@ const char *debug_str(c_parser_ast_node_type type) {
     return "TypedefFunctionPointerDeclaration";
   case FunctionPointerDeclarationSpecifiers:
     return "FunctionPointerDeclarationSpecifiers";
+  case Ellipsis:
+    return "Ellipsis";
   case CompoundStatement:
     return "CompoundStatement";
   case String:

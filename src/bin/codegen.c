@@ -6,8 +6,7 @@ void parse_header(platform_path *headerPath) {
   printf("header: %s\n", str_c_str(&headerPath->data));
   char *input = read_text_file(headerPath, NULL);
   if (input == NULL) {
-    fprintf(stderr, "failed to load file");
-    exit(EXIT_FAILURE);
+    panic("failed to read file %s!", str_c_str(&headerPath->data));
   }
   c_parser_state state = c_parser_execute(input);
   // TODO: Generate enum to string functions.

@@ -77,7 +77,8 @@ parameter_list <-
   }
 
 parameter_declaration <-
-  s:declaration_specifiers _ i:init_declarator { $$ = c_parser_ast_node_init_2(auxil, Declaration, c_parser_str_range_init($0s, $0e), s, i); }
+  kw_ellipsis { $$ = c_parser_ast_node_init_0(auxil, Ellipsis, c_parser_str_range_init($0s, $0e)); }
+/ s:declaration_specifiers _ i:init_declarator { $$ = c_parser_ast_node_init_2(auxil, Declaration, c_parser_str_range_init($0s, $0e), s, i); }
 / s:declaration_specifiers { $$ = c_parser_ast_node_init_1(auxil, Declaration, c_parser_str_range_init($0s, $0e), s); }
 
 statement <-
@@ -494,6 +495,7 @@ keyword <-
 / kw_for
 / kw_while
 / kw_do
+/ kw_ellipsis
 
 kw_sizeof <- 'sizeof' !(IDENT/DEC)
 kw_typedef <- 'typedef' !(IDENT/DEC)
@@ -517,6 +519,7 @@ kw_goto <- 'goto' !(IDENT/DEC)
 kw_for <- 'for' !(IDENT/DEC)
 kw_while <- 'while' !(IDENT/DEC)
 kw_do <- 'do' !(IDENT/DEC)
+kw_ellipsis <- '...' !(IDENT/DEC)
 
 DEC <- [0-9]
 OCT <- [0-7]

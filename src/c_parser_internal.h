@@ -51,6 +51,7 @@ typedef enum c_parser_ast_node_type {
   TypedefTypeDeclaration,
   TypedefFunctionPointerDeclaration,
   FunctionPointerDeclarationSpecifiers,
+  Ellipsis,
 
   // definitions
   FunctionDefinition,
