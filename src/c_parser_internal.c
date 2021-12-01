@@ -141,14 +141,26 @@ c_parser_ast_node_init_4(c_parser_state *state, c_parser_ast_node_type type,
   return node;
 }
 
+void c_parser_ast_node_visit(c_parser_ast_node *node,
+                             void (*callback)(c_parser_ast_node *node,
+                                              void *data),
+                             void *data) {
+  callback(node, data);
+  foreach (lst_c_parser_ast_node_ptr, &node->childNodes, it) {
+    if (it.ref->node != NULL) {
+      c_parser_ast_node_visit(it.ref->node, callback, data);
+    }
+  }
+}
+
 void c_parser_ast_node_debug_print(c_parser_state *state,
                                    c_parser_ast_node *node,
                                    size_t indentLevel) {
   size_t len = node->range.end - node->range.begin;
   char *str = state->source + node->range.begin;
   printf("%*s| node %s (%d, %d): %.*s\n", (int)indentLevel, "",
-         debug_str(node->type), (int)node->range.begin, (int)node->range.end,
-         (int)len, str);
+         c_parser_ast_node_type_debug_str(node->type), (int)node->range.begin,
+         (int)node->range.end, (int)len, str);
   size_t childNodeNum = 0;
   foreach (lst_c_parser_ast_node_ptr, &node->childNodes, it) {
     if (it.ref->node != NULL) {
@@ -220,7 +232,7 @@ void c_parser_debug_print(c_parser_state *state) {
   c_parser_ast_node_debug_print(state, state->programNode, 0);
 }
 
-const char *debug_str(c_parser_ast_node_type type) {
+const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type) {
   switch (type) {
   case TranslationUnit:
     return "TranslationUnit";
@@ -252,6 +264,8 @@ const char *debug_str(c_parser_ast_node_type type) {
     return "UnionDeclaration";
   case BitFieldDeclaration:
     return "BitFieldDeclaration";
+  case FunctionPointerDeclaration:
+    return "FunctionPointerDeclaration";
   case TypedefStructDeclaration:
     return "TypedefStructDeclaration";
   case TypedefUnionDeclaration:

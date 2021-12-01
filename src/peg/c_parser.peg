@@ -78,6 +78,7 @@ parameter_list <-
 
 parameter_declaration <-
   kw_ellipsis { $$ = c_parser_ast_node_init_0(auxil, Ellipsis, c_parser_str_range_init($0s, $0e)); }
+/ e:function_pointer_declaration { $$ = e; }
 / s:declaration_specifiers _ i:init_declarator { $$ = c_parser_ast_node_init_2(auxil, Declaration, c_parser_str_range_init($0s, $0e), s, i); }
 / s:declaration_specifiers { $$ = c_parser_ast_node_init_1(auxil, Declaration, c_parser_str_range_init($0s, $0e), s); }
 
@@ -199,6 +200,9 @@ typedef_declaration <-
 
 function_pointer_typedef_declaration <-
   kw_typedef _ s1:declaration_specifiers _ '(' _ s2:function_pointer_declaration_specifiers _ alias:identifier _ ')' _ '(' _ p:parameter_list _ ')' { $$ = c_parser_ast_node_init_4(auxil, TypedefFunctionPointerDeclaration, c_parser_str_range_init($0s, $0e), s1, p, s2, alias); }
+
+function_pointer_declaration <-
+  s1:declaration_specifiers _ '(' _ s2:function_pointer_declaration_specifiers _ alias:identifier _ ')' _ '(' _ p:parameter_list _ ')' { $$ = c_parser_ast_node_init_4(auxil, FunctionPointerDeclaration, c_parser_str_range_init($0s, $0e), s1, p, s2, alias); }
 
 enum_declaration <-
   kw_enum _ tag:identifier _ "{" _ e:enumerator_list  _ "}" { $$ = c_parser_ast_node_init_2(auxil, EnumerationDeclaration, c_parser_str_range_init($0s, $0e), tag, e); }

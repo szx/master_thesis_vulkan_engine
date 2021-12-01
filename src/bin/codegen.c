@@ -1,6 +1,10 @@
 #include "../peg/c_parser.h"
 #include "../platform.h"
 
+static void print_callback(c_parser_ast_node *node, void *data) {
+  printf("node %s \n", c_parser_ast_node_type_debug_str(node->type));
+}
+
 // Scans enums in header and generate strings.
 void parse_header(platform_path *headerPath) {
   printf("header: %s\n", str_c_str(&headerPath->data));
@@ -10,7 +14,11 @@ void parse_header(platform_path *headerPath) {
   }
   c_parser_state state = c_parser_execute(input);
   // TODO: Generate enum to string functions.
-  c_parser_debug_print(&state);
+  // c_parser_debug_print(&state);
+  if (state.errors.size > 0) {
+    panic("syntax errors in %s!", str_c_str(&headerPath->data));
+  }
+  c_parser_ast_node_visit(state.programNode, print_callback, NULL);
   c_parser_state_free(&state);
 }
 
