@@ -78,6 +78,7 @@ TEST c_parser_preprocessor_parsing() {
   char *input = read_text_file(&inputPath, &inputSize);
   platform_path_free(&inputPath);
   if (input == NULL) {
+    panic("failed to load file %s!", str_c_str(&inputPath.data));
     FAILm("failed to load file");
   }
   c_parser_state state = c_parser_execute(input);

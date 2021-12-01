@@ -20,6 +20,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Shows message dialog and exits.
+void panic(const char *format, ...);
+
 /* file system */
 typedef struct platform_path {
   str data;
