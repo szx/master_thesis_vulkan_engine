@@ -13,6 +13,10 @@
 #error "SRC_PATH should be defined by CMake"
 #define SRC_PATH "SRC_PATH should be defined by CMake"
 #endif
+#ifndef VULKAN_HEADER_PATH
+#error "VULKAN_HEADER_PATH should be defined by CMake"
+#define VULKAN_HEADER_PATH "VULKAN_HEADER_PATH should be defined by CMake"
+#endif
 
 #include "str.h"
 #include <assert.h>

@@ -114,6 +114,7 @@ endif ()
 
 # add preprocessor definitions
 ADD_DEFINITIONS(-DSRC_PATH="${CMAKE_CURRENT_SOURCE_DIR}/src")
+ADD_DEFINITIONS(-DVULKAN_HEADER_PATH="${VULKAN_INCLUDE_PATH}/vulkan/vulkan_core.h")
 
 # define executables
 message(STATUS "C_HEADERS: ${C_HEADERS}")

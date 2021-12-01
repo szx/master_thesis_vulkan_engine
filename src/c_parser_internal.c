@@ -142,10 +142,13 @@ c_parser_ast_node_init_4(c_parser_state *state, c_parser_ast_node_type type,
 }
 
 void c_parser_ast_node_visit(c_parser_ast_node *node,
-                             void (*callback)(c_parser_ast_node *node,
-                                              void *data),
+                             bool (*callback)(c_parser_ast_node *node,
+                                              void *callback_data),
                              void *data) {
-  callback(node, data);
+  bool result = callback(node, data);
+  if (!result) {
+    return;
+  }
   foreach (lst_c_parser_ast_node_ptr, &node->childNodes, it) {
     if (it.ref->node != NULL) {
       c_parser_ast_node_visit(it.ref->node, callback, data);

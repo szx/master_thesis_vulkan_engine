@@ -268,8 +268,8 @@ c_parser_ast_node_init_4(c_parser_state *state, c_parser_ast_node_type type,
 
 // Visits every AST node.
 void c_parser_ast_node_visit(c_parser_ast_node *node,
-                             void (*callback)(c_parser_ast_node *node,
-                                              void *data),
+                             bool (*callback)(c_parser_ast_node *node,
+                                              void *callback_data),
                              void *data);
 
 // Returns debug string for AST node type.
