@@ -60,9 +60,36 @@ void platform_path_append(platform_path *self, const char *dir_or_file_name) {
   str_append(&self->data, dir_or_file_name);
 }
 
+bool platform_path_equals(platform_path *self, platform_path *other) {
+  const char *data1 = str_c_str(&self->data);
+  const char *data2 = str_c_str(&other->data);
+  return g_strcmp0(data1, data2) == 0;
+}
+
+bool platform_path_dirname_equals(platform_path *self, platform_path *other) {
+  platform_path path1 = platform_path_get_dirname(self);
+  bool result = platform_path_equals(&path1, other);
+  platform_path_free(&path1);
+  return result;
+}
+
 bool platform_path_ext_equals(platform_path *self, const char *ext) {
   const char *data = str_c_str(&self->data) + self->data.size - strlen(ext);
   return g_strcmp0(data, ext) == 0;
+}
+
+platform_path platform_path_get_dirname(platform_path *self) {
+  char *path = g_path_get_dirname(str_c_str(&self->data));
+  platform_path newPath = platform_path_init(path);
+  free(path);
+  return newPath;
+}
+
+str platform_path_get_basename(platform_path *self) {
+  char *basename = g_path_get_basename(str_c_str(&self->data));
+  str name = str_init(basename);
+  free(basename);
+  return name;
 }
 
 platform_path get_executable_dir_path() {
@@ -125,4 +152,12 @@ char *read_text_file(platform_path *path, size_t *source_length) {
   }
 
   return result;
+}
+
+void write_text_file(platform_path *path, str *content) {
+  FILE *file = fopen(str_c_str(&path->data), "wb");
+  if (file) {
+    fprintf(file, "%s", str_c_str(content));
+    fclose(file);
+  }
 }

@@ -272,6 +272,7 @@ void c_parser_ast_node_visit(c_parser_ast_node *node,
                                               void *callback_data),
                              void *data);
 
+// TODO: Separate codegen of function declarations?
 // Returns debug string for AST node type.
 const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type);
 
