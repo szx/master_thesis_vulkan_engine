@@ -32,10 +32,14 @@ message("CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
 pkg_check_modules(GTK4 REQUIRED IMPORTED_TARGET gtk4)
 #endif()
 
+# add external library sqlite
+pkg_check_modules(SQLITE3 REQUIRED IMPORTED_TARGET sqlite3)
+
 # prepare info about external libraries
-set(EXTERNAL_INCLUDE_PATHS ${VULKAN_INCLUDE_PATH} ${GREATEST_INCLUDE_PATH} ${CTL_INCLUDE_PATH} ${GTK4_INCLUDE_DIRS})
-set(EXTERNAL_LIBRARY_PATHS ${VULKAN_LIBRARY_PATH} ${GTK4_LIBRARY_DIRS})
-set(EXTERNAL_LIBRARIES glfw PkgConfig::deps ${GTK4_LIBRARIES})
+set(EXTERNAL_INCLUDE_PATHS ${VULKAN_INCLUDE_PATH} ${GREATEST_INCLUDE_PATH} ${CTL_INCLUDE_PATH}
+        ${GTK4_INCLUDE_DIRS} ${SQLITE3_INCLUDE_DIRS})
+set(EXTERNAL_LIBRARY_PATHS ${VULKAN_LIBRARY_PATH} ${GTK4_LIBRARY_DIRS} ${SQLITE3_LIBRARY_DIRS})
+set(EXTERNAL_LIBRARIES glfw PkgConfig::deps ${GTK4_LIBRARIES} ${SQLITE3_LIBRARIES})
 
 
 # build packcc during configure
@@ -76,6 +80,8 @@ endforeach ()
 file(GLOB_RECURSE C_HEADERS "src/*.h")
 file(GLOB TEST_FILES_DIR "test")
 file(GLOB_RECURSE TEST_FILES "test/*.*")
+file(GLOB ASSETS_FILES_DIR "assets")
+file(GLOB_RECURSE ASSETS_FILES "assets/*.*")
 
 # define packcc parser generation
 file(GLOB_RECURSE C_GENERATOR_PEGS "src/*.peg")
@@ -102,10 +108,11 @@ set_source_files_properties(${C_GENERATOR_PEGS_OUTPUTS} PROPERTIES GENERATED TRU
 
 
 # copy resources to directory with executables
-add_custom_target(copy_resources ALL DEPENDS ${TEST_FILES})
+add_custom_target(copy_resources ALL DEPENDS ${TEST_FILES} ${ASSETS_FILES})
 add_custom_command(
         TARGET copy_resources PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${TEST_FILES_DIR} ${CMAKE_CURRENT_BINARY_DIR}/tests)
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${TEST_FILES_DIR} ${CMAKE_CURRENT_BINARY_DIR}/tests
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${ASSETS_FILES_DIR} ${CMAKE_CURRENT_BINARY_DIR}/assets)
 
 # add compiler options
 if ((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
