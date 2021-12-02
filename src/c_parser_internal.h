@@ -272,10 +272,6 @@ void c_parser_ast_node_visit(c_parser_ast_node *node,
                                               void *callback_data),
                              void *data);
 
-// TODO: Separate codegen of function declarations?
-// Returns debug string for AST node type.
-const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type type);
-
 // Prints node debug info to stdout.
 void c_parser_ast_node_debug_print(c_parser_state *state,
                                    c_parser_ast_node *node, size_t indentLevel);
@@ -293,5 +289,7 @@ void c_parser_handle_comment(c_parser_state *state, c_parser_str_range range);
 
 // Prints parser state to stdout.
 void c_parser_debug_print(c_parser_state *state);
+
+#include "codegen/c_parser_internal.h"
 
 #endif /* !C_PARSER_INTERNAL_H */

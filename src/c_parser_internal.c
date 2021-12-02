@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "c_parser_internal.h"
+#include "codegen/c_parser_internal.c"
 
 void c_parser_ast_node_free(c_parser_ast_node *pNode);
 c_parser_state c_parser_state_init(char *source) {
@@ -234,5 +235,3 @@ void c_parser_debug_print(c_parser_state *state) {
   fprintf(stdout, "PROGRAM_NODE:\n");
   c_parser_ast_node_debug_print(state, state->programNode, 0);
 }
-
-#include "codegen/c_parser_internal.h"

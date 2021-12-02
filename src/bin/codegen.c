@@ -3,7 +3,8 @@
 
 typedef struct enum_callback_data {
   c_parser_state *state;
-  str *code;
+  str *headerCode;
+  str *sourceCode;
 } enum_callback_data;
 
 void str_append_node(str *self, c_parser_state *state,
@@ -15,41 +16,63 @@ void str_append_node(str *self, c_parser_state *state,
   }
 }
 
+void str_append_header_comment(str *self) {
+  str_append(self, "// This file is auto-generated.\n");
+  str_append(
+      self,
+      "// It should be included at the end of corresponding header file.\n\n");
+}
+
+void str_append_source_comment(str *self) {
+  str_append(self, "// This file is auto-generated.\n");
+  str_append(self,
+             "// It is not standalone translation unit - it should be\n"
+             "// included at the beginning of corresponding source file.\n\n");
+}
+
 static bool enumerator_callback(c_parser_ast_node *node, void *callback_data) {
-  if (node->type != Identifier) {
+  if (node->type != EnumeratorDeclaration) {
     return true;
   }
+  c_parser_ast_node *identifier =
+      lst_c_parser_ast_node_ptr_front(&node->childNodes)->node;
+  assert(identifier->type == Identifier);
   enum_callback_data *data = callback_data;
-  str_append(data->code, "  case ");
-  str_append_node(data->code, data->state, node);
-  str_append(data->code, ":\n");
-  str_append(data->code, "    return \"");
-  str_append_node(data->code, data->state, node);
-  str_append(data->code, "\";\n");
+  str_append(data->sourceCode, "  if (value == ");
+  str_append_node(data->sourceCode, data->state, identifier);
+  str_append(data->sourceCode, ") {\n");
+  str_append(data->sourceCode, "    return \"");
+  str_append_node(data->sourceCode, data->state, identifier);
+  str_append(data->sourceCode, "\";\n");
+  str_append(data->sourceCode, "  }\n");
   return false;
 }
 
 static bool enum_callback(c_parser_ast_node *node, void *callback_data) {
   enum_callback_data *data = callback_data;
   if (node->type == EnumerationDeclaration) {
-    // c_parser_ast_node_debug_print(data->state, node, 0);
+    //c_parser_ast_node_debug_print(data->state, node, 0);
     c_parser_ast_node *identifier =
         lst_c_parser_ast_node_ptr_front(&node->childNodes)->node;
     assert(identifier);
-    str_append(data->code, "const char *");
-    str_append_node(data->code, data->state, identifier);
-    str_append(data->code, "_debug_str(");
-    str_append_node(data->code, data->state, identifier);
-    str_append(data->code, " value) {\n");
-    str_append(data->code, "  switch (value) {\n");
     c_parser_ast_node *enumeratorList =
         lst_c_parser_ast_node_ptr_back(&node->childNodes)->node;
     assert(enumeratorList);
+    // header code (function declarations)
+    str_append(data->headerCode, "const char *");
+    str_append_node(data->headerCode, data->state, identifier);
+    str_append(data->headerCode, "_debug_str(");
+    str_append_node(data->headerCode, data->state, identifier);
+    str_append(data->headerCode, " value);\n");
+    // source code (function definitions)
+    str_append(data->sourceCode, "const char *");
+    str_append_node(data->sourceCode, data->state, identifier);
+    str_append(data->sourceCode, "_debug_str(");
+    str_append_node(data->sourceCode, data->state, identifier);
+    str_append(data->sourceCode, " value) {\n");
     c_parser_ast_node_visit(enumeratorList, enumerator_callback, data);
-    str_append(data->code, "  default:\n");
-    str_append(data->code, "    return \"UNKNOWN\";\n");
-    str_append(data->code, "  }\n");
-    str_append(data->code, "}\n");
+    str_append(data->sourceCode, "  return \"UNKNOWN_ENUM\";\n");
+    str_append(data->sourceCode, "}\n");
   }
   return node->type == TranslationUnit || node->type == LanguageLinkage ||
          node->type == TypedefEnumDeclaration;
@@ -68,24 +91,35 @@ void parse_header(platform_path *headerPath, platform_path *codegenPath) {
     panic("syntax errors in %s!", str_c_str(&headerPath->data));
   }
 
-  str code = str_init("");
-  // parse enum declarations
-  enum_callback_data data = {&state, &code};
-  c_parser_ast_node_visit(state.programNode, enum_callback, &data);
-  // write generated code to file
+  str headerCode = str_init("");
+  str sourceCode = str_init("");
+  str_append_header_comment(&headerCode);
+  str_append_source_comment(&sourceCode);
 
-  // printf("CODE:\n%s\n", str_c_str(&code));
+  // TODO: Parse structs?
+  // parse enum declarations
+  enum_callback_data data = {&state, &headerCode, &sourceCode};
+  c_parser_ast_node_visit(state.programNode, enum_callback, &data);
+  // write generated header_code to file
+
+  // printf("CODE:\n%s\n", str_c_str(&header_code));
   str basename = platform_path_get_basename(headerPath);
-  platform_path outputPath = platform_path_copy(codegenPath);
-  platform_path_append(&outputPath, str_c_str(&basename));
+  platform_path headerOutputPath = platform_path_copy(codegenPath);
+  platform_path sourceOutputPath = platform_path_copy(codegenPath);
+  platform_path_append(&headerOutputPath, str_c_str(&basename));
+  platform_path_append(&sourceOutputPath, str_c_str(&basename));
   str_free(&basename);
-  printf("output: %s\n", str_c_str(&outputPath.data));
-  write_text_file(&outputPath, &code);
-  // TODO: Split function declarations and definitions?
-  // TODO: Run codegen via CMake.
-  platform_path_free(&outputPath);
+  sourceOutputPath.data.value[sourceOutputPath.data.size - 1] = 'c';
+  printf("header output: %s\n", str_c_str(&headerOutputPath.data));
+  printf("source output: %s\n", str_c_str(&sourceOutputPath.data));
+  write_text_file(&headerOutputPath, &headerCode);
+  write_text_file(&sourceOutputPath, &sourceCode);
+
+  platform_path_free(&headerOutputPath);
+  platform_path_free(&sourceOutputPath);
   c_parser_state_free(&state);
-  str_free(&code);
+  str_free(&headerCode);
+  str_free(&sourceCode);
 }
 
 int main(int argc, char *argv[]) {

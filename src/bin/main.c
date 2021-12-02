@@ -1,5 +1,8 @@
-#include "../platform.h"
+#define VK_ENABLE_BETA_EXTENSIONS
 #include "vulkan/vulkan.h"
+
+#include "../codegen/vulkan_core.c"
+#include "../platform.h"
 #include <GLFW/glfw3.h>
 
 const char *const window_title = "Window title";
@@ -15,7 +18,7 @@ int main(int argc, char *argv[]) {
   }
 
   if (glfwVulkanSupported() == GLFW_TRUE) {
-    printf("Vulkan supported\n");
+    printf("Vulkan supported (%s)\n", VkResult_debug_str(VK_SUCCESS));
   }
 
   // Create a windowed mode window and its OpenGL context
