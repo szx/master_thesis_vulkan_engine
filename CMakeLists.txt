@@ -116,7 +116,9 @@ add_custom_command(
 
 # add compiler options
 if ((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
-    add_compile_options(-Wall -Wextra -pedantic -Werror -Wno-unused-parameter)
+    add_compile_options(-Wall -Wextra -pedantic
+            -Werror
+            -Wno-unused-parameter -Wno-unused-variable)
 elseif (CMAKE_C_COMPILER_ID STREQUAL "MSVC")
     add_compile_options(/W4 /WX)
 else ()

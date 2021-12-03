@@ -1,11 +1,17 @@
 #include "../peg/c_parser.h"
 #include "../platform.h"
 
-typedef struct enum_callback_data {
+static platform_path srcPath;
+static platform_path vulkanHeaderPath;
+static lst_platform_path srcChildPathLst;
+static platform_path codegenPath;
+
+typedef struct c_parser_callback_data {
   c_parser_state *state;
   str *headerCode;
   str *sourceCode;
-} enum_callback_data;
+  bool isVulkanHeader;
+} c_parser_callback_data;
 
 void str_append_node(str *self, c_parser_state *state,
                      c_parser_ast_node *node) {
@@ -16,20 +22,6 @@ void str_append_node(str *self, c_parser_state *state,
   }
 }
 
-void str_append_header_comment(str *self) {
-  str_append(self, "// This file is auto-generated.\n");
-  str_append(
-      self,
-      "// It should be included at the end of corresponding header file.\n\n");
-}
-
-void str_append_source_comment(str *self) {
-  str_append(self, "// This file is auto-generated.\n");
-  str_append(self,
-             "// It is not standalone translation unit - it should be\n"
-             "// included at the beginning of corresponding source file.\n\n");
-}
-
 static bool enumerator_callback(c_parser_ast_node *node, void *callback_data) {
   if (node->type != EnumeratorDeclaration) {
     return true;
@@ -37,7 +29,7 @@ static bool enumerator_callback(c_parser_ast_node *node, void *callback_data) {
   c_parser_ast_node *identifier =
       lst_c_parser_ast_node_ptr_front(&node->childNodes)->node;
   assert(identifier->type == Identifier);
-  enum_callback_data *data = callback_data;
+  c_parser_callback_data *data = callback_data;
   str_append(data->sourceCode, "  if (value == ");
   str_append_node(data->sourceCode, data->state, identifier);
   str_append(data->sourceCode, ") {\n");
@@ -49,9 +41,9 @@ static bool enumerator_callback(c_parser_ast_node *node, void *callback_data) {
 }
 
 static bool enum_callback(c_parser_ast_node *node, void *callback_data) {
-  enum_callback_data *data = callback_data;
+  c_parser_callback_data *data = callback_data;
   if (node->type == EnumerationDeclaration) {
-    //c_parser_ast_node_debug_print(data->state, node, 0);
+    // c_parser_ast_node_debug_print(data->state, node, 0);
     c_parser_ast_node *identifier =
         lst_c_parser_ast_node_ptr_front(&node->childNodes)->node;
     assert(identifier);
@@ -78,8 +70,56 @@ static bool enum_callback(c_parser_ast_node *node, void *callback_data) {
          node->type == TypedefEnumDeclaration;
 }
 
+static bool struct_callback(c_parser_ast_node *node, void *callback_data) {
+  c_parser_callback_data *data = callback_data;
+  if (node->type == StructDeclaration) {
+    // c_parser_ast_node_debug_print(data->state, node, 0);
+    // TODO: Codegen structs.
+  }
+  return node->type == TranslationUnit || node->type == LanguageLinkage ||
+         node->type == TypedefStructDeclaration;
+}
+
+static bool function_declaration_callback(c_parser_ast_node *node,
+                                          void *callback_data) {
+  c_parser_callback_data *data = callback_data;
+  if (node->type == FunctionDeclaration) {
+    if (data->isVulkanHeader) {
+      // c_parser_ast_node_debug_print(data->state, node, 0);
+      lst_c_parser_ast_node_ptr_it it =
+          lst_c_parser_ast_node_ptr_it_each(&node->childNodes);
+      c_parser_ast_node *declarationSpecifiers = it.ref->node;
+      assert(declarationSpecifiers);
+      lst_c_parser_ast_node_ptr_it_step(&it);
+      c_parser_ast_node *identifier = it.ref->node;
+      assert(identifier);
+      lst_c_parser_ast_node_ptr_it_step(&it);
+      c_parser_ast_node *parameterList = it.ref->node;
+      assert(parameterList);
+      // TODO: Generate Vulkan wrappers.
+      // c_parser_ast_node_debug_print(data->state, identifier, 0);
+    }
+  }
+  return node->type == TranslationUnit || node->type == LanguageLinkage ||
+         node->type == TypedefStructDeclaration;
+}
+
+void str_append_header_comment(str *self) {
+  str_append(self, "// This file is auto-generated.\n");
+  str_append(
+      self,
+      "// It should be included at the end of corresponding header file.\n\n");
+}
+
+void str_append_source_comment(str *self) {
+  str_append(self, "// This file is auto-generated.\n");
+  str_append(self,
+             "// It is not standalone translation unit - it should be\n"
+             "// included at the beginning of corresponding source file.\n\n");
+}
+
 // Scans enums in header and generates code.
-void parse_header(platform_path *headerPath, platform_path *codegenPath) {
+void parse_header(platform_path *headerPath) {
   printf("header: %s\n", str_c_str(&headerPath->data));
   char *input = read_text_file(headerPath, NULL);
   if (input == NULL) {
@@ -96,16 +136,24 @@ void parse_header(platform_path *headerPath, platform_path *codegenPath) {
   str_append_header_comment(&headerCode);
   str_append_source_comment(&sourceCode);
 
-  // TODO: Parse structs?
-  // parse enum declarations
-  enum_callback_data data = {&state, &headerCode, &sourceCode};
-  c_parser_ast_node_visit(state.programNode, enum_callback, &data);
-  // write generated header_code to file
+  // parse and generate code
+  bool isVulkanHeader = platform_path_equals(headerPath, &vulkanHeaderPath);
+  c_parser_callback_data data = {&state, &headerCode, &sourceCode,
+                                 isVulkanHeader};
 
+  // parse enum declarations
+  c_parser_ast_node_visit(state.programNode, enum_callback, &data);
+  // parse structs
+  c_parser_ast_node_visit(state.programNode, struct_callback, &data);
+  // parse function declarations
+  c_parser_ast_node_visit(state.programNode, function_declaration_callback,
+                          &data);
+
+  // write generated header_code to file
   // printf("CODE:\n%s\n", str_c_str(&header_code));
   str basename = platform_path_get_basename(headerPath);
-  platform_path headerOutputPath = platform_path_copy(codegenPath);
-  platform_path sourceOutputPath = platform_path_copy(codegenPath);
+  platform_path headerOutputPath = platform_path_copy(&codegenPath);
+  platform_path sourceOutputPath = platform_path_copy(&codegenPath);
   platform_path_append(&headerOutputPath, str_c_str(&basename));
   platform_path_append(&sourceOutputPath, str_c_str(&basename));
   str_free(&basename);
@@ -126,16 +174,17 @@ int main(int argc, char *argv[]) {
   printf("src path: %s\n", SRC_PATH);
   printf("vulkan header path: %s\n", VULKAN_HEADER_PATH);
 
-  platform_path srcPath = platform_path_init(SRC_PATH);
-  lst_platform_path srcChildPathLst = get_dir_children(&srcPath);
-  platform_path vulkanHeaderPath = platform_path_init(VULKAN_HEADER_PATH);
-  platform_path codegenPath = platform_path_copy(&srcPath);
+  srcPath = platform_path_init(SRC_PATH);
+  vulkanHeaderPath = platform_path_init(VULKAN_HEADER_PATH);
+  srcChildPathLst = get_dir_children(&srcPath);
+  codegenPath = platform_path_copy(&srcPath);
   platform_path_append(&codegenPath, "codegen");
   lst_platform_path_push_front(&srcChildPathLst, vulkanHeaderPath);
+
   foreach (lst_platform_path, &srcChildPathLst, it) {
     if (!platform_path_dirname_equals(it.ref, &codegenPath)) {
       if (platform_path_ext_equals(it.ref, ".h")) {
-        parse_header(it.ref, &codegenPath);
+        parse_header(it.ref);
       }
     }
     platform_path_free(it.ref);
