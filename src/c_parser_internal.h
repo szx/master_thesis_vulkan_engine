@@ -232,7 +232,7 @@ c_parser_ast_node *c_parser_ast_node_init_variadic(c_parser_state *state,
 
 // Appends child AST node to AST node.
 void c_parser_ast_node_push_front(c_parser_ast_node *node,
-                                  c_parser_ast_node *child_node);
+                                  c_parser_ast_node *childNode);
 
 // Returns terminal AST node.
 c_parser_ast_node *c_parser_ast_node_init_0(c_parser_state *state,
@@ -268,7 +268,7 @@ c_parser_ast_node_init_4(c_parser_state *state, c_parser_ast_node_type type,
 // Visits every AST node.
 void c_parser_ast_node_visit(c_parser_ast_node *node,
                              bool (*callback)(c_parser_ast_node *node,
-                                              void *callback_data),
+                                              void *callbackData),
                              void *data);
 
 // Prints node debug info to stdout.

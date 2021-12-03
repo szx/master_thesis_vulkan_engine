@@ -10,11 +10,11 @@ typedef struct panic_args {
 } panic_args;
 
 static void panic_on_activate_callback(GtkApplication *app,
-                                       panic_args *panic_args) {
+                                       panic_args *panicArgs) {
   GtkWidget *window = gtk_application_window_new(app);
   GtkWidget *dialog = gtk_message_dialog_new(
       GTK_WINDOW(window), GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL,
-      GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "%s", panic_args->msg);
+      GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "%s", panicArgs->msg);
   gtk_window_set_title(GTK_WINDOW(dialog), "Fatal error");
   g_signal_connect(dialog, "response", G_CALLBACK(gtk_window_destroy), NULL);
   g_signal_connect_swapped(dialog, "response", G_CALLBACK(g_application_quit),
@@ -59,9 +59,9 @@ const char *platform_path_c_str(platform_path *self) {
   return str_c_str(&self->data);
 }
 
-void platform_path_append(platform_path *self, const char *dir_or_file_name) {
+void platform_path_append(platform_path *self, const char *dirOrFileName) {
   str_append(&self->data, G_DIR_SEPARATOR_S);
-  str_append(&self->data, dir_or_file_name);
+  str_append(&self->data, dirOrFileName);
 }
 
 bool platform_path_equals(platform_path *self, platform_path *other) {
@@ -109,10 +109,10 @@ platform_path get_executable_dir_path() {
 #endif
 }
 
-platform_path get_asset_file_path(const char *file_name) {
+platform_path get_asset_file_path(const char *fileName) {
   platform_path result = get_executable_dir_path();
   platform_path_append(&result, "assets");
-  platform_path_append(&result, file_name);
+  platform_path_append(&result, fileName);
   return result;
 }
 
@@ -133,17 +133,17 @@ void get_dir_children_impl(const char *path, lst_platform_path *paths) {
   }
 }
 
-lst_platform_path get_dir_children(platform_path *dir_path) {
+lst_platform_path get_dir_children(platform_path *dirPath) {
 #if defined(PLATFORM_LINUX)
   lst_platform_path paths = lst_platform_path_init();
-  get_dir_children_impl(str_c_str(&dir_path->data), &paths);
+  get_dir_children_impl(str_c_str(&dirPath->data), &paths);
   return paths;
 #else
 #error "plaform.c does not support current platform"
 #endif
 }
 
-char *read_text_file(platform_path *path, size_t *source_length) {
+char *read_text_file(platform_path *path, size_t *sourceLength) {
   char *result = 0;
   FILE *file = fopen(str_c_str(&path->data), "rb");
 
@@ -155,8 +155,8 @@ char *read_text_file(platform_path *path, size_t *source_length) {
     result = (char *)malloc(size + 1);
     fread(result, size, 1, file);
     result[size] = 0;
-    if (source_length != NULL) {
-      *source_length = size;
+    if (sourceLength != NULL) {
+      *sourceLength = size;
     }
 
     fclose(file);

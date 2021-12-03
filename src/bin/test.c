@@ -30,9 +30,9 @@ image image_copy(image *self) {
 #define T image
 #include "vec.h"
 
-image image_init(size_t data_count) {
-  image self = {.data = malloc(sizeof(*self.data) * data_count),
-                .dataSize = sizeof(*self.data) * data_count};
+image image_init(size_t dataCount) {
+  image self = {.data = malloc(sizeof(*self.data) * dataCount),
+                .dataSize = sizeof(*self.data) * dataCount};
   return self;
 }
 
@@ -91,7 +91,7 @@ SUITE(c_parser_suite) { RUN_TEST(c_parser_preprocessor_parsing); }
 #include "../data/config.h"
 #include <sqlite3.h>
 
-int database_resolutions_callback(void *callback_data, int argc, char **argv,
+int database_resolutions_callback(void *callbackData, int argc, char **argv,
                                   char **azColName) {
   for (int i = 0; i < argc; i++) {
     printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");

@@ -37,7 +37,7 @@ void platform_path_free(platform_path *self);
 platform_path platform_path_copy(platform_path *self);
 const char *platform_path_c_str(platform_path *self);
 
-void platform_path_append(platform_path *self, const char *dir_or_file_name);
+void platform_path_append(platform_path *self, const char *dirOrFileName);
 bool platform_path_equals(platform_path *self, platform_path *other);
 bool platform_path_dirname_equals(platform_path *self, platform_path *other);
 bool platform_path_ext_equals(platform_path *self, const char *ext);
@@ -51,13 +51,13 @@ str platform_path_get_basename(platform_path *self);
 platform_path get_executable_dir_path();
 
 // Returns new path to file in assets directory.
-platform_path get_asset_file_path(const char *file_name);
+platform_path get_asset_file_path(const char *fileName);
 
 // Returns new list of child paths.
-lst_platform_path get_dir_children(platform_path *dir_path);
+lst_platform_path get_dir_children(platform_path *dirPath);
 
 // Returns null-terminated string with text file content.
-char *read_text_file(platform_path *path, size_t *source_length);
+char *read_text_file(platform_path *path, size_t *sourceLength);
 
 // Writes text file.
 void write_text_file(platform_path *path, str *content);

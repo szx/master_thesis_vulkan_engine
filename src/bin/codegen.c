@@ -6,12 +6,12 @@ static platform_path vulkanHeaderPath;
 static lst_platform_path srcChildPathLst;
 static platform_path codegenPath;
 
-typedef struct c_parser_callback_data {
+typedef struct c_parser_callbackData {
   c_parser_state *state;
   str *headerCode;
   str *sourceCode;
   bool isVulkanHeader;
-} c_parser_callback_data;
+} c_parser_callbackData;
 
 void str_append_node(str *self, c_parser_state *state,
                      c_parser_ast_node *node) {
@@ -22,14 +22,14 @@ void str_append_node(str *self, c_parser_state *state,
   }
 }
 
-static bool enumerator_callback(c_parser_ast_node *node, void *callback_data) {
+static bool enumerator_callback(c_parser_ast_node *node, void *callbackData) {
   if (node->type != EnumeratorDeclaration) {
     return true;
   }
   c_parser_ast_node *identifier =
       lst_c_parser_ast_node_ptr_front(&node->childNodes)->node;
   assert(identifier->type == Identifier);
-  c_parser_callback_data *data = callback_data;
+  c_parser_callbackData *data = callbackData;
   str_append(data->sourceCode, "  if (value == ");
   str_append_node(data->sourceCode, data->state, identifier);
   str_append(data->sourceCode, ") {\n");
@@ -40,8 +40,8 @@ static bool enumerator_callback(c_parser_ast_node *node, void *callback_data) {
   return false;
 }
 
-static bool enum_callback(c_parser_ast_node *node, void *callback_data) {
-  c_parser_callback_data *data = callback_data;
+static bool enum_callback(c_parser_ast_node *node, void *callbackData) {
+  c_parser_callbackData *data = callbackData;
   if (node->type == EnumerationDeclaration) {
     // c_parser_ast_node_debug_print(data->state, node, 0);
     c_parser_ast_node *identifier =
@@ -70,8 +70,8 @@ static bool enum_callback(c_parser_ast_node *node, void *callback_data) {
          node->type == TypedefEnumDeclaration;
 }
 
-static bool struct_callback(c_parser_ast_node *node, void *callback_data) {
-  c_parser_callback_data *data = callback_data;
+static bool struct_callback(c_parser_ast_node *node, void *callbackData) {
+  c_parser_callbackData *data = callbackData;
   if (node->type == StructDeclaration) {
     // c_parser_ast_node_debug_print(data->state, node, 0);
     // TODO: Codegen structs.
@@ -81,8 +81,8 @@ static bool struct_callback(c_parser_ast_node *node, void *callback_data) {
 }
 
 static bool function_declaration_callback(c_parser_ast_node *node,
-                                          void *callback_data) {
-  c_parser_callback_data *data = callback_data;
+                                          void *callbackData) {
+  c_parser_callbackData *data = callbackData;
   if (node->type == FunctionDeclaration) {
     if (data->isVulkanHeader) {
       // c_parser_ast_node_debug_print(data->state, node, 0);
@@ -138,8 +138,8 @@ void parse_header(platform_path *headerPath) {
 
   // parse and generate code
   bool isVulkanHeader = platform_path_equals(headerPath, &vulkanHeaderPath);
-  c_parser_callback_data data = {&state, &headerCode, &sourceCode,
-                                 isVulkanHeader};
+  c_parser_callbackData data = {&state, &headerCode, &sourceCode,
+                                isVulkanHeader};
 
   // parse enum declarations
   c_parser_ast_node_visit(state.programNode, enum_callback, &data);

@@ -86,9 +86,9 @@ c_parser_ast_node *c_parser_ast_node_init_variadic(c_parser_state *state,
 }
 
 void c_parser_ast_node_push_front(c_parser_ast_node *node,
-                                  c_parser_ast_node *child_node) {
+                                  c_parser_ast_node *childNode) {
   lst_c_parser_ast_node_ptr_push_front(&node->childNodes,
-                                       (c_parser_ast_node_ptr){child_node});
+                                       (c_parser_ast_node_ptr){childNode});
 }
 
 c_parser_ast_node *c_parser_ast_node_init_0(c_parser_state *state,
@@ -144,7 +144,7 @@ c_parser_ast_node_init_4(c_parser_state *state, c_parser_ast_node_type type,
 
 void c_parser_ast_node_visit(c_parser_ast_node *node,
                              bool (*callback)(c_parser_ast_node *node,
-                                              void *callback_data),
+                                              void *callbackData),
                              void *data) {
   bool result = callback(node, data);
   if (!result) {
