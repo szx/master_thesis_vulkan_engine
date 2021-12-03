@@ -88,6 +88,7 @@ TEST c_parser_preprocessor_parsing() {
 
 SUITE(c_parser_suite) { RUN_TEST(c_parser_preprocessor_parsing); }
 
+#include "../data/config.h"
 #include <sqlite3.h>
 
 int database_resolutions_callback(void *callback_data, int argc, char **argv,
@@ -150,7 +151,7 @@ TEST database_loading() {
   }
   while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
     int width = sqlite3_column_int(stmt, 0);
-    int height = sqlite3_column_int(stmt, 0);
+    int height = sqlite3_column_int(stmt, 1);
     printf("%dx%d\n", width, height);
   }
   if (rc != SQLITE_DONE) {
@@ -162,6 +163,11 @@ TEST database_loading() {
   printf("closing\n");
   sqlite3_close(db);
 
+  data_config config = data_config_init();
+  printf("config.windowWidth = %d\n", config.windowWidth);
+  printf("config.windowHeight = %d\n", config.windowHeight);
+  printf("config.windowTitle = %s\n", str_c_str(&config.windowTitle));
+  data_config_free(&config);
   PASS();
 }
 

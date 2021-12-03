@@ -55,6 +55,10 @@ platform_path platform_path_copy(platform_path *self) {
   return copy;
 }
 
+const char *platform_path_c_str(platform_path *self) {
+  return str_c_str(&self->data);
+}
+
 void platform_path_append(platform_path *self, const char *dir_or_file_name) {
   str_append(&self->data, G_DIR_SEPARATOR_S);
   str_append(&self->data, dir_or_file_name);
@@ -103,6 +107,13 @@ platform_path get_executable_dir_path() {
 #else
 #error "plaform.c does not support current platform"
 #endif
+}
+
+platform_path get_asset_file_path(const char *file_name) {
+  platform_path result = get_executable_dir_path();
+  platform_path_append(&result, "assets");
+  platform_path_append(&result, file_name);
+  return result;
 }
 
 void get_dir_children_impl(const char *path, lst_platform_path *paths) {

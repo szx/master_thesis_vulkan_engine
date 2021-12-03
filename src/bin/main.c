@@ -1,12 +1,10 @@
+#include "../data/config.h"
 #include "../platform.h"
 #include "../vulkan/functions.h"
 #include <GLFW/glfw3.h>
 
-const char *const window_title = "Window title";
-const int window_width = 640;
-const int window_height = 480;
-
 int main(int argc, char *argv[]) {
+  data_config config = data_config_init();
   GLFWwindow *window;
 
   // Initialize the library
@@ -20,9 +18,10 @@ int main(int argc, char *argv[]) {
 
   // Create a windowed mode window and its OpenGL context
   window =
-      glfwCreateWindow(window_width, window_height, window_title, NULL, NULL);
+      glfwCreateWindow(config.windowWidth, config.windowHeight, str_c_str(&config.windowTitle), NULL, NULL);
   if (window == NULL) {
     glfwTerminate();
+    data_config_free(&config);
     return -1;
   }
 
@@ -42,5 +41,6 @@ int main(int argc, char *argv[]) {
   }
 
   glfwTerminate();
+  data_config_free(&config);
   return 0;
 }

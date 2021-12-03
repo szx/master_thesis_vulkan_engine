@@ -33,10 +33,9 @@ typedef struct platform_path {
 } platform_path;
 
 platform_path platform_path_init(const char *data);
-
 void platform_path_free(platform_path *self);
-
 platform_path platform_path_copy(platform_path *self);
+const char *platform_path_c_str(platform_path *self);
 
 void platform_path_append(platform_path *self, const char *dir_or_file_name);
 bool platform_path_equals(platform_path *self, platform_path *other);
@@ -50,6 +49,9 @@ str platform_path_get_basename(platform_path *self);
 
 // Returns new path to directory with current executable.
 platform_path get_executable_dir_path();
+
+// Returns new path to file in assets directory.
+platform_path get_asset_file_path(const char *file_name);
 
 // Returns new list of child paths.
 lst_platform_path get_dir_children(platform_path *dir_path);
