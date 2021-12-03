@@ -1,8 +1,5 @@
-#define VK_ENABLE_BETA_EXTENSIONS
-#include "vulkan/vulkan.h"
-
-#include "../codegen/vulkan_core.c"
 #include "../platform.h"
+#include "../vulkan/functions.h"
 #include <GLFW/glfw3.h>
 
 const char *const window_title = "Window title";
