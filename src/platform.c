@@ -16,7 +16,11 @@ void log_init() {
   logFile = fopen(platform_path_c_str(&path), "wb");
   platform_path_free(&path);
   if (logFile) {
-    log_add_fp(logFile, LOG_TRACE); // TODO: Set different level on Release.
+#if defined(DEBUG)
+    log_add_fp(logFile, LOG_DEBUG);
+#else
+    log_add_fp(logFile, LOG_INFO);
+#endif
   }
 }
 
@@ -48,6 +52,7 @@ void panic(const char *format, ...) {
   panic_args panicArgs = {.msg = msg};
   va_end(args);
 
+  log_fatal(panicArgs.msg);
   GtkApplication *app = gtk_application_new("com.example.GtkApplication",
                                             G_APPLICATION_FLAGS_NONE);
   g_signal_connect(app, "activate", G_CALLBACK(panic_on_activate_callback),

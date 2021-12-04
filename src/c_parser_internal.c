@@ -162,14 +162,14 @@ void c_parser_ast_node_debug_print(c_parser_state *state,
                                    size_t indentLevel) {
   size_t len = node->range.end - node->range.begin;
   char *str = state->source + node->range.begin;
-  printf("%*s| node %s (%d, %d): %.*s\n", (int)indentLevel, "",
-         c_parser_ast_node_type_debug_str(node->type), (int)node->range.begin,
-         (int)node->range.end, (int)len, str);
+  log_debug("%*s| node %s (%d, %d): %.*s\n", (int)indentLevel, "",
+            c_parser_ast_node_type_debug_str(node->type),
+            (int)node->range.begin, (int)node->range.end, (int)len, str);
   size_t childNodeNum = 0;
   foreach (lst_c_parser_ast_node_ptr, &node->childNodes, it) {
     if (it.ref->node != NULL) {
-      printf("%*s| child node %d:\n", (int)indentLevel, "",
-             (int)++childNodeNum);
+      log_debug("%*s| child node %d:\n", (int)indentLevel, "",
+                (int)++childNodeNum);
       c_parser_ast_node_debug_print(state, it.ref->node, indentLevel + 4);
     }
   }
@@ -200,38 +200,38 @@ void c_parser_handle_comment(c_parser_state *state, c_parser_str_range range) {
 }
 
 void c_parser_debug_print(c_parser_state *state) {
-  fprintf(stdout, "ERRORS:\n");
+  log_debug("ERRORS:\n");
   for (size_t i = 0; i < state->errors.size; i++) {
     c_parser_error *error = &state->errors.value[i];
     switch (error->type) {
     case SyntaxError: {
-      fprintf(stdout, "ERROR: Syntax error:\n");
+      log_debug("ERROR: Syntax error:\n");
     } break;
     case UnclosedComment: {
-      fprintf(stdout, "ERROR: Unclosed comment block:\n");
+      log_debug("ERROR: Unclosed comment block:\n");
     } break;
     case UnclosedString: {
-      fprintf(stdout, "ERROR: Unclosed string literal:\n");
+      log_debug("ERROR: Unclosed string literal:\n");
     } break;
     case MissingSemicolonAfterStatement: {
-      fprintf(stdout, "ERROR: Missing semicolon after expression:\n");
+      log_debug("ERROR: Missing semicolon after expression:\n");
     } break;
     default: {
-      fprintf(stdout, "ERROR: Undefined error:\n");
+      log_debug("ERROR: Undefined error:\n");
     } break;
     }
     size_t len = error->range.end - error->range.begin;
     char *str = state->source + error->range.begin;
-    fprintf(stdout, "       %.*s\n", (int)len, str);
+    log_debug("       %.*s\n", (int)len, str);
   }
-  fprintf(stdout, "COMMENTS:\n");
+  log_debug("COMMENTS:\n");
   for (size_t i = 0; i < state->comments.size; i++) {
     c_parser_comment *comment = &state->comments.value[i];
     size_t len = comment->range.end - comment->range.begin;
     char *str = state->source + comment->range.begin;
-    fprintf(stdout, "COMMENT: %.*s\n", (int)len, str);
+    log_debug("COMMENT: %.*s\n", (int)len, str);
   }
-  fprintf(stdout, "IS_VALID: %s\n", (state->isValid ? "true" : "false"));
-  fprintf(stdout, "PROGRAM_NODE:\n");
+  log_debug("IS_VALID: %s\n", (state->isValid ? "true" : "false"));
+  log_debug("PROGRAM_NODE:\n");
   c_parser_ast_node_debug_print(state, state->programNode, 0);
 }

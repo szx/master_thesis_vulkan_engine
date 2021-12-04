@@ -94,14 +94,14 @@ SUITE(c_parser_suite) { RUN_TEST(c_parser_preprocessor_parsing); }
 int database_resolutions_callback(void *callbackData, int argc, char **argv,
                                   char **azColName) {
   for (int i = 0; i < argc; i++) {
-    printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+    log_debug("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
   }
   return 0;
 }
 
 // Loading data.db
 TEST database_loading() {
-  printf("sqlite3_libversion: %s\n", sqlite3_libversion());
+  log_debug("sqlite3_libversion: %s\n", sqlite3_libversion());
 
   platform_path databasePath = get_executable_dir_path();
   platform_path_append(&databasePath, "/assets/data.db");
@@ -110,6 +110,7 @@ TEST database_loading() {
 
   int rc = sqlite3_open(str_c_str(&databasePath.data), &db);
   if (rc != SQLITE_OK) {
+    log_error("database error: %s", sqlite3_errmsg(db));
     sqlite3_close(db);
     FAILm("failed to data.db file");
   }
@@ -122,22 +123,19 @@ TEST database_loading() {
               "INSERT INTO Resolutions VALUES(1280, 720);"
               "INSERT INTO Resolutions VALUES(1280, 800);"
               "INSERT INTO Resolutions VALUES(1280, 1024);";
-  char *errorMsg = "";
-  rc = sqlite3_exec(db, sql, NULL, NULL, &errorMsg);
+  rc = sqlite3_exec(db, sql, NULL, NULL, NULL);
   if (rc != SQLITE_OK) {
+    log_error("database error: %s", sqlite3_errmsg(db));
     sqlite3_close(db);
-    panic("SQL error: %s", errorMsg);
-    sqlite3_free(errorMsg);
     FAILm("failed to execute sql insert query");
   }
 
   // first method
   sql = "SELECT * FROM Resolutions";
-  rc = sqlite3_exec(db, sql, database_resolutions_callback, NULL, &errorMsg);
+  rc = sqlite3_exec(db, sql, database_resolutions_callback, NULL, NULL);
   if (rc != SQLITE_OK) {
+    log_error("database error: %s", sqlite3_errmsg(db));
     sqlite3_close(db);
-    panic("database error: %s", errorMsg);
-    sqlite3_free(errorMsg);
     FAILm("failed to execute sql select query (1)");
   }
   // second method
@@ -145,28 +143,29 @@ TEST database_loading() {
   sql = "SELECT width, height FROM Resolutions";
   rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
   if (rc != SQLITE_OK) {
-    panic("database error: %s", sqlite3_errmsg(db));
+    log_error("database error: %s", sqlite3_errmsg(db));
     sqlite3_close(db);
     FAILm("failed to prepare sql select query (2)");
   }
   while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
     int width = sqlite3_column_int(stmt, 0);
     int height = sqlite3_column_int(stmt, 1);
-    printf("%dx%d\n", width, height);
+    log_debug("%dx%d\n", width, height);
   }
   if (rc != SQLITE_DONE) {
-    printf("database error: %s", sqlite3_errmsg(db));
+    log_error("database error: %s", sqlite3_errmsg(db));
     sqlite3_close(db);
+    FAILm("failed to execute sql select query (2)");
   }
   sqlite3_finalize(stmt);
 
-  printf("closing\n");
+  log_debug("closing\n");
   sqlite3_close(db);
 
   data_config config = data_config_init();
-  printf("config.windowWidth = %d\n", config.windowWidth);
-  printf("config.windowHeight = %d\n", config.windowHeight);
-  printf("config.windowTitle = %s\n", str_c_str(&config.windowTitle));
+  log_debug("config.windowWidth = %d\n", config.windowWidth);
+  log_debug("config.windowHeight = %d\n", config.windowHeight);
+  log_debug("config.windowTitle = %s\n", str_c_str(&config.windowTitle));
   data_config_free(&config);
   PASS();
 }

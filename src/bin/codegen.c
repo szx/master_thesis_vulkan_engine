@@ -120,7 +120,7 @@ void str_append_source_comment(str *self) {
 
 // Scans enums in header and generates code.
 void parse_header(platform_path *headerPath) {
-  printf("header: %s\n", str_c_str(&headerPath->data));
+  log_info("header: %s\n", platform_path_c_str(headerPath));
   char *input = read_text_file(headerPath, NULL);
   if (input == NULL) {
     panic("failed to read file %s!", str_c_str(&headerPath->data));
@@ -150,7 +150,7 @@ void parse_header(platform_path *headerPath) {
                           &data);
 
   // write generated header_code to file
-  // printf("CODE:\n%s\n", str_c_str(&header_code));
+  // log_debug("CODE:\n%s\n", str_c_str(&header_code));
   str basename = platform_path_get_basename(headerPath);
   platform_path headerOutputPath = platform_path_copy(&codegenPath);
   platform_path sourceOutputPath = platform_path_copy(&codegenPath);
@@ -158,8 +158,8 @@ void parse_header(platform_path *headerPath) {
   platform_path_append(&sourceOutputPath, str_c_str(&basename));
   str_free(&basename);
   sourceOutputPath.data.value[sourceOutputPath.data.size - 1] = 'c';
-  printf("header output: %s\n", str_c_str(&headerOutputPath.data));
-  printf("source output: %s\n", str_c_str(&sourceOutputPath.data));
+  log_info("header output: %s\n", str_c_str(&headerOutputPath.data));
+  log_info("source output: %s\n", str_c_str(&sourceOutputPath.data));
   write_text_file(&headerOutputPath, &headerCode);
   write_text_file(&sourceOutputPath, &sourceCode);
 
@@ -171,8 +171,9 @@ void parse_header(platform_path *headerPath) {
 }
 
 int main(int argc, char *argv[]) {
-  printf("src path: %s\n", SRC_PATH);
-  printf("vulkan header path: %s\n", VULKAN_HEADER_PATH);
+  platform_init();
+  log_info("src path: %s\n", SRC_PATH);
+  log_info("vulkan header path: %s\n", VULKAN_HEADER_PATH);
 
   srcPath = platform_path_init(SRC_PATH);
   vulkanHeaderPath = platform_path_init(VULKAN_HEADER_PATH);
@@ -192,5 +193,6 @@ int main(int argc, char *argv[]) {
   platform_path_free(&codegenPath);
   lst_platform_path_free(&srcChildPathLst);
   platform_path_free(&srcPath);
+  platform_free();
   return 0;
 }

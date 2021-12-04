@@ -28,7 +28,7 @@ static size_t pcc_strnlen(const char *str, size_t maxlen) {
 #if 0
   static const char *dbg_str[] = { "Evaluating rule", "Matched rule", "Abandoning rule" };
   #define PCC_DEBUG(auxil, event, rule, level, pos, buffer, length) \
-      fprintf(stderr, "%*s%s %s @%zu [%.*s]\n", (int)((level) * 2), "", dbg_str[event], rule, pos, (int)(length), buffer)
+      log_debug("%*s%s %s @%zu [%.*s]\n", (int)((level) * 2), "", dbg_str[event], rule, pos, (int)(length), buffer)
 #endif
 #if !defined __has_attribute || defined _MSC_VER
 #define __attribute__(x)

@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 
 int main(int argc, char *argv[]) {
+  platform_init();
   data_config config = data_config_init();
   GLFWwindow *window;
 
@@ -13,7 +14,7 @@ int main(int argc, char *argv[]) {
   }
 
   if (glfwVulkanSupported() == GLFW_TRUE) {
-    printf("Vulkan supported (%s)\n", VkResult_debug_str(VK_SUCCESS));
+    log_info("Vulkan supported (%s)\n", VkResult_debug_str(VK_SUCCESS));
   }
 
   // Create a windowed mode window and its OpenGL context
@@ -42,5 +43,6 @@ int main(int argc, char *argv[]) {
 
   glfwTerminate();
   data_config_free(&config);
+  platform_free();
   return 0;
 }
