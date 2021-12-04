@@ -3,7 +3,9 @@
 // We try to use GLib for cross-platform functionality.
 #include <glib.h>
 #include <gtk/gtk.h>
-#include <stdarg.h>
+
+#define CGLTF_IMPLEMENTATION
+#include "cgltf.h"
 
 static FILE *logFile;
 
@@ -139,8 +141,10 @@ platform_path get_executable_dir_file_path(const char *dirName,
   return result;
 }
 
-platform_path get_asset_file_path(const char *fileName) {
-  return get_executable_dir_file_path("assets", fileName);
+platform_path get_asset_file_path(const char *dirName, const char *fileName) {
+  platform_path result = get_executable_dir_file_path("assets", dirName);
+  platform_path_append(&result, fileName);
+  return result;
 }
 
 void get_dir_children_impl(const char *path, lst_platform_path *paths) {

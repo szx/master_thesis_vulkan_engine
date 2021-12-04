@@ -3,7 +3,7 @@
 
 data_config data_config_init() {
   data_config config = {0};
-  platform_path databasePath = get_asset_file_path("data.db");
+  platform_path databasePath = get_asset_file_path("", "data.db");
   int rc = sqlite3_open(platform_path_c_str(&databasePath), &config.db);
   if (rc != SQLITE_OK) {
     panic("database error (1): %s", sqlite3_errmsg(config.db));

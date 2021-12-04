@@ -18,9 +18,11 @@
 #define VULKAN_HEADER_PATH "VULKAN_HEADER_PATH should be defined by CMake"
 #endif
 
+#include "cgltf.h"
 #include "log.h"
 #include "str.h"
 #include <assert.h>
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -68,7 +70,7 @@ platform_path get_executable_dir_file_path(const char *dirName,
                                            const char *fileName);
 
 // Returns new path to file in assets directory.
-platform_path get_asset_file_path(const char *fileName);
+platform_path get_asset_file_path(const char *dirName, const char *fileName);
 
 // Returns new list of child paths.
 lst_platform_path get_dir_children(platform_path *dirPath);

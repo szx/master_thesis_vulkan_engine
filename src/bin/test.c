@@ -108,7 +108,7 @@ TEST database_loading() {
 
   sqlite3 *db; // database connection handle
 
-  int rc = sqlite3_open(str_c_str(&databasePath.data), &db);
+  int rc = sqlite3_open(platform_path_c_str(&databasePath), &db);
   if (rc != SQLITE_OK) {
     log_error("database error: %s", sqlite3_errmsg(db));
     sqlite3_close(db);
@@ -172,6 +172,25 @@ TEST database_loading() {
 
 SUITE(database_suite) { RUN_TEST(database_loading); }
 
+// Loading sponza.gltf.
+TEST gltf_loading() {
+  platform_path gltfPath = get_asset_file_path("sponza", "Sponza.gltf");
+  cgltf_options options = {0};
+  cgltf_data *data = NULL;
+  cgltf_result result =
+      cgltf_parse_file(&options, platform_path_c_str(&gltfPath), &data);
+  platform_path_free(&gltfPath);
+  if (result != cgltf_result_success) {
+    FAILm("failed to load sponza.gltf");
+  }
+  // TODO: Separate files.
+  // TODO: Loading extra files (buffer files, images).
+  cgltf_free(data);
+  PASS();
+}
+
+SUITE(gltf_suite) { RUN_TEST(gltf_loading); }
+
 GREATEST_MAIN_DEFS(); // NOLINT
 
 int main(int argc, char *argv[]) {
@@ -181,6 +200,7 @@ int main(int argc, char *argv[]) {
   RUN_SUITE(basic_test_suite);
   RUN_SUITE(c_parser_suite);
   RUN_SUITE(database_suite);
+  RUN_SUITE(gltf_suite);
   log_info("finish test suite");
   platform_free();
   GREATEST_MAIN_END();
