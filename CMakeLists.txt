@@ -22,6 +22,10 @@ set(GREATEST_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/greatest")
 # add external library CLT
 set(CTL_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/ctl/ctl")
 
+# add external library log.c
+set(LOGC_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/log.c/src")
+set(LOGC_ADDITIONAL_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/log.c/src/log.c")
+
 # add external library GLib
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(deps REQUIRED IMPORTED_TARGET glib-2.0)
@@ -37,7 +41,8 @@ pkg_check_modules(SQLITE3 REQUIRED IMPORTED_TARGET sqlite3)
 
 # prepare info about external libraries
 set(EXTERNAL_INCLUDE_PATHS ${VULKAN_INCLUDE_PATH} ${GREATEST_INCLUDE_PATH} ${CTL_INCLUDE_PATH}
-        ${GTK4_INCLUDE_DIRS} ${SQLITE3_INCLUDE_DIRS})
+        ${GTK4_INCLUDE_DIRS} ${SQLITE3_INCLUDE_DIRS} ${LOGC_INCLUDE_PATH})
+set(EXTERNAL_ADDITIONAL_SOURCES ${LOGC_ADDITIONAL_SOURCES})
 set(EXTERNAL_LIBRARY_PATHS ${VULKAN_LIBRARY_PATH} ${GTK4_LIBRARY_DIRS} ${SQLITE3_LIBRARY_DIRS})
 set(EXTERNAL_LIBRARIES glfw PkgConfig::deps ${GTK4_LIBRARIES} ${SQLITE3_LIBRARIES})
 
@@ -138,6 +143,7 @@ foreach (C_BIN_SOURCE_PATH ${C_BIN_SOURCES})
     get_filename_component(EXECUTABLE_NAME ${C_BIN_SOURCE_PATH} NAME_WE)
     add_executable(${EXECUTABLE_NAME} ${C_BIN_SOURCE_PATH} ${C_SOURCES} ${C_HEADERS} ${C_GENERATOR_PEGS_OUTPUTS})
     target_include_directories(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_INCLUDE_PATHS})
+    target_sources(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_ADDITIONAL_SOURCES})
     target_link_directories(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_LIBRARY_PATHS})
     target_link_libraries(${EXECUTABLE_NAME} LINK_PUBLIC ${EXTERNAL_LIBRARIES})
     add_dependencies(${EXECUTABLE_NAME} codegen_packcc)

@@ -18,11 +18,24 @@
 #define VULKAN_HEADER_PATH "VULKAN_HEADER_PATH should be defined by CMake"
 #endif
 
+#include "log.h"
 #include "str.h"
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+// Allocates and initializes all global state used by functions below.
+void platform_init();
+
+// Frees all global state used by functions below.
+void platform_free();
+
+// Adds log.txt file to logger.
+void log_init();
+
+// Closes log.txt file.
+void log_free();
 
 // Shows message dialog and exits.
 void panic(const char *format, ...);
@@ -49,6 +62,10 @@ str platform_path_get_basename(platform_path *self);
 
 // Returns new path to directory with current executable.
 platform_path get_executable_dir_path();
+
+// Returns new path to file in specified directory.
+platform_path get_executable_dir_file_path(const char *dirName,
+                                           const char *fileName);
 
 // Returns new path to file in assets directory.
 platform_path get_asset_file_path(const char *fileName);

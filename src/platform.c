@@ -1,9 +1,26 @@
 #include "platform.h"
 
-// note(sszczyrb): We try to use GLib for cross-platform functionality.
+// We try to use GLib for cross-platform functionality.
 #include <glib.h>
 #include <gtk/gtk.h>
 #include <stdarg.h>
+
+static FILE *logFile;
+
+void platform_init() { log_init(); }
+
+void platform_free() { log_free(); }
+
+void log_init() {
+  platform_path path = get_executable_dir_file_path("", "log.txt");
+  logFile = fopen(platform_path_c_str(&path), "wb");
+  platform_path_free(&path);
+  if (logFile) {
+    log_add_fp(logFile, LOG_TRACE); // TODO: Set different level on Release.
+  }
+}
+
+void log_free() { fclose(logFile); }
 
 typedef struct panic_args {
   char *msg;
@@ -109,11 +126,16 @@ platform_path get_executable_dir_path() {
 #endif
 }
 
-platform_path get_asset_file_path(const char *fileName) {
+platform_path get_executable_dir_file_path(const char *dirName,
+                                           const char *fileName) {
   platform_path result = get_executable_dir_path();
-  platform_path_append(&result, "assets");
+  platform_path_append(&result, dirName);
   platform_path_append(&result, fileName);
   return result;
+}
+
+platform_path get_asset_file_path(const char *fileName) {
+  return get_executable_dir_file_path("assets", fileName);
 }
 
 void get_dir_children_impl(const char *path, lst_platform_path *paths) {

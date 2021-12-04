@@ -177,10 +177,12 @@ GREATEST_MAIN_DEFS(); // NOLINT
 
 int main(int argc, char *argv[]) {
   GREATEST_MAIN_BEGIN();
-
+  platform_init();
+  log_info("start test suite");
   RUN_SUITE(basic_test_suite);
   RUN_SUITE(c_parser_suite);
   RUN_SUITE(database_suite);
-
+  log_info("finish test suite");
+  platform_free();
   GREATEST_MAIN_END();
 }
