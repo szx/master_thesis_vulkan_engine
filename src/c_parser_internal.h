@@ -1,4 +1,4 @@
-/* Structs and functions used by C parser/ */
+/* Structs and functions used by C parser */
 
 #ifndef C_PARSER_INTERNAL_H
 #define C_PARSER_INTERNAL_H

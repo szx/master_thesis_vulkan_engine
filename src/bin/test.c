@@ -1,6 +1,6 @@
 #include "../peg/c_parser.h"
 #include "../platform.h"
-#include "../vulkan/functions.h"
+#include "../vulkan/vulkan.h"
 #include "greatest.h"
 
 #define P
