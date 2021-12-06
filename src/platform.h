@@ -18,14 +18,19 @@
 #define VULKAN_HEADER_PATH "VULKAN_HEADER_PATH should be defined by CMake"
 #endif
 
+#include "cglm/cglm.h"
 #include "cgltf.h"
 #include "log.h"
+#include "stb_image.h"
 #include "str.h"
 #include <assert.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+static_assert(sizeof(char) == sizeof(uint8_t),
+              "sizeof(char) != sizeof(uint8_t)");
 
 // Allocates and initializes all global state used by functions below.
 void platform_init();

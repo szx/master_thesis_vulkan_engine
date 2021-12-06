@@ -7,6 +7,9 @@
 #define CGLTF_IMPLEMENTATION
 #include "cgltf.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 static FILE *logFile;
 
 void platform_init() { log_init(); }

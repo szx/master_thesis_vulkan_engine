@@ -31,6 +31,9 @@ typedef enum c_parser_ast_node_type {
   PreprocessorDirectiveBody,
   PreprocessorMacroCall,
 
+  // static assert
+  StaticAssert,
+
   // declarations
   Declaration,              // Specifiers (Declarator = Initializer)
   DeclarationSpecifiers,    // Specifiers

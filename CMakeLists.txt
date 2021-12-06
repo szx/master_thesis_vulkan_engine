@@ -29,6 +29,13 @@ set(LOGC_ADDITIONAL_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/log.c/src/lo
 # add external library cgltf
 set(CGLTF_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cgltf")
 
+# add external library cglm
+set(CGLM_LIBRARIES "cglm")
+add_subdirectory(thirdparty/cglm)
+
+# add external library stb
+set(STB_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb")
+
 # add external library GLib
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(deps REQUIRED IMPORTED_TARGET glib-2.0)
@@ -44,10 +51,11 @@ pkg_check_modules(SQLITE3 REQUIRED IMPORTED_TARGET sqlite3)
 
 # prepare info about external libraries
 set(EXTERNAL_INCLUDE_PATHS ${VULKAN_INCLUDE_PATH} ${GREATEST_INCLUDE_PATH} ${CTL_INCLUDE_PATH}
-        ${GTK4_INCLUDE_DIRS} ${SQLITE3_INCLUDE_DIRS} ${LOGC_INCLUDE_PATH} ${CGLTF_INCLUDE_PATH})
+        ${GTK4_INCLUDE_DIRS} ${SQLITE3_INCLUDE_DIRS} ${LOGC_INCLUDE_PATH} ${CGLTF_INCLUDE_PATH}
+        ${STB_INCLUDE_PATH})
 set(EXTERNAL_ADDITIONAL_SOURCES ${LOGC_ADDITIONAL_SOURCES})
 set(EXTERNAL_LIBRARY_PATHS ${VULKAN_LIBRARY_PATH} ${GTK4_LIBRARY_DIRS} ${SQLITE3_LIBRARY_DIRS})
-set(EXTERNAL_LIBRARIES glfw PkgConfig::deps ${GTK4_LIBRARIES} ${SQLITE3_LIBRARIES})
+set(EXTERNAL_LIBRARIES glfw PkgConfig::deps ${GTK4_LIBRARIES} ${SQLITE3_LIBRARIES} ${CGLM_LIBRARIES})
 
 
 # build packcc during configure

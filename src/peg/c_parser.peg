@@ -37,6 +37,7 @@ translation_unit <-
 
 external_declaration <-
   e:preprocessor_definition { $$ = e; }
+/ e:static_assert { $$ = e; }
 / e:linkage_specification { $$ = e; }
 / e:function_definition { $$ = e; }
 / e:declaration { $$ = e; }
@@ -49,6 +50,9 @@ preprocessor_definition <-
 
 preprocessor_definition_body <-
   ('\\' EOL / !EOL .)* { $$ = c_parser_ast_node_init_0(auxil, PreprocessorDirectiveBody, c_parser_str_range_init($0s, $0e)); }
+
+static_assert <-
+  kw_static_assert _ '(' _ e:expression _ ',' _ s:string _ ')' _ ';' { $$ = c_parser_ast_node_init_2(auxil, StaticAssert, c_parser_str_range_init($0s, $0e), e, s); }
 
 linkage_specification <-
   kw_extern _ s:string _ '{' _ t:translation_unit _ '}' { $$ = c_parser_ast_node_init_2(auxil, LanguageLinkage, c_parser_str_range_init($0s, $0e), s, t); }
@@ -500,6 +504,7 @@ keyword <-
 / kw_while
 / kw_do
 / kw_ellipsis
+/ kw_static_assert
 
 kw_sizeof <- 'sizeof' !(IDENT/DEC)
 kw_typedef <- 'typedef' !(IDENT/DEC)
@@ -524,6 +529,7 @@ kw_for <- 'for' !(IDENT/DEC)
 kw_while <- 'while' !(IDENT/DEC)
 kw_do <- 'do' !(IDENT/DEC)
 kw_ellipsis <- '...' !(IDENT/DEC)
+kw_static_assert <- 'static_assert' !(IDENT/DEC)
 
 DEC <- [0-9]
 OCT <- [0-7]

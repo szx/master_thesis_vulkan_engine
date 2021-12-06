@@ -60,6 +60,9 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type value) {
   if (value == PreprocessorMacroCall) {
     return "PreprocessorMacroCall";
   }
+  if (value == StaticAssert) {
+    return "StaticAssert";
+  }
   if (value == Declaration) {
     return "Declaration";
   }

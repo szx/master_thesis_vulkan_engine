@@ -1,7 +1,7 @@
 #include "../peg/c_parser.h"
 #include "../platform.h"
+#include "../vulkan/functions.h"
 #include "greatest.h"
-#include "vulkan/vulkan.h"
 
 #define P
 #define T int
@@ -174,18 +174,16 @@ SUITE(database_suite) { RUN_TEST(database_loading); }
 
 // Loading sponza.gltf.
 TEST gltf_loading() {
-  platform_path gltfPath = get_asset_file_path("sponza", "Sponza.gltf");
-  cgltf_options options = {0};
-  cgltf_data *data = NULL;
-  cgltf_result result =
-      cgltf_parse_file(&options, platform_path_c_str(&gltfPath), &data);
+  // TODO: Files in database.
+  // TODO: Loading extra files (images).
+  // platform_path gltfPath = get_asset_file_path("sponza", "Sponza.gltf");
+  // platform_path gltfPath = get_asset_file_path("triangle", "Triangle.gltf");
+  platform_path gltfPath =
+      get_asset_file_path("triangles", "SimpleMeshes.gltf");
+  vulkan_scene scene = parse_gltf_file(gltfPath);
+  vulkan_scene_debug_print(&scene);
   platform_path_free(&gltfPath);
-  if (result != cgltf_result_success) {
-    FAILm("failed to load sponza.gltf");
-  }
-  // TODO: Separate files.
-  // TODO: Loading extra files (buffer files, images).
-  cgltf_free(data);
+  vulkan_scene_free(&scene);
   PASS();
 }
 
@@ -198,7 +196,7 @@ int main(int argc, char *argv[]) {
   platform_init();
   log_info("start test suite");
   RUN_SUITE(basic_test_suite);
-  RUN_SUITE(c_parser_suite);
+  // RUN_SUITE(c_parser_suite);
   RUN_SUITE(database_suite);
   RUN_SUITE(gltf_suite);
   log_info("finish test suite");
