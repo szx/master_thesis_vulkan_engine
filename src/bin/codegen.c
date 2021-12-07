@@ -128,6 +128,7 @@ void parse_header(platform_path *headerPath) {
   c_parser_state state = c_parser_execute(input);
   // c_parser_debug_print(&state);
   if (state.errors.size > 0) {
+    c_parser_debug_print(&state);
     panic("syntax errors in %s!", str_c_str(&headerPath->data));
   }
 

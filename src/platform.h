@@ -23,6 +23,7 @@
 #include "log.h"
 #include "stb_image.h"
 #include "str.h"
+#include <GLFW/glfw3.h>
 #include <assert.h>
 #include <stdarg.h>
 #include <stdbool.h>
@@ -46,6 +47,16 @@ void log_free();
 
 // Shows message dialog and exits.
 void panic(const char *format, ...);
+
+#define verify(cond)                                                           \
+  do {                                                                         \
+    if (!(cond)) {                                                             \
+      panic("%s:%s: %s failed", __FILE__, __LINE__, #cond);                    \
+    }                                                                          \
+  } while (0)
+
+#define MIN(x, y) ((x) < (y) ? (x) : (y))
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
 
 /* file system */
 typedef struct platform_path {

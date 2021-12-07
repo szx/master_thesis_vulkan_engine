@@ -93,8 +93,14 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type value) {
   if (value == StructDeclaration) {
     return "StructDeclaration";
   }
+  if (value == UnnamedStructDeclaration) {
+    return "UnnamedStructDeclaration";
+  }
   if (value == UnionDeclaration) {
     return "UnionDeclaration";
+  }
+  if (value == UnnamedUnionDeclaration) {
+    return "UnnamedUnionDeclaration";
   }
   if (value == BitFieldDeclaration) {
     return "BitFieldDeclaration";

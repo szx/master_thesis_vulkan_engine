@@ -231,6 +231,7 @@ enumerator_declaration <-
 
 struct_declaration <-
   kw_struct _ tag:identifier _ "{" _ e:struct_or_union_declaration_list  _ "}" { $$ = c_parser_ast_node_init_2(auxil, StructDeclaration, c_parser_str_range_init($0s, $0e), tag, e); }
+/ kw_struct _ "{" _ e:struct_or_union_declaration_list  _ "}" { $$ = c_parser_ast_node_init_1(auxil, UnnamedStructDeclaration, c_parser_str_range_init($0s, $0e), e); }
 / kw_struct _ tag:identifier { $$ = c_parser_ast_node_init_1(auxil, StructDeclaration, c_parser_str_range_init($0s, $0e), tag); }
 
 struct_or_union_declaration_list <-
@@ -251,6 +252,7 @@ struct_or_union_declaration <-
 
 union_declaration <-
   kw_union _ tag:identifier _ "{" _ e:struct_or_union_declaration_list  _ "}" { $$ = c_parser_ast_node_init_2(auxil, UnionDeclaration, c_parser_str_range_init($0s, $0e), tag, e); }
+/ kw_union _ "{" _ e:struct_or_union_declaration_list  _ "}" { $$ = c_parser_ast_node_init_1(auxil, UnnamedUnionDeclaration, c_parser_str_range_init($0s, $0e), e); }
 / kw_union _ tag:identifier { $$ = c_parser_ast_node_init_1(auxil, UnionDeclaration, c_parser_str_range_init($0s, $0e), tag); }
 
 ## NOTE: Use global_declaration_specifiers for UPPER_CASE declarators. ##
