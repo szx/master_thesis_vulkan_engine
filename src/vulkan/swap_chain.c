@@ -76,7 +76,6 @@ void create_swap_chain(vulkan_swap_chain *vks) {
   VkExtent2D extent = choose_swap_extent(vks->vkd);
 
   uint32_t imageCount = swapChainInfo->capabilities.minImageCount + 1;
-  imageCount = MIN(imageCount, MAX_SWAP_CHAIN_IMAGES);
   if (swapChainInfo->capabilities.maxImageCount > 0 &&
       imageCount > swapChainInfo->capabilities.maxImageCount) {
     imageCount = swapChainInfo->capabilities.maxImageCount;

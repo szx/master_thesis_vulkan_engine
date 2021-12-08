@@ -155,7 +155,8 @@ void transition_image_layout(vulkan_device *vkd, VkImage image, VkFormat format,
                              VkImageLayout oldLayout, VkImageLayout newLayout,
                              uint32_t mipLevels, uint32_t arrayLayers);
 
-VkShaderModule create_shader_module(vulkan_device *vkd, str *code);
+VkShaderModule create_shader_module(vulkan_device *vkd, char *code,
+                                    size_t size);
 // VkDescriptorSetLayout create_descriptor_set_layout(VkDescriptorType
 // descriptorType, uint32_t descriptorCount, VkShaderStageFlags stageFlags);
 // VkDescriptorSet createDescriptorSet(VkDescriptorType descriptorType,

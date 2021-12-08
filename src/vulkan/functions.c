@@ -562,6 +562,15 @@ void transition_image_layout(vulkan_device *vkd, VkImage image, VkFormat format,
                              VkImageLayout oldLayout, VkImageLayout newLayout,
                              uint32_t mipLevels, uint32_t arrayLayers) {}
 
-VkShaderModule create_shader_module(vulkan_device *vkd, str *code) {
-  return NULL;
+VkShaderModule create_shader_module(vulkan_device *vkd, char *code,
+                                    size_t size) {
+  VkShaderModuleCreateInfo createInfo = {0};
+  createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+  createInfo.codeSize = size * sizeof(char);
+  createInfo.pCode = (const uint32_t *)code;
+
+  VkShaderModule shaderModule;
+  verify(vkCreateShaderModule(vkd->device, &createInfo, defaultAllocator,
+                              &shaderModule) == VK_SUCCESS);
+  return shaderModule;
 }

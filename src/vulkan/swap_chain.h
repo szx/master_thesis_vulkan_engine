@@ -6,9 +6,8 @@
 #include "../data/config.h"
 #include "functions.h"
 
-#define MAX_SWAP_CHAIN_IMAGES 3
 #define MAX_FRAMES_IN_FLIGHT 2
-#define MIN_DELTA_TIME (1.0f / 60.0f);
+#define MIN_DELTA_TIME (1.0 / 60.0)
 
 #define P
 #define T VkImage
