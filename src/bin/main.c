@@ -5,7 +5,8 @@
 int main(int argc, char *argv[]) {
   platform_init();
   data_config config = data_config_init();
-  vulkan_device device = vulkan_device_init(&config);
+  vulkan_device vkd = vulkan_device_init(&config);
+  vulkan_swap_chain vks = vulkan_swap_chain_init(&vkd);
 
   // Load scene.
   platform_path gltfPath =
@@ -16,20 +17,21 @@ int main(int argc, char *argv[]) {
 
   // TODO: create vulkan_render_context
 
-  glfwMakeContextCurrent(device.window);
+  glfwMakeContextCurrent(vkd.window);
 
   //  Loop until the user closes the window
-  while (glfwWindowShouldClose(device.window) == 0) {
+  while (glfwWindowShouldClose(vkd.window) == 0) {
     // TODO: render vulkan_render_context
 
     // Swap front and back buffers
-    glfwSwapBuffers(device.window);
+    glfwSwapBuffers(vkd.window);
 
     // Poll for and process events
     glfwPollEvents();
   }
 
-  vulkan_device_free(&device);
+  vulkan_swap_chain_free(&vks);
+  vulkan_device_free(&vkd);
   vulkan_scene_free(&scene);
   data_config_free(&config);
   platform_free();

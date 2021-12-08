@@ -4,6 +4,7 @@
 
 #include "functions.h"
 #include "scene.h"
+#include "swap_chain.h"
 
 #include "../codegen/vulkan.h"
 
