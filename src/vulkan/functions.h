@@ -6,6 +6,8 @@
 #define VK_ENABLE_BETA_EXTENSIONS
 #include "vulkan/vulkan.h"
 
+#include <GLFW/glfw3.h>
+
 #include "../data/config.h"
 #include "../platform.h"
 

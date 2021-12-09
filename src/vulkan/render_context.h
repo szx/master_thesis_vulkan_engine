@@ -23,8 +23,9 @@ vulkan_swap_chain_frame
 vulkan_swap_chain_frame_init(vulkan_swap_chain *vks,
                              uint32_t swapChainImageIndex);
 void vulkan_swap_chain_frame_free(vulkan_swap_chain_frame *frame);
+vulkan_swap_chain_frame
+vulkan_swap_chain_frame_copy(vulkan_swap_chain_frame *frame);
 
-#define P
 #define T vulkan_swap_chain_frame
 #include "vec.h" // vec_vulkan_swap_chain_frame
 
@@ -48,12 +49,12 @@ void vulkan_render_pass_free(vulkan_render_pass *renderPass);
 
 /// Manages frame-agnostic resources and frames used to render into swap chain.
 typedef struct vulkan_render_context {
-  vulkan_device vkd;                           /// Vulkan device.
-  vulkan_swap_chain vks;                       /// Vulkan swap chain.
+  vulkan_device *vkd;                          /// Vulkan device (heap).
+  vulkan_swap_chain *vks;                      /// Vulkan swap chain (heap).
   vec_vulkan_swap_chain_frame swapChainFrames; /// Swap chain frames.
   // TODO: Synchronization.
   // TODO: Rendering pipeline.
-  vulkan_render_pass renderPass;
+  vulkan_render_pass *renderPass; /// Render pass (heap).
 } vulkan_render_context;
 
 vulkan_render_context vulkan_render_context_init(data_config *config);

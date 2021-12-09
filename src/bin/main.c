@@ -16,11 +16,11 @@ int main(int argc, char *argv[]) {
 
   // TODO: create vulkan_render_context
 
-  glfwMakeContextCurrent(renderContext.vkd.window);
+  glfwMakeContextCurrent(renderContext.vkd->window);
 
   //  Loop until the user closes the window
   double currentTime = glfwGetTime();
-  while (glfwWindowShouldClose(renderContext.vkd.window) == 0) {
+  while (glfwWindowShouldClose(renderContext.vkd->window) == 0) {
     double newTime = glfwGetTime();
     double frameTime = newTime - currentTime;
     currentTime = newTime;
@@ -32,6 +32,7 @@ int main(int argc, char *argv[]) {
     glfwPollEvents(); // calls GLFW callbacks
     // TODO: render vulkan_render_context
   }
+  vkDeviceWaitIdle(renderContext.vkd->device);
 
   vulkan_render_context_free(&renderContext);
   vulkan_scene_free(&scene);

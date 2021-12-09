@@ -23,7 +23,7 @@
 #include "log.h"
 #include "stb_image.h"
 #include "str.h"
-#include <GLFW/glfw3.h>
+
 #include <assert.h>
 #include <stdarg.h>
 #include <stdbool.h>

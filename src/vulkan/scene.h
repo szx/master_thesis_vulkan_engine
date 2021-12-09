@@ -29,8 +29,8 @@ vulkan_buffer_view vulkan_buffer_view_init(char *name, size_t offset,
                                            size_t size, size_t stride,
                                            vulkan_geometry_buffer *buffer);
 void vulkan_buffer_view_free(vulkan_buffer_view *self);
+vulkan_buffer_view vulkan_buffer_view_copy(vulkan_buffer_view *self);
 
-#define P
 #define T vulkan_buffer_view
 #include "vec.h" // vec_vulkan_buffer_view
 
@@ -46,8 +46,8 @@ vulkan_accessor vulkan_accessor_init(char *name, size_t offset, size_t size,
                                      size_t stride,
                                      vulkan_buffer_view *bufferView);
 void vulkan_accessor_free(vulkan_accessor *self);
+vulkan_accessor vulkan_accessor_copy(vulkan_accessor *self);
 
-#define P
 #define T vulkan_accessor
 #include "vec.h" // vec_vulkan_accessor
 

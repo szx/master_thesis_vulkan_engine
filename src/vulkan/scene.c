@@ -37,6 +37,12 @@ void vulkan_buffer_view_free(vulkan_buffer_view *self) {
   self->name = "FREE";
 }
 
+vulkan_buffer_view vulkan_buffer_view_copy(vulkan_buffer_view *self) {
+  vulkan_buffer_view copy = *self;
+  copy.name = strdup(self->name);
+  return copy;
+}
+
 vulkan_accessor vulkan_accessor_init(char *name, size_t offset, size_t size,
                                      size_t stride,
                                      vulkan_buffer_view *bufferView) {
@@ -51,6 +57,12 @@ vulkan_accessor vulkan_accessor_init(char *name, size_t offset, size_t size,
 void vulkan_accessor_free(vulkan_accessor *self) {
   free(self->name);
   self->name = "FREE";
+}
+
+vulkan_accessor vulkan_accessor_copy(vulkan_accessor *self) {
+  vulkan_accessor copy = *self;
+  copy.name = strdup(self->name);
+  return copy;
 }
 
 vulkan_attribute vulkan_attribute_init(char *name, vulkan_attribute_type type,
@@ -376,7 +388,8 @@ vulkan_scene parse_gltf_file(platform_path gltfPath) {
   scene.geometryBuffer = vulkan_geometry_buffer_init(
       cgltfBuffer->uri, cgltfBuffer->data, cgltfBuffer->size);
   // parse buffer views
-  char *name = malloc(sizeof(char) * (int)log10(data->buffer_views_count));
+  char *name =
+      malloc(sizeof(char) * (255 + (int)log10(data->buffer_views_count)));
   for (size_t i = 0; i < data->buffer_views_count; i++) {
     sprintf(name, "bufferView%d", (int)i);
     cgltf_buffer_view *cgltfBufferView = &data->buffer_views[i];
@@ -386,9 +399,7 @@ vulkan_scene parse_gltf_file(platform_path gltfPath) {
         cgltfBufferView->stride, &scene.geometryBuffer);
     vec_vulkan_buffer_view_push_back(&scene.bufferViews, bufferView);
   }
-  free(name);
   // parse accessors
-  name = malloc(sizeof(char) * (int)log10(data->accessors_count));
   for (size_t i = 0; i < data->accessors_count; i++) {
     sprintf(name, "accessor%d", (int)i);
     cgltf_accessor *cgltfAccessor = &data->accessors[i];

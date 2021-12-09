@@ -105,6 +105,7 @@ void create_window(vulkan_device *vkd, data_config *config) {
   log_info("create_window");
   verify(glfwInit() == GLFW_TRUE);
   verify(glfwVulkanSupported() == GLFW_TRUE);
+  glfwDefaultWindowHints();
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
   vkd->window = glfwCreateWindow(config->windowWidth, config->windowHeight,
                                  str_c_str(&config->windowTitle), NULL, NULL);
@@ -442,10 +443,14 @@ void create_logical_device(vulkan_device *vkd) {
     queueCreateInfos = (VkDeviceQueueCreateInfo *)malloc(
         numQueues * sizeof(VkDeviceQueueCreateInfo));
     queueCreateInfos[0].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    queueCreateInfos[0].pNext = NULL;
+    queueCreateInfos[0].flags = 0;
     queueCreateInfos[0].queueFamilyIndex = queueFamilies.graphicsFamily;
     queueCreateInfos[0].queueCount = 1;
     queueCreateInfos[0].pQueuePriorities = &queuePriority;
     queueCreateInfos[1].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    queueCreateInfos[1].pNext = NULL;
+    queueCreateInfos[1].flags = 0;
     queueCreateInfos[1].queueFamilyIndex = queueFamilies.presentFamily;
     queueCreateInfos[1].queueCount = 1;
     queueCreateInfos[1].pQueuePriorities = &queuePriority;
@@ -454,6 +459,8 @@ void create_logical_device(vulkan_device *vkd) {
     queueCreateInfos = (VkDeviceQueueCreateInfo *)malloc(
         numQueues * sizeof(VkDeviceQueueCreateInfo));
     queueCreateInfos[0].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    queueCreateInfos[0].pNext = NULL;
+    queueCreateInfos[0].flags = 0;
     queueCreateInfos[0].queueFamilyIndex = queueFamilies.graphicsFamily;
     queueCreateInfos[0].queueCount = 1;
     queueCreateInfos[0].pQueuePriorities = &queuePriority;

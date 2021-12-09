@@ -41,6 +41,7 @@ vulkan_swap_chain_frame_init(vulkan_swap_chain *vks,
   result.swapChainImageIndex = swapChainImageIndex;
   create_command_pool(&result);
   create_command_buffer(&result);
+  // create_framebuffer(&result);
   return result;
 }
 
@@ -54,6 +55,12 @@ void vulkan_swap_chain_frame_free(vulkan_swap_chain_frame *frame) {
   vkDestroyFramebuffer(frame->vkd->device, frame->framebuffer,
                        defaultAllocator);
   frame->framebuffer = VK_NULL_HANDLE;
+}
+
+vulkan_swap_chain_frame
+vulkan_swap_chain_frame_copy(vulkan_swap_chain_frame *frame) {
+  vulkan_swap_chain_frame result = *frame;
+  return result;
 }
 
 void create_render_pass(vulkan_render_pass *renderPass) {
@@ -109,11 +116,12 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
   char *fragShaderCode = read_text_file(&fragInputPath, &fragShaderCodeSize);
   platform_path_free(&vertInputPath);
   platform_path_free(&fragInputPath);
-
   VkShaderModule vertShaderModule =
       create_shader_module(renderPass->vkd, vertShaderCode, vertShaderCodeSize);
   VkShaderModule fragShaderModule =
       create_shader_module(renderPass->vkd, fragShaderCode, fragShaderCodeSize);
+  free(vertShaderCode);
+  free(fragShaderCode);
 
   VkPipelineShaderStageCreateInfo vertShaderStageInfo = {0};
   vertShaderStageInfo.sType =
@@ -260,25 +268,26 @@ void vulkan_render_pass_free(vulkan_render_pass *renderPass) {
 
 vulkan_render_context vulkan_render_context_init(data_config *config) {
   vulkan_render_context result;
-  result.vkd = vulkan_device_init(config);
-  result.vks = vulkan_swap_chain_init(&result.vkd);
-  // TODO: swapChainFrames
+  result.vkd = (vulkan_device *)malloc(sizeof(vulkan_device));
+  *result.vkd = vulkan_device_init(config);
+  result.vks = (vulkan_swap_chain *)malloc(sizeof(vulkan_swap_chain));
+  *result.vks = vulkan_swap_chain_init(result.vkd);
   result.swapChainFrames = vec_vulkan_swap_chain_frame_init();
-  for (uint32_t i = 0; i < result.vks.swapChainImageViews.size; i++) {
-    vulkan_swap_chain_frame frame =
-        vulkan_swap_chain_frame_init(&result.vks, i);
+  for (uint32_t i = 0; i < result.vks->swapChainImageViews.size; i++) {
+    vulkan_swap_chain_frame frame = vulkan_swap_chain_frame_init(result.vks, i);
     vec_vulkan_swap_chain_frame_push_back(&result.swapChainFrames, frame);
   }
-  result.renderPass = vulkan_render_pass_init(&result.vks, ForwardRenderPass);
+  result.renderPass = (vulkan_render_pass *)malloc(sizeof(vulkan_render_pass));
+  *result.renderPass = vulkan_render_pass_init(result.vks, ForwardRenderPass);
   return result;
 }
 
 void vulkan_render_context_free(vulkan_render_context *renderContext) {
-  for (uint32_t i = 0; i < renderContext->swapChainFrames.size; i++) {
-    vulkan_swap_chain_frame *frame = &renderContext->swapChainFrames.value[i];
-    vulkan_swap_chain_frame_free(frame);
-  }
+  vulkan_render_pass_free(renderContext->renderPass);
+  free(renderContext->renderPass);
   vec_vulkan_swap_chain_frame_free(&renderContext->swapChainFrames);
-  vulkan_swap_chain_free(&renderContext->vks);
-  vulkan_device_free(&renderContext->vkd);
+  vulkan_swap_chain_free(renderContext->vks);
+  vulkan_device_free(renderContext->vkd);
+  free(renderContext->vks);
+  free(renderContext->vkd);
 }

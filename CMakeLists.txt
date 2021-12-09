@@ -131,17 +131,6 @@ add_custom_command(
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${TEST_FILES_DIR} ${CMAKE_CURRENT_BINARY_DIR}/tests
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${ASSETS_FILES_DIR} ${CMAKE_CURRENT_BINARY_DIR}/assets)
 
-# add compiler options
-if ((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
-    add_compile_options(-Wall -Wextra -pedantic
-            -Werror
-            -Wno-unused-parameter -Wno-unused-variable)
-elseif (CMAKE_C_COMPILER_ID STREQUAL "MSVC")
-    add_compile_options(/W4 /WX)
-else ()
-    message(FATAL_ERROR "unsupported compiler")
-endif ()
-
 # add preprocessor definitions
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
 ADD_DEFINITIONS(-DSRC_PATH="${CMAKE_CURRENT_SOURCE_DIR}/src")
@@ -163,7 +152,21 @@ foreach (C_BIN_SOURCE_PATH ${C_BIN_SOURCES})
     add_dependencies(${EXECUTABLE_NAME} copy_resources)
     if (NOT ${EXECUTABLE_NAME} STREQUAL "codegen")
         add_dependencies(${EXECUTABLE_NAME} codegen)
-    endif()
+    endif ()
+    # add compiler options
+    if ((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
+        target_compile_options(${EXECUTABLE_NAME} PUBLIC
+                -Wall -Wextra -pedantic
+                -Werror
+                -fsanitize=address -fsanitize=undefined -fstack-protector-all
+                -Wno-unused-parameter -Wno-unused-variable)
+        target_link_options(${EXECUTABLE_NAME} PUBLIC
+                -fsanitize=address -fsanitize=undefined -fstack-protector-all)
+    elseif (CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+        add_compile_options(/W4 /WX)
+    else ()
+        message(FATAL_ERROR "unsupported compiler")
+    endif ()
 endforeach ()
 
 
