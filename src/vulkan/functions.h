@@ -18,7 +18,7 @@ extern const char *validationLayers[VALIDATION_LAYERS_SIZE];
 #define DEVICE_EXTENSIONS_SIZE 1
 extern const char *deviceExtensions[DEVICE_EXTENSIONS_SIZE];
 
-extern const VkAllocationCallbacks *defaultAllocator;
+extern const VkAllocationCallbacks *vka;
 
 typedef struct vulkan_queue_families {
   uint32_t graphicsFamily;

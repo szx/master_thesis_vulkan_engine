@@ -5,7 +5,7 @@
 int main(int argc, char *argv[]) {
   platform_init();
   data_config config = data_config_init();
-  vulkan_render_context renderContext = vulkan_render_context_init(&config);
+  vulkan_render_context rctx = vulkan_render_context_init(&config);
 
   // Load scene.
   platform_path gltfPath =
@@ -16,11 +16,11 @@ int main(int argc, char *argv[]) {
 
   // TODO: create vulkan_render_context
 
-  glfwMakeContextCurrent(renderContext.vkd->window);
+  glfwMakeContextCurrent(rctx.vkd->window);
 
   //  Loop until the user closes the window
   double currentTime = glfwGetTime();
-  while (glfwWindowShouldClose(renderContext.vkd->window) == 0) {
+  while (glfwWindowShouldClose(rctx.vkd->window) == 0) {
     double newTime = glfwGetTime();
     double frameTime = newTime - currentTime;
     currentTime = newTime;
@@ -30,11 +30,11 @@ int main(int argc, char *argv[]) {
       frameTime -= dt;
     }
     glfwPollEvents(); // calls GLFW callbacks
-    // TODO: render vulkan_render_context
+    vulkan_render_context_draw_frame(&rctx);
   }
-  vkDeviceWaitIdle(renderContext.vkd->device);
+  vkDeviceWaitIdle(rctx.vkd->device);
 
-  vulkan_render_context_free(&renderContext);
+  vulkan_render_context_free(&rctx);
   vulkan_scene_free(&scene);
   data_config_free(&config);
   platform_free();

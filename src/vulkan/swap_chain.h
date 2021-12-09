@@ -36,8 +36,6 @@ typedef struct vulkan_swap_chain {
       swapChainImageViews; /// Image views describing swap chain images.
                            /// Necessary because Vulkan API tends to refer to
                            /// resources via views.
-
-  size_t numFramesInFlight; /// Number of frames rendered in-flight.
 } vulkan_swap_chain;
 
 vulkan_swap_chain vulkan_swap_chain_init(vulkan_device *vkd);

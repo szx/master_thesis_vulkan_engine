@@ -15,13 +15,12 @@ vulkan_swap_chain vulkan_swap_chain_init(vulkan_device *vkd) {
 
 void vulkan_swap_chain_free(vulkan_swap_chain *vks) {
   for (size_t i = 0; i < vks->swapChainImageViews.size; i++) {
-    vkDestroyImageView(vks->vkd->device, vks->swapChainImageViews.value[i],
-                       defaultAllocator);
+    vkDestroyImageView(vks->vkd->device, vks->swapChainImageViews.value[i], vka);
   }
   vec_VkImageView_free(&vks->swapChainImageViews);
   vec_VkImage_free(&vks->swapChainImages);
 
-  vkDestroySwapchainKHR(vks->vkd->device, vks->swapChain, defaultAllocator);
+  vkDestroySwapchainKHR(vks->vkd->device, vks->swapChain, vka);
   vks->swapChain = VK_NULL_HANDLE;
 }
 
@@ -110,12 +109,10 @@ void create_swap_chain(vulkan_swap_chain *vks) {
   createInfo.presentMode = presentMode;
   createInfo.clipped = VK_TRUE;
 
-  verify(vkCreateSwapchainKHR(vks->vkd->device, &createInfo, defaultAllocator,
-                              &vks->swapChain) == VK_SUCCESS);
+  verify(vkCreateSwapchainKHR(vks->vkd->device, &createInfo, vka, &vks->swapChain) == VK_SUCCESS);
 
   vks->swapChainImageFormat = surfaceFormat.format;
   vks->swapChainExtent = extent;
-  vks->numFramesInFlight = MAX_FRAMES_IN_FLIGHT;
 }
 
 void get_swap_chain_images(vulkan_swap_chain *vks) {

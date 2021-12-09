@@ -6,9 +6,8 @@
 const char *validationLayers[VALIDATION_LAYERS_SIZE] = {
     "VK_LAYER_KHRONOS_validation"};
 
-const char *deviceExtensions[DEVICE_EXTENSIONS_SIZE] = {
-    VK_KHR_SWAPCHAIN_EXTENSION_NAME};
-const VkAllocationCallbacks *defaultAllocator = NULL;
+const char *deviceExtensions[DEVICE_EXTENSIONS_SIZE] = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+const VkAllocationCallbacks *vka = NULL;
 
 VkResult create_debug_utils_messenger_ext(
     VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
@@ -77,17 +76,17 @@ void vulkan_device_free(vulkan_device *vkd) {
   log_info("vulkan_device_free()");
   vulkan_swap_chain_info_free(&vkd->swapChainInfo);
 
-  vkDestroyCommandPool(vkd->device, vkd->oneShotCommandPool, defaultAllocator);
+  vkDestroyCommandPool(vkd->device, vkd->oneShotCommandPool, vka);
 
-  vkDestroyDevice(vkd->device, defaultAllocator);
+  vkDestroyDevice(vkd->device, vka);
 
   if (validation_layers_enabled()) {
     destroy_debug_utils_messenger_ext(vkd->instance, vkd->debugMessenger, NULL);
   }
 
-  vkDestroySurfaceKHR(vkd->instance, vkd->surface, defaultAllocator);
+  vkDestroySurfaceKHR(vkd->instance, vkd->surface, vka);
 
-  vkDestroyInstance(vkd->instance, defaultAllocator);
+  vkDestroyInstance(vkd->instance, vka);
 
   glfwDestroyWindow(vkd->window);
   glfwTerminate();
@@ -210,8 +209,7 @@ void create_instance(vulkan_device *vkd, data_config *config) {
     createInfo.pNext = NULL;
   }
 
-  verify(vkCreateInstance(&createInfo, defaultAllocator, &vkd->instance) ==
-         VK_SUCCESS);
+  verify(vkCreateInstance(&createInfo, vka, &vkd->instance) == VK_SUCCESS);
 
   free(instanceExtensions);
 }
@@ -233,14 +231,12 @@ void setup_debug_messenger(vulkan_device *vkd) {
                                 VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
   debugCreateInfo.pfnUserCallback = debug_callback;
 
-  verify(create_debug_utils_messenger_ext(vkd->instance, &debugCreateInfo,
-                                          defaultAllocator,
+  verify(create_debug_utils_messenger_ext(vkd->instance, &debugCreateInfo, vka,
                                           &vkd->debugMessenger) == VK_SUCCESS);
 }
 
 void create_surface(vulkan_device *vkd) {
-  verify(glfwCreateWindowSurface(vkd->instance, vkd->window, defaultAllocator,
-                                 &vkd->surface) == VK_SUCCESS);
+  verify(glfwCreateWindowSurface(vkd->instance, vkd->window, vka, &vkd->surface) == VK_SUCCESS);
 }
 
 void query_swap_chain_support(vulkan_device *vkd,
@@ -486,8 +482,7 @@ void create_logical_device(vulkan_device *vkd) {
     createInfo.enabledLayerCount = 0;
   }
 
-  verify(vkCreateDevice(vkd->physicalDevice, &createInfo, defaultAllocator,
-                        &vkd->device) == VK_SUCCESS);
+  verify(vkCreateDevice(vkd->physicalDevice, &createInfo, vka, &vkd->device) == VK_SUCCESS);
   free(queueCreateInfos);
 
   vkGetDeviceQueue(vkd->device, queueFamilies.graphicsFamily, 0,
@@ -505,8 +500,7 @@ void create_one_shot_command_pool(vulkan_device *vkd) {
   poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
   poolInfo.queueFamilyIndex = queueFamilies.graphicsFamily;
 
-  verify(vkCreateCommandPool(vkd->device, &poolInfo, defaultAllocator,
-                             &vkd->oneShotCommandPool) == VK_SUCCESS);
+  verify(vkCreateCommandPool(vkd->device, &poolInfo, vka, &vkd->oneShotCommandPool) == VK_SUCCESS);
 }
 
 uint32_t find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
@@ -539,8 +533,7 @@ VkImageView create_image_view(vulkan_device *vkd, VkImage image,
   viewInfo.subresourceRange.layerCount = arrayLayers;
 
   VkImageView imageView;
-  verify(vkCreateImageView(vkd->device, &viewInfo, defaultAllocator,
-                           &imageView) == VK_SUCCESS);
+  verify(vkCreateImageView(vkd->device, &viewInfo, vka, &imageView) == VK_SUCCESS);
 
   return imageView;
 }
@@ -577,7 +570,6 @@ VkShaderModule create_shader_module(vulkan_device *vkd, char *code,
   createInfo.pCode = (const uint32_t *)code;
 
   VkShaderModule shaderModule;
-  verify(vkCreateShaderModule(vkd->device, &createInfo, defaultAllocator,
-                              &shaderModule) == VK_SUCCESS);
+  verify(vkCreateShaderModule(vkd->device, &createInfo, vka, &shaderModule) == VK_SUCCESS);
   return shaderModule;
 }

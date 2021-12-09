@@ -1,68 +1,6 @@
 #include "render_context.h"
 #include "../codegen/render_context.c"
 
-void create_command_pool(vulkan_swap_chain_frame *frame) {
-  vulkan_queue_families queueFamilies =
-      find_queue_families(frame->vkd, frame->vkd->physicalDevice);
-
-  VkCommandPoolCreateInfo poolInfo = {0};
-  poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-  poolInfo.queueFamilyIndex = queueFamilies.graphicsFamily;
-  poolInfo.flags =
-      VK_COMMAND_POOL_CREATE_TRANSIENT_BIT |
-      VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT; // command buffer is
-                                                       // short-lived,
-                                                       // rerecorded every frame
-
-  verify(vkCreateCommandPool(frame->vkd->device, &poolInfo, defaultAllocator,
-                             &frame->commandPool) == VK_SUCCESS);
-}
-
-void create_command_buffer(vulkan_swap_chain_frame *frame) {
-  VkCommandBufferAllocateInfo allocInfo = {0};
-  allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-  allocInfo.commandPool = frame->commandPool;
-  allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-  allocInfo.commandBufferCount = 1;
-
-  verify(vkAllocateCommandBuffers(frame->vkd->device, &allocInfo,
-                                  &frame->commandBuffer) == VK_SUCCESS);
-}
-
-vulkan_swap_chain_frame
-vulkan_swap_chain_frame_init(vulkan_swap_chain *vks,
-                             uint32_t swapChainImageIndex) {
-  vulkan_swap_chain_frame result;
-  result.vks = vks;
-  result.vkd = vks->vkd;
-  result.commandPool = VK_NULL_HANDLE;
-  result.commandBuffer = VK_NULL_HANDLE;
-  result.framebuffer = VK_NULL_HANDLE;
-  result.swapChainImageIndex = swapChainImageIndex;
-  create_command_pool(&result);
-  create_command_buffer(&result);
-  // create_framebuffer(&result);
-  return result;
-}
-
-void vulkan_swap_chain_frame_free(vulkan_swap_chain_frame *frame) {
-  vkFreeCommandBuffers(frame->vkd->device, frame->commandPool, 1,
-                       &frame->commandBuffer);
-  frame->commandBuffer = VK_NULL_HANDLE;
-  vkDestroyCommandPool(frame->vkd->device, frame->commandPool,
-                       defaultAllocator);
-  frame->commandPool = VK_NULL_HANDLE;
-  vkDestroyFramebuffer(frame->vkd->device, frame->framebuffer,
-                       defaultAllocator);
-  frame->framebuffer = VK_NULL_HANDLE;
-}
-
-vulkan_swap_chain_frame
-vulkan_swap_chain_frame_copy(vulkan_swap_chain_frame *frame) {
-  vulkan_swap_chain_frame result = *frame;
-  return result;
-}
-
 void create_render_pass(vulkan_render_pass *renderPass) {
   // TODO: Separate attachments.
   // TODO: Something better than triangle.
@@ -102,8 +40,7 @@ void create_render_pass(vulkan_render_pass *renderPass) {
   renderPassInfo.dependencyCount = 1;
   renderPassInfo.pDependencies = &dependency;
 
-  verify(vkCreateRenderPass(renderPass->vkd->device, &renderPassInfo,
-                            defaultAllocator,
+  verify(vkCreateRenderPass(renderPass->vkd->device, &renderPassInfo, vka,
                             &renderPass->renderPass) == VK_SUCCESS);
 }
 
@@ -124,31 +61,26 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
   free(fragShaderCode);
 
   VkPipelineShaderStageCreateInfo vertShaderStageInfo = {0};
-  vertShaderStageInfo.sType =
-      VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+  vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
   vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
   vertShaderStageInfo.module = vertShaderModule;
   vertShaderStageInfo.pName = "main";
 
   VkPipelineShaderStageCreateInfo fragShaderStageInfo = {0};
-  fragShaderStageInfo.sType =
-      VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+  fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
   fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
   fragShaderStageInfo.module = fragShaderModule;
   fragShaderStageInfo.pName = "main";
 
-  VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo,
-                                                    fragShaderStageInfo};
+  VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 
   VkPipelineVertexInputStateCreateInfo vertexInputInfo = {0};
-  vertexInputInfo.sType =
-      VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+  vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
   vertexInputInfo.vertexBindingDescriptionCount = 0;
   vertexInputInfo.vertexAttributeDescriptionCount = 0;
 
   VkPipelineInputAssemblyStateCreateInfo inputAssembly = {0};
-  inputAssembly.sType =
-      VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+  inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
   inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
   inputAssembly.primitiveRestartEnable = VK_FALSE;
 
@@ -183,20 +115,17 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
   rasterizer.depthBiasEnable = VK_FALSE;
 
   VkPipelineMultisampleStateCreateInfo multisampling = {0};
-  multisampling.sType =
-      VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+  multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
   multisampling.sampleShadingEnable = VK_FALSE;
   multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 
   VkPipelineColorBlendAttachmentState colorBlendAttachment = {0};
-  colorBlendAttachment.colorWriteMask =
-      VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-      VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+  colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+                                        VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
   colorBlendAttachment.blendEnable = VK_FALSE;
 
   VkPipelineColorBlendStateCreateInfo colorBlending = {0};
-  colorBlending.sType =
-      VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+  colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
   colorBlending.logicOpEnable = VK_FALSE;
   colorBlending.logicOp = VK_LOGIC_OP_COPY;
   colorBlending.attachmentCount = 1;
@@ -211,8 +140,7 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
   pipelineLayoutInfo.setLayoutCount = 0;
   pipelineLayoutInfo.pushConstantRangeCount = 0;
 
-  verify(vkCreatePipelineLayout(renderPass->vkd->device, &pipelineLayoutInfo,
-                                defaultAllocator,
+  verify(vkCreatePipelineLayout(renderPass->vkd->device, &pipelineLayoutInfo, vka,
                                 &renderPass->pipelineLayout) == VK_SUCCESS);
 
   VkGraphicsPipelineCreateInfo pipelineInfo = {0};
@@ -230,18 +158,14 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
   pipelineInfo.subpass = 0;
   pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-  verify(vkCreateGraphicsPipelines(
-             renderPass->vkd->device, VK_NULL_HANDLE, 1, &pipelineInfo,
-             defaultAllocator, &renderPass->graphicsPipeline) == VK_SUCCESS);
+  verify(vkCreateGraphicsPipelines(renderPass->vkd->device, VK_NULL_HANDLE, 1, &pipelineInfo, vka,
+                                   &renderPass->graphicsPipeline) == VK_SUCCESS);
 
-  vkDestroyShaderModule(renderPass->vkd->device, fragShaderModule,
-                        defaultAllocator);
-  vkDestroyShaderModule(renderPass->vkd->device, vertShaderModule,
-                        defaultAllocator);
+  vkDestroyShaderModule(renderPass->vkd->device, fragShaderModule, vka);
+  vkDestroyShaderModule(renderPass->vkd->device, vertShaderModule, vka);
 }
 
-vulkan_render_pass vulkan_render_pass_init(vulkan_swap_chain *vks,
-                                           vulkan_render_pass_type type) {
+vulkan_render_pass vulkan_render_pass_init(vulkan_swap_chain *vks, vulkan_render_pass_type type) {
   vulkan_render_pass result;
   result.vks = vks;
   result.vkd = vks->vkd;
@@ -255,15 +179,111 @@ vulkan_render_pass vulkan_render_pass_init(vulkan_swap_chain *vks,
 }
 
 void vulkan_render_pass_free(vulkan_render_pass *renderPass) {
-  vkDestroyRenderPass(renderPass->vkd->device, renderPass->renderPass,
-                      defaultAllocator);
+  vkDestroyRenderPass(renderPass->vkd->device, renderPass->renderPass, vka);
   renderPass->renderPass = VK_NULL_HANDLE;
-  vkDestroyPipeline(renderPass->vkd->device, renderPass->graphicsPipeline,
-                    defaultAllocator);
+  vkDestroyPipeline(renderPass->vkd->device, renderPass->graphicsPipeline, vka);
   renderPass->graphicsPipeline = VK_NULL_HANDLE;
-  vkDestroyPipelineLayout(renderPass->vkd->device, renderPass->pipelineLayout,
-                          defaultAllocator);
+  vkDestroyPipelineLayout(renderPass->vkd->device, renderPass->pipelineLayout, vka);
   renderPass->pipelineLayout = VK_NULL_HANDLE;
+}
+
+vulkan_pipeline vulkan_pipeline_init(vulkan_swap_chain *vks) {
+  vulkan_pipeline result;
+  result.vks = vks;
+  result.vkd = vks->vkd;
+  result.renderPass = (vulkan_render_pass *)malloc(sizeof(vulkan_render_pass));
+  *result.renderPass = vulkan_render_pass_init(result.vks, ForwardRenderPass);
+  return result;
+}
+
+void vulkan_pipeline_free(vulkan_pipeline *pipeline) {
+  vulkan_render_pass_free(pipeline->renderPass);
+  free(pipeline->renderPass);
+}
+
+void create_command_pool(vulkan_swap_chain_frame *frame) {
+  vulkan_queue_families queueFamilies = find_queue_families(frame->vkd, frame->vkd->physicalDevice);
+
+  VkCommandPoolCreateInfo poolInfo = {0};
+  poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+  poolInfo.queueFamilyIndex = queueFamilies.graphicsFamily;
+  poolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT |
+                   VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT; // command buffer is
+                                                                    // short-lived,
+                                                                    // rerecorded every frame
+
+  verify(vkCreateCommandPool(frame->vkd->device, &poolInfo, vka, &frame->commandPool) ==
+         VK_SUCCESS);
+}
+
+void create_command_buffer(vulkan_swap_chain_frame *frame) {
+  VkCommandBufferAllocateInfo allocInfo = {0};
+  allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+  allocInfo.commandPool = frame->commandPool;
+  allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+  allocInfo.commandBufferCount = 1;
+
+  verify(vkAllocateCommandBuffers(frame->vkd->device, &allocInfo, &frame->commandBuffer) ==
+         VK_SUCCESS);
+}
+
+void create_framebuffer(vulkan_swap_chain_frame *frame) {
+  // TODO: vulkan_pipeline
+  VkFramebufferCreateInfo framebufferInfo = {0};
+  framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+  framebufferInfo.renderPass = frame->pipeline->renderPass->renderPass;
+  framebufferInfo.attachmentCount = 1;
+  framebufferInfo.pAttachments = &frame->vks->swapChainImageViews.value[frame->swapChainImageIndex];
+  framebufferInfo.width = frame->vks->swapChainExtent.width;
+  framebufferInfo.height = frame->vks->swapChainExtent.height;
+  framebufferInfo.layers = 1;
+
+  verify(vkCreateFramebuffer(frame->vkd->device, &framebufferInfo, vka, &frame->framebuffer) ==
+         VK_SUCCESS);
+}
+
+vulkan_swap_chain_frame vulkan_swap_chain_frame_init(vulkan_pipeline *pipeline,
+                                                     uint32_t swapChainImageIndex) {
+  vulkan_swap_chain_frame result;
+  result.pipeline = pipeline;
+  result.vks = pipeline->vks;
+  result.vkd = pipeline->vks->vkd;
+  result.commandPool = VK_NULL_HANDLE;
+  result.commandBuffer = VK_NULL_HANDLE;
+  result.framebuffer = VK_NULL_HANDLE;
+  result.swapChainImageIndex = swapChainImageIndex;
+  create_command_pool(&result);
+  create_command_buffer(&result);
+  create_framebuffer(&result);
+  return result;
+}
+
+void vulkan_swap_chain_frame_free(vulkan_swap_chain_frame *frame) {
+  vkFreeCommandBuffers(frame->vkd->device, frame->commandPool, 1, &frame->commandBuffer);
+  frame->commandBuffer = VK_NULL_HANDLE;
+  vkDestroyCommandPool(frame->vkd->device, frame->commandPool, vka);
+  frame->commandPool = VK_NULL_HANDLE;
+  vkDestroyFramebuffer(frame->vkd->device, frame->framebuffer, vka);
+  frame->framebuffer = VK_NULL_HANDLE;
+}
+
+vulkan_swap_chain_frame vulkan_swap_chain_frame_copy(vulkan_swap_chain_frame *frame) {
+  vulkan_swap_chain_frame result = *frame;
+  return result;
+}
+
+void create_synchronization_objects(vulkan_render_context *rctx) {
+  VkSemaphoreCreateInfo semaphoreInfo = {0};
+  semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+  VkFenceCreateInfo fenceInfo = {0};
+  fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+  fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+  for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+    rctx->imagesInFlight[i] = VK_NULL_HANDLE;
+    vkCreateSemaphore(rctx->vkd->device, &semaphoreInfo, vka, &rctx->imageAvailableSemaphores[i]);
+    vkCreateSemaphore(rctx->vkd->device, &semaphoreInfo, vka, &rctx->renderFinishedSemaphores[i]);
+    vkCreateFence(rctx->vkd->device, &fenceInfo, vka, &rctx->inFlightFences[i]);
+  }
 }
 
 vulkan_render_context vulkan_render_context_init(data_config *config) {
@@ -272,22 +292,136 @@ vulkan_render_context vulkan_render_context_init(data_config *config) {
   *result.vkd = vulkan_device_init(config);
   result.vks = (vulkan_swap_chain *)malloc(sizeof(vulkan_swap_chain));
   *result.vks = vulkan_swap_chain_init(result.vkd);
+  result.pipeline = (vulkan_pipeline *)malloc(sizeof(vulkan_pipeline));
+  *result.pipeline = vulkan_pipeline_init(result.vks);
   result.swapChainFrames = vec_vulkan_swap_chain_frame_init();
   for (uint32_t i = 0; i < result.vks->swapChainImageViews.size; i++) {
-    vulkan_swap_chain_frame frame = vulkan_swap_chain_frame_init(result.vks, i);
+    vulkan_swap_chain_frame frame = vulkan_swap_chain_frame_init(result.pipeline, i);
     vec_vulkan_swap_chain_frame_push_back(&result.swapChainFrames, frame);
   }
-  result.renderPass = (vulkan_render_pass *)malloc(sizeof(vulkan_render_pass));
-  *result.renderPass = vulkan_render_pass_init(result.vks, ForwardRenderPass);
+  create_synchronization_objects(&result);
+  result.currentFrameInFlight = 0;
   return result;
 }
 
-void vulkan_render_context_free(vulkan_render_context *renderContext) {
-  vulkan_render_pass_free(renderContext->renderPass);
-  free(renderContext->renderPass);
-  vec_vulkan_swap_chain_frame_free(&renderContext->swapChainFrames);
-  vulkan_swap_chain_free(renderContext->vks);
-  vulkan_device_free(renderContext->vkd);
-  free(renderContext->vks);
-  free(renderContext->vkd);
+void vulkan_render_context_free(vulkan_render_context *rctx) {
+  rctx->currentFrameInFlight = -1;
+  vec_vulkan_swap_chain_frame_free(&rctx->swapChainFrames);
+  vulkan_pipeline_free(rctx->pipeline);
+  free(rctx->pipeline);
+  vulkan_swap_chain_free(rctx->vks);
+  free(rctx->vks);
+  for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+    vkDestroySemaphore(rctx->vkd->device, rctx->imageAvailableSemaphores[i], vka);
+    vkDestroySemaphore(rctx->vkd->device, rctx->renderFinishedSemaphores[i], vka);
+    vkDestroyFence(rctx->vkd->device, rctx->inFlightFences[i], vka);
+  }
+  vulkan_device_free(rctx->vkd);
+  free(rctx->vkd);
+}
+
+void vulkan_render_context_record_frame_command_buffer(vulkan_pipeline *pipeline,
+                                                       vulkan_swap_chain_frame *frame) {
+  // TODO: vulkan_render_pass_record_frame_buffer
+  VkCommandBufferBeginInfo beginInfo = {0};
+  beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+  verify(vkBeginCommandBuffer(frame->commandBuffer, &beginInfo) == VK_SUCCESS);
+
+  VkRenderPassBeginInfo renderPassInfo = {0};
+  renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+  renderPassInfo.renderPass = pipeline->renderPass->renderPass;
+  renderPassInfo.framebuffer = frame->framebuffer;
+  renderPassInfo.renderArea.offset.x = 0;
+  renderPassInfo.renderArea.offset.y = 0;
+  renderPassInfo.renderArea.extent = pipeline->vks->swapChainExtent;
+
+  VkClearValue clearColor = {{{0.0F, 0.0F, 0.0F, 1.0F}}};
+  renderPassInfo.clearValueCount = 1;
+  renderPassInfo.pClearValues = &clearColor;
+
+  vkCmdBeginRenderPass(frame->commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+  vkCmdBindPipeline(frame->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                    pipeline->renderPass->graphicsPipeline);
+  vkCmdDraw(frame->commandBuffer, 3, 1, 0, 0);
+
+  vkCmdEndRenderPass(frame->commandBuffer);
+
+  verify(vkEndCommandBuffer(frame->commandBuffer) == VK_SUCCESS);
+}
+
+void vulkan_render_context_draw_frame(vulkan_render_context *rctx) {
+  vkWaitForFences(rctx->vkd->device, 1, &rctx->inFlightFences[rctx->currentFrameInFlight], VK_TRUE,
+                  UINT64_MAX);
+
+  uint32_t imageIndex;
+  VkResult result = vkAcquireNextImageKHR(
+      rctx->vkd->device, rctx->vks->swapChain, UINT64_MAX,
+      rctx->imageAvailableSemaphores[rctx->currentFrameInFlight], VK_NULL_HANDLE, &imageIndex);
+
+  if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+    // recreateSwapChain();
+    return;
+  }
+  verify(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR);
+
+  // Pre-submit CPU work:
+  // We have acquired index of next in-flight image, we can now update frame-specific resources
+  // (uniform buffers, push constants).
+  log_debug("imageIndex = %d", imageIndex);
+  vulkan_swap_chain_frame *inFlightFrame = &rctx->swapChainFrames.value[imageIndex];
+  vulkan_render_context_record_frame_command_buffer(rctx->pipeline, inFlightFrame);
+  // scene.updateScene(currentFrameInFlight);
+  // scene.beginCommandBuffer(&framebuffers[imageIndex]);
+  // scene.recordCommandBuffer(currentFrameInFlight, &framebuffers[imageIndex]);
+  // gui.updateGUI(&scene);
+  // gui.recordCommandBuffer(&framebuffers[imageIndex]);
+  // scene.endCommandBuffer(&framebuffers[imageIndex]);
+
+  if (rctx->imagesInFlight[rctx->currentFrameInFlight] != VK_NULL_HANDLE) {
+    vkWaitForFences(rctx->vkd->device, 1, &rctx->imagesInFlight[rctx->currentFrameInFlight],
+                    VK_TRUE, UINT64_MAX);
+  }
+  rctx->imagesInFlight[rctx->currentFrameInFlight] =
+      rctx->inFlightFences[rctx->currentFrameInFlight];
+
+  VkSubmitInfo submitInfo = {0};
+  submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+  VkSemaphore waitSemaphores[] = {rctx->imageAvailableSemaphores[rctx->currentFrameInFlight]};
+  // https://github.com/KhronosGroup/Vulkan-Docs/wiki/Synchronization-Examples#graphics-to-graphics-dependencies
+  // VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+  VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT};
+  submitInfo.waitSemaphoreCount = 1;
+  submitInfo.pWaitSemaphores = waitSemaphores;
+  submitInfo.pWaitDstStageMask = waitStages;
+  submitInfo.commandBufferCount = 1;
+  submitInfo.pCommandBuffers = &inFlightFrame->commandBuffer;
+  VkSemaphore signalSemaphores[] = {rctx->renderFinishedSemaphores[rctx->currentFrameInFlight]};
+  submitInfo.signalSemaphoreCount = 1;
+  submitInfo.pSignalSemaphores = signalSemaphores;
+
+  vkResetFences(rctx->vkd->device, 1, &rctx->inFlightFences[rctx->currentFrameInFlight]);
+
+  verify(vkQueueSubmit(rctx->vkd->graphicsQueue, 1, &submitInfo,
+                       rctx->inFlightFences[rctx->currentFrameInFlight]) == VK_SUCCESS);
+
+  VkPresentInfoKHR presentInfo = {0};
+  presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+  presentInfo.waitSemaphoreCount = 1;
+  presentInfo.pWaitSemaphores = signalSemaphores;
+  VkSwapchainKHR swapChains[] = {rctx->vks->swapChain};
+  presentInfo.swapchainCount = 1;
+  presentInfo.pSwapchains = swapChains;
+  presentInfo.pImageIndices = &imageIndex;
+  result = vkQueuePresentKHR(rctx->vkd->presentQueue, &presentInfo);
+
+  if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
+      rctx->vkd->framebufferResized) {
+    rctx->vkd->framebufferResized = false;
+    // recreateSwapChain();
+    // TODO: Recreate swap chain.
+  }
+  verify(result == VK_SUCCESS);
+
+  rctx->currentFrameInFlight = (rctx->currentFrameInFlight + 1) % MAX_FRAMES_IN_FLIGHT;
 }
