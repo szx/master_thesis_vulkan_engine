@@ -49,7 +49,7 @@ vulkan_accessor vulkan_accessor_init(char *name, size_t offset, size_t size,
   vulkan_accessor result = {0};
   result.name = strdup(name);
   result.offset = offset;
-  result.size = size;
+  result.count = size;
   result.stride = stride;
   result.bufferView = bufferView;
   return result;
@@ -183,9 +183,8 @@ void vulkan_scene_debug_print(vulkan_scene *self) {
   }
   for (size_t i = 0; i < self->accessors.size; i++) {
     vulkan_accessor *accessor = &self->accessors.value[i];
-    log_debug("accessor: '%s' %d %d %d '%s'\n", accessor->name,
-              accessor->offset, accessor->size, accessor->stride,
-              accessor->bufferView->name);
+    log_debug("accessor: '%s' %d %d %d '%s'\n", accessor->name, accessor->offset, accessor->count,
+              accessor->stride, accessor->bufferView->name);
   }
   for (size_t i = 0; i < self->nodes.size; i++) {
     log_debug("node:\n");
@@ -198,9 +197,8 @@ void vulkan_scene_debug_print(vulkan_scene *self) {
                 VkPrimitiveTopology_debug_str(primitive->topology));
       if (primitive->indices != NULL) {
         vulkan_accessor *indices = primitive->indices;
-        log_debug("    indices: '%s' %d %d %d '%s'\n", indices->name,
-                  indices->offset, indices->size, indices->stride,
-                  indices->bufferView->name);
+        log_debug("    indices: '%s' %d %d %d '%s'\n", indices->name, indices->offset,
+                  indices->count, indices->stride, indices->bufferView->name);
       }
       for (size_t k = 0; k < primitive->attributes.size; k++) {
         vulkan_attribute *attribute = &primitive->attributes.value[k];
@@ -210,9 +208,8 @@ void vulkan_scene_debug_print(vulkan_scene *self) {
         vulkan_accessor *accessor = attribute->accessor;
         assert(accessor != NULL);
         if (accessor != NULL) {
-          log_debug("      accessor: '%s' %d %d %d '%s'\n", accessor->name,
-                    accessor->offset, accessor->size, accessor->stride,
-                    accessor->bufferView->name);
+          log_debug("      accessor: '%s' %d %d %d '%s'\n", accessor->name, accessor->offset,
+                    accessor->count, accessor->stride, accessor->bufferView->name);
         }
       }
     }
@@ -282,8 +279,7 @@ vulkan_accessor *find_accessor(vec_vulkan_accessor *accessors,
     vulkan_accessor *accessor = &accessors->value[i];
     vulkan_buffer_view *bufferView =
         find_buffer_view(bufferViews, cgltfAccessor->buffer_view);
-    if (accessor->offset == cgltfAccessor->offset &&
-        accessor->size == cgltfAccessor->count &&
+    if (accessor->offset == cgltfAccessor->offset && accessor->count == cgltfAccessor->count &&
         accessor->stride == cgltfAccessor->stride &&
         strcmp(accessor->bufferView->name, bufferView->name) == 0) {
       return accessor;

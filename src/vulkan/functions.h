@@ -8,8 +8,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include "../core/platform.h"
 #include "../data/config.h"
-#include "../platform.h"
 
 #include "../codegen/vulkan_core.h"
 

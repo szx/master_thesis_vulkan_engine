@@ -3,7 +3,7 @@
 #ifndef VULKAN_SCENE_H
 #define VULKAN_SCENE_H
 
-#include "../platform.h"
+#include "../core/platform.h"
 
 #include "functions.h"
 
@@ -37,7 +37,7 @@ vulkan_buffer_view vulkan_buffer_view_copy(vulkan_buffer_view *self);
 typedef struct vulkan_accessor {
   char *name;
   size_t offset;
-  size_t size;
+  size_t count;
   size_t stride;
   vulkan_buffer_view *bufferView;
 } vulkan_accessor;

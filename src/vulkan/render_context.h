@@ -3,7 +3,8 @@
 #ifndef VULKAN_RENDER_CONTEXT_H
 #define VULKAN_RENDER_CONTEXT_H
 
-#include "../platform.h"
+#include "../core/platform.h"
+#include "scene.h"
 #include "swap_chain.h"
 
 typedef enum vulkan_render_pass_type { ForwardRenderPass } vulkan_render_pass_type;
@@ -62,8 +63,8 @@ typedef struct vulkan_render_context {
   vulkan_swap_chain *vks;                      /// Vulkan swap chain.
   vulkan_pipeline *pipeline;                   /// Rendering pipeline.
   vec_vulkan_swap_chain_frame swapChainFrames; /// Swap chain frames.
-  // TODO: Rendering pipeline.
-  size_t currentFrameInFlight; /// Current frame rendered in flight.
+  vulkan_scene *scene;                         /// Swap chain frames.
+  size_t currentFrameInFlight;                 /// Current frame rendered in flight.
   /// Semaphore signaling that frame has been acquired from swap chain and is ready for drawing.
   VkSemaphore imageAvailableSemaphores[MAX_FRAMES_IN_FLIGHT];
   /// Semaphore signaling that drawing frame is finished and it can be presented.
@@ -76,6 +77,7 @@ typedef struct vulkan_render_context {
 
 vulkan_render_context vulkan_render_context_init(data_config *config);
 void vulkan_render_context_free(vulkan_render_context *rctx);
+void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneName);
 void vulkan_render_context_draw_frame(vulkan_render_context *rctx);
 
 #include "../codegen/render_context.h"

@@ -1,5 +1,5 @@
+#include "../core/platform.h"
 #include "../peg/c_parser.h"
-#include "../platform.h"
 #include "../vulkan/vulkan.h"
 #include "greatest.h"
 

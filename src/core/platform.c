@@ -14,7 +14,12 @@ static FILE *logFile;
 
 void platform_init() { log_init(); }
 
-void platform_free() { log_free(); }
+void platform_free() {
+#if defined(DEBUG)
+  platform_alloc_debug_print();
+#endif
+  log_free();
+}
 
 void log_init() {
   platform_path path = get_executable_dir_file_path("", "log.txt");
@@ -35,16 +40,14 @@ typedef struct panic_args {
   char *msg;
 } panic_args;
 
-static void panic_on_activate_callback(GtkApplication *app,
-                                       panic_args *panicArgs) {
+static void panic_on_activate_callback(GtkApplication *app, panic_args *panicArgs) {
   GtkWidget *window = gtk_application_window_new(app);
-  GtkWidget *dialog = gtk_message_dialog_new(
-      GTK_WINDOW(window), GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL,
-      GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "%s", panicArgs->msg);
+  GtkWidget *dialog =
+      gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL,
+                             GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "%s", panicArgs->msg);
   gtk_window_set_title(GTK_WINDOW(dialog), "Fatal error");
   g_signal_connect(dialog, "response", G_CALLBACK(gtk_window_destroy), NULL);
-  g_signal_connect_swapped(dialog, "response", G_CALLBACK(g_application_quit),
-                           app);
+  g_signal_connect_swapped(dialog, "response", G_CALLBACK(g_application_quit), app);
   gtk_widget_show(GTK_WIDGET(dialog));
 }
 
@@ -58,14 +61,39 @@ void panic(const char *format, ...) {
   va_end(args);
 
   log_fatal(panicArgs.msg);
-  GtkApplication *app = gtk_application_new("com.example.GtkApplication",
-                                            G_APPLICATION_FLAGS_NONE);
-  g_signal_connect(app, "activate", G_CALLBACK(panic_on_activate_callback),
-                   &panicArgs);
+  GtkApplication *app = gtk_application_new("com.example.GtkApplication", G_APPLICATION_FLAGS_NONE);
+  g_signal_connect(app, "activate", G_CALLBACK(panic_on_activate_callback), &panicArgs);
   g_application_run(G_APPLICATION(app), 0, NULL);
   g_object_unref(app);
 
   exit(EXIT_FAILURE);
+}
+
+void *platform_alloc_struct(const core_type_info *typeInfo) {
+  log_debug("alloc_struct %s: size=%d", typeInfo->name, typeInfo->size);
+  void *allocatedMemory = core_alloc_struct(typeInfo);
+  verify(allocatedMemory != NULL);
+  log_debug("alloc_struct: %p", allocatedMemory);
+  return allocatedMemory;
+}
+
+void platform_free_struct(void **memory, const core_type_info *typeInfo) {
+  log_debug("free_struct %s: %p", typeInfo->name, *memory);
+  void *memoryFreeResult = core_free_struct(*memory, typeInfo);
+  verify(memoryFreeResult == *memory);
+  *memory = NULL;
+}
+
+void platform_alloc_debug_print() {
+#if defined(DEBUG)
+#define STRUCT(type)                                                                               \
+  if (type##_alloc_stats.allocNum != type##_alloc_stats.freeNum) {                                 \
+    log_debug("alloc_debug_print:\tPOSSIBLE MEMLEAK\t%s\tallocNum=%d\tfreeNum=%d",                 \
+              type##_type_info.name, type##_alloc_stats.allocNum, type##_alloc_stats.freeNum);     \
+  }
+#include "../codegen/struct.def"
+#undef STRUCT
+#endif
 }
 
 platform_path platform_path_init(const char *data) {
@@ -82,13 +110,15 @@ platform_path platform_path_copy(platform_path *self) {
   return copy;
 }
 
-const char *platform_path_c_str(platform_path *self) {
-  return str_c_str(&self->data);
-}
+const char *platform_path_c_str(platform_path *self) { return str_c_str(&self->data); }
 
 void platform_path_append(platform_path *self, const char *dirOrFileName) {
   str_append(&self->data, G_DIR_SEPARATOR_S);
   str_append(&self->data, dirOrFileName);
+}
+
+void platform_path_append_ext(platform_path *self, const char *ext) {
+  str_append(&self->data, ext);
 }
 
 bool platform_path_equals(platform_path *self, platform_path *other) {
@@ -136,8 +166,7 @@ platform_path get_executable_dir_path() {
 #endif
 }
 
-platform_path get_executable_dir_file_path(const char *dirName,
-                                           const char *fileName) {
+platform_path get_executable_dir_file_path(const char *dirName, const char *fileName) {
   platform_path result = get_executable_dir_path();
   platform_path_append(&result, dirName);
   platform_path_append(&result, fileName);

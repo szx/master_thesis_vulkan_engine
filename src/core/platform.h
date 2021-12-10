@@ -1,3 +1,5 @@
+/* Basic cross-platform functions. Third-party libraries. */
+
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
@@ -18,6 +20,7 @@
 #define VULKAN_HEADER_PATH "VULKAN_HEADER_PATH should be defined by CMake"
 #endif
 
+#include "alloc.h"
 #include "cglm/cglm.h"
 #include "cgltf.h"
 #include "log.h"
@@ -30,8 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static_assert(sizeof(char) == sizeof(uint8_t),
-              "sizeof(char) != sizeof(uint8_t)");
+static_assert(sizeof(char) == sizeof(uint8_t), "sizeof(char) != sizeof(uint8_t)");
 
 // Allocates and initializes all global state used by functions below.
 void platform_init();
@@ -48,12 +50,31 @@ void log_free();
 // Shows message dialog and exits.
 void panic(const char *format, ...);
 
-#define verify(cond)                                                           \
-  do {                                                                         \
-    if (!(cond)) {                                                             \
-      panic("%s:%s: %s failed", __FILE__, __LINE__, #cond);                    \
-    }                                                                          \
+// Use alloc_struct macro.
+// Returns newly allocated memory.
+// Initializes struct.
+void *platform_alloc_struct(const core_type_info *typeInfo);
+
+// Use free_struct macro.
+// Frees memory allocated for struct.
+// Sets memory pointer to NULL.
+void platform_free_struct(void **memory, const core_type_info *typeInfo);
+
+// Logs debug info about all allocations.
+void platform_alloc_debug_print();
+
+#define verify(cond)                                                                               \
+  do {                                                                                             \
+    if (!(cond)) {                                                                                 \
+      panic("%s:%s: %s failed", __FILE__, __LINE__, #cond);                                        \
+    }                                                                                              \
   } while (0)
+
+#define alloc_struct(type) (type *)platform_alloc_struct(&type##_type_info)
+// TODO: init_struct
+// TODO: free_struct should call *_free()
+// TODO: remove type parameter (set tracking pointers? embed info into pointer?)
+#define free_struct(type, name) platform_free_struct((void *)&name, &type##_type_info)
 
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
@@ -69,6 +90,7 @@ platform_path platform_path_copy(platform_path *self);
 const char *platform_path_c_str(platform_path *self);
 
 void platform_path_append(platform_path *self, const char *dirOrFileName);
+void platform_path_append_ext(platform_path *self, const char *ext);
 bool platform_path_equals(platform_path *self, platform_path *other);
 bool platform_path_dirname_equals(platform_path *self, platform_path *other);
 bool platform_path_ext_equals(platform_path *self, const char *ext);
@@ -82,8 +104,7 @@ str platform_path_get_basename(platform_path *self);
 platform_path get_executable_dir_path();
 
 // Returns new path to file in specified directory.
-platform_path get_executable_dir_file_path(const char *dirName,
-                                           const char *fileName);
+platform_path get_executable_dir_file_path(const char *dirName, const char *fileName);
 
 // Returns new path to file in assets directory.
 platform_path get_asset_file_path(const char *dirName, const char *fileName);

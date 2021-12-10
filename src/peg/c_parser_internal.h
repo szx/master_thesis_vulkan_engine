@@ -3,7 +3,7 @@
 #ifndef C_PARSER_INTERNAL_H
 #define C_PARSER_INTERNAL_H
 
-#include "platform.h"
+#include "../core/platform.h"
 
 typedef enum c_parser_ast_node_type {
   // lists
@@ -294,6 +294,6 @@ void c_parser_handle_comment(c_parser_state *state, c_parser_str_range range);
 // Prints parser state to stdout.
 void c_parser_debug_print(c_parser_state *state);
 
-#include "codegen/c_parser_internal.h"
+#include "../codegen/c_parser_internal.h"
 
 #endif /* !C_PARSER_INTERNAL_H */

@@ -191,14 +191,14 @@ vulkan_pipeline vulkan_pipeline_init(vulkan_swap_chain *vks) {
   vulkan_pipeline result;
   result.vks = vks;
   result.vkd = vks->vkd;
-  result.renderPass = (vulkan_render_pass *)malloc(sizeof(vulkan_render_pass));
+  result.renderPass = alloc_struct(vulkan_render_pass);
   *result.renderPass = vulkan_render_pass_init(result.vks, ForwardRenderPass);
   return result;
 }
 
 void vulkan_pipeline_free(vulkan_pipeline *pipeline) {
   vulkan_render_pass_free(pipeline->renderPass);
-  free(pipeline->renderPass);
+  free_struct(vulkan_render_pass, pipeline->renderPass);
 }
 
 void create_command_pool(vulkan_swap_chain_frame *frame) {
@@ -288,36 +288,51 @@ void create_synchronization_objects(vulkan_render_context *rctx) {
 
 vulkan_render_context vulkan_render_context_init(data_config *config) {
   vulkan_render_context result;
-  result.vkd = (vulkan_device *)malloc(sizeof(vulkan_device));
+  result.vkd = alloc_struct(vulkan_device);
   *result.vkd = vulkan_device_init(config);
-  result.vks = (vulkan_swap_chain *)malloc(sizeof(vulkan_swap_chain));
+  result.vks = alloc_struct(vulkan_swap_chain);
   *result.vks = vulkan_swap_chain_init(result.vkd);
-  result.pipeline = (vulkan_pipeline *)malloc(sizeof(vulkan_pipeline));
+  result.pipeline = alloc_struct(vulkan_pipeline);
   *result.pipeline = vulkan_pipeline_init(result.vks);
   result.swapChainFrames = vec_vulkan_swap_chain_frame_init();
   for (uint32_t i = 0; i < result.vks->swapChainImageViews.size; i++) {
     vulkan_swap_chain_frame frame = vulkan_swap_chain_frame_init(result.pipeline, i);
     vec_vulkan_swap_chain_frame_push_back(&result.swapChainFrames, frame);
   }
-  create_synchronization_objects(&result);
   result.currentFrameInFlight = 0;
+  result.scene = NULL;
+  create_synchronization_objects(&result);
   return result;
 }
 
 void vulkan_render_context_free(vulkan_render_context *rctx) {
+  assert(rctx->scene != NULL);
   rctx->currentFrameInFlight = -1;
+  vulkan_scene_free(rctx->scene);
+  free_struct(vulkan_scene, rctx->scene);
   vec_vulkan_swap_chain_frame_free(&rctx->swapChainFrames);
   vulkan_pipeline_free(rctx->pipeline);
-  free(rctx->pipeline);
+  free_struct(vulkan_pipeline, rctx->pipeline);
   vulkan_swap_chain_free(rctx->vks);
-  free(rctx->vks);
+  free_struct(vulkan_swap_chain, rctx->vks);
   for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
     vkDestroySemaphore(rctx->vkd->device, rctx->imageAvailableSemaphores[i], vka);
     vkDestroySemaphore(rctx->vkd->device, rctx->renderFinishedSemaphores[i], vka);
     vkDestroyFence(rctx->vkd->device, rctx->inFlightFences[i], vka);
   }
   vulkan_device_free(rctx->vkd);
-  free(rctx->vkd);
+  free_struct(vulkan_device, rctx->vkd);
+}
+
+void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneName) {
+  assert(rctx->scene == NULL);
+  platform_path gltfPath = get_asset_file_path(sceneName, sceneName);
+  platform_path_append_ext(&gltfPath, ".gltf");
+  rctx->scene = alloc_struct(vulkan_scene);
+  *rctx->scene = parse_gltf_file(gltfPath);
+  platform_path_free(&gltfPath);
+  vulkan_scene_debug_print(rctx->scene);
+  // TODO: Copy resources to GPU. (deferred? tracking)
 }
 
 void vulkan_render_context_record_frame_command_buffer(vulkan_pipeline *pipeline,
@@ -351,6 +366,7 @@ void vulkan_render_context_record_frame_command_buffer(vulkan_pipeline *pipeline
 }
 
 void vulkan_render_context_draw_frame(vulkan_render_context *rctx) {
+  assert(rctx->scene != NULL);
   vkWaitForFences(rctx->vkd->device, 1, &rctx->inFlightFences[rctx->currentFrameInFlight], VK_TRUE,
                   UINT64_MAX);
 
@@ -368,7 +384,7 @@ void vulkan_render_context_draw_frame(vulkan_render_context *rctx) {
   // Pre-submit CPU work:
   // We have acquired index of next in-flight image, we can now update frame-specific resources
   // (uniform buffers, push constants).
-  log_debug("imageIndex = %d", imageIndex);
+  // log_debug("imageIndex = %d", imageIndex);
   vulkan_swap_chain_frame *inFlightFrame = &rctx->swapChainFrames.value[imageIndex];
   vulkan_render_context_record_frame_command_buffer(rctx->pipeline, inFlightFrame);
   // scene.updateScene(currentFrameInFlight);

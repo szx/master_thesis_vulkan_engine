@@ -4,7 +4,7 @@
 %value "c_parser_ast_node *"
 
 %header {
-  #include "../c_parser_internal.h"
+  #include "c_parser_internal.h"
   c_parser_state c_parser_execute(char *source);
 }
 

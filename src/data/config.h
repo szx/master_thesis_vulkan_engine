@@ -4,7 +4,7 @@
 #define DATA_CONFIG_H
 
 #include "../codegen/config.h"
-#include "../platform.h"
+#include "../core/platform.h"
 
 #include <sqlite3.h>
 
