@@ -3,11 +3,6 @@
 #ifndef VULKAN_FUNCTIONS_H
 #define VULKAN_FUNCTIONS_H
 
-#define VK_ENABLE_BETA_EXTENSIONS
-#include "vulkan/vulkan.h"
-
-#include <GLFW/glfw3.h>
-
 #include "../core/platform.h"
 #include "../data/config.h"
 

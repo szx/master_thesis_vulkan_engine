@@ -1,4 +1,5 @@
 STRUCT(core_type_info)
+STRUCT(core_type_alloc_stats)
 STRUCT(platform_path)
 STRUCT(vulkan_swap_chain)
 STRUCT(vulkan_queue_families)

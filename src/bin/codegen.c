@@ -1,6 +1,9 @@
 #include "../core/platform.h"
 #include "../peg/c_parser.h"
 
+// Toggle after updating vulkan headers.
+static const bool ignore_vulkan_header = true;
+
 static platform_path srcPath;
 static platform_path vulkanHeaderPath;
 static lst_platform_path srcChildPathLst;
@@ -198,7 +201,9 @@ int main(int argc, char *argv[]) {
   srcChildPathLst = get_dir_children(&srcPath);
   codegenPath = platform_path_copy(&srcPath);
   platform_path_append(&codegenPath, "codegen");
-  lst_platform_path_push_front(&srcChildPathLst, platform_path_copy(&vulkanHeaderPath));
+  if (!ignore_vulkan_header) {
+    lst_platform_path_push_front(&srcChildPathLst, platform_path_copy(&vulkanHeaderPath));
+  }
 
   str structDefCode = str_init("");
   str headerDefCode = str_init("");

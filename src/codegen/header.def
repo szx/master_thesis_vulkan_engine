@@ -1,4 +1,9 @@
 #if defined(ROOT)
+#include "core/thirdparty.h"
+#elif defined(PARENT)
+#include "../core/thirdparty.h"
+#endif
+#if defined(ROOT)
 #include "core/alloc.h"
 #elif defined(PARENT)
 #include "../core/alloc.h"

@@ -4,12 +4,6 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 
-#define CGLTF_IMPLEMENTATION
-#include "cgltf.h"
-
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 static FILE *logFile;
 
 void platform_init() { log_init(); }
@@ -216,7 +210,9 @@ char *read_text_file(platform_path *path, size_t *sourceLength) {
     fseek(file, 0, SEEK_SET);
 
     result = (char *)malloc(size + 1);
-    fread(result, size, 1, file);
+    if (fread(result, size, 1, file) != 1) {
+      return NULL;
+    }
     result[size] = 0;
     if (sourceLength != NULL) {
       *sourceLength = size;

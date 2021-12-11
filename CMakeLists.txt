@@ -95,6 +95,7 @@ foreach (C_CODEGEN_SOURCE_PATH ${C_CODEGEN_SOURCES})
     list(REMOVE_ITEM C_SOURCES "${C_CODEGEN_SOURCE_PATH}")
 endforeach ()
 file(GLOB_RECURSE C_HEADERS "src/*.h")
+file(GLOB_RECURSE C_PRECOMPILED_HEADERS "src/core/thirdparty.h")
 file(GLOB TEST_FILES_DIR "test")
 file(GLOB_RECURSE TEST_FILES "test/*.*")
 file(GLOB ASSETS_FILES_DIR "assets")
@@ -136,15 +137,22 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
 ADD_DEFINITIONS(-DSRC_PATH="${CMAKE_CURRENT_SOURCE_DIR}/src")
 ADD_DEFINITIONS(-DVULKAN_HEADER_PATH="${VULKAN_INCLUDE_PATH}/vulkan/vulkan_core.h")
 
+# Compiler and linker flags for ASAN.
+set(ASAN_FLAGS "-fsanitize=address" "-fsanitize=undefined")
+# Compiler and linker flags for hardening.
+set(HARDENING_FLAGS "-fstack-protector-all")
+
 # define executables
 message(STATUS "C_HEADERS: ${C_HEADERS}")
 message(STATUS "C_SOURCES: ${C_SOURCES}")
 message(STATUS "C_BIN_SOURCES: ${C_BIN_SOURCES}")
+message(STATUS "C_PRECOMPILED_HEADERS: ${C_PRECOMPILED_HEADERS}")
 message(STATUS "C_CODEGEN_SOURCES: ${C_CODEGEN_SOURCES}")
 foreach (C_BIN_SOURCE_PATH ${C_BIN_SOURCES})
     get_filename_component(EXECUTABLE_NAME ${C_BIN_SOURCE_PATH} NAME_WE)
     add_executable(${EXECUTABLE_NAME} ${C_BIN_SOURCE_PATH} ${C_SOURCES} ${C_HEADERS} ${C_GENERATOR_PEGS_OUTPUTS})
     target_include_directories(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_INCLUDE_PATHS})
+    target_precompile_headers(${EXECUTABLE_NAME} PRIVATE ${C_PRECOMPILED_HEADERS})
     target_sources(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_ADDITIONAL_SOURCES})
     target_link_directories(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_LIBRARY_PATHS})
     target_link_libraries(${EXECUTABLE_NAME} LINK_PUBLIC ${EXTERNAL_LIBRARIES})
@@ -152,16 +160,24 @@ foreach (C_BIN_SOURCE_PATH ${C_BIN_SOURCES})
     add_dependencies(${EXECUTABLE_NAME} copy_resources)
     if (NOT ${EXECUTABLE_NAME} STREQUAL "codegen")
         add_dependencies(${EXECUTABLE_NAME} codegen)
+        if ((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
+            target_compile_options(${EXECUTABLE_NAME} PUBLIC)
+            target_link_options(${EXECUTABLE_NAME} PUBLIC ${ASAN_FLAGS})
+        endif ()
+    else ()
+        add_custom_command(
+                TARGET codegen POST_BUILD
+                COMMAND ${CMAKE_CURRENT_BINARY_DIR}/codegen)
     endif ()
     # add compiler options
     if ((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
         target_compile_options(${EXECUTABLE_NAME} PUBLIC
                 -Wall -Wextra -pedantic
                 -Werror
-                -fsanitize=address -fsanitize=undefined -fstack-protector-all
+                ${HARDENING_FLAGS}
                 -Wno-unused-parameter -Wno-unused-variable)
         target_link_options(${EXECUTABLE_NAME} PUBLIC
-                -fsanitize=address -fsanitize=undefined -fstack-protector-all)
+                ${HARDENING_FLAGS})
     elseif (CMAKE_C_COMPILER_ID STREQUAL "MSVC")
         add_compile_options(/W4 /WX)
     else ()

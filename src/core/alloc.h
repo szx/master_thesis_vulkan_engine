@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-/// struct foo {}; -> extern core_type_info *foo_type_info;
+/// struct foo {}; -> extern core_type_info foo_type_info;
 typedef struct core_type_info {
   const char *name;
   const size_t size;
@@ -18,6 +18,8 @@ typedef struct core_type_info {
 #undef STRUCT
 
 #if defined(DEBUG)
+/// struct foo {}; -> extern core_type_alloc_stats foo_alloc_stats;
+
 typedef struct core_type_alloc_stats {
   size_t allocNum;
   size_t freeNum;
