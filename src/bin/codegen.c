@@ -77,9 +77,25 @@ static bool struct_callback(c_parser_ast_node *node, void *callbackData) {
       c_parser_ast_node *identifier = lst_c_parser_ast_node_ptr_front(&node->childNodes)->node;
       assert(identifier);
       // c_parser_ast_node_debug_print(data->state, identifier, 0);
-      str_append(data->structDefCode, "STRUCT(");
+      str_append(data->structDefCode, "#define STRUCT_");
+      str_append_node(data->structDefCode, data->state, identifier);
+      str_append(data->structDefCode, " 1\n");
+      str_append(data->structDefCode, "#ifdef STRUCT_COND\n");
+      str_append(data->structDefCode, "#  if STRUCT_COND(");
+      str_append_node(data->structDefCode, data->state, identifier);
+      str_append(data->structDefCode, ") == 1\n");
+      str_append(data->structDefCode, "   STRUCT_COND_TRUE(");
       str_append_node(data->structDefCode, data->state, identifier);
       str_append(data->structDefCode, ")\n");
+      str_append(data->structDefCode, "#  else\n");
+      str_append(data->structDefCode, "   STRUCT_COND_FALSE(");
+      str_append_node(data->structDefCode, data->state, identifier);
+      str_append(data->structDefCode, ")\n");
+      str_append(data->structDefCode, "#  endif\n");
+      str_append(data->structDefCode, "#endif\n");
+      str_append(data->structDefCode, "STRUCT(");
+      str_append_node(data->structDefCode, data->state, identifier);
+      str_append(data->structDefCode, ")\n\n");
     }
   }
   return node->type == TranslationUnit || node->type == LanguageLinkage ||
@@ -89,7 +105,7 @@ static bool struct_callback(c_parser_ast_node *node, void *callbackData) {
 static bool function_declaration_callback(c_parser_ast_node *node, void *callbackData) {
   c_parser_callbackData *data = callbackData;
   if (node->type == FunctionDeclaration) {
-    if (data->isVulkanHeader) {
+    if (!data->isVulkanHeader) {
       // c_parser_ast_node_debug_print(data->state, node, 0);
       lst_c_parser_ast_node_ptr_it it = lst_c_parser_ast_node_ptr_it_each(&node->childNodes);
       c_parser_ast_node *declarationSpecifiers = it.ref->node;
@@ -100,9 +116,15 @@ static bool function_declaration_callback(c_parser_ast_node *node, void *callbac
       lst_c_parser_ast_node_ptr_it_step(&it);
       c_parser_ast_node *parameterList = it.ref->node;
       assert(parameterList);
-      // TODO: Generate Vulkan wrappers.
       // c_parser_ast_node_debug_print(data->state, identifier, 0);
+      str_append(data->structDefCode, "#define FUNC_");
+      str_append_node(data->structDefCode, data->state, identifier);
+      str_append(data->structDefCode, " 1\n");
+      str_append(data->structDefCode, "FUNC(");
+      str_append_node(data->structDefCode, data->state, identifier);
+      str_append(data->structDefCode, ")\n\n");
     }
+    // TODO: Generate Vulkan wrappers.
   }
   return node->type == TranslationUnit || node->type == LanguageLinkage ||
          node->type == TypedefStructDeclaration;
@@ -119,6 +141,27 @@ void str_append_source_comment(str *self) {
                    "// included at the beginning of corresponding source file.\n\n");
 }
 
+void str_append_meta_defines(str *self) {
+  str_append(self, "// This file is auto-generated.\n");
+  str_append(self, "// It contains X-macros.\n");
+  str_append(self, "#ifndef STRUCT\n");
+  str_append(self, "#define STRUCT(name)\n");
+  str_append(self, "#endif\n");
+  str_append(self, "#ifndef FUNC\n");
+  str_append(self, "#define FUNC(name)\n");
+  str_append(self, "#endif\n");
+  str_append(self, "\n");
+}
+
+void str_append_meta_undefs(str *self) {
+  str_append(self, "\n");
+  str_append(self, "#undef STRUCT\n");
+  str_append(self, "#undef STRUCT_COND\n");
+  str_append(self, "#undef STRUCT_COND_TRUE\n");
+  str_append(self, "#undef STRUCT_COND_FALSE\n");
+  str_append(self, "#undef FUNC\n");
+  str_append(self, "\n");
+}
 void str_append_header_def(str *headerDefCode, platform_path *headerPath) {
   const char *relativeHeaderPath = platform_path_c_str(headerPath) + srcPath.data.size + 1;
   log_info("relative header path: %s\n", relativeHeaderPath);
@@ -207,6 +250,7 @@ int main(int argc, char *argv[]) {
 
   str structDefCode = str_init("");
   str headerDefCode = str_init("");
+  str_append_meta_defines(&structDefCode);
   foreach (lst_platform_path, &srcChildPathLst, it) {
     if (!platform_path_dirname_equals(it.ref, &codegenPath)) {
       if (platform_path_ext_equals(it.ref, ".h")) {
@@ -215,8 +259,9 @@ int main(int argc, char *argv[]) {
     }
     platform_path_free(it.ref);
   }
+  str_append_meta_undefs(&structDefCode);
   platform_path structDefPath = platform_path_copy(&codegenPath);
-  platform_path_append(&structDefPath, "struct.def");
+  platform_path_append(&structDefPath, "meta.def");
   write_text_file(&structDefPath, &structDefCode);
 
   platform_path headerDefPath = platform_path_copy(&codegenPath);

@@ -1,0 +1,709 @@
+// This file is auto-generated.
+// It contains X-macros.
+#ifndef STRUCT
+#define STRUCT(name)
+#endif
+#ifndef FUNC
+#define FUNC(name)
+#endif
+
+#define STRUCT_core_type_alloc_stats 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(core_type_alloc_stats) == 1
+   STRUCT_COND_TRUE(core_type_alloc_stats)
+#  else
+   STRUCT_COND_FALSE(core_type_alloc_stats)
+#  endif
+#endif
+STRUCT(core_type_alloc_stats)
+
+#define STRUCT_core_type_info 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(core_type_info) == 1
+   STRUCT_COND_TRUE(core_type_info)
+#  else
+   STRUCT_COND_FALSE(core_type_info)
+#  endif
+#endif
+STRUCT(core_type_info)
+
+#define FUNC_core_alloc_struct 1
+FUNC(core_alloc_struct)
+
+#define FUNC_core_free_struct 1
+FUNC(core_free_struct)
+
+#define STRUCT_platform_path 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(platform_path) == 1
+   STRUCT_COND_TRUE(platform_path)
+#  else
+   STRUCT_COND_FALSE(platform_path)
+#  endif
+#endif
+STRUCT(platform_path)
+
+#define FUNC_platform_init 1
+FUNC(platform_init)
+
+#define FUNC_platform_free 1
+FUNC(platform_free)
+
+#define FUNC_log_init 1
+FUNC(log_init)
+
+#define FUNC_log_free 1
+FUNC(log_free)
+
+#define FUNC_panic 1
+FUNC(panic)
+
+#define FUNC_platform_alloc_struct 1
+FUNC(platform_alloc_struct)
+
+#define FUNC_platform_free_struct 1
+FUNC(platform_free_struct)
+
+#define FUNC_platform_alloc_debug_print 1
+FUNC(platform_alloc_debug_print)
+
+#define FUNC_platform_path_init 1
+FUNC(platform_path_init)
+
+#define FUNC_platform_path_free 1
+FUNC(platform_path_free)
+
+#define FUNC_platform_path_copy 1
+FUNC(platform_path_copy)
+
+#define FUNC_platform_path_c_str 1
+FUNC(platform_path_c_str)
+
+#define FUNC_platform_path_append 1
+FUNC(platform_path_append)
+
+#define FUNC_platform_path_append_ext 1
+FUNC(platform_path_append_ext)
+
+#define FUNC_platform_path_equals 1
+FUNC(platform_path_equals)
+
+#define FUNC_platform_path_dirname_equals 1
+FUNC(platform_path_dirname_equals)
+
+#define FUNC_platform_path_ext_equals 1
+FUNC(platform_path_ext_equals)
+
+#define FUNC_platform_path_get_dirname 1
+FUNC(platform_path_get_dirname)
+
+#define FUNC_platform_path_get_basename 1
+FUNC(platform_path_get_basename)
+
+#define FUNC_get_executable_dir_path 1
+FUNC(get_executable_dir_path)
+
+#define FUNC_get_executable_dir_file_path 1
+FUNC(get_executable_dir_file_path)
+
+#define FUNC_get_asset_file_path 1
+FUNC(get_asset_file_path)
+
+#define FUNC_get_dir_children 1
+FUNC(get_dir_children)
+
+#define FUNC_read_text_file 1
+FUNC(read_text_file)
+
+#define FUNC_write_text_file 1
+FUNC(write_text_file)
+
+#define STRUCT_vulkan_swap_chain 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_swap_chain) == 1
+   STRUCT_COND_TRUE(vulkan_swap_chain)
+#  else
+   STRUCT_COND_FALSE(vulkan_swap_chain)
+#  endif
+#endif
+STRUCT(vulkan_swap_chain)
+
+#define FUNC_vulkan_swap_chain_init 1
+FUNC(vulkan_swap_chain_init)
+
+#define FUNC_vulkan_swap_chain_free 1
+FUNC(vulkan_swap_chain_free)
+
+#define FUNC_choose_swap_surface_format 1
+FUNC(choose_swap_surface_format)
+
+#define FUNC_choose_swap_present_mode 1
+FUNC(choose_swap_present_mode)
+
+#define FUNC_choose_swap_extent 1
+FUNC(choose_swap_extent)
+
+#define FUNC_create_swap_chain 1
+FUNC(create_swap_chain)
+
+#define FUNC_get_swap_chain_images 1
+FUNC(get_swap_chain_images)
+
+#define FUNC_create_swap_chain_image_views 1
+FUNC(create_swap_chain_image_views)
+
+#define STRUCT_vulkan_queue_families 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_queue_families) == 1
+   STRUCT_COND_TRUE(vulkan_queue_families)
+#  else
+   STRUCT_COND_FALSE(vulkan_queue_families)
+#  endif
+#endif
+STRUCT(vulkan_queue_families)
+
+#define STRUCT_vulkan_swap_chain_info 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_swap_chain_info) == 1
+   STRUCT_COND_TRUE(vulkan_swap_chain_info)
+#  else
+   STRUCT_COND_FALSE(vulkan_swap_chain_info)
+#  endif
+#endif
+STRUCT(vulkan_swap_chain_info)
+
+#define STRUCT_vulkan_limits 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_limits) == 1
+   STRUCT_COND_TRUE(vulkan_limits)
+#  else
+   STRUCT_COND_FALSE(vulkan_limits)
+#  endif
+#endif
+STRUCT(vulkan_limits)
+
+#define STRUCT_vulkan_device 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_device) == 1
+   STRUCT_COND_TRUE(vulkan_device)
+#  else
+   STRUCT_COND_FALSE(vulkan_device)
+#  endif
+#endif
+STRUCT(vulkan_device)
+
+#define FUNC_vulkan_queue_families_free 1
+FUNC(vulkan_queue_families_free)
+
+#define FUNC_vulkan_queue_families_complete 1
+FUNC(vulkan_queue_families_complete)
+
+#define FUNC_vulkan_swap_chain_info_init 1
+FUNC(vulkan_swap_chain_info_init)
+
+#define FUNC_vulkan_swap_chain_info_free 1
+FUNC(vulkan_swap_chain_info_free)
+
+#define FUNC_vulkan_limits_free 1
+FUNC(vulkan_limits_free)
+
+#define FUNC_vulkan_device_init 1
+FUNC(vulkan_device_init)
+
+#define FUNC_vulkan_device_free 1
+FUNC(vulkan_device_free)
+
+#define FUNC_glfw_framebuffer_resize_callback 1
+FUNC(glfw_framebuffer_resize_callback)
+
+#define FUNC_glfw_key_callback 1
+FUNC(glfw_key_callback)
+
+#define FUNC_glfw_mouse_callback 1
+FUNC(glfw_mouse_callback)
+
+#define FUNC_create_window 1
+FUNC(create_window)
+
+#define FUNC_validation_layers_enabled 1
+FUNC(validation_layers_enabled)
+
+#define FUNC_check_validation_layer_support 1
+FUNC(check_validation_layer_support)
+
+#define FUNC_create_instance 1
+FUNC(create_instance)
+
+#define FUNC_setup_debug_messenger 1
+FUNC(setup_debug_messenger)
+
+#define FUNC_create_surface 1
+FUNC(create_surface)
+
+#define FUNC_query_swap_chain_support 1
+FUNC(query_swap_chain_support)
+
+#define FUNC_check_device_extension_support 1
+FUNC(check_device_extension_support)
+
+#define FUNC_is_physical_device_suitable 1
+FUNC(is_physical_device_suitable)
+
+#define FUNC_pick_physical_device 1
+FUNC(pick_physical_device)
+
+#define FUNC_find_queue_families 1
+FUNC(find_queue_families)
+
+#define FUNC_find_limits 1
+FUNC(find_limits)
+
+#define FUNC_create_logical_device 1
+FUNC(create_logical_device)
+
+#define FUNC_create_one_shot_command_pool 1
+FUNC(create_one_shot_command_pool)
+
+#define FUNC_find_memory_type 1
+FUNC(find_memory_type)
+
+#define FUNC_find_depth_format 1
+FUNC(find_depth_format)
+
+#define FUNC_create_image 1
+FUNC(create_image)
+
+#define FUNC_create_image_view 1
+FUNC(create_image_view)
+
+#define FUNC_create_buffer 1
+FUNC(create_buffer)
+
+#define FUNC_begin_single_time_commands 1
+FUNC(begin_single_time_commands)
+
+#define FUNC_end_single_time_commands 1
+FUNC(end_single_time_commands)
+
+#define FUNC_copy_buffer 1
+FUNC(copy_buffer)
+
+#define FUNC_copy_buffer_to_image 1
+FUNC(copy_buffer_to_image)
+
+#define FUNC_generate_mipmaps 1
+FUNC(generate_mipmaps)
+
+#define FUNC_transition_image_layout 1
+FUNC(transition_image_layout)
+
+#define FUNC_create_shader_module 1
+FUNC(create_shader_module)
+
+#define STRUCT_vulkan_geometry_buffer 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_geometry_buffer) == 1
+   STRUCT_COND_TRUE(vulkan_geometry_buffer)
+#  else
+   STRUCT_COND_FALSE(vulkan_geometry_buffer)
+#  endif
+#endif
+STRUCT(vulkan_geometry_buffer)
+
+#define STRUCT_vulkan_buffer_view 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_buffer_view) == 1
+   STRUCT_COND_TRUE(vulkan_buffer_view)
+#  else
+   STRUCT_COND_FALSE(vulkan_buffer_view)
+#  endif
+#endif
+STRUCT(vulkan_buffer_view)
+
+#define STRUCT_vulkan_accessor 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_accessor) == 1
+   STRUCT_COND_TRUE(vulkan_accessor)
+#  else
+   STRUCT_COND_FALSE(vulkan_accessor)
+#  endif
+#endif
+STRUCT(vulkan_accessor)
+
+#define STRUCT_vulkan_attribute 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_attribute) == 1
+   STRUCT_COND_TRUE(vulkan_attribute)
+#  else
+   STRUCT_COND_FALSE(vulkan_attribute)
+#  endif
+#endif
+STRUCT(vulkan_attribute)
+
+#define STRUCT_vulkan_mesh_primitive 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_mesh_primitive) == 1
+   STRUCT_COND_TRUE(vulkan_mesh_primitive)
+#  else
+   STRUCT_COND_FALSE(vulkan_mesh_primitive)
+#  endif
+#endif
+STRUCT(vulkan_mesh_primitive)
+
+#define STRUCT_vulkan_mesh 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_mesh) == 1
+   STRUCT_COND_TRUE(vulkan_mesh)
+#  else
+   STRUCT_COND_FALSE(vulkan_mesh)
+#  endif
+#endif
+STRUCT(vulkan_mesh)
+
+#define STRUCT_vulkan_node 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_node) == 1
+   STRUCT_COND_TRUE(vulkan_node)
+#  else
+   STRUCT_COND_FALSE(vulkan_node)
+#  endif
+#endif
+STRUCT(vulkan_node)
+
+#define STRUCT_vulkan_scene 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_scene) == 1
+   STRUCT_COND_TRUE(vulkan_scene)
+#  else
+   STRUCT_COND_FALSE(vulkan_scene)
+#  endif
+#endif
+STRUCT(vulkan_scene)
+
+#define FUNC_vulkan_geometry_buffer_init 1
+FUNC(vulkan_geometry_buffer_init)
+
+#define FUNC_vulkan_geometry_buffer_free 1
+FUNC(vulkan_geometry_buffer_free)
+
+#define FUNC_vulkan_buffer_view_init 1
+FUNC(vulkan_buffer_view_init)
+
+#define FUNC_vulkan_buffer_view_free 1
+FUNC(vulkan_buffer_view_free)
+
+#define FUNC_vulkan_buffer_view_copy 1
+FUNC(vulkan_buffer_view_copy)
+
+#define FUNC_vulkan_accessor_init 1
+FUNC(vulkan_accessor_init)
+
+#define FUNC_vulkan_accessor_free 1
+FUNC(vulkan_accessor_free)
+
+#define FUNC_vulkan_accessor_copy 1
+FUNC(vulkan_accessor_copy)
+
+#define FUNC_vulkan_attribute_init 1
+FUNC(vulkan_attribute_init)
+
+#define FUNC_vulkan_attribute_free 1
+FUNC(vulkan_attribute_free)
+
+#define FUNC_vulkan_attribute_copy 1
+FUNC(vulkan_attribute_copy)
+
+#define FUNC_vulkan_mesh_primitive_init 1
+FUNC(vulkan_mesh_primitive_init)
+
+#define FUNC_vulkan_mesh_primitive_free 1
+FUNC(vulkan_mesh_primitive_free)
+
+#define FUNC_vulkan_mesh_primitive_copy 1
+FUNC(vulkan_mesh_primitive_copy)
+
+#define FUNC_vulkan_mesh_primitive_add_attribute 1
+FUNC(vulkan_mesh_primitive_add_attribute)
+
+#define FUNC_vulkan_mesh_init 1
+FUNC(vulkan_mesh_init)
+
+#define FUNC_vulkan_mesh_free 1
+FUNC(vulkan_mesh_free)
+
+#define FUNC_vulkan_mesh_copy 1
+FUNC(vulkan_mesh_copy)
+
+#define FUNC_vulkan_mesh_add_mesh_primitive 1
+FUNC(vulkan_mesh_add_mesh_primitive)
+
+#define FUNC_vulkan_node_init 1
+FUNC(vulkan_node_init)
+
+#define FUNC_vulkan_node_free 1
+FUNC(vulkan_node_free)
+
+#define FUNC_vulkan_node_copy 1
+FUNC(vulkan_node_copy)
+
+#define FUNC_vulkan_scene_init 1
+FUNC(vulkan_scene_init)
+
+#define FUNC_vulkan_scene_free 1
+FUNC(vulkan_scene_free)
+
+#define FUNC_vulkan_scene_add_node 1
+FUNC(vulkan_scene_add_node)
+
+#define FUNC_vulkan_scene_debug_print 1
+FUNC(vulkan_scene_debug_print)
+
+#define FUNC_parse_gltf_file 1
+FUNC(parse_gltf_file)
+
+#define STRUCT_vulkan_render_pass 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_render_pass) == 1
+   STRUCT_COND_TRUE(vulkan_render_pass)
+#  else
+   STRUCT_COND_FALSE(vulkan_render_pass)
+#  endif
+#endif
+STRUCT(vulkan_render_pass)
+
+#define STRUCT_vulkan_pipeline 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_pipeline) == 1
+   STRUCT_COND_TRUE(vulkan_pipeline)
+#  else
+   STRUCT_COND_FALSE(vulkan_pipeline)
+#  endif
+#endif
+STRUCT(vulkan_pipeline)
+
+#define STRUCT_vulkan_swap_chain_frame 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_swap_chain_frame) == 1
+   STRUCT_COND_TRUE(vulkan_swap_chain_frame)
+#  else
+   STRUCT_COND_FALSE(vulkan_swap_chain_frame)
+#  endif
+#endif
+STRUCT(vulkan_swap_chain_frame)
+
+#define STRUCT_vulkan_render_context 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_render_context) == 1
+   STRUCT_COND_TRUE(vulkan_render_context)
+#  else
+   STRUCT_COND_FALSE(vulkan_render_context)
+#  endif
+#endif
+STRUCT(vulkan_render_context)
+
+#define FUNC_vulkan_render_pass_init 1
+FUNC(vulkan_render_pass_init)
+
+#define FUNC_vulkan_render_pass_free 1
+FUNC(vulkan_render_pass_free)
+
+#define FUNC_vulkan_pipeline_init 1
+FUNC(vulkan_pipeline_init)
+
+#define FUNC_vulkan_pipeline_free 1
+FUNC(vulkan_pipeline_free)
+
+#define FUNC_vulkan_swap_chain_frame_init 1
+FUNC(vulkan_swap_chain_frame_init)
+
+#define FUNC_vulkan_swap_chain_frame_free 1
+FUNC(vulkan_swap_chain_frame_free)
+
+#define FUNC_vulkan_swap_chain_frame_copy 1
+FUNC(vulkan_swap_chain_frame_copy)
+
+#define FUNC_vulkan_render_context_init 1
+FUNC(vulkan_render_context_init)
+
+#define FUNC_vulkan_render_context_free 1
+FUNC(vulkan_render_context_free)
+
+#define FUNC_vulkan_render_context_load_scene 1
+FUNC(vulkan_render_context_load_scene)
+
+#define FUNC_vulkan_render_context_draw_frame 1
+FUNC(vulkan_render_context_draw_frame)
+
+#define STRUCT_c_parser_str_range 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(c_parser_str_range) == 1
+   STRUCT_COND_TRUE(c_parser_str_range)
+#  else
+   STRUCT_COND_FALSE(c_parser_str_range)
+#  endif
+#endif
+STRUCT(c_parser_str_range)
+
+#define STRUCT_c_parser_error 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(c_parser_error) == 1
+   STRUCT_COND_TRUE(c_parser_error)
+#  else
+   STRUCT_COND_FALSE(c_parser_error)
+#  endif
+#endif
+STRUCT(c_parser_error)
+
+#define STRUCT_c_parser_comment 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(c_parser_comment) == 1
+   STRUCT_COND_TRUE(c_parser_comment)
+#  else
+   STRUCT_COND_FALSE(c_parser_comment)
+#  endif
+#endif
+STRUCT(c_parser_comment)
+
+#define STRUCT_c_parser_state 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(c_parser_state) == 1
+   STRUCT_COND_TRUE(c_parser_state)
+#  else
+   STRUCT_COND_FALSE(c_parser_state)
+#  endif
+#endif
+STRUCT(c_parser_state)
+
+#define STRUCT_c_parser_ast_node_ptr 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(c_parser_ast_node_ptr) == 1
+   STRUCT_COND_TRUE(c_parser_ast_node_ptr)
+#  else
+   STRUCT_COND_FALSE(c_parser_ast_node_ptr)
+#  endif
+#endif
+STRUCT(c_parser_ast_node_ptr)
+
+#define STRUCT_c_parser_ast_node 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(c_parser_ast_node) == 1
+   STRUCT_COND_TRUE(c_parser_ast_node)
+#  else
+   STRUCT_COND_FALSE(c_parser_ast_node)
+#  endif
+#endif
+STRUCT(c_parser_ast_node)
+
+#define FUNC_c_parser_ast_node_ptr_init 1
+FUNC(c_parser_ast_node_ptr_init)
+
+#define FUNC_c_parser_ast_node_ptr_copy 1
+FUNC(c_parser_ast_node_ptr_copy)
+
+#define FUNC_c_parser_ast_node_ptr_free 1
+FUNC(c_parser_ast_node_ptr_free)
+
+#define FUNC_c_parser_ast_node_free 1
+FUNC(c_parser_ast_node_free)
+
+#define FUNC_c_parser_state_init 1
+FUNC(c_parser_state_init)
+
+#define FUNC_c_parser_state_free 1
+FUNC(c_parser_state_free)
+
+#define FUNC_c_parser_advance 1
+FUNC(c_parser_advance)
+
+#define FUNC_c_parser_peek 1
+FUNC(c_parser_peek)
+
+#define FUNC_c_parser_getchar 1
+FUNC(c_parser_getchar)
+
+#define FUNC_c_parser_str_range_init 1
+FUNC(c_parser_str_range_init)
+
+#define FUNC_c_parser_ast_node_allocate 1
+FUNC(c_parser_ast_node_allocate)
+
+#define FUNC_c_parser_ast_node_init_variadic 1
+FUNC(c_parser_ast_node_init_variadic)
+
+#define FUNC_c_parser_ast_node_push_front 1
+FUNC(c_parser_ast_node_push_front)
+
+#define FUNC_c_parser_ast_node_init_0 1
+FUNC(c_parser_ast_node_init_0)
+
+#define FUNC_c_parser_ast_node_init_1 1
+FUNC(c_parser_ast_node_init_1)
+
+#define FUNC_c_parser_ast_node_init_2 1
+FUNC(c_parser_ast_node_init_2)
+
+#define FUNC_c_parser_ast_node_init_3 1
+FUNC(c_parser_ast_node_init_3)
+
+#define FUNC_c_parser_ast_node_init_4 1
+FUNC(c_parser_ast_node_init_4)
+
+#define FUNC_c_parser_ast_node_visit 1
+FUNC(c_parser_ast_node_visit)
+
+#define FUNC_c_parser_ast_node_debug_print 1
+FUNC(c_parser_ast_node_debug_print)
+
+#define FUNC_c_parser_handle_error 1
+FUNC(c_parser_handle_error)
+
+#define FUNC_c_parser_handle_syntax_error 1
+FUNC(c_parser_handle_syntax_error)
+
+#define FUNC_c_parser_handle_comment 1
+FUNC(c_parser_handle_comment)
+
+#define FUNC_c_parser_debug_print 1
+FUNC(c_parser_debug_print)
+
+#define FUNC_c_parser_execute 1
+FUNC(c_parser_execute)
+
+#define FUNC_c_parser_create 1
+FUNC(c_parser_create)
+
+#define FUNC_c_parser_parse 1
+FUNC(c_parser_parse)
+
+#define FUNC_c_parser_destroy 1
+FUNC(c_parser_destroy)
+
+#define STRUCT_data_config 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(data_config) == 1
+   STRUCT_COND_TRUE(data_config)
+#  else
+   STRUCT_COND_FALSE(data_config)
+#  endif
+#endif
+STRUCT(data_config)
+
+#define FUNC_data_config_init 1
+FUNC(data_config_init)
+
+#define FUNC_data_config_free 1
+FUNC(data_config_free)
+
+#define FUNC_data_config_get_int 1
+FUNC(data_config_get_int)
+
+#define FUNC_data_config_get_str 1
+FUNC(data_config_get_str)
+
+
+#undef STRUCT
+#undef STRUCT_COND
+#undef STRUCT_COND_TRUE
+#undef STRUCT_COND_FALSE
+#undef FUNC
+

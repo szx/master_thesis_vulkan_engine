@@ -6,7 +6,21 @@
 
 #include "../codegen/c_parser_internal.c"
 
-void c_parser_ast_node_free(c_parser_ast_node *pNode);
+c_parser_ast_node_ptr c_parser_ast_node_ptr_init(c_parser_ast_node *node) {
+  c_parser_ast_node_ptr result = {node};
+  return result;
+}
+
+c_parser_ast_node_ptr c_parser_ast_node_ptr_copy(c_parser_ast_node_ptr *self) {
+  c_parser_ast_node_ptr copy = {0};
+  copy.node = self->node;
+  return copy;
+}
+
+void c_parser_ast_node_ptr_free(c_parser_ast_node_ptr *self) {
+  // Weak pointer.
+}
+
 c_parser_state c_parser_state_init(char *source) {
   c_parser_state state = {0};
   state.source = source;

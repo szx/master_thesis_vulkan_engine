@@ -197,7 +197,6 @@ vulkan_pipeline vulkan_pipeline_init(vulkan_swap_chain *vks) {
 }
 
 void vulkan_pipeline_free(vulkan_pipeline *pipeline) {
-  vulkan_render_pass_free(pipeline->renderPass);
   free_struct(vulkan_render_pass, pipeline->renderPass);
 }
 
@@ -308,19 +307,15 @@ vulkan_render_context vulkan_render_context_init(data_config *config) {
 void vulkan_render_context_free(vulkan_render_context *rctx) {
   assert(rctx->scene != NULL);
   rctx->currentFrameInFlight = -1;
-  vulkan_scene_free(rctx->scene);
   free_struct(vulkan_scene, rctx->scene);
   vec_vulkan_swap_chain_frame_free(&rctx->swapChainFrames);
-  vulkan_pipeline_free(rctx->pipeline);
   free_struct(vulkan_pipeline, rctx->pipeline);
-  vulkan_swap_chain_free(rctx->vks);
   free_struct(vulkan_swap_chain, rctx->vks);
   for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
     vkDestroySemaphore(rctx->vkd->device, rctx->imageAvailableSemaphores[i], vka);
     vkDestroySemaphore(rctx->vkd->device, rctx->renderFinishedSemaphores[i], vka);
     vkDestroyFence(rctx->vkd->device, rctx->inFlightFences[i], vka);
   }
-  vulkan_device_free(rctx->vkd);
   free_struct(vulkan_device, rctx->vkd);
 }
 

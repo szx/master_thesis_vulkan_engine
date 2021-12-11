@@ -165,6 +165,7 @@ typedef struct c_parser_error {
   c_parser_error_type type;
   c_parser_str_range range;
 } c_parser_error;
+
 #define P
 #define T c_parser_error
 #include "vec.h" // vec_c_parser_error
@@ -172,6 +173,7 @@ typedef struct c_parser_error {
 typedef struct c_parser_comment {
   c_parser_str_range range;
 } c_parser_comment;
+
 #define P
 #define T c_parser_comment
 #include "vec.h" // vec_c_parser_comment
@@ -196,7 +198,10 @@ typedef struct c_parser_ast_node_ptr {
   c_parser_ast_node *node;
 } c_parser_ast_node_ptr;
 
-#define P
+c_parser_ast_node_ptr c_parser_ast_node_ptr_init(c_parser_ast_node *node);
+c_parser_ast_node_ptr c_parser_ast_node_ptr_copy(c_parser_ast_node_ptr *self);
+void c_parser_ast_node_ptr_free(c_parser_ast_node_ptr *self);
+
 #define T c_parser_ast_node_ptr
 #include "lst.h" // lst_c_parser_ast_node_ptr
 
@@ -205,6 +210,8 @@ struct c_parser_ast_node {
   c_parser_str_range range;
   lst_c_parser_ast_node_ptr childNodes;
 };
+
+void c_parser_ast_node_free(c_parser_ast_node *node);
 
 // Returns new parser.
 // Source becomes owned by parser.

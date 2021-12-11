@@ -20,6 +20,7 @@ typedef struct vulkan_queue_families {
   uint32_t presentFamily;
 } vulkan_queue_families;
 
+void vulkan_queue_families_free(vulkan_queue_families *self);
 bool vulkan_queue_families_complete(vulkan_queue_families *queueFamilies);
 
 #define P
@@ -56,15 +57,16 @@ typedef struct vulkan_limits {
   uint32_t maxLights;     /// Max number of lights per scene.
 } vulkan_limits;
 
+void vulkan_limits_free(vulkan_limits *self);
+
 typedef struct vulkan_device {
-  GLFWwindow *window;  /// GLFW window
-  VkInstance instance; /// Vulkan instance.
-  VkDebugUtilsMessengerEXT
-      debugMessenger;   /// Vulkan debug messenger (VK_EXT_debug_utils).
-  VkSurfaceKHR surface; /// Vulkan window surface.
-  VkPhysicalDevice physicalDevice;      /// Physical device.
-  VkDevice device;                      /// Vulkan logical device.
-  VkQueue graphicsQueue;                /// Graphical queue handle.
+  GLFWwindow *window;                      /// GLFW window
+  VkInstance instance;                     /// Vulkan instance.
+  VkDebugUtilsMessengerEXT debugMessenger; /// Vulkan debug messenger (VK_EXT_debug_utils).
+  VkSurfaceKHR surface;                    /// Vulkan window surface.
+  VkPhysicalDevice physicalDevice;         /// Physical device.
+  VkDevice device;                         /// Vulkan logical device.
+  VkQueue graphicsQueue;                   /// Graphical queue handle.
   VkQueue presentQueue;                 /// Present queue handle.
   vulkan_swap_chain_info swapChainInfo; /// Swap chain support details.
   vulkan_limits limits;                 /// Physical device limits.

@@ -191,6 +191,7 @@ declaration <-
 / s:declaration_specifiers _ i:init_declarator_list _ ';' { $$ = c_parser_ast_node_init_2(auxil, Declaration, c_parser_str_range_init($0s, $0e), s, i); }
 / e:global_declaration _ ';' { $$ = e; }
 / e:function_declaration _ ';' { $$ = e; }
+/ e:function_pointer_declaration _ ';' { $$ = e; }
 ## TODO: union declaration. ##
 
 typedef_declaration <-
@@ -248,7 +249,7 @@ struct_or_union_declaration_list <-
   }
 
 struct_or_union_declaration <-
-  e:declaration { $$ = e; }
+  _s e:declaration _s  { $$ = e; }
 
 union_declaration <-
   kw_union _ tag:identifier _ "{" _ e:struct_or_union_declaration_list  _ "}" { $$ = c_parser_ast_node_init_2(auxil, UnionDeclaration, c_parser_str_range_init($0s, $0e), tag, e); }
@@ -267,7 +268,7 @@ global_declaration_specifiers <-
   (macro_identifier whitespace)? _ storage_class_specifier? _ (macro_identifier whitespace)? _ type_qualifier? _ (macro_identifier whitespace)? _ e:type_specifier ((_ '*')/(_ type_qualifier))* { $$ = c_parser_ast_node_init_1(auxil, DeclarationSpecifiers, c_parser_str_range_init($0s, $0e), e); }
 
 function_pointer_declaration_specifiers <-
-  (macro_identifier whitespace)? _ storage_class_specifier? _ (macro_identifier whitespace)? _ type_qualifier? _ (macro_identifier whitespace)? _ (macro_identifier whitespace)? _ ((_ '*')/(_ type_qualifier))* { $$ = c_parser_ast_node_init_0(auxil, FunctionPointerDeclarationSpecifiers, c_parser_str_range_init($0s, $0e)); }
+  (macro_identifier whitespace)? _ storage_class_specifier? _ (macro_identifier whitespace)? _ type_qualifier? _ (macro_identifier whitespace)? _ ((_ '*')/(_ type_qualifier))* { $$ = c_parser_ast_node_init_0(auxil, FunctionPointerDeclarationSpecifiers, c_parser_str_range_init($0s, $0e)); }
 
 storage_class_specifier <-
   kw_static

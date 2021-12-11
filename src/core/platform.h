@@ -61,7 +61,6 @@ void platform_alloc_debug_print();
 
 #define alloc_struct(type) (type *)platform_alloc_struct(&type##_type_info)
 // TODO: init_struct
-// TODO: free_struct should call *_free()
 // TODO: remove type parameter (set tracking pointers? embed info into pointer?)
 #define free_struct(type, name) platform_free_struct((void *)&name, &type##_type_info)
 

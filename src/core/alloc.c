@@ -6,52 +6,43 @@
 #include "../codegen/header.def"
 #undef PARENT
 
-#define STRUCT(type) const core_type_info type##_type_info = {#type, sizeof(type)};
-#include "../codegen/struct.def"
-#undef STRUCT
+// Preprocess STRUCT_* and FUNC_* defines.
+#include "../codegen/meta.def"
 
 #if defined(DEBUG)
-#define STRUCT(type) core_type_alloc_stats type##_alloc_stats = {0, 0};
-#include "../codegen/struct.def"
-#undef STRUCT
+// Define global core_type_alloc_stats variables.
+#define STRUCT(type) core_type_alloc_stats type##_alloc_stats = {0};
+#include "../codegen/meta.def"
 #endif
+
+// Define global core_type_info constants.
+void dummy_struct_free(void *self) {}
+#define FREE_FUNC_PTR(type) (void(*)(void *)) & type##_free
+#define STRUCT_COND(type) FUNC_##type##_free
+#define STRUCT_COND_TRUE(type) static void (*const type##_free_impl)(void *) = FREE_FUNC_PTR(type);
+#define STRUCT_COND_FALSE(type) static void (*const type##_free_impl)(void *) = &dummy_struct_free;
+#if defined(DEBUG)
+#define STRUCT(type)                                                                               \
+  const core_type_info type##_type_info = {#type, sizeof(type), type##_free_impl,                  \
+                                           &type##_alloc_stats};
+#else
+#define STRUCT(type)                                                                               \
+  const core_type_info type##_type_info = {#type, sizeof(type), type##_free_impl};
+#endif
+#include "../codegen/meta.def"
 
 void *core_alloc_struct(const core_type_info *typeInfo) {
 #if defined(DEBUG)
-#define STRUCT(type)                                                                               \
-  if (typeInfo == &type##_type_info) {                                                             \
-    type##_alloc_stats.allocNum += 1;                                                              \
-  }
-#include "../codegen/struct.def"
-#undef STRUCT
+  typeInfo->allocStats->allocNum += 1;
 #endif
-
-#define STRUCT(type)                                                                               \
-  if (typeInfo == &type##_type_info) {                                                             \
-    return malloc(type##_type_info.size);                                                          \
-  }
-#include "../codegen/struct.def"
-#undef STRUCT
-
-  return NULL;
+  return malloc(typeInfo->size);
 }
 
 void *core_free_struct(void *memory, const core_type_info *typeInfo) {
 #if defined(DEBUG)
-#define STRUCT(type)                                                                               \
-  if (typeInfo == &type##_type_info) {                                                             \
-    type##_alloc_stats.freeNum += 1;                                                               \
-  }
-#include "../codegen/struct.def"
-#undef STRUCT
+  typeInfo->allocStats->allocNum -= 1;
 #endif
-
-#define STRUCT(type)                                                                               \
-  if (typeInfo == &type##_type_info) {                                                             \
-    free(memory);                                                                                  \
-    return memory;                                                                                 \
-  }
-#include "../codegen/struct.def"
-#undef STRUCT
-  return NULL;
+  typeInfo->free(memory);
+  free(memory);
+  return memory;
 }

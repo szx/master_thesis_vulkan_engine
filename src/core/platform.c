@@ -81,11 +81,11 @@ void platform_free_struct(void **memory, const core_type_info *typeInfo) {
 void platform_alloc_debug_print() {
 #if defined(DEBUG)
 #define STRUCT(type)                                                                               \
-  if (type##_alloc_stats.allocNum != type##_alloc_stats.freeNum) {                                 \
-    log_debug("alloc_debug_print:\tPOSSIBLE MEMLEAK\t%s\tallocNum=%d\tfreeNum=%d",                 \
-              type##_type_info.name, type##_alloc_stats.allocNum, type##_alloc_stats.freeNum);     \
+  if (type##_alloc_stats.allocNum != 0) {                                                          \
+    log_debug("alloc_debug_print:\tPOSSIBLE MEMLEAK\t%s\tallocNum=%d", type##_type_info.name,      \
+              type##_alloc_stats.allocNum);                                                        \
   }
-#include "../codegen/struct.def"
+#include "../codegen/meta.def"
 #undef STRUCT
 #endif
 }
