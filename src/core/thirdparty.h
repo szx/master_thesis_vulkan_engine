@@ -13,6 +13,7 @@
 #include "stb_image.h"
 
 #include <assert.h>
+#include <stdalign.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>

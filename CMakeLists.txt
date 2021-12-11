@@ -138,7 +138,7 @@ ADD_DEFINITIONS(-DSRC_PATH="${CMAKE_CURRENT_SOURCE_DIR}/src")
 ADD_DEFINITIONS(-DVULKAN_HEADER_PATH="${VULKAN_INCLUDE_PATH}/vulkan/vulkan_core.h")
 
 # Compiler and linker flags for ASAN.
-set(ASAN_FLAGS "-fsanitize=address" "-fsanitize=undefined")
+set(ASAN_FLAGS "-fsanitize=address" "-fsanitize=undefined" "-fno-omit-frame-pointer")
 # Compiler and linker flags for hardening.
 set(HARDENING_FLAGS "-fstack-protector-all")
 
@@ -161,7 +161,7 @@ foreach (C_BIN_SOURCE_PATH ${C_BIN_SOURCES})
     if (NOT ${EXECUTABLE_NAME} STREQUAL "codegen")
         add_dependencies(${EXECUTABLE_NAME} codegen)
         if ((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
-            target_compile_options(${EXECUTABLE_NAME} PUBLIC)
+            target_compile_options(${EXECUTABLE_NAME} PUBLIC ${ASAN_FLAGS})
             target_link_options(${EXECUTABLE_NAME} PUBLIC ${ASAN_FLAGS})
         endif ()
     else ()

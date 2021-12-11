@@ -196,9 +196,7 @@ vulkan_pipeline vulkan_pipeline_init(vulkan_swap_chain *vks) {
   return result;
 }
 
-void vulkan_pipeline_free(vulkan_pipeline *pipeline) {
-  free_struct(vulkan_render_pass, pipeline->renderPass);
-}
+void vulkan_pipeline_free(vulkan_pipeline *pipeline) { free_struct(pipeline->renderPass); }
 
 void create_command_pool(vulkan_swap_chain_frame *frame) {
   vulkan_queue_families queueFamilies = find_queue_families(frame->vkd, frame->vkd->physicalDevice);
@@ -307,16 +305,16 @@ vulkan_render_context vulkan_render_context_init(data_config *config) {
 void vulkan_render_context_free(vulkan_render_context *rctx) {
   assert(rctx->scene != NULL);
   rctx->currentFrameInFlight = -1;
-  free_struct(vulkan_scene, rctx->scene);
+  free_struct(rctx->scene);
   vec_vulkan_swap_chain_frame_free(&rctx->swapChainFrames);
-  free_struct(vulkan_pipeline, rctx->pipeline);
-  free_struct(vulkan_swap_chain, rctx->vks);
+  free_struct(rctx->pipeline);
+  free_struct(rctx->vks);
   for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
     vkDestroySemaphore(rctx->vkd->device, rctx->imageAvailableSemaphores[i], vka);
     vkDestroySemaphore(rctx->vkd->device, rctx->renderFinishedSemaphores[i], vka);
     vkDestroyFence(rctx->vkd->device, rctx->inFlightFences[i], vka);
   }
-  free_struct(vulkan_device, rctx->vkd);
+  free_struct(rctx->vkd);
 }
 
 void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneName) {

@@ -27,11 +27,24 @@ STRUCT(core_type_alloc_stats)
 #endif
 STRUCT(core_type_info)
 
+#define STRUCT_core_alloc_struct_header 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(core_alloc_struct_header) == 1
+   STRUCT_COND_TRUE(core_alloc_struct_header)
+#  else
+   STRUCT_COND_FALSE(core_alloc_struct_header)
+#  endif
+#endif
+STRUCT(core_alloc_struct_header)
+
 #define FUNC_core_alloc_struct 1
 FUNC(core_alloc_struct)
 
 #define FUNC_core_free_struct 1
 FUNC(core_free_struct)
+
+#define FUNC_core_alloc_debug_print 1
+FUNC(core_alloc_debug_print)
 
 #define STRUCT_platform_path 1
 #ifdef STRUCT_COND

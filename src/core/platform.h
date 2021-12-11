@@ -24,30 +24,30 @@
 
 static_assert(sizeof(char) == sizeof(uint8_t), "sizeof(char) != sizeof(uint8_t)");
 
-// Allocates and initializes all global state used by functions below.
+/// Allocates and initializes all global state used by functions below.
 void platform_init();
 
-// Frees all global state used by functions below.
+/// Frees all global state used by functions below.
 void platform_free();
 
-// Adds log.txt file to logger.
+/// Adds log.txt file to logger.
 void log_init();
 
-// Closes log.txt file.
+/// Closes log.txt file.
 void log_free();
 
-// Shows message dialog and exits.
+/// Shows message dialog and exits.
 void panic(const char *format, ...);
 
-// Use alloc_struct macro.
-// Returns newly allocated memory.
-// Initializes struct.
+/// Use alloc_struct macro.
+/// Returns newly allocated memory.
+/// Initializes struct.
 void *platform_alloc_struct(const core_type_info *typeInfo);
 
-// Use free_struct macro.
-// Frees memory allocated for struct.
-// Sets memory pointer to NULL.
-void platform_free_struct(void **memory, const core_type_info *typeInfo);
+/// Use free_struct macro.
+/// Frees memory allocated for struct after calling appropriate user-defined free function.
+/// Sets memory pointer to NULL.
+void platform_free_struct(void **memory);
 
 // Logs debug info about all allocations.
 void platform_alloc_debug_print();
@@ -61,8 +61,7 @@ void platform_alloc_debug_print();
 
 #define alloc_struct(type) (type *)platform_alloc_struct(&type##_type_info)
 // TODO: init_struct
-// TODO: remove type parameter (set tracking pointers? embed info into pointer?)
-#define free_struct(type, name) platform_free_struct((void *)&name, &type##_type_info)
+#define free_struct(name) platform_free_struct((void *)&name)
 
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
@@ -88,22 +87,22 @@ str platform_path_get_basename(platform_path *self);
 #define T platform_path
 #include "lst.h" // lst_platform_path
 
-// Returns new path to directory with current executable.
+/// Returns new path to directory with current executable.
 platform_path get_executable_dir_path();
 
-// Returns new path to file in specified directory.
+/// Returns new path to file in specified directory.
 platform_path get_executable_dir_file_path(const char *dirName, const char *fileName);
 
-// Returns new path to file in assets directory.
+/// Returns new path to file in assets directory.
 platform_path get_asset_file_path(const char *dirName, const char *fileName);
 
-// Returns new list of child paths.
+/// Returns new list of child paths.
 lst_platform_path get_dir_children(platform_path *dirPath);
 
-// Returns null-terminated string with text file content.
+/// Returns null-terminated string with text file content.
 char *read_text_file(platform_path *path, size_t *sourceLength);
 
-// Writes text file.
+/// Writes text file.
 void write_text_file(platform_path *path, str *content);
 
 #endif /* !PLATFORM_H */

@@ -64,31 +64,20 @@ void panic(const char *format, ...) {
 }
 
 void *platform_alloc_struct(const core_type_info *typeInfo) {
-  log_debug("alloc_struct %s: size=%d", typeInfo->name, typeInfo->size);
   void *allocatedMemory = core_alloc_struct(typeInfo);
   verify(allocatedMemory != NULL);
   log_debug("alloc_struct: %p", allocatedMemory);
   return allocatedMemory;
 }
 
-void platform_free_struct(void **memory, const core_type_info *typeInfo) {
-  log_debug("free_struct %s: %p", typeInfo->name, *memory);
-  void *memoryFreeResult = core_free_struct(*memory, typeInfo);
+void platform_free_struct(void **memory) {
+  log_debug("free_struct %s: %p", *memory);
+  void *memoryFreeResult = core_free_struct(*memory);
   verify(memoryFreeResult == *memory);
   *memory = NULL;
 }
 
-void platform_alloc_debug_print() {
-#if defined(DEBUG)
-#define STRUCT(type)                                                                               \
-  if (type##_alloc_stats.allocNum != 0) {                                                          \
-    log_debug("alloc_debug_print:\tPOSSIBLE MEMLEAK\t%s\tallocNum=%d", type##_type_info.name,      \
-              type##_alloc_stats.allocNum);                                                        \
-  }
-#include "../codegen/meta.def"
-#undef STRUCT
-#endif
-}
+void platform_alloc_debug_print() { core_alloc_debug_print(); }
 
 platform_path platform_path_init(const char *data) {
   platform_path path = {0};

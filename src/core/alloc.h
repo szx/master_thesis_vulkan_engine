@@ -30,13 +30,21 @@ typedef struct core_type_info {
 #include "../codegen/meta.def"
 #undef STRUCT
 
+/// Header placed before pointer to struct allocated using core_alloc_struct.
+typedef struct core_alloc_struct_header {
+  const core_type_info *const typeInfo;
+  // TODO: Object pools.
+} core_alloc_struct_header;
+
 /// Returns newly allocated memory for struct or NULL.
 /// typeInfo should be only one of global constants declared above.
 void *core_alloc_struct(const core_type_info *typeInfo);
 
 /// Frees memory allocated for struct after calling appropriate user-defined free function.
 /// Returns pointer to freed memory or NULL if error.
-/// typeInfo should be only one of global constants declared above.
-void *core_free_struct(void *memory, const core_type_info *typeInfo);
+void *core_free_struct(void *memory);
+
+// Logs debug info about all allocations.
+void core_alloc_debug_print();
 
 #endif /* !CORE_ALLOC_H */
