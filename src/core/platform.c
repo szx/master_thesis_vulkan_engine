@@ -63,15 +63,25 @@ void panic(const char *format, ...) {
   exit(EXIT_FAILURE);
 }
 
-void *platform_alloc_struct(const core_type_info *typeInfo) {
-  void *allocatedMemory = core_alloc_struct(typeInfo);
+size_t platform_alloc_struct_array_count(void *memory) {
+  if (memory == NULL) {
+    return 0;
+  }
+  return core_alloc_struct_header_get((void *)(memory))->count;
+}
+
+void *platform_alloc_struct(const core_type_info *typeInfo, size_t count) {
+  void *allocatedMemory = core_alloc_struct(typeInfo, count);
   verify(allocatedMemory != NULL);
   log_debug("alloc_struct: %p", allocatedMemory);
   return allocatedMemory;
 }
 
 void platform_free_struct(void **memory) {
-  log_debug("free_struct %s: %p", *memory);
+  log_debug("free_struct: %p", *memory);
+  if (*memory == NULL) {
+    return;
+  }
   void *memoryFreeResult = core_free_struct(*memory);
   verify(memoryFreeResult == *memory);
   *memory = NULL;

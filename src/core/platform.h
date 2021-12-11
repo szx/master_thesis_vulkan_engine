@@ -39,10 +39,14 @@ void log_free();
 /// Shows message dialog and exits.
 void panic(const char *format, ...);
 
+/// Use count_struct_array macro.
+/// Returns number of allocated structs in struct array.
+size_t platform_alloc_struct_array_count(void *memory);
+
 /// Use alloc_struct macro.
 /// Returns newly allocated memory.
 /// Initializes struct.
-void *platform_alloc_struct(const core_type_info *typeInfo);
+void *platform_alloc_struct(const core_type_info *typeInfo, size_t count);
 
 /// Use free_struct macro.
 /// Frees memory allocated for struct after calling appropriate user-defined free function.
@@ -59,7 +63,9 @@ void platform_alloc_debug_print();
     }                                                                                              \
   } while (0)
 
-#define alloc_struct(type) (type *)platform_alloc_struct(&type##_type_info)
+#define alloc_struct(type) (type *)platform_alloc_struct(&type##_type_info, 1)
+#define alloc_struct_array(type, count) (type *)platform_alloc_struct(&type##_type_info, (count))
+#define count_struct_array(name) platform_alloc_struct_array_count((void *)(name))
 // TODO: init_struct
 #define free_struct(name) platform_free_struct((void *)&name)
 

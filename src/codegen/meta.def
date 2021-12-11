@@ -37,6 +37,9 @@ STRUCT(core_type_info)
 #endif
 STRUCT(core_alloc_struct_header)
 
+#define FUNC_core_alloc_struct_header_get 1
+FUNC(core_alloc_struct_header_get)
+
 #define FUNC_core_alloc_struct 1
 FUNC(core_alloc_struct)
 
@@ -70,6 +73,9 @@ FUNC(log_free)
 
 #define FUNC_panic 1
 FUNC(panic)
+
+#define FUNC_platform_alloc_struct_array_count 1
+FUNC(platform_alloc_struct_array_count)
 
 #define FUNC_platform_alloc_struct 1
 FUNC(platform_alloc_struct)

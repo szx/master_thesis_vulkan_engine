@@ -33,12 +33,16 @@ typedef struct core_type_info {
 /// Header placed before pointer to struct allocated using core_alloc_struct.
 typedef struct core_alloc_struct_header {
   const core_type_info *const typeInfo;
+  size_t count;
   // TODO: Object pools.
 } core_alloc_struct_header;
 
+/// Returns header of allocated struct.
+const core_alloc_struct_header *core_alloc_struct_header_get(void *memory);
+
 /// Returns newly allocated memory for struct or NULL.
 /// typeInfo should be only one of global constants declared above.
-void *core_alloc_struct(const core_type_info *typeInfo);
+void *core_alloc_struct(const core_type_info *typeInfo, size_t count);
 
 /// Frees memory allocated for struct after calling appropriate user-defined free function.
 /// Returns pointer to freed memory or NULL if error.

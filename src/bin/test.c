@@ -178,8 +178,7 @@ TEST gltf_loading() {
   // TODO: Loading extra files (images).
   // platform_path gltfPath = get_asset_file_path("sponza", "Sponza.gltf");
   // platform_path gltfPath = get_asset_file_path("triangle", "Triangle.gltf");
-  platform_path gltfPath =
-      get_asset_file_path("triangles", "SimpleMeshes.gltf");
+  platform_path gltfPath = get_asset_file_path("triangles", "triangles.gltf");
   vulkan_scene scene = parse_gltf_file(gltfPath);
   vulkan_scene_debug_print(&scene);
   platform_path_free(&gltfPath);
@@ -188,6 +187,32 @@ TEST gltf_loading() {
 }
 
 SUITE(gltf_suite) { RUN_TEST(gltf_loading); }
+
+// Memory allocation.
+TEST platform_alloc() {
+  vulkan_limits *limits = alloc_struct(vulkan_limits);
+  ASSERT_EQ(vulkan_limits_alloc_stats.allocNum, 1);
+  ASSERT_EQ(count_struct_array(limits), 1);
+  free_struct(limits);
+  ASSERT_EQ(vulkan_limits_alloc_stats.allocNum, 0);
+  ASSERT_EQ(limits, NULL);
+  ASSERT_EQ(count_struct_array(limits), 0);
+  vulkan_limits *limits2 = alloc_struct(vulkan_limits);
+  limits = alloc_struct_array(vulkan_limits, 3);
+  ASSERT_EQ(vulkan_limits_alloc_stats.allocNum, 4);
+  ASSERT_EQ(count_struct_array(limits), 3);
+  ASSERT_EQ(count_struct_array(limits2), 1);
+  free_struct(limits);
+  ASSERT_EQ(vulkan_limits_alloc_stats.allocNum, 1);
+  ASSERT_EQ(limits, NULL);
+  ASSERT_EQ(count_struct_array(limits), 0);
+  free_struct(limits2);
+  ASSERT_EQ(vulkan_limits_alloc_stats.allocNum, 0);
+  ASSERT_EQ(limits2, NULL);
+  PASS();
+}
+
+SUITE(platform_alloc_suite) { RUN_TEST(platform_alloc); }
 
 GREATEST_MAIN_DEFS(); // NOLINT
 
@@ -199,6 +224,7 @@ int main(int argc, char *argv[]) {
   // RUN_SUITE(c_parser_suite);
   RUN_SUITE(database_suite);
   RUN_SUITE(gltf_suite);
+  RUN_SUITE(platform_alloc_suite);
   log_info("finish test suite");
   platform_free();
   GREATEST_MAIN_END();

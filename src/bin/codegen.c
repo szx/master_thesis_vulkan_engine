@@ -236,8 +236,6 @@ int main(int argc, char *argv[]) {
   platform_init();
   log_info("src path: %s\n", SRC_PATH);
   log_info("vulkan header path: %s\n", VULKAN_HEADER_PATH);
-  log_debug("core_type_info_type_info.name: %s\n", core_type_info_type_info.name);
-  log_debug("core_type_info_type_info.size: %d\n", core_type_info_type_info.size);
 
   srcPath = platform_path_init(SRC_PATH);
   vulkanHeaderPath = platform_path_init(VULKAN_HEADER_PATH);
