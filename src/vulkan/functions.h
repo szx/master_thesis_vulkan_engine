@@ -36,8 +36,8 @@ typedef struct vulkan_swap_chain_info {
   vec_VkPresentModeKHR presentModes;
 } vulkan_swap_chain_info;
 
-vulkan_swap_chain_info vulkan_swap_chain_info_init();
-void vulkan_swap_chain_info_free(vulkan_swap_chain_info *self);
+void vulkan_swap_chain_info_init(vulkan_swap_chain_info *vksInfo);
+void vulkan_swap_chain_info_free(vulkan_swap_chain_info *vksInfo);
 
 typedef struct vulkan_limits {
   /* Vulkan API limits */
@@ -88,9 +88,7 @@ typedef struct vulkan_device {
   } mouse; /// GLFW mouse input.
 } vulkan_device;
 
-// TODO: Vulkan helper functions.
-
-vulkan_device vulkan_device_init(data_config *config);
+void vulkan_device_init(vulkan_device *vkd, data_config *config);
 void vulkan_device_free(vulkan_device *vkd);
 
 void glfw_framebuffer_resize_callback(GLFWwindow *window, int width,
@@ -112,28 +110,25 @@ void query_swap_chain_support(vulkan_device *vkd,
                               VkPhysicalDevice physicalDevice);
 bool check_device_extension_support(vulkan_device *vkd,
                                     VkPhysicalDevice physicalDevice);
-bool is_physical_device_suitable(vulkan_device *vkd,
-                                 VkPhysicalDevice physicalDevice);
+bool is_physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevice);
 void pick_physical_device(vulkan_device *vkd);
 
-vulkan_queue_families find_queue_families(vulkan_device *vkd,
-                                          VkPhysicalDevice physicalDevice);
+vulkan_queue_families find_queue_families(vulkan_device *vkd, VkPhysicalDevice physicalDevice);
 vulkan_limits find_limits(vulkan_device *vkd, VkPhysicalDevice physicalDevice);
 void create_logical_device(vulkan_device *vkd);
 
 void create_one_shot_command_pool(vulkan_device *vkd);
 
+/* Vulkan helper functions */
+// TODO: Implementations all Vulkan helper functions.
 uint32_t find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
                           VkMemoryPropertyFlags properties);
 VkFormat find_depth_format(vulkan_device *vkd);
-void create_image(vulkan_device *vkd, uint32_t width, uint32_t height,
-                  uint32_t mipLevels, uint32_t arrayLayers,
-                  VkSampleCountFlagBits numSamples, VkFormat format,
-                  VkImageTiling tiling, VkImageCreateFlags flags,
-                  VkImageUsageFlags usage, VkMemoryPropertyFlags properties,
-                  VkImage image, VkDeviceMemory imageMemory);
-VkImageView create_image_view(vulkan_device *vkd, VkImage image,
-                              VkImageViewType type, VkFormat format,
+void create_image(vulkan_device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
+                  uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
+                  VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,
+                  VkMemoryPropertyFlags properties, VkImage image, VkDeviceMemory imageMemory);
+VkImageView create_image_view(vulkan_device *vkd, VkImage image, VkImageViewType type, VkFormat format,
                               VkImageAspectFlags aspectFlags,
                               uint32_t mipLevels, uint32_t arrayLayers);
 void create_buffer(vulkan_device *vkd, VkDeviceSize size,

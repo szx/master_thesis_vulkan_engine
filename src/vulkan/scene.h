@@ -121,12 +121,12 @@ typedef struct vulkan_scene {
   vec_vulkan_accessor accessors;
 } vulkan_scene;
 
-vulkan_scene vulkan_scene_init();
+void vulkan_scene_init(vulkan_scene *self);
 void vulkan_scene_free(vulkan_scene *self);
 void vulkan_scene_add_node(vulkan_scene *self, vulkan_node node);
 void vulkan_scene_debug_print(vulkan_scene *self);
 
-vulkan_scene parse_gltf_file(platform_path gltfPath);
+void parse_gltf_file(vulkan_scene *scene, platform_path gltfPath);
 
 #include "../codegen/scene.h"
 

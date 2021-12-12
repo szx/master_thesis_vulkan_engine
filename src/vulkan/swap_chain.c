@@ -1,16 +1,14 @@
 #include "swap_chain.h"
 #include "../codegen/swap_chain.c"
 
-vulkan_swap_chain vulkan_swap_chain_init(vulkan_device *vkd) {
-  vulkan_swap_chain result;
-  result.vkd = vkd;
-  result.swapChain = VK_NULL_HANDLE;
-  result.swapChainImageViews = vec_VkImageView_init();
-  result.swapChainImages = vec_VkImage_init();
-  create_swap_chain(&result);
-  get_swap_chain_images(&result);
-  create_swap_chain_image_views(&result);
-  return result;
+void vulkan_swap_chain_init(vulkan_swap_chain *vks, vulkan_device *vkd) {
+  vks->vkd = vkd;
+  vks->swapChain = VK_NULL_HANDLE;
+  vks->swapChainImageViews = vec_VkImageView_init();
+  vks->swapChainImages = vec_VkImage_init();
+  create_swap_chain(vks);
+  get_swap_chain_images(vks);
+  create_swap_chain_image_views(vks);
 }
 
 void vulkan_swap_chain_free(vulkan_swap_chain *vks) {

@@ -165,17 +165,16 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
   vkDestroyShaderModule(renderPass->vkd->device, vertShaderModule, vka);
 }
 
-vulkan_render_pass vulkan_render_pass_init(vulkan_swap_chain *vks, vulkan_render_pass_type type) {
-  vulkan_render_pass result;
-  result.vks = vks;
-  result.vkd = vks->vkd;
-  result.type = type;
-  result.renderPass = VK_NULL_HANDLE;
-  result.pipelineLayout = VK_NULL_HANDLE;
-  result.graphicsPipeline = VK_NULL_HANDLE;
-  create_render_pass(&result);
-  create_graphics_pipeline(&result);
-  return result;
+void vulkan_render_pass_init(vulkan_render_pass *renderPass, vulkan_swap_chain *vks,
+                             vulkan_render_pass_type type) {
+  renderPass->vks = vks;
+  renderPass->vkd = vks->vkd;
+  renderPass->type = type;
+  renderPass->renderPass = VK_NULL_HANDLE;
+  renderPass->pipelineLayout = VK_NULL_HANDLE;
+  renderPass->graphicsPipeline = VK_NULL_HANDLE;
+  create_render_pass(renderPass);
+  create_graphics_pipeline(renderPass);
 }
 
 void vulkan_render_pass_free(vulkan_render_pass *renderPass) {
@@ -187,13 +186,11 @@ void vulkan_render_pass_free(vulkan_render_pass *renderPass) {
   renderPass->pipelineLayout = VK_NULL_HANDLE;
 }
 
-vulkan_pipeline vulkan_pipeline_init(vulkan_swap_chain *vks) {
-  vulkan_pipeline result;
-  result.vks = vks;
-  result.vkd = vks->vkd;
-  result.renderPass = alloc_struct(vulkan_render_pass);
-  init_struct(result.renderPass, vulkan_render_pass_init, result.vks, ForwardRenderPass);
-  return result;
+void vulkan_pipeline_init(vulkan_pipeline *pipeline, vulkan_swap_chain *vks) {
+  pipeline->vks = vks;
+  pipeline->vkd = vks->vkd;
+  pipeline->renderPass = alloc_struct(vulkan_render_pass);
+  init_struct(pipeline->renderPass, vulkan_render_pass_init, pipeline->vks, ForwardRenderPass);
 }
 
 void vulkan_pipeline_free(vulkan_pipeline *pipeline) { free_struct(pipeline->renderPass); }
@@ -239,20 +236,18 @@ void create_framebuffer(vulkan_swap_chain_frame *frame) {
          VK_SUCCESS);
 }
 
-vulkan_swap_chain_frame vulkan_swap_chain_frame_init(vulkan_pipeline *pipeline,
-                                                     uint32_t swapChainImageIndex) {
-  vulkan_swap_chain_frame result;
-  result.pipeline = pipeline;
-  result.vks = pipeline->vks;
-  result.vkd = pipeline->vks->vkd;
-  result.commandPool = VK_NULL_HANDLE;
-  result.commandBuffer = VK_NULL_HANDLE;
-  result.framebuffer = VK_NULL_HANDLE;
-  result.swapChainImageIndex = swapChainImageIndex;
-  create_command_pool(&result);
-  create_command_buffer(&result);
-  create_framebuffer(&result);
-  return result;
+void vulkan_swap_chain_frame_init(vulkan_swap_chain_frame *frame, vulkan_pipeline *pipeline,
+                                  uint32_t swapChainImageIndex) {
+  frame->pipeline = pipeline;
+  frame->vks = pipeline->vks;
+  frame->vkd = pipeline->vks->vkd;
+  frame->commandPool = VK_NULL_HANDLE;
+  frame->commandBuffer = VK_NULL_HANDLE;
+  frame->framebuffer = VK_NULL_HANDLE;
+  frame->swapChainImageIndex = swapChainImageIndex;
+  create_command_pool(frame);
+  create_command_buffer(frame);
+  create_framebuffer(frame);
 }
 
 void vulkan_swap_chain_frame_free(vulkan_swap_chain_frame *frame) {
@@ -283,23 +278,21 @@ void create_synchronization_objects(vulkan_render_context *rctx) {
   }
 }
 
-vulkan_render_context vulkan_render_context_init(data_config *config) {
-  vulkan_render_context result;
-  result.vkd = alloc_struct(vulkan_device);
-  init_struct(result.vkd, vulkan_device_init, config);
-  result.vks = alloc_struct(vulkan_swap_chain);
-  init_struct(result.vks, vulkan_swap_chain_init, result.vkd);
-  result.pipeline = alloc_struct(vulkan_pipeline);
-  init_struct(result.pipeline, vulkan_pipeline_init, result.vks);
-  result.swapChainFrames =
-      alloc_struct_array(vulkan_swap_chain_frame, result.vks->swapChainImageViews.size);
-  for (uint32_t i = 0; i < count_struct_array(result.swapChainFrames); i++) {
-    init_struct(&result.swapChainFrames[i], vulkan_swap_chain_frame_init, result.pipeline, i);
+void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config) {
+  rctx->vkd = alloc_struct(vulkan_device);
+  init_struct(rctx->vkd, vulkan_device_init, config);
+  rctx->vks = alloc_struct(vulkan_swap_chain);
+  init_struct(rctx->vks, vulkan_swap_chain_init, rctx->vkd);
+  rctx->pipeline = alloc_struct(vulkan_pipeline);
+  init_struct(rctx->pipeline, vulkan_pipeline_init, rctx->vks);
+  rctx->swapChainFrames =
+      alloc_struct_array(vulkan_swap_chain_frame, rctx->vks->swapChainImageViews.size);
+  for (uint32_t i = 0; i < count_struct_array(rctx->swapChainFrames); i++) {
+    init_struct(&rctx->swapChainFrames[i], vulkan_swap_chain_frame_init, rctx->pipeline, i);
   }
-  result.currentFrameInFlight = 0;
-  result.scene = NULL;
-  create_synchronization_objects(&result);
-  return result;
+  rctx->currentFrameInFlight = 0;
+  rctx->scene = NULL;
+  create_synchronization_objects(rctx);
 }
 
 void vulkan_render_context_free(vulkan_render_context *rctx) {
@@ -315,6 +308,37 @@ void vulkan_render_context_free(vulkan_render_context *rctx) {
     vkDestroyFence(rctx->vkd->device, rctx->inFlightFences[i], vka);
   }
   free_struct(rctx->vkd);
+}
+
+void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx) {
+  log_debug("recreate_swap_chain");
+  int width = 0;
+  int height = 0;
+  glfwGetFramebufferSize(rctx->vkd->window, &width, &height);
+  while (width == 0 || height == 0) {
+    // TODO: Window is minimized, should we wait here?
+    glfwGetFramebufferSize(rctx->vkd->window, &width, &height);
+    glfwWaitEvents();
+  }
+  vkDeviceWaitIdle(rctx->vkd->device);
+  // gui.deinitialize();
+  //  TODO: reinit_struct
+  // free_struct(rctx->scene);
+  free_struct(rctx->swapChainFrames);
+  free_struct(rctx->pipeline);
+  free_struct(rctx->vks);
+
+  query_swap_chain_support(rctx->vkd, rctx->vkd->physicalDevice);
+  rctx->vks = alloc_struct(vulkan_swap_chain);
+  init_struct(rctx->vks, vulkan_swap_chain_init, rctx->vkd);
+  rctx->pipeline = alloc_struct(vulkan_pipeline);
+  init_struct(rctx->pipeline, vulkan_pipeline_init, rctx->vks);
+  rctx->swapChainFrames =
+      alloc_struct_array(vulkan_swap_chain_frame, rctx->vks->swapChainImageViews.size);
+  for (uint32_t i = 0; i < count_struct_array(rctx->swapChainFrames); i++) {
+    init_struct(&rctx->swapChainFrames[i], vulkan_swap_chain_frame_init, rctx->pipeline, i);
+  }
+  // gui.initialize();
 }
 
 void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneName) {
@@ -369,7 +393,7 @@ void vulkan_render_context_draw_frame(vulkan_render_context *rctx) {
       rctx->imageAvailableSemaphores[rctx->currentFrameInFlight], VK_NULL_HANDLE, &imageIndex);
 
   if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-    // recreateSwapChain();
+    vulkan_render_context_recreate_swap_chain(rctx);
     return;
   }
   verify(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR);
@@ -427,10 +451,9 @@ void vulkan_render_context_draw_frame(vulkan_render_context *rctx) {
   if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
       rctx->vkd->framebufferResized) {
     rctx->vkd->framebufferResized = false;
-    // recreateSwapChain();
-    // TODO: Recreate swap chain.
+    vulkan_render_context_recreate_swap_chain(rctx);
+  } else {
+    verify(result == VK_SUCCESS);
   }
-  verify(result == VK_SUCCESS);
-
   rctx->currentFrameInFlight = (rctx->currentFrameInFlight + 1) % MAX_FRAMES_IN_FLIGHT;
 }

@@ -38,7 +38,7 @@ typedef struct vulkan_swap_chain {
                            /// resources via views.
 } vulkan_swap_chain;
 
-vulkan_swap_chain vulkan_swap_chain_init(vulkan_device *vkd);
+void vulkan_swap_chain_init(vulkan_swap_chain *vks, vulkan_device *vkd);
 void vulkan_swap_chain_free(vulkan_swap_chain *vks);
 
 VkSurfaceFormatKHR

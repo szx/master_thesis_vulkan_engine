@@ -154,12 +154,11 @@ vulkan_node vulkan_node_copy(vulkan_node *self) {
   return copy;
 }
 
-vulkan_scene vulkan_scene_init() {
-  vulkan_scene result = {0};
-  result.nodes = vec_vulkan_node_init();
-  result.bufferViews = vec_vulkan_buffer_view_init();
-  result.accessors = vec_vulkan_accessor_init();
-  return result;
+void vulkan_scene_init(vulkan_scene *scene) {
+  scene->nodes = vec_vulkan_node_init();
+  scene->bufferViews = vec_vulkan_buffer_view_init();
+  scene->accessors = vec_vulkan_accessor_init();
+  scene->accessors = vec_vulkan_accessor_init();
 }
 
 void vulkan_scene_free(vulkan_scene *self) {
@@ -364,8 +363,8 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode,
   return node;
 }
 
-vulkan_scene parse_gltf_file(platform_path gltfPath) {
-  vulkan_scene scene = vulkan_scene_init();
+void parse_gltf_file(vulkan_scene *scene, platform_path gltfPath) {
+  vulkan_scene_init(scene);
   // read gltf file
   cgltf_options options = {0};
   cgltf_data *data = NULL;
@@ -381,8 +380,8 @@ vulkan_scene parse_gltf_file(platform_path gltfPath) {
   // parse geometry buffer
   assert(data->buffers_count == 1);
   cgltf_buffer *cgltfBuffer = &data->buffers[0];
-  scene.geometryBuffer = vulkan_geometry_buffer_init(
-      cgltfBuffer->uri, cgltfBuffer->data, cgltfBuffer->size);
+  scene->geometryBuffer =
+      vulkan_geometry_buffer_init(cgltfBuffer->uri, cgltfBuffer->data, cgltfBuffer->size);
   // parse buffer views
   char *name =
       malloc(sizeof(char) * (255 + (int)log10(data->buffer_views_count)));
@@ -390,32 +389,29 @@ vulkan_scene parse_gltf_file(platform_path gltfPath) {
     sprintf(name, "bufferView%d", (int)i);
     cgltf_buffer_view *cgltfBufferView = &data->buffer_views[i];
     assert(cgltfBufferView->has_meshopt_compression == false);
-    vulkan_buffer_view bufferView = vulkan_buffer_view_init(
-        name, cgltfBufferView->offset, cgltfBufferView->size,
-        cgltfBufferView->stride, &scene.geometryBuffer);
-    vec_vulkan_buffer_view_push_back(&scene.bufferViews, bufferView);
+    vulkan_buffer_view bufferView =
+        vulkan_buffer_view_init(name, cgltfBufferView->offset, cgltfBufferView->size,
+                                cgltfBufferView->stride, &scene->geometryBuffer);
+    vec_vulkan_buffer_view_push_back(&scene->bufferViews, bufferView);
   }
   // parse accessors
   for (size_t i = 0; i < data->accessors_count; i++) {
     sprintf(name, "accessor%d", (int)i);
     cgltf_accessor *cgltfAccessor = &data->accessors[i];
     vulkan_buffer_view *bufferView =
-        find_buffer_view(&scene.bufferViews, cgltfAccessor->buffer_view);
-    vulkan_accessor accessor =
-        vulkan_accessor_init(name, cgltfAccessor->offset, cgltfAccessor->count,
-                             cgltfAccessor->stride, bufferView);
-    vec_vulkan_accessor_push_back(&scene.accessors, accessor);
+        find_buffer_view(&scene->bufferViews, cgltfAccessor->buffer_view);
+    vulkan_accessor accessor = vulkan_accessor_init(
+        name, cgltfAccessor->offset, cgltfAccessor->count, cgltfAccessor->stride, bufferView);
+    vec_vulkan_accessor_push_back(&scene->accessors, accessor);
   }
   free(name);
   // parse scene
   assert(data->scenes_count == 1);
   cgltf_scene *cgltfScene = &data->scene[0];
   for (size_t nodeIdx = 0; nodeIdx < cgltfScene->nodes_count; nodeIdx++) {
-    vulkan_node node =
-        parse_cgltf_node(cgltfScene->nodes[nodeIdx], &scene.geometryBuffer,
-                         &scene.bufferViews, &scene.accessors);
-    vulkan_scene_add_node(&scene, node);
+    vulkan_node node = parse_cgltf_node(cgltfScene->nodes[nodeIdx], &scene->geometryBuffer,
+                                        &scene->bufferViews, &scene->accessors);
+    vulkan_scene_add_node(scene, node);
   }
   cgltf_free(data);
-  return scene;
 }

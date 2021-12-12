@@ -47,11 +47,9 @@ bool vulkan_queue_families_complete(vulkan_queue_families *queueFamilies) {
   return queueFamilies->graphicsFamily < UINT32_MAX && queueFamilies->presentFamily < UINT32_MAX;
 }
 
-vulkan_swap_chain_info vulkan_swap_chain_info_init() {
-  vulkan_swap_chain_info result = {0};
-  result.formats = vec_VkSurfaceFormatKHR_init();
-  result.presentModes = vec_VkPresentModeKHR_init();
-  return result;
+void vulkan_swap_chain_info_init(vulkan_swap_chain_info *vksInfo) {
+  vksInfo->formats = vec_VkSurfaceFormatKHR_init();
+  vksInfo->presentModes = vec_VkPresentModeKHR_init();
 }
 
 void vulkan_swap_chain_info_free(vulkan_swap_chain_info *self) {
@@ -61,17 +59,15 @@ void vulkan_swap_chain_info_free(vulkan_swap_chain_info *self) {
 
 void vulkan_limits_free(vulkan_limits *self) {}
 
-vulkan_device vulkan_device_init(data_config *config) {
-  vulkan_device result = {0};
-  result.swapChainInfo = vulkan_swap_chain_info_init();
-  create_window(&result, config);
-  create_instance(&result, config);
-  setup_debug_messenger(&result);
-  create_surface(&result);
-  pick_physical_device(&result);
-  create_logical_device(&result);
-  create_one_shot_command_pool(&result);
-  return result;
+void vulkan_device_init(vulkan_device *vkd, data_config *config) {
+  vulkan_swap_chain_info_init(&vkd->swapChainInfo);
+  create_window(vkd, config);
+  create_instance(vkd, config);
+  setup_debug_messenger(vkd);
+  create_surface(vkd);
+  pick_physical_device(vkd);
+  create_logical_device(vkd);
+  create_one_shot_command_pool(vkd);
 }
 
 void vulkan_device_free(vulkan_device *vkd) {
@@ -94,11 +90,12 @@ void vulkan_device_free(vulkan_device *vkd) {
   glfwTerminate();
 }
 
-void glfw_framebuffer_resize_callback(GLFWwindow *window, int width,
-                                      int height) {}
+void glfw_framebuffer_resize_callback(GLFWwindow *window, int width, int height) {
+  vulkan_device *vkd = glfwGetWindowUserPointer(window);
+  vkd->framebufferResized = true;
+}
 
-void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action,
-                       int mods) {}
+void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {}
 
 void glfw_mouse_callback(GLFWwindow *window, double xPos, double yPos) {}
 
@@ -114,7 +111,8 @@ void create_window(vulkan_device *vkd, data_config *config) {
   glfwSetFramebufferSizeCallback(vkd->window, glfw_framebuffer_resize_callback);
   glfwSetKeyCallback(vkd->window, glfw_key_callback);
   glfwSetCursorPosCallback(vkd->window, glfw_mouse_callback);
-  glfwSetInputMode(vkd->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  vkd->framebufferResized = false;
+  // glfwSetInputMode(vkd->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 bool validation_layers_enabled() {

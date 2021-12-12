@@ -5,7 +5,8 @@
 int main(int argc, char *argv[]) {
   platform_init();
   data_config config = data_config_init();
-  vulkan_render_context rctx = vulkan_render_context_init(&config);
+  vulkan_render_context rctx;
+  vulkan_render_context_init(&rctx, &config);
   vulkan_render_context_load_scene(&rctx, "triangles");
 
   // TODO: create vulkan_render_context

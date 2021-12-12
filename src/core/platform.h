@@ -75,8 +75,8 @@ void platform_alloc_debug_print();
   (debug_msg("alloc_struct_array"), (type *)platform_alloc_struct(&type##_type_info, (count)))
 #define count_struct_array(ptr)                                                                    \
   (debug_msg("count_struct_array"), platform_alloc_struct_array_count((void *)(ptr)))
-#define init_struct(ptr, initFunc, ...)                                                            \
-  (debug_msg("init_struct"), (*(ptr) = (initFunc)(__VA_ARGS__)))
+#define init_struct(ptr, initFunc, ...) (debug_msg("init_struct"), ((initFunc)((ptr), __VA_ARGS__)))
+// TODO: decouple deinit_struct from free_struct
 #define free_struct(ptr) (debug_msg("free_struct"), platform_free_struct((void *)&ptr))
 
 #define MIN(x, y) ((x) < (y) ? (x) : (y))

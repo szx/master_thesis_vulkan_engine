@@ -547,6 +547,9 @@ FUNC(vulkan_render_context_init)
 #define FUNC_vulkan_render_context_free 1
 FUNC(vulkan_render_context_free)
 
+#define FUNC_vulkan_render_context_recreate_swap_chain 1
+FUNC(vulkan_render_context_recreate_swap_chain)
+
 #define FUNC_vulkan_render_context_load_scene 1
 FUNC(vulkan_render_context_load_scene)
 
