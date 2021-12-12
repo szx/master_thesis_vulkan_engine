@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
   }
   vkDeviceWaitIdle(rctx.vkd->device);
 
-  vulkan_render_context_free(&rctx);
+  vulkan_render_context_deinit(&rctx);
   data_config_free(&config);
   platform_free();
   return 0;

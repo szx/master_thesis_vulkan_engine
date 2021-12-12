@@ -11,7 +11,7 @@ void vulkan_swap_chain_init(vulkan_swap_chain *vks, vulkan_device *vkd) {
   create_swap_chain_image_views(vks);
 }
 
-void vulkan_swap_chain_free(vulkan_swap_chain *vks) {
+void vulkan_swap_chain_deinit(vulkan_swap_chain *vks) {
   for (size_t i = 0; i < vks->swapChainImageViews.size; i++) {
     vkDestroyImageView(vks->vkd->device, vks->swapChainImageViews.value[i], vka);
   }

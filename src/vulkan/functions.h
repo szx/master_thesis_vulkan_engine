@@ -20,7 +20,6 @@ typedef struct vulkan_queue_families {
   uint32_t presentFamily;
 } vulkan_queue_families;
 
-void vulkan_queue_families_free(vulkan_queue_families *self);
 bool vulkan_queue_families_complete(vulkan_queue_families *queueFamilies);
 
 #define P
@@ -37,7 +36,7 @@ typedef struct vulkan_swap_chain_info {
 } vulkan_swap_chain_info;
 
 void vulkan_swap_chain_info_init(vulkan_swap_chain_info *vksInfo);
-void vulkan_swap_chain_info_free(vulkan_swap_chain_info *vksInfo);
+void vulkan_swap_chain_info_deinit(vulkan_swap_chain_info *vksInfo);
 
 typedef struct vulkan_limits {
   /* Vulkan API limits */
@@ -56,8 +55,6 @@ typedef struct vulkan_limits {
   uint32_t maxTextures;   /// Max number of textures per scene.
   uint32_t maxLights;     /// Max number of lights per scene.
 } vulkan_limits;
-
-void vulkan_limits_free(vulkan_limits *self);
 
 typedef struct vulkan_device {
   GLFWwindow *window;                      /// GLFW window
@@ -89,7 +86,7 @@ typedef struct vulkan_device {
 } vulkan_device;
 
 void vulkan_device_init(vulkan_device *vkd, data_config *config);
-void vulkan_device_free(vulkan_device *vkd);
+void vulkan_device_deinit(vulkan_device *vkd);
 
 void glfw_framebuffer_resize_callback(GLFWwindow *window, int width,
                                       int height);

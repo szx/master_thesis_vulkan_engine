@@ -193,7 +193,7 @@ TEST platform_alloc() {
   vulkan_limits *limits = alloc_struct(vulkan_limits);
   ASSERT_EQ(vulkan_limits_alloc_stats.allocNum, 1);
   ASSERT_EQ(count_struct_array(limits), 1);
-  free_struct(limits);
+  dealloc_struct(limits);
   ASSERT_EQ(vulkan_limits_alloc_stats.allocNum, 0);
   ASSERT_EQ(limits, NULL);
   ASSERT_EQ(count_struct_array(limits), 0);
@@ -202,11 +202,11 @@ TEST platform_alloc() {
   ASSERT_EQ(vulkan_limits_alloc_stats.allocNum, 4);
   ASSERT_EQ(count_struct_array(limits), 3);
   ASSERT_EQ(count_struct_array(limits2), 1);
-  free_struct(limits);
+  dealloc_struct(limits);
   ASSERT_EQ(vulkan_limits_alloc_stats.allocNum, 1);
   ASSERT_EQ(limits, NULL);
   ASSERT_EQ(count_struct_array(limits), 0);
-  free_struct(limits2);
+  dealloc_struct(limits2);
   ASSERT_EQ(vulkan_limits_alloc_stats.allocNum, 0);
   ASSERT_EQ(limits2, NULL);
   PASS();

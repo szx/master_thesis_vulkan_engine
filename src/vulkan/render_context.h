@@ -21,7 +21,7 @@ typedef struct vulkan_render_pass {
 
 void vulkan_render_pass_init(vulkan_render_pass *renderPass, vulkan_swap_chain *vks,
                              vulkan_render_pass_type type);
-void vulkan_render_pass_free(vulkan_render_pass *renderPass);
+void vulkan_render_pass_deinit(vulkan_render_pass *renderPass);
 
 /// Describes rendering pipeline.
 typedef struct vulkan_pipeline {
@@ -34,7 +34,7 @@ typedef struct vulkan_pipeline {
 } vulkan_pipeline;
 
 void vulkan_pipeline_init(vulkan_pipeline *pipeline, vulkan_swap_chain *vks);
-void vulkan_pipeline_free(vulkan_pipeline *pipeline);
+void vulkan_pipeline_deinit(vulkan_pipeline *pipeline);
 
 /// Manages frame-specific resources (command buffer, framebuffer) used to
 /// render one swap chain frame.
@@ -52,7 +52,7 @@ typedef struct vulkan_swap_chain_frame {
 
 void vulkan_swap_chain_frame_init(vulkan_swap_chain_frame *frame, vulkan_pipeline *pipeline,
                                   uint32_t swapChainImageIndex);
-void vulkan_swap_chain_frame_free(vulkan_swap_chain_frame *frame);
+void vulkan_swap_chain_frame_deinit(vulkan_swap_chain_frame *frame);
 vulkan_swap_chain_frame vulkan_swap_chain_frame_copy(vulkan_swap_chain_frame *frame);
 
 /// Manages frame-agnostic resources and frames used to render into swap chain.
@@ -74,7 +74,7 @@ typedef struct vulkan_render_context {
 } vulkan_render_context;
 
 void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config);
-void vulkan_render_context_free();
+void vulkan_render_context_deinit(vulkan_render_context *rctx);
 /// Recreate vulkan_render_context when swap chain is out-of-date.
 void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx);
 void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneName);

@@ -161,7 +161,7 @@ void vulkan_scene_init(vulkan_scene *scene) {
   scene->accessors = vec_vulkan_accessor_init();
 }
 
-void vulkan_scene_free(vulkan_scene *self) {
+void vulkan_scene_deinit(vulkan_scene *self) {
   vec_vulkan_node_free(&self->nodes);
   vulkan_geometry_buffer_free(&self->geometryBuffer);
   vec_vulkan_buffer_view_free(&self->bufferViews);

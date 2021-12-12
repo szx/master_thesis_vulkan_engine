@@ -21,7 +21,7 @@ typedef struct core_type_alloc_stats {
 typedef struct core_type_info {
   const char *name;
   const size_t size;
-  void (*const free)(void *self);
+  void (*const deinit)(void *self);
 #if defined(DEBUG)
   core_type_alloc_stats *allocStats;
 #endif
@@ -34,19 +34,27 @@ typedef struct core_type_info {
 typedef struct core_alloc_struct_header {
   const core_type_info *const typeInfo;
   size_t count;
+  bool initialized;
   // TODO: Object pools.
 } core_alloc_struct_header;
 
 /// Returns header of allocated struct.
 const core_alloc_struct_header *core_alloc_struct_header_get(void *memory);
 
+/// Marks struct as initialized.
+void core_alloc_struct_header_init(void *memory);
+
 /// Returns newly allocated memory for struct or NULL.
 /// typeInfo should be only one of global constants declared above.
 void *core_alloc_struct(const core_type_info *typeInfo, size_t count);
 
-/// Frees memory allocated for struct after calling appropriate user-defined free function.
+/// Calls appropriate user-defined deinit function if struct is still initialized.
+void core_deinit_struct(void *memory);
+
+/// Frees memory allocated for struct.
+/// Calls core_deinit_struct().
 /// Returns pointer to freed memory or NULL if error.
-void *core_free_struct(void *memory);
+void *core_dealloc_struct(void *memory);
 
 // Logs debug info about all allocations.
 void core_alloc_debug_print();

@@ -49,15 +49,22 @@ void panic(const char *format, ...);
 /// Returns number of allocated structs in struct array.
 size_t platform_alloc_struct_array_count(void *memory);
 
+/// Use init_struct macro.
+/// Marks struct as initialized.
+void platform_alloc_struct_mark_init(void *memory);
+
 /// Use alloc_struct macro.
 /// Returns newly allocated memory.
 /// Initializes struct.
 void *platform_alloc_struct(const core_type_info *typeInfo, size_t count);
 
-/// Use free_struct macro.
-/// Frees memory allocated for struct after calling appropriate user-defined free function.
+/// Calls appropriate user-defined deinit function if struct is still initialized.
+void platform_deinit_struct(void *memory);
+
+/// Use dealloc_struct macro.
+/// Frees memory allocated for struct after calling appropriate user-defined deinit function.
 /// Sets memory pointer to NULL.
-void platform_free_struct(void **memory);
+void platform_dealloc_struct(void **memory);
 
 // Logs debug info about all allocations.
 void platform_alloc_debug_print();
@@ -75,9 +82,15 @@ void platform_alloc_debug_print();
   (debug_msg("alloc_struct_array"), (type *)platform_alloc_struct(&type##_type_info, (count)))
 #define count_struct_array(ptr)                                                                    \
   (debug_msg("count_struct_array"), platform_alloc_struct_array_count((void *)(ptr)))
-#define init_struct(ptr, initFunc, ...) (debug_msg("init_struct"), ((initFunc)((ptr), __VA_ARGS__)))
+#define init_struct(ptr, initFunc, ...)                                                            \
+  do {                                                                                             \
+    debug_msg("init_struct");                                                                      \
+    ((initFunc)((ptr), __VA_ARGS__));                                                              \
+    platform_alloc_struct_mark_init((ptr));                                                        \
+  } while (0)
 // TODO: decouple deinit_struct from free_struct
-#define free_struct(ptr) (debug_msg("free_struct"), platform_free_struct((void *)&ptr))
+#define deinit_struct(ptr) (debug_msg("deinit_struct"), platform_deinit_struct((void *)&ptr))
+#define dealloc_struct(ptr) (debug_msg("dealloc_struct"), platform_dealloc_struct((void *)&ptr))
 
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MAX(x, y) ((x) > (y) ? (x) : (y))

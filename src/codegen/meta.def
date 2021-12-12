@@ -40,11 +40,17 @@ STRUCT(core_alloc_struct_header)
 #define FUNC_core_alloc_struct_header_get 1
 FUNC(core_alloc_struct_header_get)
 
+#define FUNC_core_alloc_struct_header_init 1
+FUNC(core_alloc_struct_header_init)
+
 #define FUNC_core_alloc_struct 1
 FUNC(core_alloc_struct)
 
-#define FUNC_core_free_struct 1
-FUNC(core_free_struct)
+#define FUNC_core_deinit_struct 1
+FUNC(core_deinit_struct)
+
+#define FUNC_core_dealloc_struct 1
+FUNC(core_dealloc_struct)
 
 #define FUNC_core_alloc_debug_print 1
 FUNC(core_alloc_debug_print)
@@ -77,11 +83,17 @@ FUNC(panic)
 #define FUNC_platform_alloc_struct_array_count 1
 FUNC(platform_alloc_struct_array_count)
 
+#define FUNC_platform_alloc_struct_mark_init 1
+FUNC(platform_alloc_struct_mark_init)
+
 #define FUNC_platform_alloc_struct 1
 FUNC(platform_alloc_struct)
 
-#define FUNC_platform_free_struct 1
-FUNC(platform_free_struct)
+#define FUNC_platform_deinit_struct 1
+FUNC(platform_deinit_struct)
+
+#define FUNC_platform_dealloc_struct 1
+FUNC(platform_dealloc_struct)
 
 #define FUNC_platform_alloc_debug_print 1
 FUNC(platform_alloc_debug_print)
@@ -150,8 +162,8 @@ STRUCT(vulkan_swap_chain)
 #define FUNC_vulkan_swap_chain_init 1
 FUNC(vulkan_swap_chain_init)
 
-#define FUNC_vulkan_swap_chain_free 1
-FUNC(vulkan_swap_chain_free)
+#define FUNC_vulkan_swap_chain_deinit 1
+FUNC(vulkan_swap_chain_deinit)
 
 #define FUNC_choose_swap_surface_format 1
 FUNC(choose_swap_surface_format)
@@ -211,26 +223,20 @@ STRUCT(vulkan_limits)
 #endif
 STRUCT(vulkan_device)
 
-#define FUNC_vulkan_queue_families_free 1
-FUNC(vulkan_queue_families_free)
-
 #define FUNC_vulkan_queue_families_complete 1
 FUNC(vulkan_queue_families_complete)
 
 #define FUNC_vulkan_swap_chain_info_init 1
 FUNC(vulkan_swap_chain_info_init)
 
-#define FUNC_vulkan_swap_chain_info_free 1
-FUNC(vulkan_swap_chain_info_free)
-
-#define FUNC_vulkan_limits_free 1
-FUNC(vulkan_limits_free)
+#define FUNC_vulkan_swap_chain_info_deinit 1
+FUNC(vulkan_swap_chain_info_deinit)
 
 #define FUNC_vulkan_device_init 1
 FUNC(vulkan_device_init)
 
-#define FUNC_vulkan_device_free 1
-FUNC(vulkan_device_free)
+#define FUNC_vulkan_device_deinit 1
+FUNC(vulkan_device_deinit)
 
 #define FUNC_glfw_framebuffer_resize_callback 1
 FUNC(glfw_framebuffer_resize_callback)
@@ -468,8 +474,8 @@ FUNC(vulkan_node_copy)
 #define FUNC_vulkan_scene_init 1
 FUNC(vulkan_scene_init)
 
-#define FUNC_vulkan_scene_free 1
-FUNC(vulkan_scene_free)
+#define FUNC_vulkan_scene_deinit 1
+FUNC(vulkan_scene_deinit)
 
 #define FUNC_vulkan_scene_add_node 1
 FUNC(vulkan_scene_add_node)
@@ -523,20 +529,20 @@ STRUCT(vulkan_render_context)
 #define FUNC_vulkan_render_pass_init 1
 FUNC(vulkan_render_pass_init)
 
-#define FUNC_vulkan_render_pass_free 1
-FUNC(vulkan_render_pass_free)
+#define FUNC_vulkan_render_pass_deinit 1
+FUNC(vulkan_render_pass_deinit)
 
 #define FUNC_vulkan_pipeline_init 1
 FUNC(vulkan_pipeline_init)
 
-#define FUNC_vulkan_pipeline_free 1
-FUNC(vulkan_pipeline_free)
+#define FUNC_vulkan_pipeline_deinit 1
+FUNC(vulkan_pipeline_deinit)
 
 #define FUNC_vulkan_swap_chain_frame_init 1
 FUNC(vulkan_swap_chain_frame_init)
 
-#define FUNC_vulkan_swap_chain_frame_free 1
-FUNC(vulkan_swap_chain_frame_free)
+#define FUNC_vulkan_swap_chain_frame_deinit 1
+FUNC(vulkan_swap_chain_frame_deinit)
 
 #define FUNC_vulkan_swap_chain_frame_copy 1
 FUNC(vulkan_swap_chain_frame_copy)
@@ -544,8 +550,8 @@ FUNC(vulkan_swap_chain_frame_copy)
 #define FUNC_vulkan_render_context_init 1
 FUNC(vulkan_render_context_init)
 
-#define FUNC_vulkan_render_context_free 1
-FUNC(vulkan_render_context_free)
+#define FUNC_vulkan_render_context_deinit 1
+FUNC(vulkan_render_context_deinit)
 
 #define FUNC_vulkan_render_context_recreate_swap_chain 1
 FUNC(vulkan_render_context_recreate_swap_chain)

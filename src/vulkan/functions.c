@@ -41,8 +41,6 @@ debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
   return VK_FALSE;
 }
 
-void vulkan_queue_families_free(vulkan_queue_families *self) {}
-
 bool vulkan_queue_families_complete(vulkan_queue_families *queueFamilies) {
   return queueFamilies->graphicsFamily < UINT32_MAX && queueFamilies->presentFamily < UINT32_MAX;
 }
@@ -52,12 +50,10 @@ void vulkan_swap_chain_info_init(vulkan_swap_chain_info *vksInfo) {
   vksInfo->presentModes = vec_VkPresentModeKHR_init();
 }
 
-void vulkan_swap_chain_info_free(vulkan_swap_chain_info *self) {
-  vec_VkSurfaceFormatKHR_free(&self->formats);
-  vec_VkPresentModeKHR_free(&self->presentModes);
+void vulkan_swap_chain_info_deinit(vulkan_swap_chain_info *vksInfo) {
+  vec_VkSurfaceFormatKHR_free(&vksInfo->formats);
+  vec_VkPresentModeKHR_free(&vksInfo->presentModes);
 }
-
-void vulkan_limits_free(vulkan_limits *self) {}
 
 void vulkan_device_init(vulkan_device *vkd, data_config *config) {
   vulkan_swap_chain_info_init(&vkd->swapChainInfo);
@@ -70,9 +66,9 @@ void vulkan_device_init(vulkan_device *vkd, data_config *config) {
   create_one_shot_command_pool(vkd);
 }
 
-void vulkan_device_free(vulkan_device *vkd) {
-  log_info("vulkan_device_free()");
-  vulkan_swap_chain_info_free(&vkd->swapChainInfo);
+void vulkan_device_deinit(vulkan_device *vkd) {
+  log_info("vulkan_device_deinit()");
+  vulkan_swap_chain_info_deinit(&vkd->swapChainInfo);
 
   vkDestroyCommandPool(vkd->device, vkd->oneShotCommandPool, vka);
 
