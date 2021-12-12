@@ -65,6 +65,7 @@ VkExtent2D choose_swap_extent(vulkan_device *vkd) {
 
 void create_swap_chain(vulkan_swap_chain *vks) {
   assert(vks->swapChain == VK_NULL_HANDLE);
+  query_swap_chain_support(vks->vkd, vks->vkd->physicalDevice);
   vulkan_swap_chain_info *swapChainInfo = &vks->vkd->swapChainInfo;
   VkSurfaceFormatKHR surfaceFormat =
       choose_swap_surface_format(&swapChainInfo->formats);

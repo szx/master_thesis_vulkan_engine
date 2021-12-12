@@ -323,15 +323,12 @@ void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx) {
   vkDeviceWaitIdle(rctx->vkd->device);
   // gui.deinitialize();
   //  TODO: reinit_struct
-  // dealloc_struct(rctx->scene);
+  // deinit_struct(rctx->scene);
   dealloc_struct(rctx->swapChainFrames);
-  dealloc_struct(rctx->pipeline);
-  dealloc_struct(rctx->vks);
+  deinit_struct(rctx->pipeline);
+  deinit_struct(rctx->vks);
 
-  query_swap_chain_support(rctx->vkd, rctx->vkd->physicalDevice);
-  rctx->vks = alloc_struct(vulkan_swap_chain);
   init_struct(rctx->vks, vulkan_swap_chain_init, rctx->vkd);
-  rctx->pipeline = alloc_struct(vulkan_pipeline);
   init_struct(rctx->pipeline, vulkan_pipeline_init, rctx->vks);
   rctx->swapChainFrames =
       alloc_struct_array(vulkan_swap_chain_frame, rctx->vks->swapChainImageViews.size);

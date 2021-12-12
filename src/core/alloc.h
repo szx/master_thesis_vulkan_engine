@@ -49,6 +49,7 @@ void core_alloc_struct_header_init(void *memory);
 void *core_alloc_struct(const core_type_info *typeInfo, size_t count);
 
 /// Calls appropriate user-defined deinit function if struct is still initialized.
+/// Iterates through struct arrays.
 void core_deinit_struct(void *memory);
 
 /// Frees memory allocated for struct.

@@ -68,7 +68,11 @@ void core_deinit_struct(void *memory) {
       (core_alloc_struct_header *)((char *)memory - sizeof(core_alloc_struct_header));
   if (header->initialized) {
     const core_type_info *typeInfo = header->typeInfo;
-    typeInfo->deinit(memory);
+    char *it = memory;
+    for (size_t i = 0; i < header->count; i++) {
+      typeInfo->deinit(it);
+      it += typeInfo->size;
+    }
     header->initialized = false;
   }
 }

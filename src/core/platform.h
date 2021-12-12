@@ -88,8 +88,7 @@ void platform_alloc_debug_print();
     ((initFunc)((ptr), __VA_ARGS__));                                                              \
     platform_alloc_struct_mark_init((ptr));                                                        \
   } while (0)
-// TODO: decouple deinit_struct from free_struct
-#define deinit_struct(ptr) (debug_msg("deinit_struct"), platform_deinit_struct((void *)&ptr))
+#define deinit_struct(ptr) (debug_msg("deinit_struct"), platform_deinit_struct((void *)ptr))
 #define dealloc_struct(ptr) (debug_msg("dealloc_struct"), platform_dealloc_struct((void *)&ptr))
 
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
