@@ -36,6 +36,12 @@ void log_init();
 /// Closes log.txt file.
 void log_free();
 
+#if defined(DEBUG)
+#define debug_msg(msg) log_debug("debug_msg: %s in %s:%s:%d", msg, __func__, __FILE__, __LINE__)
+#else
+#define debug_msg(msg) 0
+#endif
+
 /// Shows message dialog and exits.
 void panic(const char *format, ...);
 
@@ -63,11 +69,13 @@ void platform_alloc_debug_print();
     }                                                                                              \
   } while (0)
 
-#define alloc_struct(type) (type *)platform_alloc_struct(&type##_type_info, 1)
-#define alloc_struct_array(type, count) (type *)platform_alloc_struct(&type##_type_info, (count))
-#define count_struct_array(name) platform_alloc_struct_array_count((void *)(name))
-// TODO: init_struct
-#define free_struct(name) platform_free_struct((void *)&name)
+#define alloc_struct(type)                                                                         \
+  (debug_msg("alloc_struct"), (type *)platform_alloc_struct(&type##_type_info, 1))
+#define alloc_struct_array(type, count)                                                            \
+  (debug_msg("alloc_struct_array"), (type *)platform_alloc_struct(&type##_type_info, (count)))
+#define count_struct_array(name)                                                                   \
+  (debug_msg("count_struct_array"), platform_alloc_struct_array_count((void *)(name)))
+#define free_struct(name) (debug_msg("free_struct"), platform_free_struct((void *)&name))
 
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MAX(x, y) ((x) > (y) ? (x) : (y))

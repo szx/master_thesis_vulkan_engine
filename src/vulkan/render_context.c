@@ -291,10 +291,10 @@ vulkan_render_context vulkan_render_context_init(data_config *config) {
   *result.vks = vulkan_swap_chain_init(result.vkd);
   result.pipeline = alloc_struct(vulkan_pipeline);
   *result.pipeline = vulkan_pipeline_init(result.vks);
-  result.swapChainFrames = vec_vulkan_swap_chain_frame_init();
-  for (uint32_t i = 0; i < result.vks->swapChainImageViews.size; i++) {
-    vulkan_swap_chain_frame frame = vulkan_swap_chain_frame_init(result.pipeline, i);
-    vec_vulkan_swap_chain_frame_push_back(&result.swapChainFrames, frame);
+  result.swapChainFrames =
+      alloc_struct_array(vulkan_swap_chain_frame, result.vks->swapChainImageViews.size);
+  for (uint32_t i = 0; i < count_struct_array(result.swapChainFrames); i++) {
+    result.swapChainFrames[i] = vulkan_swap_chain_frame_init(result.pipeline, i);
   }
   result.currentFrameInFlight = 0;
   result.scene = NULL;
@@ -306,7 +306,7 @@ void vulkan_render_context_free(vulkan_render_context *rctx) {
   assert(rctx->scene != NULL);
   rctx->currentFrameInFlight = -1;
   free_struct(rctx->scene);
-  vec_vulkan_swap_chain_frame_free(&rctx->swapChainFrames);
+  free_struct(rctx->swapChainFrames);
   free_struct(rctx->pipeline);
   free_struct(rctx->vks);
   for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
@@ -378,7 +378,7 @@ void vulkan_render_context_draw_frame(vulkan_render_context *rctx) {
   // We have acquired index of next in-flight image, we can now update frame-specific resources
   // (uniform buffers, push constants).
   // log_debug("imageIndex = %d", imageIndex);
-  vulkan_swap_chain_frame *inFlightFrame = &rctx->swapChainFrames.value[imageIndex];
+  vulkan_swap_chain_frame *inFlightFrame = &rctx->swapChainFrames[imageIndex];
   vulkan_render_context_record_frame_command_buffer(rctx->pipeline, inFlightFrame);
   // scene.updateScene(currentFrameInFlight);
   // scene.beginCommandBuffer(&framebuffers[imageIndex]);

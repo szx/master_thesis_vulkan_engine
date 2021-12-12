@@ -39,7 +39,7 @@ const core_alloc_struct_header *core_alloc_struct_header_get(void *memory) {
 
 void *core_alloc_struct(const core_type_info *typeInfo, size_t count) {
   log_debug("alloc_struct %s: size=%d count=%d", typeInfo->name, typeInfo->size, count);
-  size_t structSize = typeInfo->size;
+  size_t structSize = typeInfo->size * count;
   core_alloc_struct_header *header =
       (core_alloc_struct_header *)malloc(sizeof(core_alloc_struct_header) + structSize);
   if (header == NULL) {

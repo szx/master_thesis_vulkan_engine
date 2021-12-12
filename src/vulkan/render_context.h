@@ -54,17 +54,14 @@ vulkan_swap_chain_frame vulkan_swap_chain_frame_init(vulkan_pipeline *pipeline,
 void vulkan_swap_chain_frame_free(vulkan_swap_chain_frame *frame);
 vulkan_swap_chain_frame vulkan_swap_chain_frame_copy(vulkan_swap_chain_frame *frame);
 
-#define T vulkan_swap_chain_frame
-#include "vec.h" // vec_vulkan_swap_chain_frame
-
 /// Manages frame-agnostic resources and frames used to render into swap chain.
 typedef struct vulkan_render_context {
-  vulkan_device *vkd;                          /// Vulkan device.
-  vulkan_swap_chain *vks;                      /// Vulkan swap chain.
-  vulkan_pipeline *pipeline;                   /// Rendering pipeline.
-  vec_vulkan_swap_chain_frame swapChainFrames; /// Swap chain frames.
-  vulkan_scene *scene;                         /// Swap chain frames.
-  size_t currentFrameInFlight;                 /// Current frame rendered in flight.
+  vulkan_device *vkd;                       /// Vulkan device.
+  vulkan_swap_chain *vks;                   /// Vulkan swap chain.
+  vulkan_pipeline *pipeline;                /// Rendering pipeline.
+  vulkan_swap_chain_frame *swapChainFrames; /// Swap chain frames.
+  vulkan_scene *scene;                      /// Vulkan scene.
+  size_t currentFrameInFlight;              /// Current frame rendered in flight.
   /// Semaphore signaling that frame has been acquired from swap chain and is ready for drawing.
   VkSemaphore imageAvailableSemaphores[MAX_FRAMES_IN_FLIGHT];
   /// Semaphore signaling that drawing frame is finished and it can be presented.
