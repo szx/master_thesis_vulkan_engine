@@ -91,8 +91,7 @@ SUITE(c_parser_suite) { RUN_TEST(c_parser_preprocessor_parsing); }
 #include "../data/config.h"
 #include <sqlite3.h>
 
-int database_resolutions_callback(void *callbackData, int argc, char **argv,
-                                  char **azColName) {
+int database_resolutions_callback(void *callbackData, int argc, char **argv, char **azColName) {
   for (int i = 0; i < argc; i++) {
     log_debug("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
   }
@@ -179,10 +178,11 @@ TEST gltf_loading() {
   // platform_path gltfPath = get_asset_file_path("sponza", "Sponza.gltf");
   // platform_path gltfPath = get_asset_file_path("triangle", "Triangle.gltf");
   platform_path gltfPath = get_asset_file_path("triangles", "triangles.gltf");
-  vulkan_scene scene = parse_gltf_file(gltfPath);
+  vulkan_scene scene;
+  parse_gltf_file(&scene, gltfPath);
   vulkan_scene_debug_print(&scene);
   platform_path_free(&gltfPath);
-  vulkan_scene_free(&scene);
+  vulkan_scene_deinit(&scene);
   PASS();
 }
 
@@ -214,6 +214,34 @@ TEST platform_alloc() {
 
 SUITE(platform_alloc_suite) { RUN_TEST(platform_alloc); }
 
+// Loading sponza.gltf.
+TEST shaderc_compiling() {
+  platform_path vertPath = get_asset_file_path("shaders", "shader.vert");
+
+  shaderc_compiler_t compiler = shaderc_compiler_initialize();
+  ASSERT_NEQ(compiler, NULL);
+  shaderc_compilation_result_t result =
+      shaderc_compile_into_spv(compiler, "#version 450\nvoid main() {}", 27,
+                               shaderc_glsl_vertex_shader, "main.vert", "main", NULL);
+  // Do stuff with compilation results.
+  shaderc_compiler_release(compiler);
+  if (shaderc_result_get_num_errors(result)) {
+    log_error("%s\n", shaderc_result_get_error_message(result));
+    FAIL();
+  }
+
+  size_t codeSize = shaderc_result_get_length(result);
+  const uint32_t *spvCode = (const uint32_t *)shaderc_result_get_bytes(result);
+  // TODO: Separate into vulkan/shader.h
+  ASSERT_GT(codeSize, 0);
+
+  shaderc_result_release(result);
+  platform_path_free(&vertPath);
+  PASS();
+}
+
+SUITE(shaderc_suite) { RUN_TEST(shaderc_compiling); }
+
 GREATEST_MAIN_DEFS(); // NOLINT
 
 int main(int argc, char *argv[]) {
@@ -225,6 +253,7 @@ int main(int argc, char *argv[]) {
   RUN_SUITE(database_suite);
   RUN_SUITE(gltf_suite);
   RUN_SUITE(platform_alloc_suite);
+  RUN_SUITE(shaderc_suite);
   log_info("finish test suite");
   platform_free();
   GREATEST_MAIN_END();

@@ -5,11 +5,14 @@ project(cpptest LANGUAGES C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-# add headers from Vulkan SDK
+# add headers and shaderc from Vulkan SDK
 set(VULKAN_SDK_PATH "$ENV{VULKAN_SDK}")
 set(VULKAN_INCLUDE_PATH "${VULKAN_SDK_PATH}/include")
 set(VULKAN_LIBRARY_PATH "${VULKAN_SDK_PATH}/lib")
+set(ENV{PKG_CONFIG_PATH} "${VULKAN_LIBRARY_PATH}/pkgconfig")
 set(VULKAN_LIBRARIES "vulkan")
+find_package(PkgConfig REQUIRED)
+pkg_search_module(shaderc REQUIRED IMPORTED_TARGET shaderc_combined)
 
 # add external library glfw
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
@@ -38,8 +41,7 @@ add_subdirectory(thirdparty/cglm)
 set(STB_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb")
 
 # add external library GLib
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(deps REQUIRED IMPORTED_TARGET glib-2.0)
+pkg_check_modules(glib REQUIRED IMPORTED_TARGET glib-2.0)
 
 message("CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
 #if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -56,7 +58,7 @@ set(EXTERNAL_INCLUDE_PATHS ${VULKAN_INCLUDE_PATH} ${GREATEST_INCLUDE_PATH} ${CTL
         ${STB_INCLUDE_PATH})
 set(EXTERNAL_ADDITIONAL_SOURCES ${LOGC_ADDITIONAL_SOURCES})
 set(EXTERNAL_LIBRARY_PATHS ${VULKAN_LIBRARY_PATH} ${GTK4_LIBRARY_DIRS} ${SQLITE3_LIBRARY_DIRS})
-set(EXTERNAL_LIBRARIES glfw ${VULKAN_LIBRARIES} PkgConfig::deps ${GTK4_LIBRARIES} ${SQLITE3_LIBRARIES} ${CGLM_LIBRARIES})
+set(EXTERNAL_LIBRARIES glfw ${VULKAN_LIBRARIES} PkgConfig::shaderc PkgConfig::glib ${GTK4_LIBRARIES} ${SQLITE3_LIBRARIES} ${CGLM_LIBRARIES})
 
 
 # build packcc during configure

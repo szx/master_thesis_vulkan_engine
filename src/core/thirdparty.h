@@ -5,6 +5,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include "shaderc/shaderc.h"
+
 #include "log.h"
 #include "str.h"
 
