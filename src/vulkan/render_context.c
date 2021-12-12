@@ -192,7 +192,7 @@ vulkan_pipeline vulkan_pipeline_init(vulkan_swap_chain *vks) {
   result.vks = vks;
   result.vkd = vks->vkd;
   result.renderPass = alloc_struct(vulkan_render_pass);
-  *result.renderPass = vulkan_render_pass_init(result.vks, ForwardRenderPass);
+  init_struct(result.renderPass, vulkan_render_pass_init, result.vks, ForwardRenderPass);
   return result;
 }
 
@@ -286,15 +286,15 @@ void create_synchronization_objects(vulkan_render_context *rctx) {
 vulkan_render_context vulkan_render_context_init(data_config *config) {
   vulkan_render_context result;
   result.vkd = alloc_struct(vulkan_device);
-  *result.vkd = vulkan_device_init(config);
+  init_struct(result.vkd, vulkan_device_init, config);
   result.vks = alloc_struct(vulkan_swap_chain);
-  *result.vks = vulkan_swap_chain_init(result.vkd);
+  init_struct(result.vks, vulkan_swap_chain_init, result.vkd);
   result.pipeline = alloc_struct(vulkan_pipeline);
-  *result.pipeline = vulkan_pipeline_init(result.vks);
+  init_struct(result.pipeline, vulkan_pipeline_init, result.vks);
   result.swapChainFrames =
       alloc_struct_array(vulkan_swap_chain_frame, result.vks->swapChainImageViews.size);
   for (uint32_t i = 0; i < count_struct_array(result.swapChainFrames); i++) {
-    result.swapChainFrames[i] = vulkan_swap_chain_frame_init(result.pipeline, i);
+    init_struct(&result.swapChainFrames[i], vulkan_swap_chain_frame_init, result.pipeline, i);
   }
   result.currentFrameInFlight = 0;
   result.scene = NULL;
@@ -322,7 +322,7 @@ void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneNa
   platform_path gltfPath = get_asset_file_path(sceneName, sceneName);
   platform_path_append_ext(&gltfPath, ".gltf");
   rctx->scene = alloc_struct(vulkan_scene);
-  *rctx->scene = parse_gltf_file(gltfPath);
+  init_struct(rctx->scene, parse_gltf_file, gltfPath);
   platform_path_free(&gltfPath);
   vulkan_scene_debug_print(rctx->scene);
   // TODO: Copy resources to GPU. (deferred? tracking)
