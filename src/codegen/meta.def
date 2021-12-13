@@ -581,137 +581,137 @@ FUNC(vulkan_render_context_draw_frame)
 #define FUNC_vulkan_pipeline_record_frame_command_buffer 1
 FUNC(vulkan_pipeline_record_frame_command_buffer)
 
-#define STRUCT_c_parser_str_range 1
+#define STRUCT_parser_str_range 1
 #ifdef STRUCT_COND
-#  if STRUCT_COND(c_parser_str_range) == 1
-   STRUCT_COND_TRUE(c_parser_str_range)
+#  if STRUCT_COND(parser_str_range) == 1
+   STRUCT_COND_TRUE(parser_str_range)
 #  else
-   STRUCT_COND_FALSE(c_parser_str_range)
+   STRUCT_COND_FALSE(parser_str_range)
 #  endif
 #endif
-STRUCT(c_parser_str_range)
+STRUCT(parser_str_range)
 
-#define STRUCT_c_parser_error 1
+#define STRUCT_parser_error 1
 #ifdef STRUCT_COND
-#  if STRUCT_COND(c_parser_error) == 1
-   STRUCT_COND_TRUE(c_parser_error)
+#  if STRUCT_COND(parser_error) == 1
+   STRUCT_COND_TRUE(parser_error)
 #  else
-   STRUCT_COND_FALSE(c_parser_error)
+   STRUCT_COND_FALSE(parser_error)
 #  endif
 #endif
-STRUCT(c_parser_error)
+STRUCT(parser_error)
 
-#define STRUCT_c_parser_comment 1
+#define STRUCT_parser_comment 1
 #ifdef STRUCT_COND
-#  if STRUCT_COND(c_parser_comment) == 1
-   STRUCT_COND_TRUE(c_parser_comment)
+#  if STRUCT_COND(parser_comment) == 1
+   STRUCT_COND_TRUE(parser_comment)
 #  else
-   STRUCT_COND_FALSE(c_parser_comment)
+   STRUCT_COND_FALSE(parser_comment)
 #  endif
 #endif
-STRUCT(c_parser_comment)
+STRUCT(parser_comment)
 
-#define STRUCT_c_parser_state 1
+#define STRUCT_parser_state 1
 #ifdef STRUCT_COND
-#  if STRUCT_COND(c_parser_state) == 1
-   STRUCT_COND_TRUE(c_parser_state)
+#  if STRUCT_COND(parser_state) == 1
+   STRUCT_COND_TRUE(parser_state)
 #  else
-   STRUCT_COND_FALSE(c_parser_state)
+   STRUCT_COND_FALSE(parser_state)
 #  endif
 #endif
-STRUCT(c_parser_state)
+STRUCT(parser_state)
 
-#define STRUCT_c_parser_ast_node_ptr 1
+#define STRUCT_parser_ast_node_ptr 1
 #ifdef STRUCT_COND
-#  if STRUCT_COND(c_parser_ast_node_ptr) == 1
-   STRUCT_COND_TRUE(c_parser_ast_node_ptr)
+#  if STRUCT_COND(parser_ast_node_ptr) == 1
+   STRUCT_COND_TRUE(parser_ast_node_ptr)
 #  else
-   STRUCT_COND_FALSE(c_parser_ast_node_ptr)
+   STRUCT_COND_FALSE(parser_ast_node_ptr)
 #  endif
 #endif
-STRUCT(c_parser_ast_node_ptr)
+STRUCT(parser_ast_node_ptr)
 
-#define STRUCT_c_parser_ast_node 1
+#define STRUCT_parser_ast_node 1
 #ifdef STRUCT_COND
-#  if STRUCT_COND(c_parser_ast_node) == 1
-   STRUCT_COND_TRUE(c_parser_ast_node)
+#  if STRUCT_COND(parser_ast_node) == 1
+   STRUCT_COND_TRUE(parser_ast_node)
 #  else
-   STRUCT_COND_FALSE(c_parser_ast_node)
+   STRUCT_COND_FALSE(parser_ast_node)
 #  endif
 #endif
-STRUCT(c_parser_ast_node)
+STRUCT(parser_ast_node)
 
-#define FUNC_c_parser_ast_node_ptr_init 1
-FUNC(c_parser_ast_node_ptr_init)
+#define FUNC_parser_ast_node_ptr_init 1
+FUNC(parser_ast_node_ptr_init)
 
-#define FUNC_c_parser_ast_node_ptr_copy 1
-FUNC(c_parser_ast_node_ptr_copy)
+#define FUNC_parser_ast_node_ptr_copy 1
+FUNC(parser_ast_node_ptr_copy)
 
-#define FUNC_c_parser_ast_node_ptr_free 1
-FUNC(c_parser_ast_node_ptr_free)
+#define FUNC_parser_ast_node_ptr_free 1
+FUNC(parser_ast_node_ptr_free)
 
-#define FUNC_c_parser_ast_node_free 1
-FUNC(c_parser_ast_node_free)
+#define FUNC_parser_ast_node_free 1
+FUNC(parser_ast_node_free)
 
-#define FUNC_c_parser_state_init 1
-FUNC(c_parser_state_init)
+#define FUNC_parser_state_init 1
+FUNC(parser_state_init)
 
-#define FUNC_c_parser_state_free 1
-FUNC(c_parser_state_free)
+#define FUNC_parser_state_free 1
+FUNC(parser_state_free)
 
-#define FUNC_c_parser_advance 1
-FUNC(c_parser_advance)
+#define FUNC_parser_advance 1
+FUNC(parser_advance)
 
-#define FUNC_c_parser_peek 1
-FUNC(c_parser_peek)
+#define FUNC_parser_peek 1
+FUNC(parser_peek)
 
-#define FUNC_c_parser_getchar 1
-FUNC(c_parser_getchar)
+#define FUNC_parser_getchar 1
+FUNC(parser_getchar)
 
-#define FUNC_c_parser_str_range_init 1
-FUNC(c_parser_str_range_init)
+#define FUNC_parser_str_range_init 1
+FUNC(parser_str_range_init)
 
-#define FUNC_c_parser_ast_node_allocate 1
-FUNC(c_parser_ast_node_allocate)
+#define FUNC_parser_ast_node_allocate 1
+FUNC(parser_ast_node_allocate)
 
-#define FUNC_c_parser_ast_node_init_variadic 1
-FUNC(c_parser_ast_node_init_variadic)
+#define FUNC_parser_ast_node_init_variadic 1
+FUNC(parser_ast_node_init_variadic)
 
-#define FUNC_c_parser_ast_node_push_front 1
-FUNC(c_parser_ast_node_push_front)
+#define FUNC_parser_ast_node_push_front 1
+FUNC(parser_ast_node_push_front)
 
-#define FUNC_c_parser_ast_node_init_0 1
-FUNC(c_parser_ast_node_init_0)
+#define FUNC_parser_ast_node_init_0 1
+FUNC(parser_ast_node_init_0)
 
-#define FUNC_c_parser_ast_node_init_1 1
-FUNC(c_parser_ast_node_init_1)
+#define FUNC_parser_ast_node_init_1 1
+FUNC(parser_ast_node_init_1)
 
-#define FUNC_c_parser_ast_node_init_2 1
-FUNC(c_parser_ast_node_init_2)
+#define FUNC_parser_ast_node_init_2 1
+FUNC(parser_ast_node_init_2)
 
-#define FUNC_c_parser_ast_node_init_3 1
-FUNC(c_parser_ast_node_init_3)
+#define FUNC_parser_ast_node_init_3 1
+FUNC(parser_ast_node_init_3)
 
-#define FUNC_c_parser_ast_node_init_4 1
-FUNC(c_parser_ast_node_init_4)
+#define FUNC_parser_ast_node_init_4 1
+FUNC(parser_ast_node_init_4)
 
-#define FUNC_c_parser_ast_node_visit 1
-FUNC(c_parser_ast_node_visit)
+#define FUNC_parser_ast_node_visit 1
+FUNC(parser_ast_node_visit)
 
-#define FUNC_c_parser_ast_node_debug_print 1
-FUNC(c_parser_ast_node_debug_print)
+#define FUNC_parser_ast_node_debug_print 1
+FUNC(parser_ast_node_debug_print)
 
-#define FUNC_c_parser_handle_error 1
-FUNC(c_parser_handle_error)
+#define FUNC_parser_handle_error 1
+FUNC(parser_handle_error)
 
-#define FUNC_c_parser_handle_syntax_error 1
-FUNC(c_parser_handle_syntax_error)
+#define FUNC_parser_handle_syntax_error 1
+FUNC(parser_handle_syntax_error)
 
-#define FUNC_c_parser_handle_comment 1
-FUNC(c_parser_handle_comment)
+#define FUNC_parser_handle_comment 1
+FUNC(parser_handle_comment)
 
-#define FUNC_c_parser_debug_print 1
-FUNC(c_parser_debug_print)
+#define FUNC_parser_debug_print 1
+FUNC(parser_debug_print)
 
 #define FUNC_c_parser_execute 1
 FUNC(c_parser_execute)

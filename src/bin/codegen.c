@@ -10,14 +10,14 @@ static lst_platform_path srcChildPathLst;
 static platform_path codegenPath;
 
 typedef struct c_parser_callbackData {
-  c_parser_state *state;
+  parser_state *state;
   str *headerCode;
   str *sourceCode;
   str *structDefCode;
   bool isVulkanHeader;
 } c_parser_callbackData;
 
-void str_append_node(str *self, c_parser_state *state, c_parser_ast_node *node) {
+void str_append_node(str *self, parser_state *state, parser_ast_node *node) {
   size_t len = node->range.end - node->range.begin;
   char *str = state->source + node->range.begin;
   for (size_t i = 0; i < len; i++) {
@@ -25,11 +25,11 @@ void str_append_node(str *self, c_parser_state *state, c_parser_ast_node *node) 
   }
 }
 
-static bool enumerator_callback(c_parser_ast_node *node, void *callbackData) {
+static bool enumerator_callback(parser_ast_node *node, void *callbackData) {
   if (node->type != EnumeratorDeclaration) {
     return true;
   }
-  c_parser_ast_node *identifier = lst_c_parser_ast_node_ptr_front(&node->childNodes)->node;
+  parser_ast_node *identifier = lst_parser_ast_node_ptr_front(&node->childNodes)->node;
   assert(identifier->type == Identifier);
   c_parser_callbackData *data = callbackData;
   str_append(data->sourceCode, "  if (value == ");
@@ -42,13 +42,13 @@ static bool enumerator_callback(c_parser_ast_node *node, void *callbackData) {
   return false;
 }
 
-static bool enum_callback(c_parser_ast_node *node, void *callbackData) {
+static bool enum_callback(parser_ast_node *node, void *callbackData) {
   c_parser_callbackData *data = callbackData;
   if (node->type == EnumerationDeclaration) {
-    // c_parser_ast_node_debug_print(data->state, node, 0);
-    c_parser_ast_node *identifier = lst_c_parser_ast_node_ptr_front(&node->childNodes)->node;
+    // parser_ast_node_debug_print(data->state, node, 0);
+    parser_ast_node *identifier = lst_parser_ast_node_ptr_front(&node->childNodes)->node;
     assert(identifier);
-    c_parser_ast_node *enumeratorList = lst_c_parser_ast_node_ptr_back(&node->childNodes)->node;
+    parser_ast_node *enumeratorList = lst_parser_ast_node_ptr_back(&node->childNodes)->node;
     assert(enumeratorList);
     // header code (function declarations)
     str_append(data->headerCode, "const char *");
@@ -62,7 +62,7 @@ static bool enum_callback(c_parser_ast_node *node, void *callbackData) {
     str_append(data->sourceCode, "_debug_str(");
     str_append_node(data->sourceCode, data->state, identifier);
     str_append(data->sourceCode, " value) {\n");
-    c_parser_ast_node_visit(enumeratorList, enumerator_callback, data);
+    parser_ast_node_visit(enumeratorList, enumerator_callback, data);
     str_append(data->sourceCode, "  return \"UNKNOWN_ENUM\";\n");
     str_append(data->sourceCode, "}\n");
   }
@@ -70,13 +70,13 @@ static bool enum_callback(c_parser_ast_node *node, void *callbackData) {
          node->type == TypedefEnumDeclaration;
 }
 
-static bool struct_callback(c_parser_ast_node *node, void *callbackData) {
+static bool struct_callback(parser_ast_node *node, void *callbackData) {
   c_parser_callbackData *data = callbackData;
   if (node->type == StructDeclaration) {
     if (!data->isVulkanHeader) {
-      c_parser_ast_node *identifier = lst_c_parser_ast_node_ptr_front(&node->childNodes)->node;
+      parser_ast_node *identifier = lst_parser_ast_node_ptr_front(&node->childNodes)->node;
       assert(identifier);
-      // c_parser_ast_node_debug_print(data->state, identifier, 0);
+      // parser_ast_node_debug_print(data->state, identifier, 0);
       str_append(data->structDefCode, "#define STRUCT_");
       str_append_node(data->structDefCode, data->state, identifier);
       str_append(data->structDefCode, " 1\n");
@@ -102,21 +102,21 @@ static bool struct_callback(c_parser_ast_node *node, void *callbackData) {
          node->type == TypedefStructDeclaration;
 }
 
-static bool function_declaration_callback(c_parser_ast_node *node, void *callbackData) {
+static bool function_declaration_callback(parser_ast_node *node, void *callbackData) {
   c_parser_callbackData *data = callbackData;
   if (node->type == FunctionDeclaration) {
     if (!data->isVulkanHeader) {
-      // c_parser_ast_node_debug_print(data->state, node, 0);
-      lst_c_parser_ast_node_ptr_it it = lst_c_parser_ast_node_ptr_it_each(&node->childNodes);
-      c_parser_ast_node *declarationSpecifiers = it.ref->node;
+      // parser_ast_node_debug_print(data->state, node, 0);
+      lst_parser_ast_node_ptr_it it = lst_parser_ast_node_ptr_it_each(&node->childNodes);
+      parser_ast_node *declarationSpecifiers = it.ref->node;
       assert(declarationSpecifiers);
-      lst_c_parser_ast_node_ptr_it_step(&it);
-      c_parser_ast_node *identifier = it.ref->node;
+      lst_parser_ast_node_ptr_it_step(&it);
+      parser_ast_node *identifier = it.ref->node;
       assert(identifier);
-      lst_c_parser_ast_node_ptr_it_step(&it);
-      c_parser_ast_node *parameterList = it.ref->node;
+      lst_parser_ast_node_ptr_it_step(&it);
+      parser_ast_node *parameterList = it.ref->node;
       assert(parameterList);
-      // c_parser_ast_node_debug_print(data->state, identifier, 0);
+      // parser_ast_node_debug_print(data->state, identifier, 0);
       str_append(data->structDefCode, "#define FUNC_");
       str_append_node(data->structDefCode, data->state, identifier);
       str_append(data->structDefCode, " 1\n");
@@ -183,10 +183,10 @@ void parse_header(platform_path *headerPath, str *structDefCode, str *headerDefC
   if (input == NULL) {
     panic("failed to read file %s!", str_c_str(&headerPath->data));
   }
-  c_parser_state state = c_parser_execute(input);
-  // c_parser_debug_print(&state);
+  parser_state state = c_parser_execute(input);
+  // parser_debug_print(&state);
   if (state.errors.size > 0) {
-    c_parser_debug_print(&state);
+    parser_debug_print(&state);
     panic("syntax errors in %s!", str_c_str(&headerPath->data));
   }
 
@@ -205,11 +205,11 @@ void parse_header(platform_path *headerPath, str *structDefCode, str *headerDefC
   c_parser_callbackData data = {&state, &headerCode, &sourceCode, structDefCode, isVulkanHeader};
 
   // parse enum declarations
-  c_parser_ast_node_visit(state.programNode, enum_callback, &data);
+  parser_ast_node_visit(state.programNode, enum_callback, &data);
   // parse structs
-  c_parser_ast_node_visit(state.programNode, struct_callback, &data);
+  parser_ast_node_visit(state.programNode, struct_callback, &data);
   // parse function declarations
-  c_parser_ast_node_visit(state.programNode, function_declaration_callback, &data);
+  parser_ast_node_visit(state.programNode, function_declaration_callback, &data);
 
   // write generated header_code to file
   // log_debug("CODE:\n%s\n", str_c_str(&header_code));
@@ -227,7 +227,7 @@ void parse_header(platform_path *headerPath, str *structDefCode, str *headerDefC
 
   platform_path_free(&headerOutputPath);
   platform_path_free(&sourceOutputPath);
-  c_parser_state_free(&state);
+  parser_state_free(&state);
   str_free(&headerCode);
   str_free(&sourceCode);
 }

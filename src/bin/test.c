@@ -81,9 +81,9 @@ TEST c_parser_preprocessor_parsing() {
   if (input == NULL) {
     FAILm("failed to load file");
   }
-  c_parser_state state = c_parser_execute(input);
-  c_parser_debug_print(&state);
-  c_parser_state_free(&state);
+  parser_state state = c_parser_execute(input);
+  parser_debug_print(&state);
+  parser_state_free(&state);
   PASS();
 }
 
@@ -226,8 +226,8 @@ TEST shaderc_compiling() {
   init_struct(vertShader, vulkan_shader_init, vkd, vertInputPath);
 
   ASSERT_EQ(vertShader->type, shaderc_glsl_vertex_shader);
-  c_parser_state state = glsl_parser_execute(vertShader->glslCode);
-  c_parser_debug_print(&state);
+  parser_state state = glsl_parser_execute(vertShader->glslCode);
+  parser_debug_print(&state);
   // HIRO create VkPipelineVertexInputStateCreateInfo
 
   data_config_free(&config);

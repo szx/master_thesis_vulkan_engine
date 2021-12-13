@@ -2,7 +2,7 @@
 // It is not standalone translation unit - it should be
 // included at the beginning of corresponding source file.
 
-const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type value) {
+const char *parser_ast_node_type_debug_str(parser_ast_node_type value) {
   if (value == TranslationUnit) {
     return "TranslationUnit";
   }
@@ -311,7 +311,7 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type value) {
   }
   return "UNKNOWN_ENUM";
 }
-const char *c_parser_error_type_debug_str(c_parser_error_type value) {
+const char *parser_error_type_debug_str(parser_error_type value) {
   if (value == SyntaxError) {
     return "SyntaxError";
   }

@@ -23,8 +23,8 @@ static size_t pcc_strnlen(const char *str, size_t maxlen) {
 
 #include "/home/sszczyrb/Repos/cpptest/src/peg/glsl_parser.h"
 
-  #define PCC_GETCHAR(auxil) c_parser_getchar((auxil))
-  #define PCC_ERROR(auxil) c_parser_handle_syntax_error((auxil))
+  #define PCC_GETCHAR(auxil) parser_getchar((auxil))
+  #define PCC_ERROR(auxil) parser_handle_syntax_error((auxil))
 #if 1
   static const char *dbg_str[] = { "Evaluating rule", "Matched rule", "Abandoning rule" };
   #define PCC_DEBUG(auxil, event, rule, level, pos, buffer, length) \
@@ -70,9 +70,9 @@ typedef struct pcc_range_tag {
     size_t end;
 } pcc_range_t;
 
-typedef c_parser_ast_node *pcc_value_t;
+typedef parser_ast_node *pcc_value_t;
 
-typedef c_parser_state *pcc_auxil_t;
+typedef parser_state *pcc_auxil_t;
 
 typedef struct pcc_value_table_tag {
     pcc_value_t *buf;
@@ -1062,7 +1062,7 @@ static void pcc_action_program_1(glsl_parser_context_t *__pcc_ctx, pcc_thunk_t *
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    __ = c_parser_ast_node_init_variadic(auxil, TranslationUnit, c_parser_str_range_init(_0s, _0e));
+    __ = parser_ast_node_init_variadic(auxil, TranslationUnit, parser_str_range_init(_0s, _0e));
 #undef _0e
 #undef _0s
 #undef _0
@@ -1079,8 +1079,8 @@ static void pcc_action_translation_unit_0(glsl_parser_context_t *__pcc_ctx, pcc_
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
     __ = l;
-    __->range = c_parser_str_range_init(_0s, _0e);
-    c_parser_ast_node_push_front(__, s);
+    __->range = parser_str_range_init(_0s, _0e);
+    parser_ast_node_push_front(__, s);
 #undef _0e
 #undef _0s
 #undef _0
@@ -1097,8 +1097,8 @@ static void pcc_action_translation_unit_1(glsl_parser_context_t *__pcc_ctx, pcc_
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    __ = c_parser_ast_node_init_variadic(auxil, TranslationUnit, c_parser_str_range_init(_0s, _0e));
-    c_parser_ast_node_push_front(__, s);
+    __ = parser_ast_node_init_variadic(auxil, TranslationUnit, parser_str_range_init(_0s, _0e));
+    parser_ast_node_push_front(__, s);
 #undef _0e
 #undef _0s
 #undef _0
@@ -1193,7 +1193,7 @@ static void pcc_action_preprocessor_definition_0(glsl_parser_context_t *__pcc_ct
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    __ = c_parser_ast_node_init_2(auxil, PreprocessorDirective, c_parser_str_range_init(_0s, _0e), i, b);
+    __ = parser_ast_node_init_2(auxil, PreprocessorDirective, parser_str_range_init(_0s, _0e), i, b);
 #undef _0e
 #undef _0s
 #undef _0
@@ -1210,7 +1210,7 @@ static void pcc_action_preprocessor_definition_1(glsl_parser_context_t *__pcc_ct
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    __ = c_parser_ast_node_init_1(auxil, PreprocessorDirective, c_parser_str_range_init(_0s, _0e), i);
+    __ = parser_ast_node_init_1(auxil, PreprocessorDirective, parser_str_range_init(_0s, _0e), i);
 #undef _0e
 #undef _0s
 #undef _0
@@ -1225,7 +1225,7 @@ static void pcc_action_preprocessor_definition_body_0(glsl_parser_context_t *__p
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    __ = c_parser_ast_node_init_0(auxil, PreprocessorDirectiveBody, c_parser_str_range_init(_0s, _0e));
+    __ = parser_ast_node_init_0(auxil, PreprocessorDirectiveBody, parser_str_range_init(_0s, _0e));
 #undef _0e
 #undef _0s
 #undef _0
@@ -1242,7 +1242,7 @@ static void pcc_action_vertex_input_attribute_0(glsl_parser_context_t *__pcc_ctx
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    __ = c_parser_ast_node_init_3(auxil, VertexInputAttribute, c_parser_str_range_init(_0s, _0e), l, t, i);
+    __ = parser_ast_node_init_3(auxil, VertexInputAttribute, parser_str_range_init(_0s, _0e), l, t, i);
 #undef _0e
 #undef _0s
 #undef _0
@@ -1262,7 +1262,7 @@ static void pcc_action_vertex_output_attribute_0(glsl_parser_context_t *__pcc_ct
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    __ = c_parser_ast_node_init_3(auxil, VertexOutputAttribute, c_parser_str_range_init(_0s, _0e), l, t, i);
+    __ = parser_ast_node_init_3(auxil, VertexOutputAttribute, parser_str_range_init(_0s, _0e), l, t, i);
 #undef _0e
 #undef _0s
 #undef _0
@@ -1279,7 +1279,7 @@ static void pcc_action_identifier_0(glsl_parser_context_t *__pcc_ctx, pcc_thunk_
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    __ = c_parser_ast_node_init_0(auxil, Identifier, c_parser_str_range_init(_0s, _0e));
+    __ = parser_ast_node_init_0(auxil, Identifier, parser_str_range_init(_0s, _0e));
 #undef _0e
 #undef _0s
 #undef _0
@@ -1293,7 +1293,7 @@ static void pcc_action_integer_0(glsl_parser_context_t *__pcc_ctx, pcc_thunk_t *
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    __ = c_parser_ast_node_init_0(auxil, IntegerHex, c_parser_str_range_init(_0s, _0e));
+    __ = parser_ast_node_init_0(auxil, IntegerHex, parser_str_range_init(_0s, _0e));
 #undef _0e
 #undef _0s
 #undef _0
@@ -1307,7 +1307,7 @@ static void pcc_action_integer_1(glsl_parser_context_t *__pcc_ctx, pcc_thunk_t *
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    __ = c_parser_ast_node_init_0(auxil, IntegerOct, c_parser_str_range_init(_0s, _0e));
+    __ = parser_ast_node_init_0(auxil, IntegerOct, parser_str_range_init(_0s, _0e));
 #undef _0e
 #undef _0s
 #undef _0
@@ -1321,7 +1321,7 @@ static void pcc_action_integer_2(glsl_parser_context_t *__pcc_ctx, pcc_thunk_t *
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    __ = c_parser_ast_node_init_0(auxil, IntegerDec, c_parser_str_range_init(_0s, _0e));
+    __ = parser_ast_node_init_0(auxil, IntegerDec, parser_str_range_init(_0s, _0e));
 #undef _0e
 #undef _0s
 #undef _0
@@ -1335,7 +1335,7 @@ static void pcc_action_comment_0(glsl_parser_context_t *__pcc_ctx, pcc_thunk_t *
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    c_parser_handle_comment(auxil, c_parser_str_range_init(_0s, _0e));
+    parser_handle_comment(auxil, parser_str_range_init(_0s, _0e));
 #undef _0e
 #undef _0s
 #undef _0
@@ -1349,7 +1349,7 @@ static void pcc_action_comment_1(glsl_parser_context_t *__pcc_ctx, pcc_thunk_t *
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    c_parser_handle_comment(auxil, c_parser_str_range_init(_0s, _0e));
+    parser_handle_comment(auxil, parser_str_range_init(_0s, _0e));
 #undef _0e
 #undef _0s
 #undef _0
@@ -1363,7 +1363,7 @@ static void pcc_action_comment_2(glsl_parser_context_t *__pcc_ctx, pcc_thunk_t *
 #define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
 #define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
 #define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
-    c_parser_handle_error(auxil, UnclosedComment, c_parser_str_range_init(_0s, _0e));
+    parser_handle_error(auxil, UnclosedComment, parser_str_range_init(_0s, _0e));
 #undef _0e
 #undef _0s
 #undef _0
@@ -4388,11 +4388,11 @@ L0000:;
     return NULL;
 }
 
-glsl_parser_context_t *glsl_parser_create(c_parser_state *auxil) {
+glsl_parser_context_t *glsl_parser_create(parser_state *auxil) {
     return pcc_context__create(auxil);
 }
 
-int glsl_parser_parse(glsl_parser_context_t *ctx, c_parser_ast_node **ret) {
+int glsl_parser_parse(glsl_parser_context_t *ctx, parser_ast_node **ret) {
     if (pcc_apply_rule(ctx, pcc_evaluate_rule_program, &ctx->thunks, ret))
         pcc_do_action(ctx, &ctx->thunks, ret);
     else
@@ -4407,10 +4407,10 @@ void glsl_parser_destroy(glsl_parser_context_t *ctx) {
 }
 
 // Returns parse state after parsing source text.
-c_parser_state glsl_parser_execute(char *source) {
-  c_parser_state state = c_parser_state_init(source);
+parser_state glsl_parser_execute(char *source) {
+  parser_state state = parser_state_init(source);
   glsl_parser_context_t *ctx = glsl_parser_create(&state);
-  c_parser_ast_node *ast;
+  parser_ast_node *ast;
   int ret = glsl_parser_parse(ctx, &ast);
   state.programNode = ast;
   glsl_parser_destroy(ctx);

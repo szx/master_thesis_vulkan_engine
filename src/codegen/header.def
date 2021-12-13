@@ -44,9 +44,9 @@
 #include "../vulkan/render_context.h"
 #endif
 #if defined(ROOT)
-#include "peg/c_parser_internal.h"
+#include "peg/parser_internal.h"
 #elif defined(PARENT)
-#include "../peg/c_parser_internal.h"
+#include "../peg/parser_internal.h"
 #endif
 #if defined(ROOT)
 #include "peg/c_parser.h"

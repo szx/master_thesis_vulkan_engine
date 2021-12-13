@@ -1,16 +1,16 @@
 %prefix "c_parser"
 
-%auxil "c_parser_state *"
-%value "c_parser_ast_node *"
+%auxil "parser_state *"
+%value "parser_ast_node *"
 
 %header {
-  #include "c_parser_internal.h"
-  c_parser_state c_parser_execute(char *source);
+  #include "parser_internal.h"
+  parser_state c_parser_execute(char *source);
 }
 
 %source {
-  #define PCC_GETCHAR(auxil) c_parser_getchar((auxil))
-  #define PCC_ERROR(auxil) c_parser_handle_syntax_error((auxil))
+  #define PCC_GETCHAR(auxil) parser_getchar((auxil))
+  #define PCC_ERROR(auxil) parser_handle_syntax_error((auxil))
 #if 0
   static const char *dbg_str[] = { "Evaluating rule", "Matched rule", "Abandoning rule" };
   #define PCC_DEBUG(auxil, event, rule, level, pos, buffer, length) \
@@ -20,19 +20,19 @@
 
 program <-
   _ l:translation_unit _ EOF { $$ = l; }
-/ _ EOF { $$ = c_parser_ast_node_init_variadic(auxil, TranslationUnit, c_parser_str_range_init($0s, $0e)); }
+/ _ EOF { $$ = parser_ast_node_init_variadic(auxil, TranslationUnit, parser_str_range_init($0s, $0e)); }
 
 translation_unit <-
   s:external_declaration _ l:translation_unit
   {
     $$ = l;
-    $$->range = c_parser_str_range_init($0s, $0e);
-    c_parser_ast_node_push_front($$, s);
+    $$->range = parser_str_range_init($0s, $0e);
+    parser_ast_node_push_front($$, s);
   }
 / s:external_declaration
   {
-    $$ = c_parser_ast_node_init_variadic(auxil, TranslationUnit, c_parser_str_range_init($0s, $0e));
-    c_parser_ast_node_push_front($$, s);
+    $$ = parser_ast_node_init_variadic(auxil, TranslationUnit, parser_str_range_init($0s, $0e));
+    parser_ast_node_push_front($$, s);
   }
 
 external_declaration <-
@@ -43,48 +43,48 @@ external_declaration <-
 / e:declaration { $$ = e; }
 
 preprocessor_definition <-
-  '#' blank* i:raw_identifier blank* b:preprocessor_definition_body EOL { $$ = c_parser_ast_node_init_2(auxil, PreprocessorDirective, c_parser_str_range_init($0s, $0e), i, b); }
-/ '#' blank* i:raw_identifier blank* EOL { $$ = c_parser_ast_node_init_1(auxil, PreprocessorDirective, c_parser_str_range_init($0s, $0e), i); }
-/ i:macro_identifier blank* '(' blank* ')' (blank* ';')? { $$ = c_parser_ast_node_init_1(auxil, PreprocessorMacroCall, c_parser_str_range_init($0s, $0e), i); }
-/ i:macro_identifier blank* '(' blank* e:argument_expression_list blank* ')' (blank* ';')? { $$ = c_parser_ast_node_init_2(auxil, PreprocessorMacroCall, c_parser_str_range_init($0s, $0e), i, e); }
+  '#' blank* i:raw_identifier blank* b:preprocessor_definition_body EOL { $$ = parser_ast_node_init_2(auxil, PreprocessorDirective, parser_str_range_init($0s, $0e), i, b); }
+/ '#' blank* i:raw_identifier blank* EOL { $$ = parser_ast_node_init_1(auxil, PreprocessorDirective, parser_str_range_init($0s, $0e), i); }
+/ i:macro_identifier blank* '(' blank* ')' (blank* ';')? { $$ = parser_ast_node_init_1(auxil, PreprocessorMacroCall, parser_str_range_init($0s, $0e), i); }
+/ i:macro_identifier blank* '(' blank* e:argument_expression_list blank* ')' (blank* ';')? { $$ = parser_ast_node_init_2(auxil, PreprocessorMacroCall, parser_str_range_init($0s, $0e), i, e); }
 
 preprocessor_definition_body <-
-  ('\\' EOL / !EOL .)* { $$ = c_parser_ast_node_init_0(auxil, PreprocessorDirectiveBody, c_parser_str_range_init($0s, $0e)); }
+  ('\\' EOL / !EOL .)* { $$ = parser_ast_node_init_0(auxil, PreprocessorDirectiveBody, parser_str_range_init($0s, $0e)); }
 
 static_assert <-
-  kw_static_assert _ '(' _ e:expression _ ',' _ s:string _ ')' _ ';' { $$ = c_parser_ast_node_init_2(auxil, StaticAssert, c_parser_str_range_init($0s, $0e), e, s); }
+  kw_static_assert _ '(' _ e:expression _ ',' _ s:string _ ')' _ ';' { $$ = parser_ast_node_init_2(auxil, StaticAssert, parser_str_range_init($0s, $0e), e, s); }
 
 linkage_specification <-
-  kw_extern _ s:string _ '{' _ t:translation_unit _ '}' { $$ = c_parser_ast_node_init_2(auxil, LanguageLinkage, c_parser_str_range_init($0s, $0e), s, t); }
+  kw_extern _ s:string _ '{' _ t:translation_unit _ '}' { $$ = parser_ast_node_init_2(auxil, LanguageLinkage, parser_str_range_init($0s, $0e), s, t); }
 
 function_definition <-
-  s:declaration_specifiers _ d:declarator _ '(' _ p:parameter_list _ ')' _ e:compound_statement { $$ = c_parser_ast_node_init_4(auxil, FunctionDefinition, c_parser_str_range_init($0s, $0e), s, d, p, e); }
+  s:declaration_specifiers _ d:declarator _ '(' _ p:parameter_list _ ')' _ e:compound_statement { $$ = parser_ast_node_init_4(auxil, FunctionDefinition, parser_str_range_init($0s, $0e), s, d, p, e); }
 
 function_declaration <-
-  s:declaration_specifiers _ d:declarator _ '(' _ p:parameter_list _ ')' { $$ = c_parser_ast_node_init_3(auxil, FunctionDeclaration, c_parser_str_range_init($0s, $0e), s, d, p); }
+  s:declaration_specifiers _ d:declarator _ '(' _ p:parameter_list _ ')' { $$ = parser_ast_node_init_3(auxil, FunctionDeclaration, parser_str_range_init($0s, $0e), s, d, p); }
 
 parameter_list <-
   e:parameter_declaration _ ',' _ l:parameter_list
   {
     $$ = l;
-    $$->range = c_parser_str_range_init($0s, $0e);
-    c_parser_ast_node_push_front($$, e);
+    $$->range = parser_str_range_init($0s, $0e);
+    parser_ast_node_push_front($$, e);
   }
 / e:parameter_declaration
   {
-    $$ = c_parser_ast_node_init_variadic(auxil, ParameterList, c_parser_str_range_init($0s, $0e));
-    c_parser_ast_node_push_front($$, e);
+    $$ = parser_ast_node_init_variadic(auxil, ParameterList, parser_str_range_init($0s, $0e));
+    parser_ast_node_push_front($$, e);
   }
 / ('void'/'')
   {
-    $$ = c_parser_ast_node_init_variadic(auxil, ParameterList, c_parser_str_range_init($0s, $0e));
+    $$ = parser_ast_node_init_variadic(auxil, ParameterList, parser_str_range_init($0s, $0e));
   }
 
 parameter_declaration <-
-  kw_ellipsis { $$ = c_parser_ast_node_init_0(auxil, Ellipsis, c_parser_str_range_init($0s, $0e)); }
+  kw_ellipsis { $$ = parser_ast_node_init_0(auxil, Ellipsis, parser_str_range_init($0s, $0e)); }
 / e:function_pointer_declaration { $$ = e; }
-/ s:declaration_specifiers _ i:init_declarator { $$ = c_parser_ast_node_init_2(auxil, Declaration, c_parser_str_range_init($0s, $0e), s, i); }
-/ s:declaration_specifiers { $$ = c_parser_ast_node_init_1(auxil, Declaration, c_parser_str_range_init($0s, $0e), s); }
+/ s:declaration_specifiers _ i:init_declarator { $$ = parser_ast_node_init_2(auxil, Declaration, parser_str_range_init($0s, $0e), s, i); }
+/ s:declaration_specifiers { $$ = parser_ast_node_init_1(auxil, Declaration, parser_str_range_init($0s, $0e), s); }
 
 statement <-
   e:labeled_statement { $$ = e; }
@@ -96,30 +96,30 @@ statement <-
 ## TODO: More statements ##
 
 labeled_statement <-
-  i:identifier _ ':' _ s:statement { $$ = c_parser_ast_node_init_2(auxil, LabelStatement, c_parser_str_range_init($0s, $0e), i, s); }
-/ kw_case _ e:expression _ ':' _ s:statement { $$ = c_parser_ast_node_init_2(auxil, CaseStatement, c_parser_str_range_init($0s, $0e), e, s); }
-/ kw_default _ ':' _ s:statement { $$ = c_parser_ast_node_init_1(auxil, DefaultStatement, c_parser_str_range_init($0s, $0e), s); }
+  i:identifier _ ':' _ s:statement { $$ = parser_ast_node_init_2(auxil, LabelStatement, parser_str_range_init($0s, $0e), i, s); }
+/ kw_case _ e:expression _ ':' _ s:statement { $$ = parser_ast_node_init_2(auxil, CaseStatement, parser_str_range_init($0s, $0e), e, s); }
+/ kw_default _ ':' _ s:statement { $$ = parser_ast_node_init_1(auxil, DefaultStatement, parser_str_range_init($0s, $0e), s); }
 
 selection_statement <-
-  kw_if _ '(' _ e:expression _ ')' _ s:statement _ kw_else _ t:statement { $$ = c_parser_ast_node_init_3(auxil, IfStatement, c_parser_str_range_init($0s, $0e), e, s, t); }
-/ kw_if _ '(' _ e:expression _ ')' _ s:statement { $$ = c_parser_ast_node_init_2(auxil, IfStatement, c_parser_str_range_init($0s, $0e), e, s); }
-/ kw_switch _ '(' _ e:expression _ ')' _ s:statement { $$ = c_parser_ast_node_init_2(auxil, SwitchStatement, c_parser_str_range_init($0s, $0e), e, s); }
+  kw_if _ '(' _ e:expression _ ')' _ s:statement _ kw_else _ t:statement { $$ = parser_ast_node_init_3(auxil, IfStatement, parser_str_range_init($0s, $0e), e, s, t); }
+/ kw_if _ '(' _ e:expression _ ')' _ s:statement { $$ = parser_ast_node_init_2(auxil, IfStatement, parser_str_range_init($0s, $0e), e, s); }
+/ kw_switch _ '(' _ e:expression _ ')' _ s:statement { $$ = parser_ast_node_init_2(auxil, SwitchStatement, parser_str_range_init($0s, $0e), e, s); }
 ## TODO: Else if, error handling. ##
 
 iteration_statement <-
-  kw_while _ '(' _ e:expression _ ')' _ s:statement { $$ = c_parser_ast_node_init_2(auxil, WhileStatement, c_parser_str_range_init($0s, $0e), e, s); }
-/ kw_do _ s:statement _'(' _ e:expression _ ')' { $$ = c_parser_ast_node_init_2(auxil, DoWhileStatement, c_parser_str_range_init($0s, $0e), e, s); }
+  kw_while _ '(' _ e:expression _ ')' _ s:statement { $$ = parser_ast_node_init_2(auxil, WhileStatement, parser_str_range_init($0s, $0e), e, s); }
+/ kw_do _ s:statement _'(' _ e:expression _ ')' { $$ = parser_ast_node_init_2(auxil, DoWhileStatement, parser_str_range_init($0s, $0e), e, s); }
 / kw_for _ '(' _ e1:expression_statement _ e2:expression_statement _ ')' _ s:statement
   {
-    $$ = c_parser_ast_node_init_4(auxil, ForStatement, c_parser_str_range_init($0s, $0e),
+    $$ = parser_ast_node_init_4(auxil, ForStatement, parser_str_range_init($0s, $0e),
       e1,
       e2,
-      c_parser_ast_node_init_0(auxil, EmptyStatement, c_parser_str_range_init($0s, $0e)),
+      parser_ast_node_init_0(auxil, EmptyStatement, parser_str_range_init($0s, $0e)),
       s);
   }
 / kw_for _ '(' _ e1:expression_statement _ e2:expression_statement _ e3:expression _ ')' _ s:statement
   {
-    $$ = c_parser_ast_node_init_4(auxil, ForStatement, c_parser_str_range_init($0s, $0e),
+    $$ = parser_ast_node_init_4(auxil, ForStatement, parser_str_range_init($0s, $0e),
       e1,
       e2,
       e3,
@@ -127,15 +127,15 @@ iteration_statement <-
   }
 / kw_for _ '(' _ e1:declaration _ e2:expression_statement _ ')' _ s:statement
   {
-    $$ = c_parser_ast_node_init_4(auxil, ForStatement, c_parser_str_range_init($0s, $0e),
+    $$ = parser_ast_node_init_4(auxil, ForStatement, parser_str_range_init($0s, $0e),
       e1,
       e2,
-      c_parser_ast_node_init_0(auxil, EmptyStatement, c_parser_str_range_init($0s, $0e)),
+      parser_ast_node_init_0(auxil, EmptyStatement, parser_str_range_init($0s, $0e)),
       s);
   }
 / kw_for _ '(' _ e1:declaration _ e2:expression_statement _ e3:expression _ ')' _ s:statement
   {
-    $$ = c_parser_ast_node_init_4(auxil, ForStatement, c_parser_str_range_init($0s, $0e),
+    $$ = parser_ast_node_init_4(auxil, ForStatement, parser_str_range_init($0s, $0e),
       e1,
       e2,
       e3,
@@ -144,32 +144,32 @@ iteration_statement <-
 ## TODO: error handling. ##
 
 jump_statement <-
-  kw_goto _ i:identifier _ ';' { $$ = c_parser_ast_node_init_1(auxil, GotoStatement, c_parser_str_range_init($0s, $0e), i); }
-/ kw_goto _ i:identifier _ { c_parser_handle_error(auxil, MissingSemicolonAfterStatement, c_parser_str_range_init($0s, $0e)); }
-/ kw_continue _ ';' { $$ = c_parser_ast_node_init_0(auxil, ContinueStatement, c_parser_str_range_init($0s, $0e)); }
-/ kw_continue _ { c_parser_handle_error(auxil, MissingSemicolonAfterStatement, c_parser_str_range_init($0s, $0e)); }
-/ kw_break _ ';' { $$ = c_parser_ast_node_init_0(auxil, BreakStatement, c_parser_str_range_init($0s, $0e)); }
-/ kw_break _ { c_parser_handle_error(auxil, MissingSemicolonAfterStatement, c_parser_str_range_init($0s, $0e)); }
-/ kw_return _ e:expression _ ';' { $$ = c_parser_ast_node_init_1(auxil, ReturnStatement, c_parser_str_range_init($0s, $0e), e); }
-/ kw_return _ e:expression _ { c_parser_handle_error(auxil, MissingSemicolonAfterStatement, c_parser_str_range_init($0s, $0e)); }
-/ kw_return _ ';' { $$ = c_parser_ast_node_init_0(auxil, ReturnStatement, c_parser_str_range_init($0s, $0e)); }
-/ kw_return _ { c_parser_handle_error(auxil, MissingSemicolonAfterStatement, c_parser_str_range_init($0s, $0e)); }
+  kw_goto _ i:identifier _ ';' { $$ = parser_ast_node_init_1(auxil, GotoStatement, parser_str_range_init($0s, $0e), i); }
+/ kw_goto _ i:identifier _ { parser_handle_error(auxil, MissingSemicolonAfterStatement, parser_str_range_init($0s, $0e)); }
+/ kw_continue _ ';' { $$ = parser_ast_node_init_0(auxil, ContinueStatement, parser_str_range_init($0s, $0e)); }
+/ kw_continue _ { parser_handle_error(auxil, MissingSemicolonAfterStatement, parser_str_range_init($0s, $0e)); }
+/ kw_break _ ';' { $$ = parser_ast_node_init_0(auxil, BreakStatement, parser_str_range_init($0s, $0e)); }
+/ kw_break _ { parser_handle_error(auxil, MissingSemicolonAfterStatement, parser_str_range_init($0s, $0e)); }
+/ kw_return _ e:expression _ ';' { $$ = parser_ast_node_init_1(auxil, ReturnStatement, parser_str_range_init($0s, $0e), e); }
+/ kw_return _ e:expression _ { parser_handle_error(auxil, MissingSemicolonAfterStatement, parser_str_range_init($0s, $0e)); }
+/ kw_return _ ';' { $$ = parser_ast_node_init_0(auxil, ReturnStatement, parser_str_range_init($0s, $0e)); }
+/ kw_return _ { parser_handle_error(auxil, MissingSemicolonAfterStatement, parser_str_range_init($0s, $0e)); }
 
 compound_statement <-
-  '{' _ '}' { $$ = c_parser_ast_node_init_0(auxil, CompoundStatement, c_parser_str_range_init($0s, $0e)); }
+  '{' _ '}' { $$ = parser_ast_node_init_0(auxil, CompoundStatement, parser_str_range_init($0s, $0e)); }
 / '{'_ b:compound_statement_list _ '}' { $$ = b; }
 
 compound_statement_list <-
   i:compound_item _ l:compound_statement_list
   {
     $$ = l;
-    $$->range = c_parser_str_range_init($0s, $0e);
-    c_parser_ast_node_push_front($$, i);
+    $$->range = parser_str_range_init($0s, $0e);
+    parser_ast_node_push_front($$, i);
   }
 / i:compound_item
   {
-    $$ = c_parser_ast_node_init_variadic(auxil, CompoundStatement, c_parser_str_range_init($0s, $0e));
-    c_parser_ast_node_push_front($$, i);
+    $$ = parser_ast_node_init_variadic(auxil, CompoundStatement, parser_str_range_init($0s, $0e));
+    parser_ast_node_push_front($$, i);
   }
 
 compound_item <-
@@ -178,9 +178,9 @@ compound_item <-
 / s:statement { $$ = s; }
 
 expression_statement <-
-  _ ';' { $$ = c_parser_ast_node_init_0(auxil, EmptyStatement, c_parser_str_range_init($0s, $0e)); }
+  _ ';' { $$ = parser_ast_node_init_0(auxil, EmptyStatement, parser_str_range_init($0s, $0e)); }
 / _ e:expression _ ';' { $$ = e; }
-/ _ e:expression _ { c_parser_handle_error(auxil, MissingSemicolonAfterStatement, c_parser_str_range_init($0s, $0e)); }
+/ _ e:expression _ { parser_handle_error(auxil, MissingSemicolonAfterStatement, parser_str_range_init($0s, $0e)); }
 
 ## NOTE: We forbid declaration without init_declarator. ##
 declaration <-
@@ -188,87 +188,87 @@ declaration <-
 / e:enum_declaration _ ";" { $$ = e; }
 / e:struct_declaration  _ ";" { $$ = e; }
 / e:union_declaration  _ ";" { $$ = e; }
-/ s:declaration_specifiers _ i:init_declarator_list _ ';' { $$ = c_parser_ast_node_init_2(auxil, Declaration, c_parser_str_range_init($0s, $0e), s, i); }
+/ s:declaration_specifiers _ i:init_declarator_list _ ';' { $$ = parser_ast_node_init_2(auxil, Declaration, parser_str_range_init($0s, $0e), s, i); }
 / e:global_declaration _ ';' { $$ = e; }
 / e:function_declaration _ ';' { $$ = e; }
 / e:function_pointer_declaration _ ';' { $$ = e; }
 ## TODO: union declaration. ##
 
 typedef_declaration <-
-  kw_typedef _ kw_struct _ tag:identifier _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, TypedefStructDeclaration, c_parser_str_range_init($0s, $0e), tag, alias); }
-/ kw_typedef _ d:struct_declaration _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, TypedefStructDeclaration, c_parser_str_range_init($0s, $0e), d, alias); }
-/ kw_typedef _ kw_union _ tag:identifier _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, TypedefUnionDeclaration, c_parser_str_range_init($0s, $0e), tag, alias); }
-/ kw_typedef _ d:union_declaration _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, TypedefUnionDeclaration, c_parser_str_range_init($0s, $0e), d, alias); }
-/ kw_typedef _ d:enum_declaration _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, TypedefEnumDeclaration, c_parser_str_range_init($0s, $0e), d, alias); }
-/ kw_typedef _ d:declaration_specifiers _ alias:identifier { $$ = c_parser_ast_node_init_2(auxil, TypedefTypeDeclaration, c_parser_str_range_init($0s, $0e), d, alias); }
+  kw_typedef _ kw_struct _ tag:identifier _ alias:identifier { $$ = parser_ast_node_init_2(auxil, TypedefStructDeclaration, parser_str_range_init($0s, $0e), tag, alias); }
+/ kw_typedef _ d:struct_declaration _ alias:identifier { $$ = parser_ast_node_init_2(auxil, TypedefStructDeclaration, parser_str_range_init($0s, $0e), d, alias); }
+/ kw_typedef _ kw_union _ tag:identifier _ alias:identifier { $$ = parser_ast_node_init_2(auxil, TypedefUnionDeclaration, parser_str_range_init($0s, $0e), tag, alias); }
+/ kw_typedef _ d:union_declaration _ alias:identifier { $$ = parser_ast_node_init_2(auxil, TypedefUnionDeclaration, parser_str_range_init($0s, $0e), d, alias); }
+/ kw_typedef _ d:enum_declaration _ alias:identifier { $$ = parser_ast_node_init_2(auxil, TypedefEnumDeclaration, parser_str_range_init($0s, $0e), d, alias); }
+/ kw_typedef _ d:declaration_specifiers _ alias:identifier { $$ = parser_ast_node_init_2(auxil, TypedefTypeDeclaration, parser_str_range_init($0s, $0e), d, alias); }
 / t:function_pointer_typedef_declaration { $$ = t; }
 
 function_pointer_typedef_declaration <-
-  kw_typedef _ s1:declaration_specifiers _ '(' _ s2:function_pointer_declaration_specifiers _ alias:identifier _ ')' _ '(' _ p:parameter_list _ ')' { $$ = c_parser_ast_node_init_4(auxil, TypedefFunctionPointerDeclaration, c_parser_str_range_init($0s, $0e), s1, p, s2, alias); }
+  kw_typedef _ s1:declaration_specifiers _ '(' _ s2:function_pointer_declaration_specifiers _ alias:identifier _ ')' _ '(' _ p:parameter_list _ ')' { $$ = parser_ast_node_init_4(auxil, TypedefFunctionPointerDeclaration, parser_str_range_init($0s, $0e), s1, p, s2, alias); }
 
 function_pointer_declaration <-
-  s1:declaration_specifiers _ '(' _ s2:function_pointer_declaration_specifiers _ alias:identifier _ ')' _ '(' _ p:parameter_list _ ')' { $$ = c_parser_ast_node_init_4(auxil, FunctionPointerDeclaration, c_parser_str_range_init($0s, $0e), s1, p, s2, alias); }
+  s1:declaration_specifiers _ '(' _ s2:function_pointer_declaration_specifiers _ alias:identifier _ ')' _ '(' _ p:parameter_list _ ')' { $$ = parser_ast_node_init_4(auxil, FunctionPointerDeclaration, parser_str_range_init($0s, $0e), s1, p, s2, alias); }
 
 enum_declaration <-
-  kw_enum _ tag:identifier _ "{" _ e:enumerator_list  _ "}" { $$ = c_parser_ast_node_init_2(auxil, EnumerationDeclaration, c_parser_str_range_init($0s, $0e), tag, e); }
-/ kw_enum _ tag:identifier { $$ = c_parser_ast_node_init_1(auxil, EnumerationDeclaration, c_parser_str_range_init($0s, $0e), tag); }
+  kw_enum _ tag:identifier _ "{" _ e:enumerator_list  _ "}" { $$ = parser_ast_node_init_2(auxil, EnumerationDeclaration, parser_str_range_init($0s, $0e), tag, e); }
+/ kw_enum _ tag:identifier { $$ = parser_ast_node_init_1(auxil, EnumerationDeclaration, parser_str_range_init($0s, $0e), tag); }
 
 enumerator_list <-
   e:enumerator_declaration _s ',' _s l:enumerator_list
   {
     $$ = l;
-    $$->range = c_parser_str_range_init($0s, $0e);
-    c_parser_ast_node_push_front($$, e);
+    $$->range = parser_str_range_init($0s, $0e);
+    parser_ast_node_push_front($$, e);
   }
 / e:enumerator_declaration (_s ',')?
   {
-    $$ = c_parser_ast_node_init_variadic(auxil, EnumeratorDeclarationList, c_parser_str_range_init($0s, $0e));
-    c_parser_ast_node_push_front($$, e);
+    $$ = parser_ast_node_init_variadic(auxil, EnumeratorDeclarationList, parser_str_range_init($0s, $0e));
+    parser_ast_node_push_front($$, e);
   }
 
 enumerator_declaration <-
-  e:identifier _ '=' _ i:initializer { $$ = c_parser_ast_node_init_2(auxil, EnumeratorDeclaration, c_parser_str_range_init($0s, $0e), e, i); }
-/ e:identifier { $$ = c_parser_ast_node_init_1(auxil, EnumeratorDeclaration, c_parser_str_range_init($0s, $0e), e); }
+  e:identifier _ '=' _ i:initializer { $$ = parser_ast_node_init_2(auxil, EnumeratorDeclaration, parser_str_range_init($0s, $0e), e, i); }
+/ e:identifier { $$ = parser_ast_node_init_1(auxil, EnumeratorDeclaration, parser_str_range_init($0s, $0e), e); }
 
 struct_declaration <-
-  kw_struct _ tag:identifier _ "{" _ e:struct_or_union_declaration_list  _ "}" { $$ = c_parser_ast_node_init_2(auxil, StructDeclaration, c_parser_str_range_init($0s, $0e), tag, e); }
-/ kw_struct _ "{" _ e:struct_or_union_declaration_list  _ "}" { $$ = c_parser_ast_node_init_1(auxil, UnnamedStructDeclaration, c_parser_str_range_init($0s, $0e), e); }
-/ kw_struct _ tag:identifier { $$ = c_parser_ast_node_init_1(auxil, StructDeclaration, c_parser_str_range_init($0s, $0e), tag); }
+  kw_struct _ tag:identifier _ "{" _ e:struct_or_union_declaration_list  _ "}" { $$ = parser_ast_node_init_2(auxil, StructDeclaration, parser_str_range_init($0s, $0e), tag, e); }
+/ kw_struct _ "{" _ e:struct_or_union_declaration_list  _ "}" { $$ = parser_ast_node_init_1(auxil, UnnamedStructDeclaration, parser_str_range_init($0s, $0e), e); }
+/ kw_struct _ tag:identifier { $$ = parser_ast_node_init_1(auxil, StructDeclaration, parser_str_range_init($0s, $0e), tag); }
 
 struct_or_union_declaration_list <-
   e:struct_or_union_declaration _ l:struct_or_union_declaration_list
   {
     $$ = l;
-    $$->range = c_parser_str_range_init($0s, $0e);
-    c_parser_ast_node_push_front($$, e);
+    $$->range = parser_str_range_init($0s, $0e);
+    parser_ast_node_push_front($$, e);
   }
 / e:struct_or_union_declaration
   {
-    $$ = c_parser_ast_node_init_variadic(auxil, StructOrUnionDeclarationList, c_parser_str_range_init($0s, $0e));
-    c_parser_ast_node_push_front($$, e);
+    $$ = parser_ast_node_init_variadic(auxil, StructOrUnionDeclarationList, parser_str_range_init($0s, $0e));
+    parser_ast_node_push_front($$, e);
   }
 
 struct_or_union_declaration <-
   _s e:declaration _s  { $$ = e; }
 
 union_declaration <-
-  kw_union _ tag:identifier _ "{" _ e:struct_or_union_declaration_list  _ "}" { $$ = c_parser_ast_node_init_2(auxil, UnionDeclaration, c_parser_str_range_init($0s, $0e), tag, e); }
-/ kw_union _ "{" _ e:struct_or_union_declaration_list  _ "}" { $$ = c_parser_ast_node_init_1(auxil, UnnamedUnionDeclaration, c_parser_str_range_init($0s, $0e), e); }
-/ kw_union _ tag:identifier { $$ = c_parser_ast_node_init_1(auxil, UnionDeclaration, c_parser_str_range_init($0s, $0e), tag); }
+  kw_union _ tag:identifier _ "{" _ e:struct_or_union_declaration_list  _ "}" { $$ = parser_ast_node_init_2(auxil, UnionDeclaration, parser_str_range_init($0s, $0e), tag, e); }
+/ kw_union _ "{" _ e:struct_or_union_declaration_list  _ "}" { $$ = parser_ast_node_init_1(auxil, UnnamedUnionDeclaration, parser_str_range_init($0s, $0e), e); }
+/ kw_union _ tag:identifier { $$ = parser_ast_node_init_1(auxil, UnionDeclaration, parser_str_range_init($0s, $0e), tag); }
 
 ## NOTE: Use global_declaration_specifiers for UPPER_CASE declarators. ##
 global_declaration <-
-  s:global_declaration_specifiers _ i:init_declarator_list { $$ = c_parser_ast_node_init_2(auxil, Declaration, c_parser_str_range_init($0s, $0e), s, i); }
+  s:global_declaration_specifiers _ i:init_declarator_list { $$ = parser_ast_node_init_2(auxil, Declaration, parser_str_range_init($0s, $0e), s, i); }
 
 ## TODO: We forbid declaration_specifiers for arrays etc. ##
 declaration_specifiers <-
-  (macro_identifier whitespace)? _ storage_class_specifier? _ (macro_identifier whitespace)? _ type_qualifier? _ (macro_identifier whitespace)? _ e:type_specifier _ (macro_identifier whitespace)? _ ((_ '*')/(_ type_qualifier))* { $$ = c_parser_ast_node_init_1(auxil, DeclarationSpecifiers, c_parser_str_range_init($0s, $0e), e); }
+  (macro_identifier whitespace)? _ storage_class_specifier? _ (macro_identifier whitespace)? _ type_qualifier? _ (macro_identifier whitespace)? _ e:type_specifier _ (macro_identifier whitespace)? _ ((_ '*')/(_ type_qualifier))* { $$ = parser_ast_node_init_1(auxil, DeclarationSpecifiers, parser_str_range_init($0s, $0e), e); }
 
 global_declaration_specifiers <-
-  (macro_identifier whitespace)? _ storage_class_specifier? _ (macro_identifier whitespace)? _ type_qualifier? _ (macro_identifier whitespace)? _ e:type_specifier ((_ '*')/(_ type_qualifier))* { $$ = c_parser_ast_node_init_1(auxil, DeclarationSpecifiers, c_parser_str_range_init($0s, $0e), e); }
+  (macro_identifier whitespace)? _ storage_class_specifier? _ (macro_identifier whitespace)? _ type_qualifier? _ (macro_identifier whitespace)? _ e:type_specifier ((_ '*')/(_ type_qualifier))* { $$ = parser_ast_node_init_1(auxil, DeclarationSpecifiers, parser_str_range_init($0s, $0e), e); }
 
 function_pointer_declaration_specifiers <-
-  (macro_identifier whitespace)? _ storage_class_specifier? _ (macro_identifier whitespace)? _ type_qualifier? _ (macro_identifier whitespace)? _ ((_ '*')/(_ type_qualifier))* { $$ = c_parser_ast_node_init_0(auxil, FunctionPointerDeclarationSpecifiers, c_parser_str_range_init($0s, $0e)); }
+  (macro_identifier whitespace)? _ storage_class_specifier? _ (macro_identifier whitespace)? _ type_qualifier? _ (macro_identifier whitespace)? _ ((_ '*')/(_ type_qualifier))* { $$ = parser_ast_node_init_0(auxil, FunctionPointerDeclarationSpecifiers, parser_str_range_init($0s, $0e)); }
 
 storage_class_specifier <-
   kw_static
@@ -285,34 +285,34 @@ type_specifier <-
 / e:identifier { $$ = e; }
 
 macro_identifier <-
-  MACRO_IDENT(MACRO_IDENT/DEC)* { $$ = c_parser_ast_node_init_0(auxil, MacroIdentifier, c_parser_str_range_init($0s, $0e)); }
+  MACRO_IDENT(MACRO_IDENT/DEC)* { $$ = parser_ast_node_init_0(auxil, MacroIdentifier, parser_str_range_init($0s, $0e)); }
 MACRO_IDENT <- [A-Z_]
 
 init_declarator_list <-
   i:init_declarator _ ',' _ l:init_declarator_list
   {
     $$ = l;
-    $$->range = c_parser_str_range_init($0s, $0e);
-    c_parser_ast_node_push_front($$, i);
+    $$->range = parser_str_range_init($0s, $0e);
+    parser_ast_node_push_front($$, i);
   }
   / i:init_declarator (_ ',')?
   {
-    $$ = c_parser_ast_node_init_variadic(auxil, DeclaratorAndInitializerList, c_parser_str_range_init($0s, $0e));
-    c_parser_ast_node_push_front($$, i);
+    $$ = parser_ast_node_init_variadic(auxil, DeclaratorAndInitializerList, parser_str_range_init($0s, $0e));
+    parser_ast_node_push_front($$, i);
   }
 
 init_declarator <-
-  d:declarator _ '=' _ i:initializer { $$ = c_parser_ast_node_init_2(auxil, DeclaratorAndInitializer, c_parser_str_range_init($0s, $0e), d, i); }
-/ d:declarator { $$ = c_parser_ast_node_init_1(auxil, DeclaratorAndInitializer, c_parser_str_range_init($0s, $0e), d); }
+  d:declarator _ '=' _ i:initializer { $$ = parser_ast_node_init_2(auxil, DeclaratorAndInitializer, parser_str_range_init($0s, $0e), d, i); }
+/ d:declarator { $$ = parser_ast_node_init_1(auxil, DeclaratorAndInitializer, parser_str_range_init($0s, $0e), d); }
 
 declarator <-
-  d:declarator _ ':' _ i:integer { $$ = c_parser_ast_node_init_2(auxil, BitFieldDeclaration, c_parser_str_range_init($0s, $0e), d, i); }
-/  d:declarator _ '[' _ ']' { $$ = c_parser_ast_node_init_1(auxil, ArrayDeclarator, c_parser_str_range_init($0s, $0e), d); }
-/ d:declarator _ '[' _ i:expression _ ']' { $$ = c_parser_ast_node_init_2(auxil, ArrayDeclarator, c_parser_str_range_init($0s, $0e), d, i); }
-/ e:identifier { $$ = c_parser_ast_node_init_0(auxil, IdentifierDeclarator, c_parser_str_range_init($0s, $0e)); }
+  d:declarator _ ':' _ i:integer { $$ = parser_ast_node_init_2(auxil, BitFieldDeclaration, parser_str_range_init($0s, $0e), d, i); }
+/  d:declarator _ '[' _ ']' { $$ = parser_ast_node_init_1(auxil, ArrayDeclarator, parser_str_range_init($0s, $0e), d); }
+/ d:declarator _ '[' _ i:expression _ ']' { $$ = parser_ast_node_init_2(auxil, ArrayDeclarator, parser_str_range_init($0s, $0e), d, i); }
+/ e:identifier { $$ = parser_ast_node_init_0(auxil, IdentifierDeclarator, parser_str_range_init($0s, $0e)); }
 
 initializer <-
-  '{' _ '}' { $$ = c_parser_ast_node_init_0(auxil, InitializerList, c_parser_str_range_init($0s, $0e)); }
+  '{' _ '}' { $$ = parser_ast_node_init_0(auxil, InitializerList, parser_str_range_init($0s, $0e)); }
 / '{'_ i:initializer_list _ '}' { $$ = i; }
 / e:assignment_expression { $$ = e; }
 
@@ -320,13 +320,13 @@ initializer_list <-
   i:initializer_item _ ',' _ l:initializer_list
   {
     $$ = l;
-    $$->range = c_parser_str_range_init($0s, $0e);
-    c_parser_ast_node_push_front($$, i);
+    $$->range = parser_str_range_init($0s, $0e);
+    parser_ast_node_push_front($$, i);
   }
 / i:initializer_item (_ ',')?
   {
-    $$ = c_parser_ast_node_init_variadic(auxil, InitializerList, c_parser_str_range_init($0s, $0e));
-    c_parser_ast_node_push_front($$, i);
+    $$ = parser_ast_node_init_variadic(auxil, InitializerList, parser_str_range_init($0s, $0e));
+    parser_ast_node_push_front($$, i);
   }
 
 initializer_item <-
@@ -338,121 +338,121 @@ expression <-
   e:assignment_expression { $$ = e; }
 
 assignment_expression <-
-  e:unary_expression _ '=' _ l:assignment_expression { $$ = c_parser_ast_node_init_2(auxil, Assign, c_parser_str_range_init($0s, $0e), e, l); }
-/ e:unary_expression _ '+=' _ l:assignment_expression { $$ = c_parser_ast_node_init_2(auxil, AssignAdd, c_parser_str_range_init($0s, $0e), e, l); }
-/ e:unary_expression _ '-=' _ l:assignment_expression { $$ = c_parser_ast_node_init_2(auxil, AssignSub, c_parser_str_range_init($0s, $0e), e, l); }
-/ e:unary_expression _ '*=' _ l:assignment_expression { $$ = c_parser_ast_node_init_2(auxil, AssignMul, c_parser_str_range_init($0s, $0e), e, l); }
-/ e:unary_expression _ '/=' _ l:assignment_expression { $$ = c_parser_ast_node_init_2(auxil, AssignDiv, c_parser_str_range_init($0s, $0e), e, l); }
-/ e:unary_expression _ '%=' _ l:assignment_expression { $$ = c_parser_ast_node_init_2(auxil, AssignMod, c_parser_str_range_init($0s, $0e), e, l); }
-/ e:unary_expression _ '|=' _ l:assignment_expression { $$ = c_parser_ast_node_init_2(auxil, AssignBitOr, c_parser_str_range_init($0s, $0e), e, l); }
-/ e:unary_expression _ '&=' _ l:assignment_expression { $$ = c_parser_ast_node_init_2(auxil, AssignBitAnd, c_parser_str_range_init($0s, $0e), e, l); }
-/ e:unary_expression _ '^=' _ l:assignment_expression { $$ = c_parser_ast_node_init_2(auxil, AssignBitXor, c_parser_str_range_init($0s, $0e), e, l); }
-/ e:unary_expression _ '<<=' _ l:assignment_expression { $$ = c_parser_ast_node_init_2(auxil, AssignBitLeftShift, c_parser_str_range_init($0s, $0e), e, l); }
-/ e:unary_expression _ '>>=' _ l:assignment_expression { $$ = c_parser_ast_node_init_2(auxil, AssignBitRightShift, c_parser_str_range_init($0s, $0e), e, l); }
+  e:unary_expression _ '=' _ l:assignment_expression { $$ = parser_ast_node_init_2(auxil, Assign, parser_str_range_init($0s, $0e), e, l); }
+/ e:unary_expression _ '+=' _ l:assignment_expression { $$ = parser_ast_node_init_2(auxil, AssignAdd, parser_str_range_init($0s, $0e), e, l); }
+/ e:unary_expression _ '-=' _ l:assignment_expression { $$ = parser_ast_node_init_2(auxil, AssignSub, parser_str_range_init($0s, $0e), e, l); }
+/ e:unary_expression _ '*=' _ l:assignment_expression { $$ = parser_ast_node_init_2(auxil, AssignMul, parser_str_range_init($0s, $0e), e, l); }
+/ e:unary_expression _ '/=' _ l:assignment_expression { $$ = parser_ast_node_init_2(auxil, AssignDiv, parser_str_range_init($0s, $0e), e, l); }
+/ e:unary_expression _ '%=' _ l:assignment_expression { $$ = parser_ast_node_init_2(auxil, AssignMod, parser_str_range_init($0s, $0e), e, l); }
+/ e:unary_expression _ '|=' _ l:assignment_expression { $$ = parser_ast_node_init_2(auxil, AssignBitOr, parser_str_range_init($0s, $0e), e, l); }
+/ e:unary_expression _ '&=' _ l:assignment_expression { $$ = parser_ast_node_init_2(auxil, AssignBitAnd, parser_str_range_init($0s, $0e), e, l); }
+/ e:unary_expression _ '^=' _ l:assignment_expression { $$ = parser_ast_node_init_2(auxil, AssignBitXor, parser_str_range_init($0s, $0e), e, l); }
+/ e:unary_expression _ '<<=' _ l:assignment_expression { $$ = parser_ast_node_init_2(auxil, AssignBitLeftShift, parser_str_range_init($0s, $0e), e, l); }
+/ e:unary_expression _ '>>=' _ l:assignment_expression { $$ = parser_ast_node_init_2(auxil, AssignBitRightShift, parser_str_range_init($0s, $0e), e, l); }
 / e:conditional_expression { $$ = e; }
 
 conditional_expression <-
-  e:logical_or_expression _ '?' _ t:expression _ ':' _ f:conditional_expression { $$ = c_parser_ast_node_init_3(auxil, Ternary, c_parser_str_range_init($0s, $0e), e, t, f); }
+  e:logical_or_expression _ '?' _ t:expression _ ':' _ f:conditional_expression { $$ = parser_ast_node_init_3(auxil, Ternary, parser_str_range_init($0s, $0e), e, t, f); }
 / e:logical_or_expression { $$ = e; }
 
 logical_or_expression <-
-  e:logical_or_expression _ '||' _ t:logical_and_expression { $$ = c_parser_ast_node_init_2(auxil, Or, c_parser_str_range_init($0s, $0e), e, t); }
+  e:logical_or_expression _ '||' _ t:logical_and_expression { $$ = parser_ast_node_init_2(auxil, Or, parser_str_range_init($0s, $0e), e, t); }
 / e:logical_and_expression { $$ = e; }
 
 logical_and_expression <-
-  e:logical_and_expression _ '&&' _ t:bit_or_expression { $$ = c_parser_ast_node_init_2(auxil, And, c_parser_str_range_init($0s, $0e), e, t); }
+  e:logical_and_expression _ '&&' _ t:bit_or_expression { $$ = parser_ast_node_init_2(auxil, And, parser_str_range_init($0s, $0e), e, t); }
 / e:bit_or_expression { $$ = e; }
 
 bit_or_expression <-
-  e:bit_or_expression _ '|' _ t:bit_xor_expression { $$ = c_parser_ast_node_init_2(auxil, BitOr, c_parser_str_range_init($0s, $0e), e, t); }
+  e:bit_or_expression _ '|' _ t:bit_xor_expression { $$ = parser_ast_node_init_2(auxil, BitOr, parser_str_range_init($0s, $0e), e, t); }
 / e:bit_xor_expression { $$ = e; }
 
 bit_xor_expression <-
-  e:bit_xor_expression _ '^' _ t:bit_and_expression { $$ = c_parser_ast_node_init_2(auxil, BitXor, c_parser_str_range_init($0s, $0e), e, t); }
+  e:bit_xor_expression _ '^' _ t:bit_and_expression { $$ = parser_ast_node_init_2(auxil, BitXor, parser_str_range_init($0s, $0e), e, t); }
 / e:bit_and_expression { $$ = e; }
 
 bit_and_expression <-
-  e:bit_and_expression _ '&' _ t:equality_expression { $$ = c_parser_ast_node_init_2(auxil, BitAnd, c_parser_str_range_init($0s, $0e), e, t); }
+  e:bit_and_expression _ '&' _ t:equality_expression { $$ = parser_ast_node_init_2(auxil, BitAnd, parser_str_range_init($0s, $0e), e, t); }
 / e:equality_expression { $$ = e; }
 
 equality_expression <-
-  e:equality_expression _ '==' _ t:relational_expression { $$ = c_parser_ast_node_init_2(auxil, EQ, c_parser_str_range_init($0s, $0e), e, t); }
-/ e:equality_expression _ '!=' _ t:relational_expression { $$ = c_parser_ast_node_init_2(auxil, NE, c_parser_str_range_init($0s, $0e), e, t); }
+  e:equality_expression _ '==' _ t:relational_expression { $$ = parser_ast_node_init_2(auxil, EQ, parser_str_range_init($0s, $0e), e, t); }
+/ e:equality_expression _ '!=' _ t:relational_expression { $$ = parser_ast_node_init_2(auxil, NE, parser_str_range_init($0s, $0e), e, t); }
 / e:relational_expression { $$ = e; }
 
 relational_expression <-
-  e:relational_expression _ '<' _ t:shift_expression { $$ = c_parser_ast_node_init_2(auxil, LT, c_parser_str_range_init($0s, $0e), e, t); }
-/ e:relational_expression _ '>' _ t:shift_expression { $$ = c_parser_ast_node_init_2(auxil, GT, c_parser_str_range_init($0s, $0e), e, t); }
-/ e:relational_expression _ '<=' _ t:shift_expression { $$ = c_parser_ast_node_init_2(auxil, LE, c_parser_str_range_init($0s, $0e), e, t); }
-/ e:relational_expression _ '>=' _ t:shift_expression { $$ = c_parser_ast_node_init_2(auxil, GE, c_parser_str_range_init($0s, $0e), e, t); }
+  e:relational_expression _ '<' _ t:shift_expression { $$ = parser_ast_node_init_2(auxil, LT, parser_str_range_init($0s, $0e), e, t); }
+/ e:relational_expression _ '>' _ t:shift_expression { $$ = parser_ast_node_init_2(auxil, GT, parser_str_range_init($0s, $0e), e, t); }
+/ e:relational_expression _ '<=' _ t:shift_expression { $$ = parser_ast_node_init_2(auxil, LE, parser_str_range_init($0s, $0e), e, t); }
+/ e:relational_expression _ '>=' _ t:shift_expression { $$ = parser_ast_node_init_2(auxil, GE, parser_str_range_init($0s, $0e), e, t); }
 / e:shift_expression { $$ = e; }
 
 shift_expression <-
-  e:shift_expression _ '<<' _ t:additive_expression { $$ = c_parser_ast_node_init_2(auxil, BitShiftLeft, c_parser_str_range_init($0s, $0e), e, t); }
-/ e:shift_expression _ '>>' _ t:additive_expression { $$ = c_parser_ast_node_init_2(auxil, BitShiftRight, c_parser_str_range_init($0s, $0e), e, t); }
+  e:shift_expression _ '<<' _ t:additive_expression { $$ = parser_ast_node_init_2(auxil, BitShiftLeft, parser_str_range_init($0s, $0e), e, t); }
+/ e:shift_expression _ '>>' _ t:additive_expression { $$ = parser_ast_node_init_2(auxil, BitShiftRight, parser_str_range_init($0s, $0e), e, t); }
 / e:additive_expression { $$ = e; }
 
 additive_expression <-
-  l:additive_expression _ '+' _ r:multiplicative_expression  { $$ = c_parser_ast_node_init_2(auxil, Add, c_parser_str_range_init($0s, $0e), l, r); }
-/ l:additive_expression _ '-' _ r:multiplicative_expression  { $$ = c_parser_ast_node_init_2(auxil, Sub, c_parser_str_range_init($0s, $0e), l, r); }
+  l:additive_expression _ '+' _ r:multiplicative_expression  { $$ = parser_ast_node_init_2(auxil, Add, parser_str_range_init($0s, $0e), l, r); }
+/ l:additive_expression _ '-' _ r:multiplicative_expression  { $$ = parser_ast_node_init_2(auxil, Sub, parser_str_range_init($0s, $0e), l, r); }
 / e:multiplicative_expression                 { $$ = e; }
 
 multiplicative_expression  <-
-  l:multiplicative_expression  _ '*' _ r:cast_expression { $$ = c_parser_ast_node_init_2(auxil, Mul, c_parser_str_range_init($0s, $0e), l, r); }
-/ l:multiplicative_expression  _ '/' _ r:cast_expression { $$ = c_parser_ast_node_init_2(auxil, Div, c_parser_str_range_init($0s, $0e), l, r); }
-/ l:multiplicative_expression  _ '%' _ r:cast_expression { $$ = c_parser_ast_node_init_2(auxil, Mod, c_parser_str_range_init($0s, $0e), l, r); }
+  l:multiplicative_expression  _ '*' _ r:cast_expression { $$ = parser_ast_node_init_2(auxil, Mul, parser_str_range_init($0s, $0e), l, r); }
+/ l:multiplicative_expression  _ '/' _ r:cast_expression { $$ = parser_ast_node_init_2(auxil, Div, parser_str_range_init($0s, $0e), l, r); }
+/ l:multiplicative_expression  _ '%' _ r:cast_expression { $$ = parser_ast_node_init_2(auxil, Mod, parser_str_range_init($0s, $0e), l, r); }
 / e:cast_expression                  { $$ = e; }
 
 cast_expression <-
-  '(' _ t:cast_type_name _ ')' e:cast_expression { $$ = c_parser_ast_node_init_2(auxil, Cast, c_parser_str_range_init($0s, $0e), t, e); }
+  '(' _ t:cast_type_name _ ')' e:cast_expression { $$ = parser_ast_node_init_2(auxil, Cast, parser_str_range_init($0s, $0e), t, e); }
 / e:unary_expression { $$ = e; }
 
 ## NOTE: PEGs do not support lexical state, but our parser does not aim to be compatible with ANSI C.##
 ## NOTE: We assume that type name is collection of identifiers and pointers. ##
 ## NOTE: Fails for sizeof without parenthesis if type_name has no space - sizeof(point)(1) resolves to FunctionCall ##
 cast_type_name <-
-  ( (identifier / '*') _ )+ { $$ = c_parser_ast_node_init_0(auxil, TypeName, c_parser_str_range_init($0s, $0e)); }
+  ( (identifier / '*') _ )+ { $$ = parser_ast_node_init_0(auxil, TypeName, parser_str_range_init($0s, $0e)); }
 
 unary_expression <-
-  '++' _ e:unary_expression { $$ = c_parser_ast_node_init_1(auxil, Inc, c_parser_str_range_init($0s, $0e), e); }
-/ '--' _ e:unary_expression { $$ = c_parser_ast_node_init_1(auxil, Dec, c_parser_str_range_init($0s, $0e), e); }
-/ e:unary_expression _ '++' { $$ = c_parser_ast_node_init_1(auxil, Inc, c_parser_str_range_init($0s, $0e), e); }
-/ e:unary_expression _ '--' { $$ = c_parser_ast_node_init_1(auxil, Dec, c_parser_str_range_init($0s, $0e), e); }
-/ '+' _ e:cast_expression { $$ = c_parser_ast_node_init_1(auxil, Plus, c_parser_str_range_init($0s, $0e), e); }
-/ '-' _ e:cast_expression { $$ = c_parser_ast_node_init_1(auxil, Minus, c_parser_str_range_init($0s, $0e), e); }
-/ '*' _ e:cast_expression { $$ = c_parser_ast_node_init_1(auxil, Deref, c_parser_str_range_init($0s, $0e), e); }
-/ '&' _ e:cast_expression { $$ = c_parser_ast_node_init_1(auxil, Ref, c_parser_str_range_init($0s, $0e), e); }
-/ '!' _ e:cast_expression { $$ = c_parser_ast_node_init_1(auxil, Not, c_parser_str_range_init($0s, $0e), e); }
-/ '~' _ e:cast_expression { $$ = c_parser_ast_node_init_1(auxil, BitNot, c_parser_str_range_init($0s, $0e), e); }
+  '++' _ e:unary_expression { $$ = parser_ast_node_init_1(auxil, Inc, parser_str_range_init($0s, $0e), e); }
+/ '--' _ e:unary_expression { $$ = parser_ast_node_init_1(auxil, Dec, parser_str_range_init($0s, $0e), e); }
+/ e:unary_expression _ '++' { $$ = parser_ast_node_init_1(auxil, Inc, parser_str_range_init($0s, $0e), e); }
+/ e:unary_expression _ '--' { $$ = parser_ast_node_init_1(auxil, Dec, parser_str_range_init($0s, $0e), e); }
+/ '+' _ e:cast_expression { $$ = parser_ast_node_init_1(auxil, Plus, parser_str_range_init($0s, $0e), e); }
+/ '-' _ e:cast_expression { $$ = parser_ast_node_init_1(auxil, Minus, parser_str_range_init($0s, $0e), e); }
+/ '*' _ e:cast_expression { $$ = parser_ast_node_init_1(auxil, Deref, parser_str_range_init($0s, $0e), e); }
+/ '&' _ e:cast_expression { $$ = parser_ast_node_init_1(auxil, Ref, parser_str_range_init($0s, $0e), e); }
+/ '!' _ e:cast_expression { $$ = parser_ast_node_init_1(auxil, Not, parser_str_range_init($0s, $0e), e); }
+/ '~' _ e:cast_expression { $$ = parser_ast_node_init_1(auxil, BitNot, parser_str_range_init($0s, $0e), e); }
 ## NOTE: Our sizeof requires parentheses around expression. ##
-/ kw_sizeof _ '(' _ e:cast_expression _ ')' { $$ = c_parser_ast_node_init_1(auxil, Sizeof, c_parser_str_range_init($0s, $0e), e); }
-/ kw_sizeof _ '(' _ t:cast_type_name _ ')' { $$ = c_parser_ast_node_init_1(auxil, Sizeof, c_parser_str_range_init($0s, $0e), t); }
+/ kw_sizeof _ '(' _ e:cast_expression _ ')' { $$ = parser_ast_node_init_1(auxil, Sizeof, parser_str_range_init($0s, $0e), e); }
+/ kw_sizeof _ '(' _ t:cast_type_name _ ')' { $$ = parser_ast_node_init_1(auxil, Sizeof, parser_str_range_init($0s, $0e), t); }
 / e:postfix_expression { $$ = e; }
 
 argument_expression_list <-
   e:assignment_expression _ ',' _ l:argument_expression_list
   {
     $$ = l;
-    $$->range = c_parser_str_range_init($0s, $0e);
-    c_parser_ast_node_push_front($$, e);
+    $$->range = parser_str_range_init($0s, $0e);
+    parser_ast_node_push_front($$, e);
   }
 / e:assignment_expression
   {
-    $$ = c_parser_ast_node_init_variadic(auxil, ArgumentExpressionList, c_parser_str_range_init($0s, $0e));
-    c_parser_ast_node_push_front($$, e);
+    $$ = parser_ast_node_init_variadic(auxil, ArgumentExpressionList, parser_str_range_init($0s, $0e));
+    parser_ast_node_push_front($$, e);
   }
 
 postfix_expression <-
-  e:postfix_expression _ '[' _ i:expression _ ']' { $$ = c_parser_ast_node_init_2(auxil, SubscriptAccess, c_parser_str_range_init($0s, $0e), e, i); }
-/ e:postfix_expression _ '.' _ i:identifier { $$ = c_parser_ast_node_init_2(auxil, MemberAccess, c_parser_str_range_init($0s, $0e), e, i); }
-/ e:postfix_expression _ '->' _ i:identifier { $$ = c_parser_ast_node_init_2(auxil, PointerAccess, c_parser_str_range_init($0s, $0e), e, i); }
-/ e:postfix_expression _ '(' _ ')' { $$ = c_parser_ast_node_init_1(auxil, FunctionCall, c_parser_str_range_init($0s, $0e), e); }
-/ e:postfix_expression _ '(' _ i:argument_expression_list _ ')' { $$ = c_parser_ast_node_init_2(auxil, FunctionCall, c_parser_str_range_init($0s, $0e), e, i); }
+  e:postfix_expression _ '[' _ i:expression _ ']' { $$ = parser_ast_node_init_2(auxil, SubscriptAccess, parser_str_range_init($0s, $0e), e, i); }
+/ e:postfix_expression _ '.' _ i:identifier { $$ = parser_ast_node_init_2(auxil, MemberAccess, parser_str_range_init($0s, $0e), e, i); }
+/ e:postfix_expression _ '->' _ i:identifier { $$ = parser_ast_node_init_2(auxil, PointerAccess, parser_str_range_init($0s, $0e), e, i); }
+/ e:postfix_expression _ '(' _ ')' { $$ = parser_ast_node_init_1(auxil, FunctionCall, parser_str_range_init($0s, $0e), e); }
+/ e:postfix_expression _ '(' _ i:argument_expression_list _ ')' { $$ = parser_ast_node_init_2(auxil, FunctionCall, parser_str_range_init($0s, $0e), e, i); }
 / e:compound_literal { $$ = e; }
 / e:primary_expression { $$ = e; }
 
 compound_literal <-
-  '(' _ t:cast_type_name _ ')' _ '{'_ i:initializer_list _ '}' { $$ = c_parser_ast_node_init_2(auxil, CompoundLiteral, c_parser_str_range_init($0s, $0e), t, i); }
+  '(' _ t:cast_type_name _ ')' _ '{'_ i:initializer_list _ '}' { $$ = parser_ast_node_init_2(auxil, CompoundLiteral, parser_str_range_init($0s, $0e), t, i); }
 
 primary_expression <-
   e:identifier { $$ = e; }
@@ -461,14 +461,14 @@ primary_expression <-
 / '(' _ e:expression _ ')' { $$ = e; }
 
 identifier <-
-  !keyword raw_identifier { $$ = c_parser_ast_node_init_0(auxil, Identifier, c_parser_str_range_init($0s, $0e)); }
+  !keyword raw_identifier { $$ = parser_ast_node_init_0(auxil, Identifier, parser_str_range_init($0s, $0e)); }
 raw_identifier <-
   IDENT(IDENT/DEC)*
 
 integer <-
-  HEX_NUMBER INTEGER_SUFFIX? { $$ = c_parser_ast_node_init_0(auxil, IntegerHex, c_parser_str_range_init($0s, $0e)); }
-/ OCT_NUMBER INTEGER_SUFFIX? { $$ = c_parser_ast_node_init_0(auxil, IntegerOct, c_parser_str_range_init($0s, $0e)); }
-/ DEC_NUMBER INTEGER_SUFFIX? { $$ = c_parser_ast_node_init_0(auxil, IntegerDec, c_parser_str_range_init($0s, $0e)); }
+  HEX_NUMBER INTEGER_SUFFIX? { $$ = parser_ast_node_init_0(auxil, IntegerHex, parser_str_range_init($0s, $0e)); }
+/ OCT_NUMBER INTEGER_SUFFIX? { $$ = parser_ast_node_init_0(auxil, IntegerOct, parser_str_range_init($0s, $0e)); }
+/ DEC_NUMBER INTEGER_SUFFIX? { $$ = parser_ast_node_init_0(auxil, IntegerDec, parser_str_range_init($0s, $0e)); }
 
 HEX_NUMBER <- '0'[xX]HEX+
 OCT_NUMBER <- '0'OCT+
@@ -476,10 +476,10 @@ DEC_NUMBER <- ((!'0'DEC+)/'0')
 INTEGER_SUFFIX <- ('LL'/'ULL')
 
 string <-
-  '"' ('\\' . / !'"' .)* '"' { $$ = c_parser_ast_node_init_0(auxil, String, c_parser_str_range_init($0s, $0e)); }
-/ '"' ('\\' . / !'"' .)* { c_parser_handle_error(auxil, UnclosedString, c_parser_str_range_init($0s, $0e)); }
-/ '\'' ('\\' . / !'\'' .)* '\'' { $$ = c_parser_ast_node_init_0(auxil, String, c_parser_str_range_init($0s, $0e)); }
-/ '\'' ('\\' . / !'\'' .)* { c_parser_handle_error(auxil, UnclosedString, c_parser_str_range_init($0s, $0e)); }
+  '"' ('\\' . / !'"' .)* '"' { $$ = parser_ast_node_init_0(auxil, String, parser_str_range_init($0s, $0e)); }
+/ '"' ('\\' . / !'"' .)* { parser_handle_error(auxil, UnclosedString, parser_str_range_init($0s, $0e)); }
+/ '\'' ('\\' . / !'\'' .)* '\'' { $$ = parser_ast_node_init_0(auxil, String, parser_str_range_init($0s, $0e)); }
+/ '\'' ('\\' . / !'\'' .)* { parser_handle_error(auxil, UnclosedString, parser_str_range_init($0s, $0e)); }
 
 ## TODO floats ##
 
@@ -545,9 +545,9 @@ _s <- ( whitespace / comment / preprocessor_definition )*
 _ <- ( whitespace / comment )*
 
 comment <-
-  '//' ( !EOL . )* EOL { c_parser_handle_comment(auxil, c_parser_str_range_init($0s, $0e)); }
-/ '/*' ( !'*/' . )* '*/' { c_parser_handle_comment(auxil, c_parser_str_range_init($0s, $0e)); }
-/ '/*' ( !'*/' . )* { c_parser_handle_error(auxil, UnclosedComment, c_parser_str_range_init($0s, $0e)); }
+  '//' ( !EOL . )* EOL { parser_handle_comment(auxil, parser_str_range_init($0s, $0e)); }
+/ '/*' ( !'*/' . )* '*/' { parser_handle_comment(auxil, parser_str_range_init($0s, $0e)); }
+/ '/*' ( !'*/' . )* { parser_handle_error(auxil, UnclosedComment, parser_str_range_init($0s, $0e)); }
 
 whitespace <- ( blank / EOL )
 blank <- [ \t\v\f]
@@ -556,10 +556,10 @@ EOF <- !.
 
 %%
 // Returns parse state after parsing source text.
-c_parser_state c_parser_execute(char *source) {
-  c_parser_state state = c_parser_state_init(source);
+parser_state c_parser_execute(char *source) {
+  parser_state state = parser_state_init(source);
   c_parser_context_t *ctx = c_parser_create(&state);
-  c_parser_ast_node *ast;
+  parser_ast_node *ast;
   int ret = c_parser_parse(ctx, &ast);
   state.programNode = ast;
   c_parser_destroy(ctx);

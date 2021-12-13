@@ -3,16 +3,16 @@
 #ifndef PCC_INCLUDED__HOME_SSZCZYRB_REPOS_CPPTEST_SRC_PEG_C_PARSER_H
 #define PCC_INCLUDED__HOME_SSZCZYRB_REPOS_CPPTEST_SRC_PEG_C_PARSER_H
 
-#include "c_parser_internal.h"
-c_parser_state c_parser_execute(char *source);
+#include "parser_internal.h"
+parser_state c_parser_execute(char *source);
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct c_parser_context_tag c_parser_context_t;
 
-c_parser_context_t *c_parser_create(c_parser_state *auxil);
-int c_parser_parse(c_parser_context_t *ctx, c_parser_ast_node **ret);
+c_parser_context_t *c_parser_create(parser_state *auxil);
+int c_parser_parse(c_parser_context_t *ctx, parser_ast_node **ret);
 void c_parser_destroy(c_parser_context_t *ctx);
 
 #ifdef __cplusplus
