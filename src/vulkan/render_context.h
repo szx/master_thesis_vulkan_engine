@@ -5,6 +5,7 @@
 
 #include "../core/platform.h"
 #include "scene.h"
+#include "shader.h"
 #include "swap_chain.h"
 
 typedef enum vulkan_render_pass_type { ForwardRenderPass } vulkan_render_pass_type;
@@ -14,7 +15,10 @@ typedef struct vulkan_render_pass {
   vulkan_device *vkd;     /// vulkan_device pointer.
   vulkan_swap_chain *vks; /// vulkan_swap_chain pointer.
   vulkan_render_pass_type type;
+  // TODO: More render pass types, configuration.
   VkRenderPass renderPass;
+  vulkan_shader *vertShader;
+  vulkan_shader *fragShader;
   VkPipelineLayout pipelineLayout;
   VkPipeline graphicsPipeline;
 } vulkan_render_pass;

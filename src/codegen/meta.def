@@ -149,6 +149,22 @@ FUNC(read_text_file)
 #define FUNC_write_text_file 1
 FUNC(write_text_file)
 
+#define STRUCT_vulkan_shader 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_shader) == 1
+   STRUCT_COND_TRUE(vulkan_shader)
+#  else
+   STRUCT_COND_FALSE(vulkan_shader)
+#  endif
+#endif
+STRUCT(vulkan_shader)
+
+#define FUNC_vulkan_shader_init 1
+FUNC(vulkan_shader_init)
+
+#define FUNC_vulkan_shader_deinit 1
+FUNC(vulkan_shader_deinit)
+
 #define STRUCT_vulkan_swap_chain 1
 #ifdef STRUCT_COND
 #  if STRUCT_COND(vulkan_swap_chain) == 1

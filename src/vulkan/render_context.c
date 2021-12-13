@@ -45,31 +45,24 @@ void create_render_pass(vulkan_render_pass *renderPass) {
 }
 
 void create_graphics_pipeline(vulkan_render_pass *renderPass) {
-  platform_path vertInputPath = get_asset_file_path("shaders", "vert.spv");
-  platform_path fragInputPath = get_asset_file_path("shaders", "frag.spv");
-  size_t vertShaderCodeSize = 0;
-  size_t fragShaderCodeSize = 0;
-  char *vertShaderCode = read_text_file(&vertInputPath, &vertShaderCodeSize);
-  char *fragShaderCode = read_text_file(&fragInputPath, &fragShaderCodeSize);
-  platform_path_free(&vertInputPath);
-  platform_path_free(&fragInputPath);
-  VkShaderModule vertShaderModule =
-      create_shader_module(renderPass->vkd, vertShaderCode, vertShaderCodeSize);
-  VkShaderModule fragShaderModule =
-      create_shader_module(renderPass->vkd, fragShaderCode, fragShaderCodeSize);
-  free(vertShaderCode);
-  free(fragShaderCode);
+  // TODO: Different shaders for different render pass types.
+  platform_path vertInputPath = get_asset_file_path("shaders", "shader.vert");
+  platform_path fragInputPath = get_asset_file_path("shaders", "shader.frag");
+  renderPass->vertShader = alloc_struct(vulkan_shader);
+  init_struct(renderPass->vertShader, vulkan_shader_init, renderPass->vkd, vertInputPath);
+  renderPass->fragShader = alloc_struct(vulkan_shader);
+  init_struct(renderPass->fragShader, vulkan_shader_init, renderPass->vkd, fragInputPath);
 
   VkPipelineShaderStageCreateInfo vertShaderStageInfo = {0};
   vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
   vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-  vertShaderStageInfo.module = vertShaderModule;
+  vertShaderStageInfo.module = renderPass->vertShader->module;
   vertShaderStageInfo.pName = "main";
 
   VkPipelineShaderStageCreateInfo fragShaderStageInfo = {0};
   fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
   fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-  fragShaderStageInfo.module = fragShaderModule;
+  fragShaderStageInfo.module = renderPass->fragShader->module;
   fragShaderStageInfo.pName = "main";
 
   VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
@@ -160,9 +153,6 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
 
   verify(vkCreateGraphicsPipelines(renderPass->vkd->device, VK_NULL_HANDLE, 1, &pipelineInfo, vka,
                                    &renderPass->graphicsPipeline) == VK_SUCCESS);
-
-  vkDestroyShaderModule(renderPass->vkd->device, fragShaderModule, vka);
-  vkDestroyShaderModule(renderPass->vkd->device, vertShaderModule, vka);
 }
 
 void vulkan_render_pass_init(vulkan_render_pass *renderPass, vulkan_swap_chain *vks,
@@ -184,6 +174,8 @@ void vulkan_render_pass_deinit(vulkan_render_pass *renderPass) {
   renderPass->graphicsPipeline = VK_NULL_HANDLE;
   vkDestroyPipelineLayout(renderPass->vkd->device, renderPass->pipelineLayout, vka);
   renderPass->pipelineLayout = VK_NULL_HANDLE;
+  dealloc_struct(renderPass->vertShader);
+  dealloc_struct(renderPass->fragShader);
 }
 
 void vulkan_pipeline_init(vulkan_pipeline *pipeline, vulkan_swap_chain *vks) {

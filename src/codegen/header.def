@@ -14,6 +14,11 @@
 #include "../core/platform.h"
 #endif
 #if defined(ROOT)
+#include "vulkan/shader.h"
+#elif defined(PARENT)
+#include "../vulkan/shader.h"
+#endif
+#if defined(ROOT)
 #include "vulkan/swap_chain.h"
 #elif defined(PARENT)
 #include "../vulkan/swap_chain.h"
