@@ -1,5 +1,6 @@
 #include "../core/platform.h"
 #include "../peg/c_parser.h"
+#include "../peg/glsl_parser.h"
 #include "../vulkan/vulkan.h"
 #include "greatest.h"
 
@@ -216,27 +217,22 @@ SUITE(platform_alloc_suite) { RUN_TEST(platform_alloc); }
 
 // Loading sponza.gltf.
 TEST shaderc_compiling() {
-  platform_path vertPath = get_asset_file_path("shaders", "shader.vert");
+  platform_path vertInputPath = get_asset_file_path("shaders", "shader.vert");
+  platform_path fragInputPath = get_asset_file_path("shaders", "shader.frag");
+  data_config config = data_config_init();
+  vulkan_device *vkd = alloc_struct(vulkan_device);
+  init_struct(vkd, vulkan_device_init, &config);
+  vulkan_shader *vertShader = alloc_struct(vulkan_shader);
+  init_struct(vertShader, vulkan_shader_init, vkd, vertInputPath);
 
-  shaderc_compiler_t compiler = shaderc_compiler_initialize();
-  ASSERT_NEQ(compiler, NULL);
-  shaderc_compilation_result_t result =
-      shaderc_compile_into_spv(compiler, "#version 450\nvoid main() {}", 27,
-                               shaderc_glsl_vertex_shader, "main.vert", "main", NULL);
-  // Do stuff with compilation results.
-  shaderc_compiler_release(compiler);
-  if (shaderc_result_get_num_errors(result)) {
-    log_error("%s\n", shaderc_result_get_error_message(result));
-    FAIL();
-  }
+  ASSERT_EQ(vertShader->type, shaderc_glsl_vertex_shader);
+  c_parser_state state = glsl_parser_execute(vertShader->glslCode);
+  c_parser_debug_print(&state);
+  // HIRO create VkPipelineVertexInputStateCreateInfo
 
-  size_t codeSize = shaderc_result_get_length(result);
-  const uint32_t *spvCode = (const uint32_t *)shaderc_result_get_bytes(result);
-  // TODO: Separate into vulkan/shader.h
-  ASSERT_GT(codeSize, 0);
-
-  shaderc_result_release(result);
-  platform_path_free(&vertPath);
+  data_config_free(&config);
+  dealloc_struct(vertShader);
+  dealloc_struct(vkd);
   PASS();
 }
 

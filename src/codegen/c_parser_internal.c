@@ -303,6 +303,12 @@ const char *c_parser_ast_node_type_debug_str(c_parser_ast_node_type value) {
   if (value == GE) {
     return "GE";
   }
+  if (value == VertexInputAttribute) {
+    return "VertexInputAttribute";
+  }
+  if (value == VertexOutputAttribute) {
+    return "VertexOutputAttribute";
+  }
   return "UNKNOWN_ENUM";
 }
 const char *c_parser_error_type_debug_str(c_parser_error_type value) {

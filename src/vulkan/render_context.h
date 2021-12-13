@@ -82,7 +82,10 @@ void vulkan_render_context_deinit(vulkan_render_context *rctx);
 /// Recreate vulkan_render_context when swap chain is out-of-date.
 void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx);
 void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneName);
+
 void vulkan_render_context_draw_frame(vulkan_render_context *rctx);
+void vulkan_pipeline_record_frame_command_buffer(vulkan_pipeline *pipeline,
+                                                 vulkan_swap_chain_frame *frame);
 
 #include "../codegen/render_context.h"
 

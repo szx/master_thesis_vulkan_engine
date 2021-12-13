@@ -36,6 +36,7 @@ typedef struct core_alloc_struct_header {
   size_t count;
   bool initialized;
   // TODO: Object pools.
+  // TODO: str.
 } core_alloc_struct_header;
 
 /// Returns header of allocated struct.

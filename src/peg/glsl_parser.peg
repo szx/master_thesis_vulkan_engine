@@ -1,0 +1,170 @@
+%prefix "glsl_parser"
+
+%auxil "c_parser_state *"
+%value "c_parser_ast_node *"
+
+%header {
+  #include "c_parser_internal.h"
+  c_parser_state glsl_parser_execute(char *source);
+}
+
+%source {
+  #define PCC_GETCHAR(auxil) c_parser_getchar((auxil))
+  #define PCC_ERROR(auxil) c_parser_handle_syntax_error((auxil))
+#if 1
+  static const char *dbg_str[] = { "Evaluating rule", "Matched rule", "Abandoning rule" };
+  #define PCC_DEBUG(auxil, event, rule, level, pos, buffer, length) \
+      log_debug("%*s%s %s @%zu [%.*s]\n", (int)((level) * 2), "", dbg_str[event], rule, pos, (int)(length), buffer)
+#endif
+}
+
+program <-
+  _ l:translation_unit _ EOF { $$ = l; }
+/ _ EOF { $$ = c_parser_ast_node_init_variadic(auxil, TranslationUnit, c_parser_str_range_init($0s, $0e)); }
+
+translation_unit <-
+  s:external_declaration _ l:translation_unit
+  {
+    $$ = l;
+    $$->range = c_parser_str_range_init($0s, $0e);
+    c_parser_ast_node_push_front($$, s);
+  }
+/ s:external_declaration
+  {
+    $$ = c_parser_ast_node_init_variadic(auxil, TranslationUnit, c_parser_str_range_init($0s, $0e));
+    c_parser_ast_node_push_front($$, s);
+  }
+
+external_declaration <-
+  e:preprocessor_definition { $$ = e; }
+/ e:vertex_input_attribute { $$ = e; }
+/ e:vertex_output_attribute { $$ = e; }
+/ e:unknown { $$ = e; }
+#/ e:function_definition { $$ = e; }
+#/ e:declaration { $$ = e; }
+
+unknown <-
+  (!EOL .)* { $$ = NULL; }
+
+preprocessor_definition <-
+  '#' blank* i:raw_identifier blank* b:preprocessor_definition_body EOL { $$ = c_parser_ast_node_init_2(auxil, PreprocessorDirective, c_parser_str_range_init($0s, $0e), i, b); }
+/ '#' blank* i:raw_identifier blank* EOL { $$ = c_parser_ast_node_init_1(auxil, PreprocessorDirective, c_parser_str_range_init($0s, $0e), i); }
+preprocessor_definition_body <-
+  ('\\' EOL / !EOL .)* { $$ = c_parser_ast_node_init_0(auxil, PreprocessorDirectiveBody, c_parser_str_range_init($0s, $0e)); }
+
+vertex_input_attribute <-
+  kw_layout _ '(' _ kw_location _ '=' _ l:integer _ ')' _ kw_in _ t:vec_type _ i:identifier _ ';' { $$ = c_parser_ast_node_init_3(auxil, VertexInputAttribute, c_parser_str_range_init($0s, $0e), l, t, i); }
+
+vertex_output_attribute <-
+  kw_layout _ '(' _ kw_location _ '=' _ l:integer _ ')' _ kw_out _ t:vec_type _ i:identifier _ ';' { $$ = c_parser_ast_node_init_3(auxil, VertexOutputAttribute, c_parser_str_range_init($0s, $0e), l, t, i); }
+
+vec_type <-
+  'vec2'
+/ 'vec3'
+/ 'vec4'
+
+identifier <-
+  !keyword raw_identifier { $$ = c_parser_ast_node_init_0(auxil, Identifier, c_parser_str_range_init($0s, $0e)); }
+raw_identifier <-
+  IDENT(IDENT/DEC)*
+
+integer <-
+  HEX_NUMBER INTEGER_SUFFIX? { $$ = c_parser_ast_node_init_0(auxil, IntegerHex, c_parser_str_range_init($0s, $0e)); }
+/ OCT_NUMBER INTEGER_SUFFIX? { $$ = c_parser_ast_node_init_0(auxil, IntegerOct, c_parser_str_range_init($0s, $0e)); }
+/ DEC_NUMBER INTEGER_SUFFIX? { $$ = c_parser_ast_node_init_0(auxil, IntegerDec, c_parser_str_range_init($0s, $0e)); }
+
+HEX_NUMBER <- '0'[xX]HEX+
+OCT_NUMBER <- '0'OCT+
+DEC_NUMBER <- ((!'0'DEC+)/'0')
+INTEGER_SUFFIX <- ('LL'/'ULL')
+
+keyword <-
+  kw_sizeof
+/ kw_typedef
+/ kw_enum
+/ kw_struct
+/ kw_union
+/ kw_static
+/ kw_extern
+/ kw_const
+/ kw_restrict
+/ kw_volatile
+/ kw_return
+/ kw_if
+/ kw_else
+/ kw_switch
+/ kw_case
+/ kw_default
+/ kw_break
+/ kw_continue
+/ kw_goto
+/ kw_for
+/ kw_while
+/ kw_do
+/ kw_ellipsis
+/ kw_static_assert
+/ kw_layout
+/ kw_location
+/ kw_in
+/ kw_out
+
+kw_sizeof <- 'sizeof' !(IDENT/DEC)
+kw_typedef <- 'typedef' !(IDENT/DEC)
+kw_enum <- 'enum' !(IDENT/DEC)
+kw_struct <- 'struct' !(IDENT/DEC)
+kw_union <- 'union' !(IDENT/DEC)
+kw_static <- 'static' !(IDENT/DEC)
+kw_extern <- 'extern' !(IDENT/DEC)
+kw_const <- 'const' !(IDENT/DEC)
+kw_restrict <- 'restrict' !(IDENT/DEC)
+kw_volatile <- 'volatile' !(IDENT/DEC)
+kw_return <- 'return' !(IDENT/DEC)
+kw_if <- 'if' !(IDENT/DEC)
+kw_else <- 'else' !(IDENT/DEC)
+kw_switch <- 'switch' !(IDENT/DEC)
+kw_case <- 'case' !(IDENT/DEC)
+kw_default <- 'default' !(IDENT/DEC)
+kw_break <- 'break' !(IDENT/DEC)
+kw_continue <- 'continue' !(IDENT/DEC)
+kw_goto <- 'goto' !(IDENT/DEC)
+kw_for <- 'for' !(IDENT/DEC)
+kw_while <- 'while' !(IDENT/DEC)
+kw_do <- 'do' !(IDENT/DEC)
+kw_ellipsis <- '...' !(IDENT/DEC)
+kw_static_assert <- 'static_assert' !(IDENT/DEC)
+kw_layout <- 'layout' !(IDENT/DEC)
+kw_location <- 'location' !(IDENT/DEC)
+kw_in <- 'in' !(IDENT/DEC)
+kw_out <- 'out' !(IDENT/DEC)
+
+DEC <- [0-9]
+OCT <- [0-7]
+HEX <- [0-9a-fA-F]
+IDENT <- [a-zA-Z_]
+
+_ <- ( whitespace / comment )*
+
+comment <-
+  '//' ( !EOL . )* EOL { c_parser_handle_comment(auxil, c_parser_str_range_init($0s, $0e)); }
+/ '/*' ( !'*/' . )* '*/' { c_parser_handle_comment(auxil, c_parser_str_range_init($0s, $0e)); }
+/ '/*' ( !'*/' . )* { c_parser_handle_error(auxil, UnclosedComment, c_parser_str_range_init($0s, $0e)); }
+
+whitespace <- ( blank / EOL )
+blank <- [ \t\v\f]
+EOL <- '\n' / '\r\n' / '\r'
+EOF <- !.
+
+%%
+// Returns parse state after parsing source text.
+c_parser_state glsl_parser_execute(char *source) {
+  c_parser_state state = c_parser_state_init(source);
+  glsl_parser_context_t *ctx = glsl_parser_create(&state);
+  c_parser_ast_node *ast;
+  int ret = glsl_parser_parse(ctx, &ast);
+  state.programNode = ast;
+  glsl_parser_destroy(ctx);
+  if (ret) {
+    state.isValid = false;
+  }
+  return state;
+}

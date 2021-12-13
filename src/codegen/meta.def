@@ -578,6 +578,9 @@ FUNC(vulkan_render_context_load_scene)
 #define FUNC_vulkan_render_context_draw_frame 1
 FUNC(vulkan_render_context_draw_frame)
 
+#define FUNC_vulkan_pipeline_record_frame_command_buffer 1
+FUNC(vulkan_pipeline_record_frame_command_buffer)
+
 #define STRUCT_c_parser_str_range 1
 #ifdef STRUCT_COND
 #  if STRUCT_COND(c_parser_str_range) == 1
@@ -721,6 +724,18 @@ FUNC(c_parser_parse)
 
 #define FUNC_c_parser_destroy 1
 FUNC(c_parser_destroy)
+
+#define FUNC_glsl_parser_execute 1
+FUNC(glsl_parser_execute)
+
+#define FUNC_glsl_parser_create 1
+FUNC(glsl_parser_create)
+
+#define FUNC_glsl_parser_parse 1
+FUNC(glsl_parser_parse)
+
+#define FUNC_glsl_parser_destroy 1
+FUNC(glsl_parser_destroy)
 
 #define STRUCT_data_config 1
 #ifdef STRUCT_COND

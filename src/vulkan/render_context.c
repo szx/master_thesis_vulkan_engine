@@ -67,6 +67,7 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
 
   VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 
+  // HIRO VkPipelineVertexInputStateCreateInfo from shader
   VkPipelineVertexInputStateCreateInfo vertexInputInfo = {0};
   vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
   vertexInputInfo.vertexBindingDescriptionCount = 0;
@@ -314,7 +315,6 @@ void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx) {
   }
   vkDeviceWaitIdle(rctx->vkd->device);
   // gui.deinitialize();
-  //  TODO: reinit_struct
   // deinit_struct(rctx->scene);
   dealloc_struct(rctx->swapChainFrames);
   deinit_struct(rctx->pipeline);
@@ -341,8 +341,8 @@ void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneNa
   // TODO: Copy resources to GPU. (deferred? tracking)
 }
 
-void vulkan_render_context_record_frame_command_buffer(vulkan_pipeline *pipeline,
-                                                       vulkan_swap_chain_frame *frame) {
+void vulkan_pipeline_record_frame_command_buffer(vulkan_pipeline *pipeline,
+                                                 vulkan_swap_chain_frame *frame) {
   // TODO: vulkan_render_pass_record_frame_buffer
   VkCommandBufferBeginInfo beginInfo = {0};
   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -392,7 +392,7 @@ void vulkan_render_context_draw_frame(vulkan_render_context *rctx) {
   // (uniform buffers, push constants).
   // log_debug("imageIndex = %d", imageIndex);
   vulkan_swap_chain_frame *inFlightFrame = &rctx->swapChainFrames[imageIndex];
-  vulkan_render_context_record_frame_command_buffer(rctx->pipeline, inFlightFrame);
+  vulkan_pipeline_record_frame_command_buffer(rctx->pipeline, inFlightFrame);
   // scene.updateScene(currentFrameInFlight);
   // scene.beginCommandBuffer(&framebuffers[imageIndex]);
   // scene.recordCommandBuffer(currentFrameInFlight, &framebuffers[imageIndex]);

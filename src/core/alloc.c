@@ -1,7 +1,6 @@
 #include "alloc.h"
 
 // Include all headers with struct definitions.
-// TODO: Is there better way to get structs' sizeof?
 #define PARENT
 #include "../codegen/header.def"
 #undef PARENT
@@ -91,7 +90,7 @@ void *core_dealloc_struct(void *memory) {
 
 void core_alloc_debug_print() {
 #if defined(DEBUG)
-#define STRUCT(type)                                                                               \
+/*#define STRUCT(type) \
   if (type##_type_info.deinit == &dummy_struct_deinit) {                                           \
     log_debug("alloc_debug_print: type_info %s size=%d deinit=DUMMY", type##_type_info.name,       \
               type##_type_info.size);                                                              \
@@ -99,7 +98,7 @@ void core_alloc_debug_print() {
     log_debug("alloc_debug_print: type_info %s size=%d deinit=FUNC %p", type##_type_info.name,     \
               type##_type_info.size, type##_type_info.deinit);                                     \
   }
-#include "../codegen/meta.def"
+#include "../codegen/meta.def"*/
 #define STRUCT(type)                                                                               \
   if (type##_alloc_stats.allocNum != 0) {                                                          \
     log_debug("alloc_debug_print: POSSIBLE MEMLEAK %s allocNum=%d", type##_type_info.name,         \

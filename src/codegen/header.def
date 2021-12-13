@@ -54,6 +54,11 @@
 #include "../peg/c_parser.h"
 #endif
 #if defined(ROOT)
+#include "peg/glsl_parser.h"
+#elif defined(PARENT)
+#include "../peg/glsl_parser.h"
+#endif
+#if defined(ROOT)
 #include "data/config.h"
 #elif defined(PARENT)
 #include "../data/config.h"

@@ -147,6 +147,10 @@ typedef enum c_parser_ast_node_type {
   GT, // >
   LE, // <=
   GE, // >=
+
+  // GLSL
+  VertexInputAttribute,
+  VertexOutputAttribute,
 } c_parser_ast_node_type;
 
 typedef enum c_parser_error_type {

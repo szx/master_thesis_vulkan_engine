@@ -102,6 +102,9 @@ c_parser_ast_node *c_parser_ast_node_init_variadic(c_parser_state *state,
 
 void c_parser_ast_node_push_front(c_parser_ast_node *node,
                                   c_parser_ast_node *childNode) {
+  if (childNode == NULL) {
+    return;
+  }
   lst_c_parser_ast_node_ptr_push_front(&node->childNodes,
                                        (c_parser_ast_node_ptr){childNode});
 }
