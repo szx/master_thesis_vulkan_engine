@@ -402,10 +402,8 @@ vulkan_queue_families find_queue_families(vulkan_device *vkd,
 
 vulkan_limits find_limits(vulkan_device *vkd, VkPhysicalDevice physicalDevice) {
   vulkan_limits limits;
-
   VkPhysicalDeviceProperties deviceProperties;
   vkGetPhysicalDeviceProperties(physicalDevice, &deviceProperties);
-
   limits.maxImageDimension2D = deviceProperties.limits.maxImageDimension2D;
   limits.maxUniformBufferRange = deviceProperties.limits.maxUniformBufferRange;
   limits.maxStorageBufferRange = deviceProperties.limits.maxStorageBufferRange;
@@ -417,9 +415,9 @@ vulkan_limits find_limits(vulkan_device *vkd, VkPhysicalDevice physicalDevice) {
   limits.maxPerStageDescriptorSampledImages =
       deviceProperties.limits.maxPerStageDescriptorSampledImages;
   limits.maxPerStageResources = deviceProperties.limits.maxPerStageResources;
-  limits.maxBoundDescriptorSets =
-      deviceProperties.limits.maxBoundDescriptorSets;
-
+  limits.maxBoundDescriptorSets = deviceProperties.limits.maxBoundDescriptorSets;
+  limits.maxVertexInputAttributes = deviceProperties.limits.maxVertexInputAttributes;
+  limits.maxVertexOutputComponents = deviceProperties.limits.maxVertexOutputComponents;
   return limits;
 }
 

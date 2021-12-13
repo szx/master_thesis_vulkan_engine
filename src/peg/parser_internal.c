@@ -160,6 +160,22 @@ parser_ast_node_init_4(parser_state *state, parser_ast_node_type type,
   return node;
 }
 
+char *parser_ast_node_c_str(parser_state *state, parser_ast_node *node) {
+  size_t len = node->range.end - node->range.begin;
+  char *str = state->source + node->range.begin;
+  char *newStr = (char*)malloc((len+1)*sizeof(char*));
+  sprintf(newStr, "%.*s", (int)len, str);
+  return newStr;
+}
+
+size_t parser_ast_node_convert_int(parser_state *state, parser_ast_node *node) {
+  char *newStr = parser_ast_node_c_str(state, node);
+  size_t num;
+  sscanf(newStr, "%zu", &num);
+  free(newStr);
+  return num;
+}
+
 void parser_ast_node_visit(parser_ast_node *node,
                              bool (*callback)(parser_ast_node *node,
                                               void *callbackData),

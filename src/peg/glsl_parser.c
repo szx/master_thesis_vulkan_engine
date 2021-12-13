@@ -1273,6 +1273,22 @@ static void pcc_action_vertex_output_attribute_0(glsl_parser_context_t *__pcc_ct
 #undef auxil
 }
 
+static void pcc_action_vec_type_0(glsl_parser_context_t *__pcc_ctx, pcc_thunk_t *__pcc_in, pcc_value_t *__pcc_out) {
+#define auxil (__pcc_ctx->auxil)
+#define __ (*__pcc_out)
+#define i (*__pcc_in->data.leaf.values.buf[0])
+#define _0 pcc_get_capture_string(__pcc_ctx, &__pcc_in->data.leaf.capt0)
+#define _0s ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.start))
+#define _0e ((const size_t)(__pcc_ctx->pos + __pcc_in->data.leaf.capt0.range.end))
+    __ = parser_ast_node_init_1(auxil, VectorType, parser_str_range_init(_0s, _0e), i);
+#undef _0e
+#undef _0s
+#undef _0
+#undef i
+#undef __
+#undef auxil
+}
+
 static void pcc_action_identifier_0(glsl_parser_context_t *__pcc_ctx, pcc_thunk_t *__pcc_in, pcc_value_t *__pcc_out) {
 #define auxil (__pcc_ctx->auxil)
 #define __ (*__pcc_out)
@@ -1952,49 +1968,22 @@ static pcc_thunk_chunk_t *pcc_evaluate_rule_vec_type(glsl_parser_context_t *ctx)
     chunk->pos = ctx->cur;
     PCC_DEBUG(ctx->auxil, PCC_DBG_EVALUATE, "vec_type", ctx->level, chunk->pos, (ctx->buffer.buf + chunk->pos), (ctx->buffer.len - chunk->pos));
     ctx->level++;
-    pcc_value_table__resize(ctx->auxil, &chunk->values, 0);
+    pcc_value_table__resize(ctx->auxil, &chunk->values, 1);
     pcc_capture_table__resize(ctx->auxil, &chunk->capts, 0);
+    if (
+        pcc_refill_buffer(ctx, 3) < 3 ||
+        (ctx->buffer.buf + ctx->cur)[0] != 'v' ||
+        (ctx->buffer.buf + ctx->cur)[1] != 'e' ||
+        (ctx->buffer.buf + ctx->cur)[2] != 'c'
+    ) goto L0000;
+    ctx->cur += 3;
+    if (!pcc_apply_rule(ctx, pcc_evaluate_rule_integer, &chunk->thunks, &(chunk->values.buf[0]))) goto L0000;
     {
-        const size_t p = ctx->cur;
-        const size_t n = chunk->thunks.len;
-        if (
-            pcc_refill_buffer(ctx, 4) < 4 ||
-            (ctx->buffer.buf + ctx->cur)[0] != 'v' ||
-            (ctx->buffer.buf + ctx->cur)[1] != 'e' ||
-            (ctx->buffer.buf + ctx->cur)[2] != 'c' ||
-            (ctx->buffer.buf + ctx->cur)[3] != '2'
-        ) goto L0002;
-        ctx->cur += 4;
-        goto L0001;
-    L0002:;
-        ctx->cur = p;
-        pcc_thunk_array__revert(ctx->auxil, &chunk->thunks, n);
-        if (
-            pcc_refill_buffer(ctx, 4) < 4 ||
-            (ctx->buffer.buf + ctx->cur)[0] != 'v' ||
-            (ctx->buffer.buf + ctx->cur)[1] != 'e' ||
-            (ctx->buffer.buf + ctx->cur)[2] != 'c' ||
-            (ctx->buffer.buf + ctx->cur)[3] != '3'
-        ) goto L0003;
-        ctx->cur += 4;
-        goto L0001;
-    L0003:;
-        ctx->cur = p;
-        pcc_thunk_array__revert(ctx->auxil, &chunk->thunks, n);
-        if (
-            pcc_refill_buffer(ctx, 4) < 4 ||
-            (ctx->buffer.buf + ctx->cur)[0] != 'v' ||
-            (ctx->buffer.buf + ctx->cur)[1] != 'e' ||
-            (ctx->buffer.buf + ctx->cur)[2] != 'c' ||
-            (ctx->buffer.buf + ctx->cur)[3] != '4'
-        ) goto L0004;
-        ctx->cur += 4;
-        goto L0001;
-    L0004:;
-        ctx->cur = p;
-        pcc_thunk_array__revert(ctx->auxil, &chunk->thunks, n);
-        goto L0000;
-    L0001:;
+        pcc_thunk_t *const thunk = pcc_thunk__create_leaf(ctx->auxil, pcc_action_vec_type_0, 1, 0);
+        thunk->data.leaf.values.buf[0] = &(chunk->values.buf[0]);
+        thunk->data.leaf.capt0.range.start = chunk->pos;
+        thunk->data.leaf.capt0.range.end = ctx->cur;
+        pcc_thunk_array__add(ctx->auxil, &chunk->thunks, thunk);
     }
     ctx->level--;
     PCC_DEBUG(ctx->auxil, PCC_DBG_MATCH, "vec_type", ctx->level, chunk->pos, (ctx->buffer.buf + chunk->pos), (ctx->cur - chunk->pos));

@@ -695,6 +695,12 @@ FUNC(parser_ast_node_init_3)
 #define FUNC_parser_ast_node_init_4 1
 FUNC(parser_ast_node_init_4)
 
+#define FUNC_parser_ast_node_c_str 1
+FUNC(parser_ast_node_c_str)
+
+#define FUNC_parser_ast_node_convert_int 1
+FUNC(parser_ast_node_convert_int)
+
 #define FUNC_parser_ast_node_visit 1
 FUNC(parser_ast_node_visit)
 

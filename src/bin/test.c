@@ -215,7 +215,83 @@ TEST platform_alloc() {
 
 SUITE(platform_alloc_suite) { RUN_TEST(platform_alloc); }
 
-// Loading sponza.gltf.
+typedef struct glsl_parser_vertex_attribute_description {
+  size_t location;
+  size_t componentNum;
+  char *identifier;
+} glsl_parser_vertex_attribute_description;
+
+void glsl_parser_vertex_attribute_description_init(
+    glsl_parser_vertex_attribute_description *description, size_t location, size_t componentNum,
+    const char *identifier) {
+  description->location = location;
+  description->componentNum = componentNum;
+  description->identifier = strdup(identifier);
+}
+
+void glsl_parser_vertex_attribute_description_deinit(
+    glsl_parser_vertex_attribute_description *description) {
+  free(description->identifier);
+}
+
+typedef enum glsl_parser_callback_pass {
+  CountDescriptors,
+  ParseDescriptors,
+  Finished
+} glsl_parser_callback_pass;
+
+typedef struct glsl_parser_callback_data {
+  parser_state *state;
+  glsl_parser_callback_pass pass;
+  size_t inputAttributeDescriptionsSize;
+  size_t inputAttributeDescriptionsIdx;
+  size_t outputAttributeDescriptionsSize;
+  size_t outputAttributeDescriptionsIdx;
+  glsl_parser_vertex_attribute_description *inputAttributeDescriptions;
+  glsl_parser_vertex_attribute_description *outputAttributeDescriptions;
+} glsl_parser_callback_data;
+
+static bool glsl_shader_callback(parser_ast_node *node, void *callbackData) {
+  glsl_parser_callback_data *data = callbackData;
+  if (data->pass == CountDescriptors) {
+    if (node->type == VertexInputAttribute) {
+      data->inputAttributeDescriptionsSize += 1;
+    } else if (node->type == VertexOutputAttribute) {
+      data->outputAttributeDescriptionsSize += 1;
+    }
+  } else if (data->pass == ParseDescriptors) {
+    if (node->type == VertexInputAttribute || node->type == VertexOutputAttribute) {
+      lst_parser_ast_node_ptr_it it = lst_parser_ast_node_ptr_it_each(&node->childNodes);
+
+      parser_ast_node *locationNode = it.ref->node;
+      size_t location = parser_ast_node_convert_int(data->state, locationNode);
+      lst_parser_ast_node_ptr_it_step(&it);
+
+      parser_ast_node *vectorNode = it.ref->node->childNodes.head->value.node;
+      size_t componentNum = parser_ast_node_convert_int(data->state, vectorNode);
+      lst_parser_ast_node_ptr_it_step(&it);
+
+      parser_ast_node *identifierNode = it.ref->node;
+      char *identifier = parser_ast_node_c_str(data->state, identifierNode);
+
+      glsl_parser_vertex_attribute_description description;
+      glsl_parser_vertex_attribute_description_init(&description, location, componentNum,
+                                                    identifier);
+      free(identifier);
+      if (node->type == VertexInputAttribute) {
+        data->inputAttributeDescriptions[data->inputAttributeDescriptionsIdx] = description;
+        data->inputAttributeDescriptionsIdx += 1;
+        verify(data->inputAttributeDescriptionsIdx <= data->inputAttributeDescriptionsSize);
+      } else if (node->type == VertexOutputAttribute) {
+        data->outputAttributeDescriptions[data->outputAttributeDescriptionsIdx] = description;
+        data->outputAttributeDescriptionsIdx += 1;
+        verify(data->outputAttributeDescriptionsIdx <= data->outputAttributeDescriptionsSize);
+      }
+    }
+  }
+  return node->type == TranslationUnit;
+}
+
 TEST shaderc_compiling() {
   platform_path vertInputPath = get_asset_file_path("shaders", "shader.vert");
   platform_path fragInputPath = get_asset_file_path("shaders", "shader.frag");
@@ -227,8 +303,30 @@ TEST shaderc_compiling() {
 
   ASSERT_EQ(vertShader->type, shaderc_glsl_vertex_shader);
   parser_state state = glsl_parser_execute(vertShader->glslCode);
-  parser_debug_print(&state);
-  // HIRO create VkPipelineVertexInputStateCreateInfo
+  // parser_debug_print(&state);
+  log_debug("maxVertexInputAttributes=%d", vkd->limits.maxVertexInputAttributes);
+  log_debug("maxVertexOutputComponents/4=%d", vkd->limits.maxVertexOutputComponents / 4);
+  glsl_parser_callback_data data = {.state = &state,
+                                    .pass = CountDescriptors,
+                                    .inputAttributeDescriptionsSize = 0,
+                                    .inputAttributeDescriptionsIdx = 0,
+                                    .outputAttributeDescriptionsSize = 0,
+                                    .outputAttributeDescriptionsIdx = 0,
+                                    .inputAttributeDescriptions = NULL,
+                                    .outputAttributeDescriptions = NULL};
+  parser_ast_node_visit(state.programNode, glsl_shader_callback, &data);
+  log_debug("inputAttributeDescriptionsSize=%d", data.inputAttributeDescriptionsSize);
+  log_debug("outputAttributeDescriptionsSize=%d", data.outputAttributeDescriptionsSize);
+  verify(data.inputAttributeDescriptionsSize < vkd->limits.maxVertexInputAttributes);
+  verify(data.outputAttributeDescriptionsSize < vkd->limits.maxVertexOutputComponents / 4);
+  data.inputAttributeDescriptions = (glsl_parser_vertex_attribute_description *)malloc(
+      data.inputAttributeDescriptionsSize * sizeof(glsl_parser_vertex_attribute_description));
+  data.outputAttributeDescriptions = (glsl_parser_vertex_attribute_description *)malloc(
+      data.outputAttributeDescriptionsSize * sizeof(glsl_parser_vertex_attribute_description));
+  data.pass = ParseDescriptors;
+  parser_ast_node_visit(state.programNode, glsl_shader_callback, &data);
+  data.pass = Finished;
+  // HIRO move to vulkan/shader
 
   data_config_free(&config);
   dealloc_struct(vertShader);

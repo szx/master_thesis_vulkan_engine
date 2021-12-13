@@ -309,6 +309,9 @@ const char *parser_ast_node_type_debug_str(parser_ast_node_type value) {
   if (value == VertexOutputAttribute) {
     return "VertexOutputAttribute";
   }
+  if (value == VectorType) {
+    return "VectorType";
+  }
   return "UNKNOWN_ENUM";
 }
 const char *parser_error_type_debug_str(parser_error_type value) {

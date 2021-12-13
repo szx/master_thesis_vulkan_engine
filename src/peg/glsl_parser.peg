@@ -59,9 +59,7 @@ vertex_output_attribute <-
   kw_layout _ '(' _ kw_location _ '=' _ l:integer _ ')' _ kw_out _ t:vec_type _ i:identifier _ ';' { $$ = parser_ast_node_init_3(auxil, VertexOutputAttribute, parser_str_range_init($0s, $0e), l, t, i); }
 
 vec_type <-
-  'vec2'
-/ 'vec3'
-/ 'vec4'
+  'vec' i:integer { $$ = parser_ast_node_init_1(auxil, VectorType, parser_str_range_init($0s, $0e), i); }
 
 identifier <-
   !keyword raw_identifier { $$ = parser_ast_node_init_0(auxil, Identifier, parser_str_range_init($0s, $0e)); }

@@ -72,7 +72,7 @@ void platform_alloc_debug_print();
 #define verify(cond)                                                                               \
   do {                                                                                             \
     if (!(cond)) {                                                                                 \
-      panic("%s:%s: %s failed", __FILE__, __LINE__, #cond);                                        \
+      panic("%s:%d: %s failed", __FILE__, __LINE__, #cond);                                        \
     }                                                                                              \
   } while (0)
 

@@ -151,6 +151,7 @@ typedef enum parser_ast_node_type {
   // GLSL
   VertexInputAttribute,
   VertexOutputAttribute,
+  VectorType,
 } parser_ast_node_type;
 
 typedef enum parser_error_type {
@@ -280,6 +281,12 @@ parser_ast_node_init_4(parser_state *state, parser_ast_node_type type,
                          parser_str_range range, parser_ast_node *node1,
                          parser_ast_node *node2, parser_ast_node *node3,
                          parser_ast_node *node4);
+
+// Allocates new C string.
+char *parser_ast_node_c_str(parser_state *state, parser_ast_node *node);
+
+// Convert node to integer.
+size_t parser_ast_node_convert_int(parser_state *state, parser_ast_node *node);
 
 // Visits every AST node.
 void parser_ast_node_visit(parser_ast_node *node,
