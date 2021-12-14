@@ -35,7 +35,6 @@ parser_state parser_state_init(char *source) {
 }
 
 void parser_state_free(parser_state *state) {
-  free(state->source);
   state->source = NULL;
   state->sourceLength = 0;
   state->current = NULL;

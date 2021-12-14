@@ -228,6 +228,7 @@ void parse_header(platform_path *headerPath, str *structDefCode, str *headerDefC
   platform_path_free(&headerOutputPath);
   platform_path_free(&sourceOutputPath);
   parser_state_free(&state);
+  free(input);
   str_free(&headerCode);
   str_free(&sourceCode);
 }

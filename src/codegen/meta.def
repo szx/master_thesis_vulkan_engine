@@ -149,6 +149,26 @@ FUNC(read_text_file)
 #define FUNC_write_text_file 1
 FUNC(write_text_file)
 
+#define STRUCT_vulkan_vertex_attribute_description 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_vertex_attribute_description) == 1
+   STRUCT_COND_TRUE(vulkan_vertex_attribute_description)
+#  else
+   STRUCT_COND_FALSE(vulkan_vertex_attribute_description)
+#  endif
+#endif
+STRUCT(vulkan_vertex_attribute_description)
+
+#define STRUCT_vulkan_shader_info 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_shader_info) == 1
+   STRUCT_COND_TRUE(vulkan_shader_info)
+#  else
+   STRUCT_COND_FALSE(vulkan_shader_info)
+#  endif
+#endif
+STRUCT(vulkan_shader_info)
+
 #define STRUCT_vulkan_shader 1
 #ifdef STRUCT_COND
 #  if STRUCT_COND(vulkan_shader) == 1
@@ -158,6 +178,18 @@ FUNC(write_text_file)
 #  endif
 #endif
 STRUCT(vulkan_shader)
+
+#define FUNC_vulkan_vertex_attribute_description_init 1
+FUNC(vulkan_vertex_attribute_description_init)
+
+#define FUNC_vulkan_vertex_attribute_description_deinit 1
+FUNC(vulkan_vertex_attribute_description_deinit)
+
+#define FUNC_vulkan_shader_info_init 1
+FUNC(vulkan_shader_info_init)
+
+#define FUNC_vulkan_shader_info_deinit 1
+FUNC(vulkan_shader_info_deinit)
 
 #define FUNC_vulkan_shader_init 1
 FUNC(vulkan_shader_init)
