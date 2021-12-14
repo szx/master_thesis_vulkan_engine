@@ -41,6 +41,10 @@ void vulkan_vertex_attribute_description_deinit(vulkan_vertex_attribute_descript
 
 void vulkan_shader_info_init(vulkan_shader_info *info, vulkan_shader *shader);
 void vulkan_shader_info_deinit(vulkan_shader_info *info);
+VkVertexInputBindingDescription
+vulkan_shader_info_get_binding_description(vulkan_shader_info *info);
+VkVertexInputAttributeDescription *
+vulkan_shader_info_get_attribute_descriptions(vulkan_shader_info *info, size_t *count);
 
 void vulkan_shader_init(vulkan_shader *shader, vulkan_device *vkd, platform_path glslPath);
 void vulkan_shader_deinit(vulkan_shader *shader);

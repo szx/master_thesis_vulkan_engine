@@ -67,11 +67,18 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
 
   VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 
-  // HIRO VkPipelineVertexInputStateCreateInfo from shader
   VkPipelineVertexInputStateCreateInfo vertexInputInfo = {0};
   vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-  vertexInputInfo.vertexBindingDescriptionCount = 0;
-  vertexInputInfo.vertexAttributeDescriptionCount = 0;
+  vertexInputInfo.vertexBindingDescriptionCount = 1;
+  VkVertexInputBindingDescription vertexInputBindingDescription =
+      vulkan_shader_info_get_binding_description(&renderPass->vertShader->info);
+  vertexInputInfo.pVertexBindingDescriptions = &vertexInputBindingDescription;
+  size_t vertexAttributeDescriptionsCount;
+  VkVertexInputAttributeDescription *vertexAttributeDescriptions =
+      vulkan_shader_info_get_attribute_descriptions(&renderPass->vertShader->info,
+                                                    &vertexAttributeDescriptionsCount);
+  vertexInputInfo.vertexAttributeDescriptionCount = vertexAttributeDescriptionsCount;
+  vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions;
 
   VkPipelineInputAssemblyStateCreateInfo inputAssembly = {0};
   inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -366,6 +373,7 @@ void vulkan_pipeline_record_frame_command_buffer(vulkan_pipeline *pipeline,
 
   vkCmdBindPipeline(frame->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                     pipeline->renderPass->graphicsPipeline);
+  // HIRO vkCmdBindVertexBuffers
   vkCmdDraw(frame->commandBuffer, 3, 1, 0, 0);
 
   vkCmdEndRenderPass(frame->commandBuffer);

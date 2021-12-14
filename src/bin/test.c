@@ -238,6 +238,12 @@ TEST shaderc_compiling() {
   verify(inputAttributeCount < vkd->limits.maxVertexInputAttributes);
   verify(outputAttributeCount < vkd->limits.maxVertexOutputComponents / 4);
 
+  VkVertexInputBindingDescription bindingDescription =
+      vulkan_shader_info_get_binding_description(&vertShader->info);
+  size_t attributeDescriptionsCount;
+  VkVertexInputAttributeDescription *attributeDescriptions =
+      vulkan_shader_info_get_attribute_descriptions(&vertShader->info, &attributeDescriptionsCount);
+
   data_config_free(&config);
   dealloc_struct(vertShader);
   dealloc_struct(vkd);

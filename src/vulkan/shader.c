@@ -97,6 +97,40 @@ void vulkan_shader_info_deinit(vulkan_shader_info *info) {
   dealloc_struct(info->outputAttributeDescriptions);
 }
 
+VkVertexInputBindingDescription
+vulkan_shader_info_get_binding_description(vulkan_shader_info *info) {
+  // TODO: More bindings if we decide to bind more buffers in vkCmdBindVertexBuffers(). (instancing)
+  VkVertexInputBindingDescription bindingDescription = {0};
+  bindingDescription.binding = 0;
+  bindingDescription.stride = 0;
+  for (size_t i = 0; i < count_struct_array(info->inputAttributeDescriptions); i++) {
+    vulkan_vertex_attribute_description *description = &info->inputAttributeDescriptions[i];
+    // We do not support dvec.
+    bindingDescription.stride += description->componentNum * sizeof(float);
+  }
+  bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+  return bindingDescription;
+}
+
+VkVertexInputAttributeDescription *
+vulkan_shader_info_get_attribute_descriptions(vulkan_shader_info *info, size_t *count) {
+  *count = count_struct_array(info->inputAttributeDescriptions);
+  VkVertexInputAttributeDescription *attributeDescriptions =
+      (VkVertexInputAttributeDescription *)malloc(*count *
+                                                  sizeof(VkVertexInputAttributeDescription));
+  uint32_t offset = 0;
+  for (size_t i = 0; i < *count; i++) {
+    vulkan_vertex_attribute_description *description = &info->inputAttributeDescriptions[i];
+    VkFormat format = VK_FORMAT_R32_SFLOAT + 3 * (description->componentNum - 1);
+    attributeDescriptions[i].binding = 0;
+    attributeDescriptions[i].location = description->location;
+    attributeDescriptions[i].format = format;
+    attributeDescriptions[i].offset = offset;
+    offset += description->componentNum * sizeof(float);
+  }
+  return attributeDescriptions;
+}
+
 void vulkan_shader_init(vulkan_shader *shader, vulkan_device *vkd, platform_path glslPath) {
   shader->vkd = vkd;
   shader->glslPath = glslPath;

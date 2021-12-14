@@ -191,6 +191,12 @@ FUNC(vulkan_shader_info_init)
 #define FUNC_vulkan_shader_info_deinit 1
 FUNC(vulkan_shader_info_deinit)
 
+#define FUNC_vulkan_shader_info_get_binding_description 1
+FUNC(vulkan_shader_info_get_binding_description)
+
+#define FUNC_vulkan_shader_info_get_attribute_descriptions 1
+FUNC(vulkan_shader_info_get_attribute_descriptions)
+
 #define FUNC_vulkan_shader_init 1
 FUNC(vulkan_shader_init)
 

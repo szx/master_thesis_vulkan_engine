@@ -25,7 +25,7 @@ static size_t pcc_strnlen(const char *str, size_t maxlen) {
 
   #define PCC_GETCHAR(auxil) parser_getchar((auxil))
   #define PCC_ERROR(auxil) parser_handle_syntax_error((auxil))
-#if 1
+#if 0
   static const char *dbg_str[] = { "Evaluating rule", "Matched rule", "Abandoning rule" };
   #define PCC_DEBUG(auxil, event, rule, level, pos, buffer, length) \
       log_debug("%*s%s %s @%zu [%.*s]\n", (int)((level) * 2), "", dbg_str[event], rule, pos, (int)(length), buffer)
