@@ -281,7 +281,8 @@ void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config
   rctx->swapChainFrames =
       alloc_struct_array(vulkan_swap_chain_frame, rctx->vks->swapChainImageViews.size);
   for (uint32_t i = 0; i < count_struct_array(rctx->swapChainFrames); i++) {
-    init_struct(&rctx->swapChainFrames[i], vulkan_swap_chain_frame_init, rctx->pipeline, i);
+    init_struct_array_elem(rctx->swapChainFrames, i, vulkan_swap_chain_frame_init, rctx->pipeline,
+                           i);
   }
   rctx->currentFrameInFlight = 0;
   rctx->scene = NULL;
@@ -325,7 +326,8 @@ void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx) {
   rctx->swapChainFrames =
       alloc_struct_array(vulkan_swap_chain_frame, rctx->vks->swapChainImageViews.size);
   for (uint32_t i = 0; i < count_struct_array(rctx->swapChainFrames); i++) {
-    init_struct(&rctx->swapChainFrames[i], vulkan_swap_chain_frame_init, rctx->pipeline, i);
+    init_struct_array_elem(rctx->swapChainFrames, i, vulkan_swap_chain_frame_init, rctx->pipeline,
+                           i);
   }
   // gui.initialize();
 }

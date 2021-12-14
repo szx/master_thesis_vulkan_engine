@@ -82,6 +82,12 @@ void platform_alloc_debug_print();
   (debug_msg("alloc_struct_array"), (type *)platform_alloc_struct(&type##_type_info, (count)))
 #define count_struct_array(ptr)                                                                    \
   (debug_msg("count_struct_array"), platform_alloc_struct_array_count((void *)(ptr)))
+#define init_struct_array_elem(ptr, i, initFunc, ...)                                              \
+  do {                                                                                             \
+    debug_msg("init_struct_array_elem");                                                           \
+    ((initFunc)(&(ptr)[(i)], __VA_ARGS__));                                                        \
+    platform_alloc_struct_mark_init((ptr));                                                        \
+  } while (0)
 #define init_struct(ptr, initFunc, ...)                                                            \
   do {                                                                                             \
     debug_msg("init_struct");                                                                      \
