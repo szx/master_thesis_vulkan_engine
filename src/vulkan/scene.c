@@ -1,25 +1,6 @@
 #include "scene.h"
 #include "../codegen/scene.c"
 
-void vulkan_node_debug_print(vulkan_node *pNode);
-vulkan_geometry_buffer vulkan_geometry_buffer_init(char *name, uint8_t *data,
-                                                   size_t size) {
-  vulkan_geometry_buffer result = {0};
-  result.name = strdup(name);
-  result.data = malloc(sizeof(uint8_t) * size);
-  memcpy(result.data, data, size);
-  result.dataSize = size;
-  return result;
-}
-
-void vulkan_geometry_buffer_free(vulkan_geometry_buffer *self) {
-  free(self->name);
-  self->name = "FREE";
-  free(self->data);
-  self->data = NULL;
-  self->dataSize = 0;
-}
-
 vulkan_buffer_view vulkan_buffer_view_init(char *name, size_t offset,
                                            size_t size, size_t stride,
                                            vulkan_geometry_buffer *buffer) {
@@ -163,7 +144,7 @@ void vulkan_scene_init(vulkan_scene *scene) {
 
 void vulkan_scene_deinit(vulkan_scene *self) {
   vec_vulkan_node_free(&self->nodes);
-  vulkan_geometry_buffer_free(&self->geometryBuffer);
+  vulkan_geometry_buffer_deinit(&self->geometryBuffer);
   vec_vulkan_buffer_view_free(&self->bufferViews);
   vec_vulkan_accessor_free(&self->accessors);
 }
@@ -380,8 +361,8 @@ void parse_gltf_file(vulkan_scene *scene, platform_path gltfPath) {
   // parse geometry buffer
   assert(data->buffers_count == 1);
   cgltf_buffer *cgltfBuffer = &data->buffers[0];
-  scene->geometryBuffer =
-      vulkan_geometry_buffer_init(cgltfBuffer->uri, cgltfBuffer->data, cgltfBuffer->size);
+  vulkan_geometry_buffer_init(&scene->geometryBuffer, cgltfBuffer->uri, cgltfBuffer->data,
+                              cgltfBuffer->size);
   // parse buffer views
   char *name =
       malloc(sizeof(char) * (255 + (int)log10(data->buffer_views_count)));

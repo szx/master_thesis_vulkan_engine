@@ -1,6 +1,63 @@
 #include "functions.h"
 #include "../codegen/functions.c"
 
+void vulkan_geometry_buffer_init(vulkan_geometry_buffer *geometryBuffer, char *name, uint8_t *data,
+                                 size_t size) {
+  geometryBuffer->name = strdup(name);
+  geometryBuffer->data = malloc(sizeof(uint8_t) * size);
+  memcpy(geometryBuffer->data, data, size);
+  geometryBuffer->dataSize = size;
+  geometryBuffer->vkd = NULL;
+  geometryBuffer->buffer = VK_NULL_HANDLE;
+  geometryBuffer->bufferMemory = VK_NULL_HANDLE;
+}
+
+void vulkan_geometry_buffer_deinit(vulkan_geometry_buffer *geometryBuffer) {
+  free(geometryBuffer->name);
+  geometryBuffer->name = "DEINIT";
+  free(geometryBuffer->data);
+  geometryBuffer->data = NULL;
+  geometryBuffer->dataSize = 0;
+  if (geometryBuffer->vkd != NULL) {
+    vkDestroyBuffer(geometryBuffer->vkd->device, geometryBuffer->buffer, vka);
+    vkFreeMemory(geometryBuffer->vkd->device, geometryBuffer->bufferMemory, vka);
+    geometryBuffer->vkd = NULL;
+    geometryBuffer->buffer = VK_NULL_HANDLE;
+    geometryBuffer->bufferMemory = VK_NULL_HANDLE;
+  }
+}
+
+void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
+                                           vulkan_geometry_buffer *geometryBuffer) {
+  // HIRO: Reuse staging buffer.
+  // HIRO: Check if geometry buffer is dirty.
+  geometryBuffer->vkd = vkd;
+  size_t geometryBufferSize = geometryBuffer->dataSize;
+  uint8_t *geometryBufferData = geometryBuffer->data;
+  VkBuffer stagingBuffer;
+  VkDeviceMemory stagingBufferMemory;
+  create_buffer(geometryBuffer->vkd, geometryBufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                &stagingBuffer, &stagingBufferMemory);
+
+  void *data;
+  vkMapMemory(geometryBuffer->vkd->device, stagingBufferMemory, 0, geometryBufferSize, 0, &data);
+  memcpy(data, geometryBufferData, geometryBufferSize);
+  vkUnmapMemory(geometryBuffer->vkd->device, stagingBufferMemory);
+
+  create_buffer(geometryBuffer->vkd, geometryBufferSize,
+                VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
+                    VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &geometryBuffer->buffer,
+                &geometryBuffer->bufferMemory);
+
+  copy_buffer_to_buffer(geometryBuffer->vkd, stagingBuffer, geometryBuffer->buffer,
+                        geometryBufferSize);
+
+  vkDestroyBuffer(geometryBuffer->vkd->device, stagingBuffer, vka);
+  vkFreeMemory(geometryBuffer->vkd->device, stagingBufferMemory, vka);
+}
+
 uint32_t find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
                           VkMemoryPropertyFlags properties) {
   VkPhysicalDeviceMemoryProperties memProperties;
@@ -16,17 +73,14 @@ uint32_t find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
 
 VkFormat find_depth_format(vulkan_device *vkd) { return VK_FORMAT_R32_UINT; }
 
-void create_image(vulkan_device *vkd, uint32_t width, uint32_t height,
-                  uint32_t mipLevels, uint32_t arrayLayers,
-                  VkSampleCountFlagBits numSamples, VkFormat format,
-                  VkImageTiling tiling, VkImageCreateFlags flags,
-                  VkImageUsageFlags usage, VkMemoryPropertyFlags properties,
-                  VkImage image, VkDeviceMemory imageMemory) {}
+void create_image(vulkan_device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
+                  uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
+                  VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,
+                  VkMemoryPropertyFlags properties, VkImage image, VkDeviceMemory imageMemory) {}
 
-VkImageView create_image_view(vulkan_device *vkd, VkImage image,
-                              VkImageViewType type, VkFormat format,
-                              VkImageAspectFlags aspectFlags,
-                              uint32_t mipLevels, uint32_t arrayLayers) {
+VkImageView create_image_view(vulkan_device *vkd, VkImage image, VkImageViewType type,
+                              VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels,
+                              uint32_t arrayLayers) {
   VkImageViewCreateInfo viewInfo = {0};
   viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
   viewInfo.image = image;
@@ -97,7 +151,8 @@ void end_single_time_commands(vulkan_device *vkd, VkCommandBuffer commandBuffer)
   vkFreeCommandBuffers(vkd->device, vkd->oneShotCommandPool, 1, &commandBuffer);
 }
 
-void copy_buffer(vulkan_device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+void copy_buffer_to_buffer(vulkan_device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer,
+                           VkDeviceSize size) {
   VkCommandBuffer commandBuffer = begin_single_time_commands(vkd);
 
   VkBufferCopy copyRegion = {0};
@@ -107,17 +162,15 @@ void copy_buffer(vulkan_device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer, VkD
   end_single_time_commands(vkd, commandBuffer);
 }
 
-void copy_buffer_to_image(vulkan_device *vkd, VkBuffer buffer, VkImage image,
-                          uint32_t width, uint32_t height,
-                          uint32_t baseArrayLayer) {}
+void copy_buffer_to_image(vulkan_device *vkd, VkBuffer buffer, VkImage image, uint32_t width,
+                          uint32_t height, uint32_t baseArrayLayer) {}
 
-void generate_mipmaps(vulkan_device *vkd, VkImage image, VkFormat imageFormat,
-                      int32_t texWidth, int32_t texHeight, uint32_t mipLevels) {
-}
+void generate_mipmaps(vulkan_device *vkd, VkImage image, VkFormat imageFormat, int32_t texWidth,
+                      int32_t texHeight, uint32_t mipLevels) {}
 
 void transition_image_layout(vulkan_device *vkd, VkImage image, VkFormat format,
-                             VkImageLayout oldLayout, VkImageLayout newLayout,
-                             uint32_t mipLevels, uint32_t arrayLayers) {}
+                             VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels,
+                             uint32_t arrayLayers) {}
 
 VkShaderModule create_shader_module(vulkan_device *vkd, const uint32_t *code, size_t size) {
   VkShaderModuleCreateInfo createInfo = {0};

@@ -81,12 +81,26 @@ void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config
 void vulkan_render_context_deinit(vulkan_render_context *rctx);
 /// Recreate vulkan_render_context when swap chain is out-of-date.
 void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx);
+/// Load scene.
 void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneName);
-void vulkan_render_context_send_scene_to_gpu(vulkan_render_context *rctx);
+/// Send scene resources (geometry buffer) to GPU.
+void vulkan_render_context_send_scene_to_device(vulkan_render_context *rctx);
 
+/// Acquires swap chain frame.
+/// Records frame command buffer using vulkan_pipeline_record_frame_command_buffer().
+/// Submits frame command buffer.
 void vulkan_render_context_draw_frame(vulkan_render_context *rctx);
-void vulkan_pipeline_record_frame_command_buffer(vulkan_pipeline *pipeline,
+
+/// Records frame command buffer for scene using rendering pipeline.
+/// Calls vulkan_render_pass_record_frame_command_buffer() for each render pass in rendering
+/// pipeline.
+void vulkan_pipeline_record_frame_command_buffer(vulkan_scene *scene, vulkan_pipeline *pipeline,
                                                  vulkan_swap_chain_frame *frame);
+
+/// Records frame command buffer for scene using single render pass of rendering pipeline.
+void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
+                                                    vulkan_render_pass *renderPass,
+                                                    vulkan_swap_chain_frame *frame);
 
 #include "../codegen/render_context.h"
 

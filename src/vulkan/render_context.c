@@ -350,69 +350,8 @@ void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneNa
   // TODO: Copy resources to GPU. (deferred? tracking)
 }
 
-void vulkan_render_context_send_scene_to_gpu(vulkan_render_context *rctx) {
-  size_t geometryBufferSize = rctx->scene->geometryBuffer.dataSize;
-  uint8_t *geometryBufferData = rctx->scene->geometryBuffer.data;
-  // create and upload vertex buffer
-  // HIRO: Reuse staging buffer.
-  VkBuffer stagingBuffer;
-  VkDeviceMemory stagingBufferMemory;
-  create_buffer(rctx->vkd, geometryBufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                &stagingBuffer, &stagingBufferMemory);
-
-  void *data;
-  vkMapMemory(rctx->vkd->device, stagingBufferMemory, 0, geometryBufferSize, 0, &data);
-  memcpy(data, geometryBufferData, geometryBufferSize);
-  vkUnmapMemory(rctx->vkd->device, stagingBufferMemory);
-
-  VkBuffer geometryBuffer;
-  VkDeviceMemory geometryBufferMemory;
-  create_buffer(rctx->vkd, geometryBufferSize,
-                VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &geometryBuffer, &geometryBufferMemory);
-
-  copy_buffer(rctx->vkd, stagingBuffer, geometryBuffer, geometryBufferSize);
-
-  vkDestroyBuffer(rctx->vkd->device, stagingBuffer, vka);
-  vkFreeMemory(rctx->vkd->device, stagingBufferMemory, vka);
-
-  // HIRO move geometryBuffer and geometryBufferMemory to vulkan_scene
-  // HIRO ForwardRenderPass, have function draw_scene with vulkan_render_pass and vulkan_scene.
-  // HIRO vkCmdBindVertexBuffers
-  // HIRO vkCmdBindIndexBuffer
-  // HIRO vkCmdDrawIndexed
-}
-
-void vulkan_pipeline_record_frame_command_buffer(vulkan_pipeline *pipeline,
-                                                 vulkan_swap_chain_frame *frame) {
-  // TODO: vulkan_render_pass_record_frame_buffer
-  VkCommandBufferBeginInfo beginInfo = {0};
-  beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-  verify(vkBeginCommandBuffer(frame->commandBuffer, &beginInfo) == VK_SUCCESS);
-
-  VkRenderPassBeginInfo renderPassInfo = {0};
-  renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-  renderPassInfo.renderPass = pipeline->renderPass->renderPass;
-  renderPassInfo.framebuffer = frame->framebuffer;
-  renderPassInfo.renderArea.offset.x = 0;
-  renderPassInfo.renderArea.offset.y = 0;
-  renderPassInfo.renderArea.extent = pipeline->vks->swapChainExtent;
-
-  VkClearValue clearColor = {{{0.0F, 0.0F, 0.0F, 1.0F}}};
-  renderPassInfo.clearValueCount = 1;
-  renderPassInfo.pClearValues = &clearColor;
-
-  vkCmdBeginRenderPass(frame->commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-  vkCmdBindPipeline(frame->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                    pipeline->renderPass->graphicsPipeline);
-  // HIRO vkCmdBindVertexBuffers
-  vkCmdDraw(frame->commandBuffer, 3, 1, 0, 0);
-
-  vkCmdEndRenderPass(frame->commandBuffer);
-
-  verify(vkEndCommandBuffer(frame->commandBuffer) == VK_SUCCESS);
+void vulkan_render_context_send_scene_to_device(vulkan_render_context *rctx) {
+  vulkan_geometry_buffer_send_to_device(rctx->vkd, &rctx->scene->geometryBuffer);
 }
 
 void vulkan_render_context_draw_frame(vulkan_render_context *rctx) {
@@ -436,7 +375,7 @@ void vulkan_render_context_draw_frame(vulkan_render_context *rctx) {
   // (uniform buffers, push constants).
   // log_debug("imageIndex = %d", imageIndex);
   vulkan_swap_chain_frame *inFlightFrame = &rctx->swapChainFrames[imageIndex];
-  vulkan_pipeline_record_frame_command_buffer(rctx->pipeline, inFlightFrame);
+  vulkan_pipeline_record_frame_command_buffer(rctx->scene, rctx->pipeline, inFlightFrame);
   // scene.updateScene(currentFrameInFlight);
   // scene.beginCommandBuffer(&framebuffers[imageIndex]);
   // scene.recordCommandBuffer(currentFrameInFlight, &framebuffers[imageIndex]);
@@ -489,4 +428,46 @@ void vulkan_render_context_draw_frame(vulkan_render_context *rctx) {
     verify(result == VK_SUCCESS);
   }
   rctx->currentFrameInFlight = (rctx->currentFrameInFlight + 1) % MAX_FRAMES_IN_FLIGHT;
+}
+
+void vulkan_pipeline_record_frame_command_buffer(vulkan_scene *scene, vulkan_pipeline *pipeline,
+                                                 vulkan_swap_chain_frame *frame) {
+  VkCommandBufferBeginInfo beginInfo = {0};
+  beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+  verify(vkBeginCommandBuffer(frame->commandBuffer, &beginInfo) == VK_SUCCESS);
+
+  // TODO: Multiple render passes. Resolve attachments types in vulkan_render_pass_init()?
+  vulkan_render_pass_record_frame_command_buffer(scene, pipeline->renderPass, frame);
+
+  verify(vkEndCommandBuffer(frame->commandBuffer) == VK_SUCCESS);
+}
+
+void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
+                                                    vulkan_render_pass *renderPass,
+                                                    vulkan_swap_chain_frame *frame) {
+  assert(scene->geometryBuffer.vkd != NULL);
+
+  VkRenderPassBeginInfo renderPassInfo = {0};
+  renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+  renderPassInfo.renderPass = renderPass->renderPass;
+  renderPassInfo.framebuffer = frame->framebuffer;
+  renderPassInfo.renderArea.offset.x = 0;
+  renderPassInfo.renderArea.offset.y = 0;
+  renderPassInfo.renderArea.extent = renderPass->vks->swapChainExtent;
+
+  VkClearValue clearColor = {{{0.0F, 0.0F, 0.0F, 1.0F}}};
+  renderPassInfo.clearValueCount = 1;
+  renderPassInfo.pClearValues = &clearColor;
+
+  vkCmdBeginRenderPass(frame->commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+  vkCmdBindPipeline(frame->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                    renderPass->graphicsPipeline);
+  // HIRO for each mesh in node
+  // HIRO vkCmdBindVertexBuffers
+  // HIRO vkCmdBindIndexBuffer
+  // HIRO vkCmdDrawIndexed
+  vkCmdDraw(frame->commandBuffer, 3, 1, 0, 0);
+
+  vkCmdEndRenderPass(frame->commandBuffer);
 }

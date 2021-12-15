@@ -237,6 +237,25 @@ FUNC(get_swap_chain_images)
 #define FUNC_create_swap_chain_image_views 1
 FUNC(create_swap_chain_image_views)
 
+#define STRUCT_vulkan_geometry_buffer 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_geometry_buffer) == 1
+   STRUCT_COND_TRUE(vulkan_geometry_buffer)
+#  else
+   STRUCT_COND_FALSE(vulkan_geometry_buffer)
+#  endif
+#endif
+STRUCT(vulkan_geometry_buffer)
+
+#define FUNC_vulkan_geometry_buffer_init 1
+FUNC(vulkan_geometry_buffer_init)
+
+#define FUNC_vulkan_geometry_buffer_deinit 1
+FUNC(vulkan_geometry_buffer_deinit)
+
+#define FUNC_vulkan_geometry_buffer_send_to_device 1
+FUNC(vulkan_geometry_buffer_send_to_device)
+
 #define FUNC_find_memory_type 1
 FUNC(find_memory_type)
 
@@ -258,8 +277,8 @@ FUNC(begin_single_time_commands)
 #define FUNC_end_single_time_commands 1
 FUNC(end_single_time_commands)
 
-#define FUNC_copy_buffer 1
-FUNC(copy_buffer)
+#define FUNC_copy_buffer_to_buffer 1
+FUNC(copy_buffer_to_buffer)
 
 #define FUNC_copy_buffer_to_image 1
 FUNC(copy_buffer_to_image)
@@ -379,16 +398,6 @@ FUNC(create_logical_device)
 #define FUNC_create_one_shot_command_pool 1
 FUNC(create_one_shot_command_pool)
 
-#define STRUCT_vulkan_geometry_buffer 1
-#ifdef STRUCT_COND
-#  if STRUCT_COND(vulkan_geometry_buffer) == 1
-   STRUCT_COND_TRUE(vulkan_geometry_buffer)
-#  else
-   STRUCT_COND_FALSE(vulkan_geometry_buffer)
-#  endif
-#endif
-STRUCT(vulkan_geometry_buffer)
-
 #define STRUCT_vulkan_buffer_view 1
 #ifdef STRUCT_COND
 #  if STRUCT_COND(vulkan_buffer_view) == 1
@@ -458,12 +467,6 @@ STRUCT(vulkan_node)
 #  endif
 #endif
 STRUCT(vulkan_scene)
-
-#define FUNC_vulkan_geometry_buffer_init 1
-FUNC(vulkan_geometry_buffer_init)
-
-#define FUNC_vulkan_geometry_buffer_free 1
-FUNC(vulkan_geometry_buffer_free)
 
 #define FUNC_vulkan_buffer_view_init 1
 FUNC(vulkan_buffer_view_init)
@@ -613,14 +616,17 @@ FUNC(vulkan_render_context_recreate_swap_chain)
 #define FUNC_vulkan_render_context_load_scene 1
 FUNC(vulkan_render_context_load_scene)
 
-#define FUNC_vulkan_render_context_send_scene_to_gpu 1
-FUNC(vulkan_render_context_send_scene_to_gpu)
+#define FUNC_vulkan_render_context_send_scene_to_device 1
+FUNC(vulkan_render_context_send_scene_to_device)
 
 #define FUNC_vulkan_render_context_draw_frame 1
 FUNC(vulkan_render_context_draw_frame)
 
 #define FUNC_vulkan_pipeline_record_frame_command_buffer 1
 FUNC(vulkan_pipeline_record_frame_command_buffer)
+
+#define FUNC_vulkan_render_pass_record_frame_command_buffer 1
+FUNC(vulkan_render_pass_record_frame_command_buffer)
 
 #define STRUCT_parser_str_range 1
 #ifdef STRUCT_COND

@@ -6,16 +6,7 @@
 #include "../core/platform.h"
 
 #include "device.h"
-
-typedef struct vulkan_geometry_buffer {
-  char *name;
-  uint8_t *data;
-  size_t dataSize;
-} vulkan_geometry_buffer;
-
-vulkan_geometry_buffer vulkan_geometry_buffer_init(char *name, uint8_t *data,
-                                                   size_t size);
-void vulkan_geometry_buffer_free(vulkan_geometry_buffer *self);
+#include "functions.h"
 
 typedef struct vulkan_buffer_view {
   char *name;

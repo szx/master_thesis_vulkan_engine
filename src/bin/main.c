@@ -8,7 +8,7 @@ int main(int argc, char *argv[]) {
   vulkan_render_context rctx;
   vulkan_render_context_init(&rctx, &config);
   vulkan_render_context_load_scene(&rctx, "triangles");
-  vulkan_render_context_send_scene_to_gpu(&rctx);
+  vulkan_render_context_send_scene_to_device(&rctx);
   // TODO: create vulkan_render_context
 
   glfwMakeContextCurrent(rctx.vkd->window);

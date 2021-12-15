@@ -3,8 +3,25 @@
 #ifndef VULKAN_FUNCTIONS_H
 #define VULKAN_FUNCTIONS_H
 
-#include "../core/platform.h"
 #include "device.h"
+
+/* Vulkan helper structures */
+
+typedef struct vulkan_geometry_buffer {
+  char *name;
+  uint8_t *data;
+  size_t dataSize;
+  /*  initialized by vulkan_geometry_buffer_send_to_device */
+  vulkan_device *vkd; /// vulkan_device pointer
+  VkBuffer buffer;
+  VkDeviceMemory bufferMemory;
+} vulkan_geometry_buffer;
+
+void vulkan_geometry_buffer_init(vulkan_geometry_buffer *geometryBuffer, char *name, uint8_t *data,
+                                 size_t size);
+void vulkan_geometry_buffer_deinit(vulkan_geometry_buffer *geometryBuffer);
+void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
+                                           vulkan_geometry_buffer *geometryBuffer);
 
 /* Vulkan helper functions */
 // TODO: Implement all Vulkan helper functions.
@@ -23,18 +40,18 @@ void create_buffer(vulkan_device *vkd, VkDeviceSize size, VkBufferUsageFlags usa
                    VkDeviceMemory *bufferMemory);
 
 VkCommandBuffer begin_single_time_commands(vulkan_device *vkd);
-void end_single_time_commands(vulkan_device *vkd,
-                              VkCommandBuffer commandBuffer);
-void copy_buffer(vulkan_device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer,
-                 VkDeviceSize size);
-void copy_buffer_to_image(vulkan_device *vkd, VkBuffer buffer, VkImage image,
-                          uint32_t width, uint32_t height,
-                          uint32_t baseArrayLayer);
-void generate_mipmaps(vulkan_device *vkd, VkImage image, VkFormat imageFormat,
-                      int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
+void end_single_time_commands(vulkan_device *vkd, VkCommandBuffer commandBuffer);
+
+void copy_buffer_to_buffer(vulkan_device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer,
+                           VkDeviceSize size);
+void copy_buffer_to_image(vulkan_device *vkd, VkBuffer buffer, VkImage image, uint32_t width,
+                          uint32_t height, uint32_t baseArrayLayer);
+
+void generate_mipmaps(vulkan_device *vkd, VkImage image, VkFormat imageFormat, int32_t texWidth,
+                      int32_t texHeight, uint32_t mipLevels);
 void transition_image_layout(vulkan_device *vkd, VkImage image, VkFormat format,
-                             VkImageLayout oldLayout, VkImageLayout newLayout,
-                             uint32_t mipLevels, uint32_t arrayLayers);
+                             VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels,
+                             uint32_t arrayLayers);
 
 VkShaderModule create_shader_module(vulkan_device *vkd, const uint32_t *code, size_t size);
 // VkDescriptorSetLayout create_descriptor_set_layout(VkDescriptorType
