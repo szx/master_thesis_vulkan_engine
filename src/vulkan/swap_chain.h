@@ -4,6 +4,7 @@
 #define VULKAN_SWAP_CHAIN_H
 
 #include "../data/config.h"
+#include "device.h"
 #include "functions.h"
 
 #define MAX_FRAMES_IN_FLIGHT 2

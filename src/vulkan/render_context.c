@@ -350,6 +350,40 @@ void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneNa
   // TODO: Copy resources to GPU. (deferred? tracking)
 }
 
+void vulkan_render_context_send_scene_to_gpu(vulkan_render_context *rctx) {
+  size_t geometryBufferSize = rctx->scene->geometryBuffer.dataSize;
+  uint8_t *geometryBufferData = rctx->scene->geometryBuffer.data;
+  // create and upload vertex buffer
+  // HIRO: Reuse staging buffer.
+  VkBuffer stagingBuffer;
+  VkDeviceMemory stagingBufferMemory;
+  create_buffer(rctx->vkd, geometryBufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                &stagingBuffer, &stagingBufferMemory);
+
+  void *data;
+  vkMapMemory(rctx->vkd->device, stagingBufferMemory, 0, geometryBufferSize, 0, &data);
+  memcpy(data, geometryBufferData, geometryBufferSize);
+  vkUnmapMemory(rctx->vkd->device, stagingBufferMemory);
+
+  VkBuffer geometryBuffer;
+  VkDeviceMemory geometryBufferMemory;
+  create_buffer(rctx->vkd, geometryBufferSize,
+                VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &geometryBuffer, &geometryBufferMemory);
+
+  copy_buffer(rctx->vkd, stagingBuffer, geometryBuffer, geometryBufferSize);
+
+  vkDestroyBuffer(rctx->vkd->device, stagingBuffer, vka);
+  vkFreeMemory(rctx->vkd->device, stagingBufferMemory, vka);
+
+  // HIRO move geometryBuffer and geometryBufferMemory to vulkan_scene
+  // HIRO ForwardRenderPass, have function draw_scene with vulkan_render_pass and vulkan_scene.
+  // HIRO vkCmdBindVertexBuffers
+  // HIRO vkCmdBindIndexBuffer
+  // HIRO vkCmdDrawIndexed
+}
+
 void vulkan_pipeline_record_frame_command_buffer(vulkan_pipeline *pipeline,
                                                  vulkan_swap_chain_frame *frame) {
   // TODO: vulkan_render_pass_record_frame_buffer

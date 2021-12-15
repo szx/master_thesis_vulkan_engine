@@ -237,6 +237,42 @@ FUNC(get_swap_chain_images)
 #define FUNC_create_swap_chain_image_views 1
 FUNC(create_swap_chain_image_views)
 
+#define FUNC_find_memory_type 1
+FUNC(find_memory_type)
+
+#define FUNC_find_depth_format 1
+FUNC(find_depth_format)
+
+#define FUNC_create_image 1
+FUNC(create_image)
+
+#define FUNC_create_image_view 1
+FUNC(create_image_view)
+
+#define FUNC_create_buffer 1
+FUNC(create_buffer)
+
+#define FUNC_begin_single_time_commands 1
+FUNC(begin_single_time_commands)
+
+#define FUNC_end_single_time_commands 1
+FUNC(end_single_time_commands)
+
+#define FUNC_copy_buffer 1
+FUNC(copy_buffer)
+
+#define FUNC_copy_buffer_to_image 1
+FUNC(copy_buffer_to_image)
+
+#define FUNC_generate_mipmaps 1
+FUNC(generate_mipmaps)
+
+#define FUNC_transition_image_layout 1
+FUNC(transition_image_layout)
+
+#define FUNC_create_shader_module 1
+FUNC(create_shader_module)
+
 #define STRUCT_vulkan_queue_families 1
 #ifdef STRUCT_COND
 #  if STRUCT_COND(vulkan_queue_families) == 1
@@ -342,42 +378,6 @@ FUNC(create_logical_device)
 
 #define FUNC_create_one_shot_command_pool 1
 FUNC(create_one_shot_command_pool)
-
-#define FUNC_find_memory_type 1
-FUNC(find_memory_type)
-
-#define FUNC_find_depth_format 1
-FUNC(find_depth_format)
-
-#define FUNC_create_image 1
-FUNC(create_image)
-
-#define FUNC_create_image_view 1
-FUNC(create_image_view)
-
-#define FUNC_create_buffer 1
-FUNC(create_buffer)
-
-#define FUNC_begin_single_time_commands 1
-FUNC(begin_single_time_commands)
-
-#define FUNC_end_single_time_commands 1
-FUNC(end_single_time_commands)
-
-#define FUNC_copy_buffer 1
-FUNC(copy_buffer)
-
-#define FUNC_copy_buffer_to_image 1
-FUNC(copy_buffer_to_image)
-
-#define FUNC_generate_mipmaps 1
-FUNC(generate_mipmaps)
-
-#define FUNC_transition_image_layout 1
-FUNC(transition_image_layout)
-
-#define FUNC_create_shader_module 1
-FUNC(create_shader_module)
 
 #define STRUCT_vulkan_geometry_buffer 1
 #ifdef STRUCT_COND
@@ -612,6 +612,9 @@ FUNC(vulkan_render_context_recreate_swap_chain)
 
 #define FUNC_vulkan_render_context_load_scene 1
 FUNC(vulkan_render_context_load_scene)
+
+#define FUNC_vulkan_render_context_send_scene_to_gpu 1
+FUNC(vulkan_render_context_send_scene_to_gpu)
 
 #define FUNC_vulkan_render_context_draw_frame 1
 FUNC(vulkan_render_context_draw_frame)

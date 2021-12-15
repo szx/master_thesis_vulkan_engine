@@ -34,6 +34,11 @@
 #include "../vulkan/vulkan.h"
 #endif
 #if defined(ROOT)
+#include "vulkan/device.h"
+#elif defined(PARENT)
+#include "../vulkan/device.h"
+#endif
+#if defined(ROOT)
 #include "vulkan/scene.h"
 #elif defined(PARENT)
 #include "../vulkan/scene.h"

@@ -3,6 +3,7 @@
 #ifndef VULKAN_SHADER_H
 #define VULKAN_SHADER_H
 
+#include "device.h"
 #include "functions.h"
 
 /// Describes one vertex input (or output) attribute defined in GLSL shader.

@@ -5,7 +5,7 @@
 
 #include "../core/platform.h"
 
-#include "functions.h"
+#include "device.h"
 
 typedef struct vulkan_geometry_buffer {
   char *name;
@@ -125,7 +125,6 @@ void vulkan_scene_init(vulkan_scene *self);
 void vulkan_scene_deinit(vulkan_scene *self);
 void vulkan_scene_add_node(vulkan_scene *self, vulkan_node node);
 void vulkan_scene_debug_print(vulkan_scene *self);
-// HIRO create vertex buffer from scene geometry buffer
 
 void parse_gltf_file(vulkan_scene *scene, platform_path gltfPath);
 
