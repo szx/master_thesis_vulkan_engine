@@ -25,6 +25,20 @@ void str_append_node(str *self, parser_state *state, parser_ast_node *node) {
   }
 }
 
+bool node_starts_with(parser_state *state, parser_ast_node *node, const char *prefix) {
+  size_t len = node->range.end - node->range.begin;
+  char *str = state->source + node->range.begin;
+  if (len < strlen(prefix)) {
+    return false;
+  }
+  for (size_t i = 0; i < strlen(prefix); i++) {
+    if (str[i] != prefix[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
 static bool enumerator_callback(parser_ast_node *node, void *callbackData) {
   if (node->type != EnumeratorDeclaration) {
     return true;
@@ -48,6 +62,9 @@ static bool enum_callback(parser_ast_node *node, void *callbackData) {
     // parser_ast_node_debug_print(data->state, node, 0);
     parser_ast_node *identifier = lst_parser_ast_node_ptr_front(&node->childNodes)->node;
     assert(identifier);
+    if (node_starts_with(data->state, identifier, "core_")) {
+      goto end;
+    }
     parser_ast_node *enumeratorList = lst_parser_ast_node_ptr_back(&node->childNodes)->node;
     assert(enumeratorList);
     // header code (function declarations)
@@ -66,6 +83,7 @@ static bool enum_callback(parser_ast_node *node, void *callbackData) {
     str_append(data->sourceCode, "  return \"UNKNOWN_ENUM\";\n");
     str_append(data->sourceCode, "}\n");
   }
+end:
   return node->type == TranslationUnit || node->type == LanguageLinkage ||
          node->type == TypedefEnumDeclaration;
 }
@@ -76,6 +94,9 @@ static bool struct_callback(parser_ast_node *node, void *callbackData) {
     if (!data->isVulkanHeader) {
       parser_ast_node *identifier = lst_parser_ast_node_ptr_front(&node->childNodes)->node;
       assert(identifier);
+      if (node_starts_with(data->state, identifier, "core_")) {
+        goto end;
+      }
       // parser_ast_node_debug_print(data->state, identifier, 0);
       str_append(data->structDefCode, "#define STRUCT_");
       str_append_node(data->structDefCode, data->state, identifier);
@@ -98,6 +119,7 @@ static bool struct_callback(parser_ast_node *node, void *callbackData) {
       str_append(data->structDefCode, ")\n\n");
     }
   }
+end:
   return node->type == TranslationUnit || node->type == LanguageLinkage ||
          node->type == TypedefStructDeclaration;
 }

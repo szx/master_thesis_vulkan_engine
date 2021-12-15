@@ -28,6 +28,8 @@ void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
 uint32_t find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
                           VkMemoryPropertyFlags properties);
 VkFormat find_depth_format(vulkan_device *vkd);
+VkIndexType stride_to_index_format(uint32_t indexStride);
+
 void create_image(vulkan_device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
                   uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
                   VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,

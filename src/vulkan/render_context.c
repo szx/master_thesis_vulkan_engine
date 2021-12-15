@@ -161,6 +161,7 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
 
   verify(vkCreateGraphicsPipelines(renderPass->vkd->device, VK_NULL_HANDLE, 1, &pipelineInfo, vka,
                                    &renderPass->graphicsPipeline) == VK_SUCCESS);
+  free(vertexAttributeDescriptions);
 }
 
 void vulkan_render_pass_init(vulkan_render_pass *renderPass, vulkan_swap_chain *vks,
@@ -287,6 +288,7 @@ void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config
   init_struct(rctx->pipeline, vulkan_pipeline_init, rctx->vks);
   rctx->swapChainFrames =
       alloc_struct_array(vulkan_swap_chain_frame, rctx->vks->swapChainImageViews.size);
+  init_struct_array(rctx->swapChainFrames);
   for (uint32_t i = 0; i < count_struct_array(rctx->swapChainFrames); i++) {
     init_struct_array_elem(rctx->swapChainFrames, i, vulkan_swap_chain_frame_init, rctx->pipeline,
                            i);
@@ -351,7 +353,7 @@ void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneNa
 }
 
 void vulkan_render_context_send_scene_to_device(vulkan_render_context *rctx) {
-  vulkan_geometry_buffer_send_to_device(rctx->vkd, &rctx->scene->geometryBuffer);
+  vulkan_geometry_buffer_send_to_device(rctx->vkd, rctx->scene->geometryBuffer);
 }
 
 void vulkan_render_context_draw_frame(vulkan_render_context *rctx) {
@@ -445,7 +447,7 @@ void vulkan_pipeline_record_frame_command_buffer(vulkan_scene *scene, vulkan_pip
 void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
                                                     vulkan_render_pass *renderPass,
                                                     vulkan_swap_chain_frame *frame) {
-  assert(scene->geometryBuffer.vkd != NULL);
+  assert(scene->geometryBuffer->vkd != NULL);
 
   VkRenderPassBeginInfo renderPassInfo = {0};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -463,11 +465,42 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
 
   vkCmdBindPipeline(frame->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                     renderPass->graphicsPipeline);
+  for (size_t nodeIdx = 0; nodeIdx < count_struct_array(scene->nodes); nodeIdx++) {
+    // TODO: Check if node should be culled.
+    vulkan_node *node = &scene->nodes[nodeIdx];
+    log_trace("draw node %d", nodeIdx);
+    vulkan_mesh *mesh = &node->mesh;
+    for (size_t primitiveIdx = 0; primitiveIdx < count_struct_array(mesh->primitives);
+         primitiveIdx++) {
+      vulkan_mesh_primitive *primitive = &mesh->primitives[primitiveIdx];
+      vulkan_accessor *indices = primitive->indices;
+      VkBuffer indexBuffer = scene->geometryBuffer->buffer;
+      VkDeviceSize indexBufferOffset = indices->bufferView->offset + indices->offset;
+      uint32_t indexCount = indices->count;
+      uint32_t indexStride = indices->stride;
+      VkIndexType indexType = stride_to_index_format(indexStride);
+      size_t attributeCount = count_struct_array(primitive->attributes);
+      VkBuffer vertexBuffers[attributeCount];
+      VkDeviceSize vertexBuffersOffsets[attributeCount];
+      for (size_t attributeIdx = 0; attributeIdx < attributeCount; attributeIdx++) {
+        vulkan_attribute *attribute = &primitive->attributes[attributeIdx];
+        vertexBuffers[attributeIdx] = scene->geometryBuffer->buffer;
+        // HIRO check if attributes match order of vertex shader attribute descriptions
+        vertexBuffersOffsets[attributeIdx] =
+            attribute->accessor->bufferView->offset + attribute->accessor->offset;
+      }
+      vkCmdBindVertexBuffers(frame->commandBuffer, 0, attributeCount, vertexBuffers,
+                             vertexBuffersOffsets);
+      vkCmdBindIndexBuffer(frame->commandBuffer, indexBuffer, indexBufferOffset, indexType);
+      // HIRO: Push constants with mesh->transform
+      vkCmdDrawIndexed(frame->commandBuffer, indexCount, 1, 0, 0, 0);
+      // TODO: Pipeline statistics.
+    }
+  }
   // HIRO for each mesh in node
   // HIRO vkCmdBindVertexBuffers
   // HIRO vkCmdBindIndexBuffer
   // HIRO vkCmdDrawIndexed
-  vkCmdDraw(frame->commandBuffer, 3, 1, 0, 0);
 
   vkCmdEndRenderPass(frame->commandBuffer);
 }

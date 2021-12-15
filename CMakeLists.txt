@@ -12,7 +12,11 @@ set(VULKAN_LIBRARY_PATH "${VULKAN_SDK_PATH}/lib")
 set(ENV{PKG_CONFIG_PATH} "${VULKAN_LIBRARY_PATH}/pkgconfig")
 set(VULKAN_LIBRARIES "vulkan")
 find_package(PkgConfig REQUIRED)
-pkg_search_module(shaderc REQUIRED IMPORTED_TARGET shaderc_combined)
+pkg_search_module(shaderc REQUIRED shaderc_combined)
+if (NOT shaderc_FOUND)
+    message(FATAL_ERROR "shaderc not found")
+endif ()
+list(APPEND shaderc_LIBRARIES stdc++) # TODO: Why it stopped linking correctly?
 
 # add external library glfw
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
@@ -53,12 +57,12 @@ pkg_check_modules(GTK4 REQUIRED IMPORTED_TARGET gtk4)
 pkg_check_modules(SQLITE3 REQUIRED IMPORTED_TARGET sqlite3)
 
 # prepare info about external libraries
-set(EXTERNAL_INCLUDE_PATHS ${VULKAN_INCLUDE_PATH} ${GREATEST_INCLUDE_PATH} ${CTL_INCLUDE_PATH}
+set(EXTERNAL_INCLUDE_PATHS ${VULKAN_INCLUDE_PATH} ${shaderc_INCLUDE_DIRS} ${GREATEST_INCLUDE_PATH} ${CTL_INCLUDE_PATH}
         ${GTK4_INCLUDE_DIRS} ${SQLITE3_INCLUDE_DIRS} ${LOGC_INCLUDE_PATH} ${CGLTF_INCLUDE_PATH}
         ${STB_INCLUDE_PATH})
 set(EXTERNAL_ADDITIONAL_SOURCES ${LOGC_ADDITIONAL_SOURCES})
-set(EXTERNAL_LIBRARY_PATHS ${VULKAN_LIBRARY_PATH} ${GTK4_LIBRARY_DIRS} ${SQLITE3_LIBRARY_DIRS})
-set(EXTERNAL_LIBRARIES glfw ${VULKAN_LIBRARIES} PkgConfig::shaderc PkgConfig::glib ${GTK4_LIBRARIES} ${SQLITE3_LIBRARIES} ${CGLM_LIBRARIES})
+set(EXTERNAL_LIBRARY_PATHS ${VULKAN_LIBRARY_PATH} ${shaderc_LIBRARY_DIRS} ${GTK4_LIBRARY_DIRS} ${SQLITE3_LIBRARY_DIRS})
+set(EXTERNAL_LIBRARIES glfw ${VULKAN_LIBRARIES} ${shaderc_LIBRARIES} PkgConfig::glib ${GTK4_LIBRARIES} ${SQLITE3_LIBRARIES} ${CGLM_LIBRARIES})
 
 
 # build packcc during configure
@@ -140,7 +144,7 @@ ADD_DEFINITIONS(-DSRC_PATH="${CMAKE_CURRENT_SOURCE_DIR}/src")
 ADD_DEFINITIONS(-DVULKAN_HEADER_PATH="${VULKAN_INCLUDE_PATH}/vulkan/vulkan_core.h")
 
 # Compiler and linker flags for ASAN.
-set(ASAN_FLAGS "-fsanitize=address" "-fsanitize=undefined" "-fno-omit-frame-pointer")
+set(ASAN_FLAGS "$<$<CONFIG:DEBUG>:-fsanitize=address" "-fsanitize=undefined" "-fno-omit-frame-pointer>")
 # Compiler and linker flags for hardening.
 set(HARDENING_FLAGS "-fstack-protector-all")
 

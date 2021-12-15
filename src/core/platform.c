@@ -16,19 +16,23 @@ void platform_free() {
 }
 
 void log_init() {
+#if defined(DEBUG)
+  int logLevel = LOG_DEBUG;
+#else
+  int logLevel = LOG_INFO;
+#endif
+  log_set_level(logLevel);
   platform_path path = get_executable_dir_file_path("", "log.txt");
   logFile = fopen(platform_path_c_str(&path), "wb");
   platform_path_free(&path);
   if (logFile) {
-#if defined(DEBUG)
-    log_add_fp(logFile, LOG_DEBUG);
-#else
-    log_add_fp(logFile, LOG_INFO);
-#endif
+    log_add_fp(logFile, logLevel);
   }
 }
 
 void log_free() { fclose(logFile); }
+
+void dummy_debug_msg() {}
 
 typedef struct panic_args {
   char *msg;
@@ -80,17 +84,17 @@ void platform_alloc_struct_mark_init(void *memory) {
 void *platform_alloc_struct(const core_type_info *typeInfo, size_t count) {
   void *allocatedMemory = core_alloc_struct(typeInfo, count);
   verify(allocatedMemory != NULL);
-  log_debug("alloc_struct: %p", allocatedMemory);
+  log_trace("alloc_struct: %p", allocatedMemory);
   return allocatedMemory;
 }
 
 void platform_deinit_struct(void *memory) {
-  log_debug("deinit_struct: %p", memory);
+  log_trace("deinit_struct: %p", memory);
   core_deinit_struct(memory);
 }
 
 void platform_dealloc_struct(void **memory) {
-  log_debug("dealloc_struct: %p", *memory);
+  log_trace("dealloc_struct: %p", *memory);
   if (*memory == NULL) {
     return;
   }

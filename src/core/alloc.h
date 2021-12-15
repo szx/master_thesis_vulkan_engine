@@ -37,7 +37,13 @@ typedef struct core_alloc_struct_header {
   bool initialized;
   // TODO: Object pools.
   // TODO: str.
+  char padding[8];
 } core_alloc_struct_header;
+
+static_assert((sizeof(core_alloc_struct_header) % alignof(max_align_t)) == 0,
+              "(sizeof(core_alloc_struct_header) % alignof(max_align_t)) != 0");
+
+#define is_aligned(ptr, bytes) (((uintptr_t)(const void *)(ptr)) % (bytes) == 0)
 
 /// Returns header of allocated struct.
 const core_alloc_struct_header *core_alloc_struct_header_get(void *memory);

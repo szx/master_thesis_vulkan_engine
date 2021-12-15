@@ -73,6 +73,16 @@ uint32_t find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
 
 VkFormat find_depth_format(vulkan_device *vkd) { return VK_FORMAT_R32_UINT; }
 
+VkIndexType stride_to_index_format(uint32_t indexStride) {
+  VkIndexType indexType = VK_INDEX_TYPE_NONE_KHR; // HIRO Separate to functions.
+  if (indexStride == 2) {
+    indexType = VK_INDEX_TYPE_UINT16;
+  } else if (indexStride == 2) {
+    indexType = VK_INDEX_TYPE_UINT32;
+  }
+  return indexType;
+}
+
 void create_image(vulkan_device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
                   uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
                   VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,

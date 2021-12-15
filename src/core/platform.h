@@ -37,9 +37,10 @@ void log_init();
 void log_free();
 
 #if defined(DEBUG)
-#define debug_msg(msg) log_debug("debug_msg: %s in %s:%s:%d", msg, __func__, __FILE__, __LINE__)
+#define debug_msg(msg) log_trace("debug_msg: %s in %s:%s:%d", msg, __func__, __FILE__, __LINE__)
 #else
-#define debug_msg(msg) 0
+void dummy_debug_msg();
+#define debug_msg(msg) dummy_debug_msg()
 #endif
 
 /// Shows message dialog and exits.
@@ -82,6 +83,11 @@ void platform_alloc_debug_print();
   (debug_msg("alloc_struct_array"), (type *)platform_alloc_struct(&type##_type_info, (count)))
 #define count_struct_array(ptr)                                                                    \
   (debug_msg("count_struct_array"), platform_alloc_struct_array_count((void *)(ptr)))
+#define init_struct_array(ptr)                                                                     \
+  do {                                                                                             \
+    debug_msg("init_struct_array");                                                                \
+    platform_alloc_struct_mark_init((ptr));                                                        \
+  } while (0)
 #define init_struct_array_elem(ptr, i, initFunc, ...)                                              \
   do {                                                                                             \
     debug_msg("init_struct_array_elem");                                                           \
