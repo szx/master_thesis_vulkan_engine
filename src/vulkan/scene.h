@@ -16,13 +16,9 @@ typedef struct vulkan_buffer_view {
   vulkan_geometry_buffer *buffer;
 } vulkan_buffer_view;
 
-vulkan_buffer_view vulkan_buffer_view_init(char *name, size_t offset, size_t size, size_t stride,
-                                           vulkan_geometry_buffer *buffer);
-void vulkan_buffer_view_free(vulkan_buffer_view *self);
-vulkan_buffer_view vulkan_buffer_view_copy(vulkan_buffer_view *self);
-
-#define T vulkan_buffer_view
-#include "vec.h" // vec_vulkan_buffer_view
+void vulkan_buffer_view_init(vulkan_buffer_view *bufferView, char *name, size_t offset, size_t size,
+                             size_t stride, vulkan_geometry_buffer *buffer);
+void vulkan_buffer_view_deinit(vulkan_buffer_view *bufferView);
 
 typedef struct vulkan_accessor {
   char *name;
@@ -32,20 +28,16 @@ typedef struct vulkan_accessor {
   vulkan_buffer_view *bufferView;
 } vulkan_accessor;
 
-vulkan_accessor vulkan_accessor_init(char *name, size_t offset, size_t size, size_t stride,
-                                     vulkan_buffer_view *bufferView);
-void vulkan_accessor_free(vulkan_accessor *self);
-vulkan_accessor vulkan_accessor_copy(vulkan_accessor *self);
-
-#define T vulkan_accessor
-#include "vec.h" // vec_vulkan_accessor
+void vulkan_accessor_init(vulkan_accessor *accessor, char *name, size_t offset, size_t size,
+                          size_t stride, vulkan_buffer_view *bufferView);
+void vulkan_accessor_free(vulkan_accessor *accessor);
 
 typedef enum vulkan_attribute_type {
   UnknownAttribute,
   PositionAttribute,
   NormalAttribute,
   TangentAttribute,
-  TexcoordAttribute,
+  TexCoordAttribute,
   ColorAttribute
 } vulkan_attribute_type;
 
@@ -56,9 +48,9 @@ typedef struct vulkan_attribute {
   vulkan_accessor *accessor;
 } vulkan_attribute;
 
-vulkan_attribute vulkan_attribute_init(char *name, vulkan_attribute_type type, size_t index,
-                                       vulkan_accessor *accessor);
-void vulkan_attribute_deinit(vulkan_attribute *self);
+void vulkan_attribute_init(vulkan_attribute *attribute, char *name, vulkan_attribute_type type,
+                           size_t index, vulkan_accessor *accessor);
+void vulkan_attribute_deinit(vulkan_attribute *attribute);
 
 typedef struct vulkan_mesh_primitive {
   VkPrimitiveTopology topology;
@@ -90,11 +82,12 @@ void vulkan_node_deinit(vulkan_node *scene);
 typedef struct vulkan_scene {
   vulkan_node *nodes;
   vulkan_geometry_buffer *geometryBuffer;
-  vec_vulkan_buffer_view bufferViews;
-  vec_vulkan_accessor accessors;
+  vulkan_buffer_view *bufferViews;
+  vulkan_accessor *accessors;
 } vulkan_scene;
 
-void vulkan_scene_init(vulkan_scene *self, size_t nodesCount);
+void vulkan_scene_init(vulkan_scene *self, size_t nodesCount, size_t bufferViewsCount,
+                       size_t accessorsCount);
 void vulkan_scene_deinit(vulkan_scene *self);
 void vulkan_scene_debug_print(vulkan_scene *self);
 

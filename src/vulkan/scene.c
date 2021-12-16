@@ -1,64 +1,46 @@
 #include "scene.h"
 #include "../codegen/scene.c"
 
-vulkan_buffer_view vulkan_buffer_view_init(char *name, size_t offset, size_t size, size_t stride,
-                                           vulkan_geometry_buffer *buffer) {
-  vulkan_buffer_view result = {0};
-  result.name = strdup(name);
-  result.offset = offset;
-  result.size = size;
-  result.stride = stride;
-  result.buffer = buffer;
-  return result;
+void vulkan_buffer_view_init(vulkan_buffer_view *bufferView, char *name, size_t offset, size_t size,
+                             size_t stride, vulkan_geometry_buffer *buffer) {
+  bufferView->name = strdup(name);
+  bufferView->offset = offset;
+  bufferView->size = size;
+  bufferView->stride = stride;
+  bufferView->buffer = buffer;
 }
 
-void vulkan_buffer_view_free(vulkan_buffer_view *self) {
-  free(self->name);
-  self->name = "FREE";
+void vulkan_buffer_view_deinit(vulkan_buffer_view *bufferView) {
+  free(bufferView->name);
+  bufferView->name = "FREE";
 }
 
-vulkan_buffer_view vulkan_buffer_view_copy(vulkan_buffer_view *self) {
-  vulkan_buffer_view copy = *self;
-  copy.name = strdup(self->name);
-  return copy;
+void vulkan_accessor_init(vulkan_accessor *accessor, char *name, size_t offset, size_t size,
+                          size_t stride, vulkan_buffer_view *bufferView) {
+  accessor->name = strdup(name);
+  accessor->offset = offset;
+  accessor->count = size;
+  accessor->stride = stride;
+  accessor->bufferView = bufferView;
+}
+void vulkan_accessor_deinit(vulkan_accessor *accessor) {
+  free(accessor->name);
+  accessor->name = "FREE";
 }
 
-vulkan_accessor vulkan_accessor_init(char *name, size_t offset, size_t size, size_t stride,
-                                     vulkan_buffer_view *bufferView) {
-  vulkan_accessor result = {0};
-  result.name = strdup(name);
-  result.offset = offset;
-  result.count = size;
-  result.stride = stride;
-  result.bufferView = bufferView;
-  return result;
-}
-void vulkan_accessor_free(vulkan_accessor *self) {
-  free(self->name);
-  self->name = "FREE";
-}
-
-vulkan_accessor vulkan_accessor_copy(vulkan_accessor *self) {
-  vulkan_accessor copy = *self;
-  copy.name = strdup(self->name);
-  return copy;
-}
-
-vulkan_attribute vulkan_attribute_init(char *name, vulkan_attribute_type type, size_t index,
-                                       vulkan_accessor *accessor) {
+void vulkan_attribute_init(vulkan_attribute *attribute, char *name, vulkan_attribute_type type,
+                           size_t index, vulkan_accessor *accessor) {
   assert(name != NULL);
-  vulkan_attribute result = {0};
-  result.name = strdup(name);
-  result.type = type;
-  result.index = index;
-  result.accessor = accessor;
-  return result;
+  attribute->name = strdup(name);
+  attribute->type = type;
+  attribute->index = index;
+  attribute->accessor = accessor;
 }
 
-void vulkan_attribute_deinit(vulkan_attribute *self) {
-  free(self->name);
-  self->name = 0;
-  self->accessor = NULL;
+void vulkan_attribute_deinit(vulkan_attribute *attribute) {
+  free(attribute->name);
+  attribute->name = 0;
+  attribute->accessor = NULL;
 }
 
 void vulkan_mesh_primitive_init(vulkan_mesh_primitive *primitive, VkPrimitiveTopology topology,
@@ -87,31 +69,33 @@ void vulkan_node_init(vulkan_node *scene, vulkan_mesh mesh) {
 
 void vulkan_node_deinit(vulkan_node *self) { vulkan_mesh_deinit(&self->mesh); }
 
-void vulkan_scene_init(vulkan_scene *scene, size_t nodesCount) {
+void vulkan_scene_init(vulkan_scene *scene, size_t nodesCount, size_t bufferViewsCount,
+                       size_t accessorsCount) {
   scene->nodes = alloc_struct_array(vulkan_node, nodesCount);
   init_struct_array(scene->nodes);
-  scene->bufferViews = vec_vulkan_buffer_view_init();
-  scene->accessors = vec_vulkan_accessor_init();
-  scene->accessors = vec_vulkan_accessor_init();
+  scene->bufferViews = alloc_struct_array(vulkan_buffer_view, bufferViewsCount);
+  init_struct_array(scene->bufferViews);
+  scene->accessors = alloc_struct_array(vulkan_accessor, accessorsCount);
+  init_struct_array(scene->accessors);
 }
 
 void vulkan_scene_deinit(vulkan_scene *self) {
   dealloc_struct(self->nodes);
   dealloc_struct(self->geometryBuffer);
-  vec_vulkan_buffer_view_free(&self->bufferViews);
-  vec_vulkan_accessor_free(&self->accessors);
+  dealloc_struct(self->bufferViews);
+  dealloc_struct(self->accessors);
 }
 
 void vulkan_scene_debug_print(vulkan_scene *self) {
   log_debug("SCENE:\n");
   log_debug("geometryBuffer: %d\n", self->geometryBuffer->dataSize);
-  for (size_t i = 0; i < self->bufferViews.size; i++) {
-    vulkan_buffer_view *bufferView = &self->bufferViews.value[i];
+  for (size_t i = 0; i < count_struct_array(self->bufferViews); i++) {
+    vulkan_buffer_view *bufferView = &self->bufferViews[i];
     log_debug("bufferView: '%s' %d %d %d\n", bufferView->name, bufferView->offset, bufferView->size,
               bufferView->stride);
   }
-  for (size_t i = 0; i < self->accessors.size; i++) {
-    vulkan_accessor *accessor = &self->accessors.value[i];
+  for (size_t i = 0; i < count_struct_array(self->accessors); i++) {
+    vulkan_accessor *accessor = &self->accessors[i];
     log_debug("accessor: '%s' %d %d %d '%s'\n", accessor->name, accessor->offset, accessor->count,
               accessor->stride, accessor->bufferView->name);
   }
@@ -172,7 +156,7 @@ vulkan_attribute_type cgltf_attribute_type_vulkan_attribute_type(cgltf_attribute
   case cgltf_attribute_type_tangent:
     return TangentAttribute;
   case cgltf_attribute_type_texcoord:
-    return TexcoordAttribute;
+    return TexCoordAttribute;
   case cgltf_attribute_type_color:
     return ColorAttribute;
   case cgltf_attribute_type_joints:
@@ -183,10 +167,10 @@ vulkan_attribute_type cgltf_attribute_type_vulkan_attribute_type(cgltf_attribute
   }
 }
 
-vulkan_buffer_view *find_buffer_view(vec_vulkan_buffer_view *bufferViews,
+vulkan_buffer_view *find_buffer_view(vulkan_buffer_view *bufferViews,
                                      cgltf_buffer_view *cgltfBufferView) {
-  for (size_t i = 0; i < bufferViews->size; i++) {
-    vulkan_buffer_view *bufferView = &bufferViews->value[i];
+  for (size_t i = 0; i < count_struct_array(bufferViews); i++) {
+    vulkan_buffer_view *bufferView = &bufferViews[i];
     if (bufferView->offset == cgltfBufferView->offset &&
         bufferView->size == cgltfBufferView->size &&
         bufferView->stride == cgltfBufferView->stride) {
@@ -197,10 +181,10 @@ vulkan_buffer_view *find_buffer_view(vec_vulkan_buffer_view *bufferViews,
   return NULL;
 }
 
-vulkan_accessor *find_accessor(vec_vulkan_accessor *accessors, vec_vulkan_buffer_view *bufferViews,
+vulkan_accessor *find_accessor(vulkan_accessor *accessors, vulkan_buffer_view *bufferViews,
                                cgltf_accessor *cgltfAccessor) {
-  for (size_t i = 0; i < accessors->size; i++) {
-    vulkan_accessor *accessor = &accessors->value[i];
+  for (size_t i = 0; i < count_struct_array(accessors); i++) {
+    vulkan_accessor *accessor = &accessors[i];
     vulkan_buffer_view *bufferView = find_buffer_view(bufferViews, cgltfAccessor->buffer_view);
     if (accessor->offset == cgltfAccessor->offset && accessor->count == cgltfAccessor->count &&
         accessor->stride == cgltfAccessor->stride &&
@@ -213,8 +197,8 @@ vulkan_accessor *find_accessor(vec_vulkan_accessor *accessors, vec_vulkan_buffer
 }
 
 vulkan_attribute parse_attribute_accessor(cgltf_attribute *cgltfAttribute,
-                                          vec_vulkan_buffer_view *bufferViews,
-                                          vec_vulkan_accessor *accessors) {
+                                          vulkan_buffer_view *bufferViews,
+                                          vulkan_accessor *accessors) {
   assert(cgltfAttribute != NULL);
   assert(cgltfAttribute->type == cgltf_attribute_type_position ||
          cgltfAttribute->type == cgltf_attribute_type_normal ||
@@ -229,12 +213,13 @@ vulkan_attribute parse_attribute_accessor(cgltf_attribute *cgltfAttribute,
   vulkan_buffer_view *bufferView = find_buffer_view(bufferViews, cgltfBufferView);
   vulkan_attribute_type type = cgltf_attribute_type_vulkan_attribute_type(cgltfAttribute->type);
   vulkan_accessor *accessor = find_accessor(accessors, bufferViews, cgltfAccessor);
-  vulkan_attribute attribute = vulkan_attribute_init(cgltfAttribute->name, type, 0, accessor);
+  vulkan_attribute attribute;
+  vulkan_attribute_init(&attribute, cgltfAttribute->name, type, 0, accessor);
   return attribute;
 }
 
 vulkan_node parse_cgltf_node(cgltf_node *cgltfNode, vulkan_geometry_buffer *geometryBuffer,
-                             vec_vulkan_buffer_view *bufferViews, vec_vulkan_accessor *accessors) {
+                             vulkan_buffer_view *bufferViews, vulkan_accessor *accessors) {
   assert(cgltfNode->extras.start_offset == 0 && cgltfNode->extras.end_offset == 0);
   assert(cgltfNode->camera == NULL);
   assert(cgltfNode->light == NULL);
@@ -293,7 +278,9 @@ void parse_gltf_file(vulkan_scene *scene, platform_path gltfPath) {
   assert(data->scenes_count == 1);
   cgltf_scene *cgltfScene = &data->scene[0];
   size_t nodesCount = cgltfScene->nodes_count;
-  init_struct(scene, vulkan_scene_init, nodesCount);
+  size_t bufferViewsCount = data->buffer_views_count;
+  size_t accessorsCount = data->accessors_count;
+  init_struct(scene, vulkan_scene_init, nodesCount, bufferViewsCount, accessorsCount);
   // parse geometry buffer
   assert(data->buffers_count == 1);
   cgltf_buffer *cgltfBuffer = &data->buffers[0];
@@ -302,30 +289,31 @@ void parse_gltf_file(vulkan_scene *scene, platform_path gltfPath) {
               cgltfBuffer->data, cgltfBuffer->size);
   // parse buffer views
   char *name = malloc(sizeof(char) * (255 + (int)log10(data->buffer_views_count)));
-  for (size_t i = 0; i < data->buffer_views_count; i++) {
+  for (size_t i = 0; i < bufferViewsCount; i++) {
     sprintf(name, "bufferView%d", (int)i);
     cgltf_buffer_view *cgltfBufferView = &data->buffer_views[i];
     assert(cgltfBufferView->has_meshopt_compression == false);
-    vulkan_buffer_view bufferView =
-        vulkan_buffer_view_init(name, cgltfBufferView->offset, cgltfBufferView->size,
-                                cgltfBufferView->stride, scene->geometryBuffer);
-    vec_vulkan_buffer_view_push_back(&scene->bufferViews, bufferView);
+    vulkan_buffer_view bufferView;
+    vulkan_buffer_view_init(&bufferView, name, cgltfBufferView->offset, cgltfBufferView->size,
+                            cgltfBufferView->stride, scene->geometryBuffer);
+    scene->bufferViews[i] = bufferView;
   }
   // parse accessors
-  for (size_t i = 0; i < data->accessors_count; i++) {
+  for (size_t i = 0; i < accessorsCount; i++) {
     sprintf(name, "accessor%d", (int)i);
     cgltf_accessor *cgltfAccessor = &data->accessors[i];
     vulkan_buffer_view *bufferView =
-        find_buffer_view(&scene->bufferViews, cgltfAccessor->buffer_view);
-    vulkan_accessor accessor = vulkan_accessor_init(
-        name, cgltfAccessor->offset, cgltfAccessor->count, cgltfAccessor->stride, bufferView);
-    vec_vulkan_accessor_push_back(&scene->accessors, accessor);
+        find_buffer_view(scene->bufferViews, cgltfAccessor->buffer_view);
+    vulkan_accessor accessor;
+    vulkan_accessor_init(&accessor, name, cgltfAccessor->offset, cgltfAccessor->count,
+                         cgltfAccessor->stride, bufferView);
+    scene->accessors[i] = accessor;
   }
   free(name);
   // parse nodes
   for (size_t nodeIdx = 0; nodeIdx < nodesCount; nodeIdx++) {
     vulkan_node node = parse_cgltf_node(cgltfScene->nodes[nodeIdx], scene->geometryBuffer,
-                                        &scene->bufferViews, &scene->accessors);
+                                        scene->bufferViews, scene->accessors);
     scene->nodes[nodeIdx] = node;
   }
   cgltf_free(data);

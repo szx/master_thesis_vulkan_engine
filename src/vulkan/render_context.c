@@ -497,10 +497,6 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
       // TODO: Pipeline statistics.
     }
   }
-  // HIRO for each mesh in node
-  // HIRO vkCmdBindVertexBuffers
-  // HIRO vkCmdBindIndexBuffer
-  // HIRO vkCmdDrawIndexed
 
   vkCmdEndRenderPass(frame->commandBuffer);
 }

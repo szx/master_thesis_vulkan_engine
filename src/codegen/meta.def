@@ -447,20 +447,14 @@ STRUCT(vulkan_scene)
 #define FUNC_vulkan_buffer_view_init 1
 FUNC(vulkan_buffer_view_init)
 
-#define FUNC_vulkan_buffer_view_free 1
-FUNC(vulkan_buffer_view_free)
-
-#define FUNC_vulkan_buffer_view_copy 1
-FUNC(vulkan_buffer_view_copy)
+#define FUNC_vulkan_buffer_view_deinit 1
+FUNC(vulkan_buffer_view_deinit)
 
 #define FUNC_vulkan_accessor_init 1
 FUNC(vulkan_accessor_init)
 
 #define FUNC_vulkan_accessor_free 1
 FUNC(vulkan_accessor_free)
-
-#define FUNC_vulkan_accessor_copy 1
-FUNC(vulkan_accessor_copy)
 
 #define FUNC_vulkan_attribute_init 1
 FUNC(vulkan_attribute_init)

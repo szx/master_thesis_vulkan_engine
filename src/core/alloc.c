@@ -32,15 +32,23 @@ void dummy_struct_deinit(void *self) {}
 #endif
 #include "../codegen/meta.def"
 
-const core_alloc_struct_header *core_alloc_struct_header_get(void *memory) {
+static bool is_header_magic_number_correct(core_alloc_struct_header *header) {
+  return header->padding[0] == 'M' && header->padding[1] == 'A' && header->padding[2] == 'G' &&
+         header->padding[3] == 'I' && header->padding[4] == 'C' && header->padding[5] == '1' &&
+         header->padding[6] == '2' && header->padding[7] == '3';
+}
+
+core_alloc_struct_header *core_alloc_struct_header_get(void *memory) {
   core_alloc_struct_header *header =
       (core_alloc_struct_header *)((char *)memory - sizeof(core_alloc_struct_header));
+  // Check if heap pointer was allocated using core_alloc_struct().
+  verify(is_header_magic_number_correct(header));
+  // TODO: Check if not stack pointer? Needs custom allocator. (or __builtin_frame_address?)
   return header;
 }
 
 void core_alloc_struct_header_init(void *memory) {
-  core_alloc_struct_header *header =
-      (core_alloc_struct_header *)((char *)memory - sizeof(core_alloc_struct_header));
+  core_alloc_struct_header *header = core_alloc_struct_header_get(memory);
   header->initialized = true;
 }
 
@@ -64,6 +72,14 @@ void *core_alloc_struct(const core_type_info *typeInfo, size_t count) {
   memcpy(header,
          &(core_alloc_struct_header){.typeInfo = typeInfo, .count = count, .initialized = false},
          sizeof(core_alloc_struct_header));
+  header->padding[0] = 'M';
+  header->padding[1] = 'A';
+  header->padding[2] = 'G';
+  header->padding[3] = 'I';
+  header->padding[4] = 'C';
+  header->padding[5] = '1';
+  header->padding[6] = '2';
+  header->padding[7] = '3';
   void *memory = (void *)((char *)header + sizeof(core_alloc_struct_header));
   assert(is_aligned(header, alignment));
   assert(is_aligned(memory, alignment));
@@ -71,8 +87,7 @@ void *core_alloc_struct(const core_type_info *typeInfo, size_t count) {
 }
 
 void core_deinit_struct(void *memory) {
-  core_alloc_struct_header *header =
-      (core_alloc_struct_header *)((char *)memory - sizeof(core_alloc_struct_header));
+  core_alloc_struct_header *header = core_alloc_struct_header_get(memory);
   if (header->initialized) {
     const core_type_info *typeInfo = header->typeInfo;
     char *it = memory;
@@ -85,8 +100,7 @@ void core_deinit_struct(void *memory) {
 }
 
 void *core_dealloc_struct(void *memory) {
-  core_alloc_struct_header *header =
-      (core_alloc_struct_header *)((char *)memory - sizeof(core_alloc_struct_header));
+  core_alloc_struct_header *header = core_alloc_struct_header_get(memory);
   const core_type_info *typeInfo = header->typeInfo;
 #if defined(DEBUG)
   typeInfo->allocStats->allocNum -= header->count;

@@ -15,8 +15,8 @@ const char *vulkan_attribute_type_debug_str(vulkan_attribute_type value) {
   if (value == TangentAttribute) {
     return "TangentAttribute";
   }
-  if (value == TexcoordAttribute) {
-    return "TexcoordAttribute";
+  if (value == TexCoordAttribute) {
+    return "TexCoordAttribute";
   }
   if (value == ColorAttribute) {
     return "ColorAttribute";
