@@ -151,7 +151,11 @@ typedef enum parser_ast_node_type {
   // GLSL
   VertexInputAttribute,
   VertexOutputAttribute,
+  PushConstant,
+  UniformBlock,
+  VariableDeclaration,
   VectorType,
+  MatrixType
 } parser_ast_node_type;
 
 typedef enum parser_error_type {

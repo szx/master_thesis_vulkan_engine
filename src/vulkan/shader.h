@@ -16,10 +16,24 @@ typedef struct vulkan_vertex_attribute_description {
   char *identifier;
 } vulkan_vertex_attribute_description;
 
+/// Describes one push constant in GLSL shader.
+/// Examples:
+/// layout(push_constant) uniform BlockName
+/// {
+///     vec4 data;
+///     mat4 render_matrix;
+/// } InstanceName;
+typedef struct vulkan_push_constant_description {
+  char *blockName;
+  char *instanceName;
+  size_t size;
+} vulkan_push_constant_description;
+
 /// Describes results of parsing GLSL shader for information.
 typedef struct vulkan_shader_info {
   vulkan_vertex_attribute_description *inputAttributeDescriptions;
   vulkan_vertex_attribute_description *outputAttributeDescriptions;
+  vulkan_push_constant_description *pushConstantDescription;
 } vulkan_shader_info;
 
 /// Describes compiled GLSL shader.
@@ -40,12 +54,21 @@ void vulkan_vertex_attribute_description_init(vulkan_vertex_attribute_descriptio
                                               const char *identifier);
 void vulkan_vertex_attribute_description_deinit(vulkan_vertex_attribute_description *description);
 
+void vulkan_push_constant_description_init(vulkan_push_constant_description *description,
+                                           const char *blockName, const char *instanceName,
+                                           size_t size);
+void vulkan_push_constant_description_deinit(vulkan_push_constant_description *description);
+
 void vulkan_shader_info_init(vulkan_shader_info *info, vulkan_shader *shader);
 void vulkan_shader_info_deinit(vulkan_shader_info *info);
 VkVertexInputBindingDescription
 vulkan_shader_info_get_binding_description(vulkan_shader_info *info);
 VkVertexInputAttributeDescription *
 vulkan_shader_info_get_attribute_descriptions(vulkan_shader_info *info, size_t *count);
+VkPushConstantRange vulkan_shader_info_get_push_constant_range(vulkan_shader *vertShader,
+                                                               vulkan_shader *fragShader);
+VkShaderStageFlagBits vulkan_shader_info_get_push_constant_stage_flags(vulkan_shader *vertShader,
+                                                                       vulkan_shader *fragShader);
 
 void vulkan_shader_init(vulkan_shader *shader, vulkan_device *vkd, platform_path glslPath);
 void vulkan_shader_deinit(vulkan_shader *shader);

@@ -71,7 +71,7 @@ void vulkan_mesh_deinit(vulkan_mesh *mesh);
 
 typedef struct vulkan_node {
   vulkan_mesh mesh;
-  mat4 transform;
+  mat4 modelMat;
 } vulkan_node;
 
 void vulkan_node_init(vulkan_node *scene, vulkan_mesh mesh);

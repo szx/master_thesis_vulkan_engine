@@ -224,8 +224,11 @@ TEST shaderc_compiling() {
   init_struct(vkd, vulkan_device_init, &config);
   vulkan_shader *vertShader = alloc_struct(vulkan_shader);
   init_struct(vertShader, vulkan_shader_init, vkd, vertInputPath);
+  vulkan_shader *fragShader = alloc_struct(vulkan_shader);
+  init_struct(fragShader, vulkan_shader_init, vkd, fragInputPath);
 
   ASSERT_EQ(vertShader->type, shaderc_glsl_vertex_shader);
+  ASSERT_EQ(fragShader->type, shaderc_glsl_fragment_shader);
   log_debug("maxVertexInputAttributes=%d", vkd->limits.maxVertexInputAttributes);
   log_debug("maxVertexOutputComponents/4=%d", vkd->limits.maxVertexOutputComponents / 4);
   size_t inputAttributeCount = count_struct_array(vertShader->info.inputAttributeDescriptions);
@@ -243,9 +246,11 @@ TEST shaderc_compiling() {
   size_t attributeDescriptionsCount;
   VkVertexInputAttributeDescription *attributeDescriptions =
       vulkan_shader_info_get_attribute_descriptions(&vertShader->info, &attributeDescriptionsCount);
-
+  // HIRO vulkan_shader_info_get_push_constant_range
+  VkPushConstantRange range = vulkan_shader_info_get_push_constant_range(vertShader, fragShader);
   data_config_free(&config);
   dealloc_struct(vertShader);
+  dealloc_struct(fragShader);
   dealloc_struct(vkd);
   PASS();
 }
@@ -260,9 +265,9 @@ int main(int argc, char *argv[]) {
   log_info("start test suite");
   RUN_SUITE(basic_test_suite);
   // RUN_SUITE(c_parser_suite);
-  RUN_SUITE(database_suite);
-  RUN_SUITE(gltf_suite);
-  RUN_SUITE(platform_alloc_suite);
+  // RUN_SUITE(database_suite);
+  // RUN_SUITE(gltf_suite);
+  // RUN_SUITE(platform_alloc_suite);
   RUN_SUITE(shaderc_suite);
   log_info("finish test suite");
   platform_free();

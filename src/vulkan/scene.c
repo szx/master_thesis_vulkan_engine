@@ -64,7 +64,7 @@ void vulkan_mesh_deinit(vulkan_mesh *mesh) { dealloc_struct(mesh->primitives); }
 
 void vulkan_node_init(vulkan_node *scene, vulkan_mesh mesh) {
   scene->mesh = mesh;
-  glm_mat4_identity(scene->transform);
+  glm_mat4_identity(scene->modelMat);
 }
 
 void vulkan_node_deinit(vulkan_node *self) { vulkan_mesh_deinit(&self->mesh); }
@@ -102,7 +102,7 @@ void vulkan_scene_debug_print(vulkan_scene *self) {
   for (size_t i = 0; i < count_struct_array(self->nodes); i++) {
     log_debug("node:\n");
     vulkan_node *node = &self->nodes[i];
-    glm_mat4_print(node->transform, stderr);
+    glm_mat4_print(node->modelMat, stderr);
     vulkan_mesh *mesh = &node->mesh;
     for (size_t j = 0; j < count_struct_array(mesh->primitives); j++) {
       vulkan_mesh_primitive *primitive = &mesh->primitives[j];
@@ -257,7 +257,8 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode, vulkan_geometry_buffer *geom
   }
   vulkan_node node;
   vulkan_node_init(&node, mesh);
-  cgltf_node_transform_local(cgltfNode, (float *)node.transform);
+  // TODO: Animation, will probably require cgltf_node_transform_local().
+  cgltf_node_transform_world(cgltfNode, (float *)node.modelMat);
   return node;
 }
 

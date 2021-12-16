@@ -8,14 +8,20 @@
 #include "shader.h"
 #include "swap_chain.h"
 
+// TODO: More render pass types, configuration.
 typedef enum vulkan_render_pass_type { ForwardRenderPass } vulkan_render_pass_type;
+
+/// Describes created render pass.
+typedef struct vulkan_render_pass_info {
+  bool usesPushConstants;
+} vulkan_render_pass_info;
 
 /// Describes one render pass in pipeline.
 typedef struct vulkan_render_pass {
   vulkan_device *vkd;     /// vulkan_device pointer.
   vulkan_swap_chain *vks; /// vulkan_swap_chain pointer.
   vulkan_render_pass_type type;
-  // TODO: More render pass types, configuration.
+  vulkan_render_pass_info info;
   VkRenderPass renderPass;
   vulkan_shader *vertShader;
   vulkan_shader *fragShader;

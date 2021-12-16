@@ -1,6 +1,13 @@
 #include "render_context.h"
 #include "../codegen/render_context.c"
 
+void create_render_pass_info(vulkan_render_pass *renderPass) {
+  // TODO: Previous and next render pass?
+  if (renderPass->type == ForwardRenderPass) {
+    renderPass->info.usesPushConstants = true;
+  }
+}
+
 void create_render_pass(vulkan_render_pass *renderPass) {
   // TODO: Separate attachments.
   // TODO: Something better than triangle.
@@ -139,7 +146,13 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
   VkPipelineLayoutCreateInfo pipelineLayoutInfo = {0};
   pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
   pipelineLayoutInfo.setLayoutCount = 0;
-  pipelineLayoutInfo.pushConstantRangeCount = 0;
+  VkPushConstantRange pushConstantRange = {0};
+  if (renderPass->info.usesPushConstants) {
+    pushConstantRange =
+        vulkan_shader_info_get_push_constant_range(renderPass->vertShader, renderPass->fragShader);
+    pipelineLayoutInfo.pushConstantRangeCount = 1;
+    pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
+  }
 
   verify(vkCreatePipelineLayout(renderPass->vkd->device, &pipelineLayoutInfo, vka,
                                 &renderPass->pipelineLayout) == VK_SUCCESS);
@@ -169,6 +182,7 @@ void vulkan_render_pass_init(vulkan_render_pass *renderPass, vulkan_swap_chain *
   renderPass->vks = vks;
   renderPass->vkd = vks->vkd;
   renderPass->type = type;
+  create_render_pass_info(renderPass);
   renderPass->renderPass = VK_NULL_HANDLE;
   renderPass->pipelineLayout = VK_NULL_HANDLE;
   renderPass->graphicsPipeline = VK_NULL_HANDLE;
@@ -467,8 +481,19 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
                     renderPass->graphicsPipeline);
   for (size_t nodeIdx = 0; nodeIdx < count_struct_array(scene->nodes); nodeIdx++) {
     // TODO: Check if node should be culled.
+    // HIRO: View matrix and projection matrix in UBO.
     vulkan_node *node = &scene->nodes[nodeIdx];
     log_trace("draw node %d", nodeIdx);
+    {
+      // HIRO: separate push constants to another function
+      void *pushConstantValuePtr = &node->modelMat;
+      VkShaderStageFlags pushConstantStageFlags = vulkan_shader_info_get_push_constant_stage_flags(
+          renderPass->vertShader, renderPass->fragShader);
+      uint32_t pushConstantOffset = 0;
+      assert(sizeof(node->modelMat) == renderPass->vertShader->info.pushConstantDescription->size);
+      vkCmdPushConstants(frame->commandBuffer, renderPass->pipelineLayout, pushConstantStageFlags,
+                         pushConstantOffset, sizeof(node->modelMat), pushConstantValuePtr);
+    }
     vulkan_mesh *mesh = &node->mesh;
     for (size_t primitiveIdx = 0; primitiveIdx < count_struct_array(mesh->primitives);
          primitiveIdx++) {
@@ -492,7 +517,6 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
       vkCmdBindVertexBuffers(frame->commandBuffer, 0, attributeCount, vertexBuffers,
                              vertexBuffersOffsets);
       vkCmdBindIndexBuffer(frame->commandBuffer, indexBuffer, indexBufferOffset, indexType);
-      // HIRO: Push constants with mesh->transform
       vkCmdDrawIndexed(frame->commandBuffer, indexCount, 1, 0, 0, 0);
       // TODO: Pipeline statistics.
     }

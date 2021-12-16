@@ -49,6 +49,7 @@ core_alloc_struct_header *core_alloc_struct_header_get(void *memory) {
 
 void core_alloc_struct_header_init(void *memory) {
   core_alloc_struct_header *header = core_alloc_struct_header_get(memory);
+  // TODO: verify(header->initialized == false);
   header->initialized = true;
 }
 

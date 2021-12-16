@@ -132,6 +132,16 @@ FUNC(write_text_file)
 #endif
 STRUCT(vulkan_vertex_attribute_description)
 
+#define STRUCT_vulkan_push_constant_description 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_push_constant_description) == 1
+   STRUCT_COND_TRUE(vulkan_push_constant_description)
+#  else
+   STRUCT_COND_FALSE(vulkan_push_constant_description)
+#  endif
+#endif
+STRUCT(vulkan_push_constant_description)
+
 #define STRUCT_vulkan_shader_info 1
 #ifdef STRUCT_COND
 #  if STRUCT_COND(vulkan_shader_info) == 1
@@ -158,6 +168,12 @@ FUNC(vulkan_vertex_attribute_description_init)
 #define FUNC_vulkan_vertex_attribute_description_deinit 1
 FUNC(vulkan_vertex_attribute_description_deinit)
 
+#define FUNC_vulkan_push_constant_description_init 1
+FUNC(vulkan_push_constant_description_init)
+
+#define FUNC_vulkan_push_constant_description_deinit 1
+FUNC(vulkan_push_constant_description_deinit)
+
 #define FUNC_vulkan_shader_info_init 1
 FUNC(vulkan_shader_info_init)
 
@@ -169,6 +185,12 @@ FUNC(vulkan_shader_info_get_binding_description)
 
 #define FUNC_vulkan_shader_info_get_attribute_descriptions 1
 FUNC(vulkan_shader_info_get_attribute_descriptions)
+
+#define FUNC_vulkan_shader_info_get_push_constant_range 1
+FUNC(vulkan_shader_info_get_push_constant_range)
+
+#define FUNC_vulkan_shader_info_get_push_constant_stage_flags 1
+FUNC(vulkan_shader_info_get_push_constant_stage_flags)
 
 #define FUNC_vulkan_shader_init 1
 FUNC(vulkan_shader_init)
@@ -491,6 +513,16 @@ FUNC(vulkan_scene_debug_print)
 
 #define FUNC_parse_gltf_file 1
 FUNC(parse_gltf_file)
+
+#define STRUCT_vulkan_render_pass_info 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_render_pass_info) == 1
+   STRUCT_COND_TRUE(vulkan_render_pass_info)
+#  else
+   STRUCT_COND_FALSE(vulkan_render_pass_info)
+#  endif
+#endif
+STRUCT(vulkan_render_pass_info)
 
 #define STRUCT_vulkan_render_pass 1
 #ifdef STRUCT_COND

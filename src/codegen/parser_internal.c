@@ -309,8 +309,20 @@ const char *parser_ast_node_type_debug_str(parser_ast_node_type value) {
   if (value == VertexOutputAttribute) {
     return "VertexOutputAttribute";
   }
+  if (value == PushConstant) {
+    return "PushConstant";
+  }
+  if (value == UniformBlock) {
+    return "UniformBlock";
+  }
+  if (value == VariableDeclaration) {
+    return "VariableDeclaration";
+  }
   if (value == VectorType) {
     return "VectorType";
+  }
+  if (value == MatrixType) {
+    return "MatrixType";
   }
   return "UNKNOWN_ENUM";
 }

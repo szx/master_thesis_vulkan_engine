@@ -39,6 +39,7 @@ external_declaration <-
   e:preprocessor_definition { $$ = e; }
 / e:vertex_input_attribute { $$ = e; }
 / e:vertex_output_attribute { $$ = e; }
+/ e:push_constant_uniform { $$ = e; }
 / e:unknown { $$ = e; }
 #/ e:function_definition { $$ = e; }
 #/ e:declaration { $$ = e; }
@@ -58,8 +59,34 @@ vertex_input_attribute <-
 vertex_output_attribute <-
   kw_layout _ '(' _ kw_location _ '=' _ l:integer _ ')' _ kw_out _ t:vec_type _ i:identifier _ ';' { $$ = parser_ast_node_init_3(auxil, VertexOutputAttribute, parser_str_range_init($0s, $0e), l, t, i); }
 
+push_constant_uniform <-
+  kw_layout _ '(' _ kw_push_constant _ ')' _ kw_uniform _ block:identifier _ '{' _ l:uniform_block _ '}' _ instance:identifier _ ';' { $$ = parser_ast_node_init_3(auxil, PushConstant, parser_str_range_init($0s, $0e), block, instance, l); }
+
+uniform_block <-
+  e:variable_declaration _ l:uniform_block
+  {
+    $$ = l;
+    $$->range = parser_str_range_init($0s, $0e);
+    parser_ast_node_push_front($$, e);
+  }
+/ e:variable_declaration
+  {
+    $$ = parser_ast_node_init_variadic(auxil, UniformBlock, parser_str_range_init($0s, $0e));
+    parser_ast_node_push_front($$, e);
+  }
+
+variable_declaration <-
+  t:type _ i:identifier _ ';' { $$ = parser_ast_node_init_2(auxil, VariableDeclaration, parser_str_range_init($0s, $0e), t, i); }
+
+type <-
+  t:vec_type  { $$ = t; }
+/ t:mat_type  { $$ = t; }
+
 vec_type <-
   'vec' i:integer { $$ = parser_ast_node_init_1(auxil, VectorType, parser_str_range_init($0s, $0e), i); }
+
+mat_type <-
+  'mat' i:integer { $$ = parser_ast_node_init_1(auxil, MatrixType, parser_str_range_init($0s, $0e), i); }
 
 identifier <-
   !keyword raw_identifier { $$ = parser_ast_node_init_0(auxil, Identifier, parser_str_range_init($0s, $0e)); }
@@ -105,6 +132,8 @@ keyword <-
 / kw_location
 / kw_in
 / kw_out
+/ kw_uniform
+/ kw_push_constant
 
 kw_sizeof <- 'sizeof' !(IDENT/DEC)
 kw_typedef <- 'typedef' !(IDENT/DEC)
@@ -134,6 +163,8 @@ kw_layout <- 'layout' !(IDENT/DEC)
 kw_location <- 'location' !(IDENT/DEC)
 kw_in <- 'in' !(IDENT/DEC)
 kw_out <- 'out' !(IDENT/DEC)
+kw_uniform <- 'uniform' !(IDENT/DEC)
+kw_push_constant <- 'push_constant' !(IDENT/DEC)
 
 DEC <- [0-9]
 OCT <- [0-7]
