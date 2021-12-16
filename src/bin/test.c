@@ -246,8 +246,11 @@ TEST shaderc_compiling() {
   size_t attributeDescriptionsCount;
   VkVertexInputAttributeDescription *attributeDescriptions =
       vulkan_shader_info_get_attribute_descriptions(&vertShader->info, &attributeDescriptionsCount);
-  // HIRO vulkan_shader_info_get_push_constant_range
   VkPushConstantRange range = vulkan_shader_info_get_push_constant_range(vertShader, fragShader);
+  ASSERT_EQ(range.offset, 0);
+  ASSERT_GT(range.size, 0);
+  ASSERT((range.stageFlags | VK_SHADER_STAGE_VERTEX_BIT) != 0 ||
+         (range.stageFlags | VK_SHADER_STAGE_FRAGMENT_BIT) != 0);
   data_config_free(&config);
   dealloc_struct(vertShader);
   dealloc_struct(fragShader);
@@ -264,10 +267,10 @@ int main(int argc, char *argv[]) {
   platform_init();
   log_info("start test suite");
   RUN_SUITE(basic_test_suite);
-  // RUN_SUITE(c_parser_suite);
-  // RUN_SUITE(database_suite);
-  // RUN_SUITE(gltf_suite);
-  // RUN_SUITE(platform_alloc_suite);
+  RUN_SUITE(c_parser_suite);
+  RUN_SUITE(database_suite);
+  RUN_SUITE(gltf_suite);
+  RUN_SUITE(platform_alloc_suite);
   RUN_SUITE(shaderc_suite);
   log_info("finish test suite");
   platform_free();
