@@ -15,7 +15,7 @@
 #endif
 
 // Define global core_type_info constants.
-void dummy_struct_deinit(void *self) {}
+void dummy_struct_deinit(void *self) { assert(0); }
 #define DEINIT_FUNC_PTR(type) (void(*)(void *)) & type##_deinit
 #define STRUCT_COND(type) FUNC_##type##_deinit
 #define STRUCT_COND_TRUE(type)                                                                     \

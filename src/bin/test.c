@@ -223,9 +223,9 @@ TEST shaderc_compiling() {
   vulkan_device *vkd = alloc_struct(vulkan_device);
   init_struct(vkd, vulkan_device_init, &config);
   vulkan_shader *vertShader = alloc_struct(vulkan_shader);
-  init_struct(vertShader, vulkan_shader_init, vkd, vertInputPath);
+  init_struct(vertShader, vulkan_shader_init_with_path, vkd, vertInputPath);
   vulkan_shader *fragShader = alloc_struct(vulkan_shader);
-  init_struct(fragShader, vulkan_shader_init, vkd, fragInputPath);
+  init_struct(fragShader, vulkan_shader_init_with_path, vkd, fragInputPath);
 
   ASSERT_EQ(vertShader->type, shaderc_glsl_vertex_shader);
   ASSERT_EQ(fragShader->type, shaderc_glsl_fragment_shader);

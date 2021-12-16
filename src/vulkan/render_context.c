@@ -56,9 +56,11 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
   platform_path vertInputPath = get_asset_file_path("shaders", "shader.vert");
   platform_path fragInputPath = get_asset_file_path("shaders", "shader.frag");
   renderPass->vertShader = alloc_struct(vulkan_shader);
-  init_struct(renderPass->vertShader, vulkan_shader_init, renderPass->vkd, vertInputPath);
+  init_struct(renderPass->vertShader, vulkan_shader_init_with_path, renderPass->vkd, vertInputPath);
   renderPass->fragShader = alloc_struct(vulkan_shader);
-  init_struct(renderPass->fragShader, vulkan_shader_init, renderPass->vkd, fragInputPath);
+  init_struct(renderPass->fragShader, vulkan_shader_init_with_path, renderPass->vkd, fragInputPath);
+  platform_path_free(&vertInputPath);
+  platform_path_free(&fragInputPath);
 
   VkPipelineShaderStageCreateInfo vertShaderStageInfo = {0};
   vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;

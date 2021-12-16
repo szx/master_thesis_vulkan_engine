@@ -10,7 +10,9 @@
 #include "log.h"
 #include "str.h"
 
+#define CGLM_FORCE_DEPTH_ZERO_TO_ONE
 #include "cglm/cglm.h"
+
 #include "cgltf.h"
 #include "stb_image.h"
 

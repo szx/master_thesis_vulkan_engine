@@ -192,8 +192,11 @@ FUNC(vulkan_shader_info_get_push_constant_range)
 #define FUNC_vulkan_shader_info_get_push_constant_stage_flags 1
 FUNC(vulkan_shader_info_get_push_constant_stage_flags)
 
-#define FUNC_vulkan_shader_init 1
-FUNC(vulkan_shader_init)
+#define FUNC_vulkan_shader_init_with_path 1
+FUNC(vulkan_shader_init_with_path)
+
+#define FUNC_vulkan_shader_init_with_str 1
+FUNC(vulkan_shader_init_with_str)
 
 #define FUNC_vulkan_shader_deinit 1
 FUNC(vulkan_shader_deinit)
@@ -475,8 +478,8 @@ FUNC(vulkan_buffer_view_deinit)
 #define FUNC_vulkan_accessor_init 1
 FUNC(vulkan_accessor_init)
 
-#define FUNC_vulkan_accessor_free 1
-FUNC(vulkan_accessor_free)
+#define FUNC_vulkan_accessor_deinit 1
+FUNC(vulkan_accessor_deinit)
 
 #define FUNC_vulkan_attribute_init 1
 FUNC(vulkan_attribute_init)

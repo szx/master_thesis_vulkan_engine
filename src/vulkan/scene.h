@@ -30,7 +30,7 @@ typedef struct vulkan_accessor {
 
 void vulkan_accessor_init(vulkan_accessor *accessor, char *name, size_t offset, size_t size,
                           size_t stride, vulkan_buffer_view *bufferView);
-void vulkan_accessor_free(vulkan_accessor *accessor);
+void vulkan_accessor_deinit(vulkan_accessor *accessor);
 
 typedef enum vulkan_attribute_type {
   UnknownAttribute,
