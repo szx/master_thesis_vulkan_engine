@@ -209,7 +209,6 @@ VkShaderStageFlagBits vulkan_shader_info_get_push_constant_stage_flags(vulkan_sh
 
 void vulkan_shader_init_with_path(vulkan_shader *shader, vulkan_device *vkd,
                                   platform_path glslPath) {
-  // HIRO init using render pass
   char *input = read_text_file(&glslPath, NULL);
   str glslCode = str_init(input);
   free(input);

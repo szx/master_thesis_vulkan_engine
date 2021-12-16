@@ -3,9 +3,26 @@
 
 void create_render_pass_info(vulkan_render_pass *renderPass) {
   // TODO: Previous and next render pass?
+  // HIRO init using render pass
   if (renderPass->type == ForwardRenderPass) {
     renderPass->info.usesPushConstants = true;
   }
+}
+
+void create_shaders(vulkan_render_pass *renderPass) {
+  // TODO: Different shaders for different render pass types.
+  // HIRO generate glsl shaders using render_pass_info.
+  if (renderPass->type == ForwardRenderPass) {
+    renderPass->info.usesPushConstants = true;
+  }
+  platform_path vertInputPath = get_asset_file_path("shaders", "shader.vert");
+  platform_path fragInputPath = get_asset_file_path("shaders", "shader.frag");
+  renderPass->vertShader = alloc_struct(vulkan_shader);
+  init_struct(renderPass->vertShader, vulkan_shader_init_with_path, renderPass->vkd, vertInputPath);
+  renderPass->fragShader = alloc_struct(vulkan_shader);
+  init_struct(renderPass->fragShader, vulkan_shader_init_with_path, renderPass->vkd, fragInputPath);
+  platform_path_free(&vertInputPath);
+  platform_path_free(&fragInputPath);
 }
 
 void create_render_pass(vulkan_render_pass *renderPass) {
@@ -52,16 +69,6 @@ void create_render_pass(vulkan_render_pass *renderPass) {
 }
 
 void create_graphics_pipeline(vulkan_render_pass *renderPass) {
-  // TODO: Different shaders for different render pass types.
-  platform_path vertInputPath = get_asset_file_path("shaders", "shader.vert");
-  platform_path fragInputPath = get_asset_file_path("shaders", "shader.frag");
-  renderPass->vertShader = alloc_struct(vulkan_shader);
-  init_struct(renderPass->vertShader, vulkan_shader_init_with_path, renderPass->vkd, vertInputPath);
-  renderPass->fragShader = alloc_struct(vulkan_shader);
-  init_struct(renderPass->fragShader, vulkan_shader_init_with_path, renderPass->vkd, fragInputPath);
-  platform_path_free(&vertInputPath);
-  platform_path_free(&fragInputPath);
-
   VkPipelineShaderStageCreateInfo vertShaderStageInfo = {0};
   vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
   vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
@@ -185,6 +192,7 @@ void vulkan_render_pass_init(vulkan_render_pass *renderPass, vulkan_swap_chain *
   renderPass->vkd = vks->vkd;
   renderPass->type = type;
   create_render_pass_info(renderPass);
+  create_shaders(renderPass);
   renderPass->renderPass = VK_NULL_HANDLE;
   renderPass->pipelineLayout = VK_NULL_HANDLE;
   renderPass->graphicsPipeline = VK_NULL_HANDLE;
