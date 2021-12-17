@@ -77,7 +77,7 @@ static bool glsl_parser_callback(parser_ast_node *node, void *callbackData) {
       size_t location = parser_ast_node_convert_int(data->state, locationNode);
 
       parser_ast_node *vectorNode = locationNode->next;
-      size_t componentNum = parser_ast_node_convert_int(data->state, vectorNode);
+      size_t componentNum = parser_ast_node_convert_int(data->state, vectorNode->childNodes);
 
       parser_ast_node *identifierNode = vectorNode->next;
       char *identifier = parser_ast_node_c_str(data->state, identifierNode);

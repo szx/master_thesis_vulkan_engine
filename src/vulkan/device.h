@@ -22,17 +22,13 @@ typedef struct vulkan_queue_families {
 
 bool vulkan_queue_families_complete(vulkan_queue_families *queueFamilies);
 
-#define P
-#define T VkSurfaceFormatKHR
-#include "vec.h" // vec_VkSurfaceFormatKHR
-#define P
-#define T VkPresentModeKHR
-#include "vec.h" // vec_VkPresentModeKHR
+static const UT_icd ut_vk_surface_format_icd = {sizeof(VkSurfaceFormatKHR), NULL, NULL, NULL};
+static const UT_icd ut_vk_present_mode_icd = {sizeof(VkPresentModeKHR), NULL, NULL, NULL};
 
 typedef struct vulkan_swap_chain_info {
   VkSurfaceCapabilitiesKHR capabilities;
-  vec_VkSurfaceFormatKHR formats;
-  vec_VkPresentModeKHR presentModes;
+  UT_array *formats;      /// VkSurfaceFormatKHR
+  UT_array *presentModes; /// VkPresentModeKHR
 } vulkan_swap_chain_info;
 
 void vulkan_swap_chain_info_init(vulkan_swap_chain_info *vksInfo);

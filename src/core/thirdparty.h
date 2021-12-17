@@ -10,6 +10,7 @@
 #include "log.h"
 #include "str.h"
 
+#include "utarray.h"
 #include "utlist.h"
 
 #define CGLM_FORCE_DEPTH_ZERO_TO_ONE

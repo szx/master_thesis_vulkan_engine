@@ -35,7 +35,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL
 debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
                VkDebugUtilsMessageTypeFlagsEXT messageType,
                const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData) {
-  log_error("Validation layer: %s", pCallbackData->pMessage);
+  log_info("Validation layer: %s", pCallbackData->pMessage);
   return VK_FALSE;
 }
 
@@ -44,13 +44,13 @@ bool vulkan_queue_families_complete(vulkan_queue_families *queueFamilies) {
 }
 
 void vulkan_swap_chain_info_init(vulkan_swap_chain_info *vksInfo) {
-  vksInfo->formats = vec_VkSurfaceFormatKHR_init();
-  vksInfo->presentModes = vec_VkPresentModeKHR_init();
+  utarray_new(vksInfo->formats, &ut_vk_surface_format_icd);
+  utarray_new(vksInfo->presentModes, &ut_vk_present_mode_icd);
 }
 
 void vulkan_swap_chain_info_deinit(vulkan_swap_chain_info *vksInfo) {
-  vec_VkSurfaceFormatKHR_free(&vksInfo->formats);
-  vec_VkPresentModeKHR_free(&vksInfo->presentModes);
+  utarray_free(vksInfo->formats);
+  utarray_free(vksInfo->presentModes);
 }
 
 void vulkan_device_init(vulkan_device *vkd, data_config *config) {
@@ -234,22 +234,18 @@ void query_swap_chain_support(vulkan_device *vkd, VkPhysicalDevice physicalDevic
   vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, vkd->surface, &formatCount, NULL);
 
   if (formatCount != 0) {
-    VkSurfaceFormatKHR undefinedSurfaceFormat = {0};
-    vec_VkSurfaceFormatKHR_resize(&vkd->swapChainInfo.formats, formatCount, undefinedSurfaceFormat);
+    utarray_resize(vkd->swapChainInfo.formats, formatCount);
     vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, vkd->surface, &formatCount,
-                                         vec_VkSurfaceFormatKHR_data(&vkd->swapChainInfo.formats));
+                                         utarray_front(vkd->swapChainInfo.formats));
   }
 
   uint32_t presentModeCount;
   vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, vkd->surface, &presentModeCount, NULL);
 
   if (presentModeCount != 0) {
-    VkPresentModeKHR undefinedPresentMode = {0};
-    vec_VkPresentModeKHR_resize(&vkd->swapChainInfo.presentModes, presentModeCount,
-                                undefinedPresentMode);
-    vkGetPhysicalDeviceSurfacePresentModesKHR(
-        physicalDevice, vkd->surface, &presentModeCount,
-        vec_VkPresentModeKHR_data(&vkd->swapChainInfo.presentModes));
+    utarray_resize(vkd->swapChainInfo.presentModes, presentModeCount);
+    vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, vkd->surface, &presentModeCount,
+                                              utarray_front(vkd->swapChainInfo.presentModes));
   }
 }
 
@@ -302,8 +298,8 @@ bool is_physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDe
   bool swapChainAdequate = false;
   if (extensionsSupported) {
     query_swap_chain_support(vkd, physicalDevice);
-    swapChainAdequate =
-        vkd->swapChainInfo.formats.size > 0 && vkd->swapChainInfo.presentModes.size > 0;
+    swapChainAdequate = utarray_len(vkd->swapChainInfo.formats) > 0 &&
+                        utarray_len(vkd->swapChainInfo.presentModes) > 0;
   }
   log_info("swapChainAdequate = %d", swapChainAdequate);
 

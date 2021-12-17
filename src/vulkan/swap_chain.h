@@ -42,10 +42,8 @@ typedef struct vulkan_swap_chain {
 void vulkan_swap_chain_init(vulkan_swap_chain *vks, vulkan_device *vkd);
 void vulkan_swap_chain_deinit(vulkan_swap_chain *vks);
 
-VkSurfaceFormatKHR
-choose_swap_surface_format(vec_VkSurfaceFormatKHR *availableFormats);
-VkPresentModeKHR
-choose_swap_present_mode(vec_VkPresentModeKHR *availablePresentModes);
+VkSurfaceFormatKHR choose_swap_surface_format(UT_array *availableFormats);
+VkPresentModeKHR choose_swap_present_mode(UT_array *availablePresentModes);
 VkExtent2D choose_swap_extent(vulkan_device *vkd);
 
 void create_swap_chain(vulkan_swap_chain *vks);
