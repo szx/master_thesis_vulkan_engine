@@ -43,7 +43,7 @@ static bool enumerator_callback(parser_ast_node *node, void *callbackData) {
   if (node->type != EnumeratorDeclaration) {
     return true;
   }
-  parser_ast_node *identifier = lst_parser_ast_node_ptr_front(&node->childNodes)->node;
+  parser_ast_node *identifier = node->childNodes;
   assert(identifier->type == Identifier);
   c_parser_callbackData *data = callbackData;
   str_append(data->sourceCode, "  if (value == ");
@@ -60,12 +60,12 @@ static bool enum_callback(parser_ast_node *node, void *callbackData) {
   c_parser_callbackData *data = callbackData;
   if (node->type == EnumerationDeclaration) {
     // parser_ast_node_debug_print(data->state, node, 0);
-    parser_ast_node *identifier = lst_parser_ast_node_ptr_front(&node->childNodes)->node;
+    parser_ast_node *identifier = node->childNodes;
     assert(identifier);
     if (node_starts_with(data->state, identifier, "core_")) {
       goto end;
     }
-    parser_ast_node *enumeratorList = lst_parser_ast_node_ptr_back(&node->childNodes)->node;
+    parser_ast_node *enumeratorList = identifier->next;
     assert(enumeratorList);
     // header code (function declarations)
     str_append(data->headerCode, "const char *");
@@ -92,7 +92,7 @@ static bool struct_callback(parser_ast_node *node, void *callbackData) {
   c_parser_callbackData *data = callbackData;
   if (node->type == StructDeclaration) {
     if (!data->isVulkanHeader) {
-      parser_ast_node *identifier = lst_parser_ast_node_ptr_front(&node->childNodes)->node;
+      parser_ast_node *identifier = node->childNodes;
       assert(identifier);
       if (node_starts_with(data->state, identifier, "core_")) {
         goto end;
@@ -129,14 +129,11 @@ static bool function_declaration_callback(parser_ast_node *node, void *callbackD
   if (node->type == FunctionDeclaration) {
     if (!data->isVulkanHeader) {
       // parser_ast_node_debug_print(data->state, node, 0);
-      lst_parser_ast_node_ptr_it it = lst_parser_ast_node_ptr_it_each(&node->childNodes);
-      parser_ast_node *declarationSpecifiers = it.ref->node;
+      parser_ast_node *declarationSpecifiers = node->childNodes;
       assert(declarationSpecifiers);
-      lst_parser_ast_node_ptr_it_step(&it);
-      parser_ast_node *identifier = it.ref->node;
+      parser_ast_node *identifier = declarationSpecifiers->next;
       assert(identifier);
-      lst_parser_ast_node_ptr_it_step(&it);
-      parser_ast_node *parameterList = it.ref->node;
+      parser_ast_node *parameterList = identifier->next;
       assert(parameterList);
       // parser_ast_node_debug_print(data->state, identifier, 0);
       str_append(data->structDefCode, "#define FUNC_");
@@ -186,7 +183,7 @@ void str_append_meta_undefs(str *self) {
 }
 void str_append_header_def(str *headerDefCode, platform_path *headerPath) {
   const char *relativeHeaderPath = platform_path_c_str(headerPath) + srcPath.data.size + 1;
-  log_info("relative header path: %s\n", relativeHeaderPath);
+  log_info("relative header path: %s", relativeHeaderPath);
   str_append(headerDefCode, "#if defined(ROOT)\n");
   str_append(headerDefCode, "#include \"");
   str_append(headerDefCode, relativeHeaderPath);
@@ -207,7 +204,7 @@ void parse_header(platform_path *headerPath, str *structDefCode, str *headerDefC
   }
   parser_state state = c_parser_execute(input);
   // parser_debug_print(&state);
-  if (state.errors.size > 0) {
+  if (state.errors != NULL) {
     parser_debug_print(&state);
     panic("syntax errors in %s!", str_c_str(&headerPath->data));
   }
@@ -242,8 +239,8 @@ void parse_header(platform_path *headerPath, str *structDefCode, str *headerDefC
   platform_path_append(&sourceOutputPath, str_c_str(&basename));
   str_free(&basename);
   sourceOutputPath.data.value[sourceOutputPath.data.size - 1] = 'c';
-  log_info("header output: %s\n", str_c_str(&headerOutputPath.data));
-  log_info("source output: %s\n", str_c_str(&sourceOutputPath.data));
+  log_info("header output: %s", str_c_str(&headerOutputPath.data));
+  log_info("source output: %s", str_c_str(&sourceOutputPath.data));
   write_text_file(&headerOutputPath, &headerCode);
   write_text_file(&sourceOutputPath, &sourceCode);
 
@@ -257,8 +254,9 @@ void parse_header(platform_path *headerPath, str *structDefCode, str *headerDefC
 
 int main(int argc, char *argv[]) {
   platform_init();
-  log_info("src path: %s\n", SRC_PATH);
-  log_info("vulkan header path: %s\n", VULKAN_HEADER_PATH);
+  log_info("codegen started");
+  log_info("src path: %s", SRC_PATH);
+  log_info("vulkan header path: %s", VULKAN_HEADER_PATH);
 
   srcPath = platform_path_init(SRC_PATH);
   vulkanHeaderPath = platform_path_init(VULKAN_HEADER_PATH);
@@ -296,6 +294,8 @@ int main(int argc, char *argv[]) {
   platform_path_free(&codegenPath);
   lst_platform_path_free(&srcChildPathLst);
   platform_path_free(&srcPath);
+
+  log_info("codegen finished");
   platform_free();
   return 0;
 }

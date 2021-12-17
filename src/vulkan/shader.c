@@ -49,8 +49,8 @@ typedef struct glsl_parser_callback_data {
 
 static size_t glsl_parser_node_to_size(parser_state *state, parser_ast_node *node) {
   if (node->type == VariableDeclaration) {
-    parser_ast_node *typeNode = node->childNodes.head->value.node;
-    parser_ast_node *componentNode = typeNode->childNodes.head->value.node;
+    parser_ast_node *typeNode = node->childNodes;
+    parser_ast_node *componentNode = typeNode->childNodes;
     size_t componentNum = parser_ast_node_convert_int(state, componentNode);
     if (typeNode->type == VectorType) {
       return componentNum * sizeof(float);
@@ -73,17 +73,13 @@ static bool glsl_parser_callback(parser_ast_node *node, void *callbackData) {
     }
   } else if (data->pass == ParseDescriptors) {
     if (node->type == VertexInputAttribute || node->type == VertexOutputAttribute) {
-      lst_parser_ast_node_ptr_it it = lst_parser_ast_node_ptr_it_each(&node->childNodes);
-
-      parser_ast_node *locationNode = it.ref->node;
+      parser_ast_node *locationNode = node->childNodes;
       size_t location = parser_ast_node_convert_int(data->state, locationNode);
-      lst_parser_ast_node_ptr_it_step(&it);
 
-      parser_ast_node *vectorNode = it.ref->node->childNodes.head->value.node;
+      parser_ast_node *vectorNode = locationNode->next;
       size_t componentNum = parser_ast_node_convert_int(data->state, vectorNode);
-      lst_parser_ast_node_ptr_it_step(&it);
 
-      parser_ast_node *identifierNode = it.ref->node;
+      parser_ast_node *identifierNode = vectorNode->next;
       char *identifier = parser_ast_node_c_str(data->state, identifierNode);
 
       if (node->type == VertexInputAttribute) {
@@ -101,15 +97,12 @@ static bool glsl_parser_callback(parser_ast_node *node, void *callbackData) {
       }
       free(identifier);
     } else if (node->type == PushConstant) {
-      lst_parser_ast_node_ptr_it it = lst_parser_ast_node_ptr_it_each(&node->childNodes);
-      char *blockName = parser_ast_node_c_str(data->state, it.ref->node);
-      lst_parser_ast_node_ptr_it_step(&it);
-      char *instanceName = parser_ast_node_c_str(data->state, it.ref->node);
-      lst_parser_ast_node_ptr_it_step(&it);
-      parser_ast_node *uniformBlockNode = it.ref->node;
+      char *blockName = parser_ast_node_c_str(data->state, node->childNodes);
+      char *instanceName = parser_ast_node_c_str(data->state, node->childNodes->next);
+      parser_ast_node *uniformBlockNode = node->childNodes->next->next;
       size_t size = 0;
-      foreach (lst_parser_ast_node_ptr, &uniformBlockNode->childNodes, var) {
-        parser_ast_node *variableDeclaration = var.ref->node;
+      parser_ast_node *variableDeclaration;
+      LL_FOREACH(uniformBlockNode->childNodes, variableDeclaration) {
         size += glsl_parser_node_to_size(data->state, variableDeclaration);
       }
       data->info->pushConstantDescription = alloc_struct(vulkan_push_constant_description);
@@ -125,7 +118,7 @@ static bool glsl_parser_callback(parser_ast_node *node, void *callbackData) {
 void vulkan_shader_info_init(vulkan_shader_info *info, vulkan_shader *shader) {
   log_debug("vulkan_shader_info_init");
   parser_state state = glsl_parser_execute(str_c_str(&shader->glslCode));
-  // parser_debug_print(&state);
+  parser_debug_print(&state);
   verify(state.isValid == true);
   glsl_parser_callback_data data = {.state = &state, .pass = CountDescriptors, .info = info};
   parser_ast_node_visit(state.programNode, glsl_parser_callback, &data);

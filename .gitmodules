@@ -22,3 +22,6 @@
 [submodule "thirdparty/cglm"]
 	path = thirdparty/cglm
 	url = https://github.com/recp/cglm
+[submodule "thirdparty/uthash"]
+	path = thirdparty/uthash
+	url = https://github.com/troydhanson/uthash

@@ -10,6 +10,8 @@
 #include "log.h"
 #include "str.h"
 
+#include "utlist.h"
+
 #define CGLM_FORCE_DEPTH_ZERO_TO_ONE
 #include "cglm/cglm.h"
 

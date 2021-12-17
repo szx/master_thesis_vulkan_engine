@@ -173,19 +173,19 @@ typedef struct parser_str_range {
 typedef struct parser_error {
   parser_error_type type;
   parser_str_range range;
+  struct parser_error *next;
 } parser_error;
 
-#define P
-#define T parser_error
-#include "vec.h" // vec_parser_error
+void parser_error_init(parser_error *error, parser_error_type type, parser_str_range range);
+void parser_error_deinit(parser_error *error);
 
 typedef struct parser_comment {
   parser_str_range range;
+  struct parser_comment *next;
 } parser_comment;
 
-#define P
-#define T parser_comment
-#include "vec.h" // vec_parser_comment
+void parser_comment_init(parser_comment *comment, parser_str_range range);
+void parser_comment_deinit(parser_comment *comment);
 
 typedef struct parser_ast_node parser_ast_node;
 
@@ -194,30 +194,20 @@ typedef struct parser_state {
   char *source;        // null-terminated string
   size_t sourceLength; // length of source
   // Parsing state
-  char *current;                 // current character in source
-  size_t currentIndex;           // index of current character in source
-  vec_parser_error errors;     // every parsing error
-  vec_parser_comment comments; // every parsed comment
+  char *current;                // current character in source
+  size_t currentIndex;          // index of current character in source
+  parser_error *errors;       // every parsing error
+  parser_comment *comments;     // every parsed comment
   bool isValid; // false if detected remaining source text due to incompleteness
                 // of grammar
   parser_ast_node *programNode; // parsed program AST node.
 } parser_state;
 
-typedef struct parser_ast_node_ptr {
-  parser_ast_node *node;
-} parser_ast_node_ptr;
-
-parser_ast_node_ptr parser_ast_node_ptr_init(parser_ast_node *node);
-parser_ast_node_ptr parser_ast_node_ptr_copy(parser_ast_node_ptr *self);
-void parser_ast_node_ptr_free(parser_ast_node_ptr *self);
-
-#define T parser_ast_node_ptr
-#include "lst.h" // lst_parser_ast_node_ptr
-
 struct parser_ast_node {
   parser_ast_node_type type;
   parser_str_range range;
-  lst_parser_ast_node_ptr childNodes;
+  parser_ast_node *childNodes;
+  struct parser_ast_node *next; // sibling
 };
 
 void parser_ast_node_free(parser_ast_node *node);

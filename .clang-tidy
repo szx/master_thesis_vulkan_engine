@@ -1,5 +1,5 @@
 ---
-Checks: 'clang-diagnostic-*,clang-analyzer-*,-*,clang-*,readability-*,-readability-non-const-parameter,-readability-magic-numbers'
+Checks: 'clang-diagnostic-*,clang-analyzer-*,-*,clang-*,readability-*,-readability-non-const-parameter,-readability-magic-numbers,-readability-isolate-declaration'
 WarningsAsErrors: ''
 HeaderFilterRegex: ''
 AnalyzeTemporaryDtors: false

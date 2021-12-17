@@ -652,16 +652,6 @@ STRUCT(parser_comment)
 #endif
 STRUCT(parser_state)
 
-#define STRUCT_parser_ast_node_ptr 1
-#ifdef STRUCT_COND
-#  if STRUCT_COND(parser_ast_node_ptr) == 1
-   STRUCT_COND_TRUE(parser_ast_node_ptr)
-#  else
-   STRUCT_COND_FALSE(parser_ast_node_ptr)
-#  endif
-#endif
-STRUCT(parser_ast_node_ptr)
-
 #define STRUCT_parser_ast_node 1
 #ifdef STRUCT_COND
 #  if STRUCT_COND(parser_ast_node) == 1
@@ -672,14 +662,17 @@ STRUCT(parser_ast_node_ptr)
 #endif
 STRUCT(parser_ast_node)
 
-#define FUNC_parser_ast_node_ptr_init 1
-FUNC(parser_ast_node_ptr_init)
+#define FUNC_parser_error_init 1
+FUNC(parser_error_init)
 
-#define FUNC_parser_ast_node_ptr_copy 1
-FUNC(parser_ast_node_ptr_copy)
+#define FUNC_parser_error_deinit 1
+FUNC(parser_error_deinit)
 
-#define FUNC_parser_ast_node_ptr_free 1
-FUNC(parser_ast_node_ptr_free)
+#define FUNC_parser_comment_init 1
+FUNC(parser_comment_init)
+
+#define FUNC_parser_comment_deinit 1
+FUNC(parser_comment_deinit)
 
 #define FUNC_parser_ast_node_free 1
 FUNC(parser_ast_node_free)

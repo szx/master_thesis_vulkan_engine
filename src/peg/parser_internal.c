@@ -6,20 +6,20 @@
 
 #include "../codegen/parser_internal.c"
 
-parser_ast_node_ptr parser_ast_node_ptr_init(parser_ast_node *node) {
-  parser_ast_node_ptr result = {node};
-  return result;
+void parser_comment_init(parser_comment *comment, parser_str_range range) {
+  comment->range = range;
+  comment->next = NULL;
 }
 
-parser_ast_node_ptr parser_ast_node_ptr_copy(parser_ast_node_ptr *self) {
-  parser_ast_node_ptr copy = {0};
-  copy.node = self->node;
-  return copy;
+void parser_comment_deinit(parser_comment *comment) {}
+
+void parser_error_init(parser_error *error, parser_error_type type, parser_str_range range) {
+  error->type = type;
+  error->range = range;
+  error->next = NULL;
 }
 
-void parser_ast_node_ptr_free(parser_ast_node_ptr *self) {
-  // Weak pointer.
-}
+void parser_error_deinit(parser_error *error) {}
 
 parser_state parser_state_init(char *source) {
   parser_state state = {0};
@@ -27,8 +27,8 @@ parser_state parser_state_init(char *source) {
   state.sourceLength = strlen(source);
   state.current = source;
   state.currentIndex = 0;
-  state.errors = vec_parser_error_init();
-  state.comments = vec_parser_comment_init();
+  state.errors = NULL;
+  state.comments = NULL;
   state.isValid = true;
   state.programNode = NULL;
   return state;
@@ -39,8 +39,16 @@ void parser_state_free(parser_state *state) {
   state->sourceLength = 0;
   state->current = NULL;
   state->currentIndex = 0;
-  vec_parser_error_free(&state->errors);
-  vec_parser_comment_free(&state->comments);
+  parser_error *error, *tempError;
+  LL_FOREACH_SAFE(state->errors,error,tempError) {
+    LL_DELETE(state->errors,error);
+    //dealloc_struct(error);
+  }
+  parser_comment *comment, *tempComment;
+  LL_FOREACH_SAFE(state->comments,comment,tempComment) {
+    LL_DELETE(state->comments,comment);
+    dealloc_struct(comment);
+  }
   state->isValid = false;
   parser_ast_node_free(state->programNode);
   state->programNode = NULL;
@@ -78,17 +86,18 @@ parser_ast_node *parser_ast_node_allocate(parser_state *state,
       (parser_ast_node *)malloc(sizeof(parser_ast_node));
   node->type = type;
   node->range = range;
-  node->childNodes = lst_parser_ast_node_ptr_init();
+  node->childNodes = NULL;
+  node->next = NULL;
   return node;
 }
 
 void parser_ast_node_free(parser_ast_node *node) {
-  foreach (lst_parser_ast_node_ptr, &node->childNodes, it) {
-    if (it.ref->node != NULL) {
-      parser_ast_node_free(it.ref->node);
+  parser_ast_node *childNode, *temp;
+  LL_FOREACH_SAFE(node->childNodes,childNode,temp) {
+    if (childNode != NULL) {
+      parser_ast_node_free(childNode);
     }
   }
-  lst_parser_ast_node_ptr_free(&node->childNodes);
   free(node);
 }
 
@@ -104,8 +113,7 @@ void parser_ast_node_push_front(parser_ast_node *node,
   if (childNode == NULL) {
     return;
   }
-  lst_parser_ast_node_ptr_push_front(&node->childNodes,
-                                       (parser_ast_node_ptr){childNode});
+  LL_PREPEND(node->childNodes, childNode);
 }
 
 parser_ast_node *parser_ast_node_init_0(parser_state *state,
@@ -183,9 +191,10 @@ void parser_ast_node_visit(parser_ast_node *node,
   if (!result) {
     return;
   }
-  foreach (lst_parser_ast_node_ptr, &node->childNodes, it) {
-    if (it.ref->node != NULL) {
-      parser_ast_node_visit(it.ref->node, callback, data);
+  parser_ast_node *childNode;
+  LL_FOREACH(node->childNodes,childNode) {
+    if (childNode != NULL) {
+      parser_ast_node_visit(childNode, callback, data);
     }
   }
 }
@@ -199,19 +208,21 @@ void parser_ast_node_debug_print(parser_state *state,
             parser_ast_node_type_debug_str(node->type),
             (int)node->range.begin, (int)node->range.end, (int)len, str);
   size_t childNodeNum = 0;
-  foreach (lst_parser_ast_node_ptr, &node->childNodes, it) {
-    if (it.ref->node != NULL) {
+  parser_ast_node *childNode;
+  LL_FOREACH(node->childNodes,childNode) {
+    if (childNode != NULL) {
       log_debug("%*s| child node %d:\n", (int)indentLevel, "",
                 (int)++childNodeNum);
-      parser_ast_node_debug_print(state, it.ref->node, indentLevel + 4);
+      parser_ast_node_debug_print(state, childNode, indentLevel + 4);
     }
   }
 }
 
 void parser_handle_error(parser_state *state, parser_error_type type,
                            parser_str_range range) {
-  parser_error error = {.type = type, .range = range};
-  vec_parser_error_push_back(&state->errors, error);
+  parser_error *error = alloc_struct(parser_error);
+  init_struct(error, parser_error_init, type, range);
+  LL_APPEND(state->errors, error);
   state->isValid = false;
 }
 
@@ -222,20 +233,22 @@ void parser_handle_syntax_error(parser_state *state) {
   if (state->currentIndex > max_shown_chars) {
     range.begin = state->currentIndex - max_shown_chars;
   }
-  parser_error error = {.type = SyntaxError, .range = range};
-  vec_parser_error_push_back(&state->errors, error);
+  parser_error *error = alloc_struct(parser_error);
+  init_struct(error, parser_error_init, SyntaxError, range);
+  LL_APPEND(state->errors, error);
   state->isValid = false;
 }
 
 void parser_handle_comment(parser_state *state, parser_str_range range) {
-  parser_comment comment = {range};
-  vec_parser_comment_push_back(&state->comments, comment);
+  parser_comment *comment = alloc_struct(parser_comment);
+  init_struct(comment, parser_comment_init, range);
+  LL_APPEND(state->comments, comment);
 }
 
 void parser_debug_print(parser_state *state) {
   log_debug("ERRORS:\n");
-  for (size_t i = 0; i < state->errors.size; i++) {
-    parser_error *error = &state->errors.value[i];
+  parser_error *error;
+  LL_FOREACH(state->errors,error) {
     switch (error->type) {
     case SyntaxError: {
       log_debug("ERROR: Syntax error:\n");
@@ -258,8 +271,8 @@ void parser_debug_print(parser_state *state) {
     log_debug("       %.*s\n", (int)len, str);
   }
   log_debug("COMMENTS:\n");
-  for (size_t i = 0; i < state->comments.size; i++) {
-    parser_comment *comment = &state->comments.value[i];
+  parser_comment *comment;
+  LL_FOREACH(state->comments,comment) {
     size_t len = comment->range.end - comment->range.begin;
     char *str = state->source + comment->range.begin;
     log_debug("COMMENT: %.*s\n", (int)len, str);
