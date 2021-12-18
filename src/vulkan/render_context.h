@@ -12,8 +12,11 @@
 typedef enum vulkan_render_pass_type { ForwardRenderPass } vulkan_render_pass_type;
 
 /// Describes created render pass.
+/// Used by vulkan_render_pass_record_frame_command_buffer() to determine if scene can be drawn
+/// using current render pass, or if render pass needs tuning.
 typedef struct vulkan_render_pass_info {
   bool usesPushConstants;
+  vulkan_attribute_type supportedVertexAttributes;
 } vulkan_render_pass_info;
 
 /// Describes one render pass in pipeline.
@@ -32,6 +35,8 @@ typedef struct vulkan_render_pass {
 void vulkan_render_pass_init(vulkan_render_pass *renderPass, vulkan_swap_chain *vks,
                              vulkan_render_pass_type type);
 void vulkan_render_pass_deinit(vulkan_render_pass *renderPass);
+/// Validate render pass.
+void vulkan_render_pass_validate(vulkan_render_pass *renderPass, vulkan_scene *scene);
 
 /// Describes rendering pipeline.
 typedef struct vulkan_pipeline {

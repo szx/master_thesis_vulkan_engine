@@ -29,11 +29,10 @@ void vulkan_accessor_deinit(vulkan_accessor *accessor) {
 }
 
 void vulkan_attribute_init(vulkan_attribute *attribute, char *name, vulkan_attribute_type type,
-                           size_t index, vulkan_accessor *accessor) {
+                           vulkan_accessor *accessor) {
   assert(name != NULL);
   attribute->name = strdup(name);
   attribute->type = type;
-  attribute->index = index;
   attribute->accessor = accessor;
 }
 
@@ -41,6 +40,12 @@ void vulkan_attribute_deinit(vulkan_attribute *attribute) {
   free(attribute->name);
   attribute->name = 0;
   attribute->accessor = NULL;
+}
+
+int vulkan_attribute_compare(const void *s1, const void *s2) {
+  vulkan_attribute *a1 = (vulkan_attribute *)s1;
+  vulkan_attribute *a2 = (vulkan_attribute *)s2;
+  return (int)a1->type - (int)a2->type;
 }
 
 void vulkan_mesh_primitive_init(vulkan_mesh_primitive *primitive, VkPrimitiveTopology topology,
@@ -114,8 +119,8 @@ void vulkan_scene_debug_print(vulkan_scene *self) {
       }
       for (size_t k = 0; k < count_struct_array(primitive->attributes); k++) {
         vulkan_attribute *attribute = &primitive->attributes[k];
-        log_debug("    attribute: '%s' %s %d\n", attribute->name,
-                  vulkan_attribute_type_debug_str(attribute->type), attribute->index);
+        log_debug("    attribute: '%s' %s\n", attribute->name,
+                  vulkan_attribute_type_debug_str(attribute->type));
         vulkan_accessor *accessor = attribute->accessor;
         assert(accessor != NULL);
         if (accessor != NULL) {
@@ -214,7 +219,7 @@ vulkan_attribute parse_attribute_accessor(cgltf_attribute *cgltfAttribute,
   vulkan_attribute_type type = cgltf_attribute_type_vulkan_attribute_type(cgltfAttribute->type);
   vulkan_accessor *accessor = find_accessor(accessors, bufferViews, cgltfAccessor);
   vulkan_attribute attribute;
-  vulkan_attribute_init(&attribute, cgltfAttribute->name, type, 0, accessor);
+  vulkan_attribute_init(&attribute, cgltfAttribute->name, type, accessor);
   return attribute;
 }
 
@@ -252,6 +257,8 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode, vulkan_geometry_buffer *geom
       vulkan_attribute attribute = parse_attribute_accessor(cgltfAttribute, bufferViews, accessors);
       meshPrimitive.attributes[attributeIdx] = attribute;
     }
+    qsort(meshPrimitive.attributes, count_struct_array(meshPrimitive.attributes),
+          sizeof(vulkan_attribute), vulkan_attribute_compare);
     // cgltf_material* material;
     mesh.primitives[primitiveIdx] = meshPrimitive;
   }

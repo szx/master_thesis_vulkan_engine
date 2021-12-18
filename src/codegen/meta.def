@@ -183,6 +183,9 @@ FUNC(vulkan_shader_info_init)
 #define FUNC_vulkan_shader_info_deinit 1
 FUNC(vulkan_shader_info_deinit)
 
+#define FUNC_vulkan_shader_info_get_binding_count 1
+FUNC(vulkan_shader_info_get_binding_count)
+
 #define FUNC_vulkan_shader_info_get_binding_description 1
 FUNC(vulkan_shader_info_get_binding_description)
 
@@ -498,6 +501,9 @@ FUNC(vulkan_attribute_init)
 #define FUNC_vulkan_attribute_deinit 1
 FUNC(vulkan_attribute_deinit)
 
+#define FUNC_vulkan_attribute_compare 1
+FUNC(vulkan_attribute_compare)
+
 #define FUNC_vulkan_mesh_primitive_init 1
 FUNC(vulkan_mesh_primitive_init)
 
@@ -586,6 +592,9 @@ FUNC(vulkan_render_pass_init)
 
 #define FUNC_vulkan_render_pass_deinit 1
 FUNC(vulkan_render_pass_deinit)
+
+#define FUNC_vulkan_render_pass_validate 1
+FUNC(vulkan_render_pass_validate)
 
 #define FUNC_vulkan_pipeline_init 1
 FUNC(vulkan_pipeline_init)

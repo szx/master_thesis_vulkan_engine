@@ -33,24 +33,24 @@ void vulkan_accessor_init(vulkan_accessor *accessor, char *name, size_t offset, 
 void vulkan_accessor_deinit(vulkan_accessor *accessor);
 
 typedef enum vulkan_attribute_type {
-  UnknownAttribute,
-  PositionAttribute,
-  NormalAttribute,
-  TangentAttribute,
-  TexCoordAttribute,
-  ColorAttribute
+  UnknownAttribute = 1 << 0,
+  PositionAttribute = 1 << 1,
+  NormalAttribute = 1 << 2,
+  TangentAttribute = 1 << 3,
+  TexCoordAttribute = 1 << 4,
+  ColorAttribute = 1 << 5
 } vulkan_attribute_type;
 
 typedef struct vulkan_attribute {
   char *name;
   vulkan_attribute_type type;
-  size_t index;
   vulkan_accessor *accessor;
 } vulkan_attribute;
 
 void vulkan_attribute_init(vulkan_attribute *attribute, char *name, vulkan_attribute_type type,
-                           size_t index, vulkan_accessor *accessor);
+                           vulkan_accessor *accessor);
 void vulkan_attribute_deinit(vulkan_attribute *attribute);
+int vulkan_attribute_compare(const void *s1, const void *s2);
 
 typedef struct vulkan_mesh_primitive {
   VkPrimitiveTopology topology;
@@ -82,6 +82,8 @@ void vulkan_node_deinit(vulkan_node *scene);
 typedef struct vulkan_scene {
   vulkan_node *nodes;
   vulkan_geometry_buffer *geometryBuffer;
+  // HIRO interleave buffer
+  // HIRO do not expose vulkan_buffer_view and vulkan_accessor after interleaving.
   vulkan_buffer_view *bufferViews;
   vulkan_accessor *accessors;
 } vulkan_scene;

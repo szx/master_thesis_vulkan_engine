@@ -20,6 +20,7 @@ typedef struct vulkan_geometry_buffer {
 void vulkan_geometry_buffer_init(vulkan_geometry_buffer *geometryBuffer, char *name, uint8_t *data,
                                  size_t size);
 void vulkan_geometry_buffer_deinit(vulkan_geometry_buffer *geometryBuffer);
+/// Sends scene's geometry buffer
 void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
                                            vulkan_geometry_buffer *geometryBuffer);
 

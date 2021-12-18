@@ -1,13 +1,43 @@
 #include "render_context.h"
 #include "../codegen/render_context.c"
 
+/// Create render pass with default functionality.
 void create_render_pass_info(vulkan_render_pass *renderPass) {
   // TODO: Previous and next render pass?
-  // HIRO init using render pass
   if (renderPass->type == ForwardRenderPass) {
     renderPass->info.usesPushConstants = true;
+    renderPass->info.supportedVertexAttributes = PositionAttribute | NormalAttribute;
   }
-  // HIRO vertex input attributes of shader have to match those of scene.
+  // HIRO: vertex input attributes of shader have to match those of scene.
+}
+
+void vulkan_render_pass_validate(vulkan_render_pass *renderPass, vulkan_scene *scene) {
+  // TODO: Previous and next render pass?
+  vulkan_render_pass_info *info = &renderPass->info;
+  vulkan_shader *vertShader = renderPass->vertShader;
+  vulkan_shader *fragShader = renderPass->fragShader;
+  verify(renderPass->info.supportedVertexAttributes > 0);
+  verify(vertShader != NULL);
+  verify(vertShader->type == shaderc_glsl_vertex_shader);
+  verify(count_struct_array(vertShader->info.inputAttributeDescriptions) > 0);
+  verify(count_struct_array(vertShader->info.outputAttributeDescriptions) > 0);
+  verify(fragShader != NULL);
+  verify(fragShader->type == shaderc_glsl_fragment_shader);
+  verify(count_struct_array(fragShader->info.inputAttributeDescriptions) > 0);
+  verify(count_struct_array(fragShader->info.outputAttributeDescriptions) > 0);
+  if ((renderPass->info.supportedVertexAttributes & PositionAttribute) != 0) {
+    verify(count_struct_array(vertShader->info.inputAttributeDescriptions) >= 1);
+    vulkan_vertex_attribute_description *description =
+        &vertShader->info.inputAttributeDescriptions[0];
+    verify(description->type == PositionAttribute);
+  }
+  if ((renderPass->info.supportedVertexAttributes & NormalAttribute) != 0) {
+    verify(count_struct_array(vertShader->info.inputAttributeDescriptions) >= 2);
+    vulkan_vertex_attribute_description *description =
+        &vertShader->info.inputAttributeDescriptions[1];
+    verify(description->type == NormalAttribute);
+  }
+  // HIRO check if vertShader and fragShader attributes match.
 }
 
 void create_shaders(vulkan_render_pass *renderPass) {
@@ -83,9 +113,11 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
 
   VkPipelineVertexInputStateCreateInfo vertexInputInfo = {0};
   vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-  vertexInputInfo.vertexBindingDescriptionCount = 1;
+  size_t vertexBindingDescriptionsCount =
+      vulkan_shader_info_get_binding_count(&renderPass->vertShader->info);
   VkVertexInputBindingDescription vertexInputBindingDescription =
       vulkan_shader_info_get_binding_description(&renderPass->vertShader->info);
+  vertexInputInfo.vertexBindingDescriptionCount = vertexBindingDescriptionsCount;
   vertexInputInfo.pVertexBindingDescriptions = &vertexInputBindingDescription;
   size_t vertexAttributeDescriptionsCount;
   VkVertexInputAttributeDescription *vertexAttributeDescriptions =
@@ -194,6 +226,8 @@ void vulkan_render_pass_init(vulkan_render_pass *renderPass, vulkan_swap_chain *
   renderPass->renderPass = VK_NULL_HANDLE;
   renderPass->pipelineLayout = VK_NULL_HANDLE;
   renderPass->graphicsPipeline = VK_NULL_HANDLE;
+  // HIRO init using render pass
+  // HIRO reinit after tuning render_pass_info
   create_render_pass(renderPass);
   create_graphics_pipeline(renderPass);
 }
@@ -372,6 +406,8 @@ void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneNa
   init_struct(rctx->scene, parse_gltf_file, gltfPath);
   platform_path_free(&gltfPath);
   vulkan_scene_debug_print(rctx->scene);
+  vulkan_render_pass_validate(rctx->pipeline->renderPass,
+                              rctx->scene); // TODO: vulkan_pipeline_validate().
   // TODO: Copy resources to GPU. (deferred? tracking)
 }
 
@@ -509,16 +545,13 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
       vulkan_mesh_primitive *primitive = &mesh->primitives[primitiveIdx];
 
       size_t attributeCount = count_struct_array(primitive->attributes);
-      VkBuffer vertexBuffers[attributeCount];
-      VkDeviceSize vertexBuffersOffsets[attributeCount];
-      for (size_t attributeIdx = 0; attributeIdx < attributeCount; attributeIdx++) {
-        vulkan_attribute *attribute = &primitive->attributes[attributeIdx];
-        vertexBuffers[attributeIdx] = scene->geometryBuffer->buffer;
-        // HIRO check if attributes match order of vertex shader attribute descriptions
-        vertexBuffersOffsets[attributeIdx] =
-            attribute->accessor->bufferView->offset + attribute->accessor->offset;
-      }
-      vkCmdBindVertexBuffers(frame->commandBuffer, 0, attributeCount, vertexBuffers,
+      size_t bindingCount = vulkan_shader_info_get_binding_count(&renderPass->vertShader->info);
+      assert(bindingCount == 1);
+      VkBuffer vertexBuffers[bindingCount];
+      VkDeviceSize vertexBuffersOffsets[bindingCount];
+      vertexBuffers[0] = scene->geometryBuffer->buffer;
+      vertexBuffersOffsets[0] = 0;
+      vkCmdBindVertexBuffers(frame->commandBuffer, 0, bindingCount, vertexBuffers,
                              vertexBuffersOffsets);
 
       vulkan_accessor *indices = primitive->indices;

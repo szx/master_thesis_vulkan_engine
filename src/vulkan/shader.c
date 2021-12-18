@@ -151,9 +151,13 @@ void vulkan_shader_info_deinit(vulkan_shader_info *info) {
   dealloc_struct(info->pushConstantDescription);
 }
 
+size_t vulkan_shader_info_get_binding_count(vulkan_shader_info *info) {
+  // TODO: More bindings if we decide to bind more buffers in vkCmdBindVertexBuffers(). (instancing)
+  return 1;
+}
+
 VkVertexInputBindingDescription
 vulkan_shader_info_get_binding_description(vulkan_shader_info *info) {
-  // TODO: More bindings if we decide to bind more buffers in vkCmdBindVertexBuffers(). (instancing)
   VkVertexInputBindingDescription bindingDescription = {0};
   bindingDescription.binding = 0;
   bindingDescription.stride = 0;

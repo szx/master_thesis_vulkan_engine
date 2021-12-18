@@ -32,6 +32,7 @@ typedef struct vulkan_push_constant_description {
 } vulkan_push_constant_description;
 
 /// Describes results of parsing GLSL shader for information.
+/// Does not contain scene-dependant information (like vertex attribute offsets).
 typedef struct vulkan_shader_info {
   vulkan_vertex_attribute_description *inputAttributeDescriptions;
   vulkan_vertex_attribute_description *outputAttributeDescriptions;
@@ -61,8 +62,12 @@ void vulkan_push_constant_description_deinit(vulkan_push_constant_description *d
 
 void vulkan_shader_info_init(vulkan_shader_info *info, vulkan_shader *shader);
 void vulkan_shader_info_deinit(vulkan_shader_info *info);
+
+size_t vulkan_shader_info_get_binding_count(vulkan_shader_info *info);
 VkVertexInputBindingDescription
 vulkan_shader_info_get_binding_description(vulkan_shader_info *info);
+/// Returns vertex attribute descriptions.
+/// We expect that geometry buffer on device has interleaved vertex attributes.
 VkVertexInputAttributeDescription *
 vulkan_shader_info_get_attribute_descriptions(vulkan_shader_info *info, size_t *count);
 VkPushConstantRange vulkan_shader_info_get_push_constant_range(vulkan_shader *vertShader,

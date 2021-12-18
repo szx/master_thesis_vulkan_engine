@@ -48,7 +48,7 @@ core_alloc_struct_header *core_alloc_struct_header_get(void *memory) {
   core_alloc_struct_header *header =
       (core_alloc_struct_header *)((char *)memory - sizeof(core_alloc_struct_header));
   // Check if heap pointer was allocated using core_alloc_struct().
-  assert(is_header_magic_number_correct(header));
+  verify(is_header_magic_number_correct(header));
   // TODO: Check if not stack pointer? Needs custom allocator. (or __builtin_frame_address?)
   return header;
 }
