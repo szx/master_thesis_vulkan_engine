@@ -7,6 +7,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+void *core_memdup(const void *src, size_t size);
+
 #if defined(DEBUG)
 /// struct foo {}; -> extern core_type_alloc_stats foo_alloc_stats;
 typedef struct core_type_alloc_stats {

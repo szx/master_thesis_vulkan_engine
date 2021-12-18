@@ -1,5 +1,11 @@
 #include "alloc.h"
 
+void *core_memdup(const void *src, size_t size) {
+  void *data = malloc(size);
+  memcpy(data, src, size);
+  return data;
+}
+
 // Include all headers with struct definitions.
 #define PARENT
 #include "../codegen/header.def"
@@ -42,7 +48,7 @@ core_alloc_struct_header *core_alloc_struct_header_get(void *memory) {
   core_alloc_struct_header *header =
       (core_alloc_struct_header *)((char *)memory - sizeof(core_alloc_struct_header));
   // Check if heap pointer was allocated using core_alloc_struct().
-  verify(is_header_magic_number_correct(header));
+  assert(is_header_magic_number_correct(header));
   // TODO: Check if not stack pointer? Needs custom allocator. (or __builtin_frame_address?)
   return header;
 }

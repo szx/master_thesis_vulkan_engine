@@ -1,4 +1,4 @@
-/* Basic cross-platform functions. Third-party libraries. */
+/* Basic cross-platform functions. */
 
 #ifndef PLATFORM_H
 #define PLATFORM_H
@@ -109,6 +109,7 @@ void platform_alloc_debug_print();
 /* file system */
 typedef struct platform_path {
   str data;
+  struct platform_path *next;
 } platform_path;
 
 platform_path platform_path_init(const char *data);
@@ -124,9 +125,6 @@ bool platform_path_ext_equals(platform_path *self, const char *ext);
 platform_path platform_path_get_dirname(platform_path *self);
 str platform_path_get_basename(platform_path *self);
 
-#define T platform_path
-#include "lst.h" // lst_platform_path
-
 /// Returns new path to directory with current executable.
 platform_path get_executable_dir_path();
 
@@ -137,7 +135,7 @@ platform_path get_executable_dir_file_path(const char *dirName, const char *file
 platform_path get_asset_file_path(const char *dirName, const char *fileName);
 
 /// Returns new list of child paths.
-lst_platform_path get_dir_children(platform_path *dirPath);
+platform_path *get_dir_children(platform_path *dirPath);
 
 /// Returns null-terminated string with text file content.
 char *read_text_file(platform_path *path, size_t *sourceLength);

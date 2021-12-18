@@ -42,7 +42,7 @@ void parser_state_free(parser_state *state) {
   parser_error *error, *tempError;
   LL_FOREACH_SAFE(state->errors,error,tempError) {
     LL_DELETE(state->errors,error);
-    //dealloc_struct(error);
+    dealloc_struct(error);
   }
   parser_comment *comment, *tempComment;
   LL_FOREACH_SAFE(state->comments,comment,tempComment) {

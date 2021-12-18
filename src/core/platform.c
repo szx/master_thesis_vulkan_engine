@@ -108,10 +108,18 @@ void platform_alloc_debug_print() { core_alloc_debug_print(); }
 platform_path platform_path_init(const char *data) {
   platform_path path = {0};
   path.data = str_init(data);
+  path.next = NULL;
   return path;
 }
 
-void platform_path_free(platform_path *self) { str_free(&self->data); }
+void platform_path_free(platform_path *self) {
+  platform_path *path, *tempPath;
+  LL_FOREACH_SAFE(self, path, tempPath) {
+    LL_DELETE(self, path);
+    str_free(&path->data);
+    // HIRO free(path);
+  }
+}
 
 platform_path platform_path_copy(platform_path *self) {
   platform_path copy = {0};
@@ -188,13 +196,14 @@ platform_path get_asset_file_path(const char *dirName, const char *fileName) {
   return result;
 }
 
-void get_dir_children_impl(const char *path, lst_platform_path *paths) {
+void get_dir_children_impl(const char *path, platform_path **paths) {
   GError *error = NULL;
   GDir *dir = g_dir_open(path, 0, &error);
   if (error != NULL) {
     // file
-    platform_path childPath = platform_path_init(path);
-    lst_platform_path_push_back(paths, childPath);
+    platform_path *childPath = (platform_path *)malloc(sizeof(platform_path));
+    *childPath = platform_path_init(path);
+    LL_APPEND(*paths, childPath);
   } else {
     const char *childName;
     while ((childName = g_dir_read_name(dir))) {
@@ -205,9 +214,9 @@ void get_dir_children_impl(const char *path, lst_platform_path *paths) {
   }
 }
 
-lst_platform_path get_dir_children(platform_path *dirPath) {
+platform_path *get_dir_children(platform_path *dirPath) {
 #if defined(PLATFORM_LINUX)
-  lst_platform_path paths = lst_platform_path_init();
+  platform_path *paths = NULL;
   get_dir_children_impl(str_c_str(&dirPath->data), &paths);
   return paths;
 #else
