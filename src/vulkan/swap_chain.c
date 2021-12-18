@@ -4,19 +4,20 @@
 void vulkan_swap_chain_init(vulkan_swap_chain *vks, vulkan_device *vkd) {
   vks->vkd = vkd;
   vks->swapChain = VK_NULL_HANDLE;
-  vks->swapChainImageViews = vec_VkImageView_init();
-  vks->swapChainImages = vec_VkImage_init();
+  utarray_new(vks->swapChainImageViews, &ut_vk_image_view_icd);
+  utarray_new(vks->swapChainImages, &ut_vk_image_icd);
   create_swap_chain(vks);
   get_swap_chain_images(vks);
   create_swap_chain_image_views(vks);
 }
 
 void vulkan_swap_chain_deinit(vulkan_swap_chain *vks) {
-  for (size_t i = 0; i < vks->swapChainImageViews.size; i++) {
-    vkDestroyImageView(vks->vkd->device, vks->swapChainImageViews.value[i], vka);
+  VkImageView *swapChainImageView = NULL;
+  while ((swapChainImageView = utarray_next(vks->swapChainImageViews, swapChainImageView))) {
+    vkDestroyImageView(vks->vkd->device, *swapChainImageView, vka);
   }
-  vec_VkImageView_free(&vks->swapChainImageViews);
-  vec_VkImage_free(&vks->swapChainImages);
+  utarray_free(vks->swapChainImageViews);
+  utarray_free(vks->swapChainImages);
 
   vkDestroySwapchainKHR(vks->vkd->device, vks->swapChain, vka);
   vks->swapChain = VK_NULL_HANDLE;
@@ -109,25 +110,26 @@ void create_swap_chain(vulkan_swap_chain *vks) {
 
 void get_swap_chain_images(vulkan_swap_chain *vks) {
   assert(vks->swapChain != VK_NULL_HANDLE);
-  assert(vks->swapChainImages.size == 0);
+  assert(utarray_len(vks->swapChainImages) == 0);
 
   uint32_t imageCount = 0;
   vkGetSwapchainImagesKHR(vks->vkd->device, vks->swapChain, &imageCount, NULL);
-  vec_VkImage_resize(&vks->swapChainImages, imageCount, VK_NULL_HANDLE);
+  utarray_resize(vks->swapChainImages, imageCount);
   vkGetSwapchainImagesKHR(vks->vkd->device, vks->swapChain, &imageCount,
-                          vec_VkImage_data(&vks->swapChainImages));
+                          utarray_front(vks->swapChainImages));
 }
 
 void create_swap_chain_image_views(vulkan_swap_chain *vks) {
-  assert(vks->swapChainImages.size > 0);
-  assert(vks->swapChainImageViews.size == 0);
+  assert(utarray_len(vks->swapChainImages) > 0);
+  assert(utarray_len(vks->swapChainImageViews) == 0);
   assert(vks->swapChainImageFormat != VK_FORMAT_UNDEFINED);
 
-  vec_VkImageView_resize(&vks->swapChainImageViews, vks->swapChainImages.size, VK_NULL_HANDLE);
-
-  for (size_t i = 0; i < vks->swapChainImageViews.size; i++) {
-    vks->swapChainImageViews.value[i] =
-        create_image_view(vks->vkd, vks->swapChainImages.value[i], VK_IMAGE_VIEW_TYPE_2D,
+  utarray_resize(vks->swapChainImageViews, utarray_len(vks->swapChainImages));
+  for (size_t i = 0; i < utarray_len(vks->swapChainImageViews); i++) {
+    VkImageView *swapChainImageView = (VkImageView *)utarray_eltptr(vks->swapChainImageViews, i);
+    VkImage swapChainImage = *(VkImage *)utarray_eltptr(vks->swapChainImages, i);
+    *swapChainImageView =
+        create_image_view(vks->vkd, swapChainImage, VK_IMAGE_VIEW_TYPE_2D,
                           vks->swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1, 1);
   }
 }

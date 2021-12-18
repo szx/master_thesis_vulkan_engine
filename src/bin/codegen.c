@@ -6,7 +6,7 @@ static const bool ignore_vulkan_header = true;
 
 static platform_path srcPath;
 static platform_path vulkanHeaderPath;
-static lst_platform_path srcChildPathLst;
+static platform_path *srcChildPathLst;
 static platform_path codegenPath;
 
 typedef struct c_parser_callbackData {
@@ -279,25 +279,26 @@ int main(int argc, char *argv[]) {
   log_info("src path: %s", SRC_PATH);
   log_info("vulkan header path: %s", VULKAN_HEADER_PATH);
 
-  srcPath = platform_path_init(SRC_PATH);
+  /*srcPath = platform_path_init(SRC_PATH);
   vulkanHeaderPath = platform_path_init(VULKAN_HEADER_PATH);
   srcChildPathLst = get_dir_children(&srcPath);
   codegenPath = platform_path_copy(&srcPath);
   platform_path_append(&codegenPath, "codegen");
   if (!ignore_vulkan_header) {
-    lst_platform_path_push_front(&srcChildPathLst, platform_path_copy(&vulkanHeaderPath));
+    platform_path *vulkanHeaderPathCopy = (platform_path *)core_memdup(&vulkanHeaderPath,
+  sizeof(platform_path)); LL_APPEND(srcChildPathLst, vulkanHeaderPathCopy);
   }
 
   str structDefCode = str_init("");
   str headerDefCode = str_init("");
   str_append_meta_defines(&structDefCode);
-  foreach (lst_platform_path, &srcChildPathLst, it) {
-    if (!platform_path_dirname_equals(it.ref, &codegenPath)) {
-      if (platform_path_ext_equals(it.ref, ".h")) {
-        parse_header(it.ref, &structDefCode, &headerDefCode);
+  platform_path *childPath;
+  LL_FOREACH ( srcChildPathLst, childPath) {
+    if (!platform_path_dirname_equals(childPath, &codegenPath)) {
+      if (platform_path_ext_equals(childPath, ".h")) {
+        parse_header(childPath, &structDefCode, &headerDefCode);
       }
     }
-    platform_path_free(it.ref);
   }
   str_append_meta_undefs(&structDefCode);
   platform_path structDefPath = platform_path_copy(&codegenPath);
@@ -313,8 +314,8 @@ int main(int argc, char *argv[]) {
   str_free(&headerDefCode);
   str_free(&structDefCode);
   platform_path_free(&codegenPath);
-  lst_platform_path_free(&srcChildPathLst);
-  platform_path_free(&srcPath);
+  platform_path_free(srcChildPathLst);
+  platform_path_free(&srcPath);*/
 
   log_info("codegen finished");
   platform_free();

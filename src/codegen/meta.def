@@ -25,16 +25,6 @@ FUNC(core_dealloc_struct)
 #define FUNC_core_alloc_debug_print 1
 FUNC(core_alloc_debug_print)
 
-#define STRUCT_platform_path 1
-#ifdef STRUCT_COND
-#  if STRUCT_COND(platform_path) == 1
-   STRUCT_COND_TRUE(platform_path)
-#  else
-   STRUCT_COND_FALSE(platform_path)
-#  endif
-#endif
-STRUCT(platform_path)
-
 #define FUNC_platform_init 1
 FUNC(platform_init)
 
@@ -70,39 +60,6 @@ FUNC(platform_dealloc_struct)
 
 #define FUNC_platform_alloc_debug_print 1
 FUNC(platform_alloc_debug_print)
-
-#define FUNC_platform_path_init 1
-FUNC(platform_path_init)
-
-#define FUNC_platform_path_free 1
-FUNC(platform_path_free)
-
-#define FUNC_platform_path_copy 1
-FUNC(platform_path_copy)
-
-#define FUNC_platform_path_c_str 1
-FUNC(platform_path_c_str)
-
-#define FUNC_platform_path_append 1
-FUNC(platform_path_append)
-
-#define FUNC_platform_path_append_ext 1
-FUNC(platform_path_append_ext)
-
-#define FUNC_platform_path_equals 1
-FUNC(platform_path_equals)
-
-#define FUNC_platform_path_dirname_equals 1
-FUNC(platform_path_dirname_equals)
-
-#define FUNC_platform_path_ext_equals 1
-FUNC(platform_path_ext_equals)
-
-#define FUNC_platform_path_get_dirname 1
-FUNC(platform_path_get_dirname)
-
-#define FUNC_platform_path_get_basename 1
-FUNC(platform_path_get_basename)
 
 #define FUNC_get_executable_dir_path 1
 FUNC(get_executable_dir_path)

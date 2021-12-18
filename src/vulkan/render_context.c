@@ -250,7 +250,8 @@ void create_framebuffer(vulkan_swap_chain_frame *frame) {
   framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
   framebufferInfo.renderPass = frame->pipeline->renderPass->renderPass;
   framebufferInfo.attachmentCount = 1;
-  framebufferInfo.pAttachments = &frame->vks->swapChainImageViews.value[frame->swapChainImageIndex];
+  framebufferInfo.pAttachments =
+      utarray_eltptr(frame->vks->swapChainImageViews, frame->swapChainImageIndex);
   framebufferInfo.width = frame->vks->swapChainExtent.width;
   framebufferInfo.height = frame->vks->swapChainExtent.height;
   framebufferInfo.layers = 1;
@@ -309,7 +310,7 @@ void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config
   rctx->pipeline = alloc_struct(vulkan_pipeline);
   init_struct(rctx->pipeline, vulkan_pipeline_init, rctx->vks);
   rctx->swapChainFrames =
-      alloc_struct_array(vulkan_swap_chain_frame, rctx->vks->swapChainImageViews.size);
+      alloc_struct_array(vulkan_swap_chain_frame, utarray_len(rctx->vks->swapChainImageViews));
   init_struct_array(rctx->swapChainFrames);
   for (uint32_t i = 0; i < count_struct_array(rctx->swapChainFrames); i++) {
     init_struct_array_elem(rctx->swapChainFrames, i, vulkan_swap_chain_frame_init, rctx->pipeline,
@@ -355,7 +356,7 @@ void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx) {
   init_struct(rctx->vks, vulkan_swap_chain_init, rctx->vkd);
   init_struct(rctx->pipeline, vulkan_pipeline_init, rctx->vks);
   rctx->swapChainFrames =
-      alloc_struct_array(vulkan_swap_chain_frame, rctx->vks->swapChainImageViews.size);
+      alloc_struct_array(vulkan_swap_chain_frame, utarray_len(rctx->vks->swapChainImageViews));
   for (uint32_t i = 0; i < count_struct_array(rctx->swapChainFrames); i++) {
     init_struct_array_elem(rctx->swapChainFrames, i, vulkan_swap_chain_frame_init, rctx->pipeline,
                            i);
