@@ -399,6 +399,14 @@ FUNC(create_logical_device)
 #define FUNC_create_one_shot_command_pool 1
 FUNC(create_one_shot_command_pool)
 
+#define ENUM_vulkan_attribute_type()\
+ENUMERATOR(UnknownAttribute)\
+ENUMERATOR(PositionAttribute)\
+ENUMERATOR(NormalAttribute)\
+ENUMERATOR(TangentAttribute)\
+ENUMERATOR(TexCoordAttribute)\
+ENUMERATOR(ColorAttribute)\
+
 #define STRUCT_vulkan_buffer_view 1
 #ifdef STRUCT_COND
 #  if STRUCT_COND(vulkan_buffer_view) == 1
@@ -517,6 +525,9 @@ FUNC(vulkan_scene_debug_print)
 #define FUNC_parse_gltf_file 1
 FUNC(parse_gltf_file)
 
+#define ENUM_vulkan_render_pass_type()\
+ENUMERATOR(ForwardRenderPass)\
+
 #define STRUCT_vulkan_render_pass_info 1
 #ifdef STRUCT_COND
 #  if STRUCT_COND(vulkan_render_pass_info) == 1
@@ -611,6 +622,121 @@ FUNC(vulkan_pipeline_record_frame_command_buffer)
 
 #define FUNC_vulkan_render_pass_record_frame_command_buffer 1
 FUNC(vulkan_render_pass_record_frame_command_buffer)
+
+#define ENUM_parser_ast_node_type()\
+ENUMERATOR(TranslationUnit)\
+ENUMERATOR(LanguageLinkage)\
+ENUMERATOR(ArgumentExpressionList)\
+ENUMERATOR(ParameterList)\
+ENUMERATOR(EnumeratorDeclarationList)\
+ENUMERATOR(StructOrUnionDeclarationList)\
+ENUMERATOR(InitializerList)\
+ENUMERATOR(CompoundStatement)\
+ENUMERATOR(String)\
+ENUMERATOR(Identifier)\
+ENUMERATOR(MacroIdentifier)\
+ENUMERATOR(IntegerDec)\
+ENUMERATOR(IntegerOct)\
+ENUMERATOR(IntegerHex)\
+ENUMERATOR(TypeName)\
+ENUMERATOR(CompoundLiteral)\
+ENUMERATOR(PreprocessorDirective)\
+ENUMERATOR(PreprocessorDirectiveBody)\
+ENUMERATOR(PreprocessorMacroCall)\
+ENUMERATOR(StaticAssert)\
+ENUMERATOR(Declaration)\
+ENUMERATOR(DeclarationSpecifiers)\
+ENUMERATOR(DeclaratorAndInitializer)\
+ENUMERATOR(DeclaratorAndInitializerList)\
+ENUMERATOR(IdentifierDeclarator)\
+ENUMERATOR(ArrayDeclarator)\
+ENUMERATOR(FunctionDeclaration)\
+ENUMERATOR(EnumerationDeclaration)\
+ENUMERATOR(EnumeratorDeclaration)\
+ENUMERATOR(StructDeclaration)\
+ENUMERATOR(UnnamedStructDeclaration)\
+ENUMERATOR(UnionDeclaration)\
+ENUMERATOR(UnnamedUnionDeclaration)\
+ENUMERATOR(BitFieldDeclaration)\
+ENUMERATOR(FunctionPointerDeclaration)\
+ENUMERATOR(TypedefStructDeclaration)\
+ENUMERATOR(TypedefUnionDeclaration)\
+ENUMERATOR(TypedefEnumDeclaration)\
+ENUMERATOR(TypedefTypeDeclaration)\
+ENUMERATOR(TypedefFunctionPointerDeclaration)\
+ENUMERATOR(FunctionPointerDeclarationSpecifiers)\
+ENUMERATOR(Ellipsis)\
+ENUMERATOR(FunctionDefinition)\
+ENUMERATOR(EmptyStatement)\
+ENUMERATOR(LabelStatement)\
+ENUMERATOR(CaseStatement)\
+ENUMERATOR(DefaultStatement)\
+ENUMERATOR(ReturnStatement)\
+ENUMERATOR(ContinueStatement)\
+ENUMERATOR(BreakStatement)\
+ENUMERATOR(GotoStatement)\
+ENUMERATOR(IfStatement)\
+ENUMERATOR(SwitchStatement)\
+ENUMERATOR(ForStatement)\
+ENUMERATOR(WhileStatement)\
+ENUMERATOR(DoWhileStatement)\
+ENUMERATOR(SubscriptAccess)\
+ENUMERATOR(MemberAccess)\
+ENUMERATOR(PointerAccess)\
+ENUMERATOR(FunctionCall)\
+ENUMERATOR(Cast)\
+ENUMERATOR(Deref)\
+ENUMERATOR(Ref)\
+ENUMERATOR(Sizeof)\
+ENUMERATOR(BitOr)\
+ENUMERATOR(BitAnd)\
+ENUMERATOR(BitXor)\
+ENUMERATOR(BitShiftLeft)\
+ENUMERATOR(BitShiftRight)\
+ENUMERATOR(BitNot)\
+ENUMERATOR(Plus)\
+ENUMERATOR(Minus)\
+ENUMERATOR(Inc)\
+ENUMERATOR(Dec)\
+ENUMERATOR(Add)\
+ENUMERATOR(Sub)\
+ENUMERATOR(Mul)\
+ENUMERATOR(Div)\
+ENUMERATOR(Mod)\
+ENUMERATOR(Assign)\
+ENUMERATOR(AssignAdd)\
+ENUMERATOR(AssignSub)\
+ENUMERATOR(AssignMul)\
+ENUMERATOR(AssignDiv)\
+ENUMERATOR(AssignMod)\
+ENUMERATOR(AssignBitOr)\
+ENUMERATOR(AssignBitAnd)\
+ENUMERATOR(AssignBitXor)\
+ENUMERATOR(AssignBitLeftShift)\
+ENUMERATOR(AssignBitRightShift)\
+ENUMERATOR(Or)\
+ENUMERATOR(And)\
+ENUMERATOR(Not)\
+ENUMERATOR(Ternary)\
+ENUMERATOR(EQ)\
+ENUMERATOR(NE)\
+ENUMERATOR(LT)\
+ENUMERATOR(GT)\
+ENUMERATOR(LE)\
+ENUMERATOR(GE)\
+ENUMERATOR(VertexInputAttribute)\
+ENUMERATOR(VertexOutputAttribute)\
+ENUMERATOR(PushConstant)\
+ENUMERATOR(UniformBlock)\
+ENUMERATOR(VariableDeclaration)\
+ENUMERATOR(VectorType)\
+ENUMERATOR(MatrixType)\
+
+#define ENUM_parser_error_type()\
+ENUMERATOR(SyntaxError)\
+ENUMERATOR(UnclosedComment)\
+ENUMERATOR(UnclosedString)\
+ENUMERATOR(MissingSemicolonAfterStatement)\
 
 #define STRUCT_parser_str_range 1
 #ifdef STRUCT_COND
@@ -790,6 +916,7 @@ FUNC(data_config_get_int)
 FUNC(data_config_get_str)
 
 
+#undef ENUMERATOR
 #undef STRUCT
 #undef STRUCT_COND
 #undef STRUCT_COND_TRUE

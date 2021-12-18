@@ -5,15 +5,17 @@
 
 #include "device.h"
 #include "functions.h"
+#include "scene.h"
 
 /// Describes one vertex input (or output) attribute defined in GLSL shader.
 /// Examples:
 /// layout(location = 0) in vec2 inPosition;
-/// layout(location = 0) out vec3 fragColor;
+/// layout(location = 0) out vec3 outColor;
 typedef struct vulkan_vertex_attribute_description {
   size_t location;
   size_t componentNum;
   char *identifier;
+  vulkan_attribute_type type;
 } vulkan_vertex_attribute_description;
 
 /// Describes one push constant in GLSL shader.
@@ -49,7 +51,7 @@ typedef struct vulkan_shader {
 
 void vulkan_vertex_attribute_description_init(vulkan_vertex_attribute_description *description,
                                               size_t location, size_t componentNum,
-                                              const char *identifier);
+                                              const char *identifier, vulkan_attribute_type type);
 void vulkan_vertex_attribute_description_deinit(vulkan_vertex_attribute_description *description);
 
 void vulkan_push_constant_description_init(vulkan_push_constant_description *description,

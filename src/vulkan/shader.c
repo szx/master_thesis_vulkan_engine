@@ -8,10 +8,11 @@ static shaderc_compiler_t compiler;
 
 void vulkan_vertex_attribute_description_init(vulkan_vertex_attribute_description *description,
                                               size_t location, size_t componentNum,
-                                              const char *identifier) {
+                                              const char *identifier, vulkan_attribute_type type) {
   description->location = location;
   description->componentNum = componentNum;
   description->identifier = strdup(identifier);
+  description->type = type;
 }
 
 void vulkan_vertex_attribute_description_deinit(vulkan_vertex_attribute_description *description) {
@@ -82,16 +83,27 @@ static bool glsl_parser_callback(parser_ast_node *node, void *callbackData) {
       parser_ast_node *identifierNode = vectorNode->next;
       char *identifier = parser_ast_node_c_str(data->state, identifierNode);
 
+      vulkan_attribute_type type = UnknownAttribute;
+#define LEN(enumerator) strlen(#enumerator) - strlen(strchr(#enumerator, 'A'))
+#define ENUMERATOR(enumerator)                                                                     \
+  if (strncmp(identifier + 2, #enumerator, LEN(enumerator)) == 0 ||                                \
+      strncmp(identifier + 3, #enumerator, LEN(enumerator)) == 0) {                                \
+    type = enumerator;                                                                             \
+  }
+      ENUM_vulkan_attribute_type();
+#undef LEN
+      verify(type != UnknownAttribute);
+
       if (node->type == VertexInputAttribute) {
         init_struct_array_elem(
             data->info->inputAttributeDescriptions, data->inputAttributeDescriptionsIdx,
-            vulkan_vertex_attribute_description_init, location, componentNum, identifier);
+            vulkan_vertex_attribute_description_init, location, componentNum, identifier, type);
         data->inputAttributeDescriptionsIdx += 1;
         verify(data->inputAttributeDescriptionsIdx <= data->inputAttributeDescriptionsSize);
       } else if (node->type == VertexOutputAttribute) {
         init_struct_array_elem(
             data->info->outputAttributeDescriptions, data->outputAttributeDescriptionsIdx,
-            vulkan_vertex_attribute_description_init, location, componentNum, identifier);
+            vulkan_vertex_attribute_description_init, location, componentNum, identifier, type);
         data->outputAttributeDescriptionsIdx += 1;
         verify(data->outputAttributeDescriptionsIdx <= data->outputAttributeDescriptionsSize);
       }
@@ -150,6 +162,7 @@ vulkan_shader_info_get_binding_description(vulkan_shader_info *info) {
     // We do not support dvec.
     bindingDescription.stride += description->componentNum * sizeof(float);
   }
+  assert(bindingDescription.stride > 0);
   bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
   return bindingDescription;
 }
@@ -170,6 +183,7 @@ vulkan_shader_info_get_attribute_descriptions(vulkan_shader_info *info, size_t *
     attributeDescriptions[i].offset = offset;
     offset += description->componentNum * sizeof(float);
   }
+  assert(offset > 0);
   return attributeDescriptions;
 }
 

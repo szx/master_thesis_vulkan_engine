@@ -7,14 +7,12 @@ void create_render_pass_info(vulkan_render_pass *renderPass) {
   if (renderPass->type == ForwardRenderPass) {
     renderPass->info.usesPushConstants = true;
   }
+  // HIRO vertex input attributes of shader have to match those of scene.
 }
 
 void create_shaders(vulkan_render_pass *renderPass) {
   // TODO: Different shaders for different render pass types.
   // HIRO generate glsl shaders using render_pass_info.
-  if (renderPass->type == ForwardRenderPass) {
-    renderPass->info.usesPushConstants = true;
-  }
   platform_path vertInputPath = get_asset_file_path("shaders", "shader.vert");
   platform_path fragInputPath = get_asset_file_path("shaders", "shader.frag");
   renderPass->vertShader = alloc_struct(vulkan_shader);
@@ -508,12 +506,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
     for (size_t primitiveIdx = 0; primitiveIdx < count_struct_array(mesh->primitives);
          primitiveIdx++) {
       vulkan_mesh_primitive *primitive = &mesh->primitives[primitiveIdx];
-      vulkan_accessor *indices = primitive->indices;
-      VkBuffer indexBuffer = scene->geometryBuffer->buffer;
-      VkDeviceSize indexBufferOffset = indices->bufferView->offset + indices->offset;
-      uint32_t indexCount = indices->count;
-      uint32_t indexStride = indices->stride;
-      VkIndexType indexType = stride_to_index_format(indexStride);
+
       size_t attributeCount = count_struct_array(primitive->attributes);
       VkBuffer vertexBuffers[attributeCount];
       VkDeviceSize vertexBuffersOffsets[attributeCount];
@@ -526,8 +519,19 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
       }
       vkCmdBindVertexBuffers(frame->commandBuffer, 0, attributeCount, vertexBuffers,
                              vertexBuffersOffsets);
-      vkCmdBindIndexBuffer(frame->commandBuffer, indexBuffer, indexBufferOffset, indexType);
-      vkCmdDrawIndexed(frame->commandBuffer, indexCount, 1, 0, 0, 0);
+
+      vulkan_accessor *indices = primitive->indices;
+      if (indices != NULL) {
+        VkBuffer indexBuffer = scene->geometryBuffer->buffer;
+        VkDeviceSize indexBufferOffset = indices->bufferView->offset + indices->offset;
+        uint32_t indexCount = indices->count;
+        uint32_t indexStride = indices->stride;
+        VkIndexType indexType = stride_to_index_format(indexStride);
+        vkCmdBindIndexBuffer(frame->commandBuffer, indexBuffer, indexBufferOffset, indexType);
+        vkCmdDrawIndexed(frame->commandBuffer, indexCount, 1, 0, 0, 0);
+      } else {
+        panic("draw without indices not supported");
+      }
       // TODO: Pipeline statistics.
     }
   }

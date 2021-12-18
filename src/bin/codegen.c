@@ -56,6 +56,20 @@ static bool enumerator_callback(parser_ast_node *node, void *callbackData) {
   return false;
 }
 
+static bool enumerator_callback2(parser_ast_node *node, void *callbackData) {
+  if (node->type != EnumeratorDeclaration) {
+    return true;
+  }
+  parser_ast_node *identifier = node->childNodes;
+  assert(identifier->type == Identifier);
+  c_parser_callbackData *data = callbackData;
+
+  str_append(data->structDefCode, "ENUMERATOR(");
+  str_append_node(data->structDefCode, data->state, identifier);
+  str_append(data->structDefCode, ")\\\n");
+  return false;
+}
+
 static bool enum_callback(parser_ast_node *node, void *callbackData) {
   c_parser_callbackData *data = callbackData;
   if (node->type == EnumerationDeclaration) {
@@ -82,6 +96,12 @@ static bool enum_callback(parser_ast_node *node, void *callbackData) {
     parser_ast_node_visit(enumeratorList, enumerator_callback, data);
     str_append(data->sourceCode, "  return \"UNKNOWN_ENUM\";\n");
     str_append(data->sourceCode, "}\n");
+
+    str_append(data->structDefCode, "#define ENUM_");
+    str_append_node(data->structDefCode, data->state, identifier);
+    str_append(data->structDefCode, "()\\\n");
+    parser_ast_node_visit(enumeratorList, enumerator_callback2, data);
+    str_append(data->structDefCode, "\n");
   }
 end:
   return node->type == TranslationUnit || node->type == LanguageLinkage ||
@@ -174,6 +194,7 @@ void str_append_meta_defines(str *self) {
 
 void str_append_meta_undefs(str *self) {
   str_append(self, "\n");
+  str_append(self, "#undef ENUMERATOR\n");
   str_append(self, "#undef STRUCT\n");
   str_append(self, "#undef STRUCT_COND\n");
   str_append(self, "#undef STRUCT_COND_TRUE\n");
