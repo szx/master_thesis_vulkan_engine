@@ -103,7 +103,7 @@ void create_surface(vulkan_device *vkd);
 
 void query_swap_chain_support(vulkan_device *vkd, VkPhysicalDevice physicalDevice);
 bool check_device_extension_support(vulkan_device *vkd, VkPhysicalDevice physicalDevice);
-bool is_physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevice);
+bool is_physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevice, size_t *rank);
 void pick_physical_device(vulkan_device *vkd);
 
 vulkan_queue_families find_queue_families(vulkan_device *vkd, VkPhysicalDevice physicalDevice);

@@ -287,12 +287,24 @@ bool check_device_extension_support(vulkan_device *vkd, VkPhysicalDevice physica
   return !missingExtension;
 }
 
-bool is_physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevice) {
+bool is_physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevice,
+                                 size_t *rank) {
   VkPhysicalDeviceProperties deviceProperties;
   vkGetPhysicalDeviceProperties(physicalDevice, &deviceProperties);
   log_info("deviceId = %X", deviceProperties.deviceID);
   log_info("deviceName = %s", deviceProperties.deviceName);
 
+  // Favor discrete GPUs.
+  switch (deviceProperties.deviceType) {
+  case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:
+    *rank += 100;
+    break;
+  case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:
+    *rank += 10;
+    break;
+  default:
+    *rank += 1;
+  }
   uint32_t versionMajor = VK_API_VERSION_MAJOR(deviceProperties.apiVersion);
   uint32_t versionMinor = VK_API_VERSION_MINOR(deviceProperties.apiVersion);
   uint32_t versionPatch = VK_API_VERSION_PATCH(deviceProperties.apiVersion);
@@ -314,14 +326,14 @@ bool is_physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDe
   }
   log_info("swapChainAdequate = %d", swapChainAdequate);
 
+  VkPhysicalDeviceFeatures2 physicalDeviceFeatures2 = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};
   VkPhysicalDeviceVulkan11Features features11 = {
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES};
   VkPhysicalDeviceVulkan11Features features12 = {
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES};
   VkPhysicalDeviceRobustness2FeaturesEXT featuresRobustness2 = {
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT};
-  VkPhysicalDeviceFeatures2 physicalDeviceFeatures2 = {
-      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};
   physicalDeviceFeatures2.pNext = &features11;
   features11.pNext = &features12;
   features12.pNext = &featuresRobustness2;
@@ -341,6 +353,20 @@ bool is_physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDe
          featuresSupported;
 }
 
+typedef struct vulkan_physical_device_info {
+  VkPhysicalDevice physicalDevice;
+  size_t rank;
+} vulkan_physical_device_info;
+
+static int vulkan_physical_device_info_compare(const void *s1, const void *s2) {
+  vulkan_physical_device_info *a1 = (vulkan_physical_device_info *)s1;
+  vulkan_physical_device_info *a2 = (vulkan_physical_device_info *)s2;
+  return (int)a2->rank - (int)a1->rank;
+}
+
+static const UT_icd ut_vulkan_physical_device_info_icd = {sizeof(vulkan_physical_device_info), NULL,
+                                                          NULL, NULL};
+
 void pick_physical_device(vulkan_device *vkd) {
   uint32_t deviceCount = 0;
   vkEnumeratePhysicalDevices(vkd->instance, &deviceCount, NULL);
@@ -349,13 +375,23 @@ void pick_physical_device(vulkan_device *vkd) {
   vkEnumeratePhysicalDevices(vkd->instance, &deviceCount, devices);
 
   vkd->physicalDevice = VK_NULL_HANDLE;
+  UT_array *infos; // vulkan_physical_device_info
+  utarray_new(infos, &ut_vulkan_physical_device_info_icd);
   for (size_t i = 0; i < deviceCount; i++) {
     VkPhysicalDevice physicalDevice = devices[i];
-    if (is_physical_device_suitable(vkd, physicalDevice)) {
-      vkd->physicalDevice = physicalDevice;
-      break;
+    size_t rank = 0;
+    if (is_physical_device_suitable(vkd, physicalDevice, &rank)) {
+      vulkan_physical_device_info info = {.physicalDevice = physicalDevice, .rank = rank};
+      utarray_push_back(infos, &info);
     }
   }
+  if (utarray_len(infos) == 0) {
+    panic("failed to find suitable GPU");
+  }
+  qsort(infos, utarray_len(infos), sizeof(vulkan_physical_device_info),
+        vulkan_physical_device_info_compare);
+  vkd->physicalDevice = ((vulkan_physical_device_info *)utarray_front(infos))->physicalDevice;
+  utarray_free(infos);
   free(devices);
   verify(vkd->physicalDevice != VK_NULL_HANDLE);
 
