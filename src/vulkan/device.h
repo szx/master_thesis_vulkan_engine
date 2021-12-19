@@ -10,6 +10,8 @@
 
 #define VALIDATION_LAYERS_SIZE 1
 extern const char *validationLayers[VALIDATION_LAYERS_SIZE];
+#define INSTANCE_EXTENSIONS_SIZE 1
+extern const char *instanceExtensions[INSTANCE_EXTENSIONS_SIZE];
 #define DEVICE_EXTENSIONS_SIZE 1
 extern const char *deviceExtensions[DEVICE_EXTENSIONS_SIZE];
 

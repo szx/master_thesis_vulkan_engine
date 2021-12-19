@@ -5,7 +5,11 @@
 
 const char *validationLayers[VALIDATION_LAYERS_SIZE] = {"VK_LAYER_KHRONOS_validation"};
 
+const char *instanceExtensions[INSTANCE_EXTENSIONS_SIZE] = {
+    VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME};
+
 const char *deviceExtensions[DEVICE_EXTENSIONS_SIZE] = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+
 const VkAllocationCallbacks *vka = NULL;
 
 VkResult create_debug_utils_messenger_ext(VkInstance instance,
@@ -164,20 +168,22 @@ void create_instance(vulkan_device *vkd, data_config *config) {
   uint32_t glfwInstanceExtensionCount = 0;
   const char **glfwInstanceExtensions;
   glfwInstanceExtensions = glfwGetRequiredInstanceExtensions(&glfwInstanceExtensionCount);
-  uint32_t instanceExtensionCount = glfwInstanceExtensionCount;
+  uint32_t instanceExtensionCount = glfwInstanceExtensionCount + INSTANCE_EXTENSIONS_SIZE;
   if (validation_layers_enabled()) {
     instanceExtensionCount += 1;
   }
-  const char **instanceExtensions =
-      (const char **)malloc(instanceExtensionCount * sizeof(const char *));
+  const char *mergedInstanceExtensions[instanceExtensionCount];
   for (uint32_t i = 0; i < glfwInstanceExtensionCount; i++) {
-    instanceExtensions[i] = glfwInstanceExtensions[i];
+    mergedInstanceExtensions[i] = glfwInstanceExtensions[i];
+  }
+  for (uint32_t i = 0; i < INSTANCE_EXTENSIONS_SIZE; i++) {
+    mergedInstanceExtensions[glfwInstanceExtensionCount + i] = instanceExtensions[i];
   }
   if (validation_layers_enabled()) {
-    instanceExtensions[instanceExtensionCount - 1] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
+    mergedInstanceExtensions[instanceExtensionCount - 1] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
   }
   createInfo.enabledExtensionCount = instanceExtensionCount;
-  createInfo.ppEnabledExtensionNames = instanceExtensions;
+  createInfo.ppEnabledExtensionNames = mergedInstanceExtensions;
 
   VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {0};
   if (validation_layers_enabled()) {
@@ -199,8 +205,6 @@ void create_instance(vulkan_device *vkd, data_config *config) {
   }
 
   verify(vkCreateInstance(&createInfo, vka, &vkd->instance) == VK_SUCCESS);
-
-  free(instanceExtensions);
 }
 
 void setup_debug_messenger(vulkan_device *vkd) {
@@ -263,6 +267,7 @@ bool check_device_extension_support(vulkan_device *vkd, VkPhysicalDevice physica
     missingExtension = true;
     for (size_t j = 0; j < extensionCount; j++) {
       VkExtensionProperties extension = availableExtensions[j];
+      log_debug("ext: %s", extension.extensionName);
       if (strcmp(extensionName, extension.extensionName) == 0) {
         missingExtension = false;
         break;
@@ -282,6 +287,7 @@ bool is_physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDe
   VkPhysicalDeviceProperties deviceProperties;
   vkGetPhysicalDeviceProperties(physicalDevice, &deviceProperties);
   log_info("deviceId = %X", deviceProperties.deviceID);
+  log_info("deviceName = %s", deviceProperties.deviceName);
 
   uint32_t versionMajor = VK_API_VERSION_MAJOR(deviceProperties.apiVersion);
   uint32_t versionMinor = VK_API_VERSION_MINOR(deviceProperties.apiVersion);
@@ -294,6 +300,7 @@ bool is_physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDe
   log_info("found queue familes = %d", queueFamiliesComplete);
 
   bool extensionsSupported = check_device_extension_support(vkd, physicalDevice);
+  log_info("extensionsSupported = %d", false);
 
   bool swapChainAdequate = false;
   if (extensionsSupported) {
@@ -325,6 +332,7 @@ void pick_physical_device(vulkan_device *vkd) {
   VkPhysicalDevice *devices = (VkPhysicalDevice *)malloc(deviceCount * sizeof(VkPhysicalDevice));
   vkEnumeratePhysicalDevices(vkd->instance, &deviceCount, devices);
 
+  vkd->physicalDevice = VK_NULL_HANDLE;
   for (size_t i = 0; i < deviceCount; i++) {
     VkPhysicalDevice physicalDevice = devices[i];
     if (is_physical_device_suitable(vkd, physicalDevice)) {
