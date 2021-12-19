@@ -8,7 +8,10 @@ const char *validationLayers[VALIDATION_LAYERS_SIZE] = {"VK_LAYER_KHRONOS_valida
 const char *instanceExtensions[INSTANCE_EXTENSIONS_SIZE] = {
     VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME};
 
-const char *deviceExtensions[DEVICE_EXTENSIONS_SIZE] = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+const char *deviceExtensions[DEVICE_EXTENSIONS_SIZE] = {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+    VK_EXT_ROBUSTNESS_2_EXTENSION_NAME // nullDescriptor
+};
 
 const VkAllocationCallbacks *vka = NULL;
 
@@ -269,6 +272,7 @@ bool check_device_extension_support(vulkan_device *vkd, VkPhysicalDevice physica
       VkExtensionProperties extension = availableExtensions[j];
       log_debug("ext: %s", extension.extensionName);
       if (strcmp(extensionName, extension.extensionName) == 0) {
+        log_debug("ext found: %s", extension.extensionName);
         missingExtension = false;
         break;
       }
@@ -300,7 +304,7 @@ bool is_physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDe
   log_info("found queue familes = %d", queueFamiliesComplete);
 
   bool extensionsSupported = check_device_extension_support(vkd, physicalDevice);
-  log_info("extensionsSupported = %d", false);
+  log_info("extensionsSupported = %d", extensionsSupported);
 
   bool swapChainAdequate = false;
   if (extensionsSupported) {
@@ -310,16 +314,28 @@ bool is_physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDe
   }
   log_info("swapChainAdequate = %d", swapChainAdequate);
 
-  VkPhysicalDeviceFeatures supportedFeatures;
-  vkGetPhysicalDeviceFeatures(physicalDevice, &supportedFeatures);
-  log_info("samplerAnisotropy = %d", supportedFeatures.samplerAnisotropy);
+  VkPhysicalDeviceVulkan11Features features11 = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES};
+  VkPhysicalDeviceVulkan11Features features12 = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES};
+  VkPhysicalDeviceRobustness2FeaturesEXT featuresRobustness2 = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT};
+  VkPhysicalDeviceFeatures2 physicalDeviceFeatures2 = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};
+  physicalDeviceFeatures2.pNext = &features11;
+  features11.pNext = &features12;
+  features12.pNext = &featuresRobustness2;
+  vkGetPhysicalDeviceFeatures2(physicalDevice, &physicalDeviceFeatures2);
+  VkPhysicalDeviceFeatures features10 = physicalDeviceFeatures2.features;
+  log_info("samplerAnisotropy = %d", features10.samplerAnisotropy);
   log_info("shaderUniformBufferArrayDynamicIndexing = %d",
-           supportedFeatures.shaderUniformBufferArrayDynamicIndexing);
+           features10.shaderUniformBufferArrayDynamicIndexing);
   log_info("shaderSampledImageArrayDynamicIndexing = %d",
-           supportedFeatures.shaderSampledImageArrayDynamicIndexing);
-  bool featuresSupported = supportedFeatures.samplerAnisotropy &&
-                           supportedFeatures.shaderUniformBufferArrayDynamicIndexing &&
-                           supportedFeatures.shaderSampledImageArrayDynamicIndexing;
+           features10.shaderSampledImageArrayDynamicIndexing);
+  log_info("nullDescriptor = %d", featuresRobustness2.nullDescriptor);
+  bool featuresSupported =
+      features10.samplerAnisotropy && features10.shaderUniformBufferArrayDynamicIndexing &&
+      features10.shaderSampledImageArrayDynamicIndexing && featuresRobustness2.nullDescriptor;
 
   return queueFamiliesComplete && extensionsSupported && swapChainAdequate && goodVulkanVersion &&
          featuresSupported;

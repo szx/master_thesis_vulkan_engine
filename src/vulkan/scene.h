@@ -82,7 +82,12 @@ void vulkan_node_deinit(vulkan_node *scene);
 typedef struct vulkan_scene {
   vulkan_node *nodes;
   vulkan_geometry_buffer *geometryBuffer;
-  // HIRO do not interleave buffer
+  // HIRO do not interleave buffer, different binding for every attribute?
+  // HIRO What about vertex attribute descriptions? They assume interleaved attributes.
+  // HIRO VK_EXT_extended_dynamic_state allows VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE_EXT
+  // HIRO VK_EXT_vertex_input_dynamic_state allows vkCmdSetVertexInputEXT()
+  // HIRO VK_EXT_vertex_input_dynamic_state is not supported by Intel.
+  // HIRO https://github.com/zeux/niagara
   // HIRO do not expose vulkan_buffer_view and vulkan_accessor after interleaving. (indices an
   // attributes)
   vulkan_buffer_view *bufferViews;
