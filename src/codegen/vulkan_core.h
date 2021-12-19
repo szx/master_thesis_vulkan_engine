@@ -58,7 +58,6 @@ const char *VkQueryResultFlagBits_debug_str(VkQueryResultFlagBits value);
 const char *VkBufferCreateFlagBits_debug_str(VkBufferCreateFlagBits value);
 const char *VkBufferUsageFlagBits_debug_str(VkBufferUsageFlagBits value);
 const char *VkImageViewCreateFlagBits_debug_str(VkImageViewCreateFlagBits value);
-const char *VkShaderModuleCreateFlagBits_debug_str(VkShaderModuleCreateFlagBits value);
 const char *VkPipelineCacheCreateFlagBits_debug_str(VkPipelineCacheCreateFlagBits value);
 const char *VkColorComponentFlagBits_debug_str(VkColorComponentFlagBits value);
 const char *VkPipelineCreateFlagBits_debug_str(VkPipelineCreateFlagBits value);
@@ -110,6 +109,7 @@ const char *VkCompositeAlphaFlagBitsKHR_debug_str(VkCompositeAlphaFlagBitsKHR va
 const char *VkSwapchainCreateFlagBitsKHR_debug_str(VkSwapchainCreateFlagBitsKHR value);
 const char *VkDeviceGroupPresentModeFlagBitsKHR_debug_str(VkDeviceGroupPresentModeFlagBitsKHR value);
 const char *VkDisplayPlaneAlphaFlagBitsKHR_debug_str(VkDisplayPlaneAlphaFlagBitsKHR value);
+const char *VkRenderingFlagBitsKHR_debug_str(VkRenderingFlagBitsKHR value);
 const char *VkPerformanceCounterUnitKHR_debug_str(VkPerformanceCounterUnitKHR value);
 const char *VkPerformanceCounterScopeKHR_debug_str(VkPerformanceCounterScopeKHR value);
 const char *VkPerformanceCounterStorageKHR_debug_str(VkPerformanceCounterStorageKHR value);
