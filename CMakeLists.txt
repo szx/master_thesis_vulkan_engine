@@ -147,7 +147,7 @@ ADD_DEFINITIONS(-DSRC_PATH="${CMAKE_CURRENT_SOURCE_DIR}/src")
 ADD_DEFINITIONS(-DVULKAN_HEADER_PATH="${VULKAN_INCLUDE_PATH}/vulkan/vulkan_core.h")
 
 # Compiler and linker flags for ASAN.
-set(ASAN_FLAGS "$<$<CONFIG:DEBUG>:-fsanitize=address" "-fsanitize=undefined" "-fno-omit-frame-pointer>")
+set(ASAN_FLAGS "$<$<CONFIG:DEBUG>:-static-libstdc++>" "$<$<CONFIG:DEBUG>:-static-libasan>" "$<$<CONFIG:DEBUG>:-fsanitize=address" "-fsanitize=undefined" "-fno-omit-frame-pointer>")
 # Compiler and linker flags for hardening.
 set(HARDENING_FLAGS "-fstack-protector-all")
 
