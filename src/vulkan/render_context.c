@@ -31,12 +31,12 @@ void vulkan_render_pass_validate(vulkan_render_pass *renderPass, vulkan_scene *s
         &vertShader->info.inputAttributeDescriptions[0];
     verify(description->type == PositionAttribute);
   }
-  if ((renderPass->info.supportedVertexAttributes & NormalAttribute) != 0) {
+  /*if ((renderPass->info.supportedVertexAttributes & NormalAttribute) != 0) {
     verify(count_struct_array(vertShader->info.inputAttributeDescriptions) >= 2);
     vulkan_vertex_attribute_description *description =
         &vertShader->info.inputAttributeDescriptions[1];
     verify(description->type == NormalAttribute);
-  }
+  }*/
   // HIRO check if vertShader and fragShader attributes match.
 }
 
@@ -138,7 +138,6 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
   viewport.height = (float)renderPass->vks->swapChainExtent.height;
   viewport.minDepth = 0.0F;
   viewport.maxDepth = 1.0F;
-
   VkRect2D scissor = {0};
   scissor.offset.x = 0;
   scissor.offset.y = 0;
@@ -182,6 +181,12 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
   colorBlending.blendConstants[2] = 0.0F;
   colorBlending.blendConstants[3] = 0.0F;
 
+  VkDynamicState dynamicStates[2] = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+  VkPipelineDynamicStateCreateInfo dynamicState = {0};
+  dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+  dynamicState.pDynamicStates = dynamicStates;
+  dynamicState.dynamicStateCount = 2;
+
   VkPipelineLayoutCreateInfo pipelineLayoutInfo = {0};
   pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
   pipelineLayoutInfo.setLayoutCount = 0;
@@ -206,6 +211,7 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
   pipelineInfo.pRasterizationState = &rasterizer;
   pipelineInfo.pMultisampleState = &multisampling;
   pipelineInfo.pColorBlendState = &colorBlending;
+  pipelineInfo.pDynamicState = &dynamicState;
   pipelineInfo.layout = renderPass->pipelineLayout;
   pipelineInfo.renderPass = renderPass->renderPass;
   pipelineInfo.subpass = 0;
@@ -522,6 +528,19 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
 
   vkCmdBeginRenderPass(frame->commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
+  VkViewport viewport = {0};
+  viewport.width = (float)renderPass->vks->swapChainExtent.width;
+  viewport.height = (float)renderPass->vks->swapChainExtent.height;
+  viewport.minDepth = 0.0F;
+  viewport.maxDepth = 1.0F;
+  VkRect2D scissor = {0};
+  scissor.offset.x = 0;
+  scissor.offset.y = 0;
+  scissor.extent = renderPass->vks->swapChainExtent;
+
+  vkCmdSetViewport(frame->commandBuffer, 0, 1, &viewport);
+  vkCmdSetScissor(frame->commandBuffer, 0, 1, &scissor);
+
   vkCmdBindPipeline(frame->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                     renderPass->graphicsPipeline);
   for (size_t nodeIdx = 0; nodeIdx < count_struct_array(scene->nodes); nodeIdx++) {
@@ -543,18 +562,25 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
     for (size_t primitiveIdx = 0; primitiveIdx < count_struct_array(mesh->primitives);
          primitiveIdx++) {
       vulkan_mesh_primitive *primitive = &mesh->primitives[primitiveIdx];
+      vulkan_accessor *indices = primitive->indices;
 
       size_t attributeCount = count_struct_array(primitive->attributes);
       size_t bindingCount = vulkan_shader_info_get_binding_count(&renderPass->vertShader->info);
       assert(bindingCount == 1);
+      VkBuffer vertexBuffer = scene->geometryBuffer->buffer;
+      VkDeviceSize vertexBuffersOffset = 0;
+      if (indices != NULL) {
+        // HIRO convert gltf so vertex position is after indices
+        vertexBuffersOffset = 8; // HIRO from scene
+      }
+
       VkBuffer vertexBuffers[bindingCount];
       VkDeviceSize vertexBuffersOffsets[bindingCount];
-      vertexBuffers[0] = scene->geometryBuffer->buffer;
-      vertexBuffersOffsets[0] = 0;
+      vertexBuffers[0] = vertexBuffer;
+      vertexBuffersOffsets[0] = vertexBuffersOffset;
       vkCmdBindVertexBuffers(frame->commandBuffer, 0, bindingCount, vertexBuffers,
                              vertexBuffersOffsets);
 
-      vulkan_accessor *indices = primitive->indices;
       if (indices != NULL) {
         VkBuffer indexBuffer = scene->geometryBuffer->buffer;
         VkDeviceSize indexBufferOffset = indices->bufferView->offset + indices->offset;
