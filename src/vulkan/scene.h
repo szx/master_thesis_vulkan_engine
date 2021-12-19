@@ -82,8 +82,9 @@ void vulkan_node_deinit(vulkan_node *scene);
 typedef struct vulkan_scene {
   vulkan_node *nodes;
   vulkan_geometry_buffer *geometryBuffer;
-  // HIRO interleave buffer
-  // HIRO do not expose vulkan_buffer_view and vulkan_accessor after interleaving.
+  // HIRO do not interleave buffer
+  // HIRO do not expose vulkan_buffer_view and vulkan_accessor after interleaving. (indices an
+  // attributes)
   vulkan_buffer_view *bufferViews;
   vulkan_accessor *accessors;
 } vulkan_scene;

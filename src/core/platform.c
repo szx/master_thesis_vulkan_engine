@@ -24,7 +24,7 @@ void log_init() {
   log_set_level(logLevel);
   platform_path path = get_executable_dir_file_path("", "log.txt");
   logFile = fopen(platform_path_c_str(&path), "wb");
-  platform_path_free(&path);
+  platform_path_deinit(&path);
   if (logFile) {
     log_add_fp(logFile, logLevel);
   }
@@ -112,12 +112,12 @@ platform_path platform_path_init(const char *data) {
   return path;
 }
 
-void platform_path_free(platform_path *self) {
+void platform_path_deinit(platform_path *self) {
   platform_path *path, *tempPath;
   LL_FOREACH_SAFE(self, path, tempPath) {
     LL_DELETE(self, path);
     str_free(&path->data);
-    // HIRO free(path);
+    // TODO: How to free platform_path on heap?
   }
 }
 
@@ -147,7 +147,7 @@ bool platform_path_equals(platform_path *self, platform_path *other) {
 bool platform_path_dirname_equals(platform_path *self, platform_path *other) {
   platform_path path1 = platform_path_get_dirname(self);
   bool result = platform_path_equals(&path1, other);
-  platform_path_free(&path1);
+  platform_path_deinit(&path1);
   return result;
 }
 

@@ -113,7 +113,7 @@ typedef struct platform_path {
 } platform_path;
 
 platform_path platform_path_init(const char *data);
-void platform_path_free(platform_path *self);
+void platform_path_deinit(platform_path *self);
 platform_path platform_path_copy(platform_path *self);
 const char *platform_path_c_str(platform_path *self);
 

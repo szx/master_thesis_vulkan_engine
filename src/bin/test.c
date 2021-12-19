@@ -12,7 +12,7 @@ TEST c_parser_preprocessor_parsing() {
   platform_path inputPath = get_executable_dir_path();
   platform_path_append(&inputPath, "/tests/c_parser_test.txt");
   char *input = read_text_file(&inputPath, &inputSize);
-  platform_path_free(&inputPath);
+  platform_path_deinit(&inputPath);
   if (input == NULL) {
     FAILm("failed to load file");
   }
@@ -118,7 +118,7 @@ TEST gltf_loading() {
   vulkan_scene *scene = alloc_struct(vulkan_scene);
   init_struct(scene, parse_gltf_file, gltfPath);
   vulkan_scene_debug_print(scene);
-  platform_path_free(&gltfPath);
+  platform_path_deinit(&gltfPath);
   dealloc_struct(scene);
   PASS();
 }

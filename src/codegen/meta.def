@@ -77,8 +77,8 @@ FUNC(platform_alloc_debug_print)
 #define FUNC_platform_path_init 1
 FUNC(platform_path_init)
 
-#define FUNC_platform_path_free 1
-FUNC(platform_path_free)
+#define FUNC_platform_path_deinit 1
+FUNC(platform_path_deinit)
 
 #define FUNC_platform_path_copy 1
 FUNC(platform_path_copy)

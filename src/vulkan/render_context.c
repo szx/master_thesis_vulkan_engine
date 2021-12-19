@@ -49,8 +49,8 @@ void create_shaders(vulkan_render_pass *renderPass) {
   init_struct(renderPass->vertShader, vulkan_shader_init_with_path, renderPass->vkd, vertInputPath);
   renderPass->fragShader = alloc_struct(vulkan_shader);
   init_struct(renderPass->fragShader, vulkan_shader_init_with_path, renderPass->vkd, fragInputPath);
-  platform_path_free(&vertInputPath);
-  platform_path_free(&fragInputPath);
+  platform_path_deinit(&vertInputPath);
+  platform_path_deinit(&fragInputPath);
 }
 
 void create_render_pass(vulkan_render_pass *renderPass) {
@@ -404,7 +404,7 @@ void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneNa
   platform_path_append_ext(&gltfPath, ".gltf");
   rctx->scene = alloc_struct(vulkan_scene);
   init_struct(rctx->scene, parse_gltf_file, gltfPath);
-  platform_path_free(&gltfPath);
+  platform_path_deinit(&gltfPath);
   vulkan_scene_debug_print(rctx->scene);
   vulkan_render_pass_validate(rctx->pipeline->renderPass,
                               rctx->scene); // TODO: vulkan_pipeline_validate().

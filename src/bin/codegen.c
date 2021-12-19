@@ -265,8 +265,8 @@ void parse_header(platform_path *headerPath, str *structDefCode, str *headerDefC
   write_text_file(&headerOutputPath, &headerCode);
   write_text_file(&sourceOutputPath, &sourceCode);
 
-  platform_path_free(&headerOutputPath);
-  platform_path_free(&sourceOutputPath);
+  platform_path_deinit(&headerOutputPath);
+  platform_path_deinit(&sourceOutputPath);
   parser_state_free(&state);
   free(input);
   str_free(&headerCode);
@@ -310,13 +310,13 @@ int main(int argc, char *argv[]) {
   platform_path_append(&headerDefPath, "header.def");
   write_text_file(&headerDefPath, &headerDefCode);
 
-  platform_path_free(&headerDefPath);
-  platform_path_free(&structDefPath);
+  platform_path_deinit(&headerDefPath);
+  platform_path_deinit(&structDefPath);
   str_free(&headerDefCode);
   str_free(&structDefCode);
-  platform_path_free(&codegenPath);
-  platform_path_free(srcChildPathLst);
-  platform_path_free(&srcPath);
+  platform_path_deinit(&codegenPath);
+  platform_path_deinit(srcChildPathLst);
+  platform_path_deinit(&srcPath);
 
   log_info("codegen finished");
   platform_free();
