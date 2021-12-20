@@ -20,7 +20,15 @@
 #define VULKAN_HEADER_PATH "VULKAN_HEADER_PATH should be defined by CMake"
 #endif
 
+#if defined(DEBUG)
+#define debug_msg(msg) log_trace("debug_msg: %s in %s:%s:%d", msg, __func__, __FILE__, __LINE__)
+#else
+void dummy_debug_msg();
+#define debug_msg(msg) dummy_debug_msg()
+#endif
+
 #include "alloc.h"
+#include "struct_alloc.h"
 
 static_assert(sizeof(char) == sizeof(uint8_t), "sizeof(char) != sizeof(uint8_t)");
 
@@ -36,39 +44,8 @@ void log_init();
 /// Closes log.txt file.
 void log_free();
 
-#if defined(DEBUG)
-#define debug_msg(msg) log_trace("debug_msg: %s in %s:%s:%d", msg, __func__, __FILE__, __LINE__)
-#else
-void dummy_debug_msg();
-#define debug_msg(msg) dummy_debug_msg()
-#endif
-
 /// Shows message dialog and exits.
 void panic(const char *format, ...);
-
-/// Use count_struct_array macro.
-/// Returns number of allocated structs in struct array.
-size_t platform_alloc_struct_array_count(void *memory);
-
-/// Use init_struct macro.
-/// Marks struct as initialized.
-void platform_alloc_struct_mark_init(void *memory);
-
-/// Use alloc_struct macro.
-/// Returns newly allocated memory.
-/// Initializes struct.
-void *platform_alloc_struct(const core_type_info *typeInfo, size_t count);
-
-/// Calls appropriate user-defined deinit function if struct is still initialized.
-void platform_deinit_struct(void *memory);
-
-/// Use dealloc_struct macro.
-/// Frees memory allocated for struct after calling appropriate user-defined deinit function.
-/// Sets memory pointer to NULL.
-void platform_dealloc_struct(void **memory);
-
-// Logs debug info about all allocations.
-void platform_alloc_debug_print();
 
 #define verify(cond)                                                                               \
   do {                                                                                             \
@@ -76,32 +53,6 @@ void platform_alloc_debug_print();
       panic("%s:%d: %s failed", __FILE__, __LINE__, #cond);                                        \
     }                                                                                              \
   } while (0)
-
-#define alloc_struct(type)                                                                         \
-  (debug_msg("alloc_struct"), (type *)platform_alloc_struct(&type##_type_info, 1))
-#define alloc_struct_array(type, count)                                                            \
-  (debug_msg("alloc_struct_array"), (type *)platform_alloc_struct(&type##_type_info, (count)))
-#define count_struct_array(ptr)                                                                    \
-  (debug_msg("count_struct_array"), platform_alloc_struct_array_count((void *)(ptr)))
-#define init_struct_array(ptr)                                                                     \
-  do {                                                                                             \
-    debug_msg("init_struct_array");                                                                \
-    platform_alloc_struct_mark_init((ptr));                                                        \
-  } while (0)
-#define init_struct_array_elem(ptr, i, initFunc, ...)                                              \
-  do {                                                                                             \
-    debug_msg("init_struct_array_elem");                                                           \
-    ((initFunc)(&(ptr)[(i)], __VA_ARGS__));                                                        \
-    platform_alloc_struct_mark_init((ptr));                                                        \
-  } while (0)
-#define init_struct(ptr, initFunc, ...)                                                            \
-  do {                                                                                             \
-    debug_msg("init_struct");                                                                      \
-    ((initFunc)((ptr), __VA_ARGS__));                                                              \
-    platform_alloc_struct_mark_init((ptr));                                                        \
-  } while (0)
-#define deinit_struct(ptr) (debug_msg("deinit_struct"), platform_deinit_struct((void *)ptr))
-#define dealloc_struct(ptr) (debug_msg("dealloc_struct"), platform_dealloc_struct((void *)&ptr))
 
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MAX(x, y) ((x) > (y) ? (x) : (y))

@@ -7,6 +7,24 @@
 #define FUNC(name)
 #endif
 
+#define FUNC_platform_alloc_struct_array_count 1
+FUNC(platform_alloc_struct_array_count)
+
+#define FUNC_platform_alloc_struct_mark_init 1
+FUNC(platform_alloc_struct_mark_init)
+
+#define FUNC_platform_alloc_struct 1
+FUNC(platform_alloc_struct)
+
+#define FUNC_platform_deinit_struct 1
+FUNC(platform_deinit_struct)
+
+#define FUNC_platform_dealloc_struct 1
+FUNC(platform_dealloc_struct)
+
+#define FUNC_platform_alloc_debug_print 1
+FUNC(platform_alloc_debug_print)
+
 #define FUNC_core_memdup 1
 FUNC(core_memdup)
 
@@ -38,6 +56,9 @@ FUNC(core_alloc_debug_print)
 #endif
 STRUCT(platform_path)
 
+#define FUNC_dummy_debug_msg 1
+FUNC(dummy_debug_msg)
+
 #define FUNC_platform_init 1
 FUNC(platform_init)
 
@@ -50,29 +71,8 @@ FUNC(log_init)
 #define FUNC_log_free 1
 FUNC(log_free)
 
-#define FUNC_dummy_debug_msg 1
-FUNC(dummy_debug_msg)
-
 #define FUNC_panic 1
 FUNC(panic)
-
-#define FUNC_platform_alloc_struct_array_count 1
-FUNC(platform_alloc_struct_array_count)
-
-#define FUNC_platform_alloc_struct_mark_init 1
-FUNC(platform_alloc_struct_mark_init)
-
-#define FUNC_platform_alloc_struct 1
-FUNC(platform_alloc_struct)
-
-#define FUNC_platform_deinit_struct 1
-FUNC(platform_deinit_struct)
-
-#define FUNC_platform_dealloc_struct 1
-FUNC(platform_dealloc_struct)
-
-#define FUNC_platform_alloc_debug_print 1
-FUNC(platform_alloc_debug_print)
 
 #define FUNC_platform_path_init 1
 FUNC(platform_path_init)
@@ -436,36 +436,6 @@ FUNC(create_logical_device)
 #define FUNC_create_one_shot_command_pool 1
 FUNC(create_one_shot_command_pool)
 
-#define STRUCT_gltf_buffer_view 1
-#ifdef STRUCT_COND
-#  if STRUCT_COND(gltf_buffer_view) == 1
-   STRUCT_COND_TRUE(gltf_buffer_view)
-#  else
-   STRUCT_COND_FALSE(gltf_buffer_view)
-#  endif
-#endif
-STRUCT(gltf_buffer_view)
-
-#define STRUCT_gltf_accessor 1
-#ifdef STRUCT_COND
-#  if STRUCT_COND(gltf_accessor) == 1
-   STRUCT_COND_TRUE(gltf_accessor)
-#  else
-   STRUCT_COND_FALSE(gltf_accessor)
-#  endif
-#endif
-STRUCT(gltf_accessor)
-
-#define STRUCT_gltf_attribute 1
-#ifdef STRUCT_COND
-#  if STRUCT_COND(gltf_attribute) == 1
-   STRUCT_COND_TRUE(gltf_attribute)
-#  else
-   STRUCT_COND_FALSE(gltf_attribute)
-#  endif
-#endif
-STRUCT(gltf_attribute)
-
 #define STRUCT_vulkan_mesh_primitive 1
 #ifdef STRUCT_COND
 #  if STRUCT_COND(vulkan_mesh_primitive) == 1
@@ -505,27 +475,6 @@ STRUCT(vulkan_node)
 #  endif
 #endif
 STRUCT(vulkan_scene)
-
-#define FUNC_gltf_buffer_view_init 1
-FUNC(gltf_buffer_view_init)
-
-#define FUNC_gltf_buffer_view_deinit 1
-FUNC(gltf_buffer_view_deinit)
-
-#define FUNC_gltf_accessor_init 1
-FUNC(gltf_accessor_init)
-
-#define FUNC_gltf_accessor_deinit 1
-FUNC(gltf_accessor_deinit)
-
-#define FUNC_gltf_attribute_init 1
-FUNC(gltf_attribute_init)
-
-#define FUNC_gltf_attribute_deinit 1
-FUNC(gltf_attribute_deinit)
-
-#define FUNC_gltf_attribute_compare 1
-FUNC(gltf_attribute_compare)
 
 #define FUNC_vulkan_mesh_primitive_init 1
 FUNC(vulkan_mesh_primitive_init)

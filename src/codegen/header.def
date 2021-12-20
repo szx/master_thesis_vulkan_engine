@@ -4,6 +4,11 @@
 #include "../core/thirdparty.h"
 #endif
 #if defined(ROOT)
+#include "core/struct_alloc.h"
+#elif defined(PARENT)
+#include "../core/struct_alloc.h"
+#endif
+#if defined(ROOT)
 #include "core/alloc.h"
 #elif defined(PARENT)
 #include "../core/alloc.h"

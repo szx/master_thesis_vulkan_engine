@@ -8,42 +8,7 @@
 #include "device.h"
 #include "functions.h"
 
-typedef struct gltf_buffer_view {
-  char *name;
-  size_t offset;
-  size_t size;
-  size_t stride;
-  vulkan_geometry_buffer *buffer;
-} gltf_buffer_view;
-
-void gltf_buffer_view_init(gltf_buffer_view *bufferView, char *name, size_t offset, size_t size,
-                           size_t stride, vulkan_geometry_buffer *buffer);
-void gltf_buffer_view_deinit(gltf_buffer_view *bufferView);
-
-typedef struct gltf_accessor {
-  char *name;
-  size_t offset;
-  size_t count;
-  size_t stride;
-  gltf_buffer_view *bufferView;
-} gltf_accessor;
-
-void gltf_accessor_init(gltf_accessor *accessor, char *name, size_t offset, size_t size,
-                        size_t stride, gltf_buffer_view *bufferView);
-void gltf_accessor_deinit(gltf_accessor *accessor);
-
-typedef struct gltf_attribute {
-  char *name;
-  vulkan_attribute_type type;
-  gltf_accessor *accessor;
-} gltf_attribute;
-
-void gltf_attribute_init(gltf_attribute *attribute, char *name, vulkan_attribute_type type,
-                         gltf_accessor *accessor);
-void gltf_attribute_deinit(gltf_attribute *attribute);
-int gltf_attribute_compare(const void *s1, const void *s2);
-
-/// Contains vertex stream for a part of the mesh.
+/// Contains index buffer, vertex stream and topology of the part of the mesh.
 typedef struct vulkan_mesh_primitive {
   VkPrimitiveTopology topology;
   uint32_t vertexCount;
@@ -56,7 +21,7 @@ typedef struct vulkan_mesh_primitive {
   uint32_t indexStride;  /// Calculated using indexType.
   UT_array *indexBuffer; /// uint32_t or uint16_t
 
-  // HIRO: Construct scene geometry buffer.
+  // HIRO: Offsets in scene geometry buffer.
 } vulkan_mesh_primitive;
 
 void vulkan_mesh_primitive_init(vulkan_mesh_primitive *primitive, VkPrimitiveTopology topology,
@@ -88,9 +53,9 @@ typedef struct vulkan_scene {
   // HIRO do not interleave buffer, different binding for every attribute?
   // HIRO What about vertex attribute descriptions? They assume interleaved attributes.
   // HIRO do not expose gltf_buffer_view and gltf_accessor after interleaving.
+
   // HIRO roll out our own mesh data format
-  gltf_buffer_view *bufferViews;
-  gltf_accessor *accessors;
+  // HIRO: Construct scene geometry buffer.
 } vulkan_scene;
 
 void vulkan_scene_init(vulkan_scene *self, size_t nodesCount, size_t bufferViewsCount,

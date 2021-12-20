@@ -6,6 +6,10 @@ void *core_memdup(const void *src, size_t size) {
   return data;
 }
 
+#if defined(CODEGEN)
+// Target is codegen, do not expose struct alloc functionality.
+#else
+
 // Include all headers with struct definitions.
 #define PARENT
 #include "../codegen/header.def"
@@ -136,3 +140,5 @@ void core_alloc_debug_print() {
 #include "../codegen/meta.def"
 #endif
 }
+
+#endif

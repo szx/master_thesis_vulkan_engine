@@ -180,6 +180,7 @@ foreach (C_BIN_SOURCE_PATH ${C_BIN_SOURCES})
             target_link_options(${EXECUTABLE_NAME} PUBLIC ${ASAN_FLAGS})
         endif ()
     else ()
+        target_compile_definitions(codegen PUBLIC CODEGEN)
         add_custom_command(
                 TARGET codegen POST_BUILD
                 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/codegen)
