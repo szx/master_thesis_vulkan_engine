@@ -116,7 +116,7 @@ TEST gltf_loading() {
   // platform_path gltfPath = get_asset_file_path("triangle", "Triangle.gltf");
   platform_path gltfPath = get_asset_file_path("triangles", "triangles.gltf");
   vulkan_scene *scene = alloc_struct(vulkan_scene);
-  init_struct(scene, parse_gltf_file, gltfPath);
+  init_struct(scene, vulkan_scene_init_with_gltf_file, gltfPath);
   vulkan_scene_debug_print(scene);
   platform_path_deinit(&gltfPath);
   dealloc_struct(scene);

@@ -1,23 +1,16 @@
 #include "functions.h"
 #include "../codegen/functions.c"
 
-void vulkan_geometry_buffer_init(vulkan_geometry_buffer *geometryBuffer, char *name, uint8_t *data,
-                                 size_t size) {
-  geometryBuffer->name = strdup(name);
-  geometryBuffer->data = malloc(sizeof(uint8_t) * size);
-  memcpy(geometryBuffer->data, data, size);
-  geometryBuffer->dataSize = size;
+void vulkan_geometry_buffer_init(vulkan_geometry_buffer *geometryBuffer) {
+  static const UT_icd ut_vulkan_geometry_buffer_data_icd = {sizeof(uint8_t), NULL, NULL, NULL};
+  utarray_new(geometryBuffer->data, &ut_vulkan_geometry_buffer_data_icd);
   geometryBuffer->vkd = NULL;
   geometryBuffer->buffer = VK_NULL_HANDLE;
   geometryBuffer->bufferMemory = VK_NULL_HANDLE;
 }
 
 void vulkan_geometry_buffer_deinit(vulkan_geometry_buffer *geometryBuffer) {
-  free(geometryBuffer->name);
-  geometryBuffer->name = "DEINIT";
-  free(geometryBuffer->data);
-  geometryBuffer->data = NULL;
-  geometryBuffer->dataSize = 0;
+  utarray_free(geometryBuffer->data);
   if (geometryBuffer->vkd != NULL) {
     vkDestroyBuffer(geometryBuffer->vkd->device, geometryBuffer->buffer, vka);
     vkFreeMemory(geometryBuffer->vkd->device, geometryBuffer->bufferMemory, vka);
@@ -31,9 +24,10 @@ void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
                                            vulkan_geometry_buffer *geometryBuffer) {
   // HIRO: Reuse staging buffer.
   // HIRO: Check if geometry buffer is dirty.
+  // HIRO: Free geometry buffer data if geometry buffer is device local.
   geometryBuffer->vkd = vkd;
-  size_t geometryBufferSize = geometryBuffer->dataSize;
-  uint8_t *geometryBufferData = geometryBuffer->data;
+  size_t geometryBufferSize = utarray_len(geometryBuffer->data);
+  uint8_t *geometryBufferData = utarray_front(geometryBuffer->data);
   VkBuffer stagingBuffer;
   VkDeviceMemory stagingBufferMemory;
   create_buffer(geometryBuffer->vkd, geometryBufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,

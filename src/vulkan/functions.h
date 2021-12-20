@@ -7,23 +7,6 @@
 
 /* Vulkan helper structures */
 
-typedef struct vulkan_geometry_buffer {
-  char *name;
-  uint8_t *data;
-  size_t dataSize;
-  /*  initialized by vulkan_geometry_buffer_send_to_device */
-  vulkan_device *vkd; /// vulkan_device pointer
-  VkBuffer buffer;
-  VkDeviceMemory bufferMemory;
-} vulkan_geometry_buffer;
-
-void vulkan_geometry_buffer_init(vulkan_geometry_buffer *geometryBuffer, char *name, uint8_t *data,
-                                 size_t size);
-void vulkan_geometry_buffer_deinit(vulkan_geometry_buffer *geometryBuffer);
-/// Sends scene's geometry buffer
-void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
-                                           vulkan_geometry_buffer *geometryBuffer);
-
 /// One element of vertex stream.
 /// We assume that all vertex attributes are interleaved.
 /// If vertex attribute is not used, we have to do one of following:
@@ -51,8 +34,24 @@ typedef enum vulkan_index_type {
   vulkan_index_type_uint32 = 1
 } vulkan_index_type;
 
+typedef struct vulkan_geometry_buffer {
+  UT_array *data; /// uint8_t, initialized by vulkan_scene_build_geometry_buffer
+  /*  initialized by vulkan_geometry_buffer_send_to_device */
+  vulkan_device *vkd; /// vulkan_device pointer
+  VkBuffer buffer;
+  VkDeviceMemory bufferMemory;
+} vulkan_geometry_buffer;
+
 /* Vulkan helper functions */
 // TODO: Implement all Vulkan helper functions.
+
+void vulkan_geometry_buffer_init(vulkan_geometry_buffer *geometryBuffer);
+void vulkan_geometry_buffer_deinit(vulkan_geometry_buffer *geometryBuffer);
+
+/// Creates device local buffer and copies geometry buffer data into it.
+void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
+                                           vulkan_geometry_buffer *geometryBuffer);
+
 uint32_t find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
                           VkMemoryPropertyFlags properties);
 VkFormat find_depth_format(vulkan_device *vkd);

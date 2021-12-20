@@ -1,7 +1,6 @@
 #include "scene.h"
 #include "../codegen/scene.c"
 
-
 void vulkan_mesh_primitive_init(vulkan_mesh_primitive *primitive, VkPrimitiveTopology topology,
                                 vulkan_attribute_type vertexTypes, vulkan_index_type indexType) {
   primitive->topology = topology;
@@ -10,11 +9,14 @@ void vulkan_mesh_primitive_init(vulkan_mesh_primitive *primitive, VkPrimitiveTop
   primitive->vertexStride = vertex_types_to_vertex_stride(primitive->vertexTypes);
   const UT_icd vertexIcd = {primitive->vertexStride, NULL, NULL, NULL};
   utarray_new(primitive->vertexStream, &vertexIcd);
+  primitive->vertexStreamOffset = ~0;
+
   primitive->indexCount = 0;
   primitive->indexType = indexType;
   primitive->indexStride = index_type_to_index_stride(primitive->indexType);
   const UT_icd indexIcd = {primitive->indexStride, NULL, NULL, NULL};
   utarray_new(primitive->indexBuffer, &indexIcd);
+  primitive->indexBufferOffset = ~0;
 }
 
 void vulkan_mesh_primitive_deinit(vulkan_mesh_primitive *primitive) {
@@ -40,6 +42,8 @@ void vulkan_scene_init(vulkan_scene *scene, size_t nodesCount, size_t bufferView
                        size_t accessorsCount) {
   scene->nodes = alloc_struct_array(vulkan_node, nodesCount);
   init_struct_array(scene->nodes);
+  scene->geometryBuffer = alloc_struct(vulkan_geometry_buffer);
+  init_struct(scene->geometryBuffer, vulkan_geometry_buffer_init);
 }
 
 void vulkan_scene_deinit(vulkan_scene *self) {
@@ -49,7 +53,7 @@ void vulkan_scene_deinit(vulkan_scene *self) {
 
 void vulkan_scene_debug_print(vulkan_scene *self) {
   log_debug("SCENE:\n");
-  log_debug("geometryBuffer: %d\n", self->geometryBuffer->dataSize);
+  log_debug("geometryBuffer: %d\n", utarray_len(self->geometryBuffer->data));
   for (size_t i = 0; i < count_struct_array(self->nodes); i++) {
     log_debug("node:\n");
     vulkan_node *node = &self->nodes[i];
@@ -58,9 +62,9 @@ void vulkan_scene_debug_print(vulkan_scene *self) {
     for (size_t j = 0; j < count_struct_array(mesh->primitives); j++) {
       vulkan_mesh_primitive *primitive = &mesh->primitives[j];
       log_debug("  primitive %d: %s\n", j, VkPrimitiveTopology_debug_str(primitive->topology));
-      log_debug("    index: %s stride=%d count=%d\n",
+      log_debug("    index: %s stride=%d count=%d offset=%lu\n",
                 vulkan_index_type_debug_str(primitive->indexType), primitive->indexStride,
-                primitive->indexCount);
+                primitive->indexCount, primitive->indexBufferOffset);
       void *index = NULL;
       while ((index = utarray_next(primitive->indexBuffer, index))) {
         if (primitive->indexType == vulkan_index_type_uint16) {
@@ -69,8 +73,8 @@ void vulkan_scene_debug_print(vulkan_scene *self) {
           log_debug("      %u\n", *(uint32_t *)index);
         }
       }
-      log_debug("    vertex: stride=%d count=%d \n", primitive->vertexStride,
-                primitive->vertexCount);
+      log_debug("    vertex: stride=%d count=%d offset=%lu\n", primitive->vertexStride,
+                primitive->vertexCount, primitive->vertexStreamOffset);
       vulkan_vertex_stream_element *vertex = NULL;
       uint32_t vertexIdx = 0;
       while ((vertex = utarray_next(primitive->vertexStream, vertex))) {
@@ -134,7 +138,7 @@ vulkan_attribute_type cgltf_to_vulkan_attribute_type(cgltf_attribute_type type) 
     return UnknownAttribute;
   }
 }
-vulkan_node parse_cgltf_node(cgltf_node *cgltfNode, vulkan_geometry_buffer *geometryBuffer) {
+vulkan_node parse_cgltf_node(cgltf_node *cgltfNode) {
   assert(cgltfNode->extras.start_offset == 0 && cgltfNode->extras.end_offset == 0);
   assert(cgltfNode->camera == NULL);
   assert(cgltfNode->light == NULL);
@@ -185,6 +189,7 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode, vulkan_geometry_buffer *geom
         *(uint32_t *)outValue = indexValue;
       }
     }
+
     utarray_resize(meshPrimitive.vertexStream, meshPrimitive.vertexCount);
     for (size_t i = 0; i < meshPrimitive.vertexCount; i++) {
       vulkan_vertex_stream_element vertex;
@@ -220,7 +225,7 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode, vulkan_geometry_buffer *geom
   return node;
 }
 
-void parse_gltf_file(vulkan_scene *scene, platform_path gltfPath) {
+void vulkan_scene_init_with_gltf_file(vulkan_scene *scene, platform_path gltfPath) {
   // read gltf file
   cgltf_options options = {0};
   cgltf_data *data = NULL;
@@ -240,17 +245,62 @@ void parse_gltf_file(vulkan_scene *scene, platform_path gltfPath) {
   size_t bufferViewsCount = data->buffer_views_count;
   size_t accessorsCount = data->accessors_count;
   init_struct(scene, vulkan_scene_init, nodesCount, bufferViewsCount, accessorsCount);
-  // parse geometry buffer
-  assert(data->buffers_count == 1);
-  cgltf_buffer *cgltfBuffer = &data->buffers[0];
-  scene->geometryBuffer = alloc_struct(vulkan_geometry_buffer);
-  init_struct(scene->geometryBuffer, vulkan_geometry_buffer_init, cgltfBuffer->uri,
-              cgltfBuffer->data, cgltfBuffer->size);
-
   // parse nodes
   for (size_t nodeIdx = 0; nodeIdx < nodesCount; nodeIdx++) {
-    vulkan_node node = parse_cgltf_node(cgltfScene->nodes[nodeIdx], scene->geometryBuffer);
+    vulkan_node node = parse_cgltf_node(cgltfScene->nodes[nodeIdx]);
     scene->nodes[nodeIdx] = node;
   }
   cgltf_free(data);
+
+  // build geometry buffer
+  vulkan_scene_build_geometry_buffer(scene);
+}
+
+void vulkan_scene_build_geometry_buffer(vulkan_scene *scene) {
+  // TODO: Overlapping index buffers and vertex streams.
+  // TODO: Free node resources after building scene.
+  log_debug("vulkan_scene_build_geometry_buffer");
+  vulkan_scene_debug_print(scene);
+  UT_array *data = scene->geometryBuffer->data;
+  assert(utarray_len(data) == 0);
+  size_t paddingValue = 0;
+  for (size_t nodeIdx = 0; nodeIdx < count_struct_array(scene->nodes); nodeIdx++) {
+    log_debug("node:\n");
+    vulkan_node *node = &scene->nodes[nodeIdx];
+    vulkan_mesh *mesh = &node->mesh;
+    for (size_t primIdx = 0; primIdx < count_struct_array(mesh->primitives); primIdx++) {
+      vulkan_mesh_primitive *primitive = &mesh->primitives[primIdx];
+      // index buffer
+      size_t indexBufferOffset = utarray_len(data);
+      if ((indexBufferOffset % primitive->indexStride) != 0) {
+        size_t remainder = (indexBufferOffset % primitive->indexStride);
+        indexBufferOffset += remainder;
+        for (size_t i = 0; i < remainder; i++) {
+          utarray_push_back(data, &paddingValue);
+        }
+      }
+      primitive->indexBufferOffset = indexBufferOffset;
+      size_t indexBufferSize = primitive->indexStride * primitive->indexCount;
+      utarray_resize(data, utarray_len(data) + indexBufferSize);
+      void *geometryData = utarray_eltptr(data, utarray_len(data) - indexBufferSize);
+      void *indexData = utarray_front(primitive->indexBuffer);
+      memcpy(geometryData, indexData, indexBufferSize);
+      // vertex stream
+      size_t vertexStreamOffset = utarray_len(data);
+      if ((vertexStreamOffset % primitive->vertexStride) != 0) {
+        // TODO: Is it too much? Should we align vertex streams?
+        size_t remainder = (vertexStreamOffset % primitive->vertexStride);
+        vertexStreamOffset += remainder;
+        for (size_t i = 0; i < remainder; i++) {
+          utarray_push_back(data, &paddingValue);
+        }
+      }
+      primitive->vertexStreamOffset = vertexStreamOffset;
+      size_t vertexStreamSize = primitive->vertexStride * primitive->vertexCount;
+      utarray_resize(data, utarray_len(data) + vertexStreamSize);
+      geometryData = utarray_eltptr(data, utarray_len(data) - vertexStreamSize);
+      void *vertexData = utarray_front(primitive->vertexStream);
+      memcpy(geometryData, vertexData, vertexStreamSize);
+    }
+  }
 }

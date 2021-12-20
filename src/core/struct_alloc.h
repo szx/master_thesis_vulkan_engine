@@ -116,13 +116,13 @@ void platform_alloc_debug_print();
 #define init_struct_array_elem(ptr, i, initFunc, ...)                                              \
   do {                                                                                             \
     debug_msg("init_struct_array_elem");                                                           \
-    ((initFunc)(&(ptr)[(i)], __VA_ARGS__));                                                        \
+    ((initFunc)(&(ptr)[(i)], ##__VA_ARGS__));                                                      \
     platform_alloc_struct_mark_init((ptr));                                                        \
   } while (0)
 #define init_struct(ptr, initFunc, ...)                                                            \
   do {                                                                                             \
     debug_msg("init_struct");                                                                      \
-    ((initFunc)((ptr), __VA_ARGS__));                                                              \
+    ((initFunc)((ptr), ##__VA_ARGS__));                                                            \
     platform_alloc_struct_mark_init((ptr));                                                        \
   } while (0)
 #define deinit_struct(ptr) (debug_msg("deinit_struct"), platform_deinit_struct((void *)ptr))

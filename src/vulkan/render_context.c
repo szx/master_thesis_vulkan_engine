@@ -97,6 +97,7 @@ void create_render_pass(vulkan_render_pass *renderPass) {
 }
 
 void create_graphics_pipeline(vulkan_render_pass *renderPass) {
+  // HIRO bake pipelines with different VkVertexInputAttributeDescription
   VkPipelineShaderStageCreateInfo vertShaderStageInfo = {0};
   vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
   vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
@@ -409,7 +410,7 @@ void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneNa
   platform_path gltfPath = get_asset_file_path(sceneName, sceneName);
   platform_path_append_ext(&gltfPath, ".gltf");
   rctx->scene = alloc_struct(vulkan_scene);
-  init_struct(rctx->scene, parse_gltf_file, gltfPath);
+  init_struct(rctx->scene, vulkan_scene_init_with_gltf_file, gltfPath);
   platform_path_deinit(&gltfPath);
   vulkan_scene_debug_print(rctx->scene);
   vulkan_render_pass_validate(rctx->pipeline->renderPass,
@@ -568,8 +569,8 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
       VkBuffer vertexBuffer = scene->geometryBuffer->buffer;
       VkDeviceSize vertexBuffersOffset = 0;
       if (primitive->indexCount > 0) {
-        // HIRO convert gltf so vertex position is after indices
-        vertexBuffersOffset = 8; // HIRO from scene
+        // HIRO update vertex stride with dynamic constants
+        vertexBuffersOffset = primitive->vertexStreamOffset;
       }
 
       VkBuffer vertexBuffers[bindingCount];
@@ -581,7 +582,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
 
       if (primitive->indexCount > 0) {
         VkBuffer indexBuffer = scene->geometryBuffer->buffer;
-        VkDeviceSize indexBufferOffset = 0; // HIRO create geometry buffer for scene
+        VkDeviceSize indexBufferOffset = primitive->indexBufferOffset;
         uint32_t indexCount = primitive->indexCount;
         uint32_t indexStride = primitive->indexStride;
         VkIndexType indexType = stride_to_index_format(indexStride);
