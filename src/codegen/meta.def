@@ -241,6 +241,18 @@ FUNC(get_swap_chain_images)
 #define FUNC_create_swap_chain_image_views 1
 FUNC(create_swap_chain_image_views)
 
+#define ENUM_vulkan_attribute_type()\
+ENUMERATOR(UnknownAttribute)\
+ENUMERATOR(PositionAttribute)\
+ENUMERATOR(NormalAttribute)\
+ENUMERATOR(ColorAttribute)\
+ENUMERATOR(TexCoordAttribute)\
+ENUMERATOR(TangentAttribute)\
+
+#define ENUM_vulkan_index_type()\
+ENUMERATOR(vulkan_index_type_uint16)\
+ENUMERATOR(vulkan_index_type_uint32)\
+
 #define STRUCT_vulkan_geometry_buffer 1
 #ifdef STRUCT_COND
 #  if STRUCT_COND(vulkan_geometry_buffer) == 1
@@ -250,6 +262,16 @@ FUNC(create_swap_chain_image_views)
 #  endif
 #endif
 STRUCT(vulkan_geometry_buffer)
+
+#define STRUCT_vulkan_vertex_stream_element 1
+#ifdef STRUCT_COND
+#  if STRUCT_COND(vulkan_vertex_stream_element) == 1
+   STRUCT_COND_TRUE(vulkan_vertex_stream_element)
+#  else
+   STRUCT_COND_FALSE(vulkan_vertex_stream_element)
+#  endif
+#endif
+STRUCT(vulkan_vertex_stream_element)
 
 #define FUNC_vulkan_geometry_buffer_init 1
 FUNC(vulkan_geometry_buffer_init)
@@ -265,6 +287,15 @@ FUNC(find_memory_type)
 
 #define FUNC_find_depth_format 1
 FUNC(find_depth_format)
+
+#define FUNC_vertex_types_to_vertex_stride 1
+FUNC(vertex_types_to_vertex_stride)
+
+#define FUNC_index_type_to_index_stride 1
+FUNC(index_type_to_index_stride)
+
+#define FUNC_index_stride_to_index_type 1
+FUNC(index_stride_to_index_type)
 
 #define FUNC_stride_to_index_format 1
 FUNC(stride_to_index_format)
@@ -405,43 +436,35 @@ FUNC(create_logical_device)
 #define FUNC_create_one_shot_command_pool 1
 FUNC(create_one_shot_command_pool)
 
-#define ENUM_vulkan_attribute_type()\
-ENUMERATOR(UnknownAttribute)\
-ENUMERATOR(PositionAttribute)\
-ENUMERATOR(NormalAttribute)\
-ENUMERATOR(TangentAttribute)\
-ENUMERATOR(TexCoordAttribute)\
-ENUMERATOR(ColorAttribute)\
-
-#define STRUCT_vulkan_buffer_view 1
+#define STRUCT_gltf_buffer_view 1
 #ifdef STRUCT_COND
-#  if STRUCT_COND(vulkan_buffer_view) == 1
-   STRUCT_COND_TRUE(vulkan_buffer_view)
+#  if STRUCT_COND(gltf_buffer_view) == 1
+   STRUCT_COND_TRUE(gltf_buffer_view)
 #  else
-   STRUCT_COND_FALSE(vulkan_buffer_view)
+   STRUCT_COND_FALSE(gltf_buffer_view)
 #  endif
 #endif
-STRUCT(vulkan_buffer_view)
+STRUCT(gltf_buffer_view)
 
-#define STRUCT_vulkan_accessor 1
+#define STRUCT_gltf_accessor 1
 #ifdef STRUCT_COND
-#  if STRUCT_COND(vulkan_accessor) == 1
-   STRUCT_COND_TRUE(vulkan_accessor)
+#  if STRUCT_COND(gltf_accessor) == 1
+   STRUCT_COND_TRUE(gltf_accessor)
 #  else
-   STRUCT_COND_FALSE(vulkan_accessor)
+   STRUCT_COND_FALSE(gltf_accessor)
 #  endif
 #endif
-STRUCT(vulkan_accessor)
+STRUCT(gltf_accessor)
 
-#define STRUCT_vulkan_attribute 1
+#define STRUCT_gltf_attribute 1
 #ifdef STRUCT_COND
-#  if STRUCT_COND(vulkan_attribute) == 1
-   STRUCT_COND_TRUE(vulkan_attribute)
+#  if STRUCT_COND(gltf_attribute) == 1
+   STRUCT_COND_TRUE(gltf_attribute)
 #  else
-   STRUCT_COND_FALSE(vulkan_attribute)
+   STRUCT_COND_FALSE(gltf_attribute)
 #  endif
 #endif
-STRUCT(vulkan_attribute)
+STRUCT(gltf_attribute)
 
 #define STRUCT_vulkan_mesh_primitive 1
 #ifdef STRUCT_COND
@@ -483,26 +506,26 @@ STRUCT(vulkan_node)
 #endif
 STRUCT(vulkan_scene)
 
-#define FUNC_vulkan_buffer_view_init 1
-FUNC(vulkan_buffer_view_init)
+#define FUNC_gltf_buffer_view_init 1
+FUNC(gltf_buffer_view_init)
 
-#define FUNC_vulkan_buffer_view_deinit 1
-FUNC(vulkan_buffer_view_deinit)
+#define FUNC_gltf_buffer_view_deinit 1
+FUNC(gltf_buffer_view_deinit)
 
-#define FUNC_vulkan_accessor_init 1
-FUNC(vulkan_accessor_init)
+#define FUNC_gltf_accessor_init 1
+FUNC(gltf_accessor_init)
 
-#define FUNC_vulkan_accessor_deinit 1
-FUNC(vulkan_accessor_deinit)
+#define FUNC_gltf_accessor_deinit 1
+FUNC(gltf_accessor_deinit)
 
-#define FUNC_vulkan_attribute_init 1
-FUNC(vulkan_attribute_init)
+#define FUNC_gltf_attribute_init 1
+FUNC(gltf_attribute_init)
 
-#define FUNC_vulkan_attribute_deinit 1
-FUNC(vulkan_attribute_deinit)
+#define FUNC_gltf_attribute_deinit 1
+FUNC(gltf_attribute_deinit)
 
-#define FUNC_vulkan_attribute_compare 1
-FUNC(vulkan_attribute_compare)
+#define FUNC_gltf_attribute_compare 1
+FUNC(gltf_attribute_compare)
 
 #define FUNC_vulkan_mesh_primitive_init 1
 FUNC(vulkan_mesh_primitive_init)

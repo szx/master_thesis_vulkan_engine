@@ -448,6 +448,8 @@ vulkan_limits find_limits(vulkan_device *vkd, VkPhysicalDevice physicalDevice) {
   limits.maxBoundDescriptorSets = deviceProperties.limits.maxBoundDescriptorSets;
   limits.maxVertexInputAttributes = deviceProperties.limits.maxVertexInputAttributes;
   limits.maxVertexOutputComponents = deviceProperties.limits.maxVertexOutputComponents;
+  limits.maxVertexInputBindings = deviceProperties.limits.maxVertexInputBindings;
+  limits.maxVertexInputBindingStride = deviceProperties.limits.maxVertexInputBindingStride;
   return limits;
 }
 

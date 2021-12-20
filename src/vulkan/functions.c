@@ -73,11 +73,51 @@ uint32_t find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
 
 VkFormat find_depth_format(vulkan_device *vkd) { return VK_FORMAT_R32_UINT; }
 
+uint32_t vertex_types_to_vertex_stride(vulkan_attribute_type vertexTypes) {
+  if ((vertexTypes & TexCoordAttribute) != 0) {
+    return offsetof(vulkan_vertex_stream_element, texCoord) +
+           member_size(vulkan_vertex_stream_element, texCoord);
+  }
+  if ((vertexTypes & ColorAttribute) != 0) {
+    return offsetof(vulkan_vertex_stream_element, color) +
+           member_size(vulkan_vertex_stream_element, color);
+  }
+  if ((vertexTypes & NormalAttribute) != 0) {
+    return offsetof(vulkan_vertex_stream_element, normal) +
+           member_size(vulkan_vertex_stream_element, normal);
+  }
+  if ((vertexTypes & PositionAttribute) != 0) {
+    return offsetof(vulkan_vertex_stream_element, position) +
+           member_size(vulkan_vertex_stream_element, position);
+  }
+  return 0; // TODO: Unreachable.
+}
+
+uint32_t index_type_to_index_stride(vulkan_index_type indexType) {
+  switch (indexType) {
+  case vulkan_index_type_uint16:
+    return 2;
+  case vulkan_index_type_uint32:
+    return 4;
+  }
+  return 0; // HIRO unreachable
+}
+
+vulkan_index_type index_stride_to_index_type(uint32_t indexStride) {
+  switch (indexStride) {
+  case 2:
+    return vulkan_index_type_uint16;
+  case 4:
+    return vulkan_index_type_uint32;
+  }
+  return 0; // HIRO unreachable
+}
+
 VkIndexType stride_to_index_format(uint32_t indexStride) {
   VkIndexType indexType = VK_INDEX_TYPE_NONE_KHR;
   if (indexStride == 2) {
     indexType = VK_INDEX_TYPE_UINT16;
-  } else if (indexStride == 2) {
+  } else if (indexStride == 4) {
     indexType = VK_INDEX_TYPE_UINT32;
   }
   return indexType;

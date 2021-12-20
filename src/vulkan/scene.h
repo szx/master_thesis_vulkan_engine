@@ -8,58 +8,59 @@
 #include "device.h"
 #include "functions.h"
 
-typedef struct vulkan_buffer_view {
+typedef struct gltf_buffer_view {
   char *name;
   size_t offset;
   size_t size;
   size_t stride;
   vulkan_geometry_buffer *buffer;
-} vulkan_buffer_view;
+} gltf_buffer_view;
 
-void vulkan_buffer_view_init(vulkan_buffer_view *bufferView, char *name, size_t offset, size_t size,
-                             size_t stride, vulkan_geometry_buffer *buffer);
-void vulkan_buffer_view_deinit(vulkan_buffer_view *bufferView);
+void gltf_buffer_view_init(gltf_buffer_view *bufferView, char *name, size_t offset, size_t size,
+                           size_t stride, vulkan_geometry_buffer *buffer);
+void gltf_buffer_view_deinit(gltf_buffer_view *bufferView);
 
-typedef struct vulkan_accessor {
+typedef struct gltf_accessor {
   char *name;
   size_t offset;
   size_t count;
   size_t stride;
-  vulkan_buffer_view *bufferView;
-} vulkan_accessor;
+  gltf_buffer_view *bufferView;
+} gltf_accessor;
 
-void vulkan_accessor_init(vulkan_accessor *accessor, char *name, size_t offset, size_t size,
-                          size_t stride, vulkan_buffer_view *bufferView);
-void vulkan_accessor_deinit(vulkan_accessor *accessor);
+void gltf_accessor_init(gltf_accessor *accessor, char *name, size_t offset, size_t size,
+                        size_t stride, gltf_buffer_view *bufferView);
+void gltf_accessor_deinit(gltf_accessor *accessor);
 
-typedef enum vulkan_attribute_type {
-  UnknownAttribute = 1 << 0,
-  PositionAttribute = 1 << 1,
-  NormalAttribute = 1 << 2,
-  TangentAttribute = 1 << 3,
-  TexCoordAttribute = 1 << 4,
-  ColorAttribute = 1 << 5
-} vulkan_attribute_type;
-
-typedef struct vulkan_attribute {
+typedef struct gltf_attribute {
   char *name;
   vulkan_attribute_type type;
-  vulkan_accessor *accessor;
-} vulkan_attribute;
+  gltf_accessor *accessor;
+} gltf_attribute;
 
-void vulkan_attribute_init(vulkan_attribute *attribute, char *name, vulkan_attribute_type type,
-                           vulkan_accessor *accessor);
-void vulkan_attribute_deinit(vulkan_attribute *attribute);
-int vulkan_attribute_compare(const void *s1, const void *s2);
+void gltf_attribute_init(gltf_attribute *attribute, char *name, vulkan_attribute_type type,
+                         gltf_accessor *accessor);
+void gltf_attribute_deinit(gltf_attribute *attribute);
+int gltf_attribute_compare(const void *s1, const void *s2);
 
+/// Contains vertex stream for a part of the mesh.
 typedef struct vulkan_mesh_primitive {
   VkPrimitiveTopology topology;
-  vulkan_attribute *attributes;
-  vulkan_accessor *indices;
+  uint32_t vertexCount;
+  vulkan_attribute_type vertexTypes;
+  uint32_t vertexStride;  /// Calculated using vertexTypes.
+  UT_array *vertexStream; /// vulkan_vertex_stream_element
+
+  uint32_t indexCount;
+  vulkan_index_type indexType;
+  uint32_t indexStride;  /// Calculated using indexType.
+  UT_array *indexBuffer; /// uint32_t or uint16_t
+
+  // HIRO: Construct scene geometry buffer.
 } vulkan_mesh_primitive;
 
 void vulkan_mesh_primitive_init(vulkan_mesh_primitive *primitive, VkPrimitiveTopology topology,
-                                size_t attributeCount);
+                                vulkan_attribute_type vertexTypes, vulkan_index_type indexType);
 void vulkan_mesh_primitive_deinit(vulkan_mesh_primitive *primitive);
 
 typedef struct vulkan_mesh {
@@ -86,10 +87,10 @@ typedef struct vulkan_scene {
   // HIRO VK_EXT_extended_dynamic_state allows VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE_EXT
   // HIRO do not interleave buffer, different binding for every attribute?
   // HIRO What about vertex attribute descriptions? They assume interleaved attributes.
-  // HIRO do not expose vulkan_buffer_view and vulkan_accessor after interleaving. (indices an
-  // attributes)
-  vulkan_buffer_view *bufferViews;
-  vulkan_accessor *accessors;
+  // HIRO do not expose gltf_buffer_view and gltf_accessor after interleaving.
+  // HIRO roll out our own mesh data format
+  gltf_buffer_view *bufferViews;
+  gltf_accessor *accessors;
 } vulkan_scene;
 
 void vulkan_scene_init(vulkan_scene *self, size_t nodesCount, size_t bufferViewsCount,

@@ -7,6 +7,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#define member_size(type, member) sizeof(((type *)0)->member)
+
 void *core_memdup(const void *src, size_t size);
 
 #if defined(DEBUG)

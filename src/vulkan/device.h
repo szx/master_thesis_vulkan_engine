@@ -49,6 +49,8 @@ typedef struct vulkan_limits {
   uint32_t maxBoundDescriptorSets;
   uint32_t maxVertexInputAttributes;
   uint32_t maxVertexOutputComponents;
+  uint32_t maxVertexInputBindings;
+  uint32_t maxVertexInputBindingStride;
   /* render context limits */
   // TODO: Rethink.
   uint32_t maxSceneNodes; /// Max scene nodes per scene.

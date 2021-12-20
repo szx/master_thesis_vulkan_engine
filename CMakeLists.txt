@@ -47,6 +47,11 @@ add_subdirectory(thirdparty/cglm)
 # add external library stb
 set(STB_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb")
 
+# add external library meshoptimizer
+set(MESHOPTIMIZER_LIBRARIES "meshoptimizer")
+add_subdirectory(thirdparty/meshoptimizer)
+
+
 # add external library GLib
 pkg_check_modules(glib REQUIRED IMPORTED_TARGET glib-2.0)
 
@@ -65,7 +70,8 @@ set(EXTERNAL_INCLUDE_PATHS ${VULKAN_INCLUDE_PATH} ${shaderc_INCLUDE_DIRS} ${GREA
         ${STB_INCLUDE_PATH})
 set(EXTERNAL_ADDITIONAL_SOURCES ${LOGC_ADDITIONAL_SOURCES})
 set(EXTERNAL_LIBRARY_PATHS ${VULKAN_LIBRARY_PATH} ${shaderc_LIBRARY_DIRS} ${GTK4_LIBRARY_DIRS} ${SQLITE3_LIBRARY_DIRS})
-set(EXTERNAL_LIBRARIES glfw ${VULKAN_LIBRARIES} ${shaderc_LIBRARIES} PkgConfig::glib ${GTK4_LIBRARIES} ${SQLITE3_LIBRARIES} ${CGLM_LIBRARIES})
+set(EXTERNAL_LIBRARIES glfw ${VULKAN_LIBRARIES} ${shaderc_LIBRARIES} PkgConfig::glib ${GTK4_LIBRARIES}
+        ${SQLITE3_LIBRARIES} ${CGLM_LIBRARIES} ${MESHOPTIMIZER_LIBRARIES})
 
 
 # build packcc during configure

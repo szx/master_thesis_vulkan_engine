@@ -562,14 +562,12 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
     for (size_t primitiveIdx = 0; primitiveIdx < count_struct_array(mesh->primitives);
          primitiveIdx++) {
       vulkan_mesh_primitive *primitive = &mesh->primitives[primitiveIdx];
-      vulkan_accessor *indices = primitive->indices;
 
-      size_t attributeCount = count_struct_array(primitive->attributes);
       size_t bindingCount = vulkan_shader_info_get_binding_count(&renderPass->vertShader->info);
       assert(bindingCount == 1);
       VkBuffer vertexBuffer = scene->geometryBuffer->buffer;
       VkDeviceSize vertexBuffersOffset = 0;
-      if (indices != NULL) {
+      if (primitive->indexCount > 0) {
         // HIRO convert gltf so vertex position is after indices
         vertexBuffersOffset = 8; // HIRO from scene
       }
@@ -581,11 +579,11 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
       vkCmdBindVertexBuffers(frame->commandBuffer, 0, bindingCount, vertexBuffers,
                              vertexBuffersOffsets);
 
-      if (indices != NULL) {
+      if (primitive->indexCount > 0) {
         VkBuffer indexBuffer = scene->geometryBuffer->buffer;
-        VkDeviceSize indexBufferOffset = indices->bufferView->offset + indices->offset;
-        uint32_t indexCount = indices->count;
-        uint32_t indexStride = indices->stride;
+        VkDeviceSize indexBufferOffset = 0; // HIRO create geometry buffer for scene
+        uint32_t indexCount = primitive->indexCount;
+        uint32_t indexStride = primitive->indexStride;
         VkIndexType indexType = stride_to_index_format(indexStride);
         vkCmdBindIndexBuffer(frame->commandBuffer, indexBuffer, indexBufferOffset, indexType);
         vkCmdDrawIndexed(frame->commandBuffer, indexCount, 1, 0, 0, 0);

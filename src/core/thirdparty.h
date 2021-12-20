@@ -3,9 +3,9 @@
 #define VK_ENABLE_BETA_EXTENSIONS
 #include "vulkan/vulkan.h"
 
-#include <GLFW/glfw3.h>
-
+#include "meshoptimizer.h"
 #include "shaderc/shaderc.h"
+#include <GLFW/glfw3.h>
 
 #include "log.h"
 #include "str.h"
