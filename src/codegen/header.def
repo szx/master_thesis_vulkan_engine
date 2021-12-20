@@ -14,6 +14,11 @@
 #include "../core/alloc.h"
 #endif
 #if defined(ROOT)
+#include "core/junk.h"
+#elif defined(PARENT)
+#include "../core/junk.h"
+#endif
+#if defined(ROOT)
 #include "core/platform.h"
 #elif defined(PARENT)
 #include "../core/platform.h"

@@ -50,7 +50,6 @@ void parser_state_free(parser_state *state) {
     dealloc_struct(comment);
   }
   state->isValid = false;
-  parser_ast_node_free(state->programNode);
   state->programNode = NULL;
 }
 
@@ -98,7 +97,12 @@ void parser_ast_node_free(parser_ast_node *node) {
       parser_ast_node_free(childNode);
     }
   }
-  free(node);
+  parser_ast_node *siblingNode;
+  LL_FOREACH_SAFE(node,siblingNode,temp) {
+    if (siblingNode != NULL) {
+      free(node);
+    }
+  }
 }
 
 parser_ast_node *parser_ast_node_init_variadic(parser_state *state,

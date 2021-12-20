@@ -29,8 +29,7 @@ void dummy_debug_msg();
 
 #include "alloc.h"
 #include "struct_alloc.h"
-
-static_assert(sizeof(char) == sizeof(uint8_t), "sizeof(char) != sizeof(uint8_t)");
+#include "junk.h"
 
 /// Allocates and initializes all global state used by functions below.
 void platform_init();
@@ -53,9 +52,6 @@ void panic(const char *format, ...);
       panic("%s:%d: %s failed", __FILE__, __LINE__, #cond);                                        \
     }                                                                                              \
   } while (0)
-
-#define MIN(x, y) ((x) < (y) ? (x) : (y))
-#define MAX(x, y) ((x) > (y) ? (x) : (y))
 
 /* file system */
 typedef struct platform_path {

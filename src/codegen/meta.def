@@ -7,6 +7,24 @@
 #define FUNC(name)
 #endif
 
+#define FUNC_core_alloc_struct_header_get 1
+FUNC(core_alloc_struct_header_get)
+
+#define FUNC_core_alloc_struct_header_init 1
+FUNC(core_alloc_struct_header_init)
+
+#define FUNC_core_alloc_struct 1
+FUNC(core_alloc_struct)
+
+#define FUNC_core_deinit_struct 1
+FUNC(core_deinit_struct)
+
+#define FUNC_core_dealloc_struct 1
+FUNC(core_dealloc_struct)
+
+#define FUNC_core_alloc_debug_print 1
+FUNC(core_alloc_debug_print)
+
 #define FUNC_platform_alloc_struct_array_count 1
 FUNC(platform_alloc_struct_array_count)
 
@@ -27,24 +45,6 @@ FUNC(platform_alloc_debug_print)
 
 #define FUNC_core_memdup 1
 FUNC(core_memdup)
-
-#define FUNC_core_alloc_struct_header_get 1
-FUNC(core_alloc_struct_header_get)
-
-#define FUNC_core_alloc_struct_header_init 1
-FUNC(core_alloc_struct_header_init)
-
-#define FUNC_core_alloc_struct 1
-FUNC(core_alloc_struct)
-
-#define FUNC_core_deinit_struct 1
-FUNC(core_deinit_struct)
-
-#define FUNC_core_dealloc_struct 1
-FUNC(core_dealloc_struct)
-
-#define FUNC_core_alloc_debug_print 1
-FUNC(core_alloc_debug_print)
 
 #define STRUCT_platform_path 1
 #ifdef STRUCT_COND

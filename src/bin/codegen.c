@@ -322,3 +322,6 @@ int main(int argc, char *argv[]) {
   platform_free();
   return 0;
 }
+
+// Do not care about memory leaks in codegen.
+const char* __asan_default_options() { return "detect_leaks=0"; }
