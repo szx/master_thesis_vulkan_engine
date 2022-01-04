@@ -69,11 +69,7 @@ void vulkan_scene_debug_print(vulkan_scene *self) {
                 primitive->indexCount, primitive->indexBufferOffset);
       void *index = NULL;
       while ((index = utarray_next(primitive->indexBuffer, index))) {
-        if (primitive->indexType == vulkan_index_type_uint16) {
-          log_debug("      %hu\n", *(uint16_t *)index);
-        } else {
-          log_debug("      %u\n", *(uint32_t *)index);
-        }
+        log_debug("      %u\n", *(uint32_t *)index);
       }
       log_debug("    vertex: stride=%d count=%d offset=%lu\n", primitive->vertexStride,
                 primitive->vertexCount, primitive->vertexStreamOffset);
@@ -164,6 +160,9 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode) {
 
     VkPrimitiveTopology topology = cgltf_primitive_type_vulkan_topology(cgltfPrimitive->type);
     vulkan_index_type indexType = index_stride_to_index_type(cgltfIndices->stride);
+    if (indexType != vulkan_index_type_uint32) {
+      indexType = vulkan_index_type_uint32;
+    }
     uint32_t indexCount = cgltfIndices->count;
     vulkan_attribute_type vertexTypes = 0;
     uint32_t vertexCount = 0;
@@ -185,11 +184,7 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode) {
     for (size_t i = 0; i < meshPrimitive.indexCount; i++) {
       size_t indexValue = cgltf_accessor_read_index(cgltfIndices, i);
       void *outValue = utarray_eltptr(meshPrimitive.indexBuffer, i);
-      if (meshPrimitive.indexType == vulkan_index_type_uint16) {
-        *(uint16_t *)outValue = indexValue;
-      } else {
-        *(uint32_t *)outValue = indexValue;
-      }
+      *(uint32_t *)outValue = indexValue;
     }
 
     utarray_resize(meshPrimitive.vertexStream, meshPrimitive.vertexCount);

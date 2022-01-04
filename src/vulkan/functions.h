@@ -21,7 +21,7 @@ typedef struct vulkan_vertex_stream_element {
 // TODO: Packing.
 
 typedef enum vulkan_attribute_type {
-  UnknownAttribute = 1 << 0,
+  UnknownAttribute = 1 << 0, // HIRO naming
   PositionAttribute = 1 << 1,
   NormalAttribute = 1 << 2,
   ColorAttribute = 1 << 3,
@@ -30,7 +30,7 @@ typedef enum vulkan_attribute_type {
 } vulkan_attribute_type;
 
 typedef enum vulkan_index_type {
-  vulkan_index_type_uint16 = 0,
+  vulkan_index_type_unknown = 0,
   vulkan_index_type_uint32 = 1
 } vulkan_index_type;
 
