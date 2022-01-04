@@ -60,7 +60,8 @@ void vulkan_swap_chain_info_deinit(vulkan_swap_chain_info *vksInfo) {
   utarray_free(vksInfo->presentModes);
 }
 
-void vulkan_device_init(vulkan_device *vkd, data_config *config) {
+vulkan_device *vulkan_device_create(data_config *config) {
+  vulkan_device *vkd = core_alloc(sizeof(vulkan_device));
   vulkan_swap_chain_info_init(&vkd->swapChainInfo);
   create_window(vkd, config);
   create_instance(vkd, config);
@@ -69,10 +70,11 @@ void vulkan_device_init(vulkan_device *vkd, data_config *config) {
   pick_physical_device(vkd);
   create_logical_device(vkd);
   create_one_shot_command_pool(vkd);
+  return vkd;
 }
 
-void vulkan_device_deinit(vulkan_device *vkd) {
-  log_info("vulkan_device_deinit()");
+void vulkan_device_destroy(vulkan_device *vkd) {
+  log_info("vulkan_device_destroy()");
   vulkan_swap_chain_info_deinit(&vkd->swapChainInfo);
 
   vkDestroyCommandPool(vkd->device, vkd->oneShotCommandPool, vka);
@@ -89,6 +91,8 @@ void vulkan_device_deinit(vulkan_device *vkd) {
 
   glfwDestroyWindow(vkd->window);
   glfwTerminate();
+
+  core_free(vkd);
 }
 
 void glfw_framebuffer_resize_callback(GLFWwindow *window, int width, int height) {

@@ -32,9 +32,8 @@ typedef struct vulkan_render_pass {
   VkPipeline graphicsPipeline;
 } vulkan_render_pass;
 
-void vulkan_render_pass_init(vulkan_render_pass *renderPass, vulkan_swap_chain *vks,
-                             vulkan_render_pass_type type);
-void vulkan_render_pass_deinit(vulkan_render_pass *renderPass);
+vulkan_render_pass *vulkan_render_pass_create(vulkan_swap_chain *vks, vulkan_render_pass_type type);
+void vulkan_render_pass_destroy(vulkan_render_pass *renderPass);
 /// Validate render pass.
 void vulkan_render_pass_validate(vulkan_render_pass *renderPass, vulkan_scene *scene);
 
@@ -48,8 +47,8 @@ typedef struct vulkan_pipeline {
   // TODO: Descriptors, attachments. (store in vulkan_swap_chain_frame?)
 } vulkan_pipeline;
 
-void vulkan_pipeline_init(vulkan_pipeline *pipeline, vulkan_swap_chain *vks);
-void vulkan_pipeline_deinit(vulkan_pipeline *pipeline);
+vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks);
+void vulkan_pipeline_destroy(vulkan_pipeline *pipeline);
 
 /// Manages frame-specific resources (command buffer, framebuffer) used to
 /// render one swap chain frame.
@@ -72,12 +71,12 @@ vulkan_swap_chain_frame vulkan_swap_chain_frame_copy(vulkan_swap_chain_frame *fr
 
 /// Manages frame-agnostic resources and frames used to render into swap chain.
 typedef struct vulkan_render_context {
-  vulkan_device *vkd;                       /// Vulkan device.
-  vulkan_swap_chain *vks;                   /// Vulkan swap chain.
-  vulkan_pipeline *pipeline;                /// Rendering pipeline.
-  vulkan_swap_chain_frame *swapChainFrames; /// Swap chain frames.
-  vulkan_scene *scene;                      /// Vulkan scene.
-  size_t currentFrameInFlight;              /// Current frame rendered in flight.
+  vulkan_device *vkd;                                  /// Vulkan device.
+  vulkan_swap_chain *vks;                              /// Vulkan swap chain.
+  vulkan_pipeline *pipeline;                           /// Rendering pipeline.
+  core_array(vulkan_swap_chain_frame) swapChainFrames; /// Swap chain frames.
+  vulkan_scene *scene;                                 /// Vulkan scene.
+  size_t currentFrameInFlight;                         /// Current frame rendered in flight.
   /// Semaphore signaling that frame has been acquired from swap chain and is ready for drawing.
   VkSemaphore imageAvailableSemaphores[MAX_FRAMES_IN_FLIGHT];
   /// Semaphore signaling that drawing frame is finished and it can be presented.

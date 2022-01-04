@@ -25,11 +25,14 @@ void vulkan_mesh_primitive_deinit(vulkan_mesh_primitive *primitive) {
 }
 
 void vulkan_mesh_init(vulkan_mesh *mesh, size_t primitiveCount) {
-  mesh->primitives = alloc_struct_array(vulkan_mesh_primitive, primitiveCount);
-  init_struct_array(mesh->primitives);
+  core_array_alloc(mesh->primitives, primitiveCount);
 }
 
-void vulkan_mesh_deinit(vulkan_mesh *mesh) { dealloc_struct(mesh->primitives); }
+void vulkan_mesh_deinit(vulkan_mesh *mesh) {
+  core_array_foreach(mesh->primitives, vulkan_mesh_primitive * primitive,
+                     { vulkan_mesh_primitive_deinit(primitive); });
+  core_array_dealloc(mesh->primitives);
+}
 
 void vulkan_node_init(vulkan_node *scene, vulkan_mesh mesh) {
   scene->mesh = mesh;
@@ -40,27 +43,26 @@ void vulkan_node_deinit(vulkan_node *self) { vulkan_mesh_deinit(&self->mesh); }
 
 void vulkan_scene_init(vulkan_scene *scene, size_t nodesCount, size_t bufferViewsCount,
                        size_t accessorsCount) {
-  scene->nodes = alloc_struct_array(vulkan_node, nodesCount);
-  init_struct_array(scene->nodes);
-  scene->geometryBuffer = alloc_struct(vulkan_geometry_buffer);
-  init_struct(scene->geometryBuffer, vulkan_geometry_buffer_init);
+  core_array_alloc(scene->nodes, nodesCount);
+  scene->geometryBuffer = vulkan_geometry_buffer_create();
 }
 
-void vulkan_scene_deinit(vulkan_scene *self) {
-  dealloc_struct(self->nodes);
-  dealloc_struct(self->geometryBuffer);
+void vulkan_scene_deinit(vulkan_scene *scene) {
+  core_array_foreach(scene->nodes, vulkan_node * node, { vulkan_node_deinit(node); });
+  core_array_dealloc(scene->nodes);
+  vulkan_geometry_buffer_destroy(scene->geometryBuffer);
 }
 
 void vulkan_scene_debug_print(vulkan_scene *self) {
   log_debug("SCENE:\n");
   log_debug("geometryBuffer: %d\n", utarray_len(self->geometryBuffer->data));
-  for (size_t i = 0; i < count_struct_array(self->nodes); i++) {
+  for (size_t i = 0; i < core_array_count(self->nodes); i++) {
     log_debug("node:\n");
-    vulkan_node *node = &self->nodes[i];
+    vulkan_node *node = &self->nodes.ptr[i];
     glm_mat4_print(node->modelMat, stderr);
     vulkan_mesh *mesh = &node->mesh;
-    for (size_t j = 0; j < count_struct_array(mesh->primitives); j++) {
-      vulkan_mesh_primitive *primitive = &mesh->primitives[j];
+    for (size_t j = 0; j < core_array_count(mesh->primitives); j++) {
+      vulkan_mesh_primitive *primitive = &mesh->primitives.ptr[j];
       log_debug("  primitive %d: %s\n", j, VkPrimitiveTopology_debug_str(primitive->topology));
       log_debug("    index: %s stride=%d count=%d offset=%lu\n",
                 vulkan_index_type_debug_str(primitive->indexType), primitive->indexStride,
@@ -216,7 +218,7 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode) {
     }
 
     // cgltf_material* material;
-    mesh.primitives[primitiveIdx] = meshPrimitive;
+    mesh.primitives.ptr[primitiveIdx] = meshPrimitive;
   }
   vulkan_node node;
   vulkan_node_init(&node, mesh);
@@ -225,7 +227,8 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode) {
   return node;
 }
 
-void vulkan_scene_init_with_gltf_file(vulkan_scene *scene, platform_path gltfPath) {
+vulkan_scene *vulkan_scene_create_with_gltf_file(platform_path gltfPath) {
+  vulkan_scene *scene = core_alloc(sizeof(vulkan_scene));
   // read gltf file
   cgltf_options options = {0};
   cgltf_data *data = NULL;
@@ -244,16 +247,23 @@ void vulkan_scene_init_with_gltf_file(vulkan_scene *scene, platform_path gltfPat
   size_t nodesCount = cgltfScene->nodes_count;
   size_t bufferViewsCount = data->buffer_views_count;
   size_t accessorsCount = data->accessors_count;
-  init_struct(scene, vulkan_scene_init, nodesCount, bufferViewsCount, accessorsCount);
+  vulkan_scene_init(scene, nodesCount, bufferViewsCount, accessorsCount);
   // parse nodes
   for (size_t nodeIdx = 0; nodeIdx < nodesCount; nodeIdx++) {
     vulkan_node node = parse_cgltf_node(cgltfScene->nodes[nodeIdx]);
-    scene->nodes[nodeIdx] = node;
+    scene->nodes.ptr[nodeIdx] = node;
   }
   cgltf_free(data);
 
   // build geometry buffer
   vulkan_scene_build_geometry_buffer(scene);
+
+  return scene;
+}
+
+void vulkan_scene_destroy(vulkan_scene *scene) {
+  vulkan_scene_deinit(scene);
+  core_free(scene);
 }
 
 void vulkan_scene_build_geometry_buffer(vulkan_scene *scene) {
@@ -264,12 +274,12 @@ void vulkan_scene_build_geometry_buffer(vulkan_scene *scene) {
   UT_array *data = scene->geometryBuffer->data;
   assert(utarray_len(data) == 0);
   size_t paddingValue = 0;
-  for (size_t nodeIdx = 0; nodeIdx < count_struct_array(scene->nodes); nodeIdx++) {
+  for (size_t nodeIdx = 0; nodeIdx < core_array_count(scene->nodes); nodeIdx++) {
     log_debug("node:\n");
-    vulkan_node *node = &scene->nodes[nodeIdx];
+    vulkan_node *node = &scene->nodes.ptr[nodeIdx];
     vulkan_mesh *mesh = &node->mesh;
-    for (size_t primIdx = 0; primIdx < count_struct_array(mesh->primitives); primIdx++) {
-      vulkan_mesh_primitive *primitive = &mesh->primitives[primIdx];
+    for (size_t primIdx = 0; primIdx < core_array_count(mesh->primitives); primIdx++) {
+      vulkan_mesh_primitive *primitive = &mesh->primitives.ptr[primIdx];
       // index buffer
       size_t indexBufferOffset = utarray_len(data);
       if ((indexBufferOffset % primitive->indexStride) != 0) {

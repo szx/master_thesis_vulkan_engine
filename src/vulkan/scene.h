@@ -30,7 +30,7 @@ void vulkan_mesh_primitive_init(vulkan_mesh_primitive *primitive, VkPrimitiveTop
 void vulkan_mesh_primitive_deinit(vulkan_mesh_primitive *primitive);
 
 typedef struct vulkan_mesh {
-  vulkan_mesh_primitive *primitives;
+  core_array(vulkan_mesh_primitive) primitives;
 } vulkan_mesh;
 
 void vulkan_mesh_init(vulkan_mesh *mesh, size_t primitiveCount);
@@ -48,7 +48,7 @@ void vulkan_node_deinit(vulkan_node *scene);
 // Describes a scene.
 // Does not create any Vulkan objects (see vulkan_render_context).
 typedef struct vulkan_scene {
-  vulkan_node *nodes;
+  core_array(vulkan_node) nodes;
   vulkan_geometry_buffer *geometryBuffer;
   // HIRO VK_EXT_vertex_input_dynamic_state is not supported by Intel.
   // HIRO VK_EXT_extended_dynamic_state allows VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE_EXT
@@ -59,7 +59,8 @@ void vulkan_scene_init(vulkan_scene *self, size_t nodesCount, size_t bufferViews
                        size_t accessorsCount);
 void vulkan_scene_deinit(vulkan_scene *self);
 void vulkan_scene_debug_print(vulkan_scene *self);
-void vulkan_scene_init_with_gltf_file(vulkan_scene *scene, platform_path gltfPath);
+vulkan_scene *vulkan_scene_create_with_gltf_file(platform_path gltfPath);
+void vulkan_scene_destroy(vulkan_scene *scene);
 void vulkan_scene_build_geometry_buffer(vulkan_scene *scene);
 
 #include "../codegen/scene.h"

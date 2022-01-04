@@ -176,16 +176,16 @@ typedef struct parser_error {
   struct parser_error *next;
 } parser_error;
 
-void parser_error_init(parser_error *error, parser_error_type type, parser_str_range range);
-void parser_error_deinit(parser_error *error);
+parser_error *parser_error_create(parser_error_type type, parser_str_range range);
+void parser_error_destroy(parser_error *error);
 
 typedef struct parser_comment {
   parser_str_range range;
   struct parser_comment *next;
 } parser_comment;
 
-void parser_comment_init(parser_comment *comment, parser_str_range range);
-void parser_comment_deinit(parser_comment *comment);
+parser_comment *parser_comment_create(parser_str_range range);
+void parser_comment_destroy(parser_comment *comment);
 
 typedef struct parser_ast_node parser_ast_node;
 

@@ -1,15 +1,17 @@
 #include "functions.h"
 #include "../codegen/functions.c"
 
-void vulkan_geometry_buffer_init(vulkan_geometry_buffer *geometryBuffer) {
+vulkan_geometry_buffer *vulkan_geometry_buffer_create() {
+  vulkan_geometry_buffer *geometryBuffer = core_alloc(sizeof(vulkan_geometry_buffer));
   static const UT_icd ut_vulkan_geometry_buffer_data_icd = {sizeof(uint8_t), NULL, NULL, NULL};
   utarray_new(geometryBuffer->data, &ut_vulkan_geometry_buffer_data_icd);
   geometryBuffer->vkd = NULL;
   geometryBuffer->buffer = VK_NULL_HANDLE;
   geometryBuffer->bufferMemory = VK_NULL_HANDLE;
+  return geometryBuffer;
 }
 
-void vulkan_geometry_buffer_deinit(vulkan_geometry_buffer *geometryBuffer) {
+void vulkan_geometry_buffer_destroy(vulkan_geometry_buffer *geometryBuffer) {
   utarray_free(geometryBuffer->data);
   if (geometryBuffer->vkd != NULL) {
     vkDestroyBuffer(geometryBuffer->vkd->device, geometryBuffer->buffer, vka);
@@ -18,6 +20,7 @@ void vulkan_geometry_buffer_deinit(vulkan_geometry_buffer *geometryBuffer) {
     geometryBuffer->buffer = VK_NULL_HANDLE;
     geometryBuffer->bufferMemory = VK_NULL_HANDLE;
   }
+  core_free(geometryBuffer);
 }
 
 void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,

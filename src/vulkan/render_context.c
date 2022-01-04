@@ -19,16 +19,16 @@ void vulkan_render_pass_validate(vulkan_render_pass *renderPass, vulkan_scene *s
   verify(renderPass->info.supportedVertexAttributes > 0);
   verify(vertShader != NULL);
   verify(vertShader->type == shaderc_glsl_vertex_shader);
-  verify(count_struct_array(vertShader->info.inputAttributeDescriptions) > 0);
-  verify(count_struct_array(vertShader->info.outputAttributeDescriptions) > 0);
+  verify(core_array_count(vertShader->info.inputAttributeDescriptions) > 0);
+  verify(core_array_count(vertShader->info.outputAttributeDescriptions) > 0);
   verify(fragShader != NULL);
   verify(fragShader->type == shaderc_glsl_fragment_shader);
-  verify(count_struct_array(fragShader->info.inputAttributeDescriptions) > 0);
-  verify(count_struct_array(fragShader->info.outputAttributeDescriptions) > 0);
+  verify(core_array_count(fragShader->info.inputAttributeDescriptions) > 0);
+  verify(core_array_count(fragShader->info.outputAttributeDescriptions) > 0);
   if ((renderPass->info.supportedVertexAttributes & PositionAttribute) != 0) {
-    verify(count_struct_array(vertShader->info.inputAttributeDescriptions) >= 1);
+    verify(core_array_count(vertShader->info.inputAttributeDescriptions) >= 1);
     vulkan_vertex_attribute_description *description =
-        &vertShader->info.inputAttributeDescriptions[0];
+        &vertShader->info.inputAttributeDescriptions.ptr[0];
     verify(description->type == PositionAttribute);
   }
   /*if ((renderPass->info.supportedVertexAttributes & NormalAttribute) != 0) {
@@ -45,10 +45,8 @@ void create_shaders(vulkan_render_pass *renderPass) {
   // HIRO generate glsl shaders using render_pass_info.
   platform_path vertInputPath = get_asset_file_path("shaders", "shader.vert");
   platform_path fragInputPath = get_asset_file_path("shaders", "shader.frag");
-  renderPass->vertShader = alloc_struct(vulkan_shader);
-  init_struct(renderPass->vertShader, vulkan_shader_init_with_path, renderPass->vkd, vertInputPath);
-  renderPass->fragShader = alloc_struct(vulkan_shader);
-  init_struct(renderPass->fragShader, vulkan_shader_init_with_path, renderPass->vkd, fragInputPath);
+  renderPass->vertShader = vulkan_shader_create_with_path(renderPass->vkd, vertInputPath);
+  renderPass->fragShader = vulkan_shader_create_with_path(renderPass->vkd, fragInputPath);
   platform_path_deinit(&vertInputPath);
   platform_path_deinit(&fragInputPath);
 }
@@ -223,8 +221,9 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
   free(vertexAttributeDescriptions);
 }
 
-void vulkan_render_pass_init(vulkan_render_pass *renderPass, vulkan_swap_chain *vks,
-                             vulkan_render_pass_type type) {
+vulkan_render_pass *vulkan_render_pass_create(vulkan_swap_chain *vks,
+                                              vulkan_render_pass_type type) {
+  vulkan_render_pass *renderPass = core_alloc(sizeof(vulkan_render_pass));
   renderPass->vks = vks;
   renderPass->vkd = vks->vkd;
   renderPass->type = type;
@@ -237,27 +236,33 @@ void vulkan_render_pass_init(vulkan_render_pass *renderPass, vulkan_swap_chain *
   // HIRO reinit after tuning render_pass_info
   create_render_pass(renderPass);
   create_graphics_pipeline(renderPass);
+  return renderPass;
 }
 
-void vulkan_render_pass_deinit(vulkan_render_pass *renderPass) {
+void vulkan_render_pass_destroy(vulkan_render_pass *renderPass) {
   vkDestroyRenderPass(renderPass->vkd->device, renderPass->renderPass, vka);
   renderPass->renderPass = VK_NULL_HANDLE;
   vkDestroyPipeline(renderPass->vkd->device, renderPass->graphicsPipeline, vka);
   renderPass->graphicsPipeline = VK_NULL_HANDLE;
   vkDestroyPipelineLayout(renderPass->vkd->device, renderPass->pipelineLayout, vka);
   renderPass->pipelineLayout = VK_NULL_HANDLE;
-  dealloc_struct(renderPass->vertShader);
-  dealloc_struct(renderPass->fragShader);
+  vulkan_shader_destroy(renderPass->vertShader);
+  vulkan_shader_destroy(renderPass->fragShader);
+  core_free(renderPass);
 }
 
-void vulkan_pipeline_init(vulkan_pipeline *pipeline, vulkan_swap_chain *vks) {
+vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks) {
+  vulkan_pipeline *pipeline = core_alloc(sizeof(vulkan_pipeline));
   pipeline->vks = vks;
   pipeline->vkd = vks->vkd;
-  pipeline->renderPass = alloc_struct(vulkan_render_pass);
-  init_struct(pipeline->renderPass, vulkan_render_pass_init, pipeline->vks, ForwardRenderPass);
+  pipeline->renderPass = vulkan_render_pass_create(pipeline->vks, ForwardRenderPass);
+  return pipeline;
 }
 
-void vulkan_pipeline_deinit(vulkan_pipeline *pipeline) { dealloc_struct(pipeline->renderPass); }
+void vulkan_pipeline_destroy(vulkan_pipeline *pipeline) {
+  vulkan_render_pass_destroy(pipeline->renderPass);
+  core_free(pipeline);
+}
 
 void create_command_pool(vulkan_swap_chain_frame *frame) {
   vulkan_queue_families queueFamilies = find_queue_families(frame->vkd, frame->vkd->physicalDevice);
@@ -344,18 +349,12 @@ void create_synchronization_objects(vulkan_render_context *rctx) {
 }
 
 void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config) {
-  rctx->vkd = alloc_struct(vulkan_device);
-  init_struct(rctx->vkd, vulkan_device_init, config);
-  rctx->vks = alloc_struct(vulkan_swap_chain);
-  init_struct(rctx->vks, vulkan_swap_chain_init, rctx->vkd);
-  rctx->pipeline = alloc_struct(vulkan_pipeline);
-  init_struct(rctx->pipeline, vulkan_pipeline_init, rctx->vks);
-  rctx->swapChainFrames =
-      alloc_struct_array(vulkan_swap_chain_frame, utarray_len(rctx->vks->swapChainImageViews));
-  init_struct_array(rctx->swapChainFrames);
-  for (uint32_t i = 0; i < count_struct_array(rctx->swapChainFrames); i++) {
-    init_struct_array_elem(rctx->swapChainFrames, i, vulkan_swap_chain_frame_init, rctx->pipeline,
-                           i);
+  rctx->vkd = vulkan_device_create(config);
+  rctx->vks = vulkan_swap_chain_create(rctx->vkd);
+  rctx->pipeline = vulkan_pipeline_create(rctx->vks);
+  core_array_alloc(rctx->swapChainFrames, utarray_len(rctx->vks->swapChainImageViews));
+  for (uint32_t i = 0; i < core_array_count(rctx->swapChainFrames); i++) {
+    vulkan_swap_chain_frame_init(&rctx->swapChainFrames.ptr[i], rctx->pipeline, i);
   }
   rctx->currentFrameInFlight = 0;
   rctx->scene = NULL;
@@ -365,16 +364,19 @@ void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config
 void vulkan_render_context_deinit(vulkan_render_context *rctx) {
   assert(rctx->scene != NULL);
   rctx->currentFrameInFlight = -1;
-  dealloc_struct(rctx->scene);
-  dealloc_struct(rctx->swapChainFrames);
-  dealloc_struct(rctx->pipeline);
-  dealloc_struct(rctx->vks);
+  vulkan_scene_destroy(rctx->scene);
+  for (uint32_t i = 0; i < core_array_count(rctx->swapChainFrames); i++) {
+    vulkan_swap_chain_frame_deinit(&rctx->swapChainFrames.ptr[i]);
+  }
+  core_array_dealloc(rctx->swapChainFrames);
+  vulkan_pipeline_destroy(rctx->pipeline);
+  vulkan_swap_chain_destroy(rctx->vks);
   for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
     vkDestroySemaphore(rctx->vkd->device, rctx->imageAvailableSemaphores[i], vka);
     vkDestroySemaphore(rctx->vkd->device, rctx->renderFinishedSemaphores[i], vka);
     vkDestroyFence(rctx->vkd->device, rctx->inFlightFences[i], vka);
   }
-  dealloc_struct(rctx->vkd);
+  vulkan_device_destroy(rctx->vkd);
 }
 
 void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx) {
@@ -390,17 +392,18 @@ void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx) {
   vkDeviceWaitIdle(rctx->vkd->device);
   // gui.deinitialize();
   // deinit_struct(rctx->scene);
-  dealloc_struct(rctx->swapChainFrames);
-  deinit_struct(rctx->pipeline);
-  deinit_struct(rctx->vks);
+  for (uint32_t i = 0; i < core_array_count(rctx->swapChainFrames); i++) {
+    vulkan_swap_chain_frame_deinit(&rctx->swapChainFrames.ptr[i]);
+  }
+  core_array_dealloc(rctx->swapChainFrames);
+  vulkan_pipeline_destroy(rctx->pipeline);
+  vulkan_swap_chain_destroy(rctx->vks);
 
-  init_struct(rctx->vks, vulkan_swap_chain_init, rctx->vkd);
-  init_struct(rctx->pipeline, vulkan_pipeline_init, rctx->vks);
-  rctx->swapChainFrames =
-      alloc_struct_array(vulkan_swap_chain_frame, utarray_len(rctx->vks->swapChainImageViews));
-  for (uint32_t i = 0; i < count_struct_array(rctx->swapChainFrames); i++) {
-    init_struct_array_elem(rctx->swapChainFrames, i, vulkan_swap_chain_frame_init, rctx->pipeline,
-                           i);
+  rctx->vks = vulkan_swap_chain_create(rctx->vkd);
+  rctx->pipeline = vulkan_pipeline_create(rctx->vks);
+  core_array_alloc(rctx->swapChainFrames, utarray_len(rctx->vks->swapChainImageViews));
+  for (uint32_t i = 0; i < core_array_count(rctx->swapChainFrames); i++) {
+    vulkan_swap_chain_frame_init(&rctx->swapChainFrames.ptr[i], rctx->pipeline, i);
   }
   // gui.initialize();
 }
@@ -409,8 +412,7 @@ void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneNa
   assert(rctx->scene == NULL);
   platform_path gltfPath = get_asset_file_path(sceneName, sceneName);
   platform_path_append_ext(&gltfPath, ".gltf");
-  rctx->scene = alloc_struct(vulkan_scene);
-  init_struct(rctx->scene, vulkan_scene_init_with_gltf_file, gltfPath);
+  rctx->scene = vulkan_scene_create_with_gltf_file(gltfPath);
   platform_path_deinit(&gltfPath);
   vulkan_scene_debug_print(rctx->scene);
   vulkan_render_pass_validate(rctx->pipeline->renderPass,
@@ -442,7 +444,7 @@ void vulkan_render_context_draw_frame(vulkan_render_context *rctx) {
   // We have acquired index of next in-flight image, we can now update frame-specific resources
   // (uniform buffers, push constants).
   // log_debug("imageIndex = %d", imageIndex);
-  vulkan_swap_chain_frame *inFlightFrame = &rctx->swapChainFrames[imageIndex];
+  vulkan_swap_chain_frame *inFlightFrame = &rctx->swapChainFrames.ptr[imageIndex];
   vulkan_pipeline_record_frame_command_buffer(rctx->scene, rctx->pipeline, inFlightFrame);
   // scene.updateScene(currentFrameInFlight);
   // scene.beginCommandBuffer(&framebuffers[imageIndex]);
@@ -504,7 +506,7 @@ void vulkan_pipeline_record_frame_command_buffer(vulkan_scene *scene, vulkan_pip
   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
   verify(vkBeginCommandBuffer(frame->commandBuffer, &beginInfo) == VK_SUCCESS);
 
-  // TODO: Multiple render passes. Resolve attachments types in vulkan_render_pass_init()?
+  // TODO: Multiple render passes. Resolve attachments types in vulkan_render_pass_create()?
   vulkan_render_pass_record_frame_command_buffer(scene, pipeline->renderPass, frame);
 
   verify(vkEndCommandBuffer(frame->commandBuffer) == VK_SUCCESS);
@@ -544,10 +546,10 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
 
   vkCmdBindPipeline(frame->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                     renderPass->graphicsPipeline);
-  for (size_t nodeIdx = 0; nodeIdx < count_struct_array(scene->nodes); nodeIdx++) {
+  for (size_t nodeIdx = 0; nodeIdx < core_array_count(scene->nodes); nodeIdx++) {
     // TODO: Check if node should be culled.
     // HIRO: View matrix and projection matrix in UBO.
-    vulkan_node *node = &scene->nodes[nodeIdx];
+    vulkan_node *node = &scene->nodes.ptr[nodeIdx];
     log_trace("draw node %d", nodeIdx);
     {
       // HIRO: separate push constants to another function
@@ -560,9 +562,9 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
                          pushConstantOffset, sizeof(node->modelMat), pushConstantValuePtr);
     }
     vulkan_mesh *mesh = &node->mesh;
-    for (size_t primitiveIdx = 0; primitiveIdx < count_struct_array(mesh->primitives);
+    for (size_t primitiveIdx = 0; primitiveIdx < core_array_count(mesh->primitives);
          primitiveIdx++) {
-      vulkan_mesh_primitive *primitive = &mesh->primitives[primitiveIdx];
+      vulkan_mesh_primitive *primitive = &mesh->primitives.ptr[primitiveIdx];
 
       size_t bindingCount = vulkan_shader_info_get_binding_count(&renderPass->vertShader->info);
       assert(bindingCount == 1);

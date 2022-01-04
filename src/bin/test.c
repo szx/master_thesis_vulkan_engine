@@ -115,11 +115,10 @@ TEST gltf_loading() {
   // platform_path gltfPath = get_asset_file_path("sponza", "Sponza.gltf");
   // platform_path gltfPath = get_asset_file_path("triangle", "Triangle.gltf");
   platform_path gltfPath = get_asset_file_path("triangles", "triangles.gltf");
-  vulkan_scene *scene = alloc_struct(vulkan_scene);
-  init_struct(scene, vulkan_scene_init_with_gltf_file, gltfPath);
+  vulkan_scene *scene = vulkan_scene_create_with_gltf_file(gltfPath);
   vulkan_scene_debug_print(scene);
   platform_path_deinit(&gltfPath);
-  dealloc_struct(scene);
+  vulkan_scene_destroy(scene);
   PASS();
 }
 
@@ -156,11 +155,11 @@ TEST shaderc_compiling() {
   platform_path fragInputPath = get_asset_file_path("shaders", "shader.frag");
   data_config config = data_config_init();
   vulkan_device *vkd = alloc_struct(vulkan_device);
-  init_struct(vkd, vulkan_device_init, &config);
+  init_struct(vkd, vulkan_device_create, &config);
   vulkan_shader *vertShader = alloc_struct(vulkan_shader);
-  init_struct(vertShader, vulkan_shader_init_with_path, vkd, vertInputPath);
+  init_struct(vertShader, vulkan_shader_create_with_path, vkd, vertInputPath);
   vulkan_shader *fragShader = alloc_struct(vulkan_shader);
-  init_struct(fragShader, vulkan_shader_init_with_path, vkd, fragInputPath);
+  init_struct(fragShader, vulkan_shader_create_with_path, vkd, fragInputPath);
 
   ASSERT_EQ(vertShader->type, shaderc_glsl_vertex_shader);
   ASSERT_EQ(fragShader->type, shaderc_glsl_fragment_shader);

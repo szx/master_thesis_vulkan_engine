@@ -87,8 +87,8 @@ typedef struct vulkan_device {
   } mouse; /// GLFW mouse input.
 } vulkan_device;
 
-void vulkan_device_init(vulkan_device *vkd, data_config *config);
-void vulkan_device_deinit(vulkan_device *vkd);
+vulkan_device *vulkan_device_create(data_config *config);
+void vulkan_device_destroy(vulkan_device *vkd);
 
 void glfw_framebuffer_resize_callback(GLFWwindow *window, int width, int height);
 void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);

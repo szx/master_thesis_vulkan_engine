@@ -45,8 +45,8 @@ typedef struct vulkan_geometry_buffer {
 /* Vulkan helper functions */
 // TODO: Implement all Vulkan helper functions.
 
-void vulkan_geometry_buffer_init(vulkan_geometry_buffer *geometryBuffer);
-void vulkan_geometry_buffer_deinit(vulkan_geometry_buffer *geometryBuffer);
+vulkan_geometry_buffer *vulkan_geometry_buffer_create();
+void vulkan_geometry_buffer_destroy(vulkan_geometry_buffer *geometryBuffer);
 
 /// Creates device local buffer and copies geometry buffer data into it.
 void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,

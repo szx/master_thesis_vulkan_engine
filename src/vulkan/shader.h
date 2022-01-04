@@ -34,8 +34,8 @@ typedef struct vulkan_push_constant_description {
 /// Describes results of parsing GLSL shader for information.
 /// Does not contain scene-dependant information (like vertex attribute offsets).
 typedef struct vulkan_shader_info {
-  vulkan_vertex_attribute_description *inputAttributeDescriptions;
-  vulkan_vertex_attribute_description *outputAttributeDescriptions;
+  core_array(vulkan_vertex_attribute_description) inputAttributeDescriptions;
+  core_array(vulkan_vertex_attribute_description) outputAttributeDescriptions;
   vulkan_push_constant_description *pushConstantDescription;
 } vulkan_shader_info;
 
@@ -55,10 +55,10 @@ void vulkan_vertex_attribute_description_init(vulkan_vertex_attribute_descriptio
                                               const char *identifier, vulkan_attribute_type type);
 void vulkan_vertex_attribute_description_deinit(vulkan_vertex_attribute_description *description);
 
-void vulkan_push_constant_description_init(vulkan_push_constant_description *description,
-                                           const char *blockName, const char *instanceName,
-                                           size_t size);
-void vulkan_push_constant_description_deinit(vulkan_push_constant_description *description);
+vulkan_push_constant_description *vulkan_push_constant_description_create(const char *blockName,
+                                                                          const char *instanceName,
+                                                                          size_t size);
+void vulkan_push_constant_description_destroy(vulkan_push_constant_description *description);
 
 void vulkan_shader_info_init(vulkan_shader_info *info, vulkan_shader *shader);
 void vulkan_shader_info_deinit(vulkan_shader_info *info);
@@ -75,11 +75,10 @@ VkPushConstantRange vulkan_shader_info_get_push_constant_range(vulkan_shader *ve
 VkShaderStageFlagBits vulkan_shader_info_get_push_constant_stage_flags(vulkan_shader *vertShader,
                                                                        vulkan_shader *fragShader);
 
-void vulkan_shader_init_with_path(vulkan_shader *shader, vulkan_device *vkd,
-                                  platform_path glslPath);
-void vulkan_shader_init_with_str(vulkan_shader *shader, vulkan_device *vkd,
-                                 shaderc_shader_kind type, str *text);
-void vulkan_shader_deinit(vulkan_shader *shader);
+vulkan_shader *vulkan_shader_create_with_path(vulkan_device *vkd, platform_path glslPath);
+vulkan_shader *vulkan_shader_create_with_str(vulkan_device *vkd, shaderc_shader_kind type,
+                                             str *text);
+void vulkan_shader_destroy(vulkan_shader *shader);
 
 #include "../codegen/shader.h"
 

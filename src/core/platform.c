@@ -9,9 +9,6 @@ static FILE *logFile;
 void platform_init() { log_init(); }
 
 void platform_free() {
-#if defined(DEBUG) && !defined(CODEGEN)
-  platform_alloc_debug_print();
-#endif
   log_free();
 }
 

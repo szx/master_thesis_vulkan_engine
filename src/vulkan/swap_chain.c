@@ -1,7 +1,8 @@
 #include "swap_chain.h"
 #include "../codegen/swap_chain.c"
 
-void vulkan_swap_chain_init(vulkan_swap_chain *vks, vulkan_device *vkd) {
+vulkan_swap_chain *vulkan_swap_chain_create(vulkan_device *vkd) {
+  vulkan_swap_chain *vks = core_alloc(sizeof(vulkan_swap_chain));
   vks->vkd = vkd;
   vks->swapChain = VK_NULL_HANDLE;
   utarray_new(vks->swapChainImageViews, &ut_vk_image_view_icd);
@@ -9,9 +10,10 @@ void vulkan_swap_chain_init(vulkan_swap_chain *vks, vulkan_device *vkd) {
   create_swap_chain(vks);
   get_swap_chain_images(vks);
   create_swap_chain_image_views(vks);
+  return vks;
 }
 
-void vulkan_swap_chain_deinit(vulkan_swap_chain *vks) {
+void vulkan_swap_chain_destroy(vulkan_swap_chain *vks) {
   VkImageView *swapChainImageView = NULL;
   while ((swapChainImageView = utarray_next(vks->swapChainImageViews, swapChainImageView))) {
     vkDestroyImageView(vks->vkd->device, *swapChainImageView, vka);
@@ -21,6 +23,7 @@ void vulkan_swap_chain_deinit(vulkan_swap_chain *vks) {
 
   vkDestroySwapchainKHR(vks->vkd->device, vks->swapChain, vka);
   vks->swapChain = VK_NULL_HANDLE;
+  core_free(vks);
 }
 
 VkSurfaceFormatKHR choose_swap_surface_format(UT_array *availableFormats) {

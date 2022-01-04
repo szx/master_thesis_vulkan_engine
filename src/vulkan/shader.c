@@ -19,17 +19,20 @@ void vulkan_vertex_attribute_description_deinit(vulkan_vertex_attribute_descript
   free(description->identifier);
 }
 
-void vulkan_push_constant_description_init(vulkan_push_constant_description *description,
-                                           const char *blockName, const char *instanceName,
-                                           size_t size) {
+vulkan_push_constant_description *vulkan_push_constant_description_create(const char *blockName,
+                                                                          const char *instanceName,
+                                                                          size_t size) {
+  vulkan_push_constant_description *description = core_alloc(sizeof(*description));
   description->blockName = strdup(blockName);
   description->instanceName = strdup(instanceName);
   description->size = size;
+  return description;
 }
 
-void vulkan_push_constant_description_deinit(vulkan_push_constant_description *description) {
-  free(description->blockName);
-  free(description->instanceName);
+void vulkan_push_constant_description_destroy(vulkan_push_constant_description *description) {
+  core_free(description->blockName);
+  core_free(description->instanceName);
+  core_free(description);
 }
 
 typedef enum glsl_parser_callback_pass {
@@ -90,20 +93,25 @@ static bool glsl_parser_callback(parser_ast_node *node, void *callbackData) {
       strncmp(identifier + 3, #enumerator, LEN(enumerator)) == 0) {                                \
     type = enumerator;                                                                             \
   }
-      ENUM_vulkan_attribute_type();
+      ENUMERATOR(PositionAttribute)
+      ENUMERATOR(NormalAttribute)
+      ENUMERATOR(PositionAttribute)
+      ENUMERATOR(ColorAttribute)
+      ENUMERATOR(TexCoordAttribute)
+      ENUMERATOR(TangentAttribute)
 #undef LEN
       verify(type != UnknownAttribute);
 
       if (node->type == VertexInputAttribute) {
-        init_struct_array_elem(
-            data->info->inputAttributeDescriptions, data->inputAttributeDescriptionsIdx,
-            vulkan_vertex_attribute_description_init, location, componentNum, identifier, type);
+        vulkan_vertex_attribute_description_init(
+            &data->info->inputAttributeDescriptions.ptr[data->inputAttributeDescriptionsIdx],
+            location, componentNum, identifier, type);
         data->inputAttributeDescriptionsIdx += 1;
         verify(data->inputAttributeDescriptionsIdx <= data->inputAttributeDescriptionsSize);
       } else if (node->type == VertexOutputAttribute) {
-        init_struct_array_elem(
-            data->info->outputAttributeDescriptions, data->outputAttributeDescriptionsIdx,
-            vulkan_vertex_attribute_description_init, location, componentNum, identifier, type);
+        vulkan_vertex_attribute_description_init(
+            &data->info->outputAttributeDescriptions.ptr[data->outputAttributeDescriptionsIdx],
+            location, componentNum, identifier, type);
         data->outputAttributeDescriptionsIdx += 1;
         verify(data->outputAttributeDescriptionsIdx <= data->outputAttributeDescriptionsSize);
       }
@@ -117,9 +125,8 @@ static bool glsl_parser_callback(parser_ast_node *node, void *callbackData) {
       LL_FOREACH(uniformBlockNode->childNodes, variableDeclaration) {
         size += glsl_parser_node_to_size(data->state, variableDeclaration);
       }
-      data->info->pushConstantDescription = alloc_struct(vulkan_push_constant_description);
-      init_struct(data->info->pushConstantDescription, vulkan_push_constant_description_init,
-                  blockName, instanceName, size);
+      data->info->pushConstantDescription =
+          vulkan_push_constant_description_create(blockName, instanceName, size);
       free(blockName);
       free(instanceName);
     }
@@ -134,10 +141,8 @@ void vulkan_shader_info_init(vulkan_shader_info *info, vulkan_shader *shader) {
   verify(state.isValid == true);
   glsl_parser_callback_data data = {.state = &state, .pass = CountDescriptors, .info = info};
   parser_ast_node_visit(state.programNode, glsl_parser_callback, &data);
-  info->inputAttributeDescriptions =
-      alloc_struct_array(vulkan_vertex_attribute_description, data.inputAttributeDescriptionsSize);
-  info->outputAttributeDescriptions =
-      alloc_struct_array(vulkan_vertex_attribute_description, data.outputAttributeDescriptionsSize);
+  core_array_alloc(info->inputAttributeDescriptions, data.inputAttributeDescriptionsSize);
+  core_array_alloc(info->outputAttributeDescriptions, data.outputAttributeDescriptionsSize);
   info->pushConstantDescription = NULL;
   data.pass = ParseDescriptors;
   parser_ast_node_visit(state.programNode, glsl_parser_callback, &data);
@@ -146,9 +151,15 @@ void vulkan_shader_info_init(vulkan_shader_info *info, vulkan_shader *shader) {
 }
 
 void vulkan_shader_info_deinit(vulkan_shader_info *info) {
-  dealloc_struct(info->inputAttributeDescriptions);
-  dealloc_struct(info->outputAttributeDescriptions);
-  dealloc_struct(info->pushConstantDescription);
+  core_array_foreach(info->inputAttributeDescriptions,
+                     vulkan_vertex_attribute_description * description,
+                     { vulkan_vertex_attribute_description_deinit(description); });
+  core_array_dealloc(info->inputAttributeDescriptions);
+  core_array_foreach(info->outputAttributeDescriptions,
+                     vulkan_vertex_attribute_description * description,
+                     { vulkan_vertex_attribute_description_deinit(description); });
+  core_array_dealloc(info->outputAttributeDescriptions);
+  vulkan_push_constant_description_destroy(info->pushConstantDescription);
 }
 
 size_t vulkan_shader_info_get_binding_count(vulkan_shader_info *info) {
@@ -161,8 +172,8 @@ vulkan_shader_info_get_binding_description(vulkan_shader_info *info) {
   VkVertexInputBindingDescription bindingDescription = {0};
   bindingDescription.binding = 0;
   bindingDescription.stride = 0;
-  for (size_t i = 0; i < count_struct_array(info->inputAttributeDescriptions); i++) {
-    vulkan_vertex_attribute_description *description = &info->inputAttributeDescriptions[i];
+  for (size_t i = 0; i < core_array_count(info->inputAttributeDescriptions); i++) {
+    vulkan_vertex_attribute_description *description = &info->inputAttributeDescriptions.ptr[i];
     // We do not support dvec.
     bindingDescription.stride += description->componentNum * sizeof(float);
   }
@@ -173,13 +184,13 @@ vulkan_shader_info_get_binding_description(vulkan_shader_info *info) {
 
 VkVertexInputAttributeDescription *
 vulkan_shader_info_get_attribute_descriptions(vulkan_shader_info *info, size_t *count) {
-  *count = count_struct_array(info->inputAttributeDescriptions);
+  *count = core_array_count(info->inputAttributeDescriptions);
   VkVertexInputAttributeDescription *attributeDescriptions =
       (VkVertexInputAttributeDescription *)malloc(*count *
                                                   sizeof(VkVertexInputAttributeDescription));
   uint32_t offset = 0;
   for (size_t i = 0; i < *count; i++) {
-    vulkan_vertex_attribute_description *description = &info->inputAttributeDescriptions[i];
+    vulkan_vertex_attribute_description *description = &info->inputAttributeDescriptions.ptr[i];
     VkFormat format = VK_FORMAT_R32_SFLOAT + 3 * (description->componentNum - 1);
     attributeDescriptions[i].binding = 0;
     attributeDescriptions[i].location = description->location;
@@ -218,8 +229,7 @@ VkShaderStageFlagBits vulkan_shader_info_get_push_constant_stage_flags(vulkan_sh
   return stageFlags;
 }
 
-void vulkan_shader_init_with_path(vulkan_shader *shader, vulkan_device *vkd,
-                                  platform_path glslPath) {
+vulkan_shader *vulkan_shader_create_with_path(vulkan_device *vkd, platform_path glslPath) {
   char *input = read_text_file(&glslPath, NULL);
   str glslCode = str_init(input);
   free(input);
@@ -232,12 +242,14 @@ void vulkan_shader_init_with_path(vulkan_shader *shader, vulkan_device *vkd,
   } else {
     panic("unknown glsl shader extension");
   }
-  vulkan_shader_init_with_str(shader, vkd, type, &glslCode);
+  vulkan_shader *shader = vulkan_shader_create_with_str(vkd, type, &glslCode);
   str_free(&glslCode);
+  return shader;
 }
 
-void vulkan_shader_init_with_str(vulkan_shader *shader, vulkan_device *vkd,
-                                 shaderc_shader_kind type, str *text) {
+vulkan_shader *vulkan_shader_create_with_str(vulkan_device *vkd, shaderc_shader_kind type,
+                                             str *text) {
+  vulkan_shader *shader = core_alloc(sizeof(vulkan_shader));
   shader->vkd = vkd;
   shader->glslCode = str_copy(text);
   shader->type = type;
@@ -262,9 +274,10 @@ void vulkan_shader_init_with_str(vulkan_shader *shader, vulkan_device *vkd,
   shaderc_result_release(result);
   shader->module = create_shader_module(shader->vkd, shader->spvCode, shader->spvSize);
   vulkan_shader_info_init(&shader->info, shader);
+  return shader;
 }
 
-void vulkan_shader_deinit(vulkan_shader *shader) {
+void vulkan_shader_destroy(vulkan_shader *shader) {
   vulkanShaderCount -= 1;
   if (vulkanShaderCount == 0) {
     shaderc_compiler_release(compiler);
@@ -273,4 +286,5 @@ void vulkan_shader_deinit(vulkan_shader *shader) {
   free(shader->spvCode);
   vkDestroyShaderModule(shader->vkd->device, shader->module, vka);
   vulkan_shader_info_deinit(&shader->info);
+  core_free(shader);
 }

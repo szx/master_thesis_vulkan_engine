@@ -7,44 +7,17 @@
 #define FUNC(name)
 #endif
 
-#define FUNC_core_alloc_struct_header_get 1
-FUNC(core_alloc_struct_header_get)
+#define FUNC_core_alloc 1
+FUNC(core_alloc)
 
-#define FUNC_core_alloc_struct_header_init 1
-FUNC(core_alloc_struct_header_init)
-
-#define FUNC_core_alloc_struct 1
-FUNC(core_alloc_struct)
-
-#define FUNC_core_deinit_struct 1
-FUNC(core_deinit_struct)
-
-#define FUNC_core_dealloc_struct 1
-FUNC(core_dealloc_struct)
-
-#define FUNC_core_alloc_debug_print 1
-FUNC(core_alloc_debug_print)
-
-#define FUNC_platform_alloc_struct_array_count 1
-FUNC(platform_alloc_struct_array_count)
-
-#define FUNC_platform_alloc_struct_mark_init 1
-FUNC(platform_alloc_struct_mark_init)
-
-#define FUNC_platform_alloc_struct 1
-FUNC(platform_alloc_struct)
-
-#define FUNC_platform_deinit_struct 1
-FUNC(platform_deinit_struct)
-
-#define FUNC_platform_dealloc_struct 1
-FUNC(platform_dealloc_struct)
-
-#define FUNC_platform_alloc_debug_print 1
-FUNC(platform_alloc_debug_print)
+#define FUNC_core_free 1
+FUNC(core_free)
 
 #define FUNC_core_memdup 1
 FUNC(core_memdup)
+
+#define FUNC_dummy_debug_msg 1
+FUNC(dummy_debug_msg)
 
 #define STRUCT_platform_path 1
 #ifdef STRUCT_COND
@@ -55,9 +28,6 @@ FUNC(core_memdup)
 #  endif
 #endif
 STRUCT(platform_path)
-
-#define FUNC_dummy_debug_msg 1
-FUNC(dummy_debug_msg)
 
 #define FUNC_platform_init 1
 FUNC(platform_init)
@@ -171,11 +141,11 @@ FUNC(vulkan_vertex_attribute_description_init)
 #define FUNC_vulkan_vertex_attribute_description_deinit 1
 FUNC(vulkan_vertex_attribute_description_deinit)
 
-#define FUNC_vulkan_push_constant_description_init 1
-FUNC(vulkan_push_constant_description_init)
+#define FUNC_vulkan_push_constant_description_create 1
+FUNC(vulkan_push_constant_description_create)
 
-#define FUNC_vulkan_push_constant_description_deinit 1
-FUNC(vulkan_push_constant_description_deinit)
+#define FUNC_vulkan_push_constant_description_destroy 1
+FUNC(vulkan_push_constant_description_destroy)
 
 #define FUNC_vulkan_shader_info_init 1
 FUNC(vulkan_shader_info_init)
@@ -198,14 +168,14 @@ FUNC(vulkan_shader_info_get_push_constant_range)
 #define FUNC_vulkan_shader_info_get_push_constant_stage_flags 1
 FUNC(vulkan_shader_info_get_push_constant_stage_flags)
 
-#define FUNC_vulkan_shader_init_with_path 1
-FUNC(vulkan_shader_init_with_path)
+#define FUNC_vulkan_shader_create_with_path 1
+FUNC(vulkan_shader_create_with_path)
 
-#define FUNC_vulkan_shader_init_with_str 1
-FUNC(vulkan_shader_init_with_str)
+#define FUNC_vulkan_shader_create_with_str 1
+FUNC(vulkan_shader_create_with_str)
 
-#define FUNC_vulkan_shader_deinit 1
-FUNC(vulkan_shader_deinit)
+#define FUNC_vulkan_shader_destroy 1
+FUNC(vulkan_shader_destroy)
 
 #define STRUCT_vulkan_swap_chain 1
 #ifdef STRUCT_COND
@@ -217,11 +187,11 @@ FUNC(vulkan_shader_deinit)
 #endif
 STRUCT(vulkan_swap_chain)
 
-#define FUNC_vulkan_swap_chain_init 1
-FUNC(vulkan_swap_chain_init)
+#define FUNC_vulkan_swap_chain_create 1
+FUNC(vulkan_swap_chain_create)
 
-#define FUNC_vulkan_swap_chain_deinit 1
-FUNC(vulkan_swap_chain_deinit)
+#define FUNC_vulkan_swap_chain_destroy 1
+FUNC(vulkan_swap_chain_destroy)
 
 #define FUNC_choose_swap_surface_format 1
 FUNC(choose_swap_surface_format)
@@ -273,11 +243,11 @@ STRUCT(vulkan_vertex_stream_element)
 #endif
 STRUCT(vulkan_geometry_buffer)
 
-#define FUNC_vulkan_geometry_buffer_init 1
-FUNC(vulkan_geometry_buffer_init)
+#define FUNC_vulkan_geometry_buffer_create 1
+FUNC(vulkan_geometry_buffer_create)
 
-#define FUNC_vulkan_geometry_buffer_deinit 1
-FUNC(vulkan_geometry_buffer_deinit)
+#define FUNC_vulkan_geometry_buffer_destroy 1
+FUNC(vulkan_geometry_buffer_destroy)
 
 #define FUNC_vulkan_geometry_buffer_send_to_device 1
 FUNC(vulkan_geometry_buffer_send_to_device)
@@ -379,11 +349,11 @@ FUNC(vulkan_swap_chain_info_init)
 #define FUNC_vulkan_swap_chain_info_deinit 1
 FUNC(vulkan_swap_chain_info_deinit)
 
-#define FUNC_vulkan_device_init 1
-FUNC(vulkan_device_init)
+#define FUNC_vulkan_device_create 1
+FUNC(vulkan_device_create)
 
-#define FUNC_vulkan_device_deinit 1
-FUNC(vulkan_device_deinit)
+#define FUNC_vulkan_device_destroy 1
+FUNC(vulkan_device_destroy)
 
 #define FUNC_glfw_framebuffer_resize_callback 1
 FUNC(glfw_framebuffer_resize_callback)
@@ -503,8 +473,8 @@ FUNC(vulkan_scene_deinit)
 #define FUNC_vulkan_scene_debug_print 1
 FUNC(vulkan_scene_debug_print)
 
-#define FUNC_vulkan_scene_init_with_gltf_file 1
-FUNC(vulkan_scene_init_with_gltf_file)
+#define FUNC_vulkan_scene_create_with_gltf_file 1
+FUNC(vulkan_scene_create_with_gltf_file)
 
 #define FUNC_vulkan_scene_build_geometry_buffer 1
 FUNC(vulkan_scene_build_geometry_buffer)
@@ -562,20 +532,20 @@ STRUCT(vulkan_swap_chain_frame)
 #endif
 STRUCT(vulkan_render_context)
 
-#define FUNC_vulkan_render_pass_init 1
-FUNC(vulkan_render_pass_init)
+#define FUNC_vulkan_render_pass_create 1
+FUNC(vulkan_render_pass_create)
 
-#define FUNC_vulkan_render_pass_deinit 1
-FUNC(vulkan_render_pass_deinit)
+#define FUNC_vulkan_render_pass_destroy 1
+FUNC(vulkan_render_pass_destroy)
 
 #define FUNC_vulkan_render_pass_validate 1
 FUNC(vulkan_render_pass_validate)
 
-#define FUNC_vulkan_pipeline_init 1
-FUNC(vulkan_pipeline_init)
+#define FUNC_vulkan_pipeline_create 1
+FUNC(vulkan_pipeline_create)
 
-#define FUNC_vulkan_pipeline_deinit 1
-FUNC(vulkan_pipeline_deinit)
+#define FUNC_vulkan_pipeline_destroy 1
+FUNC(vulkan_pipeline_destroy)
 
 #define FUNC_vulkan_swap_chain_frame_init 1
 FUNC(vulkan_swap_chain_frame_init)
@@ -775,17 +745,17 @@ STRUCT(parser_state)
 #endif
 STRUCT(parser_ast_node)
 
-#define FUNC_parser_error_init 1
-FUNC(parser_error_init)
+#define FUNC_parser_error_create 1
+FUNC(parser_error_create)
 
-#define FUNC_parser_error_deinit 1
-FUNC(parser_error_deinit)
+#define FUNC_parser_error_destroy 1
+FUNC(parser_error_destroy)
 
-#define FUNC_parser_comment_init 1
-FUNC(parser_comment_init)
+#define FUNC_parser_comment_create 1
+FUNC(parser_comment_create)
 
-#define FUNC_parser_comment_deinit 1
-FUNC(parser_comment_deinit)
+#define FUNC_parser_comment_destroy 1
+FUNC(parser_comment_destroy)
 
 #define FUNC_parser_ast_node_free 1
 FUNC(parser_ast_node_free)

@@ -6,20 +6,28 @@
 
 #include "../codegen/parser_internal.c"
 
-void parser_comment_init(parser_comment *comment, parser_str_range range) {
+parser_comment *parser_comment_create(parser_str_range range) {
+  parser_comment *comment = core_alloc(sizeof(parser_comment));
   comment->range = range;
   comment->next = NULL;
+  return comment;
 }
 
-void parser_comment_deinit(parser_comment *comment) {}
+void parser_comment_destroy(parser_comment *comment) {
+  core_free(comment);
+}
 
-void parser_error_init(parser_error *error, parser_error_type type, parser_str_range range) {
+parser_error *parser_error_create(parser_error_type type, parser_str_range range) {
+  parser_error *error = core_alloc(sizeof(parser_error));
   error->type = type;
   error->range = range;
   error->next = NULL;
+  return error;
 }
 
-void parser_error_deinit(parser_error *error) {}
+void parser_error_destroy(parser_error *error) {
+  core_free(error);
+}
 
 parser_state parser_state_init(char *source) {
   parser_state state = {0};
@@ -42,14 +50,15 @@ void parser_state_free(parser_state *state) {
   parser_error *error, *tempError;
   LL_FOREACH_SAFE(state->errors,error,tempError) {
     LL_DELETE(state->errors,error);
-    dealloc_struct(error);
+    parser_error_destroy(error);
   }
   parser_comment *comment, *tempComment;
   LL_FOREACH_SAFE(state->comments,comment,tempComment) {
     LL_DELETE(state->comments,comment);
-    dealloc_struct(comment);
+    parser_comment_destroy(comment);
   }
   state->isValid = false;
+  parser_ast_node_free(state->programNode);
   state->programNode = NULL;
 }
 
@@ -81,8 +90,7 @@ parser_ast_node *parser_ast_node_allocate(parser_state *state,
                                               parser_ast_node_type type,
                                               parser_str_range range) {
   (void)state;
-  parser_ast_node *node =
-      (parser_ast_node *)malloc(sizeof(parser_ast_node));
+  parser_ast_node *node = core_alloc(sizeof(parser_ast_node));
   node->type = type;
   node->range = range;
   node->childNodes = NULL;
@@ -97,12 +105,7 @@ void parser_ast_node_free(parser_ast_node *node) {
       parser_ast_node_free(childNode);
     }
   }
-  parser_ast_node *siblingNode;
-  LL_FOREACH_SAFE(node,siblingNode,temp) {
-    if (siblingNode != NULL) {
-      free(node);
-    }
-  }
+  core_free(node);
 }
 
 parser_ast_node *parser_ast_node_init_variadic(parser_state *state,
@@ -224,8 +227,7 @@ void parser_ast_node_debug_print(parser_state *state,
 
 void parser_handle_error(parser_state *state, parser_error_type type,
                            parser_str_range range) {
-  parser_error *error = alloc_struct(parser_error);
-  init_struct(error, parser_error_init, type, range);
+  parser_error *error = parser_error_create(type, range);
   LL_APPEND(state->errors, error);
   state->isValid = false;
 }
@@ -237,15 +239,13 @@ void parser_handle_syntax_error(parser_state *state) {
   if (state->currentIndex > max_shown_chars) {
     range.begin = state->currentIndex - max_shown_chars;
   }
-  parser_error *error = alloc_struct(parser_error);
-  init_struct(error, parser_error_init, SyntaxError, range);
+  parser_error *error = parser_error_create(SyntaxError, range);
   LL_APPEND(state->errors, error);
   state->isValid = false;
 }
 
 void parser_handle_comment(parser_state *state, parser_str_range range) {
-  parser_comment *comment = alloc_struct(parser_comment);
-  init_struct(comment, parser_comment_init, range);
+  parser_comment *comment = parser_comment_create(range);
   LL_APPEND(state->comments, comment);
 }
 

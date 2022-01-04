@@ -20,15 +20,7 @@
 #define VULKAN_HEADER_PATH "VULKAN_HEADER_PATH should be defined by CMake"
 #endif
 
-#if defined(DEBUG)
-#define debug_msg(msg) log_trace("debug_msg: %s in %s:%s:%d", msg, __func__, __FILE__, __LINE__)
-#else
-void dummy_debug_msg();
-#define debug_msg(msg) dummy_debug_msg()
-#endif
-
 #include "alloc.h"
-#include "struct_alloc.h"
 #include "junk.h"
 
 /// Allocates and initializes all global state used by functions below.
