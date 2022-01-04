@@ -2,7 +2,10 @@
 
 void *core_alloc(size_t size) {
   void *memory = malloc(size);
-  // HIRO verify
+  if (memory == NULL) {
+    fprintf(stderr, "%s:%d: Out of memory (OOM)", __FILE__, __LINE__);
+    exit(EXIT_FAILURE);
+  }
   return memory;
 }
 
