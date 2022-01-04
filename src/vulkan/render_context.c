@@ -1,5 +1,4 @@
 #include "render_context.h"
-#include "../codegen/render_context.c"
 
 /// Create render pass with default functionality.
 void create_render_pass_info(vulkan_render_pass *renderPass) {

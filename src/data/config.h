@@ -3,7 +3,6 @@
 #ifndef DATA_CONFIG_H
 #define DATA_CONFIG_H
 
-#include "../codegen/config.h"
 #include "../core/platform.h"
 
 #include <sqlite3.h>

@@ -1,5 +1,4 @@
 #include "config.h"
-#include "../codegen/config.c"
 
 data_config data_config_init() {
   data_config config = {0};

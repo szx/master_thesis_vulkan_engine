@@ -4,7 +4,7 @@
 
 #include "parser_internal.h"
 
-#include "../codegen/parser_internal.c"
+#include "../codegen/parser_internal.c" // HIRO remove
 
 parser_comment *parser_comment_create(parser_str_range range) {
   parser_comment *comment = core_alloc(sizeof(parser_comment));

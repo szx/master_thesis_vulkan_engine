@@ -1,5 +1,4 @@
 #include "shader.h"
-#include "../codegen/shader.c"
 
 #include "../peg/glsl_parser.h"
 

@@ -63,6 +63,4 @@ vulkan_scene *vulkan_scene_create_with_gltf_file(platform_path gltfPath);
 void vulkan_scene_destroy(vulkan_scene *scene);
 void vulkan_scene_build_geometry_buffer(vulkan_scene *scene);
 
-#include "../codegen/scene.h"
-
 #endif /* !VULKAN_SCENE_H */

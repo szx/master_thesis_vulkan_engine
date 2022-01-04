@@ -1,5 +1,4 @@
 #include "scene.h"
-#include "../codegen/scene.c"
 
 void vulkan_mesh_primitive_init(vulkan_mesh_primitive *primitive, VkPrimitiveTopology topology,
                                 vulkan_attribute_type vertexTypes, vulkan_index_type indexType) {

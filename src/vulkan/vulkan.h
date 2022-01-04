@@ -8,6 +8,4 @@
 #include "scene.h"
 #include "swap_chain.h"
 
-#include "../codegen/vulkan.h"
-
 #endif /* !VULKAN_VULKAN_H */

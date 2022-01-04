@@ -112,6 +112,4 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
                                                     vulkan_render_pass *renderPass,
                                                     vulkan_swap_chain_frame *frame);
 
-#include "../codegen/render_context.h"
-
 #endif /* !VULKAN_RENDER_CONTEXT_H */

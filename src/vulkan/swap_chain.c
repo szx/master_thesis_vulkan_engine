@@ -1,5 +1,4 @@
 #include "swap_chain.h"
-#include "../codegen/swap_chain.c"
 
 vulkan_swap_chain *vulkan_swap_chain_create(vulkan_device *vkd) {
   vulkan_swap_chain *vks = core_alloc(sizeof(vulkan_swap_chain));

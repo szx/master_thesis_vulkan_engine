@@ -44,6 +44,4 @@ void create_swap_chain(vulkan_swap_chain *vks);
 void get_swap_chain_images(vulkan_swap_chain *vks);
 void create_swap_chain_image_views(vulkan_swap_chain *vks);
 
-#include "../codegen/swap_chain.h"
-
 #endif /* !VULKAN_SWAP_CHAIN_H */

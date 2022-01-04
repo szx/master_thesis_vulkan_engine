@@ -6,8 +6,6 @@
 #include "../core/platform.h"
 #include "../data/config.h"
 
-#include "../codegen/vulkan_core.h"
-
 #define VALIDATION_LAYERS_SIZE 1
 extern const char *validationLayers[VALIDATION_LAYERS_SIZE];
 #define INSTANCE_EXTENSIONS_SIZE 1
@@ -113,7 +111,5 @@ vulkan_limits find_limits(vulkan_device *vkd, VkPhysicalDevice physicalDevice);
 void create_logical_device(vulkan_device *vkd);
 
 void create_one_shot_command_pool(vulkan_device *vkd);
-
-#include "../codegen/device.h"
 
 #endif /* !VULKAN_DEVICE_H */

@@ -80,6 +80,4 @@ vulkan_shader *vulkan_shader_create_with_str(vulkan_device *vkd, shaderc_shader_
                                              str *text);
 void vulkan_shader_destroy(vulkan_shader *shader);
 
-#include "../codegen/shader.h"
-
 #endif /* !VULKAN_SHADER */

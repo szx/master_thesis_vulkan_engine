@@ -1,7 +1,4 @@
 #include "device.h"
-#include "../codegen/device.c"
-
-#include "../codegen/vulkan_core.c"
 
 const char *validationLayers[VALIDATION_LAYERS_SIZE] = {"VK_LAYER_KHRONOS_validation"};
 

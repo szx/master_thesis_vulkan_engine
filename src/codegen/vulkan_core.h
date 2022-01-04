@@ -1,5 +1,4 @@
-// This file is auto-generated.
-// It should be included at the end of corresponding header file.
+// HIRO replace with lua codegen using XML from Vulkan registry
 
 const char *VkResult_debug_str(VkResult value);
 const char *VkStructureType_debug_str(VkStructureType value);
