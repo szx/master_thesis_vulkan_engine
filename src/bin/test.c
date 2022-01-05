@@ -154,19 +154,16 @@ TEST shaderc_compiling() {
   platform_path vertInputPath = get_asset_file_path("shaders", "shader.vert");
   platform_path fragInputPath = get_asset_file_path("shaders", "shader.frag");
   data_config config = data_config_init();
-  vulkan_device *vkd = alloc_struct(vulkan_device);
-  init_struct(vkd, vulkan_device_create, &config);
-  vulkan_shader *vertShader = alloc_struct(vulkan_shader);
-  init_struct(vertShader, vulkan_shader_create_with_path, vkd, vertInputPath);
-  vulkan_shader *fragShader = alloc_struct(vulkan_shader);
-  init_struct(fragShader, vulkan_shader_create_with_path, vkd, fragInputPath);
+  vulkan_device *vkd = vulkan_device_create(&config);
+  vulkan_shader *vertShader = vulkan_shader_create_with_path(vkd, vertInputPath);
+  vulkan_shader *fragShader = vulkan_shader_create_with_path(vkd, fragInputPath);
 
   ASSERT_EQ(vertShader->type, shaderc_glsl_vertex_shader);
   ASSERT_EQ(fragShader->type, shaderc_glsl_fragment_shader);
   log_debug("maxVertexInputAttributes=%d", vkd->limits.maxVertexInputAttributes);
   log_debug("maxVertexOutputComponents/4=%d", vkd->limits.maxVertexOutputComponents / 4);
-  size_t inputAttributeCount = count_struct_array(vertShader->info.inputAttributeDescriptions);
-  size_t outputAttributeCount = count_struct_array(vertShader->info.outputAttributeDescriptions);
+  size_t inputAttributeCount = core_array_count(vertShader->info.inputAttributeDescriptions);
+  size_t outputAttributeCount = core_array_count(vertShader->info.outputAttributeDescriptions);
   ASSERT_GT(inputAttributeCount, 0);
   ASSERT_GT(outputAttributeCount, 0);
 

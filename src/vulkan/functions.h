@@ -100,7 +100,5 @@ VkShaderModule create_shader_module(vulkan_device *vkd, const uint32_t *code, si
 // VkRenderPass renderPass, size_t numOutputColorAttachments, uint32_t width,
 // uint32_t height, std::vector<VkDescriptorSetLayout> setLayouts);
 
-#include "../codegen/functions.h"   // HIRO remove
-#include "../codegen/vulkan_core.h" // HIRO remove
 
 #endif /* !VULKAN_FUNCTIONS_H */

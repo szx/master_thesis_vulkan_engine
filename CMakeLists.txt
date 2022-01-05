@@ -51,7 +51,6 @@ set(STB_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb")
 set(MESHOPTIMIZER_LIBRARIES "meshoptimizer")
 add_subdirectory(thirdparty/meshoptimizer)
 
-
 # add external library GLib
 pkg_check_modules(glib REQUIRED IMPORTED_TARGET glib-2.0)
 
@@ -73,6 +72,26 @@ set(EXTERNAL_LIBRARY_PATHS ${VULKAN_LIBRARY_PATH} ${shaderc_LIBRARY_DIRS} ${GTK4
 set(EXTERNAL_LIBRARIES glfw ${VULKAN_LIBRARIES} ${shaderc_LIBRARIES} PkgConfig::glib ${GTK4_LIBRARIES}
         ${SQLITE3_LIBRARIES} ${CGLM_LIBRARIES} ${MESHOPTIMIZER_LIBRARIES})
 
+# find python
+set(SCRIPTS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/scripts")
+find_package(Python3 COMPONENTS Interpreter Development)
+set(PYTHON_VENV_PATH ${CMAKE_CURRENT_SOURCE_DIR}/venv)
+if (NOT Python3_EXECUTABLE)
+    message(FATAL_ERROR "Could not find `python3` in PATH")
+endif ()
+message(STATUS "Python3_EXECUTABLE: ${Python3_EXECUTABLE}")
+execute_process(COMMAND "${Python3_EXECUTABLE}" -m venv "${PYTHON_VENV_PATH}")
+set(ENV{VIRTUAL_ENV} "${PYTHON_VENV_PATH}")
+set(Python3_FIND_VIRTUALENV FIRST)
+unset(Python3_EXECUTABLE)
+find_package(Python3 COMPONENTS Interpreter Development)
+if (NOT Python3_EXECUTABLE)
+    message(FATAL_ERROR "Could not find `python3` in venv")
+endif ()
+get_filename_component(PIP3_EXECUTABLE ${Python3_EXECUTABLE} DIRECTORY)
+set(PIP3_EXECUTABLE "${PIP3_EXECUTABLE}/pip3")
+message(STATUS "PIP3_EXECUTABLE: ${PIP3_EXECUTABLE}")
+execute_process(COMMAND ${PIP3_EXECUTABLE} install -r ${SCRIPTS_PATH}/requirements.txt)
 
 # build packcc during configure
 if (WIN32)
@@ -82,7 +101,7 @@ if (WIN32)
         set(PACKCC_VERSION "mingw-clang")
     elseif (CMAKE_C_COMPILER_ID STREQUAL "MSVC")
         set(PACKCC_VERSION "msvc")
-    else()
+    else ()
         message(FATAL_ERROR "packcc: unsupported compiler")
     endif()
 else()
@@ -184,7 +203,7 @@ foreach (C_BIN_SOURCE_PATH ${C_BIN_SOURCES})
     endif ()
     target_precompile_headers(${EXECUTABLE_NAME} PRIVATE ${C_PRECOMPILED_HEADERS})
     target_sources(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_ADDITIONAL_SOURCES})
-    target_sources(${EXECUTABLE_NAME} PUBLIC ${C_SOURCES} ${C_HEADERS} ${C_GENERATOR_PEGS_OUTPUTS})
+    target_sources(${EXECUTABLE_NAME} PUBLIC ${C_SOURCES} ${C_HEADERS} ${C_GENERATOR_PEGS_OUTPUTS} ${C_CODEGEN_SOURCES})
     target_link_directories(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_LIBRARY_PATHS})
     target_link_libraries(${EXECUTABLE_NAME} LINK_PUBLIC ${EXTERNAL_LIBRARIES})
     # add compiler options

@@ -2,6 +2,7 @@
 CMakeLists.txt.user
 .idea/
 assets/
+venv/
 
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------

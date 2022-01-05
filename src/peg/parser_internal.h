@@ -306,7 +306,4 @@ void parser_handle_comment(parser_state *state, parser_str_range range);
 // Prints parser state to stdout.
 void parser_debug_print(parser_state *state);
 
-
-#include "../codegen/parser_internal.h" // HIRO remove
-
 #endif /* !PARSER_INTERNAL_H */

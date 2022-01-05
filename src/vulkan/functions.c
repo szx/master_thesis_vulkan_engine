@@ -1,8 +1,5 @@
 #include "functions.h"
 
-#include "../codegen/functions.c"   // HIRO remove
-#include "../codegen/vulkan_core.c" // HIRO remove
-
 vulkan_geometry_buffer *vulkan_geometry_buffer_create() {
   vulkan_geometry_buffer *geometryBuffer = core_alloc(sizeof(vulkan_geometry_buffer));
   static const UT_icd ut_vulkan_geometry_buffer_data_icd = {sizeof(uint8_t), NULL, NULL, NULL};

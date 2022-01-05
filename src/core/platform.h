@@ -20,6 +20,7 @@
 #define VULKAN_HEADER_PATH "VULKAN_HEADER_PATH should be defined by CMake"
 #endif
 
+#include "../codegen/meta.h"
 #include "alloc.h"
 #include "junk.h"
 
