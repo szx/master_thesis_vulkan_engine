@@ -119,30 +119,38 @@ message(STATUS "PACKCC_BIN: ${PACKCC_BIN}")
 
 
 # define source files
-file(GLOB_RECURSE C_SOURCES "src/*.c")
+file(GLOB_RECURSE C_SOURCES "src/*.c") # without bin/ and codegen/
 file(GLOB_RECURSE C_BIN_SOURCES "src/bin/*.c")
+file(GLOB_RECURSE C_CODEGEN_SOURCES "src/codegen/*.c")
 foreach (C_BIN_SOURCE_PATH ${C_BIN_SOURCES})
     list(REMOVE_ITEM C_SOURCES "${C_BIN_SOURCE_PATH}")
 endforeach ()
-file(GLOB_RECURSE C_CODEGEN_SOURCES "src/codegen/*.c")
 foreach (C_CODEGEN_SOURCE_PATH ${C_CODEGEN_SOURCES})
     list(REMOVE_ITEM C_SOURCES "${C_CODEGEN_SOURCE_PATH}")
 endforeach ()
-file(GLOB_RECURSE C_CORE_SOURCES "src/core/*.c")
-file(GLOB_RECURSE C_DATA_SOURCES "src/data/*.c")
-file(GLOB_RECURSE C_PEG_SOURCES "src/peg/*.c")
 
 file(GLOB_RECURSE C_HEADERS "src/*.h")
-file(GLOB_RECURSE C_CODEGEN_HEADERS "src/codegen/*.h")
-file(GLOB_RECURSE C_CORE_HEADERS"src/core/*.h")
-file(GLOB_RECURSE C_DATA_HEADERS "src/data/*.h")
-file(GLOB_RECURSE C_PEG_HEADERS "src/peg/*.h")
+file(GLOB_RECURSE C_CODEGEN_HEADERS "src/codegen/meta.h")
+foreach (C_CODEGEN_HEADER_PATH ${C_CODEGEN_HEADERS})
+    list(REMOVE_ITEM C_HEADERS "${C_CODEGEN_HEADER_PATH}")
+endforeach ()
 
 file(GLOB_RECURSE C_PRECOMPILED_HEADERS "src/core/thirdparty.h")
 file(GLOB TEST_FILES_DIR "test")
 file(GLOB_RECURSE TEST_FILES "test/*.*")
 file(GLOB ASSETS_FILES_DIR "assets")
 file(GLOB_RECURSE ASSETS_FILES "assets/*.*")
+
+# add python codegen
+file(GLOB_RECURSE PYTHON_SCRIPTS "${SCRIPTS_PATH}/*.py")
+add_custom_command(
+        OUTPUT ${C_CODEGEN_HEADERS}
+        DEPENDS ${PYTHON_SCRIPTS} ${C_HEADERS}
+        COMMAND ${Python3_EXECUTABLE} ${SCRIPTS_PATH}/codegen.py
+        COMMENT "Python codegen for headers."
+        VERBATIM
+)
+set_source_files_properties(${C_CODEGEN_HEADERS} PROPERTIES GENERATED TRUE)
 
 # define packcc parser generation
 file(GLOB_RECURSE C_GENERATOR_PEGS "src/*.peg")
@@ -186,7 +194,9 @@ set(ASAN_FLAGS "$<$<CONFIG:DEBUG>:-static-libstdc++>" "$<$<CONFIG:DEBUG>:-static
 set(HARDENING_FLAGS "-fstack-protector-all")
 
 # define executables
+message(STATUS "PYTHON_SCRIPTS: ${PYTHON_SCRIPTS}")
 message(STATUS "C_HEADERS: ${C_HEADERS}")
+message(STATUS "C_CODEGEN_HEADERS: ${C_CODEGEN_HEADERS}")
 message(STATUS "C_SOURCES: ${C_SOURCES}")
 message(STATUS "C_BIN_SOURCES: ${C_BIN_SOURCES}")
 message(STATUS "C_PRECOMPILED_HEADERS: ${C_PRECOMPILED_HEADERS}")
@@ -203,7 +213,7 @@ foreach (C_BIN_SOURCE_PATH ${C_BIN_SOURCES})
     endif ()
     target_precompile_headers(${EXECUTABLE_NAME} PRIVATE ${C_PRECOMPILED_HEADERS})
     target_sources(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_ADDITIONAL_SOURCES})
-    target_sources(${EXECUTABLE_NAME} PUBLIC ${C_SOURCES} ${C_HEADERS} ${C_GENERATOR_PEGS_OUTPUTS} ${C_CODEGEN_SOURCES})
+    target_sources(${EXECUTABLE_NAME} PUBLIC ${C_SOURCES} ${C_HEADERS} ${C_GENERATOR_PEGS_OUTPUTS} ${C_CODEGEN_HEADERS} ${C_CODEGEN_SOURCES})
     target_link_directories(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_LIBRARY_PATHS})
     target_link_libraries(${EXECUTABLE_NAME} LINK_PUBLIC ${EXTERNAL_LIBRARIES})
     # add compiler options
