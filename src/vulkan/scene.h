@@ -1,7 +1,5 @@
 /* Vulkan scene and glTF parsing */
-
-#ifndef VULKAN_SCENE_H
-#define VULKAN_SCENE_H
+#pragma once
 
 #include "../core/platform.h"
 
@@ -71,4 +69,3 @@ void vulkan_scene_build_geometry_buffer(vulkan_scene *scene); // HIRO remove bui
 void vulkan_scene_update_data(vulkan_scene *scene);
 void vulkan_scene_send_to_device(vulkan_scene *scene);
 
-#endif /* !VULKAN_SCENE_H */

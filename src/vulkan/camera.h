@@ -1,7 +1,6 @@
 /* Camera state.
  * Used to generate view and projection matrices.
  */
-
 #pragma once
 
 #include "../core/platform.h"

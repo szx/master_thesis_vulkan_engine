@@ -1,7 +1,5 @@
 /* Vulkan API swap chain */
-
-#ifndef VULKAN_SWAP_CHAIN_H
-#define VULKAN_SWAP_CHAIN_H
+#pragma once
 
 #include "../data/config.h"
 #include "device.h"
@@ -37,4 +35,3 @@ vulkan_swap_chain *vulkan_swap_chain_create(vulkan_device *vkd);
 void vulkan_swap_chain_destroy(vulkan_swap_chain *vks);
 float vulkan_swap_chain_get_aspect_ratio(vulkan_swap_chain *vks);
 
-#endif /* !VULKAN_SWAP_CHAIN_H */

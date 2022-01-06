@@ -1,7 +1,6 @@
 /* Vulkan API and helper functions and structures */
 
-#ifndef VULKAN_FUNCTIONS_H
-#define VULKAN_FUNCTIONS_H
+#pragma once
 
 #include "device.h"
 
@@ -131,5 +130,3 @@ VkDescriptorSet create_descriptor_set_for_uniform_buffers(
 // type, RenderPassName name, const ShaderConstants &shaderConstants,
 // VkRenderPass renderPass, size_t numOutputColorAttachments, uint32_t width,
 // uint32_t height, std::vector<VkDescriptorSetLayout> setLayouts);
-
-#endif /* !VULKAN_FUNCTIONS_H */

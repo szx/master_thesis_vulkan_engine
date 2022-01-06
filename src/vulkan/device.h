@@ -1,7 +1,5 @@
 /* Vulkan API device helper functions and structures */
-
-#ifndef VULKAN_DEVICE_H
-#define VULKAN_DEVICE_H
+#pragma once
 
 #include "../core/platform.h"
 #include "../data/config.h"
@@ -112,4 +110,3 @@ void create_logical_device(vulkan_device *vkd);
 
 void create_one_shot_command_pool(vulkan_device *vkd);
 
-#endif /* !VULKAN_DEVICE_H */

@@ -1,5 +1,4 @@
 /* Basic conveniences. */
-
 #pragma once
 
 static_assert(sizeof(char) == sizeof(uint8_t), "sizeof(char) != sizeof(uint8_t)");

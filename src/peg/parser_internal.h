@@ -1,7 +1,5 @@
 /* Structs and functions used by C parser */
-
-#ifndef PARSER_INTERNAL_H
-#define PARSER_INTERNAL_H
+#pragma once
 
 #include "../core/platform.h"
 
@@ -305,5 +303,3 @@ void parser_handle_comment(parser_state *state, parser_str_range range);
 
 // Prints parser state to stdout.
 void parser_debug_print(parser_state *state);
-
-#endif /* !PARSER_INTERNAL_H */

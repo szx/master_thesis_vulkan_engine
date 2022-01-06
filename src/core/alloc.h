@@ -1,7 +1,5 @@
 /* Basic allocation. */
-
-#ifndef CORE_ALLOC_H
-#define CORE_ALLOC_H
+#pragma once
 
 #include "junk.h"
 #include <stdarg.h>
@@ -43,9 +41,7 @@ void *core_memdup(const void *src, size_t size);
   do {                                                                                             \
     for (size_t _core_array_iter = 0; _core_array_iter < utarray_len((name).array);                \
          ++_core_array_iter) {                                                                     \
-      ptrDecl = &(name).ptr[_core_array_iter];                                                      \
+      ptrDecl = &(name).ptr[_core_array_iter];                                                     \
       block                                                                                        \
     }                                                                                              \
   } while (0)
-
-#endif /* !CORE_ALLOC_H */

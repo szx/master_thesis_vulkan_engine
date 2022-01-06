@@ -1,7 +1,5 @@
 /* Basic cross-platform functions. */
-
-#ifndef PLATFORM_H
-#define PLATFORM_H
+#pragma once
 
 #if defined(__linux) || defined(__linux__) || defined(linux)
 #define PLATFORM_LINUX
@@ -82,5 +80,3 @@ char *read_text_file(platform_path *path, size_t *sourceLength);
 
 /// Writes text file.
 void write_text_file(platform_path *path, str *content);
-
-#endif /* !PLATFORM_H */

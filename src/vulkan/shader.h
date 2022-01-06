@@ -1,7 +1,5 @@
 /* GLSL shader to SPIR-V binary compiler */
-
-#ifndef VULKAN_SHADER_H
-#define VULKAN_SHADER_H
+#pragma once
 
 #include "device.h"
 #include "functions.h"
@@ -80,4 +78,3 @@ vulkan_shader *vulkan_shader_create_with_str(vulkan_device *vkd, shaderc_shader_
                                              str *text);
 void vulkan_shader_destroy(vulkan_shader *shader);
 
-#endif /* !VULKAN_SHADER */

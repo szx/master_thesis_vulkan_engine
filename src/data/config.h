@@ -1,7 +1,5 @@
-/* Structs and functions used by C parser/ */
-
-#ifndef DATA_CONFIG_H
-#define DATA_CONFIG_H
+/* SQLite database as asset pipeline output. */
+#pragma once
 
 #include "../core/platform.h"
 
@@ -29,5 +27,3 @@ int data_config_get_int(data_config *config, char *key);
 
 // Returns text value for text key.
 str data_config_get_str(data_config *config, char *key);
-
-#endif /* !DATA_CONFIG */

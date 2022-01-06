@@ -1,7 +1,5 @@
 /* Rendering Vulkan scene. */
-
-#ifndef VULKAN_RENDER_CONTEXT_H
-#define VULKAN_RENDER_CONTEXT_H
+#pragma once
 
 #include "../core/platform.h"
 #include "scene.h"
@@ -126,4 +124,3 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
                                                     vulkan_render_pass *renderPass,
                                                     vulkan_swap_chain_frame *frame);
 
-#endif /* !VULKAN_RENDER_CONTEXT_H */
