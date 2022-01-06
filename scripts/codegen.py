@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-from utils import *
-from meta import codegen_meta
+from codegen_meta import codegen_meta
+from codegen_headers import codegen_headers
 
-codegen_meta()
+
+def main():
+    codegen_meta()
+    codegen_headers()
+
+
+if __name__ == '__main__':
+    main()

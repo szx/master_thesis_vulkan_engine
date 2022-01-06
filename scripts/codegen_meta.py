@@ -2,6 +2,7 @@ from utils import *
 import clang.cindex
 from dataclasses import dataclass
 
+
 @dataclass
 class EnumDeclaration:
     """Class for keeping track of an item in inventory."""
@@ -40,7 +41,7 @@ def find_enum_decls(paths):
                     assert (childNode.kind == clang.cindex.CursorKind.ENUM_CONSTANT_DECL)
                     enumerator_name = str(childNode.spelling)
                     enumerator_value = int(childNode.enum_value)
-                    #print(f"found child: {enumerator_name} {enumerator_value}")
+                    # print(f"found child: {enumerator_name} {enumerator_value}")
                     enum.enumerators.append((enumerator_name, enumerator_value))
                 unique_enum_decls.append(enum)
         for c in node.get_children():
@@ -48,7 +49,7 @@ def find_enum_decls(paths):
 
     index = clang.cindex.Index.create()
     for path in paths:
-        #print(f"parsing enums decls in {path}")
+        # print(f"parsing enums decls in {path}")
         walk(index.parse(path).cursor)
 
     unique_enum_decls.sort(key=lambda x: x.name)
@@ -88,5 +89,5 @@ def codegen_meta():
     decls.extend(generate_strings(enum_decls, enum_helpers_decls_template))
     defs.extend(generate_strings(enum_decls, enum_helpers_defs_template))
 
-    output_strings(decls, 'meta.h')
-    output_strings(defs, 'meta.c')
+    output_strings(decls, get_output_path('meta.h'))
+    output_strings(defs, get_output_path('meta.c'))
