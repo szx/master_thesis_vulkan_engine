@@ -114,11 +114,14 @@ TEST gltf_loading() {
   // TODO: Loading extra files (images).
   // platform_path gltfPath = get_asset_file_path("sponza", "Sponza.gltf");
   // platform_path gltfPath = get_asset_file_path("triangle", "Triangle.gltf");
+  data_config config = data_config_init();
+  vulkan_device *vkd = vulkan_device_create(&config);
   platform_path gltfPath = get_asset_file_path("triangles", "triangles.gltf");
-  vulkan_scene *scene = vulkan_scene_create_with_gltf_file(gltfPath);
+  vulkan_scene *scene = vulkan_scene_create_with_gltf_file(vkd, gltfPath);
   vulkan_scene_debug_print(scene);
   platform_path_deinit(&gltfPath);
   vulkan_scene_destroy(scene);
+  vulkan_device_destroy(vkd);
   PASS();
 }
 
@@ -183,9 +186,9 @@ TEST shaderc_compiling() {
   ASSERT((range.stageFlags | VK_SHADER_STAGE_VERTEX_BIT) != 0 ||
          (range.stageFlags | VK_SHADER_STAGE_FRAGMENT_BIT) != 0);
   data_config_free(&config);
-  dealloc_struct(vertShader);
-  dealloc_struct(fragShader);
-  dealloc_struct(vkd);
+  vulkan_shader_destroy(vertShader);
+  vulkan_shader_destroy(fragShader);
+  vulkan_device_destroy(vkd);
   PASS();
 }
 

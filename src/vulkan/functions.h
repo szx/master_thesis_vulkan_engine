@@ -35,22 +35,48 @@ typedef enum vulkan_index_type {
 } vulkan_index_type;
 
 typedef struct vulkan_geometry_buffer {
-  UT_array *data; /// uint8_t, initialized by vulkan_scene_build_geometry_buffer
-  /*  initialized by vulkan_geometry_buffer_send_to_device */
+  /* initialized by vulkan_scene_build_geometry_buffer */
+  UT_array *data; /// uint8_t
+  /* initialized by vulkan_geometry_buffer_send_to_device */
   vulkan_device *vkd; /// vulkan_device pointer
   VkBuffer buffer;
   VkDeviceMemory bufferMemory;
+  /* state */
+  bool dirty; /// True if geometry buffer data updated on CPU.
 } vulkan_geometry_buffer;
+
+typedef struct vulkan_uniform_buffer {
+  /* initialized by vulkan_uniform_buffer_create */
+  vulkan_device *vkd; /// vulkan_device pointer
+  VkBuffer buffer;
+  VkDeviceMemory bufferMemory;
+  VkDeviceSize bufferMemorySize;
+  /* initialized and updated by vulkan_uniform_buffer_send_to_device */
+  struct {
+    alignas(16) mat4 viewMat;
+    alignas(16) mat4 projMat;
+  } data;
+  /* state */
+  bool dirty;            /// True if uniform buffer data updated on CPU.
+} vulkan_uniform_buffer; // HIRO: Manage every uniform buffers.
 
 /* Vulkan helper functions */
 // TODO: Implement all Vulkan helper functions.
 
 vulkan_geometry_buffer *vulkan_geometry_buffer_create();
 void vulkan_geometry_buffer_destroy(vulkan_geometry_buffer *geometryBuffer);
-
 /// Creates device local buffer and copies geometry buffer data into it.
 void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
                                            vulkan_geometry_buffer *geometryBuffer);
+
+/// Creates host visible and coherent buffer.
+/// Descriptor set is created and managed by pipeline.
+/// Note: We do not use device local memory, because we assume that mapping host visible and
+///       coherent memory is faster than copying into device local memory using staging buffer.
+vulkan_uniform_buffer *vulkan_uniform_buffer_create(vulkan_device *vkd);
+void vulkan_uniform_buffer_destroy(vulkan_uniform_buffer *uniformBuffer);
+/// Maps and updates uniform buffer memory.
+void vulkan_uniform_buffer_send_to_device(vulkan_uniform_buffer *uniformBuffer);
 
 uint32_t find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
                           VkMemoryPropertyFlags properties);
@@ -87,11 +113,17 @@ void transition_image_layout(vulkan_device *vkd, VkImage image, VkFormat format,
                              uint32_t arrayLayers);
 
 VkShaderModule create_shader_module(vulkan_device *vkd, const uint32_t *code, size_t size);
-// VkDescriptorSetLayout create_descriptor_set_layout(VkDescriptorType
-// descriptorType, uint32_t descriptorCount, VkShaderStageFlags stageFlags);
-// VkDescriptorSet createDescriptorSet(VkDescriptorType descriptorType,
-// std::vector<VkBuffer> uniformBuffers, VkDeviceSize bufferSize,
-// VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool);
+
+VkDescriptorPool create_descriptor_pool(vulkan_device *vkd, size_t totalUniformBufferCount,
+                                        size_t totalCombinedImageSamplerCount,
+                                        size_t maxAllocatedDescriptorSetsCount);
+VkDescriptorSetLayout create_descriptor_set_layout(vulkan_device *vkd,
+                                                   VkDescriptorType descriptorType,
+                                                   uint32_t descriptorCount,
+                                                   VkShaderStageFlags stageFlags);
+VkDescriptorSet create_descriptor_set_for_uniform_buffers(
+    vulkan_device *vkd, VkBuffer *uniformBuffers, VkDeviceSize bufferSize, size_t bufferCount,
+    VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool);
 // VkDescriptorSet createDescriptorSet(VkDescriptorType descriptorType,
 // std::set<std::shared_ptr<Texture>> textures, VkDescriptorSetLayout
 // descriptorSetLayout, VkDescriptorPool descriptorPool);
@@ -99,6 +131,5 @@ VkShaderModule create_shader_module(vulkan_device *vkd, const uint32_t *code, si
 // type, RenderPassName name, const ShaderConstants &shaderConstants,
 // VkRenderPass renderPass, size_t numOutputColorAttachments, uint32_t width,
 // uint32_t height, std::vector<VkDescriptorSetLayout> setLayouts);
-
 
 #endif /* !VULKAN_FUNCTIONS_H */

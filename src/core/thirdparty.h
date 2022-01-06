@@ -14,6 +14,7 @@
 #include "utlist.h"
 
 #define CGLM_FORCE_DEPTH_ZERO_TO_ONE
+#define CGLM_FORCE_LEFT_HANDED
 #include "cglm/cglm.h"
 
 #include "cgltf.h"

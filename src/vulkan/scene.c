@@ -40,16 +40,22 @@ void vulkan_node_init(vulkan_node *scene, vulkan_mesh mesh) {
 
 void vulkan_node_deinit(vulkan_node *self) { vulkan_mesh_deinit(&self->mesh); }
 
-void vulkan_scene_init(vulkan_scene *scene, size_t nodesCount, size_t bufferViewsCount,
-                       size_t accessorsCount) {
+void vulkan_scene_init(vulkan_scene *scene, vulkan_device *vkd, size_t nodesCount,
+                       size_t bufferViewsCount, size_t accessorsCount) {
+  scene->vkd = vkd;
   core_array_alloc(scene->nodes, nodesCount);
   scene->geometryBuffer = vulkan_geometry_buffer_create();
+  scene->uniformBuffer = vulkan_uniform_buffer_create(vkd);
+  scene->camera = vulkan_camera_create();
+  scene->dirty = true;
 }
 
 void vulkan_scene_deinit(vulkan_scene *scene) {
   core_array_foreach(scene->nodes, vulkan_node * node, { vulkan_node_deinit(node); });
   core_array_dealloc(scene->nodes);
+  vulkan_uniform_buffer_destroy(scene->uniformBuffer);
   vulkan_geometry_buffer_destroy(scene->geometryBuffer);
+  vulkan_camera_destroy(scene->camera);
 }
 
 void vulkan_scene_debug_print(vulkan_scene *self) {
@@ -188,7 +194,7 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode) {
 
     utarray_resize(meshPrimitive.vertexStream, meshPrimitive.vertexCount);
     for (size_t i = 0; i < meshPrimitive.vertexCount; i++) {
-      vulkan_vertex_stream_element vertex;
+      vulkan_vertex_stream_element vertex = {0};
       for (size_t attributeIdx = 0; attributeIdx < cgltfPrimitive->attributes_count;
            attributeIdx++) {
         cgltf_attribute *cgltfAttribute = &cgltfPrimitive->attributes[attributeIdx];
@@ -221,7 +227,7 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode) {
   return node;
 }
 
-vulkan_scene *vulkan_scene_create_with_gltf_file(platform_path gltfPath) {
+vulkan_scene *vulkan_scene_create_with_gltf_file(vulkan_device *vkd, platform_path gltfPath) {
   vulkan_scene *scene = core_alloc(sizeof(vulkan_scene));
   // read gltf file
   cgltf_options options = {0};
@@ -241,7 +247,7 @@ vulkan_scene *vulkan_scene_create_with_gltf_file(platform_path gltfPath) {
   size_t nodesCount = cgltfScene->nodes_count;
   size_t bufferViewsCount = data->buffer_views_count;
   size_t accessorsCount = data->accessors_count;
-  vulkan_scene_init(scene, nodesCount, bufferViewsCount, accessorsCount);
+  vulkan_scene_init(scene, vkd, nodesCount, bufferViewsCount, accessorsCount);
   // parse nodes
   for (size_t nodeIdx = 0; nodeIdx < nodesCount; nodeIdx++) {
     vulkan_node node = parse_cgltf_node(cgltfScene->nodes[nodeIdx]);
@@ -307,4 +313,14 @@ void vulkan_scene_build_geometry_buffer(vulkan_scene *scene) {
       memcpy(geometryData, vertexData, vertexStreamSize);
     }
   }
+}
+
+void vulkan_scene_update_data(vulkan_scene *scene) {
+  vulkan_camera_update_uniform_buffer_data(scene->camera, scene->uniformBuffer);
+  scene->dirty = scene->camera->dirty || scene->uniformBuffer->dirty;
+}
+
+void vulkan_scene_send_to_device(vulkan_scene *scene) {
+  vulkan_geometry_buffer_send_to_device(scene->vkd, scene->geometryBuffer);
+  vulkan_uniform_buffer_send_to_device(scene->uniformBuffer);
 }

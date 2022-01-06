@@ -70,7 +70,7 @@ CheckOptions:
   - key:             readability-suspicious-call-argument.Abbreviations
     value:           'arr=array;cnt=count;idx=index;src=source;stmt=statement;cpy=copy;dest=destination;dist=distancedst=distance;ptr=pointer;wdth=width;str=string;ln=line;srv=server;attr=attribute;ref=reference;buf=buffer;col=column;nr=number;vec=vector;len=length;elem=element;val=value;i=index;var=variable;hght=height;cl=client;num=number;pos=position;lst=list;addr=address'
   - key:             readability-uppercase-literal-suffix.NewSuffixes
-    value:           ''
+    value: 'f'
   - key:             modernize-loop-convert.MinConfidence
     value:           reasonable
   - key:             readability-uniqueptr-delete-release.PreferResetCall

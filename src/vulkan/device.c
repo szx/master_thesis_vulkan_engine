@@ -163,7 +163,7 @@ void create_instance(vulkan_device *vkd, data_config *config) {
   appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
   appInfo.pEngineName = str_c_str(&config->windowTitle);
   appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-  appInfo.apiVersion = VK_API_VERSION_1_0;
+  appInfo.apiVersion = VK_API_VERSION_1_2;
 
   VkInstanceCreateInfo createInfo = {0};
   createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -395,6 +395,7 @@ void pick_physical_device(vulkan_device *vkd) {
   utarray_free(infos);
   free(devices);
   verify(vkd->physicalDevice != VK_NULL_HANDLE);
+  log_info("device found");
 
   vkd->limits = find_limits(vkd, vkd->physicalDevice);
 }
@@ -459,7 +460,7 @@ void create_logical_device(vulkan_device *vkd) {
 
   VkDeviceQueueCreateInfo *queueCreateInfos;
   uint32_t numQueues;
-  float queuePriority = 1.0F;
+  float queuePriority = 1.0f;
   if (queueFamilies.graphicsFamily != queueFamilies.presentFamily) {
     numQueues = 2;
     queueCreateInfos =

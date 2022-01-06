@@ -5,6 +5,7 @@
 
 #include "../core/platform.h"
 
+#include "camera.h"
 #include "device.h"
 #include "functions.h"
 
@@ -48,19 +49,26 @@ void vulkan_node_deinit(vulkan_node *scene);
 // Describes a scene.
 // Does not create any Vulkan objects (see vulkan_render_context).
 typedef struct vulkan_scene {
+  vulkan_device *vkd; // vulkan_device pointer
   core_array(vulkan_node) nodes;
   vulkan_geometry_buffer *geometryBuffer;
+  vulkan_uniform_buffer *uniformBuffer;
+  vulkan_camera *camera;
   // HIRO VK_EXT_vertex_input_dynamic_state is not supported by Intel.
   // HIRO VK_EXT_extended_dynamic_state allows VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE_EXT
   // HIRO Save and load scene from disk.
+  bool dirty; /// True if scene data updated on CPU.
 } vulkan_scene;
 
-void vulkan_scene_init(vulkan_scene *self, size_t nodesCount, size_t bufferViewsCount,
-                       size_t accessorsCount);
+void vulkan_scene_init(vulkan_scene *self, vulkan_device *vkd, size_t nodesCount,
+                       size_t bufferViewsCount, size_t accessorsCount);
 void vulkan_scene_deinit(vulkan_scene *self);
 void vulkan_scene_debug_print(vulkan_scene *self);
-vulkan_scene *vulkan_scene_create_with_gltf_file(platform_path gltfPath);
+vulkan_scene *vulkan_scene_create_with_gltf_file(vulkan_device *vkd, platform_path gltfPath);
 void vulkan_scene_destroy(vulkan_scene *scene);
-void vulkan_scene_build_geometry_buffer(vulkan_scene *scene);
+void vulkan_scene_build_geometry_buffer(vulkan_scene *scene); // HIRO remove build geometry buffer
+/// Update scene data on CPU. Can make camera and uniform buffer dirty.
+void vulkan_scene_update_data(vulkan_scene *scene);
+void vulkan_scene_send_to_device(vulkan_scene *scene);
 
 #endif /* !VULKAN_SCENE_H */

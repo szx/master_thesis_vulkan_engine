@@ -5,6 +5,7 @@ void create_render_pass_info(vulkan_render_pass *renderPass) {
   // TODO: Previous and next render pass?
   if (renderPass->type == ForwardRenderPass) {
     renderPass->info.usesPushConstants = true;
+    renderPass->info.usesSceneUniformBuffer = true;
     renderPass->info.supportedVertexAttributes = PositionAttribute | NormalAttribute;
   }
   // HIRO: vertex input attributes of shader have to match those of scene.
@@ -130,12 +131,12 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
   inputAssembly.primitiveRestartEnable = VK_FALSE;
 
   VkViewport viewport = {0};
-  viewport.x = 0.0F;
-  viewport.y = 0.0F;
+  viewport.x = 0.0f;
+  viewport.y = 0.0f;
   viewport.width = (float)renderPass->vks->swapChainExtent.width;
   viewport.height = (float)renderPass->vks->swapChainExtent.height;
-  viewport.minDepth = 0.0F;
-  viewport.maxDepth = 1.0F;
+  viewport.minDepth = 0.0f;
+  viewport.maxDepth = 1.0f;
   VkRect2D scissor = {0};
   scissor.offset.x = 0;
   scissor.offset.y = 0;
@@ -153,9 +154,9 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
   rasterizer.depthClampEnable = VK_FALSE;
   rasterizer.rasterizerDiscardEnable = VK_FALSE;
   rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
-  rasterizer.lineWidth = 1.0F;
+  rasterizer.lineWidth = 1.0f;
   rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-  rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+  rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
   rasterizer.depthBiasEnable = VK_FALSE;
 
   VkPipelineMultisampleStateCreateInfo multisampling = {0};
@@ -174,10 +175,10 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
   colorBlending.logicOp = VK_LOGIC_OP_COPY;
   colorBlending.attachmentCount = 1;
   colorBlending.pAttachments = &colorBlendAttachment;
-  colorBlending.blendConstants[0] = 0.0F;
-  colorBlending.blendConstants[1] = 0.0F;
-  colorBlending.blendConstants[2] = 0.0F;
-  colorBlending.blendConstants[3] = 0.0F;
+  colorBlending.blendConstants[0] = 0.0f;
+  colorBlending.blendConstants[1] = 0.0f;
+  colorBlending.blendConstants[2] = 0.0f;
+  colorBlending.blendConstants[3] = 0.0f;
 
   VkDynamicState dynamicStates[2] = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
   VkPipelineDynamicStateCreateInfo dynamicState = {0};
@@ -187,7 +188,10 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
 
   VkPipelineLayoutCreateInfo pipelineLayoutInfo = {0};
   pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-  pipelineLayoutInfo.setLayoutCount = 0;
+  if (renderPass->info.usesSceneUniformBuffer) {
+    pipelineLayoutInfo.setLayoutCount = 1;
+    pipelineLayoutInfo.pSetLayouts = &renderPass->pipeline->descriptorSetLayout;
+  }
   VkPushConstantRange pushConstantRange = {0};
   if (renderPass->info.usesPushConstants) {
     pushConstantRange =
@@ -220,11 +224,12 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
   free(vertexAttributeDescriptions);
 }
 
-vulkan_render_pass *vulkan_render_pass_create(vulkan_swap_chain *vks,
+vulkan_render_pass *vulkan_render_pass_create(vulkan_pipeline *pipeline,
                                               vulkan_render_pass_type type) {
   vulkan_render_pass *renderPass = core_alloc(sizeof(vulkan_render_pass));
-  renderPass->vks = vks;
-  renderPass->vkd = vks->vkd;
+  renderPass->pipeline = pipeline;
+  renderPass->vks = pipeline->vks;
+  renderPass->vkd = pipeline->vks->vkd;
   renderPass->type = type;
   create_render_pass_info(renderPass);
   create_shaders(renderPass);
@@ -250,11 +255,22 @@ void vulkan_render_pass_destroy(vulkan_render_pass *renderPass) {
   core_free(renderPass);
 }
 
-vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks) {
+vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_scene *scene) {
+  assert(scene != NULL);
   vulkan_pipeline *pipeline = core_alloc(sizeof(vulkan_pipeline));
   pipeline->vks = vks;
   pipeline->vkd = vks->vkd;
-  pipeline->renderPass = vulkan_render_pass_create(pipeline->vks, ForwardRenderPass);
+  pipeline->scene = scene;
+  // HIRO different numbers for different pipelines
+  pipeline->descriptorPool = create_descriptor_pool(pipeline->vkd, 1, 1, 1);
+  pipeline->descriptorSetLayout =
+      create_descriptor_set_layout(pipeline->vkd, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1,
+                                   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
+  pipeline->descriptorSet = create_descriptor_set_for_uniform_buffers(
+      pipeline->vkd, &scene->uniformBuffer->buffer, scene->uniformBuffer->bufferMemorySize, 1,
+      pipeline->descriptorSetLayout, pipeline->descriptorPool);
+
+  pipeline->renderPass = vulkan_render_pass_create(pipeline, ForwardRenderPass);
   return pipeline;
 }
 
@@ -347,16 +363,17 @@ void create_synchronization_objects(vulkan_render_context *rctx) {
   }
 }
 
-void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config) {
+void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config, char *sceneName) {
   rctx->vkd = vulkan_device_create(config);
+  rctx->scene = NULL;
+  vulkan_render_context_load_scene(rctx, sceneName);
   rctx->vks = vulkan_swap_chain_create(rctx->vkd);
-  rctx->pipeline = vulkan_pipeline_create(rctx->vks);
+  rctx->pipeline = vulkan_pipeline_create(rctx->vks, rctx->scene);
   core_array_alloc(rctx->swapChainFrames, utarray_len(rctx->vks->swapChainImageViews));
   for (uint32_t i = 0; i < core_array_count(rctx->swapChainFrames); i++) {
     vulkan_swap_chain_frame_init(&rctx->swapChainFrames.ptr[i], rctx->pipeline, i);
   }
   rctx->currentFrameInFlight = 0;
-  rctx->scene = NULL;
   create_synchronization_objects(rctx);
 }
 
@@ -399,28 +416,38 @@ void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx) {
   vulkan_swap_chain_destroy(rctx->vks);
 
   rctx->vks = vulkan_swap_chain_create(rctx->vkd);
-  rctx->pipeline = vulkan_pipeline_create(rctx->vks);
+  rctx->pipeline = vulkan_pipeline_create(rctx->vks, rctx->scene);
   core_array_alloc(rctx->swapChainFrames, utarray_len(rctx->vks->swapChainImageViews));
   for (uint32_t i = 0; i < core_array_count(rctx->swapChainFrames); i++) {
     vulkan_swap_chain_frame_init(&rctx->swapChainFrames.ptr[i], rctx->pipeline, i);
   }
+  vulkan_camera_update_aspect_ratio(rctx->scene->camera,
+                                    rctx->vks->swapChainExtent.width /
+                                        (float)rctx->vks->swapChainExtent.height);
   // gui.initialize();
 }
 
 void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneName) {
-  assert(rctx->scene == NULL);
+  verify(rctx->vkd != NULL);
+  if (rctx->scene != NULL) {
+    vulkan_scene_destroy(rctx->scene);
+  }
   platform_path gltfPath = get_asset_file_path(sceneName, sceneName);
   platform_path_append_ext(&gltfPath, ".gltf");
-  rctx->scene = vulkan_scene_create_with_gltf_file(gltfPath);
+  rctx->scene = vulkan_scene_create_with_gltf_file(rctx->vkd, gltfPath);
   platform_path_deinit(&gltfPath);
   vulkan_scene_debug_print(rctx->scene);
-  vulkan_render_pass_validate(rctx->pipeline->renderPass,
-                              rctx->scene); // TODO: vulkan_pipeline_validate().
-  // TODO: Copy resources to GPU. (deferred? tracking)
+  // vulkan_render_pass_validate(rctx->pipeline->renderPass,
+  //                             rctx->scene); // TODO: vulkan_pipeline_validate().
+  //  TODO: Copy resources to GPU. (deferred? tracking)
 }
 
-void vulkan_render_context_send_scene_to_device(vulkan_render_context *rctx) {
-  vulkan_geometry_buffer_send_to_device(rctx->vkd, rctx->scene->geometryBuffer);
+void vulkan_render_context_update_data(vulkan_render_context *rctx) {
+  vulkan_scene_update_data(rctx->scene);
+}
+
+void vulkan_render_context_send_to_device(vulkan_render_context *rctx) {
+  vulkan_scene_send_to_device(rctx->scene);
 }
 
 void vulkan_render_context_draw_frame(vulkan_render_context *rctx) {
@@ -524,7 +551,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
   renderPassInfo.renderArea.offset.y = 0;
   renderPassInfo.renderArea.extent = renderPass->vks->swapChainExtent;
 
-  VkClearValue clearColor = {{{0.0F, 0.0F, 0.0F, 1.0F}}};
+  VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
   renderPassInfo.clearValueCount = 1;
   renderPassInfo.pClearValues = &clearColor;
 
@@ -533,8 +560,8 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
   VkViewport viewport = {0};
   viewport.width = (float)renderPass->vks->swapChainExtent.width;
   viewport.height = (float)renderPass->vks->swapChainExtent.height;
-  viewport.minDepth = 0.0F;
-  viewport.maxDepth = 1.0F;
+  viewport.minDepth = 0.0f;
+  viewport.maxDepth = 1.0f;
   VkRect2D scissor = {0};
   scissor.offset.x = 0;
   scissor.offset.y = 0;
@@ -545,9 +572,18 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
 
   vkCmdBindPipeline(frame->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                     renderPass->graphicsPipeline);
+
+  uint32_t descriptorSetCount = 1;
+  VkDescriptorSet sceneDescriptorSet =
+      renderPass->pipeline->descriptorSet; // HIRO [currentFrameInFlight];
+  VkDescriptorSet descriptorSets[descriptorSetCount];
+  descriptorSets[0] = sceneDescriptorSet;
+  vkCmdBindDescriptorSets(frame->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                          renderPass->pipelineLayout, 0, descriptorSetCount, descriptorSets, 0,
+                          NULL);
+
   for (size_t nodeIdx = 0; nodeIdx < core_array_count(scene->nodes); nodeIdx++) {
     // TODO: Check if node should be culled.
-    // HIRO: View matrix and projection matrix in UBO.
     vulkan_node *node = &scene->nodes.ptr[nodeIdx];
     log_trace("draw node %d", nodeIdx);
     {

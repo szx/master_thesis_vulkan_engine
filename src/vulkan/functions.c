@@ -7,6 +7,7 @@ vulkan_geometry_buffer *vulkan_geometry_buffer_create() {
   geometryBuffer->vkd = NULL;
   geometryBuffer->buffer = VK_NULL_HANDLE;
   geometryBuffer->bufferMemory = VK_NULL_HANDLE;
+  geometryBuffer->dirty = true;
   return geometryBuffer;
 }
 
@@ -24,8 +25,12 @@ void vulkan_geometry_buffer_destroy(vulkan_geometry_buffer *geometryBuffer) {
 
 void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
                                            vulkan_geometry_buffer *geometryBuffer) {
+  assert(geometryBuffer->buffer == VK_NULL_HANDLE);
+  assert(geometryBuffer->bufferMemory == VK_NULL_HANDLE);
+  if (!geometryBuffer->dirty) {
+    return;
+  }
   // HIRO: Reuse staging buffer.
-  // HIRO: Check if geometry buffer is dirty.
   // HIRO: Free geometry buffer data if geometry buffer is device local.
   geometryBuffer->vkd = vkd;
   size_t geometryBufferSize = utarray_len(geometryBuffer->data);
@@ -52,6 +57,47 @@ void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
 
   vkDestroyBuffer(geometryBuffer->vkd->device, stagingBuffer, vka);
   vkFreeMemory(geometryBuffer->vkd->device, stagingBufferMemory, vka);
+  geometryBuffer->dirty = false;
+}
+
+vulkan_uniform_buffer *vulkan_uniform_buffer_create(vulkan_device *vkd) {
+  vulkan_uniform_buffer *uniformBuffer = core_alloc(sizeof(vulkan_uniform_buffer));
+  glm_mat4_identity(uniformBuffer->data.viewMat);
+  glm_mat4_identity(uniformBuffer->data.projMat);
+  uniformBuffer->vkd = vkd;
+  uniformBuffer->bufferMemorySize = sizeof(uniformBuffer->data);
+  create_buffer(uniformBuffer->vkd, uniformBuffer->bufferMemorySize,
+                VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                &uniformBuffer->buffer, &uniformBuffer->bufferMemory);
+  uniformBuffer->dirty = true;
+  return uniformBuffer;
+  // HIRO support multiple buffers and descriptors (seperate for each frame)
+}
+
+void vulkan_uniform_buffer_destroy(vulkan_uniform_buffer *uniformBuffer) {
+  assert(uniformBuffer->vkd != NULL);
+  vkDestroyBuffer(uniformBuffer->vkd->device, uniformBuffer->buffer, vka);
+  vkFreeMemory(uniformBuffer->vkd->device, uniformBuffer->bufferMemory, vka);
+  uniformBuffer->vkd = NULL;
+  uniformBuffer->buffer = VK_NULL_HANDLE;
+  uniformBuffer->bufferMemory = VK_NULL_HANDLE;
+  uniformBuffer->bufferMemorySize = 0;
+  core_free(uniformBuffer);
+}
+
+void vulkan_uniform_buffer_send_to_device(vulkan_uniform_buffer *uniformBuffer) {
+  assert(uniformBuffer->buffer != VK_NULL_HANDLE);
+  assert(uniformBuffer->bufferMemory != VK_NULL_HANDLE);
+  if (!uniformBuffer->dirty) {
+    return;
+  }
+  void *data;
+  vkMapMemory(uniformBuffer->vkd->device, uniformBuffer->bufferMemory, 0,
+              uniformBuffer->bufferMemorySize, 0, &data);
+  memcpy(data, &uniformBuffer->data, uniformBuffer->bufferMemorySize);
+  vkUnmapMemory(uniformBuffer->vkd->device, uniformBuffer->bufferMemory);
+  uniformBuffer->dirty = false;
 }
 
 uint32_t find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
@@ -225,4 +271,87 @@ VkShaderModule create_shader_module(vulkan_device *vkd, const uint32_t *code, si
   VkShaderModule shaderModule;
   verify(vkCreateShaderModule(vkd->device, &createInfo, vka, &shaderModule) == VK_SUCCESS);
   return shaderModule;
+}
+
+VkDescriptorPool create_descriptor_pool(vulkan_device *vkd, size_t totalUniformBufferCount,
+                                        size_t totalCombinedImageSamplerCount,
+                                        size_t maxAllocatedDescriptorSetsCount) {
+  VkDescriptorPoolSize poolSizes[2] = {0};
+  poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  poolSizes[0].descriptorCount = totalUniformBufferCount;
+  poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  poolSizes[1].descriptorCount = totalCombinedImageSamplerCount;
+
+  verify(poolSizes[0].descriptorCount <= vkd->limits.maxPerStageDescriptorUniformBuffers);
+  verify(poolSizes[1].descriptorCount <= vkd->limits.maxPerStageDescriptorSampledImages);
+  verify((poolSizes[0].descriptorCount + poolSizes[1].descriptorCount) <=
+         vkd->limits.maxPerStageResources);
+
+  VkDescriptorPoolCreateInfo poolInfo = {0};
+  poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+  poolInfo.poolSizeCount = 2;
+  poolInfo.pPoolSizes = poolSizes;
+  poolInfo.maxSets = maxAllocatedDescriptorSetsCount;
+  // HIRO check bound VULKAN_ASSERT(poolInfo.maxSets <= vkd.limits.maxBoundDescriptorSets);
+
+  VkDescriptorPool descriptorPool;
+  verify(vkCreateDescriptorPool(vkd->device, &poolInfo, vka, &descriptorPool) == VK_SUCCESS);
+  return descriptorPool;
+}
+
+VkDescriptorSetLayout create_descriptor_set_layout(vulkan_device *vkd,
+                                                   VkDescriptorType descriptorType,
+                                                   uint32_t descriptorCount,
+                                                   VkShaderStageFlags stageFlags) {
+  VkDescriptorSetLayoutBinding layoutBinding = {0};
+  layoutBinding.binding = 0;
+  layoutBinding.descriptorCount = descriptorCount;
+  layoutBinding.descriptorType = descriptorType;
+  layoutBinding.pImmutableSamplers = NULL;
+  layoutBinding.stageFlags = stageFlags;
+
+  VkDescriptorSetLayoutBinding bindings[1] = {layoutBinding};
+
+  VkDescriptorSetLayoutCreateInfo layoutInfo = {0};
+  layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+  layoutInfo.bindingCount = 1;
+  layoutInfo.pBindings = bindings;
+
+  VkDescriptorSetLayout descriptorSetLayout;
+  verify(vkCreateDescriptorSetLayout(vkd->device, &layoutInfo, vka, &descriptorSetLayout) ==
+         VK_SUCCESS);
+  return descriptorSetLayout;
+}
+
+VkDescriptorSet create_descriptor_set_for_uniform_buffers(
+    vulkan_device *vkd, VkBuffer *uniformBuffers, VkDeviceSize bufferSize, size_t bufferCount,
+    VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool) {
+  VkDescriptorSetLayout layouts[1] = {descriptorSetLayout};
+  VkDescriptorSetAllocateInfo allocInfo = {0};
+  allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+  allocInfo.descriptorPool = descriptorPool;
+  allocInfo.descriptorSetCount = 1;
+  allocInfo.pSetLayouts = layouts;
+
+  VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
+  verify(vkAllocateDescriptorSets(vkd->device, &allocInfo, &descriptorSet) == VK_SUCCESS);
+
+  VkWriteDescriptorSet descriptorWrites[1] = {0};
+  VkDescriptorBufferInfo bufferInfo[bufferCount];
+  for (uint32_t i = 0; i < bufferCount; i++) {
+    bufferInfo[i].buffer = uniformBuffers[i];
+    bufferInfo[i].offset = 0;
+    bufferInfo[i].range = bufferSize;
+  }
+  descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+  descriptorWrites[0].dstSet = descriptorSet;
+  descriptorWrites[0].dstBinding = 0;
+  descriptorWrites[0].dstArrayElement = 0;
+  descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  descriptorWrites[0].descriptorCount = bufferCount;
+  descriptorWrites[0].pBufferInfo = bufferInfo;
+
+  vkUpdateDescriptorSets(vkd->device, 1, descriptorWrites, 0, NULL);
+
+  return descriptorSet;
 }
