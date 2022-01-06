@@ -25,11 +25,11 @@ void vulkan_geometry_buffer_destroy(vulkan_geometry_buffer *geometryBuffer) {
 
 void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
                                            vulkan_geometry_buffer *geometryBuffer) {
-  assert(geometryBuffer->buffer == VK_NULL_HANDLE);
-  assert(geometryBuffer->bufferMemory == VK_NULL_HANDLE);
   if (!geometryBuffer->dirty) {
     return;
   }
+  assert(geometryBuffer->buffer == VK_NULL_HANDLE);
+  assert(geometryBuffer->bufferMemory == VK_NULL_HANDLE);
   // HIRO: Reuse staging buffer.
   // HIRO: Free geometry buffer data if geometry buffer is device local.
   geometryBuffer->vkd = vkd;

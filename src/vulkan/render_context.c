@@ -368,6 +368,8 @@ void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config
   rctx->scene = NULL;
   vulkan_render_context_load_scene(rctx, sceneName);
   rctx->vks = vulkan_swap_chain_create(rctx->vkd);
+  vulkan_camera_update_aspect_ratio(rctx->scene->camera,
+                                    vulkan_swap_chain_get_aspect_ratio(rctx->vks));
   rctx->pipeline = vulkan_pipeline_create(rctx->vks, rctx->scene);
   core_array_alloc(rctx->swapChainFrames, utarray_len(rctx->vks->swapChainImageViews));
   for (uint32_t i = 0; i < core_array_count(rctx->swapChainFrames); i++) {
@@ -416,14 +418,13 @@ void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx) {
   vulkan_swap_chain_destroy(rctx->vks);
 
   rctx->vks = vulkan_swap_chain_create(rctx->vkd);
+  vulkan_camera_update_aspect_ratio(rctx->scene->camera,
+                                    vulkan_swap_chain_get_aspect_ratio(rctx->vks));
   rctx->pipeline = vulkan_pipeline_create(rctx->vks, rctx->scene);
   core_array_alloc(rctx->swapChainFrames, utarray_len(rctx->vks->swapChainImageViews));
   for (uint32_t i = 0; i < core_array_count(rctx->swapChainFrames); i++) {
     vulkan_swap_chain_frame_init(&rctx->swapChainFrames.ptr[i], rctx->pipeline, i);
   }
-  vulkan_camera_update_aspect_ratio(rctx->scene->camera,
-                                    rctx->vks->swapChainExtent.width /
-                                        (float)rctx->vks->swapChainExtent.height);
   // gui.initialize();
 }
 

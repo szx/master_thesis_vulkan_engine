@@ -24,6 +24,8 @@ int main(int argc, char *argv[]) {
       frameTime -= dt;
     }
     glfwPollEvents(); // calls GLFW callbacks
+    vulkan_render_context_update_data(&rctx);
+    vulkan_render_context_send_to_device(&rctx);
     vulkan_render_context_draw_frame(&rctx);
   }
   vkDeviceWaitIdle(rctx.vkd->device);
