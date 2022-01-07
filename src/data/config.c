@@ -17,7 +17,7 @@ data_config data_config_init() {
 void data_config_free(data_config *config) {
   config->windowWidth = 0;
   config->windowHeight = 0;
-  str_free(&config->windowTitle);
+  utstring_free(config->windowTitle);
   sqlite3_close(config->db);
 }
 
@@ -38,7 +38,7 @@ int data_config_get_int(data_config *config, char *key) {
   return value;
 }
 
-str data_config_get_str(data_config *config, char *key) {
+UT_string *data_config_get_str(data_config *config, char *key) {
   sqlite3_stmt *stmt;
   char *sql = "SELECT key, value FROM config WHERE key = ?;";
   int rc = sqlite3_prepare_v2(config->db, sql, -1, &stmt, NULL);
@@ -51,7 +51,9 @@ str data_config_get_str(data_config *config, char *key) {
     panic("database error (3): %s", sqlite3_errmsg(config->db));
   }
   const unsigned char *result = sqlite3_column_text(stmt, 1);
-  str value = str_init((const char *)result);
+  UT_string *value;
+  utstring_new(value);
+  utstring_printf(value, "%s", (const char *)result);
   sqlite3_finalize(stmt);
   return value;
 }

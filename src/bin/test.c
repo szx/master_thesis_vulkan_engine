@@ -11,15 +11,15 @@ TEST c_parser_preprocessor_parsing() {
   size_t inputSize;
   platform_path inputPath = get_executable_dir_path();
   platform_path_append(&inputPath, "/tests/c_parser_test.txt");
-  char *input = read_text_file(&inputPath, &inputSize);
+  UT_string *input = read_text_file(&inputPath, &inputSize);
   platform_path_deinit(&inputPath);
   if (input == NULL) {
     FAILm("failed to load file");
   }
-  parser_state state = c_parser_execute(input);
+  parser_state state = c_parser_execute(utstring_body(input));
   parser_debug_print(&state);
   parser_state_free(&state);
-  free(input);
+  utstring_free(input);
   PASS();
 }
 
@@ -101,7 +101,7 @@ TEST database_loading() {
   data_config config = data_config_init();
   log_debug("config.windowWidth = %d\n", config.windowWidth);
   log_debug("config.windowHeight = %d\n", config.windowHeight);
-  log_debug("config.windowTitle = %s\n", str_c_str(&config.windowTitle));
+  log_debug("config.windowTitle = %s\n", utstring_body(config.windowTitle));
   data_config_free(&config);
   PASS();
 }
@@ -200,11 +200,11 @@ int main(int argc, char *argv[]) {
   GREATEST_MAIN_BEGIN();
   platform_init();
   log_info("start test suite");
-  //RUN_SUITE(c_parser_suite);
-  //RUN_SUITE(database_suite);
+  RUN_SUITE(c_parser_suite);
+  RUN_SUITE(database_suite);
   RUN_SUITE(gltf_suite);
-  //RUN_SUITE(platform_alloc_suite);
-  //RUN_SUITE(shaderc_suite);
+  // RUN_SUITE(platform_alloc_suite);
+  // RUN_SUITE(shaderc_suite);
   log_info("finish test suite");
   platform_free();
   GREATEST_MAIN_END();

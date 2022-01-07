@@ -5,13 +5,15 @@
 
 #include "meshoptimizer.h"
 #include "shaderc/shaderc.h"
+#include <sqlite3.h>
+
 #include <GLFW/glfw3.h>
 
 #include "log.h"
-#include "str.h"
 
 #include "utarray.h"
 #include "utlist.h"
+#include "utstring.h"
 
 #define CGLM_FORCE_DEPTH_ZERO_TO_ONE
 #define CGLM_FORCE_LEFT_HANDED

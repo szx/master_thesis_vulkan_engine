@@ -40,7 +40,7 @@ typedef struct vulkan_shader_info {
 /// Describes compiled GLSL shader.
 typedef struct vulkan_shader {
   vulkan_device *vkd; /// vulkan_device pointer.
-  str glslCode;
+  UT_string *glslCode;
   shaderc_shader_kind type;
   uint32_t *spvCode;
   size_t spvSize;
@@ -75,6 +75,5 @@ VkShaderStageFlagBits vulkan_shader_info_get_push_constant_stage_flags(vulkan_sh
 
 vulkan_shader *vulkan_shader_create_with_path(vulkan_device *vkd, platform_path glslPath);
 vulkan_shader *vulkan_shader_create_with_str(vulkan_device *vkd, shaderc_shader_kind type,
-                                             str *text);
+                                             UT_string *text);
 void vulkan_shader_destroy(vulkan_shader *shader);
-

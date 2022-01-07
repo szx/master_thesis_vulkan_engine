@@ -108,7 +108,7 @@ void create_window(vulkan_device *vkd, data_config *config) {
   glfwDefaultWindowHints();
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
   vkd->window = glfwCreateWindow(config->windowWidth, config->windowHeight,
-                                 str_c_str(&config->windowTitle), NULL, NULL);
+                                 utstring_body(config->windowTitle), NULL, NULL);
   glfwSetWindowUserPointer(vkd->window, vkd);
   glfwSetFramebufferSizeCallback(vkd->window, glfw_framebuffer_resize_callback);
   glfwSetKeyCallback(vkd->window, glfw_key_callback);
@@ -159,9 +159,9 @@ void create_instance(vulkan_device *vkd, data_config *config) {
 
   VkApplicationInfo appInfo = {0};
   appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-  appInfo.pApplicationName = str_c_str(&config->windowTitle);
+  appInfo.pApplicationName = utstring_body(config->windowTitle);
   appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-  appInfo.pEngineName = str_c_str(&config->windowTitle);
+  appInfo.pEngineName = utstring_body(config->windowTitle);
   appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
   appInfo.apiVersion = VK_API_VERSION_1_2;
 

@@ -11,7 +11,7 @@ typedef struct data_config {
   // loaded config:
   int windowWidth;
   int windowHeight;
-  str windowTitle;
+  UT_string *windowTitle;
 } data_config;
 
 // Returns new config.
@@ -26,4 +26,4 @@ void data_config_free(data_config *config);
 int data_config_get_int(data_config *config, char *key);
 
 // Returns text value for text key.
-str data_config_get_str(data_config *config, char *key);
+UT_string *data_config_get_str(data_config *config, char *key);

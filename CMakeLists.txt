@@ -27,9 +27,6 @@ add_subdirectory(thirdparty/glfw)
 # add external library greatest
 set(GREATEST_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/greatest")
 
-# add external library CLT
-set(CTL_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/ctl/ctl")
-
 # add external library uthash
 set(UTHASH_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/uthash/src")
 
@@ -64,7 +61,7 @@ pkg_check_modules(GTK4 REQUIRED IMPORTED_TARGET gtk4)
 pkg_check_modules(SQLITE3 REQUIRED IMPORTED_TARGET sqlite3)
 
 # prepare info about external libraries
-set(EXTERNAL_INCLUDE_PATHS ${VULKAN_INCLUDE_PATH} ${shaderc_INCLUDE_DIRS} ${GREATEST_INCLUDE_PATH} ${CTL_INCLUDE_PATH}
+set(EXTERNAL_INCLUDE_PATHS ${VULKAN_INCLUDE_PATH} ${shaderc_INCLUDE_DIRS} ${GREATEST_INCLUDE_PATH}
         ${UTHASH_INCLUDE_PATH} ${GTK4_INCLUDE_DIRS} ${SQLITE3_INCLUDE_DIRS} ${LOGC_INCLUDE_PATH} ${CGLTF_INCLUDE_PATH}
         ${STB_INCLUDE_PATH})
 set(EXTERNAL_ADDITIONAL_SOURCES ${LOGC_ADDITIONAL_SOURCES})

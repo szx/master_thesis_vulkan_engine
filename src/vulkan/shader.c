@@ -135,7 +135,7 @@ static bool glsl_parser_callback(parser_ast_node *node, void *callbackData) {
 
 void vulkan_shader_info_init(vulkan_shader_info *info, vulkan_shader *shader) {
   log_debug("vulkan_shader_info_init");
-  parser_state state = glsl_parser_execute(str_c_str(&shader->glslCode));
+  parser_state state = glsl_parser_execute(utstring_body(shader->glslCode));
   parser_debug_print(&state);
   verify(state.isValid == true);
   glsl_parser_callback_data data = {.state = &state, .pass = CountDescriptors, .info = info};
@@ -229,10 +229,8 @@ VkShaderStageFlagBits vulkan_shader_info_get_push_constant_stage_flags(vulkan_sh
 }
 
 vulkan_shader *vulkan_shader_create_with_path(vulkan_device *vkd, platform_path glslPath) {
-  char *input = read_text_file(&glslPath, NULL);
-  str glslCode = str_init(input);
-  free(input);
-  verify(glslCode.size > 0);
+  UT_string *glslCode = read_text_file(&glslPath, NULL);
+  verify(utstring_len(glslCode) > 0);
   shaderc_shader_kind type = shaderc_glsl_vertex_shader;
   if (platform_path_ext_equals(&glslPath, ".vert")) {
     type = shaderc_glsl_vertex_shader;
@@ -241,18 +239,19 @@ vulkan_shader *vulkan_shader_create_with_path(vulkan_device *vkd, platform_path 
   } else {
     panic("unknown glsl shader extension");
   }
-  vulkan_shader *shader = vulkan_shader_create_with_str(vkd, type, &glslCode);
-  str_free(&glslCode);
+  vulkan_shader *shader = vulkan_shader_create_with_str(vkd, type, glslCode);
+  utstring_free(glslCode);
   return shader;
 }
 
 vulkan_shader *vulkan_shader_create_with_str(vulkan_device *vkd, shaderc_shader_kind type,
-                                             str *text) {
+                                             UT_string *text) {
   vulkan_shader *shader = core_alloc(sizeof(vulkan_shader));
   shader->vkd = vkd;
-  shader->glslCode = str_copy(text);
+  utstring_new(shader->glslCode);
+  utstring_concat(shader->glslCode, text);
   shader->type = type;
-  verify(shader->glslCode.size > 0);
+  verify(utstring_len(shader->glslCode) > 0);
   if (vulkanShaderCount == 0) {
     compiler = shaderc_compiler_initialize();
   }
@@ -260,9 +259,9 @@ vulkan_shader *vulkan_shader_create_with_str(vulkan_device *vkd, shaderc_shader_
   vulkanShaderCount += 1;
   shaderc_compile_options_t options = shaderc_compile_options_initialize();
   shaderc_compile_options_set_target_env(options, shaderc_target_env_vulkan, 0);
-  shaderc_compilation_result_t result =
-      shaderc_compile_into_spv(compiler, str_c_str(&shader->glslCode), shader->glslCode.size,
-                               shader->type, "shader", "main", NULL);
+  shaderc_compilation_result_t result = shaderc_compile_into_spv(
+      compiler, utstring_body(shader->glslCode), utstring_len(shader->glslCode), shader->type,
+      "shader", "main", NULL);
   shaderc_compile_options_release(options);
   if (shaderc_result_get_num_errors(result)) {
     panic("compilation error: %s\n", shaderc_result_get_error_message(result));
@@ -281,7 +280,7 @@ void vulkan_shader_destroy(vulkan_shader *shader) {
   if (vulkanShaderCount == 0) {
     shaderc_compiler_release(compiler);
   }
-  str_free(&shader->glslCode);
+  utstring_free(shader->glslCode);
   free(shader->spvCode);
   vkDestroyShaderModule(shader->vkd->device, shader->module, vka);
   vulkan_shader_info_deinit(&shader->info);

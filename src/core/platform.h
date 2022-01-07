@@ -46,13 +46,12 @@ void panic(const char *format, ...);
 
 /* file system */
 typedef struct platform_path {
-  str data;
+  UT_string *data;
   struct platform_path *next;
 } platform_path;
 
 platform_path platform_path_init(const char *data);
 void platform_path_deinit(platform_path *self);
-platform_path platform_path_copy(platform_path *self);
 const char *platform_path_c_str(platform_path *self);
 
 void platform_path_append(platform_path *self, const char *dirOrFileName);
@@ -61,7 +60,6 @@ bool platform_path_equals(platform_path *self, platform_path *other);
 bool platform_path_dirname_equals(platform_path *self, platform_path *other);
 bool platform_path_ext_equals(platform_path *self, const char *ext);
 platform_path platform_path_get_dirname(platform_path *self);
-str platform_path_get_basename(platform_path *self);
 
 /// Returns new path to directory with current executable.
 platform_path get_executable_dir_path();
@@ -75,8 +73,8 @@ platform_path get_asset_file_path(const char *dirName, const char *fileName);
 /// Returns new list of child paths.
 platform_path *get_dir_children(platform_path *dirPath);
 
-/// Returns null-terminated string with text file content.
-char *read_text_file(platform_path *path, size_t *sourceLength);
+/// Returns new string with text file content.
+UT_string *read_text_file(platform_path *path, size_t *sourceLength);
 
 /// Writes text file.
-void write_text_file(platform_path *path, str *content);
+void write_text_file(platform_path *path, UT_string *content);

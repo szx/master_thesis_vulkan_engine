@@ -66,7 +66,8 @@ void panic(const char *format, ...) {
 
 platform_path platform_path_init(const char *data) {
   platform_path path = {0};
-  path.data = str_init(data);
+  utstring_new(path.data);
+  utstring_printf(path.data, "%s", data);
   path.next = NULL;
   return path;
 }
@@ -75,31 +76,25 @@ void platform_path_deinit(platform_path *self) {
   platform_path *path, *tempPath;
   LL_FOREACH_SAFE(self, path, tempPath) {
     LL_DELETE(self, path);
-    str_free(&path->data);
+    utstring_free(path->data);
     // TODO: How to free platform_path on heap?
   }
 }
 
-platform_path platform_path_copy(platform_path *self) {
-  platform_path copy = {0};
-  copy.data = str_copy(&self->data);
-  return copy;
-}
-
-const char *platform_path_c_str(platform_path *self) { return str_c_str(&self->data); }
+const char *platform_path_c_str(platform_path *self) { return utstring_body(self->data); }
 
 void platform_path_append(platform_path *self, const char *dirOrFileName) {
-  str_append(&self->data, G_DIR_SEPARATOR_S);
-  str_append(&self->data, dirOrFileName);
+  utstring_printf(self->data, "%s", G_DIR_SEPARATOR_S);
+  utstring_printf(self->data, "%s", dirOrFileName);
 }
 
 void platform_path_append_ext(platform_path *self, const char *ext) {
-  str_append(&self->data, ext);
+  utstring_printf(self->data, "%s", ext);
 }
 
 bool platform_path_equals(platform_path *self, platform_path *other) {
-  const char *data1 = str_c_str(&self->data);
-  const char *data2 = str_c_str(&other->data);
+  const char *data1 = utstring_body(self->data);
+  const char *data2 = utstring_body(other->data);
   return g_strcmp0(data1, data2) == 0;
 }
 
@@ -111,22 +106,15 @@ bool platform_path_dirname_equals(platform_path *self, platform_path *other) {
 }
 
 bool platform_path_ext_equals(platform_path *self, const char *ext) {
-  const char *data = str_c_str(&self->data) + self->data.size - strlen(ext);
+  const char *data = utstring_body(self->data) + utstring_len(self->data) - strlen(ext);
   return g_strcmp0(data, ext) == 0;
 }
 
 platform_path platform_path_get_dirname(platform_path *self) {
-  char *path = g_path_get_dirname(str_c_str(&self->data));
+  char *path = g_path_get_dirname(utstring_body(self->data));
   platform_path newPath = platform_path_init(path);
   free(path);
   return newPath;
-}
-
-str platform_path_get_basename(platform_path *self) {
-  char *basename = g_path_get_basename(str_c_str(&self->data));
-  str name = str_init(basename);
-  free(basename);
-  return name;
 }
 
 platform_path get_executable_dir_path() {
@@ -176,16 +164,16 @@ void get_dir_children_impl(const char *path, platform_path **paths) {
 platform_path *get_dir_children(platform_path *dirPath) {
 #if defined(PLATFORM_LINUX)
   platform_path *paths = NULL;
-  get_dir_children_impl(str_c_str(&dirPath->data), &paths);
+  get_dir_children_impl(utstring_body(dirPath->data), &paths);
   return paths;
 #else
 #error "plaform.c does not support current platform"
 #endif
 }
 
-char *read_text_file(platform_path *path, size_t *sourceLength) {
+UT_string *read_text_file(platform_path *path, size_t *sourceLength) {
   char *result = 0;
-  FILE *file = fopen(str_c_str(&path->data), "rb");
+  FILE *file = fopen(utstring_body(path->data), "rb");
 
   if (file) {
     fseek(file, 0, SEEK_END);
@@ -203,14 +191,17 @@ char *read_text_file(platform_path *path, size_t *sourceLength) {
 
     fclose(file);
   }
-
-  return result;
+  UT_string *s;
+  utstring_new(s);
+  utstring_printf(s, "%s", result);
+  free(result);
+  return s;
 }
 
-void write_text_file(platform_path *path, str *content) {
-  FILE *file = fopen(str_c_str(&path->data), "wb");
+void write_text_file(platform_path *path, UT_string *content) {
+  FILE *file = fopen(utstring_body(path->data), "wb");
   if (file) {
-    fprintf(file, "%s", str_c_str(content));
+    fprintf(file, "%s", utstring_body(content));
     fclose(file);
   }
 }
