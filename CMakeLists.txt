@@ -133,8 +133,6 @@ foreach (C_CODEGEN_HEADER_PATH ${C_CODEGEN_HEADERS})
 endforeach ()
 
 file(GLOB_RECURSE C_PRECOMPILED_HEADERS "src/core/thirdparty.h")
-file(GLOB TEST_FILES_DIR "test")
-file(GLOB_RECURSE TEST_FILES "test/*.*")
 file(GLOB ASSETS_FILES_DIR "assets")
 file(GLOB_RECURSE ASSETS_FILES "assets/*.*")
 
@@ -174,10 +172,9 @@ set_source_files_properties(${C_GENERATOR_PEGS_OUTPUTS} PROPERTIES GENERATED TRU
 
 
 # copy resources to directory with executables
-add_custom_target(copy_resources ALL DEPENDS ${TEST_FILES} ${ASSETS_FILES})
+add_custom_target(copy_resources ALL DEPENDS ${ASSETS_FILES})
 add_custom_command(
         TARGET copy_resources PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${TEST_FILES_DIR} ${CMAKE_CURRENT_BINARY_DIR}/tests
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${ASSETS_FILES_DIR} ${CMAKE_CURRENT_BINARY_DIR}/assets)
 
 # add preprocessor definitions

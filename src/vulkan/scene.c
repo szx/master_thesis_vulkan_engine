@@ -227,17 +227,17 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode) {
   return node;
 }
 
-vulkan_scene *vulkan_scene_create_with_gltf_file(vulkan_device *vkd, platform_path gltfPath) {
+vulkan_scene *vulkan_scene_create_with_gltf_file(vulkan_device *vkd, UT_string *gltfPath) {
   vulkan_scene *scene = core_alloc(sizeof(vulkan_scene));
   // read gltf file
   cgltf_options options = {0};
   cgltf_data *data = NULL;
   cgltf_result result = cgltf_result_success;
-  result = cgltf_parse_file(&options, platform_path_c_str(&gltfPath), &data);
+  result = cgltf_parse_file(&options, utstring_body(gltfPath), &data);
   if (result != cgltf_result_success) {
     panic("failed to parse gltf file");
   }
-  result = cgltf_load_buffers(&options, data, platform_path_c_str(&gltfPath));
+  result = cgltf_load_buffers(&options, data, utstring_body(gltfPath));
   if (result != cgltf_result_success) {
     panic("failed to load gltf buffers");
   }

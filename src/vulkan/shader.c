@@ -228,13 +228,13 @@ VkShaderStageFlagBits vulkan_shader_info_get_push_constant_stage_flags(vulkan_sh
   return stageFlags;
 }
 
-vulkan_shader *vulkan_shader_create_with_path(vulkan_device *vkd, platform_path glslPath) {
-  UT_string *glslCode = read_text_file(&glslPath, NULL);
+vulkan_shader *vulkan_shader_create_with_path(vulkan_device *vkd, UT_string *glslPath) {
+  UT_string *glslCode = read_text_file(glslPath, NULL);
   verify(utstring_len(glslCode) > 0);
   shaderc_shader_kind type = shaderc_glsl_vertex_shader;
-  if (platform_path_ext_equals(&glslPath, ".vert")) {
+  if (path_ext_equal(glslPath, ".vert")) {
     type = shaderc_glsl_vertex_shader;
-  } else if (platform_path_ext_equals(&glslPath, ".frag")) {
+  } else if (path_ext_equal(glslPath, ".frag")) {
     type = shaderc_glsl_fragment_shader;
   } else {
     panic("unknown glsl shader extension");

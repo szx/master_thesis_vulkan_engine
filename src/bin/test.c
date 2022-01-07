@@ -9,10 +9,12 @@
 // Parsing C preprocessor directives.
 TEST c_parser_preprocessor_parsing() {
   size_t inputSize;
-  platform_path inputPath = get_executable_dir_path();
-  platform_path_append(&inputPath, "/tests/c_parser_test.txt");
-  UT_string *input = read_text_file(&inputPath, &inputSize);
-  platform_path_deinit(&inputPath);
+  UT_string *path;
+  utstring_new(path);
+  utstring_printf(path, SRC_PATH);
+  utstring_printf(path, "/peg/parser_internal.h");
+  UT_string *input = read_text_file(path, &inputSize);
+  utstring_free(path);
   if (input == NULL) {
     FAILm("failed to load file");
   }
@@ -39,12 +41,10 @@ int database_resolutions_callback(void *callbackData, int argc, char **argv, cha
 TEST database_loading() {
   log_debug("sqlite3_libversion: %s\n", sqlite3_libversion());
 
-  platform_path databasePath = get_executable_dir_path();
-  platform_path_append(&databasePath, "/assets/data.db");
-
+  UT_string *path = get_executable_dir_file_path("assets", "data.db");
   sqlite3 *db; // database connection handle
-
-  int rc = sqlite3_open(platform_path_c_str(&databasePath), &db);
+  int rc = sqlite3_open(utstring_body(path), &db);
+  utstring_free(path);
   if (rc != SQLITE_OK) {
     log_error("database error: %s", sqlite3_errmsg(db));
     sqlite3_close(db);
@@ -112,16 +112,16 @@ SUITE(database_suite) { RUN_TEST(database_loading); }
 TEST gltf_loading() {
   // TODO: Files in database.
   // TODO: Loading extra files (images).
-  // platform_path gltfPath = get_asset_file_path("sponza", "Sponza.gltf");
-  // platform_path gltfPath = get_asset_file_path("triangle", "Triangle.gltf");
   data_config config = data_config_init();
   vulkan_device *vkd = vulkan_device_create(&config);
-  platform_path gltfPath = get_asset_file_path("triangles", "triangles.gltf");
+  UT_string *gltfPath = get_asset_file_path("triangles", "triangles.gltf");
+  // UT_string *gltfPath = get_asset_file_path("sponza", "Sponza.gltf");
   vulkan_scene *scene = vulkan_scene_create_with_gltf_file(vkd, gltfPath);
   vulkan_scene_debug_print(scene);
-  platform_path_deinit(&gltfPath);
+  utstring_free(gltfPath);
   vulkan_scene_destroy(scene);
   vulkan_device_destroy(vkd);
+  data_config_free(&config);
   PASS();
 }
 
@@ -154,12 +154,14 @@ TEST platform_alloc() {
 SUITE(platform_alloc_suite) { RUN_TEST(platform_alloc); }
 
 TEST shaderc_compiling() {
-  platform_path vertInputPath = get_asset_file_path("shaders", "shader.vert");
-  platform_path fragInputPath = get_asset_file_path("shaders", "shader.frag");
+  UT_string *vertInputPath = get_asset_file_path("shaders", "shader.vert");
+  UT_string *fragInputPath = get_asset_file_path("shaders", "shader.frag");
   data_config config = data_config_init();
   vulkan_device *vkd = vulkan_device_create(&config);
   vulkan_shader *vertShader = vulkan_shader_create_with_path(vkd, vertInputPath);
   vulkan_shader *fragShader = vulkan_shader_create_with_path(vkd, fragInputPath);
+  utstring_free(vertInputPath);
+  utstring_free(fragInputPath);
 
   ASSERT_EQ(vertShader->type, shaderc_glsl_vertex_shader);
   ASSERT_EQ(fragShader->type, shaderc_glsl_fragment_shader);

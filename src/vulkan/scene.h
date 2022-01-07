@@ -62,7 +62,7 @@ void vulkan_scene_init(vulkan_scene *self, vulkan_device *vkd, size_t nodesCount
                        size_t bufferViewsCount, size_t accessorsCount);
 void vulkan_scene_deinit(vulkan_scene *self);
 void vulkan_scene_debug_print(vulkan_scene *self);
-vulkan_scene *vulkan_scene_create_with_gltf_file(vulkan_device *vkd, platform_path gltfPath);
+vulkan_scene *vulkan_scene_create_with_gltf_file(vulkan_device *vkd, UT_string *gltfPath);
 void vulkan_scene_destroy(vulkan_scene *scene);
 void vulkan_scene_build_geometry_buffer(vulkan_scene *scene); // HIRO remove build geometry buffer
 /// Update scene data on CPU. Can make camera and uniform buffer dirty.

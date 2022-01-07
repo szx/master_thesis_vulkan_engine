@@ -43,12 +43,12 @@ void vulkan_render_pass_validate(vulkan_render_pass *renderPass, vulkan_scene *s
 void create_shaders(vulkan_render_pass *renderPass) {
   // TODO: Different shaders for different render pass types.
   // HIRO generate glsl shaders using render_pass_info.
-  platform_path vertInputPath = get_asset_file_path("shaders", "shader.vert");
-  platform_path fragInputPath = get_asset_file_path("shaders", "shader.frag");
+  UT_string *vertInputPath = get_asset_file_path("shaders", "shader.vert");
+  UT_string *fragInputPath = get_asset_file_path("shaders", "shader.frag");
   renderPass->vertShader = vulkan_shader_create_with_path(renderPass->vkd, vertInputPath);
   renderPass->fragShader = vulkan_shader_create_with_path(renderPass->vkd, fragInputPath);
-  platform_path_deinit(&vertInputPath);
-  platform_path_deinit(&fragInputPath);
+  utstring_free(vertInputPath);
+  utstring_free(fragInputPath);
 }
 
 void create_render_pass(vulkan_render_pass *renderPass) {
@@ -433,10 +433,10 @@ void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneNa
   if (rctx->scene != NULL) {
     vulkan_scene_destroy(rctx->scene);
   }
-  platform_path gltfPath = get_asset_file_path(sceneName, sceneName);
-  platform_path_append_ext(&gltfPath, ".gltf");
+  UT_string *gltfPath = get_asset_file_path(sceneName, sceneName);
+  utstring_printf(gltfPath, ".gltf");
   rctx->scene = vulkan_scene_create_with_gltf_file(rctx->vkd, gltfPath);
-  platform_path_deinit(&gltfPath);
+  utstring_free(gltfPath);
   vulkan_scene_debug_print(rctx->scene);
   // vulkan_render_pass_validate(rctx->pipeline->renderPass,
   //                             rctx->scene); // TODO: vulkan_pipeline_validate().

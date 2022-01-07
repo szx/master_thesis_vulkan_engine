@@ -45,36 +45,20 @@ void panic(const char *format, ...);
   } while (0)
 
 /* file system */
-typedef struct platform_path {
-  UT_string *data;
-  struct platform_path *next;
-} platform_path;
-
-platform_path platform_path_init(const char *data);
-void platform_path_deinit(platform_path *self);
-const char *platform_path_c_str(platform_path *self);
-
-void platform_path_append(platform_path *self, const char *dirOrFileName);
-void platform_path_append_ext(platform_path *self, const char *ext);
-bool platform_path_equals(platform_path *self, platform_path *other);
-bool platform_path_dirname_equals(platform_path *self, platform_path *other);
-bool platform_path_ext_equals(platform_path *self, const char *ext);
-platform_path platform_path_get_dirname(platform_path *self);
+/// Checks if path extension (with dot) is equal to ext.
+bool path_ext_equal(UT_string *path, const char *ext);
 
 /// Returns new path to directory with current executable.
-platform_path get_executable_dir_path();
+UT_string *get_executable_dir_path();
 
 /// Returns new path to file in specified directory.
-platform_path get_executable_dir_file_path(const char *dirName, const char *fileName);
+UT_string *get_executable_dir_file_path(const char *dirName, const char *fileName);
 
 /// Returns new path to file in assets directory.
-platform_path get_asset_file_path(const char *dirName, const char *fileName);
-
-/// Returns new list of child paths.
-platform_path *get_dir_children(platform_path *dirPath);
+UT_string *get_asset_file_path(const char *dirName, const char *fileName);
 
 /// Returns new string with text file content.
-UT_string *read_text_file(platform_path *path, size_t *sourceLength);
+UT_string *read_text_file(UT_string *path, size_t *sourceLength);
 
 /// Writes text file.
-void write_text_file(platform_path *path, UT_string *content);
+void write_text_file(UT_string *path, UT_string *content);
