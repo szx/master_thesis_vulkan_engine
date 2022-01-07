@@ -46,7 +46,7 @@ typedef struct vulkan_pipeline {
   vulkan_swap_chain *vks; /// vulkan_swap_chain pointer.
   vulkan_scene *scene;    /// parent scene pointer
 
-  // HIRO create descriptors using scene
+  // TODO create descriptors using scene
   VkDescriptorPool descriptorPool;
   VkDescriptorSetLayout descriptorSetLayout;
   VkDescriptorSet descriptorSet;
@@ -96,7 +96,7 @@ typedef struct vulkan_render_context {
   VkFence imagesInFlight[MAX_FRAMES_IN_FLIGHT];
 } vulkan_render_context;
 
-void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config, char *sceneName);
+void vulkan_render_context_init(vulkan_render_context *rctx, data_assets *assets, char *sceneName);
 void vulkan_render_context_deinit(vulkan_render_context *rctx);
 /// Recreate vulkan_render_context when swap chain is out-of-date.
 void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx);

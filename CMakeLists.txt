@@ -100,13 +100,13 @@ if (WIN32)
         set(PACKCC_VERSION "msvc")
     else ()
         message(FATAL_ERROR "packcc: unsupported compiler")
-    endif()
-else()
+    endif ()
+else ()
     if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
         set(PACKCC_VERSION "gcc")
     elseif (CMAKE_C_COMPILER_ID STREQUAL "Clang")
         set(PACKCC_VERSION "clang")
-    else()
+    else ()
         message(FATAL_ERROR "packcc: unsupported compiler")
     endif ()
 endif ()
@@ -132,10 +132,6 @@ foreach (C_CODEGEN_HEADER_PATH ${C_CODEGEN_HEADERS})
     list(REMOVE_ITEM C_HEADERS "${C_CODEGEN_HEADER_PATH}")
 endforeach ()
 
-file(GLOB_RECURSE C_PRECOMPILED_HEADERS "src/core/thirdparty.h")
-file(GLOB ASSETS_FILES_DIR "assets")
-file(GLOB_RECURSE ASSETS_FILES "assets/*.*")
-
 # add python codegen
 file(GLOB_RECURSE PYTHON_SCRIPTS "${SCRIPTS_PATH}/*.py")
 add_custom_command(
@@ -143,9 +139,7 @@ add_custom_command(
         DEPENDS ${PYTHON_SCRIPTS} ${C_HEADERS}
         COMMAND ${Python3_EXECUTABLE} ${SCRIPTS_PATH}/codegen.py
         COMMENT "Python codegen for headers."
-        VERBATIM
-)
-set_source_files_properties(${C_CODEGEN_HEADERS} PROPERTIES GENERATED TRUE)
+        VERBATIM)
 
 # define packcc parser generation
 file(GLOB_RECURSE C_GENERATOR_PEGS "src/*.peg")
@@ -171,11 +165,26 @@ add_custom_target(
 set_source_files_properties(${C_GENERATOR_PEGS_OUTPUTS} PROPERTIES GENERATED TRUE)
 
 
-# copy resources to directory with executables
-add_custom_target(copy_resources ALL DEPENDS ${ASSETS_FILES})
+# copy unprocessed assets to directory with executables
+file(GLOB_RECURSE C_PRECOMPILED_HEADERS "src/core/thirdparty.h")
+file(GLOB ASSETS_FILES_DIR "assets")
+file(GLOB_RECURSE ASSETS_FILES "assets/*.*")
+add_custom_target(copy_assets ALL DEPENDS ${ASSETS_FILES})
 add_custom_command(
-        TARGET copy_resources PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${ASSETS_FILES_DIR} ${CMAKE_CURRENT_BINARY_DIR}/assets)
+        TARGET copy_assets PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${ASSETS_FILES_DIR} ${CMAKE_CURRENT_BINARY_DIR}/assets
+        COMMENT "Copy assets.")
+
+# run asset pipeline
+file(GLOB_RECURSE C_BIN_ASSET_PIPELINE_SOURCE "src/bin/asset_pipeline.c")
+add_custom_command(
+        OUTPUT asset_pipeline.stamp
+        DEPENDS ${ASSETS_FILES} ${C_BIN_ASSET_PIPELINE_SOURCE}
+        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/asset_pipeline
+        COMMAND ${CMAKE_COMMAND} -E touch asset_pipeline.stamp
+        COMMENT "Run asset pipeline.") #TODO: python script?
+add_custom_target(run_asset_pipeline DEPENDS asset_pipeline.stamp)
+add_dependencies(run_asset_pipeline copy_assets asset_pipeline)
 
 # add preprocessor definitions
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
@@ -199,7 +208,10 @@ foreach (C_BIN_SOURCE_PATH ${C_BIN_SOURCES})
     get_filename_component(EXECUTABLE_NAME ${C_BIN_SOURCE_PATH} NAME_WE)
     add_executable(${EXECUTABLE_NAME} ${C_BIN_SOURCE_PATH})
     add_dependencies(${EXECUTABLE_NAME} codegen_packcc)
-    add_dependencies(${EXECUTABLE_NAME} copy_resources)
+    add_dependencies(${EXECUTABLE_NAME} copy_assets)
+    if (NOT ${EXECUTABLE_NAME} STREQUAL "asset_pipeline")
+        add_dependencies(${EXECUTABLE_NAME} run_asset_pipeline)
+    endif ()
     target_include_directories(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_INCLUDE_PATHS})
     if ((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
         target_compile_options(${EXECUTABLE_NAME} PUBLIC ${ASAN_FLAGS})
@@ -236,7 +248,7 @@ macro(GroupSources curdir)
         else ()
             string(REPLACE "/" "\\" groupname ${curdir})
             source_group(${groupname} FILES ${PROJECT_SOURCE_DIR}/${curdir}/${child})
-        endif()
-    endforeach()
+        endif ()
+    endforeach ()
 endmacro()
 GroupSources(Source)

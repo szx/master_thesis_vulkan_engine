@@ -1,7 +1,6 @@
 /* Vulkan API swap chain */
 #pragma once
 
-#include "../data/config.h"
 #include "device.h"
 #include "functions.h"
 

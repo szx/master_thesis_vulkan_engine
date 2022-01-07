@@ -1,12 +1,12 @@
-#include "../core/platform.h"
-#include "../data/config.h"
+#include "../core/core.h"
+#include "../data/data.h"
 #include "../vulkan/vulkan.h"
 
 int main(int argc, char *argv[]) {
   platform_init();
-  data_config config = data_config_init();
+  data_assets *assets = data_assets_create(true);
   vulkan_render_context rctx;
-  vulkan_render_context_init(&rctx, &config, "triangles");
+  vulkan_render_context_init(&rctx, assets, "triangles");
   vulkan_render_context_update_data(&rctx);
   vulkan_render_context_send_to_device(&rctx);
 
@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
   vkDeviceWaitIdle(rctx.vkd->device);
 
   vulkan_render_context_deinit(&rctx);
-  data_config_free(&config);
+  data_assets_destroy(assets);
   platform_free();
   return 0;
 }

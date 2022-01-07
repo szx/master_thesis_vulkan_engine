@@ -20,7 +20,7 @@ typedef struct vulkan_vertex_stream_element {
 // TODO: Packing.
 
 typedef enum vulkan_attribute_type {
-  UnknownAttribute = 1 << 0, // HIRO naming
+  UnknownAttribute = 1 << 0, // TODO naming
   PositionAttribute = 1 << 1,
   NormalAttribute = 1 << 2,
   ColorAttribute = 1 << 3,
@@ -57,7 +57,7 @@ typedef struct vulkan_uniform_buffer {
   } data;
   /* state */
   bool dirty;            /// True if uniform buffer data updated on CPU.
-} vulkan_uniform_buffer; // HIRO: Manage every uniform buffers.
+} vulkan_uniform_buffer; // TODO: Manage every uniform buffers.
 
 /* Vulkan helper functions */
 // TODO: Implement all Vulkan helper functions.

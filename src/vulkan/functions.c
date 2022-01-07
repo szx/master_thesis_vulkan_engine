@@ -30,8 +30,8 @@ void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
   }
   assert(geometryBuffer->buffer == VK_NULL_HANDLE);
   assert(geometryBuffer->bufferMemory == VK_NULL_HANDLE);
-  // HIRO: Reuse staging buffer.
-  // HIRO: Free geometry buffer data if geometry buffer is device local.
+  // TODO: Reuse staging buffer.
+  // TODO: Free geometry buffer data if geometry buffer is device local.
   geometryBuffer->vkd = vkd;
   size_t geometryBufferSize = utarray_len(geometryBuffer->data);
   uint8_t *geometryBufferData = utarray_front(geometryBuffer->data);
@@ -72,7 +72,7 @@ vulkan_uniform_buffer *vulkan_uniform_buffer_create(vulkan_device *vkd) {
                 &uniformBuffer->buffer, &uniformBuffer->bufferMemory);
   uniformBuffer->dirty = true;
   return uniformBuffer;
-  // HIRO support multiple buffers and descriptors (seperate for each frame)
+  // TODO support multiple buffers and descriptors (seperate for each frame)
 }
 
 void vulkan_uniform_buffer_destroy(vulkan_uniform_buffer *uniformBuffer) {
@@ -141,7 +141,7 @@ uint32_t index_type_to_index_stride(vulkan_index_type indexType) {
     return 4;
   }
   panic("unsupported index type %d", indexType);
-  return 0; // HIRO unreachable
+  return 0; // TODO unreachable
 }
 
 vulkan_index_type index_stride_to_index_type(uint32_t indexStride) {
@@ -292,7 +292,7 @@ VkDescriptorPool create_descriptor_pool(vulkan_device *vkd, size_t totalUniformB
   poolInfo.poolSizeCount = 2;
   poolInfo.pPoolSizes = poolSizes;
   poolInfo.maxSets = maxAllocatedDescriptorSetsCount;
-  // HIRO check bound VULKAN_ASSERT(poolInfo.maxSets <= vkd.limits.maxBoundDescriptorSets);
+  // TODO check bound VULKAN_ASSERT(poolInfo.maxSets <= vkd.limits.maxBoundDescriptorSets);
 
   VkDescriptorPool descriptorPool;
   verify(vkCreateDescriptorPool(vkd->device, &poolInfo, vka, &descriptorPool) == VK_SUCCESS);

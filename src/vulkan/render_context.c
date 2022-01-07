@@ -8,7 +8,7 @@ void create_render_pass_info(vulkan_render_pass *renderPass) {
     renderPass->info.usesSceneUniformBuffer = true;
     renderPass->info.supportedVertexAttributes = PositionAttribute | NormalAttribute;
   }
-  // HIRO: vertex input attributes of shader have to match those of scene.
+  // TODO: vertex input attributes of shader have to match those of scene.
 }
 
 void vulkan_render_pass_validate(vulkan_render_pass *renderPass, vulkan_scene *scene) {
@@ -37,12 +37,12 @@ void vulkan_render_pass_validate(vulkan_render_pass *renderPass, vulkan_scene *s
         &vertShader->info.inputAttributeDescriptions[1];
     verify(description->type == NormalAttribute);
   }*/
-  // HIRO check if vertShader and fragShader attributes match.
+  // TODO check if vertShader and fragShader attributes match.
 }
 
 void create_shaders(vulkan_render_pass *renderPass) {
   // TODO: Different shaders for different render pass types.
-  // HIRO generate glsl shaders using render_pass_info.
+  // TODO generate glsl shaders using render_pass_info.
   UT_string *vertInputPath = get_asset_file_path("shaders", "shader.vert");
   UT_string *fragInputPath = get_asset_file_path("shaders", "shader.frag");
   renderPass->vertShader = vulkan_shader_create_with_path(renderPass->vkd, vertInputPath);
@@ -95,7 +95,7 @@ void create_render_pass(vulkan_render_pass *renderPass) {
 }
 
 void create_graphics_pipeline(vulkan_render_pass *renderPass) {
-  // HIRO bake pipelines with different VkVertexInputAttributeDescription
+  // TODO bake pipelines with different VkVertexInputAttributeDescription
   VkPipelineShaderStageCreateInfo vertShaderStageInfo = {0};
   vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
   vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
@@ -236,8 +236,8 @@ vulkan_render_pass *vulkan_render_pass_create(vulkan_pipeline *pipeline,
   renderPass->renderPass = VK_NULL_HANDLE;
   renderPass->pipelineLayout = VK_NULL_HANDLE;
   renderPass->graphicsPipeline = VK_NULL_HANDLE;
-  // HIRO init using render pass
-  // HIRO reinit after tuning render_pass_info
+  // TODO init using render pass
+  // TODO reinit after tuning render_pass_info
   create_render_pass(renderPass);
   create_graphics_pipeline(renderPass);
   return renderPass;
@@ -261,7 +261,7 @@ vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_scene *sc
   pipeline->vks = vks;
   pipeline->vkd = vks->vkd;
   pipeline->scene = scene;
-  // HIRO different numbers for different pipelines
+  // TODO different numbers for different pipelines
   pipeline->descriptorPool = create_descriptor_pool(pipeline->vkd, 1, 1, 1);
   pipeline->descriptorSetLayout =
       create_descriptor_set_layout(pipeline->vkd, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1,
@@ -363,8 +363,8 @@ void create_synchronization_objects(vulkan_render_context *rctx) {
   }
 }
 
-void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config, char *sceneName) {
-  rctx->vkd = vulkan_device_create(config);
+void vulkan_render_context_init(vulkan_render_context *rctx, data_assets *assets, char *sceneName) {
+  rctx->vkd = vulkan_device_create(assets);
   rctx->scene = NULL;
   vulkan_render_context_load_scene(rctx, sceneName);
   rctx->vks = vulkan_swap_chain_create(rctx->vkd);
@@ -576,7 +576,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
 
   uint32_t descriptorSetCount = 1;
   VkDescriptorSet sceneDescriptorSet =
-      renderPass->pipeline->descriptorSet; // HIRO [currentFrameInFlight];
+      renderPass->pipeline->descriptorSet; // TODO [currentFrameInFlight];
   VkDescriptorSet descriptorSets[descriptorSetCount];
   descriptorSets[0] = sceneDescriptorSet;
   vkCmdBindDescriptorSets(frame->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -588,7 +588,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
     vulkan_node *node = &scene->nodes.ptr[nodeIdx];
     log_trace("draw node %d", nodeIdx);
     {
-      // HIRO: separate push constants to another function
+      // TODO: separate push constants to another function
       void *pushConstantValuePtr = &node->modelMat;
       VkShaderStageFlags pushConstantStageFlags = vulkan_shader_info_get_push_constant_stage_flags(
           renderPass->vertShader, renderPass->fragShader);
@@ -607,7 +607,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
       VkBuffer vertexBuffer = scene->geometryBuffer->buffer;
       VkDeviceSize vertexBuffersOffset = 0;
       if (primitive->indexCount > 0) {
-        // HIRO update vertex stride with dynamic constants
+        // TODO update vertex stride with dynamic constants
         vertexBuffersOffset = primitive->vertexStreamOffset;
       }
 

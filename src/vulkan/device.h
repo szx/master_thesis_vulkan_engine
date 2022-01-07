@@ -2,7 +2,7 @@
 #pragma once
 
 #include "../core/platform.h"
-#include "../data/config.h"
+#include "../data/data.h"
 
 #define VALIDATION_LAYERS_SIZE 1
 extern const char *validationLayers[VALIDATION_LAYERS_SIZE];
@@ -83,18 +83,18 @@ typedef struct vulkan_device {
   } mouse; /// GLFW mouse input.
 } vulkan_device;
 
-vulkan_device *vulkan_device_create(data_config *config);
+vulkan_device *vulkan_device_create(data_assets *assets);
 void vulkan_device_destroy(vulkan_device *vkd);
 
 void glfw_framebuffer_resize_callback(GLFWwindow *window, int width, int height);
 void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 void glfw_mouse_callback(GLFWwindow *window, double xPos, double yPos);
 
-void create_window(vulkan_device *vkd, data_config *config);
+void create_window(vulkan_device *vkd, data_assets *assets);
 
 bool validation_layers_enabled();
 bool check_validation_layer_support(vulkan_device *vkd);
-void create_instance(vulkan_device *vkd, data_config *config);
+void create_instance(vulkan_device *vkd, data_assets *assets);
 void setup_debug_messenger(vulkan_device *vkd);
 
 void create_surface(vulkan_device *vkd);
