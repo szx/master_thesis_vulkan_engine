@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[]) {
   platform_init();
-  data_assets *assets = data_assets_create(true);
+  data_assets *assets = data_assets_create();
   vulkan_render_context rctx;
   vulkan_render_context_init(&rctx, assets, "triangles");
   vulkan_render_context_update_data(&rctx);

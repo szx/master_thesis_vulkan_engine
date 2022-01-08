@@ -8,12 +8,11 @@
 
 // Parsing C preprocessor directives.
 TEST c_parser_preprocessor_parsing() {
-  size_t inputSize;
   UT_string *path;
   utstring_new(path);
   utstring_printf(path, SRC_PATH);
   utstring_printf(path, "/peg/parser_internal.h");
-  UT_string *input = read_text_file(path, &inputSize);
+  UT_string *input = read_text_file(path);
   utstring_free(path);
   if (input == NULL) {
     FAILm("failed to load file");
@@ -98,7 +97,7 @@ TEST database_loading() {
   log_debug("closing\n");
   sqlite3_close(db);
 
-  data_assets *assets = data_assets_create(true);
+  data_assets *assets = data_assets_create();
   log_debug("config.windowWidth = %d\n", assets->windowWidth);
   log_debug("config.windowHeight = %d\n", assets->windowHeight);
   log_debug("config.windowTitle = %s\n", utstring_body(assets->windowTitle));
@@ -107,7 +106,7 @@ TEST database_loading() {
 }
 
 TEST database_create_key_value_table() {
-  data_assets *assets = data_assets_create(true);
+  data_assets *assets = data_assets_create();
   data_db_create_key_value_table_for_blobs(assets->db, "strings");
   data_assets_destroy(assets);
   PASS();
@@ -122,7 +121,7 @@ SUITE(database_suite) {
 TEST gltf_loading() {
   // TODO: Files in database.
   // TODO: Loading extra files (images).
-  data_assets *assets = data_assets_create(true);
+  data_assets *assets = data_assets_create();
   vulkan_device *vkd = vulkan_device_create(assets);
   UT_string *gltfPath = get_asset_file_path("triangles", "triangles.gltf");
   // UT_string *gltfPath = get_asset_file_path("sponza", "Sponza.gltf");
@@ -166,7 +165,7 @@ SUITE(platform_alloc_suite) { RUN_TEST(platform_alloc); }
 TEST shaderc_compiling() {
   UT_string *vertInputPath = get_asset_file_path("shaders", "shader.vert");
   UT_string *fragInputPath = get_asset_file_path("shaders", "shader.frag");
-  data_assets *assets = data_assets_create(true);
+  data_assets *assets = data_assets_create();
   vulkan_device *vkd = vulkan_device_create(assets);
   vulkan_shader *vertShader = vulkan_shader_create_with_path(vkd, vertInputPath);
   vulkan_shader *fragShader = vulkan_shader_create_with_path(vkd, fragInputPath);

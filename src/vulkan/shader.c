@@ -229,7 +229,7 @@ VkShaderStageFlagBits vulkan_shader_info_get_push_constant_stage_flags(vulkan_sh
 }
 
 vulkan_shader *vulkan_shader_create_with_path(vulkan_device *vkd, UT_string *glslPath) {
-  UT_string *glslCode = read_text_file(glslPath, NULL);
+  UT_string *glslCode = read_text_file(glslPath);
   verify(utstring_len(glslCode) > 0);
   shaderc_shader_kind type = shaderc_glsl_vertex_shader;
   if (path_ext_equal(glslPath, ".vert")) {

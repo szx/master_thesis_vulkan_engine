@@ -2,18 +2,37 @@
 #include "../data/data.h"
 #include "../vulkan/vulkan.h"
 
+void write_default_config();
+void write_meshes_to_assets(data_assets *assets);
+
 int main(int argc, char *argv[]) {
   platform_init();
-  log_info("create default SQLite database");
-  data_assets *assets = data_assets_create(false);
   log_info("write default config");
-  assets->windowWidth = 800;
-  assets->windowHeight = 600;
-  utstring_printf(assets->windowTitle, "cpptest");
-  // HIRO ^config file (maybe key-value pairs in argv? Lua?)
-  log_info("save asset pipeline");
-  data_assets_destroy(assets);
+  write_default_config();
+  log_info("open SQLite asset database");
+  data_assets *assets = data_assets_create();
+  log_info("save empty asset database");
+  data_assets_save_empty(assets);
+  log_info("write meshes to asset database");
+  write_meshes_to_assets(assets);
   log_info("finished asset pipeline");
+  data_assets_destroy(assets);
   platform_free();
   return 0;
+}
+
+void write_default_config() {
+  data_config *config = data_config_create();
+
+  config->dirty = true;
+  data_config_set_int(config, "windowWidth", 800);
+  data_config_set_int(config, "windowHeight", 600);
+  data_config_set_str(config, "windowTitle", "cpptest");
+
+  data_config_save(config);
+  data_config_destroy(config);
+}
+
+void write_meshes_to_assets(data_assets *assets) {
+  // TODO: Write meshes to asset database.
 }

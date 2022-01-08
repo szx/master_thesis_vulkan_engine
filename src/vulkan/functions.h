@@ -7,7 +7,7 @@
 /* Vulkan helper structures */
 
 /// One element of vertex stream.
-/// We assume that all vertex attributes are interleaved.
+/// Assumes that all vertex attributes are interleaved.
 /// If vertex attribute is not used, we have to do one of following:
 ///     - adjust vertex binding stride and shader (if it is after all other used vertex attributes)
 ///     - fill vertex attribute with default value

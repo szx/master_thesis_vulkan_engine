@@ -1,3 +1,4 @@
+### World space and clip space
 - We use left-handed world coordinates:
   - +X points right
   - +Y points up
@@ -11,3 +12,11 @@
   - [Perspective Projections](https://learnwebgl.brown37.net/08_projections/projections_perspective.html)
   - [The Indulgence of Engine Porting](http://whirlicube.com/the-indulgence-of-engine-porting.html)
 - Front faces are counterclockwise.
+
+### Config
+
+- Global engine config examples:
+  - window width and height
+  - window title
+- Global engine config in stored in the INI configuration file in _assets/config.ini_.
+- We support only 1 section ([config]) in _config.ini_.

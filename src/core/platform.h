@@ -58,7 +58,7 @@ UT_string *get_executable_dir_file_path(const char *dirName, const char *fileNam
 UT_string *get_asset_file_path(const char *dirName, const char *fileName);
 
 /// Returns new string with text file content.
-UT_string *read_text_file(UT_string *path, size_t *sourceLength);
+UT_string *read_text_file(UT_string *path);
 
 /// Writes text file.
-void write_text_file(UT_string *path, UT_string *content);
+bool write_text_file(UT_string *path, UT_string *content);

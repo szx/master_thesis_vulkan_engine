@@ -107,9 +107,9 @@ void create_window(vulkan_device *vkd, data_assets *assets) {
   verify(glfwVulkanSupported() == GLFW_TRUE);
   glfwDefaultWindowHints();
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-  verify(assets->windowWidth > 0 && assets->windowHeight > 0);
-  vkd->window = glfwCreateWindow(assets->windowWidth, assets->windowHeight,
-                                 utstring_body(assets->windowTitle), NULL, NULL);
+  verify(assets->config->windowWidth > 0 && assets->config->windowHeight > 0);
+  vkd->window = glfwCreateWindow(assets->config->windowWidth, assets->config->windowHeight,
+                                 utstring_body(assets->config->windowTitle), NULL, NULL);
   glfwSetWindowUserPointer(vkd->window, vkd);
   glfwSetFramebufferSizeCallback(vkd->window, glfw_framebuffer_resize_callback);
   glfwSetKeyCallback(vkd->window, glfw_key_callback);
@@ -160,9 +160,9 @@ void create_instance(vulkan_device *vkd, data_assets *assets) {
 
   VkApplicationInfo appInfo = {0};
   appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-  appInfo.pApplicationName = utstring_body(assets->windowTitle);
+  appInfo.pApplicationName = utstring_body(assets->config->windowTitle);
   appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-  appInfo.pEngineName = utstring_body(assets->windowTitle);
+  appInfo.pEngineName = utstring_body(assets->config->windowTitle);
   appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
   appInfo.apiVersion = VK_API_VERSION_1_2;
 

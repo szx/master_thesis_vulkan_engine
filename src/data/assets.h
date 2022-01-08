@@ -1,38 +1,28 @@
-/* SQLite database as a asset pipeline output. */
+/* SQLite database as a asset database. */
 #pragma once
 
+#include "config.h"
 #include "db.h"
 
-// TODO: generate from config
-// TODO: blob support (read-only except asset pipeline?)
-// TODO: meshes
-
 // clang-format off
-#define END_OF_DATA_ASSETS_TABLES
-#define DATA_ASSETS_TABLES(X_text_table, X_blob_table, ...)                                         \
-  X_text_table(config, __VA_ARGS__)                                                                 \
-  X_blob_table(mesh, __VA_ARGS__)                                                                 \
-  END_OF_DATA_ASSETS_TABLES
-
-#define END_OF_DATA_ASSETS_KEYS
-#define DATA_ASSETS_KEYS(X_int, X_string, ...)                                                     \
-  X_int(config, windowWidth, __VA_ARGS__)                                                          \
-  X_int(config, windowHeight, __VA_ARGS__)                                                         \
-  X_string(config, windowTitle, __VA_ARGS__)                                                       \
-  END_OF_DATA_ASSETS_KEYS
+#define END_OF_DATA_ASSETS_BLOB_TABLES
+#define DATA_ASSETS_BLOB_TABLES(X, ...)                                        \
+  X(mesh, __VA_ARGS__)                                                                  \
+  END_OF_DATA_ASSETS_BLOB_TABLES
 // clang-format on
 
 typedef struct data_assets {
-  data_db *db; /// SQLite database file.
+  data_db *db;     /// SQLite database file.
+  UT_string *path; /// SQLite database filepath.
   /* config */
-  int windowWidth;
-  int windowHeight;
-  UT_string *windowTitle;
+  data_config *config;
+  // TODO: Fetching mesh blobs to CPU.
 } data_assets;
 
-data_assets *data_assets_create(bool shouldLoad);
+data_assets *data_assets_create();
 void data_assets_destroy(data_assets *assets);
-/// Saves config.
+/// Saves assets database.
 void data_assets_save(data_assets *assets);
-/// Saves default config.
-void data_assets_save_default(data_assets *assets);
+/// Saves empty assets database.
+/// Used by asset pipeline.
+void data_assets_save_empty(data_assets *assets);

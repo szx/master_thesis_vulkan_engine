@@ -95,10 +95,12 @@ UT_string *get_asset_file_path(const char *dirName, const char *fileName) {
   return path;
 }
 
-UT_string *read_text_file(UT_string *path, size_t *sourceLength) {
+UT_string *read_text_file(UT_string *path) {
+  UT_string *s;
+  utstring_new(s);
+
   char *result = 0;
   FILE *file = fopen(utstring_body(path), "rb");
-
   if (file) {
     fseek(file, 0, SEEK_END);
     size_t size = ftell(file);
@@ -109,23 +111,21 @@ UT_string *read_text_file(UT_string *path, size_t *sourceLength) {
       return NULL;
     }
     result[size] = 0;
-    if (sourceLength != NULL) {
-      *sourceLength = size;
-    }
-
     fclose(file);
+
+    utstring_printf(s, "%s", result);
+    free(result);
   }
-  UT_string *s;
-  utstring_new(s);
-  utstring_printf(s, "%s", result);
-  free(result);
+
   return s;
 }
 
-void write_text_file(UT_string *path, UT_string *content) {
+bool write_text_file(UT_string *path, UT_string *content) {
   FILE *file = fopen(utstring_body(path), "wb");
   if (file) {
     fprintf(file, "%s", utstring_body(content));
     fclose(file);
+    return true;
   }
+  return false;
 }

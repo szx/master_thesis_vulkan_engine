@@ -16,6 +16,12 @@ void dummy_debug_msg();
 #define debug_msg(msg) dummy_debug_msg()
 #endif
 
-#define MACRO_CONCAT_RAW(x, y) x ## y
+/// Strip left whitespaces.
+void lstrip(char **str);
+/// Strip right whitespaces.
+/// Note: Replaces right whitespaces with '\0'.
+void rstrip(char **str);
+
+#define MACRO_CONCAT_RAW(x, y) x##y
 #define MACRO_CONCAT_EXPANDED(x, y) MACRO_CONCAT_RAW(x, y)
 #define MACRO_CONCAT_LINE(x) MACRO_CONCAT_EXPANDED(x, __LINE__)
