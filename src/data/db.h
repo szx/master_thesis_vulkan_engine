@@ -27,7 +27,7 @@ UT_string *data_db_insert_str(data_db *db, char *table, char *key, UT_string *va
 // TODO: Insert blob.
 
 /// Creates table with key/value (text/text) schema.
-/// Note: SQLite has "dynamic type system", which means that we can store
+/// NOTE: SQLite has "dynamic type system", which means that we can store
 ///       integers in text fields.
 void data_db_create_key_value_table_for_text(data_db *db, char *table);
 

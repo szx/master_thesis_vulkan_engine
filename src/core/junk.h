@@ -17,10 +17,13 @@ void dummy_debug_msg();
 #endif
 
 /// Strip left whitespaces.
-void lstrip(char **str);
+void strlstrip(char **str);
 /// Strip right whitespaces.
-/// Note: Replaces right whitespaces with '\0'.
-void rstrip(char **str);
+/// NOTE: Replaces right whitespaces with '\0'.
+void strrstrip(char **str);
+/// Strip left and right whitespaces.
+/// NOTE: Replaces right whitespaces with '\0'.
+void strstrip(char **str);
 
 #define MACRO_CONCAT_RAW(x, y) x##y
 #define MACRO_CONCAT_EXPANDED(x, y) MACRO_CONCAT_RAW(x, y)

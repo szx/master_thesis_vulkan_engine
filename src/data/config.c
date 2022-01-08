@@ -54,13 +54,13 @@ void data_config_parse(data_config *config, UT_string *configStr) {
   char *line = strtok_r(str, delim, &txt);
   char *section = NULL;
   while (line != NULL) {
-    lstrip(&line);
-    rstrip(&line);
+    strstrip(&line);
     if (strlen(line) < 3) {
       log_error("invalid config line '%s'", line);
       return;
     }
     log_debug("config line %s", line);
+
     // parse [section]
     if (line[0] == '[') {
       section = line + 1;
@@ -71,6 +71,7 @@ void data_config_parse(data_config *config, UT_string *configStr) {
       log_error("invalid config line without section '%s'", line);
       return;
     }
+
     // parse key = value
     size_t equalPos = 0;
     for (size_t i = 0; i < strlen(line); i++) {
@@ -85,11 +86,11 @@ void data_config_parse(data_config *config, UT_string *configStr) {
     }
     line[equalPos] = '\0';
     char *key = line;
-    lstrip(&key);
-    rstrip(&key);
+    strstrip(&key);
     char *value = line + equalPos + 1;
-    lstrip(&value);
-    rstrip(&value);
+    strstrip(&value);
+
+    // set config key with value
     log_debug("key='%s' value='%s'", key, value);
 #define parse_int(_section, _key, ...)                                                             \
   if (strcmp(#_section, section) == 0 && strcmp(#_key, key) == 0)                                  \
@@ -101,6 +102,7 @@ void data_config_parse(data_config *config, UT_string *configStr) {
     DATA_CONFIG_STR_KEYS(parse_str, )
 #undef parse_str
 #undef parse_int
+
   next_line:
     line = strtok_r(NULL, delim, &txt);
   }

@@ -70,7 +70,7 @@ void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
 
 /// Creates host visible and coherent buffer.
 /// Descriptor set is created and managed by pipeline.
-/// Note: We do not use device local memory, because we assume that mapping host visible and
+/// NOTE: We do not use device local memory, because we assume that mapping host visible and
 ///       coherent memory is faster than copying into device local memory using staging buffer.
 vulkan_uniform_buffer *vulkan_uniform_buffer_create(vulkan_device *vkd);
 void vulkan_uniform_buffer_destroy(vulkan_uniform_buffer *uniformBuffer);

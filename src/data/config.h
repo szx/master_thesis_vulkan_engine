@@ -4,24 +4,22 @@
 
 #pragma once
 
-// clang-format off
-// Note: Further config key definitions should be added here.
+// NOTE: Further config key definitions should be added here.
 static const char *configSections[2] = {"graphics", "controls"};
 #define END_OF_DATA_CONFIG_INT_KEYS
-#define DATA_CONFIG_INT_KEYS(X, ...)                                                      \
-  X(graphics, WindowWidth, __VA_ARGS__)                                                                      \
-  X(graphics, WindowHeight, __VA_ARGS__)                                                                     \
-  X(controls, Enabled, __VA_ARGS__)                                                                     \
+#define DATA_CONFIG_INT_KEYS(X, ...)                                                               \
+  X(graphics, WindowWidth, __VA_ARGS__)                                                            \
+  X(graphics, WindowHeight, __VA_ARGS__)                                                           \
+  X(controls, Enabled, __VA_ARGS__)                                                                \
   END_OF_DATA_CONFIG_INT_KEYS
 #define END_OF_DATA_CONFIG_STR_KEYS
-#define DATA_CONFIG_STR_KEYS(X, ...)                                                      \
-  X(graphics, WindowTitle, __VA_ARGS__)                                                                      \
+#define DATA_CONFIG_STR_KEYS(X, ...)                                                               \
+  X(graphics, WindowTitle, __VA_ARGS__)                                                            \
   END_OF_DATA_CONFIG_STR_KEYS
-// clang-format on
 
 /// Key-value config.
 /// It corresponds to multiple sections of INI file.
-/// NOTE: Implementation is case sensitive.
+/// FIXME: Implementation is case sensitive.
 typedef struct data_config {
   UT_string *path; /// INI config filepath.
   /* state */
@@ -41,7 +39,7 @@ void data_config_load(data_config *config);
 /// Writes config state to disk.
 void data_config_save(data_config *config);
 /// Parses string and updates config state.
-/// Note: Can replace newlines and '=' in configStr with '\0'.
+/// NOTE: Can replace newlines and '=' in configStr with '\0'.
 void data_config_parse(data_config *config, UT_string *configStr);
 /// Returns default config string representation.
 UT_string *data_config_get_config_str(data_config *config);
