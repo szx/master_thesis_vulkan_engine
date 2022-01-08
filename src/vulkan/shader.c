@@ -1,6 +1,6 @@
 #include "shader.h"
 
-#include "../peg/glsl_parser.h"
+#include "../parser/glsl_parser.h"
 
 static size_t vulkanShaderCount = 0;
 static shaderc_compiler_t compiler;

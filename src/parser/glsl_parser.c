@@ -21,7 +21,7 @@ static size_t pcc_strnlen(const char *str, size_t maxlen) {
 #endif /* defined __GNUC__ && defined _WIN32 */
 #endif /* !_MSC_VER */
 
-#include "/home/sszczyrb/Repos/cpptest/src/peg/glsl_parser.h"
+#include "/home/sszczyrb/Repos/cpptest/src/parser/glsl_parser.h"
 
   #define PCC_GETCHAR(auxil) parser_getchar((auxil))
   #define PCC_ERROR(auxil) parser_handle_syntax_error((auxil))

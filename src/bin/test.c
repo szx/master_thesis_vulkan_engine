@@ -1,30 +1,9 @@
 #include "../core/platform.h"
-#include "../peg/c_parser.h"
-#include "../peg/glsl_parser.h"
+#include "../parser/glsl_parser.h"
 #include "../vulkan/vulkan.h"
 #include "greatest.h"
 
 #include <stdlib.h>
-
-// Parsing C preprocessor directives.
-TEST c_parser_preprocessor_parsing() {
-  UT_string *path;
-  utstring_new(path);
-  utstring_printf(path, SRC_PATH);
-  utstring_printf(path, "/peg/parser_internal.h");
-  UT_string *input = read_text_file(path);
-  utstring_free(path);
-  if (input == NULL) {
-    FAILm("failed to load file");
-  }
-  parser_state state = c_parser_execute(utstring_body(input));
-  parser_debug_print(&state);
-  parser_state_free(&state);
-  utstring_free(input);
-  PASS();
-}
-
-SUITE(c_parser_suite) { RUN_TEST(c_parser_preprocessor_parsing); }
 
 #include "../data/config.h"
 #include <sqlite3.h>
@@ -98,9 +77,10 @@ TEST database_loading() {
   sqlite3_close(db);
 
   data_assets *assets = data_assets_create();
-  log_debug("config.windowWidth = %d\n", assets->windowWidth);
-  log_debug("config.windowHeight = %d\n", assets->windowHeight);
-  log_debug("config.windowTitle = %s\n", utstring_body(assets->windowTitle));
+  log_debug("config.graphicsWindowWidth = %d\n", assets->config->graphicsWindowWidth);
+  log_debug("config.graphicsWindowHeight = %d\n", assets->config->graphicsWindowHeight);
+  log_debug("config.graphicsWindowTitle = %s\n",
+            utstring_body(assets->config->graphicsWindowTitle));
   data_assets_destroy(assets);
   PASS();
 }
@@ -211,7 +191,6 @@ int main(int argc, char *argv[]) {
   GREATEST_MAIN_BEGIN();
   platform_init();
   log_info("start test suite");
-  RUN_SUITE(c_parser_suite);
   RUN_SUITE(database_suite);
   RUN_SUITE(gltf_suite);
   // RUN_SUITE(platform_alloc_suite);
