@@ -5,7 +5,7 @@ static_assert(sizeof(char) == sizeof(uint8_t), "sizeof(char) != sizeof(uint8_t)"
 
 #define is_aligned(ptr, bytes) (((uintptr_t)(const void *)(ptr)) % (bytes) == 0)
 #define member_size(type, member) sizeof(((type *)0)->member)
-
+#define array_size(array) (sizeof(array) / sizeof((array)[0]))
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 
@@ -25,3 +25,4 @@ void rstrip(char **str);
 #define MACRO_CONCAT_RAW(x, y) x##y
 #define MACRO_CONCAT_EXPANDED(x, y) MACRO_CONCAT_RAW(x, y)
 #define MACRO_CONCAT_LINE(x) MACRO_CONCAT_EXPANDED(x, __LINE__)
+#define MACRO_EXPAND(...) __VA_ARGS__

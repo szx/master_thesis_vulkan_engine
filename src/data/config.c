@@ -3,8 +3,8 @@
 data_config *data_config_create() {
   data_config *config = core_alloc(sizeof(data_config));
   config->path = get_asset_file_path("", "config.ini");
-#define alloc_int(key, ...) config->key = 0;
-#define alloc_str(key, ...) utstring_new(config->key);
+#define alloc_int(_section, _key, ...) config->_section##_key = 0;
+#define alloc_str(_section, _key, ...) utstring_new(config->_section##_key);
   DATA_CONFIG_INT_KEYS(alloc_int, )
   DATA_CONFIG_STR_KEYS(alloc_str, )
 #undef alloc_int
@@ -16,12 +16,9 @@ data_config *data_config_create() {
 
 void data_config_destroy(data_config *config) {
   utstring_free(config->path);
-#define free_int(key, ...)
-#define free_str(key, ...) utstring_free(config->windowTitle);
-  DATA_CONFIG_INT_KEYS(free_int, )
+#define free_str(_section, _key, ...) utstring_free(config->_section##_key);
   DATA_CONFIG_STR_KEYS(free_str, )
 #undef free_str
-#undef free_int
   core_free(config);
 }
 
@@ -55,9 +52,26 @@ void data_config_parse(data_config *config, UT_string *configStr) {
   const char *delim = "\n\r";
   char *txt;
   char *line = strtok_r(str, delim, &txt);
-  // TODO: INI sections.
-  while ((line = strtok_r(NULL, delim, &txt))) {
-    log_trace("config line %s", line);
+  char *section = NULL;
+  while (line != NULL) {
+    lstrip(&line);
+    rstrip(&line);
+    if (strlen(line) < 3) {
+      log_error("invalid config line '%s'", line);
+      return;
+    }
+    log_debug("config line %s", line);
+    // parse [section]
+    if (line[0] == '[') {
+      section = line + 1;
+      section[strlen(section) - 1] = '\0';
+      goto next_line;
+    }
+    if (section == NULL) {
+      log_error("invalid config line without section '%s'", line);
+      return;
+    }
+    // parse key = value
     size_t equalPos = 0;
     for (size_t i = 0; i < strlen(line); i++) {
       if (line[i] == '=') {
@@ -66,11 +80,10 @@ void data_config_parse(data_config *config, UT_string *configStr) {
       }
     }
     if (equalPos == 0) {
-      log_error("malformed config line: %s", line);
+      log_error("invalid config line '%s'", line);
       continue;
     }
     line[equalPos] = '\0';
-    // Strip left whitespaces.
     char *key = line;
     lstrip(&key);
     rstrip(&key);
@@ -78,16 +91,18 @@ void data_config_parse(data_config *config, UT_string *configStr) {
     lstrip(&value);
     rstrip(&value);
     log_debug("key='%s' value='%s'", key, value);
-#define parse_int(_key, ...)                                                                       \
-  if (strcmp(#_key, key) == 0)                                                                     \
-    data_config_set_int(config, #_key, atoi(value));
-#define parse_str(_key, ...)                                                                       \
-  if (strcmp(#_key, key) == 0)                                                                     \
-    data_config_set_str(config, #_key, value);
+#define parse_int(_section, _key, ...)                                                             \
+  if (strcmp(#_section, section) == 0 && strcmp(#_key, key) == 0)                                  \
+    data_config_set_int(config, #_section, #_key, atoi(value));
+#define parse_str(_section, _key, ...)                                                             \
+  if (strcmp(#_section, section) == 0 && strcmp(#_key, key) == 0)                                  \
+    data_config_set_str(config, #_section, #_key, value);
     DATA_CONFIG_INT_KEYS(parse_int, )
     DATA_CONFIG_STR_KEYS(parse_str, )
 #undef parse_str
 #undef parse_int
+  next_line:
+    line = strtok_r(NULL, delim, &txt);
   }
   config->dirty = false;
 }
@@ -95,37 +110,47 @@ void data_config_parse(data_config *config, UT_string *configStr) {
 UT_string *data_config_get_config_str(data_config *config) {
   UT_string *s;
   utstring_new(s);
-  // TODO: INI sections.
-  utstring_printf(s, "[config]\n");
-#define save_int(_key, ...) utstring_printf(s, "  %s = %d \n", #_key, config->_key);
-#define save_str(_key, ...) utstring_printf(s, "  %s = %s\n", #_key, utstring_body(config->_key));
-  DATA_CONFIG_INT_KEYS(save_int, )
-  DATA_CONFIG_STR_KEYS(save_str, )
+
+  for (size_t i = 0; i < array_size(configSections); i++) {
+    const char *section = configSections[i];
+    utstring_printf(s, "[%s]\n", section);
+#define save_int(_section, _key, ...)                                                              \
+  if (strcmp(#_section, section) == 0) {                                                           \
+    utstring_printf(s, "  %s = %d \n", #_key, config->_section##_key);                             \
+  }
+#define save_str(_section, _key, ...)                                                              \
+  if (strcmp(#_section, section) == 0) {                                                           \
+    utstring_printf(s, "  %s = %s\n", #_key, utstring_body(config->_section##_key));               \
+  }
+    DATA_CONFIG_INT_KEYS(save_int, )
+    DATA_CONFIG_STR_KEYS(save_str, )
 #undef save_str
 #undef save_int
-  utstring_printf(s, "\n");
+    utstring_printf(s, "\n");
+  }
   return s;
 }
 
-void data_config_set_int(data_config *config, const char *key, int value) {
-#define parse_int(_key, ...)                                                                       \
-  if (strcmp(#_key, key) == 0) {                                                                   \
-    config->_key = value;                                                                          \
+void data_config_set_int(data_config *config, const char *section, const char *key, int value) {
+#define parse_int(_section, _key, ...)                                                             \
+  if (strcmp(#_section, section) == 0 && strcmp(#_key, key) == 0) {                                \
+    config->_section##_key = value;                                                                \
     return;                                                                                        \
   }
   DATA_CONFIG_INT_KEYS(parse_int, )
 #undef parse_int
-  log_warn("tried to set value '%d' for unrecognized int config key '%s", value, key);
+  log_warn("tried to set value '%d' for int config key '%s", value, key);
 }
 
-void data_config_set_str(data_config *config, const char *key, const char *value) {
-#define parse_str(_key, ...)                                                                       \
-  if (strcmp(#_key, key) == 0) {                                                                   \
-    utstring_clear(config->_key);                                                                  \
-    utstring_printf(config->_key, "%s", value);                                                    \
+void data_config_set_str(data_config *config, const char *section, const char *key,
+                         const char *value) {
+#define parse_str(_section, _key, ...)                                                             \
+  if (strcmp(#_section, section) == 0 && strcmp(#_key, key) == 0) {                                \
+    utstring_clear(config->_section##_key);                                                        \
+    utstring_printf(config->_section##_key, "%s", value);                                          \
     return;                                                                                        \
   }
   DATA_CONFIG_STR_KEYS(parse_str, )
 #undef parse_str
-  log_error("tried to set value '%s' for unrecognized string config key '%s", value, key);
+  log_error("tried to set value '%s' for string config key '%s' '%s'", value, section, key);
 }
