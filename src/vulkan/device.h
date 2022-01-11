@@ -96,7 +96,7 @@ void create_window(vulkan_device *vkd, data_assets *assets);
 bool validation_layers_enabled();
 bool check_validation_layer_support(vulkan_device *vkd);
 void create_instance(vulkan_device *vkd, data_assets *assets);
-
+void create_debug_utils(vulkan_device *vkd);
 void create_surface(vulkan_device *vkd);
 
 void query_swap_chain_support(vulkan_device *vkd, VkPhysicalDevice physicalDevice);

@@ -12,6 +12,7 @@
 #include "log.h"
 
 #include "utarray.h"
+#include "uthash.h"
 #include "utlist.h"
 #include "utstring.h"
 

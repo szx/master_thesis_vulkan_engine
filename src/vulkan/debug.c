@@ -96,12 +96,45 @@ debug_callback_general(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
   return VK_FALSE; // True is reserved for layers.
 }
 
+static void name_object(vulkan_debug *debug, VkObjectType objectType, uint64_t objectHandle,
+                        const char *format, va_list args) {
+  va_list copy;
+  va_copy(copy, args);
+  UT_string *s;
+  utstring_new(s);
+  utstring_printf_va(s, format, copy);
+  va_end(copy);
+  const char *objectName = strdup(utstring_body(s));
+  utstring_free(s);
+
+  vulkan_debug_name_data *nameData;
+  HASH_FIND_STR(debug->names, objectName, nameData);
+  if (nameData == NULL) {
+    nameData = core_alloc(sizeof(vulkan_debug_name_data));
+    nameData->name = objectName;
+    HASH_ADD_KEYPTR(hh, debug->names, nameData->name, strlen(nameData->name), nameData);
+  } else {
+    free((char *)objectName);
+  }
+
+  VkDebugUtilsObjectNameInfoEXT nameInfo = {0};
+  nameInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT;
+  nameInfo.objectType = objectType;
+  nameInfo.objectHandle = objectHandle;
+  nameInfo.pObjectName = nameData->name;
+
+  // TODO: Add names and additional data to vulkan_debug.
+  assert(debug->pDevice != VK_NULL_HANDLE);
+  verify(debug->setDebugUtilsObjectNameEXT(*debug->pDevice, &nameInfo) == VK_SUCCESS);
+}
+
 /* public */
 
-vulkan_debug *vulkan_debug_create(bool enabled, VkInstance instance,
+vulkan_debug *vulkan_debug_create(bool enabled, VkDevice *pDevice, VkInstance instance,
                                   const VkAllocationCallbacks *vka) {
   vulkan_debug *debug = core_alloc(sizeof(vulkan_debug));
   debug->enabled = enabled;
+  debug->pDevice = pDevice;
   debug->instance = instance;
   debug->vka = vka;
   debug->debugMessenger = VK_NULL_HANDLE;
@@ -110,6 +143,16 @@ vulkan_debug *vulkan_debug_create(bool enabled, VkInstance instance,
         vulkan_debug_messenger_create_info(debug_callback_general);
     verify(create_debug_utils_messenger_ext(debug->instance, &debugCreateInfo, debug->vka,
                                             &debug->debugMessenger) == VK_SUCCESS);
+    debug->cmdBeginDebugUtilsLabelEXT = (PFN_vkCmdBeginDebugUtilsLabelEXT)vkGetInstanceProcAddr(
+        debug->instance, "vkCmdBeginDebugUtilsLabelEXT");
+    debug->cmdEndDebugUtilsLabelEXT = (PFN_vkCmdEndDebugUtilsLabelEXT)vkGetInstanceProcAddr(
+        debug->instance, "vkCmdEndDebugUtilsLabelEXT");
+    debug->cmdInsertDebugUtilsLabelEXT = (PFN_vkCmdInsertDebugUtilsLabelEXT)vkGetInstanceProcAddr(
+        debug->instance, "vkCmdInsertDebugUtilsLabelEXT");
+    debug->setDebugUtilsObjectNameEXT = (PFN_vkSetDebugUtilsObjectNameEXT)vkGetInstanceProcAddr(
+        debug->instance, "vkSetDebugUtilsObjectNameEXT");
+
+    debug->names = NULL;
   }
   return debug;
 }
@@ -118,7 +161,21 @@ void vulkan_debug_destroy(vulkan_debug *debug) {
   if (debug->enabled) {
     destroy_debug_utils_messenger_ext(debug->instance, debug->debugMessenger, NULL);
   }
+  vulkan_debug_name_data *nameData, *temp;
+  HASH_ITER(hh, debug->names, nameData, temp) {
+    HASH_DEL(debug->names, nameData);
+    free((char *)nameData->name);
+    core_free(nameData);
+  }
   core_free(debug);
+}
+
+void vulkan_debug_name_command_buffer(vulkan_debug *debug, VkCommandBuffer commandBuffer,
+                                      const char *format, ...) {
+  va_list args;
+  va_start(args, format);
+  name_object(debug, VK_OBJECT_TYPE_COMMAND_BUFFER, (uint64_t)commandBuffer, format, args);
+  va_end(args);
 }
 
 VkBool32 VKAPI_CALL vulkan_debug_callback_for_instance(

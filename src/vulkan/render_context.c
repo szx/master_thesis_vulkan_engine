@@ -303,6 +303,9 @@ void create_command_buffer(vulkan_swap_chain_frame *frame) {
 
   verify(vkAllocateCommandBuffers(frame->vkd->device, &allocInfo, &frame->commandBuffer) ==
          VK_SUCCESS);
+
+  vulkan_debug_name_command_buffer(frame->vkd->debug, frame->commandBuffer,
+                                   "frame command buffer #%d", frame->swapChainImageIndex);
 }
 
 void create_framebuffer(vulkan_swap_chain_frame *frame) {

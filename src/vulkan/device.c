@@ -31,7 +31,7 @@ vulkan_device *vulkan_device_create(data_assets *assets) {
   vulkan_swap_chain_info_init(&vkd->swapChainInfo);
   create_window(vkd, assets);
   create_instance(vkd, assets);
-  vkd->debug = vulkan_debug_create(validation_layers_enabled(), vkd->instance, vka);
+  create_debug_utils(vkd);
   create_surface(vkd);
   pick_physical_device(vkd);
   create_logical_device(vkd);
@@ -170,6 +170,11 @@ void create_instance(vulkan_device *vkd, data_assets *assets) {
   }
 
   verify(vkCreateInstance(&createInfo, vka, &vkd->instance) == VK_SUCCESS);
+}
+
+void create_debug_utils(vulkan_device *vkd) {
+  vkd->device = VK_NULL_HANDLE;
+  vkd->debug = vulkan_debug_create(validation_layers_enabled(), &vkd->device, vkd->instance, vka);
 }
 
 void create_surface(vulkan_device *vkd) {
