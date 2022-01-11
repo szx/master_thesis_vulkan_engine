@@ -5,6 +5,19 @@
 static size_t vulkanShaderCount = 0;
 static shaderc_compiler_t compiler;
 
+static const char *shaderc_shader_kind_debug_str(shaderc_shader_kind type) {
+  if (type == shaderc_vertex_shader) {
+    return "vertex shader";
+  }
+  if (type == shaderc_fragment_shader) {
+    return "fragment shader";
+  }
+  if (type == shaderc_compute_shader) {
+    return "compute shader";
+  }
+  return "UNKNOWN shaderc_shader_kind";
+}
+
 void vulkan_vertex_attribute_description_init(vulkan_vertex_attribute_description *description,
                                               size_t location, size_t componentNum,
                                               const char *identifier, vulkan_attribute_type type) {
@@ -270,7 +283,8 @@ vulkan_shader *vulkan_shader_create_with_str(vulkan_device *vkd, shaderc_shader_
   shader->spvCode = (uint32_t *)malloc(shader->spvSize);
   memcpy(shader->spvCode, (uint32_t *)shaderc_result_get_bytes(result), shader->spvSize);
   shaderc_result_release(result);
-  shader->module = create_shader_module(shader->vkd, shader->spvCode, shader->spvSize);
+  shader->module = create_shader_module(shader->vkd, shader->spvCode, shader->spvSize,
+                                        shaderc_shader_kind_debug_str(shader->type));
   vulkan_shader_info_init(&shader->info, shader);
   return shader;
 }

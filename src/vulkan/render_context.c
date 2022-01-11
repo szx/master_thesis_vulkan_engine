@@ -292,6 +292,7 @@ void create_command_pool(vulkan_swap_chain_frame *frame) {
 
   verify(vkCreateCommandPool(frame->vkd->device, &poolInfo, vka, &frame->commandPool) ==
          VK_SUCCESS);
+  vulkan_debug_name_command_pool(frame->vkd->debug, frame->commandPool, "frame command pool #%d");
 }
 
 void create_command_buffer(vulkan_swap_chain_frame *frame) {
@@ -303,7 +304,6 @@ void create_command_buffer(vulkan_swap_chain_frame *frame) {
 
   verify(vkAllocateCommandBuffers(frame->vkd->device, &allocInfo, &frame->commandBuffer) ==
          VK_SUCCESS);
-
   vulkan_debug_name_command_buffer(frame->vkd->debug, frame->commandBuffer,
                                    "frame command buffer #%d", frame->swapChainImageIndex);
 }
@@ -322,6 +322,7 @@ void create_framebuffer(vulkan_swap_chain_frame *frame) {
 
   verify(vkCreateFramebuffer(frame->vkd->device, &framebufferInfo, vka, &frame->framebuffer) ==
          VK_SUCCESS);
+  vulkan_debug_name_framebuffer(frame->vkd->debug, frame->framebuffer, "frame framebuffer #%d");
 }
 
 void vulkan_swap_chain_frame_init(vulkan_swap_chain_frame *frame, vulkan_pipeline *pipeline,
@@ -361,8 +362,14 @@ void create_synchronization_objects(vulkan_render_context *rctx) {
   for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
     rctx->imagesInFlight[i] = VK_NULL_HANDLE;
     vkCreateSemaphore(rctx->vkd->device, &semaphoreInfo, vka, &rctx->imageAvailableSemaphores[i]);
+    vulkan_debug_name_semaphore(rctx->vkd->debug, rctx->imageAvailableSemaphores[i],
+                                "frame available for rendering - semaphore #%zu", i);
     vkCreateSemaphore(rctx->vkd->device, &semaphoreInfo, vka, &rctx->renderFinishedSemaphores[i]);
+    vulkan_debug_name_semaphore(rctx->vkd->debug, rctx->renderFinishedSemaphores[i],
+                                "frame finished rendering - semaphore #%zu", i);
     vkCreateFence(rctx->vkd->device, &fenceInfo, vka, &rctx->inFlightFences[i]);
+    vulkan_debug_name_fence(rctx->vkd->debug, rctx->inFlightFences[i],
+                            "frame command buffer have finished rendering - fence #%zu", i);
   }
 }
 

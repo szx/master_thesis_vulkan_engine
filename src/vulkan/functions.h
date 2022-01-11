@@ -92,10 +92,10 @@ void create_image(vulkan_device *vkd, uint32_t width, uint32_t height, uint32_t 
                   VkMemoryPropertyFlags properties, VkImage image, VkDeviceMemory imageMemory);
 VkImageView create_image_view(vulkan_device *vkd, VkImage image, VkImageViewType type,
                               VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels,
-                              uint32_t arrayLayers);
+                              uint32_t arrayLayers, const char *debugName);
 void create_buffer(vulkan_device *vkd, VkDeviceSize size, VkBufferUsageFlags usage,
-                   VkMemoryPropertyFlags properties, VkBuffer *buffer,
-                   VkDeviceMemory *bufferMemory);
+                   VkMemoryPropertyFlags properties, VkBuffer *buffer, VkDeviceMemory *bufferMemory,
+                   const char *debugName);
 
 VkCommandBuffer begin_single_time_commands(vulkan_device *vkd);
 void end_single_time_commands(vulkan_device *vkd, VkCommandBuffer commandBuffer);
@@ -111,7 +111,8 @@ void transition_image_layout(vulkan_device *vkd, VkImage image, VkFormat format,
                              VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels,
                              uint32_t arrayLayers);
 
-VkShaderModule create_shader_module(vulkan_device *vkd, const uint32_t *code, size_t size);
+VkShaderModule create_shader_module(vulkan_device *vkd, const uint32_t *code, size_t size,
+                                    const char *debugName);
 
 VkDescriptorPool create_descriptor_pool(vulkan_device *vkd, size_t totalUniformBufferCount,
                                         size_t totalCombinedImageSamplerCount,

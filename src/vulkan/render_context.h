@@ -86,13 +86,13 @@ typedef struct vulkan_render_context {
   core_array(vulkan_swap_chain_frame) swapChainFrames; /// Swap chain frames.
   vulkan_scene *scene;                                 /// Vulkan scene.
   size_t currentFrameInFlight;                         /// Current frame rendered in flight.
-  /// Semaphore signaling that frame has been acquired from swap chain and is ready for drawing.
+  /// Semaphore signaling that frame has been acquired from swap chain and is ready for rendering.
   VkSemaphore imageAvailableSemaphores[MAX_FRAMES_IN_FLIGHT];
-  /// Semaphore signaling that drawing frame is finished and it can be presented.
+  /// Semaphore signaling that rendering frame is finished and it can be presented.
   VkSemaphore renderFinishedSemaphores[MAX_FRAMES_IN_FLIGHT];
-  /// Fence that is signaled after submitted command buffer have completed drawing frame.
+  /// Fence that is signaled after submitted command buffer have completed rendering frame.
   VkFence inFlightFences[MAX_FRAMES_IN_FLIGHT];
-  /// Handle to fence that will be signaled after submitted command buffer finishes drawing frame.
+  /// Handle to fence that will be signaled after submitted command buffer finishes rendering frame.
   VkFence imagesInFlight[MAX_FRAMES_IN_FLIGHT];
 } vulkan_render_context;
 

@@ -36,7 +36,12 @@
         - Produces validation layer errors.
     - Persistent debug messenger:
         - Produces validation layer errors.
-        - Named objects.
+        - Named objects:
+            - Used by validation layers, RenderDoc and other debugging tools.
+            - Example: function _create_buffer()_ takes argument _debugName = "geometry buffer"_, which results in two
+              new named objects:
+                - device memory "geometry buffer - device memory (...)"
+                - device memory "geometry buffer - buffer (...)"
         - TODO: Command buffer labels.
         - Doesn't use tags - objects have names, which allow for additional data tracking in vulkan_debug_data.
             - "In general, most debug layers and tools get the necessary information they need by simply referring to

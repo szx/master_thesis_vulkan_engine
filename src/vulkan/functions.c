@@ -39,7 +39,7 @@ void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
   VkDeviceMemory stagingBufferMemory;
   create_buffer(geometryBuffer->vkd, geometryBufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                &stagingBuffer, &stagingBufferMemory);
+                &stagingBuffer, &stagingBufferMemory, "staging buffer for geometry");
 
   void *data;
   vkMapMemory(geometryBuffer->vkd->device, stagingBufferMemory, 0, geometryBufferSize, 0, &data);
@@ -50,7 +50,7 @@ void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
                 VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
                     VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &geometryBuffer->buffer,
-                &geometryBuffer->bufferMemory);
+                &geometryBuffer->bufferMemory, "geometry buffer");
 
   copy_buffer_to_buffer(geometryBuffer->vkd, stagingBuffer, geometryBuffer->buffer,
                         geometryBufferSize);
@@ -69,7 +69,7 @@ vulkan_uniform_buffer *vulkan_uniform_buffer_create(vulkan_device *vkd) {
   create_buffer(uniformBuffer->vkd, uniformBuffer->bufferMemorySize,
                 VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                &uniformBuffer->buffer, &uniformBuffer->bufferMemory);
+                &uniformBuffer->buffer, &uniformBuffer->bufferMemory, "uniform buffer");
   uniformBuffer->dirty = true;
   return uniformBuffer;
   // TODO support multiple buffers and descriptors (seperate for each frame)
@@ -166,11 +166,13 @@ VkIndexType stride_to_index_format(uint32_t indexStride) {
 void create_image(vulkan_device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
                   uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
                   VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,
-                  VkMemoryPropertyFlags properties, VkImage image, VkDeviceMemory imageMemory) {}
+                  VkMemoryPropertyFlags properties, VkImage image, VkDeviceMemory imageMemory) {
+  assert(0);
+}
 
 VkImageView create_image_view(vulkan_device *vkd, VkImage image, VkImageViewType type,
                               VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels,
-                              uint32_t arrayLayers) {
+                              uint32_t arrayLayers, const char *debugName) {
   VkImageViewCreateInfo viewInfo = {0};
   viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
   viewInfo.image = image;
@@ -184,28 +186,33 @@ VkImageView create_image_view(vulkan_device *vkd, VkImage image, VkImageViewType
 
   VkImageView imageView;
   verify(vkCreateImageView(vkd->device, &viewInfo, vka, &imageView) == VK_SUCCESS);
+  vulkan_debug_name_image_view(vkd->debug, imageView, "%s - image view (%s)", debugName,
+                               VkImageViewType_debug_str(viewInfo.viewType));
 
   return imageView;
 }
 
 void create_buffer(vulkan_device *vkd, VkDeviceSize size, VkBufferUsageFlags usage,
-                   VkMemoryPropertyFlags properties, VkBuffer *buffer,
-                   VkDeviceMemory *bufferMemory) {
+                   VkMemoryPropertyFlags properties, VkBuffer *buffer, VkDeviceMemory *bufferMemory,
+                   const char *debugName) {
   VkBufferCreateInfo bufferInfo = {0};
   bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
   bufferInfo.size = size;
   bufferInfo.usage = usage;
   bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
   verify(vkCreateBuffer(vkd->device, &bufferInfo, vka, buffer) == VK_SUCCESS);
+  vulkan_debug_name_buffer(vkd->debug, *buffer, "%s - buffer (%zu B)", debugName, bufferInfo.size);
 
   VkMemoryRequirements memRequirements;
   vkGetBufferMemoryRequirements(vkd->device, *buffer, &memRequirements);
-
   VkMemoryAllocateInfo allocInfo = {0};
   allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
   allocInfo.allocationSize = memRequirements.size;
   allocInfo.memoryTypeIndex = find_memory_type(vkd, memRequirements.memoryTypeBits, properties);
   verify(vkAllocateMemory(vkd->device, &allocInfo, vka, bufferMemory) == VK_SUCCESS);
+  vulkan_debug_name_device_memory(vkd->debug, *bufferMemory, "%s - device memory (%zu B)",
+                                  debugName, memRequirements.size);
+
   vkBindBufferMemory(vkd->device, *buffer, *bufferMemory, 0);
 }
 
@@ -218,6 +225,7 @@ VkCommandBuffer begin_single_time_commands(vulkan_device *vkd) {
 
   VkCommandBuffer commandBuffer;
   vkAllocateCommandBuffers(vkd->device, &allocInfo, &commandBuffer);
+  vulkan_debug_name_command_buffer(vkd->debug, commandBuffer, "one-shot command buffer");
 
   VkCommandBufferBeginInfo beginInfo = {0};
   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -253,16 +261,23 @@ void copy_buffer_to_buffer(vulkan_device *vkd, VkBuffer srcBuffer, VkBuffer dstB
 }
 
 void copy_buffer_to_image(vulkan_device *vkd, VkBuffer buffer, VkImage image, uint32_t width,
-                          uint32_t height, uint32_t baseArrayLayer) {}
+                          uint32_t height, uint32_t baseArrayLayer) {
+  assert(0);
+}
 
 void generate_mipmaps(vulkan_device *vkd, VkImage image, VkFormat imageFormat, int32_t texWidth,
-                      int32_t texHeight, uint32_t mipLevels) {}
+                      int32_t texHeight, uint32_t mipLevels) {
+  assert(0);
+}
 
 void transition_image_layout(vulkan_device *vkd, VkImage image, VkFormat format,
                              VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels,
-                             uint32_t arrayLayers) {}
+                             uint32_t arrayLayers) {
+  assert(0);
+}
 
-VkShaderModule create_shader_module(vulkan_device *vkd, const uint32_t *code, size_t size) {
+VkShaderModule create_shader_module(vulkan_device *vkd, const uint32_t *code, size_t size,
+                                    const char *debugName) {
   VkShaderModuleCreateInfo createInfo = {0};
   createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
   createInfo.codeSize = size * sizeof(char);
@@ -270,6 +285,7 @@ VkShaderModule create_shader_module(vulkan_device *vkd, const uint32_t *code, si
 
   VkShaderModule shaderModule;
   verify(vkCreateShaderModule(vkd->device, &createInfo, vka, &shaderModule) == VK_SUCCESS);
+  vulkan_debug_name_shader_module(vkd->debug, shaderModule, "%s - shader module", debugName);
   return shaderModule;
 }
 

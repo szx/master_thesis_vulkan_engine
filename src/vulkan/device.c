@@ -471,4 +471,5 @@ void create_one_shot_command_pool(vulkan_device *vkd) {
   poolInfo.queueFamilyIndex = queueFamilies.graphicsFamily;
 
   verify(vkCreateCommandPool(vkd->device, &poolInfo, vka, &vkd->oneShotCommandPool) == VK_SUCCESS);
+  vulkan_debug_name_command_pool(vkd->debug, vkd->oneShotCommandPool, "one-shot command pool");
 }

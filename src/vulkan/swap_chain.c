@@ -143,6 +143,7 @@ void create_swap_chain_image_views(vulkan_swap_chain *vks) {
     VkImage swapChainImage = *(VkImage *)utarray_eltptr(vks->swapChainImages, i);
     *swapChainImageView =
         create_image_view(vks->vkd, swapChainImage, VK_IMAGE_VIEW_TYPE_2D,
-                          vks->swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1, 1);
+                          vks->swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1, 1, "swap chain");
+    vulkan_debug_name_image(vks->vkd->debug, swapChainImage, "swap chain - image #%zu", i);
   }
 }

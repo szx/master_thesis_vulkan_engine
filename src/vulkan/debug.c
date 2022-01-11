@@ -98,6 +98,10 @@ debug_callback_general(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 
 static void name_object(vulkan_debug *debug, VkObjectType objectType, uint64_t objectHandle,
                         const char *format, va_list args) {
+  if (!debug->enabled) {
+    return;
+  }
+
   va_list copy;
   va_copy(copy, args);
   UT_string *s;
@@ -160,23 +164,37 @@ vulkan_debug *vulkan_debug_create(bool enabled, VkDevice *pDevice, VkInstance in
 void vulkan_debug_destroy(vulkan_debug *debug) {
   if (debug->enabled) {
     destroy_debug_utils_messenger_ext(debug->instance, debug->debugMessenger, NULL);
-  }
-  vulkan_debug_name_data *nameData, *temp;
-  HASH_ITER(hh, debug->names, nameData, temp) {
-    HASH_DEL(debug->names, nameData);
-    free((char *)nameData->name);
-    core_free(nameData);
+    vulkan_debug_name_data *nameData, *temp;
+    HASH_ITER(hh, debug->names, nameData, temp) {
+      HASH_DEL(debug->names, nameData);
+      free((char *)nameData->name);
+      core_free(nameData);
+    }
   }
   core_free(debug);
 }
 
-void vulkan_debug_name_command_buffer(vulkan_debug *debug, VkCommandBuffer commandBuffer,
-                                      const char *format, ...) {
-  va_list args;
-  va_start(args, format);
-  name_object(debug, VK_OBJECT_TYPE_COMMAND_BUFFER, (uint64_t)commandBuffer, format, args);
-  va_end(args);
-}
+#define VULKAN_DEBUG_NAME_FUNC_DEF(_funcName, _handleType, _objectType)                            \
+  void vulkan_debug_name_##_funcName(vulkan_debug *debug, _handleType handle, const char *format,  \
+                                     ...) {                                                        \
+    va_list args;                                                                                  \
+    va_start(args, format);                                                                        \
+    name_object(debug, _objectType, (uint64_t)handle, format, args);                               \
+    va_end(args);                                                                                  \
+  }
+
+VULKAN_DEBUG_NAME_FUNC_DEF(command_pool, VkCommandPool, VK_OBJECT_TYPE_COMMAND_POOL)
+VULKAN_DEBUG_NAME_FUNC_DEF(command_buffer, VkCommandBuffer, VK_OBJECT_TYPE_COMMAND_BUFFER)
+VULKAN_DEBUG_NAME_FUNC_DEF(framebuffer, VkFramebuffer, VK_OBJECT_TYPE_FRAMEBUFFER)
+VULKAN_DEBUG_NAME_FUNC_DEF(semaphore, VkSemaphore, VK_OBJECT_TYPE_SEMAPHORE)
+VULKAN_DEBUG_NAME_FUNC_DEF(fence, VkFence, VK_OBJECT_TYPE_FENCE)
+VULKAN_DEBUG_NAME_FUNC_DEF(device_memory, VkDeviceMemory, VK_OBJECT_TYPE_DEVICE_MEMORY)
+VULKAN_DEBUG_NAME_FUNC_DEF(buffer, VkBuffer, VK_OBJECT_TYPE_BUFFER)
+VULKAN_DEBUG_NAME_FUNC_DEF(image, VkImage, VK_OBJECT_TYPE_IMAGE)
+VULKAN_DEBUG_NAME_FUNC_DEF(image_view, VkImageView, VK_OBJECT_TYPE_IMAGE_VIEW)
+VULKAN_DEBUG_NAME_FUNC_DEF(shader_module, VkShaderModule, VK_OBJECT_TYPE_SHADER_MODULE)
+
+#undef VULKAN_DEBUG_NAME_FUNC_DEF
 
 VkBool32 VKAPI_CALL vulkan_debug_callback_for_instance(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,

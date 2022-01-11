@@ -33,9 +33,22 @@ vulkan_debug *vulkan_debug_create(bool enabled, VkDevice *device, VkInstance ins
                                   const VkAllocationCallbacks *vka);
 void vulkan_debug_destroy(vulkan_debug *debug);
 
-/// Names Vulkan command buffer.
-void vulkan_debug_name_command_buffer(vulkan_debug *debug, VkCommandBuffer commandBuffer,
-                                      const char *format, ...);
+#define VULKAN_DEBUG_NAME_FUNC_DECL(_funcName, _handleType)                                        \
+  void vulkan_debug_name_##_funcName(vulkan_debug *debug, _handleType handle, const char *format,  \
+                                     ...);
+
+VULKAN_DEBUG_NAME_FUNC_DECL(command_pool, VkCommandPool)
+VULKAN_DEBUG_NAME_FUNC_DECL(command_buffer, VkCommandBuffer)
+VULKAN_DEBUG_NAME_FUNC_DECL(framebuffer, VkFramebuffer)
+VULKAN_DEBUG_NAME_FUNC_DECL(semaphore, VkSemaphore)
+VULKAN_DEBUG_NAME_FUNC_DECL(fence, VkFence)
+VULKAN_DEBUG_NAME_FUNC_DECL(device_memory, VkDeviceMemory)
+VULKAN_DEBUG_NAME_FUNC_DECL(buffer, VkBuffer)
+VULKAN_DEBUG_NAME_FUNC_DECL(image, VkImage)
+VULKAN_DEBUG_NAME_FUNC_DECL(image_view, VkImageView)
+VULKAN_DEBUG_NAME_FUNC_DECL(shader_module, VkShaderModule)
+
+#undef VULKAN_DEBUG_NAME_FUNC_DECL
 
 /// Short-lived debug callback for vkCreateInstance and vkCreateInstance.
 /// Logs output of validation layers.
