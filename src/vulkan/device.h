@@ -3,6 +3,7 @@
 
 #include "../core/platform.h"
 #include "../data/data.h"
+#include "debug.h"
 
 #define VALIDATION_LAYERS_SIZE 1
 extern const char *validationLayers[VALIDATION_LAYERS_SIZE];
@@ -55,20 +56,20 @@ typedef struct vulkan_limits {
 } vulkan_limits;
 
 typedef struct vulkan_device {
-  GLFWwindow *window;                      /// GLFW window
-  VkInstance instance;                     /// Vulkan instance.
-  VkDebugUtilsMessengerEXT debugMessenger; /// Vulkan debug messenger (VK_EXT_debug_utils).
-  VkSurfaceKHR surface;                    /// Vulkan window surface.
-  VkPhysicalDevice physicalDevice;         /// Physical device.
-  VkDevice device;                         /// Vulkan logical device.
-  VkQueue graphicsQueue;                   /// Graphical queue handle.
-  VkQueue presentQueue;                    /// Present queue handle.
-  vulkan_swap_chain_info swapChainInfo;    /// Swap chain support details.
-  vulkan_limits limits;                    /// Physical device limits.
-  bool framebufferResized;                 /// True if GLFW framebuffer resize callback was
-                                           /// triggered.
-  VkCommandPool oneShotCommandPool;        /// Command pool used for one-shot copy and
-                                           /// image transition commands.
+  GLFWwindow *window;                   /// GLFW window
+  VkInstance instance;                  /// Vulkan instance.
+  VkSurfaceKHR surface;                 /// Vulkan window surface.
+  vulkan_debug *debug;                  /// Vulkan debug utils.
+  VkPhysicalDevice physicalDevice;      /// Physical device.
+  VkDevice device;                      /// Vulkan logical device.
+  VkQueue graphicsQueue;                /// Graphical queue handle.
+  VkQueue presentQueue;                 /// Present queue handle.
+  vulkan_swap_chain_info swapChainInfo; /// Swap chain support details.
+  vulkan_limits limits;                 /// Physical device limits.
+  bool framebufferResized;              /// True if GLFW framebuffer resize callback was
+                                        /// triggered.
+  VkCommandPool oneShotCommandPool;     /// Command pool used for one-shot copy and
+                                        /// image transition commands.
   struct {
     bool w, a, s, d;
     bool q;
@@ -95,13 +96,12 @@ void create_window(vulkan_device *vkd, data_assets *assets);
 bool validation_layers_enabled();
 bool check_validation_layer_support(vulkan_device *vkd);
 void create_instance(vulkan_device *vkd, data_assets *assets);
-void setup_debug_messenger(vulkan_device *vkd);
 
 void create_surface(vulkan_device *vkd);
 
 void query_swap_chain_support(vulkan_device *vkd, VkPhysicalDevice physicalDevice);
 bool check_device_extension_support(vulkan_device *vkd, VkPhysicalDevice physicalDevice);
-bool is_physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevice, size_t *rank);
+bool physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevice, size_t *rank);
 void pick_physical_device(vulkan_device *vkd);
 
 vulkan_queue_families find_queue_families(vulkan_device *vkd, VkPhysicalDevice physicalDevice);
@@ -109,4 +109,3 @@ vulkan_limits find_limits(vulkan_device *vkd, VkPhysicalDevice physicalDevice);
 void create_logical_device(vulkan_device *vkd);
 
 void create_one_shot_command_pool(vulkan_device *vkd);
-

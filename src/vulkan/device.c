@@ -12,37 +12,6 @@ const char *deviceExtensions[DEVICE_EXTENSIONS_SIZE] = {
 
 const VkAllocationCallbacks *vka = NULL;
 
-VkResult create_debug_utils_messenger_ext(VkInstance instance,
-                                          const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
-                                          const VkAllocationCallbacks *pAllocator,
-                                          VkDebugUtilsMessengerEXT *pDebugMessenger) {
-  PFN_vkCreateDebugUtilsMessengerEXT func =
-      (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance,
-                                                                "vkCreateDebugUtilsMessengerEXT");
-  if (func != NULL) {
-    return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
-  }
-  return VK_ERROR_EXTENSION_NOT_PRESENT;
-}
-
-void destroy_debug_utils_messenger_ext(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger,
-                                       const VkAllocationCallbacks *pAllocator) {
-  PFN_vkDestroyDebugUtilsMessengerEXT func =
-      (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance,
-                                                                 "vkDestroyDebugUtilsMessengerEXT");
-  if (func != NULL) {
-    func(instance, debugMessenger, pAllocator);
-  }
-}
-
-static VKAPI_ATTR VkBool32 VKAPI_CALL
-debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-               VkDebugUtilsMessageTypeFlagsEXT messageType,
-               const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData) {
-  log_info("Validation layer: %s", pCallbackData->pMessage);
-  return VK_FALSE;
-}
-
 bool vulkan_queue_families_complete(vulkan_queue_families *queueFamilies) {
   return queueFamilies->graphicsFamily < UINT32_MAX && queueFamilies->presentFamily < UINT32_MAX;
 }
@@ -62,7 +31,7 @@ vulkan_device *vulkan_device_create(data_assets *assets) {
   vulkan_swap_chain_info_init(&vkd->swapChainInfo);
   create_window(vkd, assets);
   create_instance(vkd, assets);
-  setup_debug_messenger(vkd);
+  vkd->debug = vulkan_debug_create(validation_layers_enabled(), vkd->instance, vka);
   create_surface(vkd);
   pick_physical_device(vkd);
   create_logical_device(vkd);
@@ -78,9 +47,7 @@ void vulkan_device_destroy(vulkan_device *vkd) {
 
   vkDestroyDevice(vkd->device, vka);
 
-  if (validation_layers_enabled()) {
-    destroy_debug_utils_messenger_ext(vkd->instance, vkd->debugMessenger, NULL);
-  }
+  vulkan_debug_destroy(vkd->debug);
 
   vkDestroySurfaceKHR(vkd->instance, vkd->surface, vka);
 
@@ -195,15 +162,7 @@ void create_instance(vulkan_device *vkd, data_assets *assets) {
   if (validation_layers_enabled()) {
     createInfo.enabledLayerCount = VALIDATION_LAYERS_SIZE;
     createInfo.ppEnabledLayerNames = validationLayers;
-
-    debugCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-    debugCreateInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
-                                      VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-                                      VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-    debugCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-                                  VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-                                  VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-    debugCreateInfo.pfnUserCallback = debug_callback;
+    debugCreateInfo = vulkan_debug_messenger_create_info(vulkan_debug_callback_for_instance);
     createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
   } else {
     createInfo.enabledLayerCount = 0;
@@ -211,25 +170,6 @@ void create_instance(vulkan_device *vkd, data_assets *assets) {
   }
 
   verify(vkCreateInstance(&createInfo, vka, &vkd->instance) == VK_SUCCESS);
-}
-
-void setup_debug_messenger(vulkan_device *vkd) {
-  if (!validation_layers_enabled()) {
-    return;
-  }
-
-  VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {0};
-  debugCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-  debugCreateInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
-                                    VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-                                    VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-  debugCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-                                VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-                                VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-  debugCreateInfo.pfnUserCallback = debug_callback;
-
-  verify(create_debug_utils_messenger_ext(vkd->instance, &debugCreateInfo, vka,
-                                          &vkd->debugMessenger) == VK_SUCCESS);
 }
 
 void create_surface(vulkan_device *vkd) {
@@ -290,8 +230,7 @@ bool check_device_extension_support(vulkan_device *vkd, VkPhysicalDevice physica
   return !missingExtension;
 }
 
-bool is_physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevice,
-                                 size_t *rank) {
+bool physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevice, size_t *rank) {
   VkPhysicalDeviceProperties deviceProperties;
   vkGetPhysicalDeviceProperties(physicalDevice, &deviceProperties);
   log_info("deviceId = %X", deviceProperties.deviceID);
@@ -383,7 +322,7 @@ void pick_physical_device(vulkan_device *vkd) {
   for (size_t i = 0; i < deviceCount; i++) {
     VkPhysicalDevice physicalDevice = devices[i];
     size_t rank = 0;
-    if (is_physical_device_suitable(vkd, physicalDevice, &rank)) {
+    if (physical_device_suitable(vkd, physicalDevice, &rank)) {
       vulkan_physical_device_info info = {.physicalDevice = physicalDevice, .rank = rank};
       utarray_push_back(infos, &info);
     }
