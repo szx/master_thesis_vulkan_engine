@@ -1,4 +1,5 @@
 #include "functions.h"
+#include "device.h"
 
 vulkan_geometry_buffer *vulkan_geometry_buffer_create() {
   vulkan_geometry_buffer *geometryBuffer = core_alloc(sizeof(vulkan_geometry_buffer));
@@ -37,23 +38,23 @@ void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
   uint8_t *geometryBufferData = utarray_front(geometryBuffer->data);
   VkBuffer stagingBuffer;
   VkDeviceMemory stagingBufferMemory;
-  create_buffer(geometryBuffer->vkd, geometryBufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                &stagingBuffer, &stagingBufferMemory, "staging buffer for geometry");
+  vulkan_create_buffer(geometryBuffer->vkd, geometryBufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                       &stagingBuffer, &stagingBufferMemory, "staging buffer for geometry");
 
   void *data;
   vkMapMemory(geometryBuffer->vkd->device, stagingBufferMemory, 0, geometryBufferSize, 0, &data);
   memcpy(data, geometryBufferData, geometryBufferSize);
   vkUnmapMemory(geometryBuffer->vkd->device, stagingBufferMemory);
 
-  create_buffer(geometryBuffer->vkd, geometryBufferSize,
-                VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
-                    VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &geometryBuffer->buffer,
-                &geometryBuffer->bufferMemory, "geometry buffer");
+  vulkan_create_buffer(geometryBuffer->vkd, geometryBufferSize,
+                       VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
+                           VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &geometryBuffer->buffer,
+                       &geometryBuffer->bufferMemory, "geometry buffer");
 
-  copy_buffer_to_buffer(geometryBuffer->vkd, stagingBuffer, geometryBuffer->buffer,
-                        geometryBufferSize);
+  vulkan_copy_buffer_to_buffer(geometryBuffer->vkd, stagingBuffer, geometryBuffer->buffer,
+                               geometryBufferSize);
 
   vkDestroyBuffer(geometryBuffer->vkd->device, stagingBuffer, vka);
   vkFreeMemory(geometryBuffer->vkd->device, stagingBufferMemory, vka);
@@ -66,10 +67,10 @@ vulkan_uniform_buffer *vulkan_uniform_buffer_create(vulkan_device *vkd) {
   glm_mat4_identity(uniformBuffer->data.projMat);
   uniformBuffer->vkd = vkd;
   uniformBuffer->bufferMemorySize = sizeof(uniformBuffer->data);
-  create_buffer(uniformBuffer->vkd, uniformBuffer->bufferMemorySize,
-                VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                &uniformBuffer->buffer, &uniformBuffer->bufferMemory, "uniform buffer");
+  vulkan_create_buffer(uniformBuffer->vkd, uniformBuffer->bufferMemorySize,
+                       VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                       &uniformBuffer->buffer, &uniformBuffer->bufferMemory, "uniform buffer");
   uniformBuffer->dirty = true;
   return uniformBuffer;
   // TODO support multiple buffers and descriptors (seperate for each frame)
@@ -163,16 +164,91 @@ VkIndexType stride_to_index_format(uint32_t indexStride) {
   return indexType;
 }
 
-void create_image(vulkan_device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
-                  uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
-                  VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,
-                  VkMemoryPropertyFlags properties, VkImage image, VkDeviceMemory imageMemory) {
+#define DEBUG_NAME_FORMAT_START()                                                                  \
+  va_list args;                                                                                    \
+  va_start(args, debugFormat);                                                                     \
+  char *debugName;                                                                                 \
+  UT_string *s;                                                                                    \
+  utstring_new(s);                                                                                 \
+  utstring_printf_va(s, debugFormat, args);                                                        \
+  va_end(args);                                                                                    \
+  debugName = strdup(utstring_body(s));                                                            \
+  utstring_free(s);
+
+#define DEBUG_NAME_FORMAT_END() free(debugName);
+
+VkCommandPool vulkan_create_command_pool(vulkan_device *vkd, uint32_t queueFamilyIndex,
+                                         VkCommandPoolCreateFlags flags, const char *debugFormat,
+                                         ...) {
+  VkCommandPoolCreateInfo poolInfo = {0};
+  poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+  poolInfo.queueFamilyIndex = queueFamilyIndex;
+  poolInfo.flags = flags;
+
+  VkCommandPool commandPool;
+  verify(vkCreateCommandPool(vkd->device, &poolInfo, vka, &commandPool) == VK_SUCCESS);
+
+  DEBUG_NAME_FORMAT_START();
+  vulkan_debug_name_command_pool(vkd->debug, commandPool, "%s - command pool", debugName);
+  DEBUG_NAME_FORMAT_END();
+
+  return commandPool;
+}
+
+VkCommandBuffer vulkan_create_command_buffer(vulkan_device *vkd, VkCommandPool commandPool,
+                                             const char *debugFormat, ...) {
+  VkCommandBufferAllocateInfo allocInfo = {0};
+  allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+  allocInfo.commandPool = commandPool;
+  allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+  allocInfo.commandBufferCount = 1;
+
+  VkCommandBuffer commandBuffer;
+  verify(vkAllocateCommandBuffers(vkd->device, &allocInfo, &commandBuffer) == VK_SUCCESS);
+
+  DEBUG_NAME_FORMAT_START();
+  vulkan_debug_name_command_buffer(vkd->debug, commandBuffer, "%s - command buffer", debugName);
+  DEBUG_NAME_FORMAT_END();
+
+  return commandBuffer;
+}
+
+VkFramebuffer vulkan_create_framebuffer(vulkan_device *vkd, VkRenderPass renderPass,
+                                        uint32_t attachmentCount, const VkImageView *attachments,
+                                        uint32_t width, uint32_t height, const char *debugFormat,
+                                        ...) {
+  VkFramebufferCreateInfo framebufferInfo = {0};
+  framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+  framebufferInfo.renderPass = renderPass;
+  framebufferInfo.attachmentCount = 1;
+  framebufferInfo.pAttachments = attachments;
+  framebufferInfo.width = width;
+  framebufferInfo.height = height;
+  framebufferInfo.layers = 1; // NOTE: 1 layer when rendering to swap chain image, could use more
+                              // layers if rendering to shadow maps, VR etc.
+
+  VkFramebuffer framebuffer;
+  verify(vkCreateFramebuffer(vkd->device, &framebufferInfo, vka, &framebuffer) == VK_SUCCESS);
+
+  DEBUG_NAME_FORMAT_START();
+  vulkan_debug_name_framebuffer(vkd->debug, framebuffer, "%s - framebuffer", debugName);
+  DEBUG_NAME_FORMAT_END();
+
+  return framebuffer;
+}
+
+void vulkan_create_image(vulkan_device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
+                         uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
+                         VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,
+                         VkMemoryPropertyFlags properties, VkImage *image,
+                         VkDeviceMemory *imageMemory, const char *debugFormat, ...) {
   assert(0);
 }
 
-VkImageView create_image_view(vulkan_device *vkd, VkImage image, VkImageViewType type,
-                              VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels,
-                              uint32_t arrayLayers, const char *debugName) {
+VkImageView vulkan_create_image_view(vulkan_device *vkd, VkImage image, VkImageViewType type,
+                                     VkFormat format, VkImageAspectFlags aspectFlags,
+                                     uint32_t mipLevels, uint32_t arrayLayers,
+                                     const char *debugFormat, ...) {
   VkImageViewCreateInfo viewInfo = {0};
   viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
   viewInfo.image = image;
@@ -186,20 +262,25 @@ VkImageView create_image_view(vulkan_device *vkd, VkImage image, VkImageViewType
 
   VkImageView imageView;
   verify(vkCreateImageView(vkd->device, &viewInfo, vka, &imageView) == VK_SUCCESS);
+
+  DEBUG_NAME_FORMAT_START();
   vulkan_debug_name_image_view(vkd->debug, imageView, "%s - image view (%s)", debugName,
                                VkImageViewType_debug_str(viewInfo.viewType));
+  DEBUG_NAME_FORMAT_END();
 
   return imageView;
 }
 
-void create_buffer(vulkan_device *vkd, VkDeviceSize size, VkBufferUsageFlags usage,
-                   VkMemoryPropertyFlags properties, VkBuffer *buffer, VkDeviceMemory *bufferMemory,
-                   const char *debugName) {
+void vulkan_create_buffer(vulkan_device *vkd, VkDeviceSize size, VkBufferUsageFlags usage,
+                          VkMemoryPropertyFlags properties, VkBuffer *buffer,
+                          VkDeviceMemory *bufferMemory, const char *debugFormat, ...) {
   VkBufferCreateInfo bufferInfo = {0};
   bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
   bufferInfo.size = size;
   bufferInfo.usage = usage;
   bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+  DEBUG_NAME_FORMAT_START();
   verify(vkCreateBuffer(vkd->device, &bufferInfo, vka, buffer) == VK_SUCCESS);
   vulkan_debug_name_buffer(vkd->debug, *buffer, "%s - buffer (%zu B)", debugName, bufferInfo.size);
 
@@ -210,74 +291,16 @@ void create_buffer(vulkan_device *vkd, VkDeviceSize size, VkBufferUsageFlags usa
   allocInfo.allocationSize = memRequirements.size;
   allocInfo.memoryTypeIndex = find_memory_type(vkd, memRequirements.memoryTypeBits, properties);
   verify(vkAllocateMemory(vkd->device, &allocInfo, vka, bufferMemory) == VK_SUCCESS);
+
   vulkan_debug_name_device_memory(vkd->debug, *bufferMemory, "%s - device memory (%zu B)",
                                   debugName, memRequirements.size);
+  DEBUG_NAME_FORMAT_END();
 
   vkBindBufferMemory(vkd->device, *buffer, *bufferMemory, 0);
 }
 
-VkCommandBuffer begin_single_time_commands(vulkan_device *vkd) {
-  VkCommandBufferAllocateInfo allocInfo = {0};
-  allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-  allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-  allocInfo.commandPool = vkd->oneShotCommandPool;
-  allocInfo.commandBufferCount = 1;
-
-  VkCommandBuffer commandBuffer;
-  vkAllocateCommandBuffers(vkd->device, &allocInfo, &commandBuffer);
-  vulkan_debug_name_command_buffer(vkd->debug, commandBuffer, "one-shot command buffer");
-
-  VkCommandBufferBeginInfo beginInfo = {0};
-  beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-  beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-  vkBeginCommandBuffer(commandBuffer, &beginInfo);
-
-  return commandBuffer;
-}
-
-void end_single_time_commands(vulkan_device *vkd, VkCommandBuffer commandBuffer) {
-  vkEndCommandBuffer(commandBuffer);
-
-  VkSubmitInfo submitInfo = {0};
-  submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-  submitInfo.commandBufferCount = 1;
-  submitInfo.pCommandBuffers = &commandBuffer;
-
-  vkQueueSubmit(vkd->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-  vkQueueWaitIdle(vkd->graphicsQueue);
-
-  vkFreeCommandBuffers(vkd->device, vkd->oneShotCommandPool, 1, &commandBuffer);
-}
-
-void copy_buffer_to_buffer(vulkan_device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer,
-                           VkDeviceSize size) {
-  VkCommandBuffer commandBuffer = begin_single_time_commands(vkd);
-
-  VkBufferCopy copyRegion = {0};
-  copyRegion.size = size;
-  vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
-
-  end_single_time_commands(vkd, commandBuffer);
-}
-
-void copy_buffer_to_image(vulkan_device *vkd, VkBuffer buffer, VkImage image, uint32_t width,
-                          uint32_t height, uint32_t baseArrayLayer) {
-  assert(0);
-}
-
-void generate_mipmaps(vulkan_device *vkd, VkImage image, VkFormat imageFormat, int32_t texWidth,
-                      int32_t texHeight, uint32_t mipLevels) {
-  assert(0);
-}
-
-void transition_image_layout(vulkan_device *vkd, VkImage image, VkFormat format,
-                             VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels,
-                             uint32_t arrayLayers) {
-  assert(0);
-}
-
-VkShaderModule create_shader_module(vulkan_device *vkd, const uint32_t *code, size_t size,
-                                    const char *debugName) {
+VkShaderModule vulkan_create_shader_module(vulkan_device *vkd, const uint32_t *code, size_t size,
+                                           const char *debugFormat, ...) {
   VkShaderModuleCreateInfo createInfo = {0};
   createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
   createInfo.codeSize = size * sizeof(char);
@@ -285,13 +308,18 @@ VkShaderModule create_shader_module(vulkan_device *vkd, const uint32_t *code, si
 
   VkShaderModule shaderModule;
   verify(vkCreateShaderModule(vkd->device, &createInfo, vka, &shaderModule) == VK_SUCCESS);
+
+  DEBUG_NAME_FORMAT_START()
   vulkan_debug_name_shader_module(vkd->debug, shaderModule, "%s - shader module", debugName);
+  DEBUG_NAME_FORMAT_END();
+
   return shaderModule;
 }
 
-VkDescriptorPool create_descriptor_pool(vulkan_device *vkd, size_t totalUniformBufferCount,
-                                        size_t totalCombinedImageSamplerCount,
-                                        size_t maxAllocatedDescriptorSetsCount) {
+VkDescriptorPool vulkan_create_descriptor_pool(vulkan_device *vkd, size_t totalUniformBufferCount,
+                                               size_t totalCombinedImageSamplerCount,
+                                               size_t maxAllocatedDescriptorSetsCount,
+                                               const char *debugFormat, ...) {
   VkDescriptorPoolSize poolSizes[2] = {0};
   poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
   poolSizes[0].descriptorCount = totalUniformBufferCount;
@@ -312,13 +340,22 @@ VkDescriptorPool create_descriptor_pool(vulkan_device *vkd, size_t totalUniformB
 
   VkDescriptorPool descriptorPool;
   verify(vkCreateDescriptorPool(vkd->device, &poolInfo, vka, &descriptorPool) == VK_SUCCESS);
+
+  DEBUG_NAME_FORMAT_START()
+  vulkan_debug_name_descriptor_pool(
+      vkd->debug, descriptorPool,
+      "%s - descriptor pool (%zu uniforms, %zu combined, max %zu descriptor sets)", debugName,
+      totalUniformBufferCount, totalCombinedImageSamplerCount, maxAllocatedDescriptorSetsCount);
+  DEBUG_NAME_FORMAT_END();
+
   return descriptorPool;
 }
 
-VkDescriptorSetLayout create_descriptor_set_layout(vulkan_device *vkd,
-                                                   VkDescriptorType descriptorType,
-                                                   uint32_t descriptorCount,
-                                                   VkShaderStageFlags stageFlags) {
+VkDescriptorSetLayout vulkan_create_descriptor_set_layout(vulkan_device *vkd,
+                                                          VkDescriptorType descriptorType,
+                                                          uint32_t descriptorCount,
+                                                          VkShaderStageFlags stageFlags,
+                                                          const char *debugFormat, ...) {
   VkDescriptorSetLayoutBinding layoutBinding = {0};
   layoutBinding.binding = 0;
   layoutBinding.descriptorCount = descriptorCount;
@@ -336,12 +373,20 @@ VkDescriptorSetLayout create_descriptor_set_layout(vulkan_device *vkd,
   VkDescriptorSetLayout descriptorSetLayout;
   verify(vkCreateDescriptorSetLayout(vkd->device, &layoutInfo, vka, &descriptorSetLayout) ==
          VK_SUCCESS);
+
+  DEBUG_NAME_FORMAT_START()
+  vulkan_debug_name_descriptor_set_layout(vkd->debug, descriptorSetLayout,
+                                          "%s - descriptor set layout (%zu bindings)", debugName,
+                                          layoutInfo.bindingCount);
+  DEBUG_NAME_FORMAT_END();
+
   return descriptorSetLayout;
 }
 
-VkDescriptorSet create_descriptor_set_for_uniform_buffers(
+VkDescriptorSet vulkan_create_descriptor_set_for_uniform_buffers(
     vulkan_device *vkd, VkBuffer *uniformBuffers, VkDeviceSize bufferSize, size_t bufferCount,
-    VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool) {
+    VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool,
+    const char *debugFormat, ...) {
   VkDescriptorSetLayout layouts[1] = {descriptorSetLayout};
   VkDescriptorSetAllocateInfo allocInfo = {0};
   allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -351,6 +396,10 @@ VkDescriptorSet create_descriptor_set_for_uniform_buffers(
 
   VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
   verify(vkAllocateDescriptorSets(vkd->device, &allocInfo, &descriptorSet) == VK_SUCCESS);
+
+  DEBUG_NAME_FORMAT_START()
+  vulkan_debug_name_descriptor_set(vkd->debug, descriptorSet, "%s - descriptor set", debugName);
+  DEBUG_NAME_FORMAT_END();
 
   VkWriteDescriptorSet descriptorWrites[1] = {0};
   VkDescriptorBufferInfo bufferInfo[bufferCount];
@@ -370,4 +419,92 @@ VkDescriptorSet create_descriptor_set_for_uniform_buffers(
   vkUpdateDescriptorSets(vkd->device, 1, descriptorWrites, 0, NULL);
 
   return descriptorSet;
+}
+
+VkSemaphore vulkan_create_semaphore(vulkan_device *vkd, VkSemaphoreCreateFlags flags,
+                                    const char *debugFormat, ...) {
+  VkSemaphoreCreateInfo semaphoreInfo = {0};
+  semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+  semaphoreInfo.flags = flags;
+
+  VkSemaphore semaphore;
+  verify(vkCreateSemaphore(vkd->device, &semaphoreInfo, vka, &semaphore) == VK_SUCCESS);
+
+  DEBUG_NAME_FORMAT_START()
+  vulkan_debug_name_semaphore(vkd->debug, semaphore, "%s - semaphore", debugName);
+  DEBUG_NAME_FORMAT_END();
+
+  return semaphore;
+}
+
+VkFence vulkan_create_fence(vulkan_device *vkd, VkFenceCreateFlags flags, const char *debugFormat,
+                            ...) {
+  VkFenceCreateInfo fenceInfo = {0};
+  fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+  fenceInfo.flags = flags;
+
+  VkFence fence;
+  verify(vkCreateFence(vkd->device, &fenceInfo, vka, &fence) == VK_SUCCESS);
+
+  DEBUG_NAME_FORMAT_START()
+  vulkan_debug_name_fence(vkd->debug, fence, "%s - fence", debugName);
+  DEBUG_NAME_FORMAT_END();
+
+  return fence;
+}
+
+#undef DEBUG_NAME_FORMAT_START
+#undef DEBUG_NAME_FORMAT_END
+
+VkCommandBuffer vulkan_begin_one_shot_commands(vulkan_device *vkd) {
+  VkCommandBuffer commandBuffer;
+  commandBuffer = vulkan_create_command_buffer(vkd, vkd->oneShotCommandPool, "one-shot");
+
+  VkCommandBufferBeginInfo beginInfo = {0};
+  beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+  beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+  vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+  return commandBuffer;
+}
+
+void vulkan_end_one_shot_commands(vulkan_device *vkd, VkCommandBuffer commandBuffer) {
+  vkEndCommandBuffer(commandBuffer);
+
+  VkSubmitInfo submitInfo = {0};
+  submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+  submitInfo.commandBufferCount = 1;
+  submitInfo.pCommandBuffers = &commandBuffer;
+
+  vkQueueSubmit(vkd->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+  vkQueueWaitIdle(vkd->graphicsQueue);
+
+  vkFreeCommandBuffers(vkd->device, vkd->oneShotCommandPool, 1, &commandBuffer);
+}
+
+void vulkan_copy_buffer_to_buffer(vulkan_device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer,
+                                  VkDeviceSize size) {
+  VkCommandBuffer commandBuffer = vulkan_begin_one_shot_commands(vkd);
+
+  VkBufferCopy copyRegion = {0};
+  copyRegion.size = size;
+  vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+
+  vulkan_end_one_shot_commands(vkd, commandBuffer);
+}
+
+void vulkan_copy_buffer_to_image(vulkan_device *vkd, VkBuffer buffer, VkImage image, uint32_t width,
+                                 uint32_t height, uint32_t baseArrayLayer) {
+  assert(0);
+}
+
+void vulkan_generate_mipmaps(vulkan_device *vkd, VkImage image, VkFormat imageFormat,
+                             int32_t texWidth, int32_t texHeight, uint32_t mipLevels) {
+  assert(0);
+}
+
+void vulkan_transition_image_layout(vulkan_device *vkd, VkImage image, VkFormat format,
+                                    VkImageLayout oldLayout, VkImageLayout newLayout,
+                                    uint32_t mipLevels, uint32_t arrayLayers) {
+  assert(0);
 }

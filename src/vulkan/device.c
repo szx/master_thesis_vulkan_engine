@@ -1,4 +1,5 @@
 #include "device.h"
+#include "functions.h"
 
 const char *validationLayers[VALIDATION_LAYERS_SIZE] = {"VK_LAYER_KHRONOS_validation"};
 
@@ -464,12 +465,7 @@ void create_logical_device(vulkan_device *vkd) {
 
 void create_one_shot_command_pool(vulkan_device *vkd) {
   vulkan_queue_families queueFamilies = find_queue_families(vkd, vkd->physicalDevice);
-
-  // TODO: Use transfer queue - but vkCmdBlitImage is graphics queue only?
-  VkCommandPoolCreateInfo poolInfo = {0};
-  poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-  poolInfo.queueFamilyIndex = queueFamilies.graphicsFamily;
-
-  verify(vkCreateCommandPool(vkd->device, &poolInfo, vka, &vkd->oneShotCommandPool) == VK_SUCCESS);
-  vulkan_debug_name_command_pool(vkd->debug, vkd->oneShotCommandPool, "one-shot command pool");
+  vkd->oneShotCommandPool =
+      vulkan_create_command_pool(vkd, queueFamilies.graphicsFamily, 0, "one-shot");
+  // TODO: Also use transfer queue - but vkCmdBlitImage is graphics queue only?
 }

@@ -262,13 +262,13 @@ vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_scene *sc
   pipeline->vkd = vks->vkd;
   pipeline->scene = scene;
   // TODO different numbers for different pipelines
-  pipeline->descriptorPool = create_descriptor_pool(pipeline->vkd, 1, 1, 1);
-  pipeline->descriptorSetLayout =
-      create_descriptor_set_layout(pipeline->vkd, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1,
-                                   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
-  pipeline->descriptorSet = create_descriptor_set_for_uniform_buffers(
+  pipeline->descriptorPool = vulkan_create_descriptor_pool(pipeline->vkd, 1, 1, 1, "pipeline");
+  pipeline->descriptorSetLayout = vulkan_create_descriptor_set_layout(
+      pipeline->vkd, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1,
+      VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, "pipeline");
+  pipeline->descriptorSet = vulkan_create_descriptor_set_for_uniform_buffers(
       pipeline->vkd, &scene->uniformBuffer->buffer, scene->uniformBuffer->bufferMemorySize, 1,
-      pipeline->descriptorSetLayout, pipeline->descriptorPool);
+      pipeline->descriptorSetLayout, pipeline->descriptorPool, "pipeline");
 
   pipeline->renderPass = vulkan_render_pass_create(pipeline, ForwardRenderPass);
   return pipeline;
@@ -281,48 +281,25 @@ void vulkan_pipeline_destroy(vulkan_pipeline *pipeline) {
 
 void create_command_pool(vulkan_swap_chain_frame *frame) {
   vulkan_queue_families queueFamilies = find_queue_families(frame->vkd, frame->vkd->physicalDevice);
-
-  VkCommandPoolCreateInfo poolInfo = {0};
-  poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-  poolInfo.queueFamilyIndex = queueFamilies.graphicsFamily;
-  poolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT |
-                   VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT; // command buffer is
-                                                                    // short-lived,
-                                                                    // rerecorded every frame
-
-  verify(vkCreateCommandPool(frame->vkd->device, &poolInfo, vka, &frame->commandPool) ==
-         VK_SUCCESS);
-  vulkan_debug_name_command_pool(frame->vkd->debug, frame->commandPool, "frame command pool #%d");
+  frame->commandPool = vulkan_create_command_pool(
+      frame->vkd, queueFamilies.graphicsFamily,
+      VK_COMMAND_POOL_CREATE_TRANSIENT_BIT |
+          VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, // command buffer is short-lived,
+                                                           // rerecorded every frame
+      "frame #%d", frame->swapChainImageIndex);
 }
 
 void create_command_buffer(vulkan_swap_chain_frame *frame) {
-  VkCommandBufferAllocateInfo allocInfo = {0};
-  allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-  allocInfo.commandPool = frame->commandPool;
-  allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-  allocInfo.commandBufferCount = 1;
-
-  verify(vkAllocateCommandBuffers(frame->vkd->device, &allocInfo, &frame->commandBuffer) ==
-         VK_SUCCESS);
-  vulkan_debug_name_command_buffer(frame->vkd->debug, frame->commandBuffer,
-                                   "frame command buffer #%d", frame->swapChainImageIndex);
+  frame->commandBuffer = vulkan_create_command_buffer(frame->vkd, frame->commandPool, "frame #%d",
+                                                      frame->swapChainImageIndex);
 }
 
 void create_framebuffer(vulkan_swap_chain_frame *frame) {
-  // TODO: vulkan_pipeline
-  VkFramebufferCreateInfo framebufferInfo = {0};
-  framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-  framebufferInfo.renderPass = frame->pipeline->renderPass->renderPass;
-  framebufferInfo.attachmentCount = 1;
-  framebufferInfo.pAttachments =
-      utarray_eltptr(frame->vks->swapChainImageViews, frame->swapChainImageIndex);
-  framebufferInfo.width = frame->vks->swapChainExtent.width;
-  framebufferInfo.height = frame->vks->swapChainExtent.height;
-  framebufferInfo.layers = 1;
-
-  verify(vkCreateFramebuffer(frame->vkd->device, &framebufferInfo, vka, &frame->framebuffer) ==
-         VK_SUCCESS);
-  vulkan_debug_name_framebuffer(frame->vkd->debug, frame->framebuffer, "frame framebuffer #%d");
+  frame->framebuffer = vulkan_create_framebuffer(
+      frame->vkd, frame->pipeline->renderPass->renderPass, 1,
+      utarray_eltptr(frame->vks->swapChainImageViews, frame->swapChainImageIndex),
+      frame->vks->swapChainExtent.width, frame->vks->swapChainExtent.height, "frame #%d",
+      frame->swapChainImageIndex);
 }
 
 void vulkan_swap_chain_frame_init(vulkan_swap_chain_frame *frame, vulkan_pipeline *pipeline,
@@ -354,22 +331,14 @@ vulkan_swap_chain_frame vulkan_swap_chain_frame_copy(vulkan_swap_chain_frame *fr
 }
 
 void create_synchronization_objects(vulkan_render_context *rctx) {
-  VkSemaphoreCreateInfo semaphoreInfo = {0};
-  semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-  VkFenceCreateInfo fenceInfo = {0};
-  fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-  fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
   for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
     rctx->imagesInFlight[i] = VK_NULL_HANDLE;
-    vkCreateSemaphore(rctx->vkd->device, &semaphoreInfo, vka, &rctx->imageAvailableSemaphores[i]);
-    vulkan_debug_name_semaphore(rctx->vkd->debug, rctx->imageAvailableSemaphores[i],
-                                "frame available for rendering - semaphore #%zu", i);
-    vkCreateSemaphore(rctx->vkd->device, &semaphoreInfo, vka, &rctx->renderFinishedSemaphores[i]);
-    vulkan_debug_name_semaphore(rctx->vkd->debug, rctx->renderFinishedSemaphores[i],
-                                "frame finished rendering - semaphore #%zu", i);
-    vkCreateFence(rctx->vkd->device, &fenceInfo, vka, &rctx->inFlightFences[i]);
-    vulkan_debug_name_fence(rctx->vkd->debug, rctx->inFlightFences[i],
-                            "frame command buffer have finished rendering - fence #%zu", i);
+    rctx->imageAvailableSemaphores[i] =
+        vulkan_create_semaphore(rctx->vkd, 0, "frame #%zu available for rendering", i);
+    rctx->renderFinishedSemaphores[i] =
+        vulkan_create_semaphore(rctx->vkd, 0, "frame #%zu finished rendering", i);
+    rctx->inFlightFences[i] = vulkan_create_fence(rctx->vkd, VK_FENCE_CREATE_SIGNALED_BIT,
+                                                  "frame #%zu finished rendering", i);
   }
 }
 
