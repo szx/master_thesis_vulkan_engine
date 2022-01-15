@@ -6,7 +6,7 @@ void write_default_config();
 void write_meshes_to_assets(data_assets *assets);
 
 int main(int argc, char *argv[]) {
-  platform_init();
+  platform_create();
   log_info("write default config");
   write_default_config();
   log_info("open SQLite asset database");
@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
   write_meshes_to_assets(assets);
   log_info("finished asset pipeline");
   data_assets_destroy(assets);
-  platform_free();
+  platform_destroy();
   return 0;
 }
 

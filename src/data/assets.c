@@ -2,7 +2,7 @@
 
 data_assets *data_assets_create() {
   data_assets *assets = core_alloc(sizeof(data_assets));
-  assets->path = get_asset_file_path("", "data.db");
+  assets->path = globals.assetsFilePath;
   assets->db = data_db_create(assets->path);
   assets->config = data_config_create();
   return assets;
@@ -10,7 +10,6 @@ data_assets *data_assets_create() {
 
 void data_assets_destroy(data_assets *assets) {
   data_assets_save(assets);
-  utstring_free(assets->path);
   data_db_destroy(assets->db);
   data_config_destroy(assets->config);
   core_free(assets);

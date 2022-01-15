@@ -3,7 +3,7 @@
 #include "../vulkan/vulkan.h"
 
 int main(int argc, char *argv[]) {
-  platform_init();
+  platform_create();
   data_assets *assets = data_assets_create();
   vulkan_render_context rctx;
   vulkan_render_context_init(&rctx, assets, "triangles");
@@ -32,6 +32,6 @@ int main(int argc, char *argv[]) {
 
   vulkan_render_context_deinit(&rctx);
   data_assets_destroy(assets);
-  platform_free();
+  platform_destroy();
   return 0;
 }

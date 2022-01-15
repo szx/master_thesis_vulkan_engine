@@ -2,7 +2,7 @@
 
 data_config *data_config_create() {
   data_config *config = core_alloc(sizeof(data_config));
-  config->path = get_asset_file_path("", "config.ini");
+  config->path = globals.configFilePath;
 #define alloc_int(_section, _key, ...) config->_section##_key = 0;
 #define alloc_str(_section, _key, ...) utstring_new(config->_section##_key);
   DATA_CONFIG_INT_KEYS(alloc_int, )
@@ -15,7 +15,6 @@ data_config *data_config_create() {
 }
 
 void data_config_destroy(data_config *config) {
-  utstring_free(config->path);
 #define free_str(_section, _key, ...) utstring_free(config->_section##_key);
   DATA_CONFIG_STR_KEYS(free_str, )
 #undef free_str

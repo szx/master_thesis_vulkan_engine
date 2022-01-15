@@ -18,21 +18,22 @@
 #define VULKAN_HEADER_PATH "VULKAN_HEADER_PATH should be defined by CMake"
 #endif
 
+#include "../codegen/globals.h"
 #include "../codegen/meta.h"
 #include "alloc.h"
 #include "junk.h"
 
 /// Allocates and initializes all global state used by functions below.
-void platform_init();
+void platform_create();
 
 /// Frees all global state used by functions below.
-void platform_free();
+void platform_destroy();
 
 /// Adds log.txt file to logger.
-void log_init();
+void log_create();
 
 /// Closes log.txt file.
-void log_free();
+void log_destroy();
 
 /// Shows message dialog and exits.
 void panic(const char *format, ...);

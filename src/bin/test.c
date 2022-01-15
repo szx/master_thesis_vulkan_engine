@@ -19,7 +19,7 @@ int database_resolutions_callback(void *callbackData, int argc, char **argv, cha
 TEST database_loading() {
   log_debug("sqlite3_libversion: %s\n", sqlite3_libversion());
 
-  UT_string *path = get_executable_dir_file_path("assets", "data.db");
+  UT_string *path = globals.assetsFilePath;
   sqlite3 *db; // database connection handle
   int rc = sqlite3_open(utstring_body(path), &db);
   utstring_free(path);
@@ -189,13 +189,13 @@ GREATEST_MAIN_DEFS(); // NOLINT
 
 int main(int argc, char *argv[]) {
   GREATEST_MAIN_BEGIN();
-  platform_init();
+  platform_create();
   log_info("start test suite");
   RUN_SUITE(database_suite);
   RUN_SUITE(gltf_suite);
   // RUN_SUITE(platform_alloc_suite);
   // RUN_SUITE(shaderc_suite);
   log_info("finish test suite");
-  platform_free();
+  platform_destroy();
   GREATEST_MAIN_END();
 }

@@ -6,11 +6,17 @@
 
 static FILE *logFile;
 
-void platform_init() { log_init(); }
+void platform_create() {
+  globals_create();
+  log_create();
+}
 
-void platform_free() { log_free(); }
+void platform_destroy() {
+  log_destroy();
+  globals_destroy();
+}
 
-void log_init() {
+void log_create() {
 #if defined(DEBUG)
   int logLevel = LOG_DEBUG;
 #else
@@ -25,7 +31,7 @@ void log_init() {
   }
 }
 
-void log_free() { fclose(logFile); }
+void log_destroy() { fclose(logFile); }
 
 void dummy_debug_msg() {}
 
@@ -89,7 +95,7 @@ UT_string *get_executable_dir_file_path(const char *dirName, const char *fileNam
   return path;
 }
 
-UT_string *get_asset_file_path(const char *dirName, const char *fileName) {
+UT_string *get_asset_file_path(const char *dirName, const char *fileName) { // HIRO remove
   UT_string *path = get_executable_dir_file_path("assets", dirName);
   utstring_printf(path, "/%s", fileName);
   return path;
