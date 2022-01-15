@@ -1,8 +1,9 @@
 from utils import *
+from globals import *
 
 global_paths = [
-    ("assetsFilePath", ("assets", "data.db")),
-    ("configFilePath", ("assets", "config.ini"))
+    ("assetsFilePath", (assets_dirname, assets_filename)),
+    ("configFilePath", (assets_dirname, config_filename))
 ]
 
 

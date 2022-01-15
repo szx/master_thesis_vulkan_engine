@@ -133,10 +133,10 @@ foreach (C_CODEGEN_HEADER_PATH ${C_CODEGEN_HEADERS})
 endforeach ()
 
 # add python codegen
-file(GLOB_RECURSE PYTHON_SCRIPTS "${SCRIPTS_PATH}/*.py")
+file(GLOB_RECURSE PYTHON_CODEGEN_SCRIPTS "${SCRIPTS_PATH}/codegen_*.py")
 add_custom_command(
         OUTPUT ${C_CODEGEN_HEADERS}
-        DEPENDS ${PYTHON_SCRIPTS} ${C_HEADERS}
+        DEPENDS ${PYTHON_CODEGEN_SCRIPTS} ${C_HEADERS}
         COMMAND ${Python3_EXECUTABLE} ${SCRIPTS_PATH}/codegen.py
         COMMENT "Python codegen for headers."
         VERBATIM)
@@ -177,12 +177,13 @@ add_custom_command(
 
 # run asset pipeline
 file(GLOB_RECURSE C_BIN_ASSET_PIPELINE_SOURCE "src/bin/asset_pipeline.c")
+file(GLOB_RECURSE PYTHON_ASSET_SCRIPTS "${SCRIPTS_PATH}/asset_*.py")
 add_custom_command(
         OUTPUT asset_pipeline.stamp
-        DEPENDS ${ASSETS_FILES} ${C_BIN_ASSET_PIPELINE_SOURCE}
-        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/asset_pipeline
+        DEPENDS ${ASSETS_FILES} ${C_BIN_ASSET_PIPELINE_SOURCE} ${PYTHON_ASSET_SCRIPTS}
+        COMMAND ${Python3_EXECUTABLE} ${SCRIPTS_PATH}/asset_pipeline.py ${CMAKE_CURRENT_BINARY_DIR}
         COMMAND ${CMAKE_COMMAND} -E touch asset_pipeline.stamp
-        COMMENT "Run asset pipeline.") #TODO: python script?
+        COMMENT "Run asset pipeline.")
 add_custom_target(run_asset_pipeline DEPENDS asset_pipeline.stamp)
 add_dependencies(run_asset_pipeline copy_assets asset_pipeline)
 
@@ -197,7 +198,8 @@ set(ASAN_FLAGS "$<$<CONFIG:DEBUG>:-static-libstdc++>" "$<$<CONFIG:DEBUG>:-static
 set(HARDENING_FLAGS "-fstack-protector-all")
 
 # define executables
-message(STATUS "PYTHON_SCRIPTS: ${PYTHON_SCRIPTS}")
+message(STATUS "PYTHON_CODEGEN_SCRIPTS: ${PYTHON_CODEGEN_SCRIPTS}")
+message(STATUS "PYTHON_ASSET_SCRIPTS: ${PYTHON_ASSET_SCRIPTS}")
 message(STATUS "C_HEADERS: ${C_HEADERS}")
 message(STATUS "C_CODEGEN_HEADERS: ${C_CODEGEN_HEADERS}")
 message(STATUS "C_SOURCES: ${C_SOURCES}")
