@@ -6,5 +6,6 @@
 #include "functions.h"
 #include "render_context.h"
 #include "scene.h"
+#include "scene_data.h"
 #include "shader.h"
 #include "swap_chain.h"

@@ -347,7 +347,7 @@ void vulkan_render_context_init(vulkan_render_context *rctx, data_assets *assets
   rctx->scene = NULL;
   vulkan_render_context_load_scene(rctx, sceneName);
   rctx->vks = vulkan_swap_chain_create(rctx->vkd);
-  vulkan_camera_update_aspect_ratio(rctx->scene->camera,
+  vulkan_camera_update_aspect_ratio(rctx->scene->data->camera,
                                     vulkan_swap_chain_get_aspect_ratio(rctx->vks));
   rctx->pipeline = vulkan_pipeline_create(rctx->vks, rctx->scene);
   core_array_alloc(rctx->swapChainFrames, utarray_len(rctx->vks->swapChainImageViews));
@@ -397,7 +397,7 @@ void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx) {
   vulkan_swap_chain_destroy(rctx->vks);
 
   rctx->vks = vulkan_swap_chain_create(rctx->vkd);
-  vulkan_camera_update_aspect_ratio(rctx->scene->camera,
+  vulkan_camera_update_aspect_ratio(rctx->scene->data->camera,
                                     vulkan_swap_chain_get_aspect_ratio(rctx->vks));
   rctx->pipeline = vulkan_pipeline_create(rctx->vks, rctx->scene);
   core_array_alloc(rctx->swapChainFrames, utarray_len(rctx->vks->swapChainImageViews));
@@ -414,7 +414,7 @@ void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneNa
   }
   UT_string *gltfPath = get_asset_file_path(sceneName, sceneName);
   utstring_printf(gltfPath, ".gltf");
-  rctx->scene = vulkan_scene_create_with_gltf_file(rctx->vkd, gltfPath);
+  rctx->scene = vulkan_scene_create(rctx->vkd, gltfPath); // HIRO
   utstring_free(gltfPath);
   vulkan_scene_debug_print(rctx->scene);
   // vulkan_render_pass_validate(rctx->pipeline->renderPass,
@@ -562,9 +562,9 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
                           renderPass->pipelineLayout, 0, descriptorSetCount, descriptorSets, 0,
                           NULL);
 
-  for (size_t nodeIdx = 0; nodeIdx < core_array_count(scene->nodes); nodeIdx++) {
+  for (size_t nodeIdx = 0; nodeIdx < core_array_count(scene->data->nodes); nodeIdx++) {
     // TODO: Check if node should be culled.
-    vulkan_node *node = &scene->nodes.ptr[nodeIdx];
+    vulkan_node *node = &scene->data->nodes.ptr[nodeIdx];
     log_trace("draw node %d", nodeIdx);
     {
       // TODO: separate push constants to another function
