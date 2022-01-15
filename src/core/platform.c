@@ -1,9 +1,5 @@
 #include "platform.h"
 
-// We try to use GLib for cross-platform functionality.
-#include <glib.h>
-#include <gtk/gtk.h>
-
 static FILE *logFile;
 
 void platform_create() {
@@ -33,7 +29,7 @@ void log_create() {
 
 void log_destroy() { fclose(logFile); }
 
-void dummy_debug_msg() {}
+void dummy_func() {}
 
 typedef struct panic_args {
   char *msg;

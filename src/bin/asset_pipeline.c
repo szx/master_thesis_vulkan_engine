@@ -84,8 +84,9 @@ void write_meshes_to_assets(data_assets *assets, gltf_input *gltfInputs, size_t 
     gltf_input gltfInput = gltfInputs[i];
     log_info("processing gltf '%s' in '%s", utstring_body(gltfInput.gltfName),
              utstring_body(gltfInput.gltfPath));
-    // vulkan_scene *scene = vulkan_scene_create_with_gltf_file(vkd, gltfPath);
+    vulkan_scene_data *data = vulkan_scene_data_create_with_gltf_file(gltfInput.gltfPath);
     //  HIRO separate gltf.h from scene.h
     //  HIRO parse scene
+    vulkan_scene_data_destroy(data);
   }
 }

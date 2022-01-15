@@ -8,6 +8,8 @@
 #include <sqlite3.h>
 
 #include <GLFW/glfw3.h>
+#include <glib.h>
+#include <gtk/gtk.h>
 
 #include "log.h"
 

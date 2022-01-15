@@ -25,6 +25,7 @@ def main(bin_path):
     output, error = execute_command(f'{asset_pipeline_bin_path} {args}')
     if error:
         sys.exit(1)
+    sys.exit(1)
 
 
 if __name__ == '__main__':

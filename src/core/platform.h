@@ -1,14 +1,6 @@
 /* Basic cross-platform functions. */
 #pragma once
 
-#if defined(__linux) || defined(__linux__) || defined(linux)
-#define PLATFORM_LINUX
-#elif defined(__APPLE__)
-#define PLATFORM_APPLE
-#elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(_WIN64)
-#define PLATFORM_WINDOWS
-#endif
-
 #ifndef SRC_PATH
 #error "SRC_PATH should be defined by CMake"
 #define SRC_PATH "SRC_PATH should be defined by CMake"
