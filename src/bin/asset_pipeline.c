@@ -61,7 +61,7 @@ void write_meshes_to_assets(data_assets *assets, asset_pipeline_input *assetInpu
       vulkan_mesh_primitive *primitive = &mesh->primitives.ptr[primIdx];
       log_debug("  primitive %d: %s\n", primIdx,
                 VkPrimitiveTopology_debug_str(primitive->topology));
-      utstring_clear(meshName); // HIRO hash
+      utstring_clear(meshName); // HIRO hash key
       utstring_printf(meshName, "%s_%zu", utstring_body(assetInput->sourceAssetName), primIdx);
       data_assets_insert_primitive_int(assets, utstring_body(meshName), "topology",
                                        primitive->topology);
@@ -71,11 +71,11 @@ void write_meshes_to_assets(data_assets *assets, asset_pipeline_input *assetInpu
       data_assets_insert_primitive_blob(
           assets, utstring_body(meshName), "vertices", utarray_front(primitive->vertexStream),
           primitive->vertexStream->icd.sz * utarray_len(primitive->vertexStream));
-      // HIRO vertex attributes
+      // HIRO split vertex into attributes
     }
+    // HIRO add actual scene
     utstring_free(meshName);
   }
-  //  HIRO parse scene
   vulkan_scene_data_destroy(data);
 }
 

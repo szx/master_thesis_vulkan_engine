@@ -22,6 +22,7 @@ void data_db_destroy(data_db *db) {
   do {                                                                                             \
     sqlite3_stmt *_stmt;                                                                           \
     char *_sql = query;                                                                            \
+    log_debug("SQLITE_PREPARE(%s)", query);                                                        \
     int _rc = sqlite3_prepare_v2(db->db, _sql, -1, &_stmt, NULL);                                  \
     if (_rc != SQLITE_OK) {                                                                        \
       panic("database error (prepare): %s", sqlite3_errmsg(db->db));                               \
@@ -42,6 +43,7 @@ void data_db_destroy(data_db *db) {
   {                                                                                                \
     utstring_renew(sql);                                                                           \
     utstring_printf(sql, query, __VA_ARGS__);                                                      \
+    log_debug("SQLITE_EXEC(%s)", sql);                                                             \
     int rc = sqlite3_exec(db->db, utstring_body(sql), NULL, NULL, NULL);                           \
     if (rc != SQLITE_OK) {                                                                         \
       panic("database error (exec): %s", sqlite3_errmsg(db->db));                                  \
@@ -72,14 +74,18 @@ UT_string *data_db_get_str(data_db *db, char *key) {
 
 int data_db_insert_int(data_db *db, char *table, char *key, char *column, int value) {
   static UT_string *sql = NULL;
-  SQLITE_EXEC("INSERT OR REPLACE INTO %s (key, %s) VALUES(\"%s\", %d);", table, column, key, value);
+  // UPSERT (UPDATE + INSERT): Insert if key doesn't exist, otherwise update.
+  SQLITE_EXEC(
+      "INSERT INTO %s (key, %s) VALUES(\"%s\", %d) ON CONFLICT (key) DO UPDATE SET %s = %d;", table,
+      column, key, value, column, value);
   return value;
 }
 
-UT_string *data_db_insert_str(data_db *db, char *table, char *key, UT_string *value) {
+UT_string *data_db_insert_str(data_db *db, char *table, char *column, char *key, UT_string *value) {
   static UT_string *sql = NULL;
-  SQLITE_EXEC("INSERT OR REPLACE INTO %s VALUES(\"%s\", \"%s\");", table, key,
-              utstring_body(value));
+  SQLITE_EXEC(
+      "INSERT INTO %s (key, %s) VALUES(\"%s\", \"%s\") ON CONFLICT (key) DO UPDATE SET %s = %s;",
+      table, column, key, utstring_body(value), column, utstring_body(value));
   return value;
 }
 
@@ -87,9 +93,12 @@ void data_db_insert_blob(data_db *db, char *table, char *key, char *column, void
                          size_t size) {
   UT_string *query;
   utstring_new(query);
-  utstring_printf(query, "UPDATE %s SET %s = ? WHERE key = \"%s\";", table, column, key);
+  utstring_printf(
+      query, "INSERT INTO %s (key, %s) VALUES (\"%s\", ?) ON CONFLICT (key) DO UPDATE SET %s = ?;",
+      table, column, key, column);
   SQLITE_PREPARE(utstring_body(query));
   sqlite3_bind_blob(_stmt, 1, value, size, NULL);
+  sqlite3_bind_blob(_stmt, 2, value, size, NULL);
   SQLITE_STEP(SQLITE_DONE);
   SQLITE_FINALIZE();
   utstring_free(query);

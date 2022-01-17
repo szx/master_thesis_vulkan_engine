@@ -22,7 +22,7 @@ UT_string *data_db_get_str(data_db *db, char *key);
 int data_db_insert_int(data_db *db, char *table, char *key, char *column, int value);
 
 /// Returns inserted string value for a text key.
-UT_string *data_db_insert_str(data_db *db, char *table, char *key, UT_string *value);
+UT_string *data_db_insert_str(data_db *db, char *table, char *key, char *column, UT_string *value);
 
 /// Inserts blob for a text key.
 void data_db_insert_blob(data_db *db, char *table, char *key, char *column, void *value,
