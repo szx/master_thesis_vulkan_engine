@@ -4,6 +4,7 @@ data_db *data_db_create(UT_string *path) {
   data_db *db = core_alloc(sizeof(data_db));
   utstring_new(db->path);
   utstring_concat(db->path, path);
+  log_debug("opening SQLite database '%s'", utstring_body(db->path));
   int rc = sqlite3_open(utstring_body(db->path), &db->db);
   if (rc != SQLITE_OK) {
     panic("database error (1): %s", sqlite3_errmsg(db->db));
@@ -69,9 +70,9 @@ UT_string *data_db_get_str(data_db *db, char *key) {
   return value;
 }
 
-int data_db_insert_int(data_db *db, char *table, char *key, int value) {
+int data_db_insert_int(data_db *db, char *table, char *key, char *column, int value) {
   static UT_string *sql = NULL;
-  SQLITE_EXEC("INSERT OR REPLACE INTO %s VALUES(\"%s\", %d);", table, key, value);
+  SQLITE_EXEC("INSERT OR REPLACE INTO %s (key, %s) VALUES(\"%s\", %d);", table, column, key, value);
   return value;
 }
 
@@ -88,8 +89,9 @@ void data_db_create_key_value_table_for_text(data_db *db, char *table) {
   SQLITE_EXEC("CREATE TABLE %s(key TEXT PRIMARY KEY, value TEXT);", table);
 }
 
-void data_db_create_key_value_table_for_blobs(data_db *db, char *table) {
+void data_db_create_key_value_table_for_multiple_values(data_db *db, char *table,
+                                                        const char *valueNames) {
   static UT_string *sql = NULL;
   SQLITE_EXEC("DROP TABLE IF EXISTS %s;", table);
-  SQLITE_EXEC("CREATE TABLE %s(key TEXT PRIMARY KEY, value BLOB);", table);
+  SQLITE_EXEC("CREATE TABLE %s(key TEXT PRIMARY KEY, %s);", table, valueNames);
 }

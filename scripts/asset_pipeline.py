@@ -3,6 +3,14 @@ from utils import *
 from globals import *
 
 
+def run_asset_pipeline(asset_pipeline_bin, source_asset_type, args):
+    print(f"running asset_pipeline for '{source_asset_type}' '{args}'")
+    output, error = execute_command(f'{asset_pipeline_bin} {source_asset_type} {args}')
+    if error:
+        print("error in asset pipeline:", output)
+        sys.exit(1)
+
+
 def get_gltf_files(assets_path):
     gltf_names, gltf_paths = [], []
     for gltf_path in assets_path.glob('**/*.gltf'):
@@ -18,13 +26,13 @@ def main(bin_path):
     gltf_names, gltf_paths = get_gltf_files(assets_path)
     print(gltf_names, gltf_paths)
     asset_pipeline_bin_path = bin_path / "asset_pipeline"
-    print("running asset_pipeline executable")
-    gltf_count = len(gltf_names)
+
+    run_asset_pipeline(asset_pipeline_bin_path, "empty_assets", '')
+
     gltf_paths = [f'"{str(x)}"' for x in gltf_paths]
-    args = f'{gltf_count} {" ".join(gltf_names)} {" ".join(gltf_paths)}'
-    output, error = execute_command(f'{asset_pipeline_bin_path} {args}')
-    if error:
-        sys.exit(1)
+    for gltf_name, gltf_path in zip(gltf_names, gltf_paths):
+        args = f'{gltf_name} {gltf_path}'
+        run_asset_pipeline(asset_pipeline_bin_path, "gltf", f'{gltf_name} {gltf_path}')
     sys.exit(1)
 
 

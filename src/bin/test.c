@@ -87,7 +87,7 @@ TEST database_loading() {
 
 TEST database_create_key_value_table() {
   data_assets *assets = data_assets_create();
-  data_db_create_key_value_table_for_blobs(assets->db, "strings");
+  data_db_create_key_value_table_for_multiple_values(assets->db, "strings", "value BLOB");
   data_assets_destroy(assets);
   PASS();
 }

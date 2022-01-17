@@ -4,12 +4,11 @@
 #include "config.h"
 #include "db.h"
 
-// clang-format off
-#define END_OF_DATA_ASSETS_BLOB_TABLES
-#define DATA_ASSETS_BLOB_TABLES(X, ...)                                        \
-  X(mesh, __VA_ARGS__)                                                                  \
-  END_OF_DATA_ASSETS_BLOB_TABLES
-// clang-format on
+#define END_OF_DATA_ASSETS_TABLES
+#define DATA_ASSETS_TABLES(X, ...)                                                                 \
+  /*X(mesh, "primitives BLOB", __VA_ARGS__)*/                                                      \
+  X(primitive, "topology INT, indices BLOB, vertices BLOB", __VA_ARGS__)                           \
+  END_OF_DATA_ASSETS_TABLES
 
 typedef struct data_assets {
   data_db *db;     /// SQLite database file.

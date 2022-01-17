@@ -19,7 +19,7 @@ int data_db_get_int(data_db *db, char *key);
 UT_string *data_db_get_str(data_db *db, char *key);
 
 /// Returns inserted int value for a text key.
-int data_db_insert_int(data_db *db, char *table, char *key, int value);
+int data_db_insert_int(data_db *db, char *table, char *key, char *column, int value);
 
 /// Returns inserted string value for a text key.
 UT_string *data_db_insert_str(data_db *db, char *table, char *key, UT_string *value);
@@ -31,5 +31,6 @@ UT_string *data_db_insert_str(data_db *db, char *table, char *key, UT_string *va
 ///       integers in text fields.
 void data_db_create_key_value_table_for_text(data_db *db, char *table);
 
-/// Creates table with key/value (text/blob) schema.
-void data_db_create_key_value_table_for_blobs(data_db *db, char *table);
+/// Creates table with key/value (text/blobs) schema.
+void data_db_create_key_value_table_for_multiple_values(data_db *db, char *table,
+                                                        const char *valueNames);

@@ -27,7 +27,6 @@ void data_config_load(data_config *config) {
     log_error("failed to read config file '%s'", utstring_body(config->path));
     return;
   }
-  log_debug("loaded config:\n%s", utstring_body(s));
   data_config_parse(config, s);
   utstring_free(s);
 }
@@ -46,7 +45,6 @@ void data_config_save(data_config *config) {
 }
 
 void data_config_parse(data_config *config, UT_string *configStr) {
-  log_debug("parsing config");
   char *str = utstring_body(configStr);
   const char *delim = "\n\r";
   char *txt;
@@ -58,8 +56,6 @@ void data_config_parse(data_config *config, UT_string *configStr) {
       log_error("invalid config line '%s'", line);
       return;
     }
-    log_debug("config line %s", line);
-
     // parse [section]
     if (line[0] == '[') {
       section = line + 1;
@@ -90,7 +86,6 @@ void data_config_parse(data_config *config, UT_string *configStr) {
     strstrip(&value);
 
     // set config key with value
-    log_debug("key='%s' value='%s'", key, value);
 #define parse_int(_section, _key, ...)                                                             \
   if (strcmp(#_section, section) == 0 && strcmp(#_key, key) == 0)                                  \
     data_config_set_int(config, #_section, #_key, atoi(value));

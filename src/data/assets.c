@@ -22,8 +22,9 @@ void data_assets_save(data_assets *assets) {
 
 void data_assets_save_empty(data_assets *assets) {
   // recreate tables
-#define create_blob_table(table, ...) data_db_create_key_value_table_for_blobs(assets->db, #table);
-  DATA_ASSETS_BLOB_TABLES(create_blob_table, )
-#undef create_blob_table
+#define create_table(table, value_names, ...)                                                      \
+  data_db_create_key_value_table_for_multiple_values(assets->db, #table, value_names);
+  DATA_ASSETS_TABLES(create_table, )
+#undef create_table
   data_assets_save(assets);
 }

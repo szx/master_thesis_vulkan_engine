@@ -28,6 +28,38 @@
     - \[controls\]
         - enabled
 
+### Asset pipeline
+
+```mermaid
+graph TD;
+    CGI[CGI tools] --> glTF
+    glTF[glTF scene] --> SA
+    CF[INI configuration file] --> SA
+    SA[Source assets] --> AP
+    AP[Asset pipeline] --> RF
+    RF[Runtime asset] --> R
+    R[Runtime]
+```
+
+- Source assets:
+    - glTF scenes
+    - TODO: textures
+
+- Runtime assets:
+    - _config.ini_
+        - INI configuration file
+    - _data.db_
+        - SQLite asset database.
+        - Table "mesh"
+            - key TEXT
+                - TODO: hash
+            - topology INT
+            - indices BLOB
+                - only 32-bit indices
+            - vertices BLOB
+        - TODO: textures
+        - TODO: scenes
+
 ### Debugging functionality
 
 - Debug messengers using VK_EXT_debug_utils:
