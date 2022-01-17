@@ -24,6 +24,10 @@ int data_db_insert_int(data_db *db, char *table, char *key, char *column, int va
 /// Returns inserted string value for a text key.
 UT_string *data_db_insert_str(data_db *db, char *table, char *key, UT_string *value);
 
+/// Inserts blob for a text key.
+void data_db_insert_blob(data_db *db, char *table, char *key, char *column, void *value,
+                         size_t size);
+
 // TODO: Insert blob.
 
 /// Creates table with key/value (text/text) schema.

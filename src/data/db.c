@@ -20,21 +20,21 @@ void data_db_destroy(data_db *db) {
 
 #define SQLITE_PREPARE(query)                                                                      \
   do {                                                                                             \
-    sqlite3_stmt *stmt;                                                                            \
-    char *sql = query;                                                                             \
-    int rc = sqlite3_prepare_v2(db->db, sql, -1, &stmt, NULL);                                     \
-    if (rc != SQLITE_OK) {                                                                         \
+    sqlite3_stmt *_stmt;                                                                           \
+    char *_sql = query;                                                                            \
+    int _rc = sqlite3_prepare_v2(db->db, _sql, -1, &_stmt, NULL);                                  \
+    if (_rc != SQLITE_OK) {                                                                        \
       panic("database error (prepare): %s", sqlite3_errmsg(db->db));                               \
     }
 
-#define SQLITE_STEP()                                                                              \
-  rc = sqlite3_step(stmt);                                                                         \
-  if (rc != SQLITE_ROW) {                                                                          \
+#define SQLITE_STEP(expected)                                                                      \
+  _rc = sqlite3_step(_stmt);                                                                       \
+  if (_rc != expected) {                                                                           \
     panic("database error (step): %s", sqlite3_errmsg(db->db));                                    \
   }
 
 #define SQLITE_FINALIZE()                                                                          \
-  sqlite3_finalize(stmt);                                                                          \
+  sqlite3_finalize(_stmt);                                                                         \
   }                                                                                                \
   while (0)
 
@@ -51,9 +51,9 @@ void data_db_destroy(data_db *db) {
 int data_db_get_int(data_db *db, char *key) {
   int value;
   SQLITE_PREPARE("SELECT key, value FROM config WHERE key = ?;");
-  sqlite3_bind_text(stmt, 1, key, strlen(key), NULL);
-  SQLITE_STEP();
-  value = sqlite3_column_int(stmt, 1);
+  sqlite3_bind_text(_stmt, 1, key, strlen(key), NULL);
+  SQLITE_STEP(SQLITE_ROW);
+  value = sqlite3_column_int(_stmt, 1);
   SQLITE_FINALIZE();
   return value;
 }
@@ -61,9 +61,9 @@ int data_db_get_int(data_db *db, char *key) {
 UT_string *data_db_get_str(data_db *db, char *key) {
   UT_string *value;
   SQLITE_PREPARE("SELECT key, value FROM config WHERE key = ?;");
-  sqlite3_bind_text(stmt, 1, key, strlen(key), NULL);
-  SQLITE_STEP();
-  const unsigned char *result = sqlite3_column_text(stmt, 1);
+  sqlite3_bind_text(_stmt, 1, key, strlen(key), NULL);
+  SQLITE_STEP(SQLITE_ROW);
+  const unsigned char *result = sqlite3_column_text(_stmt, 1);
   utstring_new(value);
   utstring_printf(value, "%s", result);
   SQLITE_FINALIZE();
@@ -81,6 +81,18 @@ UT_string *data_db_insert_str(data_db *db, char *table, char *key, UT_string *va
   SQLITE_EXEC("INSERT OR REPLACE INTO %s VALUES(\"%s\", \"%s\");", table, key,
               utstring_body(value));
   return value;
+}
+
+void data_db_insert_blob(data_db *db, char *table, char *key, char *column, void *value,
+                         size_t size) {
+  UT_string *query;
+  utstring_new(query);
+  utstring_printf(query, "UPDATE %s SET %s = ? WHERE key = \"%s\";", table, column, key);
+  SQLITE_PREPARE(utstring_body(query));
+  sqlite3_bind_blob(_stmt, 1, value, size, NULL);
+  SQLITE_STEP(SQLITE_DONE);
+  SQLITE_FINALIZE();
+  utstring_free(query);
 }
 
 void data_db_create_key_value_table_for_text(data_db *db, char *table) {

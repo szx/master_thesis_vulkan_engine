@@ -28,3 +28,12 @@ void data_assets_save_empty(data_assets *assets) {
 #undef create_table
   data_assets_save(assets);
 }
+
+void data_assets_insert_primitive_int(data_assets *assets, char *key, char *column, int value) {
+  data_db_insert_int(assets->db, "primitive", key, column, value);
+}
+
+void data_assets_insert_primitive_blob(data_assets *assets, char *key, char *column, void *value,
+                                       size_t size) {
+  data_db_insert_blob(assets->db, "primitive", key, column, value, size);
+}

@@ -25,3 +25,10 @@ void data_assets_save(data_assets *assets);
 /// Saves empty assets database.
 /// Used by asset pipeline.
 void data_assets_save_empty(data_assets *assets);
+
+#define decl_table(table, value_names, ...)                                                        \
+  void data_assets_insert_##table##_int(data_assets *assets, char *key, char *column, int value);  \
+  void data_assets_insert_##table##_blob(data_assets *assets, char *key, char *column,             \
+                                         void *value, size_t size);
+DATA_ASSETS_TABLES(decl_table, )
+#undef decl_table
