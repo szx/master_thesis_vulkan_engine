@@ -69,7 +69,8 @@ def codegen_macros(config: ConfigParser):
     decls.append(f'\n#define END_OF_DATA_ASSET_DB_TABLES')
     decls.append(f'#define DATA_ASSET_DB_TABLES(X, ...) \\')
     for key, value in asset_db_ini.items():
-        decls.append(f'  X({key}, "{value}", __VA_ARGS__) \\')
+        key_def, _, value_defs = value.partition(",")
+        decls.append(f'  X({key}, "{key_def.strip()}", "{value_defs.strip()}", __VA_ARGS__) \\')
     decls.append(f'  END_OF_DATA_ASSET_DB_TABLES')
 
     output_strings(decls, get_output_path('macros.h'))

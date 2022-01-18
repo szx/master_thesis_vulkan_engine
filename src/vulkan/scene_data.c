@@ -17,6 +17,8 @@ void vulkan_mesh_primitive_init(vulkan_mesh_primitive *primitive, VkPrimitiveTop
   const UT_icd indexIcd = {primitive->indexStride, NULL, NULL, NULL};
   utarray_new(primitive->indexBuffer, &indexIcd);
   primitive->indexBufferOffset = ~0;
+
+  primitive->hash = 0;
 }
 
 void vulkan_mesh_primitive_deinit(vulkan_mesh_primitive *primitive) {
@@ -95,6 +97,7 @@ void vulkan_scene_data_debug_print(vulkan_scene_data *sceneData) {
           log_debug("        texCoord: %f %f\n", vertex->texCoord[0], vertex->texCoord[1]);
         }
       }
+      log_debug("    hash=%zu", primitive->hash);
     }
   }
 }
@@ -216,6 +219,17 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode) {
           (vulkan_vertex_stream_element *)utarray_eltptr(meshPrimitive.vertexStream, i);
       *outVertex = vertex;
     }
+
+    XXH64_state_t *const state = XXH64_createState();
+    assert(state != NULL);
+    const XXH64_hash_t seed = 0;
+    assert(XXH64_reset(state, seed) != XXH_ERROR);
+    assert(XXH64_update(state, utarray_front(meshPrimitive.indexBuffer),
+                        utarray_size(meshPrimitive.indexBuffer)) != XXH_ERROR);
+    assert(XXH64_update(state, utarray_front(meshPrimitive.vertexStream),
+                        utarray_size(meshPrimitive.vertexStream)) != XXH_ERROR);
+    meshPrimitive.hash = XXH64_digest(state);
+    XXH64_freeState(state);
 
     // cgltf_material* material;
     mesh.primitives.ptr[primitiveIdx] = meshPrimitive;

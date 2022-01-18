@@ -12,13 +12,14 @@ typedef struct vulkan_mesh_primitive {
   uint32_t vertexStride;       /// Calculated using vertexAttributes.
   UT_array *vertexStream;      /// vulkan_vertex_stream_element
   uint32_t vertexStreamOffset; /// Offset of vertex stream in geometry buffer.
-
   // TODO: LOD index buffers.
   uint32_t indexCount;
   vulkan_index_type indexType;
   uint32_t indexStride;       /// Calculated using indexType.
-  UT_array *indexBuffer;      /// uint32_t or uint16_t
+  UT_array *indexBuffer;      /// uint32_t
   uint32_t indexBufferOffset; /// Offset of index buffer in geometry buffer.
+
+  XXH64_hash_t hash; /// Hash, used to prevent duplicates in asset database.
 } vulkan_mesh_primitive;
 
 void vulkan_mesh_primitive_init(vulkan_mesh_primitive *primitive, VkPrimitiveTopology topology,

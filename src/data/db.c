@@ -72,47 +72,73 @@ UT_string *data_db_get_str(data_db *db, char *key) {
   return value;
 }
 
-int data_db_insert_int(data_db *db, char *table, char *key, char *column, int value) {
-  static UT_string *sql = NULL;
-  // UPSERT (UPDATE + INSERT): Insert if key doesn't exist, otherwise update.
-  SQLITE_EXEC(
-      "INSERT INTO %s (key, %s) VALUES(\"%s\", %d) ON CONFLICT (key) DO UPDATE SET %s = %d;", table,
-      column, key, value, column, value);
-  return value;
-}
-
-UT_string *data_db_insert_str(data_db *db, char *table, char *column, char *key, UT_string *value) {
-  static UT_string *sql = NULL;
-  SQLITE_EXEC(
-      "INSERT INTO %s (key, %s) VALUES(\"%s\", \"%s\") ON CONFLICT (key) DO UPDATE SET %s = %s;",
-      table, column, key, utstring_body(value), column, utstring_body(value));
-  return value;
-}
-
-void data_db_insert_blob(data_db *db, char *table, char *key, char *column, void *value,
-                         size_t size) {
+void data_db_insert_int(data_db *db, char *table, void *key, size_t keySize, char *column,
+                        int value, bool updateIfExists) {
   UT_string *query;
   utstring_new(query);
-  utstring_printf(
-      query, "INSERT INTO %s (key, %s) VALUES (\"%s\", ?) ON CONFLICT (key) DO UPDATE SET %s = ?;",
-      table, column, key, column);
+  if (updateIfExists) {
+    utstring_printf(
+        query, "INSERT INTO %s (key, %s) VALUES (?, %d) ON CONFLICT (key) DO UPDATE SET %s = %d;",
+        table, column, value, column, value);
+
+  } else {
+    utstring_printf(query, "INSERT INTO %s (key, %s) VALUES (?, %d) ON CONFLICT (key) DO NOTHING;",
+                    table, column, value);
+  }
   SQLITE_PREPARE(utstring_body(query));
-  sqlite3_bind_blob(_stmt, 1, value, size, NULL);
-  sqlite3_bind_blob(_stmt, 2, value, size, NULL);
+  sqlite3_bind_blob(_stmt, 1, key, keySize, NULL);
   SQLITE_STEP(SQLITE_DONE);
   SQLITE_FINALIZE();
   utstring_free(query);
 }
 
-void data_db_create_key_value_table_for_text(data_db *db, char *table) {
-  static UT_string *sql = NULL;
-  SQLITE_EXEC("DROP TABLE IF EXISTS %s;", table);
-  SQLITE_EXEC("CREATE TABLE %s(key TEXT PRIMARY KEY, value TEXT);", table);
+void data_db_insert_str(data_db *db, char *table, void *key, size_t keySize, char *column,
+                        UT_string *value, bool updateIfExists) {
+  UT_string *query;
+  utstring_new(query);
+  if (updateIfExists) {
+    utstring_printf(
+        query,
+        "INSERT INTO %s (key, %s) VALUES (?, \"%s\") ON CONFLICT (key) DO UPDATE SET %s = \"%s\";",
+        table, column, utstring_body(value), column, utstring_body(value));
+  } else {
+    utstring_printf(query,
+                    "INSERT INTO %s (key, %s) VALUES (?, \"%s\") ON CONFLICT (key) DO NOTHING;",
+                    table, column, utstring_body(value));
+  }
+  SQLITE_PREPARE(utstring_body(query));
+  sqlite3_bind_blob(_stmt, 1, key, keySize, NULL);
+  SQLITE_STEP(SQLITE_DONE);
+  SQLITE_FINALIZE();
+  utstring_free(query);
+}
+
+void data_db_insert_blob(data_db *db, char *table, void *key, size_t keySize, char *column,
+                         void *value, size_t size, bool updateIfExists) {
+  UT_string *query;
+  utstring_new(query);
+  if (updateIfExists) {
+    utstring_printf(
+        query, "INSERT INTO %s (key, %s) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET %s = ?;",
+        table, column, column);
+  } else {
+    utstring_printf(query, "INSERT INTO %s (key, %s) VALUES (?, ?) ON CONFLICT (key) DO NOTHING;",
+                    table, column);
+  }
+  SQLITE_PREPARE(utstring_body(query));
+  sqlite3_bind_blob(_stmt, 1, key, keySize, NULL);
+  sqlite3_bind_blob(_stmt, 2, value, size, NULL);
+  if (updateIfExists) {
+    sqlite3_bind_blob(_stmt, 3, value, size, NULL);
+  }
+  SQLITE_STEP(SQLITE_DONE);
+  SQLITE_FINALIZE();
+  utstring_free(query);
 }
 
 void data_db_create_key_value_table_for_multiple_values(data_db *db, char *table,
-                                                        const char *valueNames) {
+                                                        const char *keyDef, const char *valueDefs) {
   static UT_string *sql = NULL;
   SQLITE_EXEC("DROP TABLE IF EXISTS %s;", table);
-  SQLITE_EXEC("CREATE TABLE %s(key TEXT PRIMARY KEY, %s);", table, valueNames);
+  SQLITE_EXEC("CREATE TABLE %s(%s PRIMARY KEY, %s);", table, keyDef, valueDefs);
 }

@@ -22,5 +22,5 @@
 
 #define END_OF_DATA_ASSET_DB_TABLES
 #define DATA_ASSET_DB_TABLES(X, ...) \
-  X(primitive, "topology INT, indices BLOB, vertices BLOB, vertexAttributes INT", __VA_ARGS__) \
+  X(primitive, "key BLOB", "topology INT, indices BLOB, vertices BLOB, vertexAttributes INT", __VA_ARGS__) \
   END_OF_DATA_ASSET_DB_TABLES

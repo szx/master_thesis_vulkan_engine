@@ -28,3 +28,6 @@
 [submodule "thirdparty/meshoptimizer"]
 	path = thirdparty/meshoptimizer
 	url = https://github.com/zeux/meshoptimizer
+[submodule "thirdparty/xxHash"]
+	path = thirdparty/xxHash
+	url = https://github.com/Cyan4973/xxHash

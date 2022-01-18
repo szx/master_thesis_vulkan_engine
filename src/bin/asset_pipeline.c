@@ -48,28 +48,25 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
     vulkan_node *node = &data->nodes.ptr[nodeIdx];
     log_debug("node %zu", nodeIdx);
     glm_mat4_print(node->modelMat, stderr);
+
     vulkan_mesh *mesh = &node->mesh;
-    UT_string *meshName;
-    utstring_new(meshName);
     for (size_t primIdx = 0; primIdx < core_array_count(mesh->primitives); primIdx++) {
       vulkan_mesh_primitive *primitive = &mesh->primitives.ptr[primIdx];
       log_debug("  primitive %d: %s\n", primIdx,
                 VkPrimitiveTopology_debug_str(primitive->topology));
-      utstring_clear(meshName); // HIRO hash key
-      utstring_printf(meshName, "%s_%zu", utstring_body(assetInput->sourceAssetName), primIdx);
-      data_asset_db_insert_primitive_int(assetDb, utstring_body(meshName), "topology",
-                                         primitive->topology);
-      data_asset_db_insert_primitive_blob(
-          assetDb, utstring_body(meshName), "indices", utarray_front(primitive->indexBuffer),
-          primitive->indexBuffer->icd.sz * utarray_len(primitive->indexBuffer));
-      data_asset_db_insert_primitive_blob(
-          assetDb, utstring_body(meshName), "vertices", utarray_front(primitive->vertexStream),
-          primitive->vertexStream->icd.sz * utarray_len(primitive->vertexStream));
-      data_asset_db_insert_primitive_int(assetDb, utstring_body(meshName), "vertexAttributes",
-                                         primitive->vertexAttributes);
+      log_debug("hash: %zu", primitive->hash);
+      data_asset_db_insert_primitive_int(assetDb, &primitive->hash, sizeof(primitive->hash),
+                                         "topology", primitive->topology);
+      data_asset_db_insert_primitive_blob(assetDb, &primitive->hash, sizeof(primitive->hash),
+                                          "indices", utarray_front(primitive->indexBuffer),
+                                          utarray_size(primitive->indexBuffer));
+      data_asset_db_insert_primitive_blob(assetDb, &primitive->hash, sizeof(primitive->hash),
+                                          "vertices", utarray_front(primitive->vertexStream),
+                                          utarray_size(primitive->vertexStream));
+      data_asset_db_insert_primitive_int(assetDb, &primitive->hash, sizeof(primitive->hash),
+                                         "vertexAttributes", primitive->vertexAttributes);
     }
-    // HIRO add actual scene
-    utstring_free(meshName);
+    // HIRO add actual scene to asset database
   }
   vulkan_scene_data_destroy(data);
 }

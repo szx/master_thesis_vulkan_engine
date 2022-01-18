@@ -13,6 +13,8 @@
 
 #include "log.h"
 
+#include "xxhash.h"
+
 #include "utarray.h"
 #include "uthash.h"
 #include "utlist.h"

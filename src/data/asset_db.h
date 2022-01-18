@@ -20,10 +20,10 @@ void data_asset_db_save(data_asset_db *assetDb);
 /// Used by asset pipeline.
 void data_asset_db_save_empty(data_asset_db *assetDb);
 
-#define decl_table(table, value_names, ...)                                                        \
-  void data_asset_db_insert_##table##_int(data_asset_db *assetDb, char *key, char *column,         \
-                                          int value);                                              \
-  void data_asset_db_insert_##table##_blob(data_asset_db *assetDb, char *key, char *column,        \
-                                           void *value, size_t size);
+#define decl_table(table, key_def, value_defs, ...)                                                \
+  void data_asset_db_insert_##table##_int(data_asset_db *assetDb, void *key, size_t keySize,       \
+                                          char *column, int value);                                \
+  void data_asset_db_insert_##table##_blob(data_asset_db *assetDb, void *key, size_t keySize,      \
+                                           char *column, void *value, size_t size);
 DATA_ASSET_DB_TABLES(decl_table, )
 #undef decl_table

@@ -33,7 +33,7 @@ def main(bin_path):
     for gltf_name, gltf_path in zip(gltf_names, gltf_paths):
         args = f'{gltf_name} {gltf_path}'
         run_asset_pipeline(asset_pipeline_bin_path, "gltf", f'{gltf_name} {gltf_path}')
-    # sys.exit(1)
+    sys.exit(1)
 
 
 if __name__ == '__main__':
