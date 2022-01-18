@@ -76,12 +76,11 @@ TEST database_loading() {
   log_debug("closing\n");
   sqlite3_close(db);
 
-  data_assets *assets = data_assets_create();
-  log_debug("config.graphicsWindowWidth = %d\n", assets->config->graphicsWindowWidth);
-  log_debug("config.graphicsWindowHeight = %d\n", assets->config->graphicsWindowHeight);
-  log_debug("config.graphicsWindowTitle = %s\n",
-            utstring_body(assets->config->graphicsWindowTitle));
-  data_assets_destroy(assets);
+  data_config *config = data_config_create();
+  log_debug("config.graphicsWindowWidth = %d\n", config->graphicsWindowWidth);
+  log_debug("config.graphicsWindowHeight = %d\n", config->graphicsWindowHeight);
+  log_debug("config.graphicsWindowTitle = %s\n", utstring_body(config->graphicsWindowTitle));
+  data_config_destroy(config);
   PASS();
 }
 

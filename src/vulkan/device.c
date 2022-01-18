@@ -27,11 +27,11 @@ void vulkan_swap_chain_info_deinit(vulkan_swap_chain_info *vksInfo) {
   utarray_free(vksInfo->presentModes);
 }
 
-vulkan_device *vulkan_device_create(data_assets *assets) {
+vulkan_device *vulkan_device_create(data_config *config, data_assets *assets) {
   vulkan_device *vkd = core_alloc(sizeof(vulkan_device));
   vulkan_swap_chain_info_init(&vkd->swapChainInfo);
-  create_window(vkd, assets);
-  create_instance(vkd, assets);
+  create_window(vkd, config, assets);
+  create_instance(vkd, config, assets);
   create_debug_utils(vkd);
   create_surface(vkd);
   pick_physical_device(vkd);
@@ -69,16 +69,15 @@ void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, in
 
 void glfw_mouse_callback(GLFWwindow *window, double xPos, double yPos) {}
 
-void create_window(vulkan_device *vkd, data_assets *assets) {
+void create_window(vulkan_device *vkd, data_config *config, data_assets *assets) {
   log_info("create_window");
   verify(glfwInit() == GLFW_TRUE);
   verify(glfwVulkanSupported() == GLFW_TRUE);
   glfwDefaultWindowHints();
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-  verify(assets->config->graphicsWindowWidth > 0 && assets->config->graphicsWindowHeight > 0);
-  vkd->window =
-      glfwCreateWindow(assets->config->graphicsWindowWidth, assets->config->graphicsWindowHeight,
-                       utstring_body(assets->config->graphicsWindowTitle), NULL, NULL);
+  verify(config->graphicsWindowWidth > 0 && config->graphicsWindowHeight > 0);
+  vkd->window = glfwCreateWindow(config->graphicsWindowWidth, config->graphicsWindowHeight,
+                                 utstring_body(config->graphicsWindowTitle), NULL, NULL);
   glfwSetWindowUserPointer(vkd->window, vkd);
   glfwSetFramebufferSizeCallback(vkd->window, glfw_framebuffer_resize_callback);
   glfwSetKeyCallback(vkd->window, glfw_key_callback);
@@ -122,16 +121,16 @@ bool check_validation_layer_support(vulkan_device *vkd) {
   return true;
 }
 
-void create_instance(vulkan_device *vkd, data_assets *assets) {
+void create_instance(vulkan_device *vkd, data_config *config, data_assets *assets) {
   if (validation_layers_enabled() && !check_validation_layer_support(vkd)) {
     panic("validation layers requested, but not available!");
   }
 
   VkApplicationInfo appInfo = {0};
   appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-  appInfo.pApplicationName = utstring_body(assets->config->graphicsWindowTitle);
+  appInfo.pApplicationName = utstring_body(config->graphicsWindowTitle);
   appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-  appInfo.pEngineName = utstring_body(assets->config->graphicsWindowTitle);
+  appInfo.pEngineName = utstring_body(config->graphicsWindowTitle);
   appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
   appInfo.apiVersion = VK_API_VERSION_1_2;
 

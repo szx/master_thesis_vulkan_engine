@@ -13,8 +13,6 @@
 typedef struct data_assets {
   data_db *db;     /// SQLite database file.
   UT_string *path; /// SQLite database filepath.
-  /* config */
-  data_config *config;
   // TODO: Fetching mesh blobs to CPU.
 } data_assets;
 

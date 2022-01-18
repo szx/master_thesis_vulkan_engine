@@ -36,6 +36,7 @@ def codegen_macros(config: ConfigParser):
     decls = ['#pragma once']
     defs = ['#include "macros.h"', '#include "../core/platform.h"']
 
+    # config.h #
     decls.append(f'\n#define END_OF_DATA_CONFIG_SECTION')
     decls.append(f'#define DATA_CONFIG_SECTIONS(X, ...) \\')
     for section in config_ini.keys():

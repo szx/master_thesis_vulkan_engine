@@ -4,9 +4,10 @@
 
 int main(int argc, char *argv[]) {
   platform_create();
+  data_config *config = data_config_create();
   data_assets *assets = data_assets_create();
   vulkan_render_context rctx;
-  vulkan_render_context_init(&rctx, assets, "triangles");
+  vulkan_render_context_init(&rctx, config, assets, "triangles");
   vulkan_render_context_update_data(&rctx);
   vulkan_render_context_send_to_device(&rctx);
 
@@ -32,6 +33,7 @@ int main(int argc, char *argv[]) {
 
   vulkan_render_context_deinit(&rctx);
   data_assets_destroy(assets);
+  data_config_destroy(config);
   platform_destroy();
   return 0;
 }
