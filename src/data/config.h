@@ -4,18 +4,7 @@
 
 #pragma once
 
-// NOTE: Further config key definitions should be added here.
-static const char *configSections[2] = {"graphics", "controls"};
-#define END_OF_DATA_CONFIG_INT_KEYS
-#define DATA_CONFIG_INT_KEYS(X, ...)                                                               \
-  X(graphics, WindowWidth, __VA_ARGS__)                                                            \
-  X(graphics, WindowHeight, __VA_ARGS__)                                                           \
-  X(controls, Enabled, __VA_ARGS__)                                                                \
-  END_OF_DATA_CONFIG_INT_KEYS
-#define END_OF_DATA_CONFIG_STR_KEYS
-#define DATA_CONFIG_STR_KEYS(X, ...)                                                               \
-  X(graphics, WindowTitle, __VA_ARGS__)                                                            \
-  END_OF_DATA_CONFIG_STR_KEYS
+#include "../codegen/macros.h"
 
 /// Key-value config.
 /// It corresponds to multiple sections of INI file.
@@ -43,8 +32,10 @@ void data_config_save(data_config *config);
 void data_config_parse(data_config *config, UT_string *configStr);
 /// Returns default config string representation.
 UT_string *data_config_get_config_str(data_config *config);
-/// Sets int value for a config key.
+
 void data_config_set_int(data_config *config, const char *section, const char *key, int value);
-/// Sets copied string value for a config key.
 void data_config_set_str(data_config *config, const char *section, const char *key,
                          const char *value);
+void data_config_set_default_int(data_config *config, const char *section, const char *key);
+void data_config_set_default_str(data_config *config, const char *section, const char *key);
+void data_config_set_default_values(data_config *config);

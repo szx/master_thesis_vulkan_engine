@@ -107,6 +107,13 @@ UT_string *data_config_get_config_str(data_config *config) {
   UT_string *s;
   utstring_new(s);
 
+#define section_num(_section, ...) +1
+#define section_str(_section, ...) #_section,
+  static const char *configSections[0 DATA_CONFIG_SECTIONS(section_num, )] = {
+      DATA_CONFIG_SECTIONS(section_str, )};
+#undef section_str
+#undef section_num
+
   for (size_t i = 0; i < array_size(configSections); i++) {
     const char *section = configSections[i];
     utstring_printf(s, "[%s]\n", section);
@@ -149,4 +156,38 @@ void data_config_set_str(data_config *config, const char *section, const char *k
   DATA_CONFIG_STR_KEYS(parse_str, )
 #undef parse_str
   log_error("tried to set value '%s' for string config key '%s' '%s'", value, section, key);
+}
+
+void data_config_set_default_int(data_config *config, const char *section, const char *key) {
+#define parse_int(_section, _key, _default, ...)                                                   \
+  if (strcmp(#_section, section) == 0 && strcmp(#_key, key) == 0) {                                \
+    config->_section##_key = _default;                                                             \
+    return;                                                                                        \
+  }
+  DATA_CONFIG_INT_KEYS(parse_int, )
+#undef parse_int
+  log_warn("tried to set default value for int config key '%s", key);
+}
+void data_config_set_default_str(data_config *config, const char *section, const char *key) {
+#define parse_str(_section, _key, _default, ...)                                                   \
+  if (strcmp(#_section, section) == 0 && strcmp(#_key, key) == 0) {                                \
+    utstring_clear(config->_section##_key);                                                        \
+    utstring_printf(config->_section##_key, "%s", _default);                                       \
+    return;                                                                                        \
+  }
+  DATA_CONFIG_STR_KEYS(parse_str, )
+#undef parse_str
+  log_error("tried to set default value for string config key '%s' '%s'", section, key);
+}
+
+void data_config_set_default_values(data_config *config) {
+#define set_int(_section, _key, _default, ...) config->_section##_key = _default;
+  DATA_CONFIG_INT_KEYS(set_int, )
+#undef set_int
+#define set_str(_section, _key, _default, ...)                                                     \
+  utstring_clear(config->_section##_key);                                                          \
+  utstring_printf(config->_section##_key, "%s", _default);
+  DATA_CONFIG_STR_KEYS(set_str, )
+#undef set_str
+  config->dirty = true;
 }

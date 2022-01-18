@@ -35,13 +35,7 @@ void parse_arguments(int argc, char *argv[], asset_pipeline_input **assetInput) 
 
 void write_default_config() {
   data_config *config = data_config_create();
-
-  config->dirty = true;
-  data_config_set_int(config, "graphics", "WindowWidth", 800);
-  data_config_set_int(config, "graphics", "WindowHeight", 600);
-  data_config_set_str(config, "graphics", "WindowTitle", "cpptest");
-  data_config_set_int(config, "controls", "Enabled", 1);
-
+  data_config_set_default_values(config);
   data_config_save(config);
   data_config_destroy(config);
 }

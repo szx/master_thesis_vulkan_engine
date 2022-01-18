@@ -1,5 +1,6 @@
 from utils import *
 
+
 def global_decls_template(e):
     if isinstance(e, tuple):
         return f"  UT_string *{e[0]};"
@@ -13,7 +14,6 @@ def global_defs_template(e):
 def global_create_template(e):
     init = []
     if isinstance(e, tuple):
-        print(e)
         init.append(f'  globals.{e[0]} = get_executable_dir_file_path("", "{e[1]}");')
     return '\n'.join(init)
 

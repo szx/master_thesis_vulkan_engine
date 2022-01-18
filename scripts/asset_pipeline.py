@@ -26,13 +26,14 @@ def main(bin_path):
     print(gltf_names, gltf_paths)
     asset_pipeline_bin_path = bin_path / "asset_pipeline"
 
+    run_asset_pipeline(asset_pipeline_bin_path, "empty_config", '')
     run_asset_pipeline(asset_pipeline_bin_path, "empty_assets", '')
 
     gltf_paths = [f'"{str(x)}"' for x in gltf_paths]
     for gltf_name, gltf_path in zip(gltf_names, gltf_paths):
         args = f'{gltf_name} {gltf_path}'
         run_asset_pipeline(asset_pipeline_bin_path, "gltf", f'{gltf_name} {gltf_path}')
-    # sys.exit(1)
+    sys.exit(1)
 
 
 if __name__ == '__main__':
