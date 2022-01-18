@@ -8,8 +8,8 @@
 typedef struct vulkan_mesh_primitive {
   VkPrimitiveTopology topology;
   uint32_t vertexCount;
-  vulkan_attribute_type vertexTypes;
-  uint32_t vertexStride;       /// Calculated using vertexTypes.
+  vulkan_attribute_type vertexAttributes;
+  uint32_t vertexStride;       /// Calculated using vertexAttributes.
   UT_array *vertexStream;      /// vulkan_vertex_stream_element
   uint32_t vertexStreamOffset; /// Offset of vertex stream in geometry buffer.
 
@@ -22,7 +22,8 @@ typedef struct vulkan_mesh_primitive {
 } vulkan_mesh_primitive;
 
 void vulkan_mesh_primitive_init(vulkan_mesh_primitive *primitive, VkPrimitiveTopology topology,
-                                vulkan_attribute_type vertexTypes, vulkan_index_type indexType);
+                                vulkan_attribute_type vertexAttributes,
+                                vulkan_index_type indexType);
 void vulkan_mesh_primitive_deinit(vulkan_mesh_primitive *primitive);
 
 typedef struct vulkan_mesh {

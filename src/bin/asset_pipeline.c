@@ -71,7 +71,8 @@ void write_meshes_to_assets(data_assets *assets, asset_pipeline_input *assetInpu
       data_assets_insert_primitive_blob(
           assets, utstring_body(meshName), "vertices", utarray_front(primitive->vertexStream),
           primitive->vertexStream->icd.sz * utarray_len(primitive->vertexStream));
-      // HIRO split vertex into attributes
+      data_assets_insert_primitive_int(assets, utstring_body(meshName), "vertexAttributes",
+                                       primitive->vertexAttributes);
     }
     // HIRO add actual scene
     utstring_free(meshName);

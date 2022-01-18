@@ -7,7 +7,7 @@
 #define END_OF_DATA_ASSETS_TABLES
 #define DATA_ASSETS_TABLES(X, ...)                                                                 \
   /*X(mesh, "primitives BLOB", __VA_ARGS__)*/                                                      \
-  X(primitive, "topology INT, indices BLOB, vertices BLOB", __VA_ARGS__)                           \
+  X(primitive, "topology INT, indices BLOB, vertices BLOB, vertexAttributes INT", __VA_ARGS__)     \
   END_OF_DATA_ASSETS_TABLES
 
 typedef struct data_assets {

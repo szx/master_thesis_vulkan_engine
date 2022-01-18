@@ -3,10 +3,12 @@ import sys
 from pathlib import Path
 import subprocess
 import shlex
+from configparser import ConfigParser, ExtendedInterpolation
 
 script_path = Path(os.path.realpath(__file__))
 root_path = script_path.parents[1]
 src_path = root_path / 'src'
+config_path = root_path / 'scripts' / 'config.txt'
 
 
 def get_header_paths():
@@ -38,3 +40,10 @@ def execute_command(command):
     process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE)
     output, error = process.communicate()
     return output, error
+
+
+def parse_config():
+    config = ConfigParser(interpolation=ExtendedInterpolation())
+    config.optionxform = lambda value: value
+    config.read(config_path)
+    return config

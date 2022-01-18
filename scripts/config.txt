@@ -1,0 +1,4 @@
+[GLOBALS]
+assetsDirname = assets
+assetsDatabaseFilepath = ${assetsDirname}/data.db
+assetsConfigFilepath =${assetsDirname}/config.ini

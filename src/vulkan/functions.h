@@ -82,7 +82,7 @@ uint32_t find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
                           VkMemoryPropertyFlags properties);
 VkFormat find_depth_format(vulkan_device *vkd);
 
-uint32_t vertex_types_to_vertex_stride(vulkan_attribute_type vertexTypes);
+uint32_t vertex_types_to_vertex_stride(vulkan_attribute_type vertexAttributes);
 uint32_t index_type_to_index_stride(vulkan_index_type indexType);
 vulkan_index_type index_stride_to_index_type(uint32_t indexStride);
 VkIndexType stride_to_index_format(uint32_t indexStride);

@@ -43,7 +43,7 @@ void data_db_destroy(data_db *db) {
   {                                                                                                \
     utstring_renew(sql);                                                                           \
     utstring_printf(sql, query, __VA_ARGS__);                                                      \
-    log_debug("SQLITE_EXEC(%s)", sql);                                                             \
+    log_debug("SQLITE_EXEC(%s)", utstring_body(sql));                                              \
     int rc = sqlite3_exec(db->db, utstring_body(sql), NULL, NULL, NULL);                           \
     if (rc != SQLITE_OK) {                                                                         \
       panic("database error (exec): %s", sqlite3_errmsg(db->db));                                  \

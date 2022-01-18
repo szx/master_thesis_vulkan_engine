@@ -2,7 +2,7 @@
 
 data_assets *data_assets_create() {
   data_assets *assets = core_alloc(sizeof(data_assets));
-  assets->path = globals.assetsFilePath;
+  assets->path = globals.assetsDatabaseFilepath;
   assets->db = data_db_create(assets->path);
   assets->config = data_config_create();
   return assets;

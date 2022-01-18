@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 from utils import *
-from globals import *
-
 
 def run_asset_pipeline(asset_pipeline_bin, source_asset_type, args):
     print(f"running asset_pipeline for '{source_asset_type}' '{args}'")
@@ -22,7 +20,8 @@ def get_gltf_files(assets_path):
 
 
 def main(bin_path):
-    assets_path = bin_path / assets_dirname
+    config = parse_config()
+    assets_path = bin_path / config['GLOBALS']['assetsDirname']
     gltf_names, gltf_paths = get_gltf_files(assets_path)
     print(gltf_names, gltf_paths)
     asset_pipeline_bin_path = bin_path / "asset_pipeline"
@@ -33,7 +32,7 @@ def main(bin_path):
     for gltf_name, gltf_path in zip(gltf_names, gltf_paths):
         args = f'{gltf_name} {gltf_path}'
         run_asset_pipeline(asset_pipeline_bin_path, "gltf", f'{gltf_name} {gltf_path}')
-    sys.exit(1)
+    # sys.exit(1)
 
 
 if __name__ == '__main__':

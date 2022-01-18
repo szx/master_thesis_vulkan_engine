@@ -4,10 +4,12 @@
 #include "../core/platform.h"
 globals_ globals;
 void globals_create() {
-  globals.assetsFilePath = get_executable_dir_file_path("assets", "data.db");
-  globals.configFilePath = get_executable_dir_file_path("assets", "config.ini");
+  globals.assetsDirname = get_executable_dir_file_path("", "assets");
+  globals.assetsDatabaseFilepath = get_executable_dir_file_path("", "assets/data.db");
+  globals.assetsConfigFilepath = get_executable_dir_file_path("", "assets/config.ini");
 }
 void globals_destroy() {
-  utstring_free(globals.assetsFilePath);
-  utstring_free(globals.configFilePath);
+  utstring_free(globals.assetsDirname);
+  utstring_free(globals.assetsDatabaseFilepath);
+  utstring_free(globals.assetsConfigFilepath);
 }

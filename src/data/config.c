@@ -2,7 +2,7 @@
 
 data_config *data_config_create() {
   data_config *config = core_alloc(sizeof(data_config));
-  config->path = globals.configFilePath;
+  config->path = globals.assetsConfigFilepath;
 #define alloc_int(_section, _key, ...) config->_section##_key = 0;
 #define alloc_str(_section, _key, ...) utstring_new(config->_section##_key);
   DATA_CONFIG_INT_KEYS(alloc_int, )

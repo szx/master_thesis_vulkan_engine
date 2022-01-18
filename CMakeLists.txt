@@ -133,7 +133,10 @@ foreach (C_CODEGEN_HEADER_PATH ${C_CODEGEN_HEADERS})
 endforeach ()
 
 # add python codegen
-file(GLOB_RECURSE PYTHON_CODEGEN_SCRIPTS "${SCRIPTS_PATH}/codegen_*.py")
+file(GLOB_RECURSE PYTHON_CODEGEN_SCRIPTS
+        "${SCRIPTS_PATH}/codegen*.py"
+        "${SCRIPTS_PATH}/utils.py"
+        "${SCRIPTS_PATH}/config.txt")
 add_custom_command(
         OUTPUT ${C_CODEGEN_HEADERS}
         DEPENDS ${PYTHON_CODEGEN_SCRIPTS} ${C_HEADERS}

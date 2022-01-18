@@ -1,11 +1,4 @@
 from utils import *
-from globals import *
-
-global_paths = [
-    ("assetsFilePath", (assets_dirname, assets_filename)),
-    ("configFilePath", (assets_dirname, config_filename))
-]
-
 
 def global_decls_template(e):
     if isinstance(e, tuple):
@@ -20,7 +13,8 @@ def global_defs_template(e):
 def global_create_template(e):
     init = []
     if isinstance(e, tuple):
-        init.append(f'  globals.{e[0]} = get_executable_dir_file_path("{e[1][0]}", "{e[1][1]}");')
+        print(e)
+        init.append(f'  globals.{e[0]} = get_executable_dir_file_path("", "{e[1]}");')
     return '\n'.join(init)
 
 
@@ -31,21 +25,23 @@ def global_destroy_template(e):
     return '\n'.join(init)
 
 
-def codegen_globals():
+def codegen_globals(config: ConfigParser):
+    global_config = [(key, config['GLOBALS'][key]) for key in config['GLOBALS']]
+
     decls = ['#pragma once', 'void globals_create();', 'void globals_destroy();']
     defs = ['#include "globals.h"', '#include "../core/platform.h"']
 
     decls.append('typedef struct globals_ {')
-    decls.extend(generate_strings(global_paths, global_decls_template))
+    decls.extend(generate_strings(global_config, global_decls_template))
     decls.append('} globals_;')
     decls.append('extern globals_ globals;')
 
     defs.append('globals_ globals;')
     defs.append('void globals_create() {')
-    defs.extend(generate_strings(global_paths, global_create_template))
+    defs.extend(generate_strings(global_config, global_create_template))
     defs.append('}')
     defs.append('void globals_destroy() {')
-    defs.extend(generate_strings(global_paths, global_destroy_template))
+    defs.extend(generate_strings(global_config, global_destroy_template))
     defs.append('}')
 
     output_strings(decls, get_output_path('globals.h'))

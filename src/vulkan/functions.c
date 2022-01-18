@@ -116,24 +116,24 @@ uint32_t find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
 
 VkFormat find_depth_format(vulkan_device *vkd) { return VK_FORMAT_R32_UINT; }
 
-uint32_t vertex_types_to_vertex_stride(vulkan_attribute_type vertexTypes) {
-  if ((vertexTypes & TexCoordAttribute) != 0) {
+uint32_t vertex_types_to_vertex_stride(vulkan_attribute_type vertexAttributes) {
+  if ((vertexAttributes & TexCoordAttribute) != 0) {
     return offsetof(vulkan_vertex_stream_element, texCoord) +
            member_size(vulkan_vertex_stream_element, texCoord);
   }
-  if ((vertexTypes & ColorAttribute) != 0) {
+  if ((vertexAttributes & ColorAttribute) != 0) {
     return offsetof(vulkan_vertex_stream_element, color) +
            member_size(vulkan_vertex_stream_element, color);
   }
-  if ((vertexTypes & NormalAttribute) != 0) {
+  if ((vertexAttributes & NormalAttribute) != 0) {
     return offsetof(vulkan_vertex_stream_element, normal) +
            member_size(vulkan_vertex_stream_element, normal);
   }
-  if ((vertexTypes & PositionAttribute) != 0) {
+  if ((vertexAttributes & PositionAttribute) != 0) {
     return offsetof(vulkan_vertex_stream_element, position) +
            member_size(vulkan_vertex_stream_element, position);
   }
-  panic("unsupported vertex attribute %d", vertexTypes);
+  panic("unsupported vertex attribute %d", vertexAttributes);
   return 0; // TODO: Unreachable.
 }
 
