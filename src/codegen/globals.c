@@ -5,11 +5,11 @@
 globals_ globals;
 void globals_create() {
   globals.assetsDirname = get_executable_dir_file_path("", "assets");
-  globals.assetsDatabaseFilepath = get_executable_dir_file_path("", "assets/data.db");
-  globals.assetsConfigFilepath = get_executable_dir_file_path("", "assets/config.ini");
+  globals.assetDatabaseFilepath = get_executable_dir_file_path("", "assets/data.db");
+  globals.assetConfigFilepath = get_executable_dir_file_path("", "assets/config.ini");
 }
 void globals_destroy() {
   utstring_free(globals.assetsDirname);
-  utstring_free(globals.assetsDatabaseFilepath);
-  utstring_free(globals.assetsConfigFilepath);
+  utstring_free(globals.assetDatabaseFilepath);
+  utstring_free(globals.assetConfigFilepath);
 }

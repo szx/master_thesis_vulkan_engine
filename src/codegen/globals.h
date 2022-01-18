@@ -5,7 +5,7 @@ void globals_create();
 void globals_destroy();
 typedef struct globals_ {
   UT_string *assetsDirname;
-  UT_string *assetsDatabaseFilepath;
-  UT_string *assetsConfigFilepath;
+  UT_string *assetDatabaseFilepath;
+  UT_string *assetConfigFilepath;
 } globals_;
 extern globals_ globals;

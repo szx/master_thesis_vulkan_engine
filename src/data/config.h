@@ -5,6 +5,7 @@
 #pragma once
 
 #include "../codegen/macros.h"
+#include "../core/platform.h"
 
 /// Key-value config.
 /// It corresponds to multiple sections of INI file.

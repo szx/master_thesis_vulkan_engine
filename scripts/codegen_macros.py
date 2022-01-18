@@ -4,7 +4,7 @@ Generates X-macros used by INI config parser and SQLite asset database.
 from utils import *
 
 
-def get_ini_config_by_section(config, name):
+def get_config(config, name, split_keys=False):
     def parse_value(v):
         v = v.strip('"')
         try:
@@ -13,9 +13,14 @@ def get_ini_config_by_section(config, name):
             pass
         return v
 
-    ini_config = [(key.split('.'), config[name][key]) for key in config[name]]
-    sections = set([e[0][0] for e in ini_config])
-    ini_config = {section: {k[1]: parse_value(v) for (k, v) in ini_config if k[0] == section} for section in sections}
+    if split_keys:
+        ini_config = [(key.split('.'), config[name][key]) for key in config[name]]
+        sections = set([e[0][0] for e in ini_config])
+        ini_config = {section: {k[1]: parse_value(v) for (k, v) in ini_config if k[0] == section} for section in
+                      sections}
+    else:
+        ini_config = [(key, parse_value(config[name][key])) for key in config[name]]
+        ini_config = dict(ini_config)
     return ini_config
 
 
@@ -31,12 +36,12 @@ def macros_items_template(e):
 
 
 def codegen_macros(config: ConfigParser):
-    config_ini = get_ini_config_by_section(config, 'ASSET.CONFIG')
-
     decls = ['#pragma once']
     defs = ['#include "macros.h"', '#include "../core/platform.h"']
 
-    # config.h #
+    # config.h
+    config_ini = get_config(config, 'ASSET.CONFIG', split_keys=True)
+
     decls.append(f'\n#define END_OF_DATA_CONFIG_SECTION')
     decls.append(f'#define DATA_CONFIG_SECTIONS(X, ...) \\')
     for section in config_ini.keys():
@@ -59,7 +64,13 @@ def codegen_macros(config: ConfigParser):
                 decls.append(f'  X({section}, {key}, "{value}", __VA_ARGS__) \\')
     decls.append(f'  END_OF_DATA_CONFIG_STR_KEYS')
 
-    # HIRO assets.h
+    # asset_db.h
+    asset_db_ini = get_config(config, 'ASSET.DB')
+    decls.append(f'\n#define END_OF_DATA_ASSET_DB_TABLES')
+    decls.append(f'#define DATA_ASSET_DB_TABLES(X, ...) \\')
+    for key, value in asset_db_ini.items():
+        decls.append(f'  X({key}, "{value}", __VA_ARGS__) \\')
+    decls.append(f'  END_OF_DATA_ASSET_DB_TABLES')
 
     output_strings(decls, get_output_path('macros.h'))
     output_strings(defs, get_output_path('macros.c'))

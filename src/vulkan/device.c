@@ -27,11 +27,11 @@ void vulkan_swap_chain_info_deinit(vulkan_swap_chain_info *vksInfo) {
   utarray_free(vksInfo->presentModes);
 }
 
-vulkan_device *vulkan_device_create(data_config *config, data_assets *assets) {
+vulkan_device *vulkan_device_create(data_config *config, data_asset_db *assetDb) {
   vulkan_device *vkd = core_alloc(sizeof(vulkan_device));
   vulkan_swap_chain_info_init(&vkd->swapChainInfo);
-  create_window(vkd, config, assets);
-  create_instance(vkd, config, assets);
+  create_window(vkd, config, assetDb);
+  create_instance(vkd, config, assetDb);
   create_debug_utils(vkd);
   create_surface(vkd);
   pick_physical_device(vkd);
@@ -69,7 +69,7 @@ void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, in
 
 void glfw_mouse_callback(GLFWwindow *window, double xPos, double yPos) {}
 
-void create_window(vulkan_device *vkd, data_config *config, data_assets *assets) {
+void create_window(vulkan_device *vkd, data_config *config, data_asset_db *assetDb) {
   log_info("create_window");
   verify(glfwInit() == GLFW_TRUE);
   verify(glfwVulkanSupported() == GLFW_TRUE);
@@ -121,7 +121,7 @@ bool check_validation_layer_support(vulkan_device *vkd) {
   return true;
 }
 
-void create_instance(vulkan_device *vkd, data_config *config, data_assets *assets) {
+void create_instance(vulkan_device *vkd, data_config *config, data_asset_db *assetDb) {
   if (validation_layers_enabled() && !check_validation_layer_support(vkd)) {
     panic("validation layers requested, but not available!");
   }

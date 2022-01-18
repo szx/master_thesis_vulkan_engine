@@ -4,18 +4,23 @@
 
 #define END_OF_DATA_CONFIG_SECTION
 #define DATA_CONFIG_SECTIONS(X, ...) \
-  X(graphics, __VA_ARGS__) \
   X(controls, __VA_ARGS__) \
+  X(graphics, __VA_ARGS__) \
   END_OF_DATA_CONFIG_SECTION
 
 #define END_OF_DATA_CONFIG_INT_KEYS
 #define DATA_CONFIG_INT_KEYS(X, ...) \
+  X(controls, Enabled, 1, __VA_ARGS__) \
   X(graphics, WindowWidth, 640, __VA_ARGS__) \
   X(graphics, WindowHeight, 480, __VA_ARGS__) \
-  X(controls, Enabled, 1, __VA_ARGS__) \
   END_OF_DATA_CONFIG_INT_KEYS
 
 #define END_OF_DATA_CONFIG_STR_KEYS
 #define DATA_CONFIG_STR_KEYS(X, ...) \
   X(graphics, WindowTitle, "cpptext", __VA_ARGS__) \
   END_OF_DATA_CONFIG_STR_KEYS
+
+#define END_OF_DATA_ASSET_DB_TABLES
+#define DATA_ASSET_DB_TABLES(X, ...) \
+  X(primitive, "topology INT, indices BLOB, vertices BLOB, vertexAttributes INT", __VA_ARGS__) \
+  END_OF_DATA_ASSET_DB_TABLES

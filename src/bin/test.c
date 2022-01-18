@@ -85,9 +85,9 @@ TEST database_loading() {
 }
 
 TEST database_create_key_value_table() {
-  data_assets *assets = data_assets_create();
+  data_asset_db *assetDb = data_asset_db_create();
   data_db_create_key_value_table_for_multiple_values(assets->db, "strings", "value BLOB");
-  data_assets_destroy(assets);
+  data_asset_db_destroy(assets);
   PASS();
 }
 
@@ -100,7 +100,7 @@ SUITE(database_suite) {
 TEST gltf_loading() {
   // TODO: Files in database.
   // TODO: Loading extra files (images).
-  data_assets *assets = data_assets_create();
+  data_asset_db *assetDb = data_asset_db_create();
   vulkan_device *vkd = vulkan_device_create(assets);
   UT_string *gltfPath = get_asset_file_path("triangles", "triangles.gltf");
   // UT_string *gltfPath = get_asset_file_path("sponza", "Sponza.gltf");
@@ -109,7 +109,7 @@ TEST gltf_loading() {
   utstring_free(gltfPath);
   vulkan_scene_destroy(scene);
   vulkan_device_destroy(vkd);
-  data_assets_destroy(assets);
+  data_asset_db_destroy(assets);
   PASS();
 }
 
@@ -144,7 +144,7 @@ SUITE(platform_alloc_suite) { RUN_TEST(platform_alloc); }
 TEST shaderc_compiling() {
   UT_string *vertInputPath = get_asset_file_path("shaders", "shader.vert");
   UT_string *fragInputPath = get_asset_file_path("shaders", "shader.frag");
-  data_assets *assets = data_assets_create();
+  data_asset_db *assetDb = data_asset_db_create();
   vulkan_device *vkd = vulkan_device_create(assets);
   vulkan_shader *vertShader = vulkan_shader_create_with_path(vkd, vertInputPath);
   vulkan_shader *fragShader = vulkan_shader_create_with_path(vkd, fragInputPath);
@@ -175,7 +175,7 @@ TEST shaderc_compiling() {
   ASSERT_GT(range.size, 0);
   ASSERT((range.stageFlags | VK_SHADER_STAGE_VERTEX_BIT) != 0 ||
          (range.stageFlags | VK_SHADER_STAGE_FRAGMENT_BIT) != 0);
-  data_assets_destroy(assets);
+  data_asset_db_destroy(assets);
   vulkan_shader_destroy(vertShader);
   vulkan_shader_destroy(fragShader);
   vulkan_device_destroy(vkd);

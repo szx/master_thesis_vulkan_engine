@@ -97,7 +97,7 @@ typedef struct vulkan_render_context {
 } vulkan_render_context;
 
 void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config,
-                                data_assets *assets, char *sceneName);
+                                data_asset_db *assetDb, char *sceneName);
 void vulkan_render_context_deinit(vulkan_render_context *rctx);
 /// Recreate vulkan_render_context when swap chain is out-of-date.
 void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx);

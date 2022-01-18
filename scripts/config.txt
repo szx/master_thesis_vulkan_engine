@@ -1,10 +1,13 @@
 [GLOBALS]
 assetsDirname = assets
-assetsDatabaseFilepath = ${assetsDirname}/data.db
-assetsConfigFilepath =${assetsDirname}/config.ini
+assetDatabaseFilepath = ${assetsDirname}/data.db
+assetConfigFilepath =${assetsDirname}/config.ini
 
 [ASSET.CONFIG]
 graphics.WindowWidth = 640
 graphics.WindowHeight = 480
 graphics.WindowTitle = "cpptext"
 controls.Enabled = 1
+
+[ASSET.DB]
+primitive = "topology INT, indices BLOB, vertices BLOB, vertexAttributes INT"

@@ -40,7 +40,7 @@ void write_default_config() {
   data_config_destroy(config);
 }
 
-void write_meshes_to_assets(data_assets *assets, asset_pipeline_input *assetInput) {
+void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetInput) {
   log_info("processing gltf '%s' in '%s'", utstring_body(assetInput->sourceAssetName),
            utstring_body(assetInput->sourceAssetPath));
   vulkan_scene_data *data = vulkan_scene_data_create_with_gltf_file(assetInput->sourceAssetPath);
@@ -57,16 +57,16 @@ void write_meshes_to_assets(data_assets *assets, asset_pipeline_input *assetInpu
                 VkPrimitiveTopology_debug_str(primitive->topology));
       utstring_clear(meshName); // HIRO hash key
       utstring_printf(meshName, "%s_%zu", utstring_body(assetInput->sourceAssetName), primIdx);
-      data_assets_insert_primitive_int(assets, utstring_body(meshName), "topology",
-                                       primitive->topology);
-      data_assets_insert_primitive_blob(
-          assets, utstring_body(meshName), "indices", utarray_front(primitive->indexBuffer),
+      data_asset_db_insert_primitive_int(assetDb, utstring_body(meshName), "topology",
+                                         primitive->topology);
+      data_asset_db_insert_primitive_blob(
+          assetDb, utstring_body(meshName), "indices", utarray_front(primitive->indexBuffer),
           primitive->indexBuffer->icd.sz * utarray_len(primitive->indexBuffer));
-      data_assets_insert_primitive_blob(
-          assets, utstring_body(meshName), "vertices", utarray_front(primitive->vertexStream),
+      data_asset_db_insert_primitive_blob(
+          assetDb, utstring_body(meshName), "vertices", utarray_front(primitive->vertexStream),
           primitive->vertexStream->icd.sz * utarray_len(primitive->vertexStream));
-      data_assets_insert_primitive_int(assets, utstring_body(meshName), "vertexAttributes",
-                                       primitive->vertexAttributes);
+      data_asset_db_insert_primitive_int(assetDb, utstring_body(meshName), "vertexAttributes",
+                                         primitive->vertexAttributes);
     }
     // HIRO add actual scene
     utstring_free(meshName);
@@ -85,18 +85,18 @@ int main(int argc, char *argv[]) {
     write_default_config();
   } else if (strcmp("empty_assets", utstring_body(input->sourceAssetType)) == 0) {
     log_info("open SQLite asset database");
-    data_assets *assets = data_assets_create();
+    data_asset_db *assetDb = data_asset_db_create();
     log_info("save empty asset database");
-    data_assets_save_empty(assets);
+    data_asset_db_save_empty(assetDb);
     log_info("close SQLite asset database");
-    data_assets_destroy(assets);
+    data_asset_db_destroy(assetDb);
   } else if (strcmp("gltf", utstring_body(input->sourceAssetType)) == 0) {
     log_info("open SQLite asset database");
-    data_assets *assets = data_assets_create();
+    data_asset_db *assetDb = data_asset_db_create();
     log_info("write meshes to asset database");
-    write_meshes_to_assets(assets, input);
+    write_meshes_to_assets(assetDb, input);
     log_info("close SQLite asset database");
-    data_assets_destroy(assets);
+    data_asset_db_destroy(assetDb);
   }
   log_info("finished asset pipeline");
   asset_pipeline_input_destroy(input);

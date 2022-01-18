@@ -343,8 +343,8 @@ void create_synchronization_objects(vulkan_render_context *rctx) {
 }
 
 void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config,
-                                data_assets *assets, char *sceneName) {
-  rctx->vkd = vulkan_device_create(config, assets);
+                                data_asset_db *assetDb, char *sceneName) {
+  rctx->vkd = vulkan_device_create(config, assetDb);
   rctx->scene = NULL;
   vulkan_render_context_load_scene(rctx, sceneName);
   rctx->vks = vulkan_swap_chain_create(rctx->vkd);

@@ -84,18 +84,18 @@ typedef struct vulkan_device {
   } mouse; /// GLFW mouse input.
 } vulkan_device;
 
-vulkan_device *vulkan_device_create(data_config *config, data_assets *assets);
+vulkan_device *vulkan_device_create(data_config *config, data_asset_db *assetDb);
 void vulkan_device_destroy(vulkan_device *vkd);
 
 void glfw_framebuffer_resize_callback(GLFWwindow *window, int width, int height);
 void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 void glfw_mouse_callback(GLFWwindow *window, double xPos, double yPos);
 
-void create_window(vulkan_device *vkd, data_config *config, data_assets *assets);
+void create_window(vulkan_device *vkd, data_config *config, data_asset_db *assetDb);
 
 bool validation_layers_enabled();
 bool check_validation_layer_support(vulkan_device *vkd);
-void create_instance(vulkan_device *vkd, data_config *config, data_assets *assets);
+void create_instance(vulkan_device *vkd, data_config *config, data_asset_db *assetDb);
 void create_debug_utils(vulkan_device *vkd);
 void create_surface(vulkan_device *vkd);
 
