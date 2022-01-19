@@ -235,22 +235,13 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode) {
       }
     }
 
-    XXH64_state_t *const state = XXH64_createState();
-    assert(state != NULL);
-    const XXH64_hash_t seed = 0;
-    assert(XXH64_reset(state, seed) != XXH_ERROR);
-    assert(XXH64_update(state, utarray_front(meshPrimitive.indices),
-                        utarray_size(meshPrimitive.indices)) != XXH_ERROR);
-    assert(XXH64_update(state, utarray_front(meshPrimitive.positions),
-                        utarray_size(meshPrimitive.positions)) != XXH_ERROR);
-    assert(XXH64_update(state, utarray_front(meshPrimitive.normals),
-                        utarray_size(meshPrimitive.normals)) != XXH_ERROR);
-    assert(XXH64_update(state, utarray_front(meshPrimitive.colors),
-                        utarray_size(meshPrimitive.colors)) != XXH_ERROR);
-    assert(XXH64_update(state, utarray_front(meshPrimitive.texCoords),
-                        utarray_size(meshPrimitive.texCoords)) != XXH_ERROR);
-    meshPrimitive.hash = XXH64_digest(state);
-    XXH64_freeState(state);
+    HASH_START(state)
+#define HASH_UPDATE_FUNC(_i, _array) HASH_UPDATE(state, utarray_front(_array), utarray_size(_array))
+    MACRO_FOREACH(HASH_UPDATE_FUNC, meshPrimitive.indices, meshPrimitive.positions,
+                  meshPrimitive.normals, meshPrimitive.colors, meshPrimitive.texCoords)
+#undef HASH_UPDATE_FUNC
+    HASH_DIGEST(state, meshPrimitive.hash)
+    HASH_END(state)
 
     // cgltf_material* material;
     mesh.primitives.ptr[primitiveIdx] = meshPrimitive;

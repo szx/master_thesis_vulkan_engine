@@ -51,6 +51,7 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
     vulkan_mesh *mesh = &node->mesh;
     for (size_t primIdx = 0; primIdx < core_array_count(mesh->primitives); primIdx++) {
       vulkan_mesh_primitive *primitive = &mesh->primitives.ptr[primIdx];
+
       data_asset_db_insert_primitive_topology_int(assetDb, &primitive->hash,
                                                   sizeof(primitive->hash), primitive->topology);
       data_asset_db_insert_primitive_indices_blob(
@@ -64,6 +65,8 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
       data_asset_db_insert_primitive_tex_coords_blob(
           assetDb, &primitive->hash, sizeof(primitive->hash), utarray_blob(primitive->texCoords));
     }
+    // HIRO node hash
+
     // HIRO add actual scene to asset database
   }
   vulkan_scene_data_destroy(data);

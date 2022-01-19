@@ -17,8 +17,7 @@ typedef struct vulkan_mesh_primitive {
   vulkan_index_type indexType;
   uint32_t indexStride; /// Calculated using indexType.
   UT_array *indices;    /// uint32_t
-
-  XXH64_hash_t hash; /// Hash, used to prevent duplicates in asset database.
+  XXH64_hash_t hash;    /// Hash, used to prevent duplicates in asset database.
 } vulkan_mesh_primitive;
 
 void vulkan_mesh_primitive_init(vulkan_mesh_primitive *primitive, VkPrimitiveTopology topology,
@@ -28,6 +27,7 @@ void vulkan_mesh_primitive_deinit(vulkan_mesh_primitive *primitive);
 
 typedef struct vulkan_mesh {
   core_array(vulkan_mesh_primitive) primitives;
+  XXH64_hash_t hash; /// Hash, used to prevent duplicates in asset database.
 } vulkan_mesh;
 
 void vulkan_mesh_init(vulkan_mesh *mesh, size_t primitiveCount);

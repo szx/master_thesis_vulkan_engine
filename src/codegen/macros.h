@@ -23,14 +23,22 @@
 #define END_OF_DATA_ASSET_DB_TABLES
 #define DATA_ASSET_DB_TABLES(X, ...) \
   X(primitive, "key BLOB", "topology INT, indices BLOB, positions BLOB, normals BLOB, colors BLOB, tex_coords BLOB", __VA_ARGS__) \
+  X(mesh, "key BLOB", "primitives BLOB", __VA_ARGS__) \
+  X(node, "key BLOB", "transform BLOB, mesh BLOB", __VA_ARGS__) \
   END_OF_DATA_ASSET_DB_TABLES
 
 #define END_OF_DATA_ASSET_DB_COLUMNS
 #define DATA_ASSET_DB_COLUMNS(X, ...) \
+  X(primitive, key, blob, __VA_ARGS__) \
   X(primitive, topology, int, __VA_ARGS__) \
   X(primitive, indices, blob, __VA_ARGS__) \
   X(primitive, positions, blob, __VA_ARGS__) \
   X(primitive, normals, blob, __VA_ARGS__) \
   X(primitive, colors, blob, __VA_ARGS__) \
   X(primitive, tex_coords, blob, __VA_ARGS__) \
+  X(mesh, key, blob, __VA_ARGS__) \
+  X(mesh, primitives, blob, __VA_ARGS__) \
+  X(node, key, blob, __VA_ARGS__) \
+  X(node, transform, blob, __VA_ARGS__) \
+  X(node, mesh, blob, __VA_ARGS__) \
   END_OF_DATA_ASSET_DB_COLUMNS
