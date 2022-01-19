@@ -49,7 +49,8 @@ void vulkan_node_debug_print(vulkan_node *node);
 typedef struct vulkan_scene_data {
   core_array(vulkan_node) nodes;
   vulkan_camera *camera;
-  bool dirty; /// True if scene data updated on CPU.
+  hash_t hash; /// Hash, used to prevent duplicates in asset database.
+  bool dirty;  /// True if scene data updated on CPU.
 } vulkan_scene_data;
 
 vulkan_scene_data *vulkan_scene_data_create(size_t nodesCount);

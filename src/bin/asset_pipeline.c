@@ -43,9 +43,12 @@ void write_default_config() {
 void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetInput) {
   log_info("processing gltf '%s' in '%s'", utstring_body(assetInput->sourceAssetName),
            utstring_body(assetInput->sourceAssetPath));
-  vulkan_scene_data *data = vulkan_scene_data_create_with_gltf_file(assetInput->sourceAssetPath);
-  for (size_t nodeIdx = 0; nodeIdx < core_array_count(data->nodes); nodeIdx++) {
-    vulkan_node *node = &data->nodes.ptr[nodeIdx];
+  vulkan_scene_data *sceneData =
+      vulkan_scene_data_create_with_gltf_file(assetInput->sourceAssetPath);
+  UT_array *nodeHashes = NULL;
+  utarray_alloc(nodeHashes, sizeof(hash_t));
+  for (size_t nodeIdx = 0; nodeIdx < core_array_count(sceneData->nodes); nodeIdx++) {
+    vulkan_node *node = &sceneData->nodes.ptr[nodeIdx];
     // vulkan_node_debug_print(node);
 
     vulkan_mesh *mesh = &node->mesh;
@@ -79,11 +82,15 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
                                              (data_blob){node->modelMat, sizeof(node->modelMat)});
     data_asset_db_insert_node_mesh_blob(assetDb, &node->hash, sizeof(node->hash),
                                         (data_blob){&node->mesh.hash, sizeof(node->mesh.hash)});
+    utarray_push_back(nodeHashes, &node->hash);
     // TODO: child nodes
-
-    // HIRO add actual scene to asset database
   }
-  vulkan_scene_data_destroy(data);
+  // HIRO add actual scene to asset database
+  data_asset_db_insert_scene_nodes_blob(assetDb, &sceneData->hash, sizeof(sceneData->hash),
+                                        utarray_blob(nodeHashes));
+  // HIRO cameras
+  utarray_free(nodeHashes);
+  vulkan_scene_data_destroy(sceneData);
 }
 
 int main(int argc, char *argv[]) {

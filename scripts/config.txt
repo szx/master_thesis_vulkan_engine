@@ -13,6 +13,8 @@ controls.Enabled = 1
 # keys are hashes
 # primitives and nodes are arrays of hashes
 # transform in mat4
+# cameras is camera_init_data HIRO: ???
 primitive = "key BLOB, topology INT, indices BLOB, positions BLOB, normals BLOB, colors BLOB, tex_coords BLOB"
 mesh = "key BLOB, primitives BLOB"
 node = "key BLOB, transform BLOB, nodes BLOB, mesh BLOB"
+scene = "key BLOB, nodes BLOB, cameras BLOB"

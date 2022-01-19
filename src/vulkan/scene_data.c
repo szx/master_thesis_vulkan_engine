@@ -293,10 +293,15 @@ vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *gltfPath) 
   size_t accessorsCount = data->accessors_count;
   vulkan_scene_data *sceneData = vulkan_scene_data_create(nodesCount);
 
+  HASH_START(sceneState)
   for (size_t nodeIdx = 0; nodeIdx < nodesCount; nodeIdx++) {
     vulkan_node node = parse_cgltf_node(cgltfScene->nodes[nodeIdx]);
     sceneData->nodes.ptr[nodeIdx] = node;
+    HASH_UPDATE(sceneState, &node.hash, sizeof(node.hash))
   }
+  // HIRO cameras
+  HASH_DIGEST(sceneState, sceneData->hash)
+  HASH_END(sceneState)
   cgltf_free(data);
 
   return sceneData;
