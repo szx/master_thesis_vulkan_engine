@@ -73,7 +73,7 @@ UT_string *data_db_get_str(data_db *db, char *key) {
 }
 
 void data_db_insert_int(data_db *db, char *table, void *key, size_t keySize, char *column,
-                        int value, bool updateIfExists) {
+                        data_int value, bool updateIfExists) {
   UT_string *query;
   utstring_new(query);
   if (updateIfExists) {
@@ -93,7 +93,7 @@ void data_db_insert_int(data_db *db, char *table, void *key, size_t keySize, cha
 }
 
 void data_db_insert_str(data_db *db, char *table, void *key, size_t keySize, char *column,
-                        UT_string *value, bool updateIfExists) {
+                        data_str value, bool updateIfExists) {
   UT_string *query;
   utstring_new(query);
   if (updateIfExists) {
@@ -114,7 +114,7 @@ void data_db_insert_str(data_db *db, char *table, void *key, size_t keySize, cha
 }
 
 void data_db_insert_blob(data_db *db, char *table, void *key, size_t keySize, char *column,
-                         void *value, size_t size, bool updateIfExists) {
+                         data_blob value, bool updateIfExists) {
   UT_string *query;
   utstring_new(query);
   if (updateIfExists) {
@@ -127,9 +127,9 @@ void data_db_insert_blob(data_db *db, char *table, void *key, size_t keySize, ch
   }
   SQLITE_PREPARE(utstring_body(query));
   sqlite3_bind_blob(_stmt, 1, key, keySize, NULL);
-  sqlite3_bind_blob(_stmt, 2, value, size, NULL);
+  sqlite3_bind_blob(_stmt, 2, value.memory, value.size, NULL);
   if (updateIfExists) {
-    sqlite3_bind_blob(_stmt, 3, value, size, NULL);
+    sqlite3_bind_blob(_stmt, 3, value.memory, value.size, NULL);
   }
   SQLITE_STEP(SQLITE_DONE);
   SQLITE_FINALIZE();

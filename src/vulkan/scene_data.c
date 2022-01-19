@@ -5,25 +5,25 @@ void vulkan_mesh_primitive_init(vulkan_mesh_primitive *primitive, VkPrimitiveTop
                                 vulkan_index_type indexType) {
   primitive->topology = topology;
   primitive->vertexCount = 0;
-  primitive->vertexAttributes = vertexAttributes;
-  primitive->vertexStride = vertex_types_to_vertex_stride(primitive->vertexAttributes);
-  const UT_icd vertexIcd = {primitive->vertexStride, NULL, NULL, NULL};
-  utarray_new(primitive->vertexStream, &vertexIcd);
-  primitive->vertexStreamOffset = ~0;
+  utarray_alloc(primitive->positions, sizeof(vec3));
+  utarray_alloc(primitive->normals, sizeof(vec3));
+  utarray_alloc(primitive->colors, sizeof(vec3));
+  utarray_alloc(primitive->texCoords, sizeof(vec2));
 
   primitive->indexCount = 0;
   primitive->indexType = indexType;
   primitive->indexStride = index_type_to_index_stride(primitive->indexType);
-  const UT_icd indexIcd = {primitive->indexStride, NULL, NULL, NULL};
-  utarray_new(primitive->indexBuffer, &indexIcd);
-  primitive->indexBufferOffset = ~0;
+  utarray_alloc(primitive->indices, primitive->indexStride);
 
   primitive->hash = 0;
 }
 
 void vulkan_mesh_primitive_deinit(vulkan_mesh_primitive *primitive) {
-  utarray_free(primitive->vertexStream);
-  utarray_free(primitive->indexBuffer);
+  utarray_free(primitive->positions);
+  utarray_free(primitive->normals);
+  utarray_free(primitive->colors);
+  utarray_free(primitive->texCoords);
+  utarray_free(primitive->indices);
 }
 
 void vulkan_mesh_init(vulkan_mesh *mesh, size_t primitiveCount) {
@@ -51,6 +51,47 @@ vulkan_scene_data *vulkan_scene_data_create(size_t nodesCount) {
   return sceneData;
 }
 
+void vulkan_node_debug_print(vulkan_node *node) {
+  log_debug("node:\n");
+  glm_mat4_print(node->modelMat, stderr);
+  vulkan_mesh *mesh = &node->mesh;
+  for (size_t j = 0; j < core_array_count(mesh->primitives); j++) {
+    vulkan_mesh_primitive *primitive = &mesh->primitives.ptr[j];
+    log_debug("  primitive %d: %s\n", j, VkPrimitiveTopology_debug_str(primitive->topology));
+    log_debug("    index: %s stride=%d count=%d\n",
+              vulkan_index_type_debug_str(primitive->indexType), primitive->indexStride,
+              primitive->indexCount);
+    void *index = NULL;
+    while ((index = utarray_next(primitive->indices, index))) {
+      log_debug("      %u\n", *(uint32_t *)index);
+    }
+    log_debug("    vertices: count=%d\n", primitive->vertexCount, primitive->vertexCount);
+    uint32_t vertexIdx = 0;
+    vec3 *position = NULL;
+    while ((position = utarray_next(primitive->positions, position))) {
+      log_debug("        position %d: %f %f %f\n", vertexIdx++, (*position)[0], (*position)[1],
+                (*position)[2]);
+    }
+    vertexIdx = 0;
+    vec3 *normal = NULL;
+    while ((normal = utarray_next(primitive->normals, normal))) {
+      log_debug("        normal %d: %f %f %f\n", vertexIdx++, (*normal)[0], (*normal)[1],
+                (*normal)[2]);
+    }
+    vertexIdx = 0;
+    vec3 *color = NULL;
+    while ((color = utarray_next(primitive->colors, color))) {
+      log_debug("        color %d: %f %f %f\n", vertexIdx++, (*color)[0], (*color)[1], (*color)[2]);
+    }
+    vertexIdx = 0;
+    vec2 *texCoord = NULL;
+    while ((texCoord = utarray_next(primitive->texCoords, texCoord))) {
+      log_debug("        texCoord %d: %f %f\n", vertexIdx++, (*texCoord)[0], (*texCoord)[1]);
+    }
+    log_debug("    hash=%zu", primitive->hash);
+  }
+}
+
 void vulkan_scene_data_destroy(vulkan_scene_data *sceneData) {
   core_array_foreach(sceneData->nodes, vulkan_node * node, { vulkan_node_deinit(node); });
   core_array_dealloc(sceneData->nodes);
@@ -61,44 +102,8 @@ void vulkan_scene_data_destroy(vulkan_scene_data *sceneData) {
 void vulkan_scene_data_debug_print(vulkan_scene_data *sceneData) {
   log_debug("SCENE_DATA:\n");
   for (size_t i = 0; i < core_array_count(sceneData->nodes); i++) {
-    log_debug("node:\n");
     vulkan_node *node = &sceneData->nodes.ptr[i];
-    glm_mat4_print(node->modelMat, stderr);
-    vulkan_mesh *mesh = &node->mesh;
-    for (size_t j = 0; j < core_array_count(mesh->primitives); j++) {
-      vulkan_mesh_primitive *primitive = &mesh->primitives.ptr[j];
-      log_debug("  primitive %d: %s\n", j, VkPrimitiveTopology_debug_str(primitive->topology));
-      log_debug("    index: %s stride=%d count=%d offset=%lu\n",
-                vulkan_index_type_debug_str(primitive->indexType), primitive->indexStride,
-                primitive->indexCount, primitive->indexBufferOffset);
-      void *index = NULL;
-      while ((index = utarray_next(primitive->indexBuffer, index))) {
-        log_debug("      %u\n", *(uint32_t *)index);
-      }
-      log_debug("    vertex: stride=%d count=%d offset=%lu\n", primitive->vertexStride,
-                primitive->vertexCount, primitive->vertexStreamOffset);
-      vulkan_vertex_stream_element *vertex = NULL;
-      uint32_t vertexIdx = 0;
-      while ((vertex = utarray_next(primitive->vertexStream, vertex))) {
-        log_debug("      %d:", vertexIdx++);
-        if ((primitive->vertexAttributes & PositionAttribute) != 0) {
-          log_debug("        position: %f %f %f\n", vertex->position[0], vertex->position[1],
-                    vertex->position[2]);
-        }
-        if ((primitive->vertexAttributes & NormalAttribute) != 0) {
-          log_debug("        normal: %f %f %f\n", vertex->normal[0], vertex->normal[1],
-                    vertex->normal[2]);
-        }
-        if ((primitive->vertexAttributes & ColorAttribute) != 0) {
-          log_debug("        color: %f %f %f\n", vertex->color[0], vertex->color[1],
-                    vertex->color[2]);
-        }
-        if ((primitive->vertexAttributes & TexCoordAttribute) != 0) {
-          log_debug("        texCoord: %f %f\n", vertex->texCoord[0], vertex->texCoord[1]);
-        }
-      }
-      log_debug("    hash=%zu", primitive->hash);
-    }
+    vulkan_node_debug_print(node);
   }
 }
 
@@ -188,46 +193,62 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode) {
     vulkan_mesh_primitive_init(&meshPrimitive, topology, vertexAttributes, indexType);
     meshPrimitive.vertexCount = vertexCount;
     meshPrimitive.indexCount = indexCount;
-    utarray_resize(meshPrimitive.indexBuffer, meshPrimitive.indexCount);
+    utarray_resize(meshPrimitive.indices, meshPrimitive.indexCount);
     for (size_t i = 0; i < meshPrimitive.indexCount; i++) {
       size_t indexValue = cgltf_accessor_read_index(cgltfIndices, i);
-      void *outValue = utarray_eltptr(meshPrimitive.indexBuffer, i);
+      void *outValue = utarray_eltptr(meshPrimitive.indices, i);
       *(uint32_t *)outValue = indexValue;
     }
-
-    utarray_resize(meshPrimitive.vertexStream, meshPrimitive.vertexCount);
+    if ((vertexAttributes & PositionAttribute) != 0) {
+      utarray_resize(meshPrimitive.positions, meshPrimitive.vertexCount);
+    }
+    if ((vertexAttributes & NormalAttribute) != 0) {
+      utarray_resize(meshPrimitive.normals, meshPrimitive.vertexCount);
+    }
+    if ((vertexAttributes & ColorAttribute) != 0) {
+      utarray_resize(meshPrimitive.colors, meshPrimitive.vertexCount);
+    }
+    if ((vertexAttributes & TexCoordAttribute) != 0) {
+      utarray_resize(meshPrimitive.texCoords, meshPrimitive.vertexCount);
+    }
     for (size_t i = 0; i < meshPrimitive.vertexCount; i++) {
-      vulkan_vertex_stream_element vertex = {0};
       for (size_t attributeIdx = 0; attributeIdx < cgltfPrimitive->attributes_count;
            attributeIdx++) {
         cgltf_attribute *cgltfAttribute = &cgltfPrimitive->attributes[attributeIdx];
         vulkan_attribute_type type = cgltf_to_vulkan_attribute_type(cgltfAttribute->type);
         if (type == PositionAttribute) {
-          verify(cgltf_accessor_read_float(cgltfAttribute->data, i, (float *)&vertex.position, 3));
+          verify(cgltf_accessor_read_float(cgltfAttribute->data, i,
+                                           (float *)utarray_eltptr(meshPrimitive.positions, i), 3));
         }
         if (type == NormalAttribute) {
-          verify(cgltf_accessor_read_float(cgltfAttribute->data, i, (float *)&vertex.normal, 3));
+          verify(cgltf_accessor_read_float(cgltfAttribute->data, i,
+                                           (float *)utarray_eltptr(meshPrimitive.normals, i), 3));
         }
         if (type == ColorAttribute) {
-          verify(cgltf_accessor_read_float(cgltfAttribute->data, i, (float *)&vertex.color, 3));
+          verify(cgltf_accessor_read_float(cgltfAttribute->data, i,
+                                           (float *)utarray_eltptr(meshPrimitive.colors, i), 3));
         }
         if (type == TexCoordAttribute) {
-          verify(cgltf_accessor_read_float(cgltfAttribute->data, i, (float *)&vertex.texCoord, 2));
+          verify(cgltf_accessor_read_float(cgltfAttribute->data, i,
+                                           (float *)utarray_eltptr(meshPrimitive.texCoords, i), 2));
         }
       }
-      vulkan_vertex_stream_element *outVertex =
-          (vulkan_vertex_stream_element *)utarray_eltptr(meshPrimitive.vertexStream, i);
-      *outVertex = vertex;
     }
 
     XXH64_state_t *const state = XXH64_createState();
     assert(state != NULL);
     const XXH64_hash_t seed = 0;
     assert(XXH64_reset(state, seed) != XXH_ERROR);
-    assert(XXH64_update(state, utarray_front(meshPrimitive.indexBuffer),
-                        utarray_size(meshPrimitive.indexBuffer)) != XXH_ERROR);
-    assert(XXH64_update(state, utarray_front(meshPrimitive.vertexStream),
-                        utarray_size(meshPrimitive.vertexStream)) != XXH_ERROR);
+    assert(XXH64_update(state, utarray_front(meshPrimitive.indices),
+                        utarray_size(meshPrimitive.indices)) != XXH_ERROR);
+    assert(XXH64_update(state, utarray_front(meshPrimitive.positions),
+                        utarray_size(meshPrimitive.positions)) != XXH_ERROR);
+    assert(XXH64_update(state, utarray_front(meshPrimitive.normals),
+                        utarray_size(meshPrimitive.normals)) != XXH_ERROR);
+    assert(XXH64_update(state, utarray_front(meshPrimitive.colors),
+                        utarray_size(meshPrimitive.colors)) != XXH_ERROR);
+    assert(XXH64_update(state, utarray_front(meshPrimitive.texCoords),
+                        utarray_size(meshPrimitive.texCoords)) != XXH_ERROR);
     meshPrimitive.hash = XXH64_digest(state);
     XXH64_freeState(state);
 

@@ -3,7 +3,7 @@
 vulkan_scene *vulkan_scene_create(vulkan_device *vkd, UT_string *sceneName) {
   vulkan_scene *scene = core_alloc(sizeof(vulkan_scene));
   scene->vkd = vkd;
-  panic("not implemented"); // HIRO
+  panic("not implemented"); // HIRO build buffers
   return scene;
   /*scene->geometryBuffer = vulkan_geometry_buffer_create();
   scene->uniformBuffer = vulkan_uniform_buffer_create(vkd);
@@ -27,6 +27,8 @@ void vulkan_scene_build_geometry_buffer(vulkan_scene *scene) {
   // TODO: Overlapping index buffers and vertex streams.
   // TODO: Free node resources after building scene.
   log_debug("vulkan_scene_build_geometry_buffer");
+  // HIRO rethink vulkan_scene_build_geometry_buffer: interleave attributes from vulkan_node here?
+  /*
   vulkan_scene_debug_print(scene);
   UT_array *data = scene->geometryBuffer->data;
   assert(utarray_len(data) == 0);
@@ -69,7 +71,7 @@ void vulkan_scene_build_geometry_buffer(vulkan_scene *scene) {
       void *vertexData = utarray_front(primitive->vertexStream);
       memcpy(geometryData, vertexData, vertexStreamSize);
     }
-  }
+  }*/
 }
 
 void vulkan_scene_update_data(vulkan_scene *scene) {

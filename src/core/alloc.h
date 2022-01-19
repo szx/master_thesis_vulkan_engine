@@ -15,6 +15,12 @@ void core_free(void *ptr);
 /// Returns copy of memory.
 void *core_memdup(const void *src, size_t size);
 
+#define utarray_alloc(_array, _size)                                                               \
+  do {                                                                                             \
+    const UT_icd icd = {_size, NULL, NULL, NULL};                                                  \
+    utarray_new(_array, &icd);                                                                     \
+  } while (false)
+
 #define core_array(type)                                                                           \
   struct {                                                                                         \
     UT_array *array;                                                                               \

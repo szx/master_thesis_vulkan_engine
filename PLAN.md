@@ -27,27 +27,29 @@
 
 - [ ] Rendering
 	- [ ] Asset pipeline
-		- [x] INI configuration
-		- [x] **glTF** scene input
-		- [x] Processing meshes
-		- [ ] Processing images
-		- [x] SQLite database output
-			- [ ] 
-	- [ ] **GPU-driven rendering pipeline:**
-		- [ ] Building scene geometry buffer & uploading to GPU.
-			- [x] One big vertex buffer.
-			- [ ] One big uniform buffer with object data indexed with object ID in vertex & fragment shaders.
-		- [ ] MAYBE: Mesh Cluster Rendering.
-		- [ ] LOD selection & culling using compute shader.
-		- [ ] Rendering whole scene using vkCmdDrawIndexedIndirect.
-	- [ ] Render graph.
-		- [x] Research.
-		- [ ] Implementation.
-		- [ ] Forward rendering.
-		- [ ] Deferred rendering.
-			- [ ] G-buffer compression
-		- [ ] Post-processing effects
-			- [ ] Motion blur
+        - [x] INI configuration
+        - [x] **glTF** scene input
+        - [x] Processing meshes
+        - [ ] Processing scenes
+        - [ ] Processing images
+        - [x] SQLite database output
+    - [ ] **GPU-driven rendering pipeline:**
+        - [ ] Building uploading to GPU scene geometry buffer
+            - [ ] Building scene geometry buffer
+            - [ ] Uploading scene geometry buffer to GPU
+            - [x] One big vertex buffer
+            - [ ] One big uniform buffer with object data indexed with object ID in vertex & fragment shaders
+        - [ ] MAYBE: Mesh Cluster Rendering
+        - [ ] LOD selection & culling using compute shader
+        - [ ] Rendering whole scene using vkCmdDrawIndexedIndirect
+    - [ ] Render graph.
+        - [x] Research.
+        - [ ] Implementation.
+        - [ ] Forward rendering.
+        - [ ] Deferred rendering.
+            - [ ] G-buffer compression
+        - [ ] Post-processing effects
+            - [ ] Motion blur
 
 - [ ] Experiments:
 	- [ ] Building and running on Windows.

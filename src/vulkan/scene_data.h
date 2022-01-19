@@ -8,16 +8,15 @@
 typedef struct vulkan_mesh_primitive {
   VkPrimitiveTopology topology;
   uint32_t vertexCount;
-  vulkan_attribute_type vertexAttributes;
-  uint32_t vertexStride;       /// Calculated using vertexAttributes.
-  UT_array *vertexStream;      /// vulkan_vertex_stream_element
-  uint32_t vertexStreamOffset; /// Offset of vertex stream in geometry buffer.
+  UT_array *positions; /// vec3
+  UT_array *normals;   /// vec3
+  UT_array *colors;    /// vec3
+  UT_array *texCoords; /// vec2
   // TODO: LOD index buffers.
   uint32_t indexCount;
   vulkan_index_type indexType;
-  uint32_t indexStride;       /// Calculated using indexType.
-  UT_array *indexBuffer;      /// uint32_t
-  uint32_t indexBufferOffset; /// Offset of index buffer in geometry buffer.
+  uint32_t indexStride; /// Calculated using indexType.
+  UT_array *indices;    /// uint32_t
 
   XXH64_hash_t hash; /// Hash, used to prevent duplicates in asset database.
 } vulkan_mesh_primitive;
@@ -40,8 +39,9 @@ typedef struct vulkan_node {
   // TODO: child nodes
 } vulkan_node;
 
-void vulkan_node_init(vulkan_node *scene, vulkan_mesh mesh);
-void vulkan_node_deinit(vulkan_node *scene);
+void vulkan_node_init(vulkan_node *node, vulkan_mesh mesh);
+void vulkan_node_deinit(vulkan_node *node);
+void vulkan_node_debug_print(vulkan_node *node);
 
 /// Describes a scene.
 /// Does not create any Vulkan objects (see vulkan_scene).

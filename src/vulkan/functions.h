@@ -17,7 +17,7 @@ typedef struct vulkan_vertex_stream_element {
   vec3 normal;
   vec3 color;
   vec2 texCoord;
-} vulkan_vertex_stream_element;
+} vulkan_vertex_stream_element; // HIRO create interleaved vertex stream when building scene
 // TODO: Packing.
 
 typedef enum vulkan_attribute_type {

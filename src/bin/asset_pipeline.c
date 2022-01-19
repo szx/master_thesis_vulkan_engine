@@ -46,25 +46,23 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
   vulkan_scene_data *data = vulkan_scene_data_create_with_gltf_file(assetInput->sourceAssetPath);
   for (size_t nodeIdx = 0; nodeIdx < core_array_count(data->nodes); nodeIdx++) {
     vulkan_node *node = &data->nodes.ptr[nodeIdx];
-    log_debug("node %zu", nodeIdx);
-    glm_mat4_print(node->modelMat, stderr);
+    // vulkan_node_debug_print(node);
 
     vulkan_mesh *mesh = &node->mesh;
     for (size_t primIdx = 0; primIdx < core_array_count(mesh->primitives); primIdx++) {
       vulkan_mesh_primitive *primitive = &mesh->primitives.ptr[primIdx];
-      log_debug("  primitive %d: %s\n", primIdx,
-                VkPrimitiveTopology_debug_str(primitive->topology));
-      log_debug("hash: %zu", primitive->hash);
-      data_asset_db_insert_primitive_int(assetDb, &primitive->hash, sizeof(primitive->hash),
-                                         "topology", primitive->topology);
-      data_asset_db_insert_primitive_blob(assetDb, &primitive->hash, sizeof(primitive->hash),
-                                          "indices", utarray_front(primitive->indexBuffer),
-                                          utarray_size(primitive->indexBuffer));
-      data_asset_db_insert_primitive_blob(assetDb, &primitive->hash, sizeof(primitive->hash),
-                                          "vertices", utarray_front(primitive->vertexStream),
-                                          utarray_size(primitive->vertexStream));
-      data_asset_db_insert_primitive_int(assetDb, &primitive->hash, sizeof(primitive->hash),
-                                         "vertexAttributes", primitive->vertexAttributes);
+      data_asset_db_insert_primitive_topology_int(assetDb, &primitive->hash,
+                                                  sizeof(primitive->hash), primitive->topology);
+      data_asset_db_insert_primitive_indices_blob(
+          assetDb, &primitive->hash, sizeof(primitive->hash), utarray_blob(primitive->indices));
+      data_asset_db_insert_primitive_positions_blob(
+          assetDb, &primitive->hash, sizeof(primitive->hash), utarray_blob(primitive->positions));
+      data_asset_db_insert_primitive_normals_blob(
+          assetDb, &primitive->hash, sizeof(primitive->hash), utarray_blob(primitive->normals));
+      data_asset_db_insert_primitive_colors_blob(assetDb, &primitive->hash, sizeof(primitive->hash),
+                                                 utarray_blob(primitive->colors));
+      data_asset_db_insert_primitive_tex_coords_blob(
+          assetDb, &primitive->hash, sizeof(primitive->hash), utarray_blob(primitive->texCoords));
     }
     // HIRO add actual scene to asset database
   }
