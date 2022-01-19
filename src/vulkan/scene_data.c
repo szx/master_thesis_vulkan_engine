@@ -162,7 +162,9 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode) {
 
   vulkan_mesh mesh;
   vulkan_mesh_init(&mesh, cgltfMesh->primitives_count);
+  HASH_START(meshHash)
 
+  // parse primitives
   for (size_t primitiveIdx = 0; primitiveIdx < cgltfMesh->primitives_count; primitiveIdx++) {
     cgltf_primitive *cgltfPrimitive = &cgltfMesh->primitives[primitiveIdx];
     assert(cgltfPrimitive->has_draco_mesh_compression == false);
@@ -189,63 +191,71 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode) {
       verify(vertexCount == cgltfAttribute->data->count);
     }
 
-    vulkan_mesh_primitive meshPrimitive;
-    vulkan_mesh_primitive_init(&meshPrimitive, topology, vertexAttributes, indexType);
-    meshPrimitive.vertexCount = vertexCount;
-    meshPrimitive.indexCount = indexCount;
-    utarray_resize(meshPrimitive.indices, meshPrimitive.indexCount);
-    for (size_t i = 0; i < meshPrimitive.indexCount; i++) {
+    vulkan_mesh_primitive primitive;
+    vulkan_mesh_primitive_init(&primitive, topology, vertexAttributes, indexType);
+    primitive.vertexCount = vertexCount;
+    primitive.indexCount = indexCount;
+    utarray_resize(primitive.indices, primitive.indexCount);
+    for (size_t i = 0; i < primitive.indexCount; i++) {
       size_t indexValue = cgltf_accessor_read_index(cgltfIndices, i);
-      void *outValue = utarray_eltptr(meshPrimitive.indices, i);
+      void *outValue = utarray_eltptr(primitive.indices, i);
       *(uint32_t *)outValue = indexValue;
     }
     if ((vertexAttributes & PositionAttribute) != 0) {
-      utarray_resize(meshPrimitive.positions, meshPrimitive.vertexCount);
+      utarray_resize(primitive.positions, primitive.vertexCount);
     }
     if ((vertexAttributes & NormalAttribute) != 0) {
-      utarray_resize(meshPrimitive.normals, meshPrimitive.vertexCount);
+      utarray_resize(primitive.normals, primitive.vertexCount);
     }
     if ((vertexAttributes & ColorAttribute) != 0) {
-      utarray_resize(meshPrimitive.colors, meshPrimitive.vertexCount);
+      utarray_resize(primitive.colors, primitive.vertexCount);
     }
     if ((vertexAttributes & TexCoordAttribute) != 0) {
-      utarray_resize(meshPrimitive.texCoords, meshPrimitive.vertexCount);
+      utarray_resize(primitive.texCoords, primitive.vertexCount);
     }
-    for (size_t i = 0; i < meshPrimitive.vertexCount; i++) {
+    for (size_t i = 0; i < primitive.vertexCount; i++) {
       for (size_t attributeIdx = 0; attributeIdx < cgltfPrimitive->attributes_count;
            attributeIdx++) {
         cgltf_attribute *cgltfAttribute = &cgltfPrimitive->attributes[attributeIdx];
         vulkan_attribute_type type = cgltf_to_vulkan_attribute_type(cgltfAttribute->type);
         if (type == PositionAttribute) {
           verify(cgltf_accessor_read_float(cgltfAttribute->data, i,
-                                           (float *)utarray_eltptr(meshPrimitive.positions, i), 3));
+                                           (float *)utarray_eltptr(primitive.positions, i), 3));
         }
         if (type == NormalAttribute) {
           verify(cgltf_accessor_read_float(cgltfAttribute->data, i,
-                                           (float *)utarray_eltptr(meshPrimitive.normals, i), 3));
+                                           (float *)utarray_eltptr(primitive.normals, i), 3));
         }
         if (type == ColorAttribute) {
           verify(cgltf_accessor_read_float(cgltfAttribute->data, i,
-                                           (float *)utarray_eltptr(meshPrimitive.colors, i), 3));
+                                           (float *)utarray_eltptr(primitive.colors, i), 3));
         }
         if (type == TexCoordAttribute) {
           verify(cgltf_accessor_read_float(cgltfAttribute->data, i,
-                                           (float *)utarray_eltptr(meshPrimitive.texCoords, i), 2));
+                                           (float *)utarray_eltptr(primitive.texCoords, i), 2));
         }
       }
     }
 
-    HASH_START(state)
-#define HASH_UPDATE_FUNC(_i, _array) HASH_UPDATE(state, utarray_front(_array), utarray_size(_array))
-    MACRO_FOREACH(HASH_UPDATE_FUNC, meshPrimitive.indices, meshPrimitive.positions,
-                  meshPrimitive.normals, meshPrimitive.colors, meshPrimitive.texCoords)
+    HASH_START(primitiveState)
+#define HASH_UPDATE_FUNC(_i, _array)                                                               \
+  HASH_UPDATE(primitiveState, utarray_front(_array), utarray_size(_array))
+    MACRO_FOREACH(HASH_UPDATE_FUNC, primitive.indices, primitive.positions, primitive.normals,
+                  primitive.colors, primitive.texCoords)
 #undef HASH_UPDATE_FUNC
-    HASH_DIGEST(state, meshPrimitive.hash)
-    HASH_END(state)
+    HASH_DIGEST(primitiveState, primitive.hash)
+    HASH_END(primitiveState)
+
+    // add primitive hash to mesh hash
+    HASH_UPDATE(meshHash, &primitive.hash, sizeof(primitive.hash));
 
     // cgltf_material* material;
-    mesh.primitives.ptr[primitiveIdx] = meshPrimitive;
+    mesh.primitives.ptr[primitiveIdx] = primitive;
   }
+
+  HASH_DIGEST(meshHash, mesh.hash)
+  HASH_END(meshHash)
+
   vulkan_node node;
   vulkan_node_init(&node, mesh);
   // TODO: Animation, will probably require cgltf_node_transform_local().
