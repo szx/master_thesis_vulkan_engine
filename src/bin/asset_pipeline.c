@@ -50,7 +50,7 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
 
     vulkan_mesh *mesh = &node->mesh;
     UT_array *primitiveHashes = NULL;
-    utarray_alloc(primitiveHashes, sizeof(XXH64_hash_t));
+    utarray_alloc(primitiveHashes, sizeof(hash_t));
 
     for (size_t primIdx = 0; primIdx < core_array_count(mesh->primitives); primIdx++) {
       vulkan_mesh_primitive *primitive = &mesh->primitives.ptr[primIdx];
@@ -75,7 +75,11 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
                                               utarray_blob(primitiveHashes));
     utarray_free(primitiveHashes);
 
-    // HIRO node hash
+    data_asset_db_insert_node_transform_blob(assetDb, &node->hash, sizeof(node->hash),
+                                             (data_blob){node->modelMat, sizeof(node->modelMat)});
+    data_asset_db_insert_node_mesh_blob(assetDb, &node->hash, sizeof(node->hash),
+                                        (data_blob){&node->mesh.hash, sizeof(node->mesh.hash)});
+    // TODO: child nodes
 
     // HIRO add actual scene to asset database
   }

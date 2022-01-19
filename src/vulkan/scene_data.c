@@ -36,12 +36,13 @@ void vulkan_mesh_deinit(vulkan_mesh *mesh) {
   core_array_dealloc(mesh->primitives);
 }
 
-void vulkan_node_init(vulkan_node *scene, vulkan_mesh mesh) {
-  scene->mesh = mesh;
-  glm_mat4_identity(scene->modelMat);
+void vulkan_node_init(vulkan_node *node, vulkan_mesh mesh) {
+  node->mesh = mesh;
+  glm_mat4_identity(node->modelMat);
+  node->hash = 0;
 }
 
-void vulkan_node_deinit(vulkan_node *self) { vulkan_mesh_deinit(&self->mesh); }
+void vulkan_node_deinit(vulkan_node *node) { vulkan_mesh_deinit(&node->mesh); }
 
 vulkan_scene_data *vulkan_scene_data_create(size_t nodesCount) {
   vulkan_scene_data *sceneData = core_alloc(sizeof(vulkan_scene_data));
@@ -54,6 +55,7 @@ vulkan_scene_data *vulkan_scene_data_create(size_t nodesCount) {
 void vulkan_node_debug_print(vulkan_node *node) {
   log_debug("node:\n");
   glm_mat4_print(node->modelMat, stderr);
+  log_debug("  hash=%zu", node->hash);
   vulkan_mesh *mesh = &node->mesh;
   for (size_t j = 0; j < core_array_count(mesh->primitives); j++) {
     vulkan_mesh_primitive *primitive = &mesh->primitives.ptr[j];
@@ -238,6 +240,7 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode) {
     }
 
     HASH_START(primitiveState)
+    HASH_UPDATE(primitiveState, &primitive.topology, sizeof(primitive.topology))
 #define HASH_UPDATE_FUNC(_i, _array)                                                               \
   HASH_UPDATE(primitiveState, utarray_front(_array), utarray_size(_array))
     MACRO_FOREACH(HASH_UPDATE_FUNC, primitive.indices, primitive.positions, primitive.normals,
@@ -260,6 +263,13 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode) {
   vulkan_node_init(&node, mesh);
   // TODO: Animation, will probably require cgltf_node_transform_local().
   cgltf_node_transform_world(cgltfNode, (float *)node.modelMat);
+  // TODO: child nodes
+  HASH_START(nodeState)
+  HASH_UPDATE(nodeState, &node.modelMat, sizeof(node.modelMat))
+  HASH_UPDATE(nodeState, &node.mesh.hash, sizeof(node.mesh.hash))
+  HASH_DIGEST(nodeState, node.hash)
+  HASH_END(nodeState)
+
   return node;
 }
 

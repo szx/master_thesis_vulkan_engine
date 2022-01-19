@@ -34,13 +34,14 @@ void strrstrip(char **str);
 /// NOTE: Replaces right whitespaces with '\0'.
 void strstrip(char **str);
 
+typedef XXH64_hash_t hash_t;
 #define HASH_START(_state)                                                                         \
   XXH64_state_t *const _state = XXH64_createState();                                               \
   assert(_state != NULL);                                                                          \
   const XXH64_hash_t _state##seed = 0;                                                             \
   assert(XXH64_reset(_state, _state##seed) != XXH_ERROR);
-#define HASH_UPDATE(_state, _data, _size)                                                          \
-  assert(XXH64_update(_state, (const void *)_data, _size) != XXH_ERROR);
+#define HASH_UPDATE(_state, _dataPtr, _size)                                                       \
+  assert(XXH64_update(_state, (const void *)_dataPtr, _size) != XXH_ERROR);
 #define HASH_DIGEST(_state, _var) _var = XXH64_digest(_state);
 #define HASH_END(_state) XXH64_freeState(_state);
 

@@ -11,8 +11,8 @@ controls.Enabled = 1
 
 [ASSET.DB]
 # keys are hashes
-# primitives are array of hashes
+# primitives and nodes are arrays of hashes
 # transform in mat4
 primitive = "key BLOB, topology INT, indices BLOB, positions BLOB, normals BLOB, colors BLOB, tex_coords BLOB"
 mesh = "key BLOB, primitives BLOB"
-node = "key BLOB, transform BLOB, mesh BLOB"
+node = "key BLOB, transform BLOB, nodes BLOB, mesh BLOB"

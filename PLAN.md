@@ -30,8 +30,9 @@
 		- [x] INI configuration
 		- [x] glTF scene input
 		- [x] Processing primitives
-		- [ ] **Processing meshes**
-		- [ ] Processing scenes
+		- [x] Processing meshes
+		- [x] Processing nodes.
+		- [ ] **Processing scenes.**
 		- [ ] Processing images
 		- [x] SQLite database output
 	- [ ] GPU-driven rendering pipeline:
