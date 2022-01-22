@@ -72,6 +72,10 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
                                                      utarray_blob(primitive->texCoords));
 
       utarray_push_back(primitiveHashes, &primitive->hash);
+
+      // Quick sanity check.
+      assert(data_db_select_hash(assetDb->db, "primitive", hash_blob(primitive->hash), "key") ==
+             primitive->hash);
     }
 
     data_asset_db_insert_mesh_primitives_hash_array(assetDb, hash_blob(mesh->hash),

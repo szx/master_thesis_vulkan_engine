@@ -18,15 +18,18 @@ void data_db_destroy(data_db *db) {
   core_free(db);
 }
 
-#define SQLITE_PREPARE(query)                                                                      \
+#define SQLITE_PREPARE(query, ...)                                                                 \
   do {                                                                                             \
     sqlite3_stmt *_stmt;                                                                           \
-    char *_sql = query;                                                                            \
-    log_debug("SQLITE_PREPARE(%s)", query);                                                        \
-    int _rc = sqlite3_prepare_v2(db->db, _sql, -1, &_stmt, NULL);                                  \
+    UT_string *_sql;                                                                               \
+    utstring_new(_sql);                                                                            \
+    utstring_printf(_sql, query, __VA_ARGS__);                                                     \
+    log_debug("SQLITE_PREPARE(%s)", utstring_body(_sql));                                          \
+    int _rc = sqlite3_prepare_v2(db->db, utstring_body(_sql), -1, &_stmt, NULL);                   \
     if (_rc != SQLITE_OK) {                                                                        \
       panic("database error (prepare): %s", sqlite3_errmsg(db->db));                               \
-    }
+    }                                                                                              \
+    utstring_free(_sql);
 
 #define SQLITE_STEP(expected)                                                                      \
   _rc = sqlite3_step(_stmt);                                                                       \
@@ -50,82 +53,94 @@ void data_db_destroy(data_db *db) {
     }                                                                                              \
   }
 
-int data_db_get_int(data_db *db, char *key) {
-  int value;
-  SQLITE_PREPARE("SELECT key, value FROM config WHERE key = ?;");
-  sqlite3_bind_text(_stmt, 1, key, strlen(key), NULL);
+/* select */
+
+data_int data_db_select_int(data_db *db, char *table, data_blob key, char *column) {
+  int value = 0;
+  SQLITE_PREPARE("SELECT key, %s FROM %s WHERE key = ?;", column, table);
+  sqlite3_bind_blob(_stmt, 1, key.memory, key.size, NULL);
   SQLITE_STEP(SQLITE_ROW);
   value = sqlite3_column_int(_stmt, 1);
   SQLITE_FINALIZE();
   return value;
 }
 
-UT_string *data_db_get_str(data_db *db, char *key) {
+data_str data_db_select_str(data_db *db, char *table, data_blob key, char *column) {
   UT_string *value;
-  SQLITE_PREPARE("SELECT key, value FROM config WHERE key = ?;");
-  sqlite3_bind_text(_stmt, 1, key, strlen(key), NULL);
+  utstring_new(value);
+  SQLITE_PREPARE("SELECT key, %s FROM %s WHERE key = ?;", column, table);
+  sqlite3_bind_blob(_stmt, 1, key.memory, key.size, NULL);
   SQLITE_STEP(SQLITE_ROW);
   const unsigned char *result = sqlite3_column_text(_stmt, 1);
-  utstring_new(value);
   utstring_printf(value, "%s", result);
   SQLITE_FINALIZE();
   return value;
 }
 
+data_blob data_db_select_blob(data_db *db, char *table, data_blob key, char *column) {
+  data_blob value;
+  SQLITE_PREPARE("SELECT key, %s FROM %s WHERE key = ?;", column, table);
+  sqlite3_bind_blob(_stmt, 1, key.memory, key.size, NULL);
+  SQLITE_STEP(SQLITE_ROW);
+  const void *memory = sqlite3_column_blob(_stmt, 1);
+  size_t size = sqlite3_column_bytes(_stmt, 1);
+  value.size = size;
+  value.memory = core_memdup(memory, value.size);
+  SQLITE_FINALIZE();
+  return value;
+}
+
+data_hash data_db_select_hash(data_db *db, char *table, data_blob key, char *column) {
+  data_blob blob = data_db_select_blob(db, table, key, column);
+  data_hash hash = *(data_hash *)blob.memory;
+  core_free(blob.memory);
+  return hash;
+}
+
+data_hash_array data_db_select_hash_array(data_db *db, char *table, data_blob key, char *column) {
+  return data_db_select_blob(db, table, key, column);
+}
+
+/* insert */
+
 void data_db_insert_int(data_db *db, char *table, data_blob key, char *column, data_int value,
                         bool updateIfExists) {
-  UT_string *query;
-  utstring_new(query);
+  const char *query;
   if (updateIfExists) {
-    utstring_printf(
-        query, "INSERT INTO %s (key, %s) VALUES (?, %d) ON CONFLICT (key) DO UPDATE SET %s = %d;",
-        table, column, value, column, value);
-
+    query = "INSERT INTO %s (key, %s) VALUES (?, %d) ON CONFLICT (key) DO UPDATE SET %s = %d;";
   } else {
-    utstring_printf(query, "INSERT INTO %s (key, %s) VALUES (?, %d) ON CONFLICT (key) DO NOTHING;",
-                    table, column, value);
+    query = "INSERT INTO %s (key, %s) VALUES (?, %d) ON CONFLICT (key) DO NOTHING;";
   }
-  SQLITE_PREPARE(utstring_body(query));
+  SQLITE_PREPARE(query, table, column, value, column, value);
   sqlite3_bind_blob(_stmt, 1, key.memory, key.size, NULL);
   SQLITE_STEP(SQLITE_DONE);
   SQLITE_FINALIZE();
-  utstring_free(query);
 }
 
 void data_db_insert_str(data_db *db, char *table, data_blob key, char *column, data_str value,
                         bool updateIfExists) {
-  UT_string *query;
-  utstring_new(query);
+  const char *query;
   if (updateIfExists) {
-    utstring_printf(
-        query,
-        "INSERT INTO %s (key, %s) VALUES (?, \"%s\") ON CONFLICT (key) DO UPDATE SET %s = \"%s\";",
-        table, column, utstring_body(value), column, utstring_body(value));
+    query =
+        "INSERT INTO %s (key, %s) VALUES (?, \"%s\") ON CONFLICT (key) DO UPDATE SET %s = \"%s\";";
   } else {
-    utstring_printf(query,
-                    "INSERT INTO %s (key, %s) VALUES (?, \"%s\") ON CONFLICT (key) DO NOTHING;",
-                    table, column, utstring_body(value));
+    query = "INSERT INTO %s (key, %s) VALUES (?, \"%s\") ON CONFLICT (key) DO NOTHING;";
   }
-  SQLITE_PREPARE(utstring_body(query));
+  SQLITE_PREPARE(query, table, column, utstring_body(value), column, utstring_body(value));
   sqlite3_bind_blob(_stmt, 1, key.memory, key.size, NULL);
   SQLITE_STEP(SQLITE_DONE);
   SQLITE_FINALIZE();
-  utstring_free(query);
 }
 
 void data_db_insert_blob(data_db *db, char *table, data_blob key, char *column, data_blob value,
                          bool updateIfExists) {
-  UT_string *query;
-  utstring_new(query);
+  const char *query;
   if (updateIfExists) {
-    utstring_printf(
-        query, "INSERT INTO %s (key, %s) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET %s = ?;",
-        table, column, column);
+    query = "INSERT INTO %s (key, %s) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET %s = ?;";
   } else {
-    utstring_printf(query, "INSERT INTO %s (key, %s) VALUES (?, ?) ON CONFLICT (key) DO NOTHING;",
-                    table, column);
+    query = "INSERT INTO %s (key, %s) VALUES (?, ?) ON CONFLICT (key) DO NOTHING;";
   }
-  SQLITE_PREPARE(utstring_body(query));
+  SQLITE_PREPARE(query, table, column, column);
   sqlite3_bind_blob(_stmt, 1, key.memory, key.size, NULL);
   sqlite3_bind_blob(_stmt, 2, value.memory, value.size, NULL);
   if (updateIfExists) {
@@ -133,7 +148,6 @@ void data_db_insert_blob(data_db *db, char *table, data_blob key, char *column, 
   }
   SQLITE_STEP(SQLITE_DONE);
   SQLITE_FINALIZE();
-  utstring_free(query);
 }
 
 void data_db_insert_hash(data_db *db, char *table, data_blob key, char *column, data_hash value,

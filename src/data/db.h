@@ -12,15 +12,7 @@ typedef struct data_db {
 data_db *data_db_create(UT_string *path);
 void data_db_destroy(data_db *db);
 
-/* select */
-
-/// Returns int value of a text key.
-int data_db_get_int(data_db *db, char *key);
-
-/// Returns new string value of a text key.
-UT_string *data_db_get_str(data_db *db, char *key);
-
-/* insert */
+/* supported data types */
 
 typedef int data_int;
 typedef UT_string *data_str;
@@ -28,6 +20,7 @@ typedef struct data_blob {
   void *memory;
   size_t size;
 } data_blob;
+
 #define utarray_blob(_array)                                                                       \
   (data_blob) { utarray_front(_array), utarray_size(_array) }
 #define utstring_blob(_s)                                                                          \
@@ -37,6 +30,20 @@ typedef hash_t data_hash;
   (data_blob) { &(_hash), sizeof(_hash) }
 typedef data_blob data_hash_array;
 #define utarray_hash_array(_array) utarray_blob(_array)
+
+/* select */
+
+data_int data_db_select_int(data_db *db, char *table, data_blob key, char *column);
+
+data_str data_db_select_str(data_db *db, char *table, data_blob key, char *column);
+
+data_blob data_db_select_blob(data_db *db, char *table, data_blob key, char *column);
+
+data_hash data_db_select_hash(data_db *db, char *table, data_blob key, char *column);
+
+data_hash_array data_db_select_hash_array(data_db *db, char *table, data_blob key, char *column);
+
+/* insert */
 
 void data_db_insert_int(data_db *db, char *table, data_blob key, char *column, data_int value,
                         bool updateIfExists);
