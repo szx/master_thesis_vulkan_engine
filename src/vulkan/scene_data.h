@@ -57,6 +57,5 @@ vulkan_scene_data *vulkan_scene_data_create(size_t nodesCount);
 void vulkan_scene_data_destroy(vulkan_scene_data *sceneData);
 void vulkan_scene_data_debug_print(vulkan_scene_data *sceneData);
 
-/// Loads scene data from glTF file.
-/// To be used only by by asset pipeline.
+/* asset pipeline */
 vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *gltfPath);

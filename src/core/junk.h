@@ -60,8 +60,8 @@ typedef XXH64_hash_t hash_t;
 // FIXME: Expands to 1 for 0 arguments.
 #define MACRO_NARGS(...) MACRO_NARGS_(__VA_ARGS__, MACRO_NARGS_RSEQ_N())
 #define MACRO_NARGS_(...) MACRO_ARG_N(__VA_ARGS__)
-#define MACRO_NARGS_RSEQ_N() 8, 7, 6, 5, 4, 3, 2, 1, 0
-#define MACRO_ARG_N(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) N
+#define MACRO_NARGS_RSEQ_N() 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
+#define MACRO_ARG_N(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, N, ...) N
 
 // Returns name concatenated with number of variadic arguments.
 #define MACRO_OVERLOAD(_name, ...) MACRO_CONCAT(_name, MACRO_NARGS(__VA_ARGS__))
@@ -79,3 +79,11 @@ typedef XXH64_hash_t hash_t;
 #define MACRO_FOREACH_6(_macro, _elem, ...) _macro(5, _elem) MACRO_FOREACH_5(_macro, __VA_ARGS__)
 #define MACRO_FOREACH_7(_macro, _elem, ...) _macro(6, _elem) MACRO_FOREACH_6(_macro, __VA_ARGS__)
 #define MACRO_FOREACH_8(_macro, _elem, ...) _macro(7, _elem) MACRO_FOREACH_7(_macro, __VA_ARGS__)
+#define MACRO_FOREACH_9(_macro, _elem, ...) _macro(8, _elem) MACRO_FOREACH_8(_macro, __VA_ARGS__)
+#define MACRO_FOREACH_10(_macro, _elem, ...) _macro(9, _elem) MACRO_FOREACH_9(_macro, __VA_ARGS__)
+#define MACRO_FOREACH_11(_macro, _elem, ...) _macro(10, _elem) MACRO_FOREACH_10(_macro, __VA_ARGS__)
+#define MACRO_FOREACH_12(_macro, _elem, ...) _macro(11, _elem) MACRO_FOREACH_11(_macro, __VA_ARGS__)
+#define MACRO_FOREACH_13(_macro, _elem, ...) _macro(12, _elem) MACRO_FOREACH_12(_macro, __VA_ARGS__)
+#define MACRO_FOREACH_14(_macro, _elem, ...) _macro(13, _elem) MACRO_FOREACH_13(_macro, __VA_ARGS__)
+#define MACRO_FOREACH_15(_macro, _elem, ...) _macro(14, _elem) MACRO_FOREACH_14(_macro, __VA_ARGS__)
+#define MACRO_FOREACH_16(_macro, _elem, ...) _macro(15, _elem) MACRO_FOREACH_15(_macro, __VA_ARGS__)

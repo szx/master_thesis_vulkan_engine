@@ -74,21 +74,25 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
       utarray_push_back(primitiveHashes, &primitive->hash);
     }
 
-    data_asset_db_insert_mesh_primitives_blob(assetDb, &mesh->hash, sizeof(mesh->hash),
-                                              utarray_blob(primitiveHashes));
+    data_asset_db_insert_mesh_primitives_hash_array(assetDb, &mesh->hash, sizeof(mesh->hash),
+                                                    utarray_hash_array(primitiveHashes));
     utarray_free(primitiveHashes);
 
     data_asset_db_insert_node_transform_blob(assetDb, &node->hash, sizeof(node->hash),
                                              (data_blob){node->modelMat, sizeof(node->modelMat)});
-    data_asset_db_insert_node_mesh_blob(assetDb, &node->hash, sizeof(node->hash),
-                                        (data_blob){&node->mesh.hash, sizeof(node->mesh.hash)});
+    data_asset_db_insert_node_mesh_hash(assetDb, &node->hash, sizeof(node->hash), node->mesh.hash);
     utarray_push_back(nodeHashes, &node->hash);
     // TODO: child nodes
   }
-  // HIRO add actual scene to asset database
-  data_asset_db_insert_scene_nodes_blob(assetDb, &sceneData->hash, sizeof(sceneData->hash),
-                                        utarray_blob(nodeHashes));
-  // HIRO cameras
+  data_asset_db_insert_scene_nodes_hash_array(assetDb, &sceneData->hash, sizeof(sceneData->hash),
+                                              utarray_hash_array(nodeHashes));
+
+  data_blob cameraBlob = vulkan_camera_serialize(sceneData->camera);
+  data_asset_db_insert_scene_cameras_blob(assetDb, &sceneData->hash, sizeof(sceneData->hash),
+                                          cameraBlob);
+  core_free(cameraBlob.memory);
+
+  // TODO: Add textures to pipeline.
   utarray_free(nodeHashes);
   vulkan_scene_data_destroy(sceneData);
 }

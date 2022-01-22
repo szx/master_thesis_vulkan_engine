@@ -197,12 +197,16 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode) {
     vulkan_mesh_primitive_init(&primitive, topology, vertexAttributes, indexType);
     primitive.vertexCount = vertexCount;
     primitive.indexCount = indexCount;
+
+    // read indices
     utarray_resize(primitive.indices, primitive.indexCount);
     for (size_t i = 0; i < primitive.indexCount; i++) {
       size_t indexValue = cgltf_accessor_read_index(cgltfIndices, i);
       void *outValue = utarray_eltptr(primitive.indices, i);
       *(uint32_t *)outValue = indexValue;
     }
+
+    // read vertex attributes
     if ((vertexAttributes & PositionAttribute) != 0) {
       utarray_resize(primitive.positions, primitive.vertexCount);
     }
@@ -239,6 +243,12 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode) {
       }
     }
 
+    // TODO: Currently primitive hash is produced using all topology + indices + vertex attributes.
+    //       This eliminates duplicated primitives with EXACTLY the same structure, but still
+    //       results in e.g. nodes with same vertex attributes but different indices are stored as
+    //       separate entries in asset database, even if they share vertex attributes.
+    //       It could be optimized with separate hashes and tables for each vertex attribute and
+    //       foreign keys in primitive table. Not sure if its worth additional work.
     HASH_START(primitiveState)
     HASH_UPDATE(primitiveState, &primitive.topology, sizeof(primitive.topology))
 #define HASH_UPDATE_FUNC(_i, _array)                                                               \
@@ -299,7 +309,7 @@ vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *gltfPath) 
     sceneData->nodes.ptr[nodeIdx] = node;
     HASH_UPDATE(sceneState, &node.hash, sizeof(node.hash))
   }
-  // HIRO cameras
+  // TODO: cameras from gltf file
   HASH_DIGEST(sceneState, sceneData->hash)
   HASH_END(sceneState)
   cgltf_free(data);

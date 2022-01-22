@@ -136,9 +136,34 @@ void data_db_insert_blob(data_db *db, char *table, void *key, size_t keySize, ch
   utstring_free(query);
 }
 
+void data_db_insert_hash(data_db *db, char *table, void *key, size_t keySize, char *column,
+                         data_hash value, bool updateIfExists) {
+  data_db_insert_blob(db, table, key, keySize, column, (data_blob){&value, sizeof(value)},
+                      updateIfExists);
+}
+
+void data_db_insert_hash_array(data_db *db, char *table, void *key, size_t keySize, char *column,
+                               data_hash_array value, bool updateIfExists) {
+  data_db_insert_blob(db, table, key, keySize, column, value, updateIfExists);
+}
+
 void data_db_create_key_value_table_for_multiple_values(data_db *db, char *table,
-                                                        const char *keyDef, const char *valueDefs) {
+                                                        const char *keyDef,
+                                                        const char *columnDefs[],
+                                                        size_t columnDefsCount) {
   static UT_string *sql = NULL;
   SQLITE_EXEC("DROP TABLE IF EXISTS %s;", table);
-  SQLITE_EXEC("CREATE TABLE %s(%s PRIMARY KEY, %s);", table, keyDef, valueDefs);
+  UT_string *columns;
+  utstring_new(columns);
+  for (size_t i = 0; i < columnDefsCount; i += 2) {
+    const char *name = columnDefs[i];
+    const char *type = columnDefs[i + 1];
+    if (strcmp(type, "HASH") == 0 || strcmp(type, "HASH_ARRAY") == 0) {
+      // Hash is just a blob with special *_get() and *_insert().
+      type = "BLOB";
+    }
+    utstring_printf(columns, "%s %s%s", name, type, (i + 2 < columnDefsCount ? "," : ""));
+  }
+  SQLITE_EXEC("CREATE TABLE %s(%s PRIMARY KEY, %s);", table, keyDef, utstring_body(columns));
+  utstring_free(columns);
 }

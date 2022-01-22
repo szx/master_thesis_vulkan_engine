@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "../data/db.h"
 
 vulkan_camera *vulkan_camera_create() {
   vulkan_camera *camera = core_alloc(sizeof(vulkan_camera));
@@ -21,8 +22,34 @@ void vulkan_camera_update_aspect_ratio(vulkan_camera *camera, float aspectRatio)
   camera->dirty = true;
 }
 
+data_blob vulkan_camera_serialize(vulkan_camera *camera) {
+  data_blob blob;
+  blob.size = 11 * sizeof(float);
+  blob.memory = core_alloc(blob.size);
+  float *ptr = blob.memory;
+#define SERIALIZE_FLOAT(_ptr, _field)                                                              \
+  do {                                                                                             \
+    *_ptr = camera->_field;                                                                        \
+    _ptr++;                                                                                        \
+  } while (0)
+  SERIALIZE_FLOAT(ptr, position[0]);
+  SERIALIZE_FLOAT(ptr, position[1]);
+  SERIALIZE_FLOAT(ptr, position[2]);
+  SERIALIZE_FLOAT(ptr, rotation[0]);
+  SERIALIZE_FLOAT(ptr, rotation[1]);
+  SERIALIZE_FLOAT(ptr, rotation[2]);
+  SERIALIZE_FLOAT(ptr, rotation[3]);
+  SERIALIZE_FLOAT(ptr, fovY);
+  SERIALIZE_FLOAT(ptr, aspectRatio);
+  SERIALIZE_FLOAT(ptr, nearZ);
+  SERIALIZE_FLOAT(ptr, farZ);
+#undef SERIALIZE_FLOAT
+  return blob;
+}
+
 void vulkan_camera_update_uniform_buffer_data(vulkan_camera *camera,
                                               vulkan_uniform_buffer *uniformBuffer) {
+  // HIRO move vulkan_camera_update_uniform_buffer_data to build in scene - only data here.
   if (!camera->dirty) {
     return;
   }
