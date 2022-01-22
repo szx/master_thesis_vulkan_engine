@@ -10,7 +10,7 @@ graphics.WindowTitle = "cpptext"
 controls.Enabled = 1
 
 [ASSET.DB]
-# keys are hashes
+# keys are hashes, except for scene with text key (but still stored as blob)
 primitive = "key BLOB, topology INT, indices BLOB, positions BLOB, normals BLOB, colors BLOB, tex_coords BLOB"
 mesh = "key BLOB, primitives HASH_ARRAY"
 node = "key BLOB, transform BLOB, nodes BLOB, mesh HASH"

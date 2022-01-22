@@ -79,7 +79,8 @@ def codegen_macros(config: ConfigParser):
     decls.append(f'#define DATA_ASSET_DB_COLUMNS(X, ...) \\')
     for key, value in asset_db_ini.items():
         for column, _, sqliteType in [value_def.strip().partition(' ') for value_def in value.split(',')]:
-            decls.append(f'  X({key}, {column}, {sqliteType.lower()}, __VA_ARGS__) \\')
+            if column != "key":
+                decls.append(f'  X({key}, {column}, {sqliteType.lower()}, __VA_ARGS__) \\')
     decls.append(f'  END_OF_DATA_ASSET_DB_COLUMNS')
 
     output_strings(decls, get_output_path('macros.h'))

@@ -21,7 +21,7 @@ void data_asset_db_save(data_asset_db *assetDb);
 void data_asset_db_save_empty(data_asset_db *assetDb);
 
 #define decl_insert(_table, _column, _type, ...)                                                   \
-  void data_asset_db_insert_##_table##_##_column##_##_type(data_asset_db *assetDb, void *key,      \
-                                                           size_t keySize, data##_##_type value);
+  void data_asset_db_insert_##_table##_##_column##_##_type(data_asset_db *assetDb, data_blob key,  \
+                                                           data##_##_type value);
 DATA_ASSET_DB_COLUMNS(decl_insert, )
 #undef decl_insert

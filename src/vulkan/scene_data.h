@@ -47,15 +47,18 @@ void vulkan_node_debug_print(vulkan_node *node);
 /// Describes a scene.
 /// Does not create any Vulkan objects (see vulkan_scene).
 typedef struct vulkan_scene_data {
+  UT_string *name;
   core_array(vulkan_node) nodes;
   vulkan_camera *camera;
-  hash_t hash; /// Hash, used to prevent duplicates in asset database.
-  bool dirty;  /// True if scene data updated on CPU.
+  bool dirty; /// True if scene data updated on CPU.
 } vulkan_scene_data;
 
-vulkan_scene_data *vulkan_scene_data_create(size_t nodesCount);
+vulkan_scene_data *vulkan_scene_data_create(size_t nodesCount, UT_string *name);
 void vulkan_scene_data_destroy(vulkan_scene_data *sceneData);
 void vulkan_scene_data_debug_print(vulkan_scene_data *sceneData);
 
 /* asset pipeline */
-vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *gltfPath);
+vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *gltfName,
+                                                           UT_string *gltfPath);
+vulkan_scene_data *vulkan_scene_data_create_with_asset_db(UT_string *sceneName,
+                                                          data_asset_db *assetDb);

@@ -30,23 +30,27 @@ typedef struct data_blob {
 } data_blob;
 #define utarray_blob(_array)                                                                       \
   (data_blob) { utarray_front(_array), utarray_size(_array) }
+#define utstring_blob(_s)                                                                          \
+  (data_blob) { utstring_body(_s), utstring_len(_s) }
 typedef hash_t data_hash;
+#define hash_blob(_hash)                                                                           \
+  (data_blob) { &(_hash), sizeof(_hash) }
 typedef data_blob data_hash_array;
 #define utarray_hash_array(_array) utarray_blob(_array)
 
-void data_db_insert_int(data_db *db, char *table, void *key, size_t keySize, char *column,
-                        data_int value, bool updateIfExists);
+void data_db_insert_int(data_db *db, char *table, data_blob key, char *column, data_int value,
+                        bool updateIfExists);
 
-void data_db_insert_str(data_db *db, char *table, void *key, size_t keySize, char *column,
-                        data_str value, bool updateIfExists);
+void data_db_insert_str(data_db *db, char *table, data_blob key, char *column, data_str value,
+                        bool updateIfExists);
 
-void data_db_insert_blob(data_db *db, char *table, void *key, size_t keySize, char *column,
-                         data_blob value, bool updateIfExists);
+void data_db_insert_blob(data_db *db, char *table, data_blob key, char *column, data_blob value,
+                         bool updateIfExists);
 
-void data_db_insert_hash(data_db *db, char *table, void *key, size_t keySize, char *column,
-                         data_hash value, bool updateIfExists);
+void data_db_insert_hash(data_db *db, char *table, data_blob key, char *column, data_hash value,
+                         bool updateIfExists);
 
-void data_db_insert_hash_array(data_db *db, char *table, void *key, size_t keySize, char *column,
+void data_db_insert_hash_array(data_db *db, char *table, data_blob key, char *column,
                                data_hash_array value, bool updateIfExists);
 
 /* create */

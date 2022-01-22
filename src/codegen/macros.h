@@ -30,20 +30,16 @@
 
 #define END_OF_DATA_ASSET_DB_COLUMNS
 #define DATA_ASSET_DB_COLUMNS(X, ...) \
-  X(primitive, key, blob, __VA_ARGS__) \
   X(primitive, topology, int, __VA_ARGS__) \
   X(primitive, indices, blob, __VA_ARGS__) \
   X(primitive, positions, blob, __VA_ARGS__) \
   X(primitive, normals, blob, __VA_ARGS__) \
   X(primitive, colors, blob, __VA_ARGS__) \
   X(primitive, tex_coords, blob, __VA_ARGS__) \
-  X(mesh, key, blob, __VA_ARGS__) \
   X(mesh, primitives, hash_array, __VA_ARGS__) \
-  X(node, key, blob, __VA_ARGS__) \
   X(node, transform, blob, __VA_ARGS__) \
   X(node, nodes, blob, __VA_ARGS__) \
   X(node, mesh, hash, __VA_ARGS__) \
-  X(scene, key, blob, __VA_ARGS__) \
   X(scene, nodes, hash_array, __VA_ARGS__) \
   X(scene, cameras, blob, __VA_ARGS__) \
   END_OF_DATA_ASSET_DB_COLUMNS

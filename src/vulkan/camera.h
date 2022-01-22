@@ -4,7 +4,7 @@
 #pragma once
 
 #include "../core/platform.h"
-#include "../data/db.h"
+#include "../data/data.h"
 #include "functions.h"
 
 /// Contains index buffer, interleaved vertex stream and topology of the part of the mesh.

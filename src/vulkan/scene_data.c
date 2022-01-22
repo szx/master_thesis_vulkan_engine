@@ -44,14 +44,6 @@ void vulkan_node_init(vulkan_node *node, vulkan_mesh mesh) {
 
 void vulkan_node_deinit(vulkan_node *node) { vulkan_mesh_deinit(&node->mesh); }
 
-vulkan_scene_data *vulkan_scene_data_create(size_t nodesCount) {
-  vulkan_scene_data *sceneData = core_alloc(sizeof(vulkan_scene_data));
-  core_array_alloc(sceneData->nodes, nodesCount);
-  sceneData->camera = vulkan_camera_create();
-  sceneData->dirty = true;
-  return sceneData;
-}
-
 void vulkan_node_debug_print(vulkan_node *node) {
   log_debug("node:\n");
   glm_mat4_print(node->modelMat, stderr);
@@ -94,7 +86,18 @@ void vulkan_node_debug_print(vulkan_node *node) {
   }
 }
 
+vulkan_scene_data *vulkan_scene_data_create(size_t nodesCount, UT_string *name) {
+  vulkan_scene_data *sceneData = core_alloc(sizeof(vulkan_scene_data));
+  utstring_new(sceneData->name);
+  utstring_concat(sceneData->name, name);
+  core_array_alloc(sceneData->nodes, nodesCount);
+  sceneData->camera = vulkan_camera_create();
+  sceneData->dirty = true;
+  return sceneData;
+}
+
 void vulkan_scene_data_destroy(vulkan_scene_data *sceneData) {
+  utstring_free(sceneData->name);
   core_array_foreach(sceneData->nodes, vulkan_node * node, { vulkan_node_deinit(node); });
   core_array_dealloc(sceneData->nodes);
   vulkan_camera_destroy(sceneData->camera);
@@ -283,7 +286,8 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode) {
   return node;
 }
 
-vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *gltfPath) {
+vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *gltfName,
+                                                           UT_string *gltfPath) {
   cgltf_options options = {0};
   cgltf_data *data = NULL;
   cgltf_result result = cgltf_result_success;
@@ -301,6 +305,22 @@ vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *gltfPath) 
   size_t nodesCount = cgltfScene->nodes_count;
   size_t bufferViewsCount = data->buffer_views_count;
   size_t accessorsCount = data->accessors_count;
+  vulkan_scene_data *sceneData = vulkan_scene_data_create(nodesCount, gltfName);
+
+  for (size_t nodeIdx = 0; nodeIdx < nodesCount; nodeIdx++) {
+    vulkan_node node = parse_cgltf_node(cgltfScene->nodes[nodeIdx]);
+    sceneData->nodes.ptr[nodeIdx] = node;
+  }
+  // TODO: cameras from gltf file
+  cgltf_free(data);
+
+  return sceneData;
+}
+
+vulkan_scene_data *vulkan_scene_data_create_with_asset_db(UT_string *sceneName,
+                                                          data_asset_db *assetDb) {
+  // HIRO: load from asset_db
+  /*
   vulkan_scene_data *sceneData = vulkan_scene_data_create(nodesCount);
 
   HASH_START(sceneState)
@@ -314,5 +334,6 @@ vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *gltfPath) 
   HASH_END(sceneState)
   cgltf_free(data);
 
-  return sceneData;
+  return sceneData;*/
+  return NULL;
 }

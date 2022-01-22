@@ -43,8 +43,8 @@ void write_default_config() {
 void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetInput) {
   log_info("processing gltf '%s' in '%s'", utstring_body(assetInput->sourceAssetName),
            utstring_body(assetInput->sourceAssetPath));
-  vulkan_scene_data *sceneData =
-      vulkan_scene_data_create_with_gltf_file(assetInput->sourceAssetPath);
+  vulkan_scene_data *sceneData = vulkan_scene_data_create_with_gltf_file(
+      assetInput->sourceAssetName, assetInput->sourceAssetPath);
   UT_array *nodeHashes = NULL;
   utarray_alloc(nodeHashes, sizeof(hash_t));
   for (size_t nodeIdx = 0; nodeIdx < core_array_count(sceneData->nodes); nodeIdx++) {
@@ -58,38 +58,37 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
     for (size_t primIdx = 0; primIdx < core_array_count(mesh->primitives); primIdx++) {
       vulkan_mesh_primitive *primitive = &mesh->primitives.ptr[primIdx];
 
-      data_asset_db_insert_primitive_topology_int(assetDb, &primitive->hash,
-                                                  sizeof(primitive->hash), primitive->topology);
-      data_asset_db_insert_primitive_indices_blob(
-          assetDb, &primitive->hash, sizeof(primitive->hash), utarray_blob(primitive->indices));
-      data_asset_db_insert_primitive_positions_blob(
-          assetDb, &primitive->hash, sizeof(primitive->hash), utarray_blob(primitive->positions));
-      data_asset_db_insert_primitive_normals_blob(
-          assetDb, &primitive->hash, sizeof(primitive->hash), utarray_blob(primitive->normals));
-      data_asset_db_insert_primitive_colors_blob(assetDb, &primitive->hash, sizeof(primitive->hash),
+      data_asset_db_insert_primitive_topology_int(assetDb, hash_blob(primitive->hash),
+                                                  primitive->topology);
+      data_asset_db_insert_primitive_indices_blob(assetDb, hash_blob(primitive->hash),
+                                                  utarray_blob(primitive->indices));
+      data_asset_db_insert_primitive_positions_blob(assetDb, hash_blob(primitive->hash),
+                                                    utarray_blob(primitive->positions));
+      data_asset_db_insert_primitive_normals_blob(assetDb, hash_blob(primitive->hash),
+                                                  utarray_blob(primitive->normals));
+      data_asset_db_insert_primitive_colors_blob(assetDb, hash_blob(primitive->hash),
                                                  utarray_blob(primitive->colors));
-      data_asset_db_insert_primitive_tex_coords_blob(
-          assetDb, &primitive->hash, sizeof(primitive->hash), utarray_blob(primitive->texCoords));
+      data_asset_db_insert_primitive_tex_coords_blob(assetDb, hash_blob(primitive->hash),
+                                                     utarray_blob(primitive->texCoords));
 
       utarray_push_back(primitiveHashes, &primitive->hash);
     }
 
-    data_asset_db_insert_mesh_primitives_hash_array(assetDb, &mesh->hash, sizeof(mesh->hash),
+    data_asset_db_insert_mesh_primitives_hash_array(assetDb, hash_blob(mesh->hash),
                                                     utarray_hash_array(primitiveHashes));
     utarray_free(primitiveHashes);
 
-    data_asset_db_insert_node_transform_blob(assetDb, &node->hash, sizeof(node->hash),
+    data_asset_db_insert_node_transform_blob(assetDb, hash_blob(node->hash),
                                              (data_blob){node->modelMat, sizeof(node->modelMat)});
-    data_asset_db_insert_node_mesh_hash(assetDb, &node->hash, sizeof(node->hash), node->mesh.hash);
+    data_asset_db_insert_node_mesh_hash(assetDb, hash_blob(node->hash), node->mesh.hash);
     utarray_push_back(nodeHashes, &node->hash);
     // TODO: child nodes
   }
-  data_asset_db_insert_scene_nodes_hash_array(assetDb, &sceneData->hash, sizeof(sceneData->hash),
+  data_asset_db_insert_scene_nodes_hash_array(assetDb, utstring_blob(sceneData->name),
                                               utarray_hash_array(nodeHashes));
 
   data_blob cameraBlob = vulkan_camera_serialize(sceneData->camera);
-  data_asset_db_insert_scene_cameras_blob(assetDb, &sceneData->hash, sizeof(sceneData->hash),
-                                          cameraBlob);
+  data_asset_db_insert_scene_cameras_blob(assetDb, utstring_blob(sceneData->name), cameraBlob);
   core_free(cameraBlob.memory);
 
   // TODO: Add textures to pipeline.

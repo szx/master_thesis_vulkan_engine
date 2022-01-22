@@ -33,9 +33,9 @@ void data_asset_db_save_empty(data_asset_db *assetDb) {
 }
 
 #define def_insert(_table, _column, _type, ...)                                                    \
-  void data_asset_db_insert_##_table##_##_column##_##_type(data_asset_db *assetDb, void *key,      \
-                                                           size_t keySize, data##_##_type value) { \
-    data_db_insert_##_type(assetDb->db, #_table, key, keySize, #_column, value, true);             \
+  void data_asset_db_insert_##_table##_##_column##_##_type(data_asset_db *assetDb, data_blob key,  \
+                                                           data##_##_type value) {                 \
+    data_db_insert_##_type(assetDb->db, #_table, key, #_column, value, true);                      \
   }
 DATA_ASSET_DB_COLUMNS(def_insert, )
 #undef def_insert
