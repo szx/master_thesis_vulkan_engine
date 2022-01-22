@@ -70,17 +70,16 @@ def codegen_macros(config: ConfigParser):
     decls.append(f'#define DATA_ASSET_DB_TABLES(X, ...) \\')
     for key, value in asset_db_ini.items():
         key_def, _, value_defs = value.partition(",")
-        key_def = key_def.strip()
-        value_defs = value_defs.replace(',', ' ').strip().split()
-        decls.append(f'  X({key}, "{key_def.strip()}", {", ".join(value_defs)}, __VA_ARGS__) \\')
+        key_name, key_type = key_def.replace(',', ' ').strip().split()
+        value_defs = [x.lower() for x in value_defs.replace(',', ' ').strip().split()]
+        decls.append(f'  X({key}, {key_name.lower()}, {key_type.lower()}, {", ".join(value_defs)}, __VA_ARGS__) \\')
     decls.append(f'  END_OF_DATA_ASSET_DB_TABLES')
 
     decls.append(f'\n#define END_OF_DATA_ASSET_DB_COLUMNS')
     decls.append(f'#define DATA_ASSET_DB_COLUMNS(X, ...) \\')
     for key, value in asset_db_ini.items():
         for column, _, sqliteType in [value_def.strip().partition(' ') for value_def in value.split(',')]:
-            if column != "key":
-                decls.append(f'  X({key}, {column}, {sqliteType.lower()}, __VA_ARGS__) \\')
+            decls.append(f'  X({key}, {column}, {sqliteType.lower()}, __VA_ARGS__) \\')
     decls.append(f'  END_OF_DATA_ASSET_DB_COLUMNS')
 
     output_strings(decls, get_output_path('macros.h'))

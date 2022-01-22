@@ -72,10 +72,6 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
                                                      utarray_blob(primitive->texCoords));
 
       utarray_push_back(primitiveHashes, &primitive->hash);
-
-      // Quick sanity check.
-      assert(data_db_select_hash(assetDb->db, "primitive", hash_blob(primitive->hash), "key") ==
-             primitive->hash);
     }
 
     data_asset_db_insert_mesh_primitives_hash_array(assetDb, hash_blob(mesh->hash),
@@ -96,6 +92,14 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
   core_free(cameraBlob.memory);
 
   // TODO: Add textures to pipeline.
+
+  {
+    // Quick sanity check.
+    UT_string *name = data_asset_db_select_scene_key_text(assetDb, utstring_blob(sceneData->name));
+    assert(strcmp(utstring_body(name), utstring_body(sceneData->name)) == 0);
+    utstring_free(name);
+  }
+
   utarray_free(nodeHashes);
   vulkan_scene_data_destroy(sceneData);
 }

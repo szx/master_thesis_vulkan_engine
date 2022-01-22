@@ -15,7 +15,7 @@ void data_db_destroy(data_db *db);
 /* supported data types */
 
 typedef int data_int;
-typedef UT_string *data_str;
+typedef UT_string *data_text;
 typedef struct data_blob {
   void *memory;
   size_t size;
@@ -35,7 +35,7 @@ typedef data_blob data_hash_array;
 
 data_int data_db_select_int(data_db *db, char *table, data_blob key, char *column);
 
-data_str data_db_select_str(data_db *db, char *table, data_blob key, char *column);
+data_text data_db_select_text(data_db *db, char *table, data_blob key, char *column);
 
 data_blob data_db_select_blob(data_db *db, char *table, data_blob key, char *column);
 
@@ -48,8 +48,8 @@ data_hash_array data_db_select_hash_array(data_db *db, char *table, data_blob ke
 void data_db_insert_int(data_db *db, char *table, data_blob key, char *column, data_int value,
                         bool updateIfExists);
 
-void data_db_insert_str(data_db *db, char *table, data_blob key, char *column, data_str value,
-                        bool updateIfExists);
+void data_db_insert_text(data_db *db, char *table, data_blob key, char *column, data_text value,
+                         bool updateIfExists);
 
 void data_db_insert_blob(data_db *db, char *table, data_blob key, char *column, data_blob value,
                          bool updateIfExists);
@@ -66,6 +66,6 @@ void data_db_insert_hash_array(data_db *db, char *table, data_blob key, char *co
 /// NOTE: SQLite has "dynamic type system", which means that we can store
 ///       integers in text fields.
 void data_db_create_key_value_table_for_multiple_values(data_db *db, char *table,
-                                                        const char *keyDef,
+                                                        const char *keyName, const char *keyType,
                                                         const char *columnDefs[],
                                                         size_t columnDefsCount);

@@ -65,7 +65,7 @@ data_int data_db_select_int(data_db *db, char *table, data_blob key, char *colum
   return value;
 }
 
-data_str data_db_select_str(data_db *db, char *table, data_blob key, char *column) {
+data_text data_db_select_text(data_db *db, char *table, data_blob key, char *column) {
   UT_string *value;
   utstring_new(value);
   SQLITE_PREPARE("SELECT key, %s FROM %s WHERE key = ?;", column, table);
@@ -117,8 +117,8 @@ void data_db_insert_int(data_db *db, char *table, data_blob key, char *column, d
   SQLITE_FINALIZE();
 }
 
-void data_db_insert_str(data_db *db, char *table, data_blob key, char *column, data_str value,
-                        bool updateIfExists) {
+void data_db_insert_text(data_db *db, char *table, data_blob key, char *column, data_text value,
+                         bool updateIfExists) {
   const char *query;
   if (updateIfExists) {
     query =
@@ -161,22 +161,29 @@ void data_db_insert_hash_array(data_db *db, char *table, data_blob key, char *co
 }
 
 void data_db_create_key_value_table_for_multiple_values(data_db *db, char *table,
-                                                        const char *keyDef,
+                                                        const char *keyName, const char *keyType,
                                                         const char *columnDefs[],
                                                         size_t columnDefsCount) {
   static UT_string *sql = NULL;
   SQLITE_EXEC("DROP TABLE IF EXISTS %s;", table);
+
+  if (strcmp(keyType, "hash") == 0 || strcmp(keyType, "hash_array") == 0) {
+    // Hash is just a blob with special *_get() and *_insert().
+    keyType = "blob";
+  }
   UT_string *columns;
   utstring_new(columns);
   for (size_t i = 0; i < columnDefsCount; i += 2) {
     const char *name = columnDefs[i];
     const char *type = columnDefs[i + 1];
-    if (strcmp(type, "HASH") == 0 || strcmp(type, "HASH_ARRAY") == 0) {
+    if (strcmp(type, "hash") == 0 || strcmp(type, "hash_array") == 0) {
       // Hash is just a blob with special *_get() and *_insert().
-      type = "BLOB";
+      type = "blob";
     }
     utstring_printf(columns, "%s %s%s", name, type, (i + 2 < columnDefsCount ? "," : ""));
   }
-  SQLITE_EXEC("CREATE TABLE %s(%s PRIMARY KEY, %s);", table, keyDef, utstring_body(columns));
+
+  SQLITE_EXEC("CREATE TABLE %s(%s %s PRIMARY KEY, %s);", table, keyName, keyType,
+              utstring_body(columns));
   utstring_free(columns);
 }
