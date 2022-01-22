@@ -60,5 +60,5 @@ void vulkan_scene_data_debug_print(vulkan_scene_data *sceneData);
 /* asset pipeline */
 vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *gltfName,
                                                            UT_string *gltfPath);
-vulkan_scene_data *vulkan_scene_data_create_with_asset_db(UT_string *sceneName,
-                                                          data_asset_db *assetDb);
+vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb,
+                                                          UT_string *sceneName);

@@ -1,13 +1,16 @@
 #include "scene.h"
 
-vulkan_scene *vulkan_scene_create(vulkan_device *vkd, UT_string *sceneName) {
+vulkan_scene *vulkan_scene_create(data_asset_db *assetDb, vulkan_device *vkd,
+                                  UT_string *sceneName) {
   vulkan_scene *scene = core_alloc(sizeof(vulkan_scene));
+  scene->assetDb = assetDb;
   scene->vkd = vkd;
-  panic("not implemented"); // HIRO build buffers
-  return scene;
+  scene->data = vulkan_scene_data_create_with_asset_db(scene->assetDb, sceneName);
   /*scene->geometryBuffer = vulkan_geometry_buffer_create();
   scene->uniformBuffer = vulkan_uniform_buffer_create(vkd);
   vulkan_scene_build_geometry_buffer(scene);*/
+  panic("vulkan_scene_create not implemented"); // HIRO build buffers
+  return scene;
 }
 
 void vulkan_scene_destroy(vulkan_scene *scene) {

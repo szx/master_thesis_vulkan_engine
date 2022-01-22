@@ -18,6 +18,16 @@ void data_db_destroy(data_db *db) {
   core_free(db);
 }
 
+UT_array *hash_array_utarray(data_hash_array hashArray) {
+  UT_array *hashes = NULL;
+  utarray_alloc(hashes, sizeof(hash_t));
+  utarray_resize(hashes, hashArray.size / sizeof(hash_t));
+  for (size_t i = 0; i < utarray_len(hashes); i++) {
+    *(hash_t *)utarray_eltptr(hashes, i) = ((hash_t *)hashArray.memory)[i];
+  }
+  return hashes;
+}
+
 #define SQLITE_PREPARE(query, ...)                                                                 \
   do {                                                                                             \
     sqlite3_stmt *_stmt;                                                                           \

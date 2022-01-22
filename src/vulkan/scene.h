@@ -10,7 +10,8 @@
 /// Describes a scene.
 /// Does not create any Vulkan objects (see vulkan_render_context).
 typedef struct vulkan_scene {
-  vulkan_device *vkd; /// vulkan_device pointer
+  data_asset_db *assetDb; /// data_asset_db pointer
+  vulkan_device *vkd;     /// vulkan_device pointer
   vulkan_scene_data *data;
   vulkan_geometry_buffer *geometryBuffer;
   vulkan_uniform_buffer *uniformBuffer;
@@ -19,7 +20,7 @@ typedef struct vulkan_scene {
   // TODO Save and load scene from disk.
 } vulkan_scene;
 
-vulkan_scene *vulkan_scene_create(vulkan_device *vkd, UT_string *sceneName);
+vulkan_scene *vulkan_scene_create(data_asset_db *assetDb, vulkan_device *vkd, UT_string *sceneName);
 void vulkan_scene_destroy(vulkan_scene *scene);
 void vulkan_scene_debug_print(vulkan_scene *scene);
 

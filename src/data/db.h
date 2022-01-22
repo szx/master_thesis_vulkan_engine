@@ -31,6 +31,8 @@ typedef hash_t data_hash;
 typedef data_blob data_hash_array;
 #define utarray_hash_array(_array) utarray_blob(_array)
 
+UT_array *hash_array_utarray(data_hash_array hashArray);
+
 /* select */
 
 data_int data_db_select_int(data_db *db, char *table, data_blob key, char *column);

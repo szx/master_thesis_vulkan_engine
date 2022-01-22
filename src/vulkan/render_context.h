@@ -80,6 +80,8 @@ vulkan_swap_chain_frame vulkan_swap_chain_frame_copy(vulkan_swap_chain_frame *fr
 
 /// Manages frame-agnostic resources and frames used to render into swap chain.
 typedef struct vulkan_render_context {
+  data_config *config;                                 /// INI configuration.
+  data_asset_db *assetDb;                              // Asset database.
   vulkan_device *vkd;                                  /// Vulkan device.
   vulkan_swap_chain *vks;                              /// Vulkan swap chain.
   vulkan_pipeline *pipeline;                           /// Rendering pipeline.
@@ -97,12 +99,12 @@ typedef struct vulkan_render_context {
 } vulkan_render_context;
 
 void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config,
-                                data_asset_db *assetDb, char *sceneName);
+                                data_asset_db *assetDb, UT_string *sceneName);
 void vulkan_render_context_deinit(vulkan_render_context *rctx);
 /// Recreate vulkan_render_context when swap chain is out-of-date.
 void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx);
 /// Load scene.
-void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneName);
+void vulkan_render_context_load_scene(vulkan_render_context *rctx, UT_string *sceneName);
 
 /// Update render_context data on CPU. Can make scene dirty.
 void vulkan_render_context_update_data(vulkan_render_context *rctx);
@@ -124,4 +126,3 @@ void vulkan_pipeline_record_frame_command_buffer(vulkan_scene *scene, vulkan_pip
 void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
                                                     vulkan_render_pass *renderPass,
                                                     vulkan_swap_chain_frame *frame);
-

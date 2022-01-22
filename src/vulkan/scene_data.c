@@ -317,23 +317,34 @@ vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *gltfName,
   return sceneData;
 }
 
-vulkan_scene_data *vulkan_scene_data_create_with_asset_db(UT_string *sceneName,
-                                                          data_asset_db *assetDb) {
-  // HIRO: load from asset_db
-  /*
-  vulkan_scene_data *sceneData = vulkan_scene_data_create(nodesCount);
+vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb,
+                                                          UT_string *sceneName) {
+  vulkan_scene_data *sceneData = NULL;
 
-  HASH_START(sceneState)
+  data_hash_array nodeHashArray =
+      data_asset_db_select_scene_nodes_hash_array(assetDb, utstring_blob(sceneName));
+  UT_array *nodeHashes = hash_array_utarray(nodeHashArray);
+
+  sceneData = vulkan_scene_data_create(utarray_len(nodeHashes), sceneName);
+
+  hash_t *nodeHash = NULL;
+  while ((nodeHash = (utarray_next(nodeHashes, nodeHash)))) {
+    data_blob transformBlob =
+        data_asset_db_select_node_transform_blob(assetDb, hash_blob(*nodeHash));
+    // HIRO serialization/deserialization - could use codegen
+    log_debug("      %zx\n", *nodeHash);
+  }
+  // HIRO: load from asset_db
+
+  /*vulkan_scene_data *sceneData = vulkan_scene_data_create(nodesCount);
+
   for (size_t nodeIdx = 0; nodeIdx < nodesCount; nodeIdx++) {
     vulkan_node node = parse_cgltf_node(cgltfScene->nodes[nodeIdx]);
     sceneData->nodes.ptr[nodeIdx] = node;
     HASH_UPDATE(sceneState, &node.hash, sizeof(node.hash))
   }
-  // TODO: cameras from gltf file
-  HASH_DIGEST(sceneState, sceneData->hash)
-  HASH_END(sceneState)
-  cgltf_free(data);
 
   return sceneData;*/
-  return NULL;
+  panic("vulkan_scene_data_create_with_asset_db not implemented");
+  return sceneData;
 }

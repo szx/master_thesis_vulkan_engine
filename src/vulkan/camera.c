@@ -23,6 +23,7 @@ void vulkan_camera_update_aspect_ratio(vulkan_camera *camera, float aspectRatio)
 }
 
 data_blob vulkan_camera_serialize(vulkan_camera *camera) {
+  // HIRO use codegen for serialization/deserialization
   data_blob blob;
   blob.size = 11 * sizeof(float);
   blob.memory = core_alloc(blob.size);

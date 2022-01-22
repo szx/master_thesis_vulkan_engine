@@ -343,7 +343,9 @@ void create_synchronization_objects(vulkan_render_context *rctx) {
 }
 
 void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config,
-                                data_asset_db *assetDb, char *sceneName) {
+                                data_asset_db *assetDb, UT_string *sceneName) {
+  rctx->config = config;
+  rctx->assetDb = assetDb;
   rctx->vkd = vulkan_device_create(config, assetDb);
   rctx->scene = NULL;
   vulkan_render_context_load_scene(rctx, sceneName);
@@ -408,15 +410,12 @@ void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx) {
   // gui.initialize();
 }
 
-void vulkan_render_context_load_scene(vulkan_render_context *rctx, char *sceneName) {
+void vulkan_render_context_load_scene(vulkan_render_context *rctx, UT_string *sceneName) {
   verify(rctx->vkd != NULL);
   if (rctx->scene != NULL) {
     vulkan_scene_destroy(rctx->scene);
   }
-  UT_string *gltfPath = get_asset_file_path(sceneName, sceneName);
-  utstring_printf(gltfPath, ".gltf");
-  rctx->scene = vulkan_scene_create(rctx->vkd, gltfPath); // HIRO
-  utstring_free(gltfPath);
+  rctx->scene = vulkan_scene_create(rctx->assetDb, rctx->vkd, sceneName);
   vulkan_scene_debug_print(rctx->scene);
   // vulkan_render_pass_validate(rctx->pipeline->renderPass,
   //                             rctx->scene); // TODO: vulkan_pipeline_validate().

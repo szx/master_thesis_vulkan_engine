@@ -7,7 +7,7 @@ int main(int argc, char *argv[]) {
   data_config *config = data_config_create();
   data_asset_db *assetDb = data_asset_db_create();
   vulkan_render_context rctx;
-  vulkan_render_context_init(&rctx, config, assetDb, "triangles");
+  vulkan_render_context_init(&rctx, config, assetDb, config->settingsStartScene);
   vulkan_render_context_update_data(&rctx);
   vulkan_render_context_send_to_device(&rctx);
 
