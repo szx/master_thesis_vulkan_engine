@@ -22,31 +22,10 @@ void vulkan_camera_update_aspect_ratio(vulkan_camera *camera, float aspectRatio)
   camera->dirty = true;
 }
 
-data_blob vulkan_camera_serialize(vulkan_camera *camera) {
-  // HIRO use codegen for serialization/deserialization
-  data_blob blob;
-  blob.size = 11 * sizeof(float);
-  blob.memory = core_alloc(blob.size);
-  float *ptr = blob.memory;
-#define SERIALIZE_FLOAT(_ptr, _field)                                                              \
-  do {                                                                                             \
-    *_ptr = camera->_field;                                                                        \
-    _ptr++;                                                                                        \
-  } while (0)
-  SERIALIZE_FLOAT(ptr, position[0]);
-  SERIALIZE_FLOAT(ptr, position[1]);
-  SERIALIZE_FLOAT(ptr, position[2]);
-  SERIALIZE_FLOAT(ptr, rotation[0]);
-  SERIALIZE_FLOAT(ptr, rotation[1]);
-  SERIALIZE_FLOAT(ptr, rotation[2]);
-  SERIALIZE_FLOAT(ptr, rotation[3]);
-  SERIALIZE_FLOAT(ptr, fovY);
-  SERIALIZE_FLOAT(ptr, aspectRatio);
-  SERIALIZE_FLOAT(ptr, nearZ);
-  SERIALIZE_FLOAT(ptr, farZ);
-#undef SERIALIZE_FLOAT
-  return blob;
-}
+SERIALIZE_DEF(vulkan_camera, position[0], position[1], position[2], rotation[0], rotation[1],
+              rotation[2], rotation[3], fovY, aspectRatio, nearZ, farZ)
+DESERIALIZE_DEF(vulkan_camera, position[0], position[1], position[2], rotation[0], rotation[1],
+                rotation[2], rotation[3], fovY, aspectRatio, nearZ, farZ)
 
 void vulkan_camera_update_uniform_buffer_data(vulkan_camera *camera,
                                               vulkan_uniform_buffer *uniformBuffer) {

@@ -93,12 +93,20 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
 
   // TODO: Add textures to pipeline.
 
+#if defined(DEBUG)
   {
     // Quick sanity check.
     UT_string *name = data_asset_db_select_scene_key_text(assetDb, utstring_blob(sceneData->name));
     assert(strcmp(utstring_body(name), utstring_body(sceneData->name)) == 0);
     utstring_free(name);
+
+    vulkan_camera *camera = vulkan_camera_create();
+    vulkan_camera_deserialize(
+        camera, data_asset_db_select_scene_cameras_blob(assetDb, utstring_blob(sceneData->name)));
+    assert(sceneData->camera->nearZ == camera->nearZ);
+    vulkan_camera_destroy(camera);
   }
+#endif
 
   utarray_free(nodeHashes);
   vulkan_scene_data_destroy(sceneData);
