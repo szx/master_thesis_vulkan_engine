@@ -1,8 +1,6 @@
 #include "scene_data.h"
 
-void vulkan_mesh_primitive_init(vulkan_mesh_primitive *primitive, VkPrimitiveTopology topology,
-                                vulkan_attribute_type vertexAttributes,
-                                vulkan_index_type indexType) {
+void vulkan_primitive_init(vulkan_primitive *primitive, VkPrimitiveTopology topology) {
   primitive->topology = topology;
   primitive->vertexCount = 0;
   utarray_alloc(primitive->positions, sizeof(vec3));
@@ -11,14 +9,14 @@ void vulkan_mesh_primitive_init(vulkan_mesh_primitive *primitive, VkPrimitiveTop
   utarray_alloc(primitive->texCoords, sizeof(vec2));
 
   primitive->indexCount = 0;
-  primitive->indexType = indexType;
+  primitive->indexType = vulkan_index_type_uint32;
   primitive->indexStride = index_type_to_index_stride(primitive->indexType);
   utarray_alloc(primitive->indices, primitive->indexStride);
 
   primitive->hash = 0;
 }
 
-void vulkan_mesh_primitive_deinit(vulkan_mesh_primitive *primitive) {
+void vulkan_primitive_deinit(vulkan_primitive *primitive) {
   utarray_free(primitive->positions);
   utarray_free(primitive->normals);
   utarray_free(primitive->colors);
@@ -31,26 +29,26 @@ void vulkan_mesh_init(vulkan_mesh *mesh, size_t primitiveCount) {
 }
 
 void vulkan_mesh_deinit(vulkan_mesh *mesh) {
-  core_array_foreach(mesh->primitives, vulkan_mesh_primitive * primitive,
-                     { vulkan_mesh_primitive_deinit(primitive); });
+  core_array_foreach(mesh->primitives, vulkan_primitive * primitive,
+                     { vulkan_primitive_deinit(primitive); });
   core_array_dealloc(mesh->primitives);
 }
 
-void vulkan_node_init(vulkan_node *node, vulkan_mesh mesh) {
+void vulkan_node_init(vulkan_node *node, vulkan_mesh mesh, mat4 transform, hash_t hash) {
   node->mesh = mesh;
-  glm_mat4_identity(node->modelMat);
-  node->hash = 0;
+  glm_mat4_copy(transform, node->transform);
+  node->hash = hash;
 }
 
 void vulkan_node_deinit(vulkan_node *node) { vulkan_mesh_deinit(&node->mesh); }
 
 void vulkan_node_debug_print(vulkan_node *node) {
   log_debug("node:\n");
-  glm_mat4_print(node->modelMat, stderr);
+  glm_mat4_print(node->transform, stderr);
   log_debug("  hash=%zu", node->hash);
   vulkan_mesh *mesh = &node->mesh;
   for (size_t j = 0; j < core_array_count(mesh->primitives); j++) {
-    vulkan_mesh_primitive *primitive = &mesh->primitives.ptr[j];
+    vulkan_primitive *primitive = &mesh->primitives.ptr[j];
     log_debug("  primitive %d: %s\n", j, VkPrimitiveTopology_debug_str(primitive->topology));
     log_debug("    index: %s stride=%d count=%d\n",
               vulkan_index_type_debug_str(primitive->indexType), primitive->indexStride,
@@ -196,8 +194,8 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode) {
       verify(vertexCount == cgltfAttribute->data->count);
     }
 
-    vulkan_mesh_primitive primitive;
-    vulkan_mesh_primitive_init(&primitive, topology, vertexAttributes, indexType);
+    vulkan_primitive primitive;
+    vulkan_primitive_init(&primitive, topology);
     primitive.vertexCount = vertexCount;
     primitive.indexCount = indexCount;
 
@@ -273,12 +271,12 @@ vulkan_node parse_cgltf_node(cgltf_node *cgltfNode) {
   HASH_END(meshHash)
 
   vulkan_node node;
-  vulkan_node_init(&node, mesh);
+  vulkan_node_init(&node, mesh, GLM_MAT4_IDENTITY, 0);
   // TODO: Animation, will probably require cgltf_node_transform_local().
-  cgltf_node_transform_world(cgltfNode, (float *)node.modelMat);
+  cgltf_node_transform_world(cgltfNode, (float *)node.transform);
   // TODO: child nodes
   HASH_START(nodeState)
-  HASH_UPDATE(nodeState, &node.modelMat, sizeof(node.modelMat))
+  HASH_UPDATE(nodeState, &node.transform, sizeof(node.transform))
   HASH_UPDATE(nodeState, &node.mesh.hash, sizeof(node.mesh.hash))
   HASH_DIGEST(nodeState, node.hash)
   HASH_END(nodeState)
@@ -332,12 +330,37 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
   vulkan_camera_deserialize(sceneData->camera, cameraBlob);
 
   hash_t *nodeHash = NULL;
+  size_t nodeIdx = 0;
   while ((nodeHash = (utarray_next(nodeHashes, nodeHash)))) {
-    data_mat4 transformMat =
-        data_asset_db_select_node_transform_mat4(assetDb, hash_blob(*nodeHash));
-    glm_mat4_print(transformMat.value, stdout);
+    /* node data */
+    data_mat4 transform = data_asset_db_select_node_transform_mat4(assetDb, hash_blob(*nodeHash));
+    // TODO: Chlid nodes.
+    data_hash meshHash = data_asset_db_select_node_mesh_hash(assetDb, hash_blob(*nodeHash));
+    vulkan_node node;
 
-    log_debug("      %zx\n", *nodeHash);
+    /* mesh data */
+    data_hash_array primitiveHashArray =
+        data_asset_db_select_mesh_primitives_hash_array(assetDb, hash_blob(meshHash));
+    UT_array *primitiveHashes = hash_array_utarray(primitiveHashArray);
+    vulkan_mesh mesh;
+    vulkan_mesh_init(&mesh, utarray_len(primitiveHashes));
+
+    /* primitive data */
+    hash_t *primitiveHash = NULL;
+    size_t primitiveIdx = 0;
+    while ((primitiveHash = (utarray_next(primitiveHashes, primitiveHash)))) {
+      VkPrimitiveTopology topology =
+          data_asset_db_select_primitive_topology_int(assetDb, hash_blob(*primitiveHash));
+      vulkan_primitive primitive;
+      vulkan_primitive_init(&primitive, topology);
+      // HIRO read attributes
+      // HIRO just rewrite scene_data, remove core_array, SoA for primitives, meshes, nodes.
+      mesh.primitives.ptr[primitiveIdx++] = primitive;
+    }
+
+    /* add node */
+    vulkan_node_init(&node, mesh, transform.value, *nodeHash);
+    sceneData->nodes.ptr[nodeIdx++] = node;
   }
   // HIRO: load from asset_db
 

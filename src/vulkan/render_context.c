@@ -568,18 +568,18 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
     log_trace("draw node %d", nodeIdx);
     {
       // TODO: separate push constants to another function
-      void *pushConstantValuePtr = &node->modelMat;
+      void *pushConstantValuePtr = &node->transform;
       VkShaderStageFlags pushConstantStageFlags = vulkan_shader_info_get_push_constant_stage_flags(
           renderPass->vertShader, renderPass->fragShader);
       uint32_t pushConstantOffset = 0;
-      assert(sizeof(node->modelMat) == renderPass->vertShader->info.pushConstantDescription->size);
+      assert(sizeof(node->transform) == renderPass->vertShader->info.pushConstantDescription->size);
       vkCmdPushConstants(frame->commandBuffer, renderPass->pipelineLayout, pushConstantStageFlags,
-                         pushConstantOffset, sizeof(node->modelMat), pushConstantValuePtr);
+                         pushConstantOffset, sizeof(node->transform), pushConstantValuePtr);
     }
     vulkan_mesh *mesh = &node->mesh;
     for (size_t primitiveIdx = 0; primitiveIdx < core_array_count(mesh->primitives);
          primitiveIdx++) {
-      vulkan_mesh_primitive *primitive = &mesh->primitives.ptr[primitiveIdx];
+      vulkan_primitive *primitive = &mesh->primitives.ptr[primitiveIdx];
 
       size_t bindingCount = vulkan_shader_info_get_binding_count(&renderPass->vertShader->info);
       assert(bindingCount == 1);

@@ -67,11 +67,11 @@ UT_array *hash_array_utarray(data_hash_array hashArray) {
 /* select */
 
 data_int data_db_select_int(data_db *db, char *table, data_blob key, char *column) {
-  int value = 0;
+  uint64_t value = 0;
   SQLITE_PREPARE("SELECT key, %s FROM %s WHERE key = ?;", column, table);
   sqlite3_bind_blob(_stmt, 1, key.memory, key.size, NULL);
   SQLITE_STEP(SQLITE_ROW);
-  value = sqlite3_column_int(_stmt, 1);
+  value = sqlite3_column_int64(_stmt, 1);
   SQLITE_FINALIZE();
   return value;
 }
@@ -126,9 +126,9 @@ void data_db_insert_int(data_db *db, char *table, data_blob key, char *column, d
                         bool updateIfExists) {
   const char *query;
   if (updateIfExists) {
-    query = "INSERT INTO %s (key, %s) VALUES (?, %d) ON CONFLICT (key) DO UPDATE SET %s = %d;";
+    query = "INSERT INTO %s (key, %s) VALUES (?, %zu) ON CONFLICT (key) DO UPDATE SET %s = %zu;";
   } else {
-    query = "INSERT INTO %s (key, %s) VALUES (?, %d) ON CONFLICT (key) DO NOTHING;";
+    query = "INSERT INTO %s (key, %s) VALUES (?, %zu) ON CONFLICT (key) DO NOTHING;";
   }
   SQLITE_PREPARE(query, table, column, value, column, value);
   sqlite3_bind_blob(_stmt, 1, key.memory, key.size, NULL);

@@ -56,7 +56,7 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
     utarray_alloc(primitiveHashes, sizeof(hash_t));
 
     for (size_t primIdx = 0; primIdx < core_array_count(mesh->primitives); primIdx++) {
-      vulkan_mesh_primitive *primitive = &mesh->primitives.ptr[primIdx];
+      vulkan_primitive *primitive = &mesh->primitives.ptr[primIdx];
 
       data_asset_db_insert_primitive_topology_int(assetDb, hash_blob(primitive->hash),
                                                   primitive->topology);
@@ -79,7 +79,7 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
     utarray_free(primitiveHashes);
 
     data_mat4 transformMat;
-    glm_mat4_copy(node->modelMat, transformMat.value);
+    glm_mat4_copy(node->transform, transformMat.value);
     data_asset_db_insert_node_transform_mat4(assetDb, hash_blob(node->hash), transformMat);
 
     data_asset_db_insert_node_mesh_hash(assetDb, hash_blob(node->hash), node->mesh.hash);
@@ -103,9 +103,11 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
     utstring_free(name);
 
     vulkan_camera *camera = vulkan_camera_create();
-    vulkan_camera_deserialize(
-        camera, data_asset_db_select_scene_cameras_blob(assetDb, utstring_blob(sceneData->name)));
+    data_blob blob =
+        data_asset_db_select_scene_cameras_blob(assetDb, utstring_blob(sceneData->name));
+    vulkan_camera_deserialize(camera, blob);
     assert(sceneData->camera->nearZ == camera->nearZ);
+    data_blob_free_memory(blob);
     vulkan_camera_destroy(camera);
   }
 #endif

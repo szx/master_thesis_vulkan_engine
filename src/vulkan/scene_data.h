@@ -5,7 +5,7 @@
 #include "camera.h"
 
 /// Contains index buffer, interleaved vertex stream and topology of the part of the mesh.
-typedef struct vulkan_mesh_primitive {
+typedef struct vulkan_primitive {
   VkPrimitiveTopology topology;
   uint32_t vertexCount;
   UT_array *positions; /// vec3
@@ -18,15 +18,13 @@ typedef struct vulkan_mesh_primitive {
   uint32_t indexStride; /// Calculated using indexType.
   UT_array *indices;    /// uint32_t
   hash_t hash;          /// Hash, used to prevent duplicates in asset database.
-} vulkan_mesh_primitive;
+} vulkan_primitive;
 
-void vulkan_mesh_primitive_init(vulkan_mesh_primitive *primitive, VkPrimitiveTopology topology,
-                                vulkan_attribute_type vertexAttributes,
-                                vulkan_index_type indexType);
-void vulkan_mesh_primitive_deinit(vulkan_mesh_primitive *primitive);
+void vulkan_primitive_init(vulkan_primitive *primitive, VkPrimitiveTopology topology);
+void vulkan_primitive_deinit(vulkan_primitive *primitive);
 
 typedef struct vulkan_mesh {
-  core_array(vulkan_mesh_primitive) primitives;
+  core_array(vulkan_primitive) primitives;
   hash_t hash; /// Hash, used to prevent duplicates in asset database.
 } vulkan_mesh;
 
@@ -35,12 +33,12 @@ void vulkan_mesh_deinit(vulkan_mesh *mesh);
 
 typedef struct vulkan_node {
   vulkan_mesh mesh;
-  mat4 modelMat;
+  mat4 transform;
   // TODO: child nodes
   hash_t hash; /// Hash, used to prevent duplicates in asset database.
 } vulkan_node;
 
-void vulkan_node_init(vulkan_node *node, vulkan_mesh mesh);
+void vulkan_node_init(vulkan_node *node, vulkan_mesh mesh, mat4 transform, hash_t hash);
 void vulkan_node_deinit(vulkan_node *node);
 void vulkan_node_debug_print(vulkan_node *node);
 

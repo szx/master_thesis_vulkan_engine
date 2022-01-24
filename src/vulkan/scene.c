@@ -41,7 +41,7 @@ void vulkan_scene_build_geometry_buffer(vulkan_scene *scene) {
     vulkan_node *node = &scene->data->nodes.ptr[nodeIdx];
     vulkan_mesh *mesh = &node->mesh;
     for (size_t primIdx = 0; primIdx < core_array_count(mesh->primitives); primIdx++) {
-      vulkan_mesh_primitive *primitive = &mesh->primitives.ptr[primIdx];
+      vulkan_primitive *primitive = &mesh->primitives.ptr[primIdx];
       // index buffer
       size_t indexBufferOffset = utarray_len(data);
       if ((indexBufferOffset % primitive->indexStride) != 0) {

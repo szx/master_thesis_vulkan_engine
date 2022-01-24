@@ -14,7 +14,7 @@ void data_db_destroy(data_db *db);
 
 /* supported data types */
 
-typedef int data_int;
+typedef uint64_t data_int;
 typedef UT_string *data_text;
 typedef struct data_blob {
   void *memory;
