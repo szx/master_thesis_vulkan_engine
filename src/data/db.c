@@ -1,4 +1,5 @@
 #include "db.h"
+#include "serialization.h"
 
 data_db *data_db_create(UT_string *path) {
   data_db *db = core_alloc(sizeof(data_db));
@@ -111,6 +112,14 @@ data_hash_array data_db_select_hash_array(data_db *db, char *table, data_blob ke
   return data_db_select_blob(db, table, key, column);
 }
 
+data_mat4 data_db_select_mat4(data_db *db, char *table, data_blob key, char *column) {
+  data_blob blob = data_db_select_blob(db, table, key, column);
+  data_mat4 data;
+  deserialize_mat4(blob.memory, &data.value);
+  core_free(blob.memory);
+  return data;
+}
+
 /* insert */
 
 void data_db_insert_int(data_db *db, char *table, data_blob key, char *column, data_int value,
@@ -170,6 +179,15 @@ void data_db_insert_hash_array(data_db *db, char *table, data_blob key, char *co
   data_db_insert_blob(db, table, key, column, value, updateIfExists);
 }
 
+void data_db_insert_mat4(data_db *db, char *table, data_blob key, char *column, data_mat4 value,
+                         bool updateIfExists) {
+  data_blob blob;
+  data_blob_alloc_memory(blob, sizeof(value.value));
+  serialize_mat4(blob.memory, value.value);
+  data_db_insert_blob(db, table, key, column, blob, updateIfExists);
+  data_blob_free_memory(blob);
+}
+
 void data_db_create_key_value_table_for_multiple_values(data_db *db, char *table,
                                                         const char *keyName, const char *keyType,
                                                         const char *columnDefs[],
@@ -177,7 +195,7 @@ void data_db_create_key_value_table_for_multiple_values(data_db *db, char *table
   static UT_string *sql = NULL;
   SQLITE_EXEC("DROP TABLE IF EXISTS %s;", table);
 
-  if (strcmp(keyType, "hash") == 0 || strcmp(keyType, "hash_array") == 0) {
+  if (strcmp(keyType, "hash") == 0) {
     // Hash is just a blob with special *_get() and *_insert().
     keyType = "blob";
   }
@@ -186,8 +204,7 @@ void data_db_create_key_value_table_for_multiple_values(data_db *db, char *table
   for (size_t i = 0; i < columnDefsCount; i += 2) {
     const char *name = columnDefs[i];
     const char *type = columnDefs[i + 1];
-    if (strcmp(type, "hash") == 0 || strcmp(type, "hash_array") == 0) {
-      // Hash is just a blob with special *_get() and *_insert().
+    if (strcmp(type, "hash") == 0 || strcmp(type, "hash_array") == 0 || strcmp(type, "mat4") == 0) {
       type = "blob";
     }
     utstring_printf(columns, "%s %s%s", name, type, (i + 2 < columnDefsCount ? "," : ""));

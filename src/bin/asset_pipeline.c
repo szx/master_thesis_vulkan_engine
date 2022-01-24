@@ -78,8 +78,10 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
                                                     utarray_hash_array(primitiveHashes));
     utarray_free(primitiveHashes);
 
-    data_asset_db_insert_node_transform_blob(assetDb, hash_blob(node->hash),
-                                             (data_blob){node->modelMat, sizeof(node->modelMat)});
+    data_mat4 transformMat;
+    glm_mat4_copy(node->modelMat, transformMat.value);
+    data_asset_db_insert_node_transform_mat4(assetDb, hash_blob(node->hash), transformMat);
+
     data_asset_db_insert_node_mesh_hash(assetDb, hash_blob(node->hash), node->mesh.hash);
     utarray_push_back(nodeHashes, &node->hash);
     // TODO: child nodes

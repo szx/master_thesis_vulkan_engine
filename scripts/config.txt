@@ -13,5 +13,5 @@ settings.StartScene = "triangles"
 [ASSET.DB]
 primitive = "key HASH, topology INT, indices BLOB, positions BLOB, normals BLOB, colors BLOB, tex_coords BLOB"
 mesh = "key HASH, primitives HASH_ARRAY"
-node = "key HASH, transform BLOB, nodes BLOB, mesh HASH"
+node = "key HASH, transform MAT4, nodes BLOB, mesh HASH"
 scene = "key TEXT, nodes HASH_ARRAY, cameras BLOB"

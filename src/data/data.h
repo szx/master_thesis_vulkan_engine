@@ -3,3 +3,4 @@
 #include "asset_db.h"
 #include "config.h"
 #include "db.h"
+#include "serialization.h"

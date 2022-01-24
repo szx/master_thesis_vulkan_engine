@@ -327,11 +327,16 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
 
   sceneData = vulkan_scene_data_create(utarray_len(nodeHashes), sceneName);
 
+  data_blob cameraBlob =
+      data_asset_db_select_scene_cameras_blob(assetDb, utstring_blob(sceneData->name));
+  vulkan_camera_deserialize(sceneData->camera, cameraBlob);
+
   hash_t *nodeHash = NULL;
   while ((nodeHash = (utarray_next(nodeHashes, nodeHash)))) {
-    data_blob transformBlob =
-        data_asset_db_select_node_transform_blob(assetDb, hash_blob(*nodeHash));
-    // HIRO deserialize camera
+    data_mat4 transformMat =
+        data_asset_db_select_node_transform_mat4(assetDb, hash_blob(*nodeHash));
+    glm_mat4_print(transformMat.value, stdout);
+
     log_debug("      %zx\n", *nodeHash);
   }
   // HIRO: load from asset_db
