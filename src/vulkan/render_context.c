@@ -562,10 +562,10 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
                           renderPass->pipelineLayout, 0, descriptorSetCount, descriptorSets, 0,
                           NULL);
 
-  for (size_t nodeIdx = 0; nodeIdx < core_array_count(scene->data->nodes); nodeIdx++) {
+  vulkan_node_data *node = NULL;
+  while ((node = (utarray_next(scene->data->nodes, node)))) {
     // TODO: Check if node should be culled.
-    vulkan_node *node = &scene->data->nodes.ptr[nodeIdx];
-    log_trace("draw node %d", nodeIdx);
+    log_trace("draw node");
     {
       // TODO: separate push constants to another function
       void *pushConstantValuePtr = &node->transform;
@@ -576,11 +576,9 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
       vkCmdPushConstants(frame->commandBuffer, renderPass->pipelineLayout, pushConstantStageFlags,
                          pushConstantOffset, sizeof(node->transform), pushConstantValuePtr);
     }
-    vulkan_mesh *mesh = &node->mesh;
-    for (size_t primitiveIdx = 0; primitiveIdx < core_array_count(mesh->primitives);
-         primitiveIdx++) {
-      vulkan_primitive *primitive = &mesh->primitives.ptr[primitiveIdx];
-
+    vulkan_mesh_data *mesh = &node->mesh;
+    vulkan_primitive_data *primitive = NULL;
+    while ((primitive = (utarray_next(mesh->primitives, primitive)))) {
       size_t bindingCount = vulkan_shader_info_get_binding_count(&renderPass->vertShader->info);
       assert(bindingCount == 1);
       VkBuffer vertexBuffer = scene->geometryBuffer->buffer;

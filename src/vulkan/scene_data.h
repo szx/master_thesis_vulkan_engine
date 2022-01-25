@@ -5,7 +5,7 @@
 #include "camera.h"
 
 /// Contains index buffer, interleaved vertex stream and topology of the part of the mesh.
-typedef struct vulkan_primitive {
+typedef struct vulkan_primitive_data {
   VkPrimitiveTopology topology;
   uint32_t vertexCount;
   UT_array *positions; /// vec3
@@ -18,42 +18,45 @@ typedef struct vulkan_primitive {
   uint32_t indexStride; /// Calculated using indexType.
   UT_array *indices;    /// uint32_t
   hash_t hash;          /// Hash, used to prevent duplicates in asset database.
-} vulkan_primitive;
+} vulkan_primitive_data;
 
-void vulkan_primitive_init(vulkan_primitive *primitive, VkPrimitiveTopology topology);
-void vulkan_primitive_deinit(vulkan_primitive *primitive);
+void vulkan_primitive_data_init(vulkan_primitive_data *primitive);
+void vulkan_primitive_data_deinit(vulkan_primitive_data *primitive);
 
-typedef struct vulkan_mesh {
-  core_array(vulkan_primitive) primitives;
-  hash_t hash; /// Hash, used to prevent duplicates in asset database.
-} vulkan_mesh;
+typedef struct vulkan_mesh_data {
+  UT_array *primitives; // vulkan_primitive_data*
+  hash_t hash;          /// Hash, used to prevent duplicates in asset database.
+} vulkan_mesh_data;
 
-void vulkan_mesh_init(vulkan_mesh *mesh, size_t primitiveCount);
-void vulkan_mesh_deinit(vulkan_mesh *mesh);
+void vulkan_mesh_data_init(vulkan_mesh_data *mesh);
+void vulkan_mesh_data_deinit(vulkan_mesh_data *mesh);
 
-typedef struct vulkan_node {
-  vulkan_mesh mesh;
+typedef struct vulkan_node_data {
+  vulkan_mesh_data mesh;
   mat4 transform;
   // TODO: child nodes
   hash_t hash; /// Hash, used to prevent duplicates in asset database.
-} vulkan_node;
+} vulkan_node_data;
 
-void vulkan_node_init(vulkan_node *node, vulkan_mesh mesh, mat4 transform, hash_t hash);
-void vulkan_node_deinit(vulkan_node *node);
-void vulkan_node_debug_print(vulkan_node *node);
+void vulkan_node_data_init(vulkan_node_data *node);
+void vulkan_node_data_deinit(vulkan_node_data *node);
+void vulkan_node_data_debug_print(vulkan_node_data *node);
 
 /// Describes a scene.
 /// Does not create any Vulkan objects (see vulkan_scene).
 typedef struct vulkan_scene_data {
   UT_string *name;
-  core_array(vulkan_node) nodes;
+  UT_array *primitives; /// vulkan_primitive_data array, all primitives used by scene.
+  UT_array *nodes;      /// vulkan_node_data array, all nodes in scene.
   vulkan_camera *camera;
   bool dirty; /// True if scene data updated on CPU.
 } vulkan_scene_data;
 
-vulkan_scene_data *vulkan_scene_data_create(size_t nodesCount, UT_string *name);
+vulkan_scene_data *vulkan_scene_data_create(UT_string *name);
 void vulkan_scene_data_destroy(vulkan_scene_data *sceneData);
 void vulkan_scene_data_debug_print(vulkan_scene_data *sceneData);
+vulkan_primitive_data *vulkan_scene_data_add_primitive(vulkan_scene_data *sceneData,
+                                                       vulkan_primitive_data primitive);
 
 /* asset pipeline */
 vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *gltfName,

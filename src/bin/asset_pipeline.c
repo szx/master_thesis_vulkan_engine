@@ -47,31 +47,30 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
       assetInput->sourceAssetName, assetInput->sourceAssetPath);
   UT_array *nodeHashes = NULL;
   utarray_alloc(nodeHashes, sizeof(hash_t));
-  for (size_t nodeIdx = 0; nodeIdx < core_array_count(sceneData->nodes); nodeIdx++) {
-    vulkan_node *node = &sceneData->nodes.ptr[nodeIdx];
-    // vulkan_node_debug_print(node);
+  vulkan_node_data *node = NULL;
+  while ((node = (utarray_next(sceneData->nodes, node)))) {
+    // vulkan_node_data_debug_print(node);
 
-    vulkan_mesh *mesh = &node->mesh;
+    vulkan_mesh_data *mesh = &node->mesh;
     UT_array *primitiveHashes = NULL;
     utarray_alloc(primitiveHashes, sizeof(hash_t));
 
-    for (size_t primIdx = 0; primIdx < core_array_count(mesh->primitives); primIdx++) {
-      vulkan_primitive *primitive = &mesh->primitives.ptr[primIdx];
+    vulkan_primitive_data **primitive = NULL;
+    while ((primitive = (utarray_next(mesh->primitives, primitive)))) {
+      data_asset_db_insert_primitive_topology_int(assetDb, hash_blob((*primitive)->hash),
+                                                  (*primitive)->topology);
+      data_asset_db_insert_primitive_indices_blob(assetDb, hash_blob((*primitive)->hash),
+                                                  utarray_blob((*primitive)->indices));
+      data_asset_db_insert_primitive_positions_blob(assetDb, hash_blob((*primitive)->hash),
+                                                    utarray_blob((*primitive)->positions));
+      data_asset_db_insert_primitive_normals_blob(assetDb, hash_blob((*primitive)->hash),
+                                                  utarray_blob((*primitive)->normals));
+      data_asset_db_insert_primitive_colors_blob(assetDb, hash_blob((*primitive)->hash),
+                                                 utarray_blob((*primitive)->colors));
+      data_asset_db_insert_primitive_tex_coords_blob(assetDb, hash_blob((*primitive)->hash),
+                                                     utarray_blob((*primitive)->texCoords));
 
-      data_asset_db_insert_primitive_topology_int(assetDb, hash_blob(primitive->hash),
-                                                  primitive->topology);
-      data_asset_db_insert_primitive_indices_blob(assetDb, hash_blob(primitive->hash),
-                                                  utarray_blob(primitive->indices));
-      data_asset_db_insert_primitive_positions_blob(assetDb, hash_blob(primitive->hash),
-                                                    utarray_blob(primitive->positions));
-      data_asset_db_insert_primitive_normals_blob(assetDb, hash_blob(primitive->hash),
-                                                  utarray_blob(primitive->normals));
-      data_asset_db_insert_primitive_colors_blob(assetDb, hash_blob(primitive->hash),
-                                                 utarray_blob(primitive->colors));
-      data_asset_db_insert_primitive_tex_coords_blob(assetDb, hash_blob(primitive->hash),
-                                                     utarray_blob(primitive->texCoords));
-
-      utarray_push_back(primitiveHashes, &primitive->hash);
+      utarray_push_back(primitiveHashes, &(*primitive)->hash);
     }
 
     data_asset_db_insert_mesh_primitives_hash_array(assetDb, hash_blob(mesh->hash),

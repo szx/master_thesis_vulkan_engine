@@ -30,7 +30,8 @@ void vulkan_scene_build_geometry_buffer(vulkan_scene *scene) {
   // TODO: Overlapping index buffers and vertex streams.
   // TODO: Free node resources after building scene.
   log_debug("vulkan_scene_build_geometry_buffer");
-  // HIRO rethink vulkan_scene_build_geometry_buffer: interleave attributes from vulkan_node here?
+  // HIRO rethink vulkan_scene_build_geometry_buffer: interleave attributes from vulkan_node_data
+  // here?
   /*
   vulkan_scene_debug_print(scene);
   UT_array *data = scene->geometryBuffer->data;
@@ -38,10 +39,10 @@ void vulkan_scene_build_geometry_buffer(vulkan_scene *scene) {
   size_t paddingValue = 0;
   for (size_t nodeIdx = 0; nodeIdx < core_array_count(scene->data->nodes); nodeIdx++) {
     log_debug("node:\n");
-    vulkan_node *node = &scene->data->nodes.ptr[nodeIdx];
-    vulkan_mesh *mesh = &node->mesh;
+    vulkan_node_data *node = &scene->data->nodes.ptr[nodeIdx];
+    vulkan_mesh_data_data *mesh = &node->mesh;
     for (size_t primIdx = 0; primIdx < core_array_count(mesh->primitives); primIdx++) {
-      vulkan_primitive *primitive = &mesh->primitives.ptr[primIdx];
+      vulkan_primitive_data *primitive = &mesh->primitives.ptr[primIdx];
       // index buffer
       size_t indexBufferOffset = utarray_len(data);
       if ((indexBufferOffset % primitive->indexStride) != 0) {

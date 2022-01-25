@@ -47,19 +47,20 @@ Co należy wyprodukować:
 		- [x] Processing primitives
 		- [x] Processing meshes
 		- [x] Processing nodes.
-		- [ ] **Processing scenes.**
-		- [ ] Processing images
+        - [x] Processing scenes.
+        - [ ] Processing images
 		- [ ] Maybe: LOD generation using meshoptimizer.
 		- [x] SQLite database output
 	- [ ] GPU-driven rendering pipeline (14.02):
-		- [ ] Building uploading to GPU scene geometry buffer
-			- [ ] **Building scene geometry buffer**
-			- [ ] Uploading scene geometry buffer to GPU
-			- [x] One big vertex buffer
-			- [ ] One big uniform buffer with object data indexed with object ID in vertex & fragment shaders
-		- [ ] LOD selection & culling using compute shader
-		- [ ] Rendering whole scene using vkCmdDrawIndexedIndirect
-		- [ ] Maybe: Mesh Cluster Rendering
+        - [ ] **Loading scene data from asset database.**
+        - [ ] Building uploading to GPU scene geometry buffer
+            - [ ] **Building scene geometry buffer**
+            - [ ] Uploading scene geometry buffer to GPU
+            - [x] One big vertex buffer
+            - [ ] One big uniform buffer with object data indexed with object ID in vertex & fragment shaders
+        - [ ] LOD selection & culling using compute shader
+        - [ ] Rendering whole scene using vkCmdDrawIndexedIndirect
+        - [ ] Maybe: Mesh Cluster Rendering
 	- [ ] Render graph (30.02).
 		- [x] Research.
 		- [ ] Implementation.
