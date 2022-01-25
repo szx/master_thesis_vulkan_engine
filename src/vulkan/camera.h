@@ -27,8 +27,5 @@ void vulkan_camera_destroy(vulkan_camera *camera);
 /// Updates aspect ratio after swap chain recreation.
 void vulkan_camera_update_aspect_ratio(vulkan_camera *camera, float aspectRatio);
 
-void vulkan_camera_update_uniform_buffer_data(vulkan_camera *camera,
-                                              vulkan_uniform_buffer *uniformBuffer);
-
 data_blob vulkan_camera_serialize(vulkan_camera *camera);
 void vulkan_camera_deserialize(vulkan_camera *camera, data_blob blob);

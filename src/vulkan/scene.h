@@ -5,6 +5,7 @@
 
 #include "device.h"
 #include "functions.h"
+#include "geometry_buffer.h" // HIRO rename to scene_buffer?
 #include "scene_data.h"
 
 /// Describes a scene.
@@ -15,9 +16,6 @@ typedef struct vulkan_scene {
   vulkan_scene_data *data;
   vulkan_geometry_buffer *geometryBuffer;
   vulkan_uniform_buffer *uniformBuffer;
-  // TODO VK_EXT_vertex_input_dynamic_state is not supported by Intel.
-  // TODO VK_EXT_extended_dynamic_state allows VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE_EXT
-  // TODO Save and load scene from disk.
 } vulkan_scene;
 
 vulkan_scene *vulkan_scene_create(data_asset_db *assetDb, vulkan_device *vkd, UT_string *sceneName);

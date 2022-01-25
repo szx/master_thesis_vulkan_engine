@@ -4,6 +4,7 @@
 #include "debug.h"
 #include "device.h"
 #include "functions.h"
+#include "geometry_buffer.h"
 #include "render_context.h"
 #include "scene.h"
 #include "scene_data.h"

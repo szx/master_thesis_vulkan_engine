@@ -6,10 +6,9 @@ vulkan_scene *vulkan_scene_create(data_asset_db *assetDb, vulkan_device *vkd,
   scene->assetDb = assetDb;
   scene->vkd = vkd;
   scene->data = vulkan_scene_data_create_with_asset_db(scene->assetDb, sceneName);
-  /*scene->geometryBuffer = vulkan_geometry_buffer_create();
+  scene->geometryBuffer = vulkan_geometry_buffer_create();
   scene->uniformBuffer = vulkan_uniform_buffer_create(vkd);
-  vulkan_scene_build_geometry_buffer(scene);*/
-  panic("vulkan_scene_create not implemented"); // HIRO build buffers
+  vulkan_scene_build_geometry_buffer(scene);
   return scene;
 }
 
@@ -29,7 +28,6 @@ void vulkan_scene_debug_print(vulkan_scene *scene) {
 void vulkan_scene_build_geometry_buffer(vulkan_scene *scene) {
   // TODO: Overlapping index buffers and vertex streams.
   // TODO: Free node resources after building scene.
-  log_debug("vulkan_scene_build_geometry_buffer");
   // HIRO rethink vulkan_scene_build_geometry_buffer: interleave attributes from vulkan_node_data
   // here?
   /*
@@ -76,10 +74,11 @@ void vulkan_scene_build_geometry_buffer(vulkan_scene *scene) {
       memcpy(geometryData, vertexData, vertexStreamSize);
     }
   }*/
+  panic("vulkan_scene_build_geometry_buffer in not implemented"); // HIRO build buffers
 }
 
 void vulkan_scene_update_data(vulkan_scene *scene) {
-  vulkan_camera_update_uniform_buffer_data(scene->data->camera, scene->uniformBuffer);
+  vulkan_uniform_buffer_update_with_camera(scene->uniformBuffer, scene->data->camera);
   scene->data->dirty = scene->data->camera->dirty || scene->uniformBuffer->dirty;
 }
 
