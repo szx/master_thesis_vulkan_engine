@@ -43,26 +43,28 @@ Co należy wyprodukować:
 - [ ] Rendering
 	- [ ] Asset pipeline (30.01)
 		- [x] INI configuration
-		- [x] glTF scene input
-		- [x] Processing primitives
-		- [x] Processing meshes
-		- [x] Processing nodes.
+        - [x] glTF scene input
+        - [x] Processing primitives
+        - [x] Processing meshes
+        - [x] Processing nodes.
         - [x] Processing scenes.
         - [ ] Processing images
-		- [ ] Maybe: LOD generation using meshoptimizer.
-		- [x] SQLite database output
-	- [ ] GPU-driven rendering pipeline (14.02):
-        - [ ] **Loading scene data from asset database.**
-        - [ ] Building uploading to GPU scene geometry buffer
+        - [ ] Maybe: LOD generation using meshoptimizer.
+        - [x] SQLite database output
+        - [ ] **Write test comparing outputs of glFT with asset database**.
+    - [ ] GPU-driven rendering pipeline (14.02):
+        - [x] Loading scene data from asset database.
+        - [ ] Scene geometry buffer
             - [ ] **Building scene geometry buffer**
             - [ ] Uploading scene geometry buffer to GPU
             - [x] One big vertex buffer
             - [ ] One big uniform buffer with object data indexed with object ID in vertex & fragment shaders
-        - [ ] LOD selection & culling using compute shader
+        - [ ] Culling using compute shader
+        - [ ] Maybe: LOD selection
         - [ ] Rendering whole scene using vkCmdDrawIndexedIndirect
         - [ ] Maybe: Mesh Cluster Rendering
-	- [ ] Render graph (30.02).
-		- [x] Research.
+    - [ ] Render graph (30.02).
+        - [x] Research.
 		- [ ] Implementation.
 		- [ ] Forward rendering.
 		- [ ] Deferred rendering.

@@ -42,8 +42,8 @@ vulkan_attribute_type cgltf_to_vulkan_attribute_type(cgltf_attribute_type type) 
   }
 }
 
-vulkan_primitive_data *parse_cgltf_primitive(vulkan_scene_data *sceneData,
-                                             cgltf_primitive *cgltfPrimitive) {
+vulkan_primitive_data_index parse_cgltf_primitive(vulkan_scene_data *sceneData,
+                                                  cgltf_primitive *cgltfPrimitive) {
   // Check if glTF uses only supported capabilities.
   assert(cgltfPrimitive->has_draco_mesh_compression == false);
   assert(cgltfPrimitive->targets_count == 0);
@@ -138,8 +138,8 @@ vulkan_primitive_data *parse_cgltf_primitive(vulkan_scene_data *sceneData,
   HASH_DIGEST(primitiveState, primitive.hash)
   HASH_END(primitiveState)
 
-  vulkan_primitive_data *primitiveIt = vulkan_scene_data_add_primitive(sceneData, primitive);
-  return primitiveIt;
+  vulkan_primitive_data_index primitiveIdx = vulkan_scene_data_add_primitive(sceneData, primitive);
+  return primitiveIdx;
 }
 
 vulkan_mesh_data parse_cgltf_mesh(vulkan_scene_data *sceneData, cgltf_mesh *cgltfMesh) {
@@ -149,10 +149,11 @@ vulkan_mesh_data parse_cgltf_mesh(vulkan_scene_data *sceneData, cgltf_mesh *cglt
   HASH_START(meshHash)
 
   for (size_t primitiveIdx = 0; primitiveIdx < cgltfMesh->primitives_count; primitiveIdx++) {
-    vulkan_primitive_data *primitive =
+    vulkan_primitive_data_index idx =
         parse_cgltf_primitive(sceneData, &cgltfMesh->primitives[primitiveIdx]);
+    vulkan_primitive_data *primitive = utarray_eltptr(sceneData->primitives, idx);
     HASH_UPDATE(meshHash, &primitive->hash, sizeof(primitive->hash));
-    utarray_push_back(mesh.primitives, &primitive);
+    utarray_push_back(mesh.primitives, &idx);
   }
 
   HASH_DIGEST(meshHash, mesh.hash)
@@ -173,7 +174,7 @@ vulkan_node_data parse_cgltf_node(vulkan_scene_data *sceneData, cgltf_node *cglt
   assert(cgltfMesh->target_names_count == 0);
 
   vulkan_node_data node;
-  vulkan_node_data_init(&node);
+  vulkan_node_data_init(&node, sceneData);
 
   node.mesh = parse_cgltf_mesh(sceneData, cgltfMesh);
   // TODO: Animation, will probably require cgltf_node_transform_local().
@@ -242,12 +243,13 @@ void vulkan_primitive_data_deinit(vulkan_primitive_data *primitive) {
 }
 
 void vulkan_mesh_data_init(vulkan_mesh_data *mesh) {
-  utarray_alloc(mesh->primitives, sizeof(vulkan_primitive_data *));
+  utarray_alloc(mesh->primitives, sizeof(vulkan_primitive_data_index));
 }
 
 void vulkan_mesh_data_deinit(vulkan_mesh_data *mesh) { utarray_free(mesh->primitives); }
 
-void vulkan_node_data_init(vulkan_node_data *node) {
+void vulkan_node_data_init(vulkan_node_data *node, vulkan_scene_data *sceneData) {
+  node->sceneData = sceneData;
   glm_mat4_identity(node->transform);
   node->hash = 0;
 }
@@ -259,8 +261,9 @@ void vulkan_node_data_debug_print(vulkan_node_data *node) {
   glm_mat4_print(node->transform, stderr);
   log_debug("  hash=%zu", node->hash);
   vulkan_mesh_data *mesh = &node->mesh;
-  vulkan_primitive_data *primitive = NULL;
-  while ((primitive = (utarray_next(mesh->primitives, primitive)))) {
+  vulkan_primitive_data_index *primitiveIdx = NULL;
+  while ((primitiveIdx = (utarray_next(mesh->primitives, primitiveIdx)))) {
+    vulkan_primitive_data *primitive = utarray_eltptr(node->sceneData->primitives, *primitiveIdx);
     log_debug("  primitive: %s\n", VkPrimitiveTopology_debug_str(primitive->topology));
     log_debug("    index: %s stride=%d count=%d\n",
               vulkan_index_type_debug_str(primitive->indexType), primitive->indexStride,
@@ -334,23 +337,25 @@ void vulkan_scene_data_debug_print(vulkan_scene_data *sceneData) {
   }
 }
 
-vulkan_primitive_data *vulkan_scene_data_add_primitive(vulkan_scene_data *sceneData,
-                                                       vulkan_primitive_data primitive) {
+vulkan_primitive_data_index vulkan_scene_data_add_primitive(vulkan_scene_data *sceneData,
+                                                            vulkan_primitive_data primitive) {
   vulkan_primitive_data *primitiveIt = NULL;
+  // Use index instead of pointers, because they can be invalidated when array grows.
+  vulkan_primitive_data_index idx = 0;
   bool primitiveAlreadyAdded = false;
   while ((primitiveIt = (utarray_next(sceneData->primitives, primitiveIt)))) {
     if (primitiveIt->hash == primitive.hash) {
       primitiveAlreadyAdded = true;
       break;
     }
+    idx++;
   }
   if (!primitiveAlreadyAdded) {
     utarray_push_back(sceneData->primitives, &primitive);
-    primitiveIt = utarray_back(sceneData->primitives);
   } else {
     vulkan_primitive_data_deinit(&primitive);
   }
-  return primitiveIt;
+  return idx;
 }
 
 vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *gltfName,
@@ -363,8 +368,7 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
                                                           UT_string *sceneName) {
   vulkan_scene_data *sceneData = NULL;
 
-#if 0
-    data_hash_array nodeHashArray =
+  data_hash_array nodeHashArray =
       data_asset_db_select_scene_nodes_hash_array(assetDb, utstring_blob(sceneName));
   UT_array *nodeHashes = hash_array_utarray(nodeHashArray);
 
@@ -378,9 +382,10 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
   size_t nodeIdx = 0;
   while ((nodeHash = (utarray_next(nodeHashes, nodeHash)))) {
     /* node data */
-    data_mat4 transform = data_asset_db_select_node_transform_mat4(assetDb, hash_blob(*nodeHash));
+    data_blob nodeKey = hash_blob(*nodeHash);
+    data_mat4 transform = data_asset_db_select_node_transform_mat4(assetDb, nodeKey);
     // TODO: Chlid nodes.
-    data_hash meshHash = data_asset_db_select_node_mesh_hash(assetDb, hash_blob(*nodeHash));
+    data_hash meshHash = data_asset_db_select_node_mesh_hash(assetDb, nodeKey);
     vulkan_node_data node;
 
     /* mesh data */
@@ -390,35 +395,39 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
     vulkan_mesh_data mesh;
     vulkan_mesh_data_init(&mesh);
 
-    /* primitive data */
+    // parse mesh primitives
     hash_t *primitiveHash = NULL;
-    size_t primitiveIdx = 0;
     while ((primitiveHash = (utarray_next(primitiveHashes, primitiveHash)))) {
-      VkPrimitiveTopology topology =
-          data_asset_db_select_primitive_topology_int(assetDb, hash_blob(*primitiveHash));
+      data_blob primitiveKey = hash_blob(*primitiveHash);
+
       vulkan_primitive_data primitive;
       vulkan_primitive_data_init(&primitive);
-      // HIRO read attributes
-      // HIRO just rewrite scene_data, remove core_array, SoA for primitives, meshes, nodes.
-      mesh.primitives.ptr[primitiveIdx++] = primitive;
+      primitive.topology = data_asset_db_select_primitive_topology_int(assetDb, primitiveKey);
+
+#define COPY_VERTEX_ATTRIBUTE(_name)                                                               \
+  data_blob _name##Blob = data_asset_db_select_primitive_##_name##_blob(assetDb, primitiveKey);    \
+  utarray_resize(primitive._name, _name##Blob.size / primitive._name->icd.sz);                     \
+  memcpy(primitive._name->d, _name##Blob.memory, _name##Blob.size);
+      COPY_VERTEX_ATTRIBUTE(positions)
+      COPY_VERTEX_ATTRIBUTE(normals)
+      COPY_VERTEX_ATTRIBUTE(colors)
+      COPY_VERTEX_ATTRIBUTE(texCoords)
+#undef COPY_VERTEX_ATTRIBUTE
+
+      primitive.hash = data_asset_db_select_primitive_key_hash(assetDb, primitiveKey);
+
+      vulkan_primitive_data_index primitiveIdx =
+          vulkan_scene_data_add_primitive(sceneData, primitive);
+      utarray_push_back(mesh.primitives, &primitiveIdx);
     }
 
     /* add node */
-    vulkan_node_data_init(&node, mesh, transform.value, *nodeHash);
-    sceneData->nodes.ptr[nodeIdx++] = node;
-  }
-  // HIRO: load from asset_db
-
-  /*vulkan_scene_data *sceneData = vulkan_scene_data_create(nodesCount);
-
-  for (size_t nodeIdx = 0; nodeIdx < nodesCount; nodeIdx++) {
-    vulkan_node_data node = parse_cgltf_node(cgltfScene->nodes[nodeIdx]);
-    sceneData->nodes.ptr[nodeIdx] = node;
-    HASH_UPDATE(sceneState, &node.hash, sizeof(node.hash))
+    vulkan_node_data_init(&node, sceneData);
+    node.mesh = mesh;
+    glm_mat4_copy(transform.value, node.transform);
+    node.hash = *nodeHash;
+    utarray_push_back(sceneData->nodes, &node);
   }
 
-  return sceneData;*/
-#endif
-  panic("vulkan_scene_data_create_with_asset_db not implemented");
   return sceneData;
 }

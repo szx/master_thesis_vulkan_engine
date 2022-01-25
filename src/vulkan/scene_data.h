@@ -4,6 +4,8 @@
 #include "../core/platform.h"
 #include "camera.h"
 
+typedef struct vulkan_scene_data vulkan_scene_data;
+
 /// Contains index buffer, interleaved vertex stream and topology of the part of the mesh.
 typedef struct vulkan_primitive_data {
   VkPrimitiveTopology topology;
@@ -20,11 +22,13 @@ typedef struct vulkan_primitive_data {
   hash_t hash;          /// Hash, used to prevent duplicates in asset database.
 } vulkan_primitive_data;
 
+typedef size_t vulkan_primitive_data_index;
+
 void vulkan_primitive_data_init(vulkan_primitive_data *primitive);
 void vulkan_primitive_data_deinit(vulkan_primitive_data *primitive);
 
 typedef struct vulkan_mesh_data {
-  UT_array *primitives; // vulkan_primitive_data*
+  UT_array *primitives; /// vulkan_primitive_data_index array.
   hash_t hash;          /// Hash, used to prevent duplicates in asset database.
 } vulkan_mesh_data;
 
@@ -32,13 +36,14 @@ void vulkan_mesh_data_init(vulkan_mesh_data *mesh);
 void vulkan_mesh_data_deinit(vulkan_mesh_data *mesh);
 
 typedef struct vulkan_node_data {
+  vulkan_scene_data *sceneData; // Parent pointer.
   vulkan_mesh_data mesh;
   mat4 transform;
   // TODO: child nodes
   hash_t hash; /// Hash, used to prevent duplicates in asset database.
 } vulkan_node_data;
 
-void vulkan_node_data_init(vulkan_node_data *node);
+void vulkan_node_data_init(vulkan_node_data *node, vulkan_scene_data *sceneData);
 void vulkan_node_data_deinit(vulkan_node_data *node);
 void vulkan_node_data_debug_print(vulkan_node_data *node);
 
@@ -55,8 +60,10 @@ typedef struct vulkan_scene_data {
 vulkan_scene_data *vulkan_scene_data_create(UT_string *name);
 void vulkan_scene_data_destroy(vulkan_scene_data *sceneData);
 void vulkan_scene_data_debug_print(vulkan_scene_data *sceneData);
-vulkan_primitive_data *vulkan_scene_data_add_primitive(vulkan_scene_data *sceneData,
-                                                       vulkan_primitive_data primitive);
+
+/// Adds new primitive. Returns integer index.
+vulkan_primitive_data_index vulkan_scene_data_add_primitive(vulkan_scene_data *sceneData,
+                                                            vulkan_primitive_data primitive);
 
 /* asset pipeline */
 vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *gltfName,
