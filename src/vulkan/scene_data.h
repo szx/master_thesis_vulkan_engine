@@ -66,7 +66,7 @@ vulkan_primitive_data_index vulkan_scene_data_add_primitive(vulkan_scene_data *s
                                                             vulkan_primitive_data primitive);
 
 /* asset pipeline */
-vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *gltfName,
+vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *sceneName,
                                                            UT_string *gltfPath);
 vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb,
                                                           UT_string *sceneName);

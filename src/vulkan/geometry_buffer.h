@@ -28,7 +28,7 @@ typedef struct vulkan_uniform_buffer {
   struct {
     alignas(16) mat4 viewMat;
     alignas(16) mat4 projMat;
-  } data;
+  } data; // HIRO move UBO definitions out of vulkan_uniform_buffer
   /* state */
   bool dirty;            /// True if uniform buffer data updated on CPU.
 } vulkan_uniform_buffer; // TODO: Manage every uniform buffers.

@@ -43,7 +43,7 @@ void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
 
   void *data;
   vkMapMemory(geometryBuffer->vkd->device, stagingBufferMemory, 0, geometryBufferSize, 0, &data);
-  memcpy(data, geometryBufferData, geometryBufferSize);
+  core_memcpy(data, geometryBufferData, geometryBufferSize);
   vkUnmapMemory(geometryBuffer->vkd->device, stagingBufferMemory);
 
   vulkan_create_buffer(geometryBuffer->vkd, geometryBufferSize,
@@ -95,7 +95,7 @@ void vulkan_uniform_buffer_send_to_device(vulkan_uniform_buffer *uniformBuffer) 
   void *data;
   vkMapMemory(uniformBuffer->vkd->device, uniformBuffer->bufferMemory, 0,
               uniformBuffer->bufferMemorySize, 0, &data);
-  memcpy(data, &uniformBuffer->data, uniformBuffer->bufferMemorySize);
+  core_memcpy(data, &uniformBuffer->data, uniformBuffer->bufferMemorySize);
   vkUnmapMemory(uniformBuffer->vkd->device, uniformBuffer->bufferMemory);
   uniformBuffer->dirty = false;
 }

@@ -26,6 +26,7 @@ void vulkan_scene_debug_print(vulkan_scene *scene) {
 }
 
 void vulkan_scene_build_geometry_buffer(vulkan_scene *scene) {
+  // HIRO return after research into GPU-driven rendering.
   // TODO: Overlapping index buffers and vertex streams.
   // TODO: Free node resources after building scene.
   // HIRO rethink vulkan_scene_build_geometry_buffer: interleave attributes from vulkan_node_data

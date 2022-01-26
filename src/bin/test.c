@@ -1,151 +1,92 @@
-#include "../core/platform.h"
+#include "../core/core.h"
+#include "../data/data.h"
 #include "../parser/glsl_parser.h"
 #include "../vulkan/vulkan.h"
 #include "greatest.h"
 
 #include <stdlib.h>
 
-#include "../data/config.h"
-#include <sqlite3.h>
-
-int database_resolutions_callback(void *callbackData, int argc, char **argv, char **azColName) {
-  for (int i = 0; i < argc; i++) {
-    log_debug("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-  }
-  return 0;
-}
-
-// Loading data.db
-TEST database_loading() {
-  log_debug("sqlite3_libversion: %s\n", sqlite3_libversion());
-
-  UT_string *path = globals.assetsFilePath;
-  sqlite3 *db; // database connection handle
-  int rc = sqlite3_open(utstring_body(path), &db);
-  utstring_free(path);
-  if (rc != SQLITE_OK) {
-    log_error("database error: %s", sqlite3_errmsg(db));
-    sqlite3_close(db);
-    FAILm("failed to data.db file");
-  }
-
-  char *sql = "DROP TABLE IF EXISTS Resolutions;"
-              "CREATE TABLE Resolutions(width INT, height INT);"
-              "INSERT INTO Resolutions VALUES(640, 460);"
-              "INSERT INTO Resolutions VALUES(800, 600);"
-              "INSERT INTO Resolutions VALUES(1024, 768);"
-              "INSERT INTO Resolutions VALUES(1280, 720);"
-              "INSERT INTO Resolutions VALUES(1280, 800);"
-              "INSERT INTO Resolutions VALUES(1280, 1024);";
-  rc = sqlite3_exec(db, sql, NULL, NULL, NULL);
-  if (rc != SQLITE_OK) {
-    log_error("database error: %s", sqlite3_errmsg(db));
-    sqlite3_close(db);
-    FAILm("failed to execute sql insert query");
-  }
-
-  // first method
-  sql = "SELECT * FROM Resolutions";
-  rc = sqlite3_exec(db, sql, database_resolutions_callback, NULL, NULL);
-  if (rc != SQLITE_OK) {
-    log_error("database error: %s", sqlite3_errmsg(db));
-    sqlite3_close(db);
-    FAILm("failed to execute sql select query (1)");
-  }
-  // second method
-  sqlite3_stmt *stmt;
-  sql = "SELECT width, height FROM Resolutions";
-  rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-  if (rc != SQLITE_OK) {
-    log_error("database error: %s", sqlite3_errmsg(db));
-    sqlite3_close(db);
-    FAILm("failed to prepare sql select query (2)");
-  }
-  while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-    int width = sqlite3_column_int(stmt, 0);
-    int height = sqlite3_column_int(stmt, 1);
-    log_debug("%dx%d\n", width, height);
-  }
-  if (rc != SQLITE_DONE) {
-    log_error("database error: %s", sqlite3_errmsg(db));
-    sqlite3_close(db);
-    FAILm("failed to execute sql select query (2)");
-  }
-  sqlite3_finalize(stmt);
-
-  log_debug("closing\n");
-  sqlite3_close(db);
-
-  data_config *config = data_config_create();
-  log_debug("config.graphicsWindowWidth = %d\n", config->graphicsWindowWidth);
-  log_debug("config.graphicsWindowHeight = %d\n", config->graphicsWindowHeight);
-  log_debug("config.graphicsWindowTitle = %s\n", utstring_body(config->graphicsWindowTitle));
-  data_config_destroy(config);
-  PASS();
-}
-
-TEST database_create_key_value_table() {
-  data_asset_db *assetDb = data_asset_db_create();
-  data_db_create_key_value_table_for_multiple_values(assets->db, "strings", "value BLOB");
-  data_asset_db_destroy(assets);
-  PASS();
-}
-
-SUITE(database_suite) {
-  RUN_TEST(database_loading);
-  RUN_TEST(database_create_key_value_table);
-}
-
 // Loading sponza.gltf.
 TEST gltf_loading() {
   // TODO: Files in database.
   // TODO: Loading extra files (images).
+  data_config *config = data_config_create();
   data_asset_db *assetDb = data_asset_db_create();
-  vulkan_device *vkd = vulkan_device_create(assets);
-  UT_string *gltfPath = get_asset_file_path("triangles", "triangles.gltf");
-  // UT_string *gltfPath = get_asset_file_path("sponza", "Sponza.gltf");
-  vulkan_scene *scene = vulkan_scene_create_with_gltf_file(vkd, gltfPath);
-  vulkan_scene_debug_print(scene);
+  vulkan_device *vkd = vulkan_device_create(config, assetDb);
+  UT_string *sceneName;
+  utstring_alloc(sceneName, "sponza");
+  UT_string *gltfPath = get_asset_file_path("sponza", "sponza.gltf");
+  vulkan_scene_data *gltfSceneData = vulkan_scene_data_create_with_gltf_file(sceneName, gltfPath);
+  vulkan_scene_data *assetDbSceneData = vulkan_scene_data_create_with_asset_db(assetDb, sceneName);
+
+  ASSERT_STR_EQ(utstring_body(gltfSceneData->name), utstring_body(assetDbSceneData->name));
+  ASSERT_EQ(gltfSceneData->dirty, assetDbSceneData->dirty);
+  ASSERT_EQ(utarray_len(gltfSceneData->nodes), utarray_len(assetDbSceneData->nodes));
+  ASSERT_EQ(utarray_len(gltfSceneData->primitives), utarray_len(assetDbSceneData->primitives));
+  vulkan_node_data *assetDbNode = NULL;
+  while ((assetDbNode = (utarray_next(assetDbSceneData->nodes, assetDbNode)))) {
+    vulkan_node_data *gltfNode = NULL;
+    bool foundCorrespondingNode = false;
+    while ((gltfNode = (utarray_next(gltfSceneData->nodes, gltfNode)))) {
+      if (gltfNode->hash == assetDbNode->hash) {
+        foundCorrespondingNode = true;
+        break;
+      }
+    }
+    ASSERT_EQ(foundCorrespondingNode, true);
+    ASSERT_MEM_EQ(gltfNode->transform, assetDbNode->transform, sizeof(mat4));
+    vulkan_mesh_data *gltfMesh = &gltfNode->mesh;
+    vulkan_mesh_data *assetDbMesh = &assetDbNode->mesh;
+    ASSERT_EQ(gltfMesh->hash, assetDbMesh->hash);
+    vulkan_primitive_data *gltfPrimitive = NULL;
+    vulkan_primitive_data *assetDbPrimitive = NULL;
+    bool foundCorrespondingPrimitive = false;
+    vulkan_primitive_data_index *gltfPrimIdx = NULL;
+    while ((gltfPrimIdx = (utarray_next(gltfMesh->primitives, gltfPrimIdx)))) {
+      gltfPrimitive = utarray_eltptr(gltfSceneData->primitives, *gltfPrimIdx);
+      vulkan_primitive_data_index *assetDbPrimIdx = NULL;
+      while ((assetDbPrimIdx = (utarray_next(gltfMesh->primitives, assetDbPrimIdx)))) {
+        assetDbPrimitive = utarray_eltptr(assetDbSceneData->primitives, *assetDbPrimIdx);
+        if (gltfPrimitive->hash == assetDbPrimitive->hash) {
+          foundCorrespondingPrimitive = true;
+          break;
+        }
+      }
+    }
+    ASSERT_EQ(foundCorrespondingPrimitive, true);
+    ASSERT_EQ(gltfPrimitive->topology, assetDbPrimitive->topology);
+    ASSERT_EQ(gltfPrimitive->vertexCount, assetDbPrimitive->vertexCount);
+    ASSERT_EQ(gltfPrimitive->indexCount, assetDbPrimitive->indexCount);
+    ASSERT_EQ(gltfPrimitive->indexStride, assetDbPrimitive->indexStride);
+#define ASSERT_VERTEX_ATTRIBUTE(_name)                                                             \
+  ASSERT_EQ(utarray_len(gltfPrimitive->_name), utarray_len(assetDbPrimitive->_name));              \
+  if (utarray_len(gltfPrimitive->_name) > 0)                                                       \
+    ASSERT_MEM_EQ(utarray_front(gltfPrimitive->_name), utarray_front(assetDbPrimitive->_name),     \
+                  utarray_size(gltfPrimitive->_name));
+    ASSERT_VERTEX_ATTRIBUTE(positions)
+    ASSERT_VERTEX_ATTRIBUTE(normals)
+    ASSERT_VERTEX_ATTRIBUTE(colors)
+    ASSERT_VERTEX_ATTRIBUTE(texCoords)
+  }
   utstring_free(gltfPath);
-  vulkan_scene_destroy(scene);
+  utstring_free(sceneName);
+  vulkan_scene_data_destroy(assetDbSceneData);
+  vulkan_scene_data_destroy(gltfSceneData);
   vulkan_device_destroy(vkd);
-  data_asset_db_destroy(assets);
+  data_asset_db_destroy(assetDb);
+  data_config_destroy(config);
   PASS();
 }
 
 SUITE(gltf_suite) { RUN_TEST(gltf_loading); }
 
-// Memory allocation.
-TEST platform_alloc() {
-  /*vulkan_limits *limits = alloc_struct(vulkan_limits);
-  ASSERT_EQ(vulkan_limits_alloc_stats.allocNum, 1);
-  ASSERT_EQ(count_struct_array(limits), 1);
-  dealloc_struct(limits);
-  ASSERT_EQ(vulkan_limits_alloc_stats.allocNum, 0);
-  ASSERT_EQ(limits, NULL);
-  ASSERT_EQ(count_struct_array(limits), 0);
-  vulkan_limits *limits2 = alloc_struct(vulkan_limits);
-  limits = alloc_struct_array(vulkan_limits, 3);
-  ASSERT_EQ(vulkan_limits_alloc_stats.allocNum, 4);
-  ASSERT_EQ(count_struct_array(limits), 3);
-  ASSERT_EQ(count_struct_array(limits2), 1);
-  dealloc_struct(limits);
-  ASSERT_EQ(vulkan_limits_alloc_stats.allocNum, 1);
-  ASSERT_EQ(limits, NULL);
-  ASSERT_EQ(count_struct_array(limits), 0);
-  dealloc_struct(limits2);
-  ASSERT_EQ(vulkan_limits_alloc_stats.allocNum, 0);
-  ASSERT_EQ(limits2, NULL);*/
-  PASS();
-}
-
-SUITE(platform_alloc_suite) { RUN_TEST(platform_alloc); }
-
 TEST shaderc_compiling() {
+  data_config *config = data_config_create();
+  data_asset_db *assetDb = data_asset_db_create();
+  vulkan_device *vkd = vulkan_device_create(config, assetDb);
+
   UT_string *vertInputPath = get_asset_file_path("shaders", "shader.vert");
   UT_string *fragInputPath = get_asset_file_path("shaders", "shader.frag");
-  data_asset_db *assetDb = data_asset_db_create();
-  vulkan_device *vkd = vulkan_device_create(assets);
   vulkan_shader *vertShader = vulkan_shader_create_with_path(vkd, vertInputPath);
   vulkan_shader *fragShader = vulkan_shader_create_with_path(vkd, fragInputPath);
   utstring_free(vertInputPath);
@@ -175,7 +116,9 @@ TEST shaderc_compiling() {
   ASSERT_GT(range.size, 0);
   ASSERT((range.stageFlags | VK_SHADER_STAGE_VERTEX_BIT) != 0 ||
          (range.stageFlags | VK_SHADER_STAGE_FRAGMENT_BIT) != 0);
-  data_asset_db_destroy(assets);
+
+  data_config_destroy(config);
+  data_asset_db_destroy(assetDb);
   vulkan_shader_destroy(vertShader);
   vulkan_shader_destroy(fragShader);
   vulkan_device_destroy(vkd);
@@ -189,12 +132,8 @@ GREATEST_MAIN_DEFS(); // NOLINT
 int main(int argc, char *argv[]) {
   GREATEST_MAIN_BEGIN();
   platform_create();
-  log_info("start test suite");
-  RUN_SUITE(database_suite);
   RUN_SUITE(gltf_suite);
-  // RUN_SUITE(platform_alloc_suite);
   // RUN_SUITE(shaderc_suite);
-  log_info("finish test suite");
   platform_destroy();
   GREATEST_MAIN_END();
 }

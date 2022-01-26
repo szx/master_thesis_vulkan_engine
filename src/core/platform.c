@@ -86,7 +86,7 @@ UT_string *get_executable_dir_path() {
 
 UT_string *get_executable_dir_file_path(const char *dirName, const char *fileName) {
   UT_string *path = get_executable_dir_path();
-  utstring_printf(path, "%s", dirName);
+  utstring_printf(path, "/%s", dirName);
   utstring_printf(path, "/%s", fileName);
   return path;
 }

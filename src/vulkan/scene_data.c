@@ -358,9 +358,9 @@ vulkan_primitive_data_index vulkan_scene_data_add_primitive(vulkan_scene_data *s
   return idx;
 }
 
-vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *gltfName,
+vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *sceneName,
                                                            UT_string *gltfPath) {
-  vulkan_scene_data *sceneData = parse_cgltf_scene(gltfName, gltfPath);
+  vulkan_scene_data *sceneData = parse_cgltf_scene(sceneName, gltfPath);
   return sceneData;
 }
 
@@ -371,12 +371,14 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
   data_hash_array nodeHashArray =
       data_asset_db_select_scene_nodes_hash_array(assetDb, utstring_blob(sceneName));
   UT_array *nodeHashes = hash_array_utarray(nodeHashArray);
+  data_blob_free_memory(nodeHashArray);
 
   sceneData = vulkan_scene_data_create(sceneName);
 
   data_blob cameraBlob =
       data_asset_db_select_scene_cameras_blob(assetDb, utstring_blob(sceneData->name));
   vulkan_camera_deserialize(sceneData->camera, cameraBlob);
+  data_blob_free_memory(cameraBlob);
 
   hash_t *nodeHash = NULL;
   size_t nodeIdx = 0;
@@ -392,8 +394,11 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
     data_hash_array primitiveHashArray =
         data_asset_db_select_mesh_primitives_hash_array(assetDb, hash_blob(meshHash));
     UT_array *primitiveHashes = hash_array_utarray(primitiveHashArray);
+    data_blob_free_memory(primitiveHashArray);
+
     vulkan_mesh_data mesh;
     vulkan_mesh_data_init(&mesh);
+    mesh.hash = meshHash;
 
     // parse mesh primitives
     hash_t *primitiveHash = NULL;
@@ -404,15 +409,27 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
       vulkan_primitive_data_init(&primitive);
       primitive.topology = data_asset_db_select_primitive_topology_int(assetDb, primitiveKey);
 
-#define COPY_VERTEX_ATTRIBUTE(_name)                                                               \
+#define COPY_BLOB_TO_ARRAY(_name)                                                                  \
   data_blob _name##Blob = data_asset_db_select_primitive_##_name##_blob(assetDb, primitiveKey);    \
   utarray_resize(primitive._name, _name##Blob.size / primitive._name->icd.sz);                     \
-  memcpy(primitive._name->d, _name##Blob.memory, _name##Blob.size);
+  core_memcpy(primitive._name->d, _name##Blob.memory, _name##Blob.size);
+      COPY_BLOB_TO_ARRAY(indices);
+      primitive.indexCount = utarray_len(primitive.indices);
+
+#define COPY_VERTEX_ATTRIBUTE(_name)                                                               \
+  COPY_BLOB_TO_ARRAY(_name)                                                                        \
+  if (primitive.vertexCount == 0) {                                                                \
+    primitive.vertexCount = utarray_len(primitive._name);                                          \
+  } else if (utarray_len(primitive._name) > 0) {                                                   \
+    verify(primitive.vertexCount == utarray_len(primitive._name));                                 \
+  }                                                                                                \
+  data_blob_free_memory(_name##Blob);
       COPY_VERTEX_ATTRIBUTE(positions)
       COPY_VERTEX_ATTRIBUTE(normals)
       COPY_VERTEX_ATTRIBUTE(colors)
       COPY_VERTEX_ATTRIBUTE(texCoords)
 #undef COPY_VERTEX_ATTRIBUTE
+#undef COPY_BLOB_TO_ARRAY
 
       primitive.hash = data_asset_db_select_primitive_key_hash(assetDb, primitiveKey);
 
@@ -420,6 +437,7 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
           vulkan_scene_data_add_primitive(sceneData, primitive);
       utarray_push_back(mesh.primitives, &primitiveIdx);
     }
+    utarray_free(primitiveHashes);
 
     /* add node */
     vulkan_node_data_init(&node, sceneData);
@@ -428,6 +446,7 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
     node.hash = *nodeHash;
     utarray_push_back(sceneData->nodes, &node);
   }
+  utarray_free(nodeHashes);
 
   return sceneData;
 }

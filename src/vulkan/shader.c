@@ -281,7 +281,7 @@ vulkan_shader *vulkan_shader_create_with_str(vulkan_device *vkd, shaderc_shader_
   }
   shader->spvSize = shaderc_result_get_length(result);
   shader->spvCode = (uint32_t *)malloc(shader->spvSize);
-  memcpy(shader->spvCode, (uint32_t *)shaderc_result_get_bytes(result), shader->spvSize);
+  core_memcpy(shader->spvCode, (uint32_t *)shaderc_result_get_bytes(result), shader->spvSize);
   shaderc_result_release(result);
   shader->module = vulkan_create_shader_module(shader->vkd, shader->spvCode, shader->spvSize,
                                                shaderc_shader_kind_debug_str(shader->type));

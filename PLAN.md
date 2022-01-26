@@ -50,21 +50,22 @@ Co należy wyprodukować:
         - [x] Processing scenes.
         - [ ] Processing images
         - [ ] Maybe: LOD generation using meshoptimizer.
-        - [x] SQLite database output
-        - [ ] **Write test comparing outputs of glFT with asset database**.
+		- [x] SQLite database output
+		- [x] Write test comparing outputs of glFT with asset database.
     - [ ] GPU-driven rendering pipeline (14.02):
-        - [x] Loading scene data from asset database.
-        - [ ] Scene geometry buffer
-            - [ ] **Building scene geometry buffer**
-            - [ ] Uploading scene geometry buffer to GPU
-            - [x] One big vertex buffer
-            - [ ] One big uniform buffer with object data indexed with object ID in vertex & fragment shaders
+		- [x] Loading scene data from asset database.
+		- [ ] **Research**
+		- [ ] Scene geometry buffer
+			- [ ] **Building scene geometry buffer**
+			- [ ] Uploading scene geometry buffer to GPU
+			- [x] One big vertex buffer
+			- [ ] One big uniform buffer with object data indexed with object ID in vertex & fragment shaders
         - [ ] Culling using compute shader
         - [ ] Maybe: LOD selection
         - [ ] Rendering whole scene using vkCmdDrawIndexedIndirect
         - [ ] Maybe: Mesh Cluster Rendering
     - [ ] Render graph (30.02).
-        - [x] Research.
+		- [ ] **Research**.
 		- [ ] Implementation.
 		- [ ] Forward rendering.
 		- [ ] Deferred rendering.

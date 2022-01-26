@@ -96,7 +96,7 @@ data_blob data_db_select_blob(data_db *db, char *table, data_blob key, char *col
   const void *memory = sqlite3_column_blob(_stmt, 1);
   size_t size = sqlite3_column_bytes(_stmt, 1);
   value.size = size;
-  value.memory = core_memdup(memory, value.size);
+  value.memory = memory != NULL ? core_memdup(memory, value.size) : NULL;
   SQLITE_FINALIZE();
   return value;
 }

@@ -6,7 +6,7 @@ assetConfigFilepath =${assetsDirname}/config.ini
 [ASSET.CONFIG]
 graphics.WindowWidth = 640
 graphics.WindowHeight = 480
-graphics.WindowTitle = "cpptext"
+graphics.WindowTitle = "cpptest"
 controls.Enabled = 1
 settings.StartScene = "triangles"
 

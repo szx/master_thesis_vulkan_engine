@@ -12,8 +12,17 @@ void *core_alloc(size_t size);
 /// Frees allocation.
 void core_free(void *ptr);
 
+/// Copies memory.
+void *core_memcpy(void *dest, const void *src, size_t size);
+
 /// Returns copy of memory.
 void *core_memdup(const void *src, size_t size);
+
+#define utstring_alloc(_s, _str)                                                                   \
+  do {                                                                                             \
+    utstring_new(_s);                                                                              \
+    utstring_printf(_s, "%s", _str);                                                               \
+  } while (false)
 
 #define utarray_alloc(_array, _size)                                                               \
   do {                                                                                             \
