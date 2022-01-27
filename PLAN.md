@@ -48,13 +48,24 @@ Co należy wyprodukować:
         - [x] Processing meshes
         - [x] Processing nodes.
         - [x] Processing scenes.
-        - [ ] Processing images
+        - [ ] **Processing images**
         - [ ] Maybe: LOD generation using meshoptimizer.
 		- [x] SQLite database output
 		- [x] Write test comparing outputs of glFT with asset database.
     - [ ] GPU-driven rendering pipeline (14.02):
 		- [x] Loading scene data from asset database.
 		- [ ] **Research**
+			- [ ] [Writing and efficient Vulkan renderer](https://zeux.io/2020/02/27/writing-an-efficient-vulkan-renderer/)
+			- [ ] [GPU Driven Rendering Overview - Vulkan Guide](https://vkguide.dev/docs/gpudriven/gpu_driven_engines/)
+			- [ ] [Advanced Scenegraph Rendering Pipeline](https://on-demand.gputechconf.com/gtc/2013/presentations/S3032-Advanced-Scenegraph-Rendering-Pipeline.pdf)
+			- [ ] [GDC Vault - Rendering 'Rainbow Six | Siege'](https://www.gdcvault.com/play/1022990/Rendering-Rainbow-Six-Siege)
+			- [ ] [Experiments in GPU-based occlusion culling – Interplay of Light](https://interplayoflight.wordpress.com/2017/11/15/experiments-in-gpu-based-occlusion-culling/)
+			- [ ] [Indirect drawing and GPU culling - Win32 apps | Microsoft Docs](https://docs.microsoft.com/en-us/windows/win32/direct3d12/indirect-drawing-and-gpu-culling-)
+			- [ ] [Vulkan-Samples/samples/performance/multi_draw_indirect at master · KhronosGroup/Vulkan-Samples · GitHub](https://github.com/KhronosGroup/Vulkan-Samples/tree/master/samples/performance/multi_draw_indirect)
+			- [ ] [GPU Driven Occlusion Culling in Life is Feudal ](https://bazhenovc.github.io/blog/post/gpu-driven-occlusion-culling-slides-lif/)
+			- [ ] [Vulkan/examples/indirectdraw at master · SaschaWillems/Vulkan · GitHub](https://github.com/SaschaWillems/Vulkan/tree/master/examples/indirectdraw)
+			- [ ] [Indirect Rendering : "A way to a million draw calls" - CPP Rendering](https://cpp-rendering.io/indirect-rendering/)
+			- [ ] [D3D12 And Vulkan: Lessons Learned](https://gpuopen.com/wp-content/uploads/2017/03/GDC2017-D3D12-And-Vulkan-Lessons-Learned.pdf)
 		- [ ] Scene geometry buffer
 			- [ ] **Building scene geometry buffer**
 			- [ ] Uploading scene geometry buffer to GPU
