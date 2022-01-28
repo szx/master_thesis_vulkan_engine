@@ -49,6 +49,11 @@ Co należy wyprodukować:
         - [x] Processing nodes.
         - [x] Processing scenes.
         - [ ] **Processing images**
+        - [ ] Split vertex attributes into seperate arrays.
+        - [ ] Shader generation.
+	        - [ ] Split shader into shader parts. (**blocked by research**)
+	        - [ ] Store as many shader parts in asset database.
+	        - [ ] Generate GLSL shader strings and SPIR-V shader bytecode.
         - [ ] Maybe: LOD generation using meshoptimizer.
 		- [x] SQLite database output
 		- [x] Write test comparing outputs of glFT with asset database.
@@ -56,8 +61,14 @@ Co należy wyprodukować:
 		- [x] Loading scene data from asset database.
 		- [ ] **Research**
 			- [ ] [Writing and efficient Vulkan renderer](https://zeux.io/2020/02/27/writing-an-efficient-vulkan-renderer/)
+				- [ ] Read and take notes.
+				- [ ] Write summary in NOTES.
 			- [ ] [GPU Driven Rendering Overview - Vulkan Guide](https://vkguide.dev/docs/gpudriven/gpu_driven_engines/)
+				- [x] Read and take notes.
+				- [ ] Write summary in NOTES.
 			- [ ] [Advanced Scenegraph Rendering Pipeline](https://on-demand.gputechconf.com/gtc/2013/presentations/S3032-Advanced-Scenegraph-Rendering-Pipeline.pdf)
+				- [x] Read and take notes.
+				- [ ] Write summary in NOTES.
 			- [ ] [GDC Vault - Rendering 'Rainbow Six | Siege'](https://www.gdcvault.com/play/1022990/Rendering-Rainbow-Six-Siege)
 			- [ ] [Experiments in GPU-based occlusion culling – Interplay of Light](https://interplayoflight.wordpress.com/2017/11/15/experiments-in-gpu-based-occlusion-culling/)
 			- [ ] [Indirect drawing and GPU culling - Win32 apps | Microsoft Docs](https://docs.microsoft.com/en-us/windows/win32/direct3d12/indirect-drawing-and-gpu-culling-)
