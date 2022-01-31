@@ -4,8 +4,8 @@
 
 #define END_OF_DATA_CONFIG_SECTION
 #define DATA_CONFIG_SECTIONS(X, ...) \
-  X(settings, __VA_ARGS__) \
   X(graphics, __VA_ARGS__) \
+  X(settings, __VA_ARGS__) \
   X(controls, __VA_ARGS__) \
   END_OF_DATA_CONFIG_SECTION
 
@@ -18,8 +18,8 @@
 
 #define END_OF_DATA_CONFIG_STR_KEYS
 #define DATA_CONFIG_STR_KEYS(X, ...) \
-  X(settings, StartScene, "triangles", __VA_ARGS__) \
   X(graphics, WindowTitle, "cpptest", __VA_ARGS__) \
+  X(settings, StartScene, "triangles", __VA_ARGS__) \
   END_OF_DATA_CONFIG_STR_KEYS
 
 #define END_OF_DATA_ASSET_DB_TABLES

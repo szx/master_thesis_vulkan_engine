@@ -173,7 +173,7 @@ vulkan_node_data parse_cgltf_node(vulkan_scene_data *sceneData, cgltf_node *cglt
   assert(cgltfMesh->target_names_count == 0);
 
   vulkan_node_data node;
-  vulkan_node_data_init(&node, sceneData);
+  vulkan_node_data_init(&node);
 
   node.mesh = parse_cgltf_mesh(sceneData, cgltfMesh);
   // TODO: Animation, will probably require cgltf_node_transform_local().
@@ -244,54 +244,12 @@ void vulkan_mesh_data_init(vulkan_mesh_data *mesh) {
 
 void vulkan_mesh_data_deinit(vulkan_mesh_data *mesh) { utarray_free(mesh->primitives); }
 
-void vulkan_node_data_init(vulkan_node_data *node, vulkan_scene_data *sceneData) {
-  node->sceneData = sceneData;
+void vulkan_node_data_init(vulkan_node_data *node) {
   glm_mat4_identity(node->transform);
   node->hash = 0;
 }
 
 void vulkan_node_data_deinit(vulkan_node_data *node) { vulkan_mesh_data_deinit(&node->mesh); }
-
-void vulkan_node_data_debug_print(vulkan_node_data *node) {
-  log_debug("node:\n");
-  glm_mat4_print(node->transform, stderr);
-  log_debug("  hash=%zu", node->hash);
-  vulkan_mesh_data *mesh = &node->mesh;
-  vulkan_primitive_data_index *primitiveIdx = NULL;
-  while ((primitiveIdx = (utarray_next(mesh->primitives, primitiveIdx)))) {
-    vulkan_primitive_data *primitive = utarray_eltptr(node->sceneData->primitives, *primitiveIdx);
-    log_debug("  primitive: %s\n", VkPrimitiveTopology_debug_str(primitive->topology));
-    log_debug("    index: count=%d\n", utarray_len(primitive->indices));
-    void *index = NULL;
-    while ((index = utarray_next(primitive->indices, index))) {
-      log_debug("      %u\n", *(uint32_t *)index);
-    }
-    log_debug("    vertices: count=%d\n", primitive->vertexCount, primitive->vertexCount);
-    uint32_t vertexIdx = 0;
-    vec3 *position = NULL;
-    while ((position = utarray_next(primitive->positions, position))) {
-      log_debug("        position %d: %f %f %f\n", vertexIdx++, (*position)[0], (*position)[1],
-                (*position)[2]);
-    }
-    vertexIdx = 0;
-    vec3 *normal = NULL;
-    while ((normal = utarray_next(primitive->normals, normal))) {
-      log_debug("        normal %d: %f %f %f\n", vertexIdx++, (*normal)[0], (*normal)[1],
-                (*normal)[2]);
-    }
-    vertexIdx = 0;
-    vec3 *color = NULL;
-    while ((color = utarray_next(primitive->colors, color))) {
-      log_debug("        color %d: %f %f %f\n", vertexIdx++, (*color)[0], (*color)[1], (*color)[2]);
-    }
-    vertexIdx = 0;
-    vec2 *texCoord = NULL;
-    while ((texCoord = utarray_next(primitive->texCoords, texCoord))) {
-      log_debug("        texCoord %d: %f %f\n", vertexIdx++, (*texCoord)[0], (*texCoord)[1]);
-    }
-    log_debug("    hash=%zu", primitive->hash);
-  }
-}
 
 vulkan_scene_data *vulkan_scene_data_create(UT_string *name) {
   vulkan_scene_data *sceneData = core_alloc(sizeof(vulkan_scene_data));
@@ -321,14 +279,6 @@ void vulkan_scene_data_destroy(vulkan_scene_data *sceneData) {
 
   vulkan_camera_destroy(sceneData->camera);
   core_free(sceneData);
-}
-
-void vulkan_scene_data_debug_print(vulkan_scene_data *sceneData) {
-  log_debug("SCENE_DATA:\n");
-  vulkan_node_data *node = NULL;
-  while ((node = (utarray_next(sceneData->nodes, node)))) {
-    vulkan_node_data_debug_print(node);
-  }
 }
 
 vulkan_primitive_data_index vulkan_scene_data_add_primitive(vulkan_scene_data *sceneData,
@@ -406,7 +356,8 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
 #define COPY_BLOB_TO_ARRAY(_name)                                                                  \
   data_blob _name##Blob = data_asset_db_select_primitive_##_name##_blob(assetDb, primitiveKey);    \
   utarray_resize(primitive._name, _name##Blob.size / primitive._name->icd.sz);                     \
-  core_memcpy(primitive._name->d, _name##Blob.memory, _name##Blob.size);
+  core_memcpy(primitive._name->d, _name##Blob.memory, _name##Blob.size);                           \
+  data_blob_free_memory(_name##Blob);
 
       COPY_BLOB_TO_ARRAY(indices);
 
@@ -417,7 +368,6 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
   } else if (utarray_len(primitive._name) > 0) {                                                   \
     verify(primitive.vertexCount == utarray_len(primitive._name));                                 \
   }                                                                                                \
-  data_blob_free_memory(_name##Blob);
 
       COPY_VERTEX_ATTRIBUTE(positions)
       COPY_VERTEX_ATTRIBUTE(normals)
@@ -436,7 +386,7 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
     utarray_free(primitiveHashes);
 
     /* add node */
-    vulkan_node_data_init(&node, sceneData);
+    vulkan_node_data_init(&node);
     node.mesh = mesh;
     glm_mat4_copy(transform.value, node.transform);
     node.hash = *nodeHash;
@@ -445,4 +395,64 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
   utarray_free(nodeHashes);
 
   return sceneData;
+}
+
+/* debug print */
+
+void vulkan_primitive_data_debug_print(vulkan_primitive_data *primitive) {
+  log_debug("primitive: %s\n", VkPrimitiveTopology_debug_str(primitive->topology));
+  log_debug("  hash=%zu", primitive->hash);
+  log_debug("  index: count=%d\n", utarray_len(primitive->indices));
+  void *index = NULL;
+  while ((index = utarray_next(primitive->indices, index))) {
+    log_debug("    %u\n", *(uint32_t *)index);
+  }
+  log_debug("  vertices: count=%d\n", primitive->vertexCount, primitive->vertexCount);
+  uint32_t vertexIdx = 0;
+  vec3 *position = NULL;
+  while ((position = utarray_next(primitive->positions, position))) {
+    log_debug("      position %d: %f %f %f\n", vertexIdx++, (*position)[0], (*position)[1],
+              (*position)[2]);
+  }
+  vertexIdx = 0;
+  vec3 *normal = NULL;
+  while ((normal = utarray_next(primitive->normals, normal))) {
+    log_debug("      normal %d: %f %f %f\n", vertexIdx++, (*normal)[0], (*normal)[1], (*normal)[2]);
+  }
+  vertexIdx = 0;
+  vec3 *color = NULL;
+  while ((color = utarray_next(primitive->colors, color))) {
+    log_debug("      color %d: %f %f %f\n", vertexIdx++, (*color)[0], (*color)[1], (*color)[2]);
+  }
+  vertexIdx = 0;
+  vec2 *texCoord = NULL;
+  while ((texCoord = utarray_next(primitive->texCoords, texCoord))) {
+    log_debug("      texCoord %d: %f %f\n", vertexIdx++, (*texCoord)[0], (*texCoord)[1]);
+  }
+}
+
+void vulkan_mesh_data_debug_print(vulkan_mesh_data *mesh, vulkan_scene_data *sceneData) {
+  log_debug("mesh:\n");
+  log_debug("  hash=%zu", mesh->hash);
+  vulkan_primitive_data_index *primitiveIdx = NULL;
+  while ((primitiveIdx = (utarray_next(mesh->primitives, primitiveIdx)))) {
+    vulkan_primitive_data *primitive = utarray_eltptr(sceneData->primitives, *primitiveIdx);
+    vulkan_primitive_data_debug_print(primitive);
+  }
+}
+
+void vulkan_node_data_debug_print(vulkan_node_data *node, vulkan_scene_data *sceneData) {
+  log_debug("node:\n");
+  glm_mat4_print(node->transform, stderr);
+  log_debug("  hash=%zu", node->hash);
+  vulkan_mesh_data *mesh = &node->mesh;
+  vulkan_mesh_data_debug_print(mesh, sceneData);
+}
+
+void vulkan_scene_data_debug_print(vulkan_scene_data *sceneData) {
+  log_debug("SCENE_DATA:\n");
+  vulkan_node_data *node = NULL;
+  while ((node = (utarray_next(sceneData->nodes, node)))) {
+    vulkan_node_data_debug_print(node, sceneData);
+  }
 }

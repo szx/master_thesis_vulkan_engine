@@ -1,5 +1,5 @@
-/* Geometry buffer.
- * Used to aggregate scene's vertex data into device local buffers. */
+/* Basic Vulkan objects.
+ * Used by scene to draw scene data. */
 
 #pragma once
 
@@ -7,6 +7,12 @@
 #include "device.h"
 #include "functions.h"
 
+// HIRO rename to objects
+// HIRO basic log-level wrappers: buffer
+// HIRO basic high-level wrappers: vertex element, vertex buffer, uniform/storage buffer for shader
+
+// Geometry buffer.
+// Used to aggregate scene's vertex data into device local buffers.
 typedef struct vulkan_geometry_buffer {
   /* initialized by vulkan_scene_build_geometry_buffer */
   UT_array *data; /// uint8_t
@@ -14,7 +20,7 @@ typedef struct vulkan_geometry_buffer {
   vulkan_device *vkd; /// vulkan_device pointer
   VkBuffer buffer;
   VkDeviceMemory bufferMemory;
-  /* state */
+
   bool dirty; /// True if geometry buffer data updated on CPU.
 } vulkan_geometry_buffer;
 
@@ -29,7 +35,7 @@ typedef struct vulkan_uniform_buffer {
     alignas(16) mat4 viewMat;
     alignas(16) mat4 projMat;
   } data; // HIRO move UBO definitions out of vulkan_uniform_buffer
-  /* state */
+
   bool dirty;            /// True if uniform buffer data updated on CPU.
 } vulkan_uniform_buffer; // TODO: Manage every uniform buffers.
 

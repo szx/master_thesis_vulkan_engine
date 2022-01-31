@@ -7,7 +7,6 @@
 #include "../data/data.h"
 #include "functions.h"
 
-/// Contains index buffer, interleaved vertex stream and topology of the part of the mesh.
 typedef struct vulkan_camera {
   /* View matrix: camera position and rotation */
   vec3 position;   /// Position in world space.
@@ -17,7 +16,7 @@ typedef struct vulkan_camera {
   float aspectRatio; /// Aspect ratio.
   float nearZ;       /// Min depth range: distance from near clipping plane (along +Z axis!)
   float farZ;        /// Max depth range: distance from far clipping plane (along +Z axis!)
-  /* state */
+
   bool dirty; /// True if camera state updated.
 } vulkan_camera;
 

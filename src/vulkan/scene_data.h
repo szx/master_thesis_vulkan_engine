@@ -1,4 +1,5 @@
-/* Basic scene objects, glTF parsing and loading scene from asset database */
+/* Basic scene data.
+ * glTF parsing and loading scene from asset database. */
 #pragma once
 
 #include "../core/platform.h"
@@ -15,14 +16,15 @@ typedef struct vulkan_primitive_data {
   UT_array *colors;    /// vec3
   UT_array *texCoords; /// vec2
   // TODO: LOD index buffers.
-  UT_array *indices;    /// uint32_t
-  hash_t hash;          /// Hash, used to prevent duplicates in asset database.
+  UT_array *indices; /// uint32_t
+  hash_t hash;       /// Hash, used to prevent duplicates in asset database.
 } vulkan_primitive_data;
 
 typedef size_t vulkan_primitive_data_index;
 
 void vulkan_primitive_data_init(vulkan_primitive_data *primitive);
 void vulkan_primitive_data_deinit(vulkan_primitive_data *primitive);
+void vulkan_primitive_data_debug_print(vulkan_primitive_data *primitive);
 
 typedef struct vulkan_mesh_data {
   UT_array *primitives; /// vulkan_primitive_data_index array.
@@ -31,18 +33,18 @@ typedef struct vulkan_mesh_data {
 
 void vulkan_mesh_data_init(vulkan_mesh_data *mesh);
 void vulkan_mesh_data_deinit(vulkan_mesh_data *mesh);
+void vulkan_mesh_data_debug_print(vulkan_mesh_data *mesh, vulkan_scene_data *sceneData);
 
 typedef struct vulkan_node_data {
-  vulkan_scene_data *sceneData; // Parent pointer.
   vulkan_mesh_data mesh;
   mat4 transform;
   // TODO: child nodes
   hash_t hash; /// Hash, used to prevent duplicates in asset database.
 } vulkan_node_data;
 
-void vulkan_node_data_init(vulkan_node_data *node, vulkan_scene_data *sceneData);
+void vulkan_node_data_init(vulkan_node_data *node);
 void vulkan_node_data_deinit(vulkan_node_data *node);
-void vulkan_node_data_debug_print(vulkan_node_data *node);
+void vulkan_node_data_debug_print(vulkan_node_data *node, vulkan_scene_data *sceneData);
 
 /// Describes a scene.
 /// Does not create any Vulkan objects (see vulkan_scene).

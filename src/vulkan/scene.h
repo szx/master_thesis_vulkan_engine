@@ -1,15 +1,17 @@
-/* Vulkan scene and glTF parsing */
+/* Vulkan scene */
 #pragma once
 
 #include "../core/platform.h"
 
 #include "device.h"
 #include "functions.h"
-#include "geometry_buffer.h" // HIRO rename to scene_buffer?
+#include "geometry_buffer.h"
 #include "scene_data.h"
 
-/// Describes a scene.
-/// Does not create any Vulkan objects (see vulkan_render_context).
+// HIRO SceneGraph, SceneTree, ShapeList, Batches?
+
+/// Creates and destroys Vulkan objects used to draw scene described by
+/// scene data objects (see scene_data).
 typedef struct vulkan_scene {
   data_asset_db *assetDb; /// data_asset_db pointer
   vulkan_device *vkd;     /// vulkan_device pointer

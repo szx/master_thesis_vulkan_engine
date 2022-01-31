@@ -3,14 +3,12 @@
 
 vulkan_camera *vulkan_camera_create() {
   vulkan_camera *camera = core_alloc(sizeof(vulkan_camera));
-  glm_vec3((vec3){0.0f, 0.0f, 0.0f}, camera->position);
+  glm_vec3((vec3){0.0f, 0.0f, -1.0f}, camera->position);
   glm_quat_identity(camera->rotation);
   camera->fovY = 90.0f;
   camera->aspectRatio = 1.0f;
   camera->nearZ = 0.1f;
   camera->farZ = 256.0f;
-  // TODO: Camera config using Lua.
-  camera->position[2] = -1.0f;
   camera->dirty = true;
   return camera;
 }
