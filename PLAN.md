@@ -62,21 +62,22 @@ Co należy wyprodukować:
 		- [ ] **Research**
 			- [ ] [Writing and efficient Vulkan renderer](https://zeux.io/2020/02/27/writing-an-efficient-vulkan-renderer/)
 				- [ ] Read and take notes.
-				- [ ] Write summary in NOTES.
 			- [ ] [GPU Driven Rendering Overview - Vulkan Guide](https://vkguide.dev/docs/gpudriven/gpu_driven_engines/)
 				- [x] Read and take notes.
-				- [ ] Write summary in NOTES.
 			- [ ] [Advanced Scenegraph Rendering Pipeline](https://on-demand.gputechconf.com/gtc/2013/presentations/S3032-Advanced-Scenegraph-Rendering-Pipeline.pdf)
 				- [x] Read and take notes.
-				- [ ] Write summary in NOTES.
 			- [ ] [GDC Vault - Rendering 'Rainbow Six | Siege'](https://www.gdcvault.com/play/1022990/Rendering-Rainbow-Six-Siege)
+				- [ ] Read and take notes.
 			- [ ] [Experiments in GPU-based occlusion culling – Interplay of Light](https://interplayoflight.wordpress.com/2017/11/15/experiments-in-gpu-based-occlusion-culling/)
+				- [x] Read and take notes.
 			- [ ] [Indirect drawing and GPU culling - Win32 apps | Microsoft Docs](https://docs.microsoft.com/en-us/windows/win32/direct3d12/indirect-drawing-and-gpu-culling-)
-			- [ ] [Vulkan-Samples/samples/performance/multi_draw_indirect at master · KhronosGroup/Vulkan-Samples · GitHub](https://github.com/KhronosGroup/Vulkan-Samples/tree/master/samples/performance/multi_draw_indirect)
+				- [ ] Read and take notes.
 			- [ ] [GPU Driven Occlusion Culling in Life is Feudal ](https://bazhenovc.github.io/blog/post/gpu-driven-occlusion-culling-slides-lif/)
-			- [ ] [Vulkan/examples/indirectdraw at master · SaschaWillems/Vulkan · GitHub](https://github.com/SaschaWillems/Vulkan/tree/master/examples/indirectdraw)
+				- [ ] Read and take notes.
 			- [ ] [Indirect Rendering : "A way to a million draw calls" - CPP Rendering](https://cpp-rendering.io/indirect-rendering/)
+				- [ ] Read and take notes.
 			- [ ] [D3D12 And Vulkan: Lessons Learned](https://gpuopen.com/wp-content/uploads/2017/03/GDC2017-D3D12-And-Vulkan-Lessons-Learned.pdf)
+				- [ ] Read and take notes.
 		- [ ] Scene geometry buffer
 			- [ ] **Building scene geometry buffer**
 			- [ ] Uploading scene geometry buffer to GPU
