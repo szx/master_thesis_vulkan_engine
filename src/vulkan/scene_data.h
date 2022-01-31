@@ -15,9 +15,6 @@ typedef struct vulkan_primitive_data {
   UT_array *colors;    /// vec3
   UT_array *texCoords; /// vec2
   // TODO: LOD index buffers.
-  uint32_t indexCount;
-  vulkan_index_type indexType;
-  uint32_t indexStride; /// Calculated using indexType.
   UT_array *indices;    /// uint32_t
   hash_t hash;          /// Hash, used to prevent duplicates in asset database.
 } vulkan_primitive_data;

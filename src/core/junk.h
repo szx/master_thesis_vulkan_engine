@@ -15,6 +15,7 @@ static_assert(sizeof(char) == sizeof(uint8_t), "sizeof(char) != sizeof(uint8_t)"
 #define member_size(type, member) sizeof(((type *)0)->member)
 #define array_size(array) (sizeof(array) / sizeof((array)[0]))
 #define utarray_size(array) ((array)->icd.sz * utarray_len((array)))
+#define utarray_eltsize(array) ((array)->icd.sz)
 
 #if defined(DEBUG)
 #define debug_msg(msg) log_trace("debug_msg: %s in %s:%s:%d", msg, __func__, __FILE__, __LINE__)

@@ -73,11 +73,10 @@ vulkan_primitive_data_index parse_cgltf_primitive(vulkan_scene_data *sceneData,
   vulkan_primitive_data_init(&primitive);
   primitive.topology = topology;
   primitive.vertexCount = vertexCount;
-  primitive.indexCount = indexCount;
 
   // read indices
-  utarray_resize(primitive.indices, primitive.indexCount);
-  for (size_t i = 0; i < primitive.indexCount; i++) {
+  utarray_resize(primitive.indices, indexCount);
+  for (size_t i = 0; i < utarray_len(primitive.indices); i++) {
     size_t indexValue = cgltf_accessor_read_index(cgltfIndices, i);
     void *outValue = utarray_eltptr(primitive.indices, i);
     *(uint32_t *)outValue = indexValue;
@@ -227,10 +226,7 @@ void vulkan_primitive_data_init(vulkan_primitive_data *primitive) {
   utarray_alloc(primitive->normals, sizeof(vec3));
   utarray_alloc(primitive->colors, sizeof(vec3));
   utarray_alloc(primitive->texCoords, sizeof(vec2));
-  primitive->indexCount = 0;
-  primitive->indexType = vulkan_index_type_uint32;
-  primitive->indexStride = index_type_to_index_stride(primitive->indexType);
-  utarray_alloc(primitive->indices, primitive->indexStride);
+  utarray_alloc(primitive->indices, sizeof(uint32_t));
   primitive->hash = 0;
 }
 
@@ -265,9 +261,7 @@ void vulkan_node_data_debug_print(vulkan_node_data *node) {
   while ((primitiveIdx = (utarray_next(mesh->primitives, primitiveIdx)))) {
     vulkan_primitive_data *primitive = utarray_eltptr(node->sceneData->primitives, *primitiveIdx);
     log_debug("  primitive: %s\n", VkPrimitiveTopology_debug_str(primitive->topology));
-    log_debug("    index: %s stride=%d count=%d\n",
-              vulkan_index_type_debug_str(primitive->indexType), primitive->indexStride,
-              primitive->indexCount);
+    log_debug("    index: count=%d\n", utarray_len(primitive->indices));
     void *index = NULL;
     while ((index = utarray_next(primitive->indices, index))) {
       log_debug("      %u\n", *(uint32_t *)index);
@@ -413,8 +407,8 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
   data_blob _name##Blob = data_asset_db_select_primitive_##_name##_blob(assetDb, primitiveKey);    \
   utarray_resize(primitive._name, _name##Blob.size / primitive._name->icd.sz);                     \
   core_memcpy(primitive._name->d, _name##Blob.memory, _name##Blob.size);
+
       COPY_BLOB_TO_ARRAY(indices);
-      primitive.indexCount = utarray_len(primitive.indices);
 
 #define COPY_VERTEX_ATTRIBUTE(_name)                                                               \
   COPY_BLOB_TO_ARRAY(_name)                                                                        \
@@ -424,10 +418,12 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
     verify(primitive.vertexCount == utarray_len(primitive._name));                                 \
   }                                                                                                \
   data_blob_free_memory(_name##Blob);
+
       COPY_VERTEX_ATTRIBUTE(positions)
       COPY_VERTEX_ATTRIBUTE(normals)
       COPY_VERTEX_ATTRIBUTE(colors)
       COPY_VERTEX_ATTRIBUTE(texCoords)
+
 #undef COPY_VERTEX_ATTRIBUTE
 #undef COPY_BLOB_TO_ARRAY
 

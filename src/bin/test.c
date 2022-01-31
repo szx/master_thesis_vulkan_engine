@@ -8,7 +8,6 @@
 
 // Loading sponza.gltf.
 TEST gltf_loading() {
-  // TODO: Files in database.
   // TODO: Loading extra files (images).
   data_config *config = data_config_create();
   data_asset_db *assetDb = data_asset_db_create();
@@ -56,8 +55,6 @@ TEST gltf_loading() {
     ASSERT_EQ(foundCorrespondingPrimitive, true);
     ASSERT_EQ(gltfPrimitive->topology, assetDbPrimitive->topology);
     ASSERT_EQ(gltfPrimitive->vertexCount, assetDbPrimitive->vertexCount);
-    ASSERT_EQ(gltfPrimitive->indexCount, assetDbPrimitive->indexCount);
-    ASSERT_EQ(gltfPrimitive->indexStride, assetDbPrimitive->indexStride);
 #define ASSERT_VERTEX_ATTRIBUTE(_name)                                                             \
   ASSERT_EQ(utarray_len(gltfPrimitive->_name), utarray_len(assetDbPrimitive->_name));              \
   if (utarray_len(gltfPrimitive->_name) > 0)                                                       \

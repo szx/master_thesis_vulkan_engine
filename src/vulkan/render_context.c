@@ -583,7 +583,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
       assert(bindingCount == 1);
       VkBuffer vertexBuffer = scene->geometryBuffer->buffer;
       VkDeviceSize vertexBuffersOffset = 0;
-      if (primitive->indexCount > 0) {
+      if (utarray_len(primitive->indices) > 0) {
         // TODO update vertex stride with dynamic constants
         vertexBuffersOffset = 0; // HIRO replace primitive->vertexStreamOffset;
       }
@@ -595,11 +595,11 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
       vkCmdBindVertexBuffers(frame->commandBuffer, 0, bindingCount, vertexBuffers,
                              vertexBuffersOffsets);
 
-      if (primitive->indexCount > 0) {
+      if (utarray_len(primitive->indices) > 0) {
         VkBuffer indexBuffer = scene->geometryBuffer->buffer;
         VkDeviceSize indexBufferOffset = 0; // HIRO replace primitive->indexBufferOffset;
-        uint32_t indexCount = primitive->indexCount;
-        uint32_t indexStride = primitive->indexStride;
+        uint32_t indexCount = utarray_len(primitive->indices);
+        uint32_t indexStride = utarray_eltsize(primitive->indices);
         VkIndexType indexType = stride_to_index_format(indexStride);
         vkCmdBindIndexBuffer(frame->commandBuffer, indexBuffer, indexBufferOffset, indexType);
         vkCmdDrawIndexed(frame->commandBuffer, indexCount, 1, 0, 0, 0);
