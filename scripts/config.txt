@@ -11,7 +11,8 @@ controls.Enabled = 1
 settings.StartScene = "triangles"
 
 [ASSET.DB]
-primitive = "key HASH, topology INT, indices BLOB, positions BLOB, normals BLOB, colors BLOB, texCoords BLOB"
-mesh = "key HASH, primitives HASH_ARRAY"
-node = "key HASH, transform MAT4, nodes BLOB, mesh HASH"
-scene = "key TEXT, nodes HASH_ARRAY, cameras BLOB"
+types = "INT:uint32_t, MAT4:mat4, TEXT:UT_string *, KEY:hash_t, BLOB:UT_array *"
+primitive = "key KEY, topology INT, indices BLOB, positions BLOB, normals BLOB, colors BLOB, texCoords BLOB"
+mesh = "key KEY, primitives KEY_ARRAY"
+node = "key KEY, transform MAT4, nodes BLOB, mesh KEY"
+scene = "key KEY, name TEXT, nodes KEY_ARRAY, cameras BLOB"

@@ -14,7 +14,7 @@ TEST gltf_loading() {
   vulkan_device *vkd = vulkan_device_create(config, assetDb);
   UT_string *sceneName;
   utstring_alloc(sceneName, "sponza");
-  UT_string *gltfPath = get_asset_file_path("sponza", "sponza.gltf");
+  UT_string *gltfPath = get_asset_file_path("sponza", "Sponza.gltf");
   vulkan_scene_data *gltfSceneData = vulkan_scene_data_create_with_gltf_file(sceneName, gltfPath);
   vulkan_scene_data *assetDbSceneData = vulkan_scene_data_create_with_asset_db(assetDb, sceneName);
 
@@ -27,7 +27,7 @@ TEST gltf_loading() {
     vulkan_node_data *gltfNode = NULL;
     bool foundCorrespondingNode = false;
     while ((gltfNode = (utarray_next(gltfSceneData->nodes, gltfNode)))) {
-      if (gltfNode->hash == assetDbNode->hash) {
+      if (gltfNode->hash.value == assetDbNode->hash.value) {
         foundCorrespondingNode = true;
         break;
       }
@@ -36,7 +36,7 @@ TEST gltf_loading() {
     ASSERT_MEM_EQ(gltfNode->transform, assetDbNode->transform, sizeof(mat4));
     vulkan_mesh_data *gltfMesh = &gltfNode->mesh;
     vulkan_mesh_data *assetDbMesh = &assetDbNode->mesh;
-    ASSERT_EQ(gltfMesh->hash, assetDbMesh->hash);
+    ASSERT_EQ(gltfMesh->hash.value, assetDbMesh->hash.value);
     vulkan_primitive_data *gltfPrimitive = NULL;
     vulkan_primitive_data *assetDbPrimitive = NULL;
     bool foundCorrespondingPrimitive = false;
@@ -46,7 +46,7 @@ TEST gltf_loading() {
       vulkan_primitive_data_index *assetDbPrimIdx = NULL;
       while ((assetDbPrimIdx = (utarray_next(gltfMesh->primitives, assetDbPrimIdx)))) {
         assetDbPrimitive = utarray_eltptr(assetDbSceneData->primitives, *assetDbPrimIdx);
-        if (gltfPrimitive->hash == assetDbPrimitive->hash) {
+        if (gltfPrimitive->hash.value == assetDbPrimitive->hash.value) {
           foundCorrespondingPrimitive = true;
           break;
         }

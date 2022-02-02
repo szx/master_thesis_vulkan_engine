@@ -66,6 +66,15 @@ def codegen_macros(config: ConfigParser):
 
     # asset_db.h
     asset_db_ini = get_config(config, 'ASSET.DB')
+    asset_db_types = [x.strip().split(":") for x in asset_db_ini['types'].split(',')]
+    asset_db_ini.pop('types', None)
+
+    decls.append(f'\n#define END_OF_DATA_DB_TYPES')
+    decls.append(f'#define DATA_DB_TYPES(X, ...) \\')
+    for (data_type, data_value) in asset_db_types:
+        decls.append(f'  X({data_type.lower()}, {data_value}, __VA_ARGS__) \\')
+    decls.append(f'  END_OF_DATA_DB_TYPES')
+
     decls.append(f'\n#define END_OF_DATA_ASSET_DB_TABLES')
     decls.append(f'#define DATA_ASSET_DB_TABLES(X, ...) \\')
     for key, value in asset_db_ini.items():

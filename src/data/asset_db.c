@@ -36,7 +36,7 @@ void data_asset_db_save_empty(data_asset_db *assetDb) {
 
 #define def_select(_table, _column, _type, ...)                                                    \
   data##_##_type data_asset_db_select_##_table##_##_column##_##_type(data_asset_db *assetDb,       \
-                                                                     data_blob key) {              \
+                                                                     data_key key) {               \
     return data_db_select_##_type(assetDb->db, #_table, key, #_column);                            \
   }
 DATA_ASSET_DB_COLUMNS(def_select, )
@@ -45,7 +45,7 @@ DATA_ASSET_DB_COLUMNS(def_select, )
 /* insert */
 
 #define def_insert(_table, _column, _type, ...)                                                    \
-  void data_asset_db_insert_##_table##_##_column##_##_type(data_asset_db *assetDb, data_blob key,  \
+  void data_asset_db_insert_##_table##_##_column##_##_type(data_asset_db *assetDb, data_key key,   \
                                                            data##_##_type value) {                 \
     data_db_insert_##_type(assetDb->db, #_table, key, #_column, value, true);                      \
   }

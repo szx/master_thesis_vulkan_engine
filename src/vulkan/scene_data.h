@@ -17,7 +17,7 @@ typedef struct vulkan_primitive_data {
   UT_array *texCoords; /// vec2
   // TODO: LOD index buffers.
   UT_array *indices; /// uint32_t
-  hash_t hash;       /// Hash, used to prevent duplicates in asset database.
+  data_key hash;     /// Hash, used to prevent duplicates in asset database.
 } vulkan_primitive_data;
 
 typedef size_t vulkan_primitive_data_index;
@@ -28,7 +28,7 @@ void vulkan_primitive_data_debug_print(vulkan_primitive_data *primitive);
 
 typedef struct vulkan_mesh_data {
   UT_array *primitives; /// vulkan_primitive_data_index array.
-  hash_t hash;          /// Hash, used to prevent duplicates in asset database.
+  data_key hash;        /// Hash, used to prevent duplicates in asset database.
 } vulkan_mesh_data;
 
 void vulkan_mesh_data_init(vulkan_mesh_data *mesh);
@@ -39,7 +39,7 @@ typedef struct vulkan_node_data {
   vulkan_mesh_data mesh;
   mat4 transform;
   // TODO: child nodes
-  hash_t hash; /// Hash, used to prevent duplicates in asset database.
+  data_key hash; /// Hash, used to prevent duplicates in asset database.
 } vulkan_node_data;
 
 void vulkan_node_data_init(vulkan_node_data *node);
@@ -53,7 +53,8 @@ typedef struct vulkan_scene_data {
   UT_array *primitives; /// vulkan_primitive_data array, all primitives used by scene.
   UT_array *nodes;      /// vulkan_node_data array, all nodes in scene.
   vulkan_camera *camera;
-  bool dirty; /// True if scene data updated on CPU.
+  bool dirty;    /// True if scene data updated on CPU.
+  data_key hash; /// Hash, used to prevent duplicates in asset database.
 } vulkan_scene_data;
 
 vulkan_scene_data *vulkan_scene_data_create(UT_string *name);
