@@ -128,20 +128,16 @@ vulkan_primitive_data_index parse_cgltf_primitive(vulkan_scene_data *sceneData,
 
 vulkan_mesh_data parse_cgltf_mesh(vulkan_scene_data *sceneData, cgltf_mesh *cgltfMesh) {
   vulkan_mesh_data mesh;
-  vulkan_mesh_data_init(&mesh);
-
-  HASH_START(meshHash)
+  vulkan_mesh_data_init(&mesh, sceneData);
 
   for (size_t primitiveIdx = 0; primitiveIdx < cgltfMesh->primitives_count; primitiveIdx++) {
     vulkan_primitive_data_index idx =
         parse_cgltf_primitive(sceneData, &cgltfMesh->primitives[primitiveIdx]);
     vulkan_primitive_data *primitive = utarray_eltptr(sceneData->primitives, idx);
-    HASH_UPDATE(meshHash, &primitive->hash, sizeof(primitive->hash));
     utarray_push_back(mesh.primitives, &idx);
   }
 
-  HASH_DIGEST(meshHash, mesh.hash.value)
-  HASH_END(meshHash)
+  mesh.hash = vulkan_mesh_data_calculate_key(&mesh);
 
   return mesh;
 }
@@ -208,12 +204,6 @@ vulkan_scene_data *parse_cgltf_scene(UT_string *name, UT_string *path) {
 }
 
 /* scene data */
-
-void vulkan_mesh_data_init(vulkan_mesh_data *mesh) {
-  utarray_alloc(mesh->primitives, sizeof(vulkan_primitive_data_index));
-}
-
-void vulkan_mesh_data_deinit(vulkan_mesh_data *mesh) { utarray_free(mesh->primitives); }
 
 void vulkan_node_data_init(vulkan_node_data *node) {
   glm_mat4_identity(node->transform);
@@ -317,30 +307,13 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
     /* node data */
     data_mat4 transform = data_asset_db_select_node_transform_mat4(assetDb, *nodeKey);
     // TODO: Chlid nodes.
-    data_key meshHash = data_asset_db_select_node_mesh_key(assetDb, *nodeKey);
     vulkan_node_data node;
+    data_key meshHash = data_asset_db_select_node_mesh_key(assetDb, *nodeKey);
 
     /* mesh data */
-    data_key_array primitiveHashArray =
-        data_asset_db_select_mesh_primitives_key_array(assetDb, meshHash);
-    UT_array *primitiveHashes = primitiveHashArray.values;
-
     vulkan_mesh_data mesh;
-    vulkan_mesh_data_init(&mesh);
-    mesh.hash = meshHash;
-
-    // parse mesh primitives
-    data_key *primitiveKey = NULL;
-    while ((primitiveKey = (utarray_next(primitiveHashes, primitiveKey)))) {
-      vulkan_primitive_data primitive;
-      vulkan_primitive_data_init(&primitive);
-      vulkan_primitive_data_deserialize(&primitive, assetDb, *primitiveKey);
-
-      vulkan_primitive_data_index primitiveIdx =
-          vulkan_scene_data_add_primitive(sceneData, primitive);
-      utarray_push_back(mesh.primitives, &primitiveIdx);
-    }
-    data_key_array_deinit(&primitiveHashArray);
+    vulkan_mesh_data_init(&mesh, sceneData);
+    vulkan_mesh_data_deserialize(&mesh, assetDb, meshHash);
 
     /* add node */
     vulkan_node_data_init(&node);
@@ -356,22 +329,12 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
 
 /* debug print */
 
-void vulkan_mesh_data_debug_print(vulkan_mesh_data *mesh, vulkan_scene_data *sceneData) {
-  log_debug("mesh:\n");
-  log_debug("  hash=%zu", mesh->hash);
-  vulkan_primitive_data_index *primitiveIdx = NULL;
-  while ((primitiveIdx = (utarray_next(mesh->primitives, primitiveIdx)))) {
-    vulkan_primitive_data *primitive = utarray_eltptr(sceneData->primitives, *primitiveIdx);
-    vulkan_primitive_data_debug_print(primitive);
-  }
-}
-
 void vulkan_node_data_debug_print(vulkan_node_data *node, vulkan_scene_data *sceneData) {
   log_debug("node:\n");
   glm_mat4_print(node->transform, stderr);
   log_debug("  hash=%zu", node->hash);
   vulkan_mesh_data *mesh = &node->mesh;
-  vulkan_mesh_data_debug_print(mesh, sceneData);
+  vulkan_mesh_data_debug_print(mesh);
 }
 
 void vulkan_scene_data_debug_print(vulkan_scene_data *sceneData) {

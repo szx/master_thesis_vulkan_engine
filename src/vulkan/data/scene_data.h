@@ -4,20 +4,8 @@
 
 #include "../../data/data.h"
 #include "camera.h"
+#include "mesh.h"
 #include "primitive.h"
-
-typedef struct vulkan_scene_data vulkan_scene_data;
-
-typedef size_t vulkan_primitive_data_index;
-
-typedef struct vulkan_mesh_data {
-  UT_array *primitives; /// vulkan_primitive_data_index array.
-  data_key hash;        /// Hash, used to prevent duplicates in asset database.
-} vulkan_mesh_data;
-
-void vulkan_mesh_data_init(vulkan_mesh_data *mesh);
-void vulkan_mesh_data_deinit(vulkan_mesh_data *mesh);
-void vulkan_mesh_data_debug_print(vulkan_mesh_data *mesh, vulkan_scene_data *sceneData);
 
 typedef struct vulkan_node_data {
   vulkan_mesh_data mesh;

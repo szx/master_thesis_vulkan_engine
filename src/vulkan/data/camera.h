@@ -1,4 +1,5 @@
 /* Camera state.
+ * Represents camera in scene.
  * Used to generate view and projection matrices.
  */
 #pragma once

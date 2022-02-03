@@ -55,43 +55,31 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
   }
   data_asset_db_insert_scene_cameras_key_array(assetDb, sceneData->hash,
                                                data_key_array_temp(cameraKeys));
+  utarray_free(cameraKeys);
 
-  UT_array *nodeHashes = NULL;
-  utarray_alloc(nodeHashes, sizeof(data_key));
+  UT_array *nodeKeys = NULL;
+  utarray_alloc(nodeKeys, sizeof(data_key));
   vulkan_node_data *node = NULL;
   while ((node = (utarray_next(sceneData->nodes, node)))) {
     // vulkan_node_data_debug_print(node);
 
     vulkan_mesh_data *mesh = &node->mesh;
-    UT_array *primitiveHashes = NULL;
-    utarray_alloc(primitiveHashes, sizeof(data_key));
-
-    vulkan_primitive_data_index *primitiveIdx = NULL;
-    while ((primitiveIdx = (utarray_next(mesh->primitives, primitiveIdx)))) {
-      vulkan_primitive_data *primitive = utarray_eltptr(sceneData->primitives, *primitiveIdx);
-      vulkan_primitive_data_serialize(primitive, assetDb);
-      utarray_push_back(primitiveHashes, &primitive->hash);
-    }
-
-    data_asset_db_insert_mesh_primitives_key_array(assetDb, mesh->hash,
-                                                   data_key_array_temp(primitiveHashes));
-    utarray_free(primitiveHashes);
+    vulkan_mesh_data_serialize(mesh, assetDb);
 
     data_mat4 transformMat;
     glm_mat4_copy(node->transform, transformMat.value);
     data_asset_db_insert_node_transform_mat4(assetDb, node->hash, transformMat);
 
     data_asset_db_insert_node_mesh_key(assetDb, node->hash, node->mesh.hash);
-    utarray_push_back(nodeHashes, &node->hash);
-    // TODO: child nodes
+    utarray_push_back(nodeKeys, &node->hash);
   }
   data_asset_db_insert_scene_name_text(assetDb, sceneData->hash, (data_text){sceneData->name});
   data_asset_db_insert_scene_nodes_key_array(assetDb, sceneData->hash,
-                                             data_key_array_temp(nodeHashes));
+                                             data_key_array_temp(nodeKeys));
+  utarray_free(nodeKeys);
 
-  // TODO: Add textures to pipeline.
+  // TODO: Add materials to pipeline.
 
-  utarray_free(nodeHashes);
   vulkan_scene_data_destroy(sceneData);
 }
 
