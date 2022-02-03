@@ -6,7 +6,7 @@
 #include "../../data/data.h"
 #include "../functions.h"
 
-typedef struct vulkan_camera {
+typedef struct vulkan_camera_data {
   /* View matrix: camera position and rotation */
   vec3 position;   /// Position in world space.
   versor rotation; /// Rotation in world space.
@@ -18,13 +18,14 @@ typedef struct vulkan_camera {
 
   bool dirty;    /// True if camera state updated.
   data_key hash; /// Hash, used to prevent duplicates in asset database.
-} vulkan_camera;
+} vulkan_camera_data;
 
-void vulkan_camera_init(vulkan_camera *camera);
-void vulkan_camera_deinit(vulkan_camera *camera);
+void vulkan_camera_data_init(vulkan_camera_data *camera);
+void vulkan_camera_data_deinit(vulkan_camera_data *camera);
 
-void vulkan_camera_update_aspect_ratio(vulkan_camera *camera, float aspectRatio);
+void vulkan_camera_data_update_aspect_ratio(vulkan_camera_data *camera, float aspectRatio);
 
-data_key vulkan_camera_calculate_key(vulkan_camera *camera);
-void vulkan_camera_serialize(vulkan_camera *camera, data_asset_db *assetDb);
-void vulkan_camera_deserialize(vulkan_camera *camera, data_asset_db *assetDb, data_key key);
+data_key vulkan_camera_data_calculate_key(vulkan_camera_data *camera);
+void vulkan_camera_data_serialize(vulkan_camera_data *camera, data_asset_db *assetDb);
+void vulkan_camera_data_deserialize(vulkan_camera_data *camera, data_asset_db *assetDb,
+                                    data_key key);

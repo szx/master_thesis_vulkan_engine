@@ -48,9 +48,9 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
 
   UT_array *cameraKeys = NULL;
   utarray_alloc(cameraKeys, sizeof(data_key));
-  vulkan_camera *camera = NULL;
+  vulkan_camera_data *camera = NULL;
   while ((camera = (utarray_next(sceneData->cameras, camera)))) {
-    vulkan_camera_serialize(camera, assetDb);
+    vulkan_camera_data_serialize(camera, assetDb);
     utarray_push_back(cameraKeys, &camera->hash);
   }
   data_asset_db_insert_scene_cameras_key_array(assetDb, sceneData->hash,

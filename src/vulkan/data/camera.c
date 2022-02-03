@@ -1,6 +1,6 @@
 #include "camera.h"
 
-void vulkan_camera_init(vulkan_camera *camera) {
+void vulkan_camera_data_init(vulkan_camera_data *camera) {
   glm_vec3((vec3){0.0f, 0.0f, -1.0f}, camera->position);
   glm_quat_identity(camera->rotation);
   camera->fovY = 90.0f;
@@ -8,17 +8,17 @@ void vulkan_camera_init(vulkan_camera *camera) {
   camera->nearZ = 0.1f;
   camera->farZ = 256.0f;
   camera->dirty = true;
-  camera->hash = vulkan_camera_calculate_key(camera);
+  camera->hash = vulkan_camera_data_calculate_key(camera);
 }
 
-void vulkan_camera_deinit(vulkan_camera *camera) {}
+void vulkan_camera_data_deinit(vulkan_camera_data *camera) {}
 
-void vulkan_camera_update_aspect_ratio(vulkan_camera *camera, float aspectRatio) {
+void vulkan_camera_data_update_aspect_ratio(vulkan_camera_data *camera, float aspectRatio) {
   camera->aspectRatio = aspectRatio;
   camera->dirty = true;
 }
 
-data_key vulkan_camera_calculate_key(vulkan_camera *camera) {
+data_key vulkan_camera_data_calculate_key(vulkan_camera_data *camera) {
   hash_t value;
   HASH_START(hashState)
   HASH_UPDATE(hashState, camera->position, sizeof(camera->position))
@@ -32,7 +32,7 @@ data_key vulkan_camera_calculate_key(vulkan_camera *camera) {
   return (data_key){value};
 }
 
-void vulkan_camera_serialize(vulkan_camera *camera, data_asset_db *assetDb) {
+void vulkan_camera_data_serialize(vulkan_camera_data *camera, data_asset_db *assetDb) {
   data_asset_db_insert_camera_position_vec3(assetDb, camera->hash,
                                             data_vec3_temp(camera->position));
   data_asset_db_insert_camera_rotation_vec4(assetDb, camera->hash,
@@ -44,7 +44,8 @@ void vulkan_camera_serialize(vulkan_camera *camera, data_asset_db *assetDb) {
   data_asset_db_insert_camera_farZ_float(assetDb, camera->hash, data_float_temp(camera->farZ));
 }
 
-void vulkan_camera_deserialize(vulkan_camera *camera, data_asset_db *assetDb, data_key key) {
+void vulkan_camera_data_deserialize(vulkan_camera_data *camera, data_asset_db *assetDb,
+                                    data_key key) {
   camera->hash = key;
   glm_vec3_copy(data_asset_db_select_camera_position_vec3(assetDb, camera->hash).value,
                 camera->position);

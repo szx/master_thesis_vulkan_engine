@@ -55,4 +55,4 @@ void vulkan_uniform_buffer_destroy(vulkan_uniform_buffer *uniformBuffer);
 void vulkan_uniform_buffer_send_to_device(vulkan_uniform_buffer *uniformBuffer);
 
 void vulkan_uniform_buffer_update_with_camera(vulkan_uniform_buffer *uniformBuffer,
-                                              vulkan_camera *camera);
+                                              vulkan_camera_data *camera);

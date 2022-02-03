@@ -24,9 +24,9 @@ TEST gltf_loading() {
   ASSERT_EQ(utarray_len(gltfSceneData->cameras), utarray_len(assetDbSceneData->cameras));
   ASSERT_EQ(utarray_len(gltfSceneData->primitives), utarray_len(assetDbSceneData->primitives));
 
-  vulkan_camera *assetDbCamera = NULL;
+  vulkan_camera_data *assetDbCamera = NULL;
   while ((assetDbCamera = (utarray_next(assetDbSceneData->cameras, assetDbCamera)))) {
-    vulkan_camera *gltfCamera = NULL;
+    vulkan_camera_data *gltfCamera = NULL;
     bool foundCorrespondingCamera = false;
     while ((gltfCamera = (utarray_next(gltfSceneData->cameras, gltfCamera)))) {
       if (gltfCamera->hash.value == assetDbCamera->hash.value) {
