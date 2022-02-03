@@ -327,8 +327,7 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
 
   sceneData = vulkan_scene_data_create(sceneName);
 
-  data_blob cameraBlob = data_asset_db_select_scene_cameras_blob(assetDb, sceneKey);
-  vulkan_camera_deserialize(sceneData->camera, cameraBlob);
+  vulkan_camera_deserialize(sceneData->camera, assetDb);
 
   data_key *nodeHash = NULL;
   size_t nodeIdx = 0;
@@ -357,27 +356,28 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
       primitive.topology =
           data_asset_db_select_primitive_topology_int(assetDb, *primitiveKey).value;
 
-#define COPY_BLOB_TO_ARRAY(_name)                                                                  \
-  data_blob _name##Blob = data_asset_db_select_primitive_##_name##_blob(assetDb, *primitiveKey);   \
-  utarray_resize(primitive._name,                                                                  \
-                 utarray_len(_name##Blob.value) / utarray_eltsize(primitive._name));               \
-  core_memcpy(primitive._name->d, _name##Blob.value->d, utarray_size(primitive._name));            \
-  data_blob_deinit(&_name##Blob);
+#define SELECT_ARRAY(_name, _type)                                                                 \
+  data_##_type _name##Blob =                                                                       \
+      data_asset_db_select_primitive_##_name##_##_type(assetDb, *primitiveKey);                    \
+  utarray_resize(primitive._name, utarray_len(_name##Blob.values));                                \
+  core_memcpy(primitive._name->d, _name##Blob.values->d, utarray_size(primitive._name));           \
+  data_##_type##_deinit(&_name##Blob);
 
-      COPY_BLOB_TO_ARRAY(indices);
+      SELECT_ARRAY(indices, int_array);
 
-#define COPY_VERTEX_ATTRIBUTE(_name)                                                               \
-  COPY_BLOB_TO_ARRAY(_name)                                                                        \
+#define SELECT_VERTEX_ATTRIBUTE(_name, _type)                                                      \
+  SELECT_ARRAY(_name, _type)                                                                       \
   if (primitive.vertexCount == 0) {                                                                \
+    log_debug("primitive.vertexCount=%zu", utarray_len(primitive._name));                          \
     primitive.vertexCount = utarray_len(primitive._name);                                          \
   } else if (utarray_len(primitive._name) > 0) {                                                   \
     verify(primitive.vertexCount == utarray_len(primitive._name));                                 \
   }
 
-      COPY_VERTEX_ATTRIBUTE(positions)
-      COPY_VERTEX_ATTRIBUTE(normals)
-      COPY_VERTEX_ATTRIBUTE(colors)
-      COPY_VERTEX_ATTRIBUTE(texCoords)
+      SELECT_VERTEX_ATTRIBUTE(positions, vec3_array)
+      SELECT_VERTEX_ATTRIBUTE(normals, vec3_array)
+      SELECT_VERTEX_ATTRIBUTE(colors, vec3_array)
+      SELECT_VERTEX_ATTRIBUTE(texCoords, vec2_array)
 
 #undef COPY_VERTEX_ATTRIBUTE
 #undef COPY_BLOB_TO_ARRAY

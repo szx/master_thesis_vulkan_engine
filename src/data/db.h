@@ -17,28 +17,25 @@ void data_db_destroy(data_db *db);
 /* data types */
 
 #define decl_data_type(_type, _value, ...)                                                         \
-  typedef struct data##_##_type {                                                                  \
+  typedef struct data_##_type {                                                                    \
     _value value;                                                                                  \
-  } data##_##_type;                                                                                \
-  void data##_##_type##_init(data_##_type *data, _value value);                                    \
-  void data##_##_type##_deinit(data_##_type *data);                                                \
+  } data_##_type;                                                                                  \
+  void data_##_type##_init(data_##_type *data, _value value);                                      \
+  void data_##_type##_deinit(data_##_type *data);                                                  \
+  data_##_type data_##_type##_temp(_value value); /* NOTE: can leak memory */                      \
+  size_t data_##_type##_size(_value value);                                                        \
+  void data_##_type##_serialize(uint8_t *memory, _value value);                                    \
+  void data_##_type##_deserialize(const uint8_t *memory, size_t size, _value *value);              \
+                                                                                                   \
   typedef struct data##_##_type##_array {                                                          \
     UT_array *values;                                                                              \
   } data##_##_type##_array;                                                                        \
   void data_##_type##_array_init(data_##_type##_array *array);                                     \
   void data_##_type##_array_deinit(data_##_type##_array *array);                                   \
-  void data_##_type##_array_push_back(data_##_type##_array *array, _value value);
+  void data_##_type##_array_push_back(data_##_type##_array *array, _value value);                  \
+  data_##_type##_array data_##_type##_array_temp(UT_array *values);
 DATA_DB_TYPES(decl_data_type, )
 #undef decl_data_type
-
-/* serialize */
-
-#define decl_data_serialize(_type, _value, ...)                                                    \
-  size_t data_size_##_type(_value value);                                                          \
-  void data_serialize_##_type(uint8_t *memory, _value value);                                      \
-  void data_deserialize_##_type(const uint8_t *memory, size_t size, _value *value);
-DATA_DB_TYPES(decl_data_serialize, )
-#undef decl_data_serialize
 
 /* select */
 

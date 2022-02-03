@@ -1,5 +1,4 @@
 #include "camera.h"
-#include "../data/db.h"
 
 vulkan_camera *vulkan_camera_create() {
   vulkan_camera *camera = core_alloc(sizeof(vulkan_camera));
@@ -10,6 +9,7 @@ vulkan_camera *vulkan_camera_create() {
   camera->nearZ = 0.1f;
   camera->farZ = 256.0f;
   camera->dirty = true;
+  camera->hash = vulkan_camera_calculate_key(camera);
   return camera;
 }
 
@@ -20,39 +20,40 @@ void vulkan_camera_update_aspect_ratio(vulkan_camera *camera, float aspectRatio)
   camera->dirty = true;
 }
 
-data_blob vulkan_camera_serialize(vulkan_camera *camera) {
-  UT_array *array = NULL;
-  utarray_alloc(array, sizeof(float));
-  utarray_push_back(array, &(camera->position[0]));
-  utarray_push_back(array, &(camera->position[1]));
-  utarray_push_back(array, &(camera->position[2]));
-  utarray_push_back(array, &(camera->rotation[0]));
-  utarray_push_back(array, &(camera->rotation[1]));
-  utarray_push_back(array, &(camera->rotation[2]));
-  utarray_push_back(array, &(camera->rotation[3]));
-  utarray_push_back(array, &(camera->fovY));
-  utarray_push_back(array, &(camera->aspectRatio));
-  utarray_push_back(array, &(camera->nearZ));
-  utarray_push_back(array, &(camera->farZ));
-  data_blob blob = {0};
-  data_blob_init(&blob, array);
-  return blob;
+data_key vulkan_camera_calculate_key(vulkan_camera *camera) {
+  hash_t value;
+  HASH_START(hashState)
+  HASH_UPDATE(hashState, camera->position, sizeof(camera->position))
+  HASH_UPDATE(hashState, camera->rotation, sizeof(camera->rotation))
+  HASH_UPDATE(hashState, &camera->fovY, sizeof(camera->fovY))
+  HASH_UPDATE(hashState, &camera->aspectRatio, sizeof(camera->aspectRatio))
+  HASH_UPDATE(hashState, &camera->nearZ, sizeof(camera->nearZ))
+  HASH_UPDATE(hashState, &camera->farZ, sizeof(camera->farZ))
+  HASH_DIGEST(hashState, value)
+  HASH_END(hashState);
+  return (data_key){value};
 }
 
-void vulkan_camera_deserialize(vulkan_camera *camera, data_blob blob) {
-  UT_array *array = NULL;
-  data_deserialize_blob((const uint8_t *)blob.value->d, utarray_size(blob.value), &array);
-  float *ptr = (float *)utarray_front(array);
-  camera->position[0] = ptr[0];
-  camera->position[1] = ptr[1];
-  camera->position[2] = ptr[2];
-  camera->rotation[0] = ptr[3];
-  camera->rotation[1] = ptr[4];
-  camera->rotation[2] = ptr[5];
-  camera->rotation[3] = ptr[6];
-  camera->fovY = ptr[7];
-  camera->aspectRatio = ptr[8];
-  camera->nearZ = ptr[9];
-  camera->farZ = ptr[10];
-  utarray_free(array);
+void vulkan_camera_serialize(vulkan_camera *camera, data_asset_db *assetDb) {
+  data_asset_db_insert_camera_position_vec3(assetDb, camera->hash,
+                                            data_vec3_temp(camera->position));
+  data_asset_db_insert_camera_rotation_vec4(assetDb, camera->hash,
+                                            data_vec4_temp(camera->rotation));
+  data_asset_db_insert_camera_fovY_float(assetDb, camera->hash, data_float_temp(camera->fovY));
+  data_asset_db_insert_camera_aspectRatio_float(assetDb, camera->hash,
+                                                data_float_temp(camera->aspectRatio));
+  data_asset_db_insert_camera_nearZ_float(assetDb, camera->hash, data_float_temp(camera->nearZ));
+  data_asset_db_insert_camera_farZ_float(assetDb, camera->hash, data_float_temp(camera->farZ));
+}
+
+void vulkan_camera_deserialize(vulkan_camera *camera, data_asset_db *assetDb) {
+  glm_vec3_copy(data_asset_db_select_camera_position_vec3(assetDb, camera->hash).value,
+                camera->position);
+  glm_vec4_copy(data_asset_db_select_camera_rotation_vec4(assetDb, camera->hash).value,
+                camera->rotation);
+  camera->fovY = data_asset_db_select_camera_fovY_float(assetDb, camera->hash).value;
+  camera->aspectRatio = data_asset_db_select_camera_aspectRatio_float(assetDb, camera->hash).value;
+  camera->nearZ = data_asset_db_select_camera_nearZ_float(assetDb, camera->hash).value;
+  data_float d = data_asset_db_select_camera_farZ_float(assetDb, camera->hash);
+  camera->farZ = d.value;
 }

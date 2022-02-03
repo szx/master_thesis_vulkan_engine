@@ -4,58 +4,68 @@
 
 #define END_OF_DATA_CONFIG_SECTION
 #define DATA_CONFIG_SECTIONS(X, ...) \
-  X(graphics, __VA_ARGS__) \
   X(controls, __VA_ARGS__) \
   X(settings, __VA_ARGS__) \
+  X(graphics, __VA_ARGS__) \
   END_OF_DATA_CONFIG_SECTION
 
 #define END_OF_DATA_CONFIG_INT_KEYS
 #define DATA_CONFIG_INT_KEYS(X, ...) \
+  X(controls, Enabled, 1, __VA_ARGS__) \
   X(graphics, WindowWidth, 640, __VA_ARGS__) \
   X(graphics, WindowHeight, 480, __VA_ARGS__) \
-  X(controls, Enabled, 1, __VA_ARGS__) \
   END_OF_DATA_CONFIG_INT_KEYS
 
 #define END_OF_DATA_CONFIG_STR_KEYS
 #define DATA_CONFIG_STR_KEYS(X, ...) \
-  X(graphics, WindowTitle, "cpptest", __VA_ARGS__) \
   X(settings, StartScene, "triangles", __VA_ARGS__) \
+  X(graphics, WindowTitle, "cpptest", __VA_ARGS__) \
   END_OF_DATA_CONFIG_STR_KEYS
 
 #define END_OF_DATA_DB_TYPES
 #define DATA_DB_TYPES(X, ...) \
   X(int, uint32_t, __VA_ARGS__) \
+  X(float, float, __VA_ARGS__) \
+  X(vec2, vec2, __VA_ARGS__) \
+  X(vec3, vec3, __VA_ARGS__) \
+  X(vec4, vec4, __VA_ARGS__) \
   X(mat4, mat4, __VA_ARGS__) \
   X(text, UT_string *, __VA_ARGS__) \
   X(key, hash_t, __VA_ARGS__) \
-  X(blob, UT_array *, __VA_ARGS__) \
   END_OF_DATA_DB_TYPES
 
 #define END_OF_DATA_ASSET_DB_TABLES
 #define DATA_ASSET_DB_TABLES(X, ...) \
-  X(primitive, key, key, topology, int, indices, blob, positions, blob, normals, blob, colors, blob, texcoords, blob, __VA_ARGS__) \
+  X(primitive, key, key, topology, int, indices, int_array, positions, vec3_array, normals, vec3_array, colors, vec3_array, texcoords, vec2_array, __VA_ARGS__) \
   X(mesh, key, key, primitives, key_array, __VA_ARGS__) \
-  X(node, key, key, transform, mat4, nodes, blob, mesh, key, __VA_ARGS__) \
-  X(scene, key, key, name, text, nodes, key_array, cameras, blob, __VA_ARGS__) \
+  X(node, key, key, transform, mat4, mesh, key, __VA_ARGS__) \
+  X(camera, key, key, position, vec3, rotation, vec4, fovy, float, aspectratio, float, nearz, float, farz, float, __VA_ARGS__) \
+  X(scene, key, key, name, text, nodes, key_array, cameras, key_array, __VA_ARGS__) \
   END_OF_DATA_ASSET_DB_TABLES
 
 #define END_OF_DATA_ASSET_DB_COLUMNS
 #define DATA_ASSET_DB_COLUMNS(X, ...) \
   X(primitive, key, key, __VA_ARGS__) \
   X(primitive, topology, int, __VA_ARGS__) \
-  X(primitive, indices, blob, __VA_ARGS__) \
-  X(primitive, positions, blob, __VA_ARGS__) \
-  X(primitive, normals, blob, __VA_ARGS__) \
-  X(primitive, colors, blob, __VA_ARGS__) \
-  X(primitive, texCoords, blob, __VA_ARGS__) \
+  X(primitive, indices, int_array, __VA_ARGS__) \
+  X(primitive, positions, vec3_array, __VA_ARGS__) \
+  X(primitive, normals, vec3_array, __VA_ARGS__) \
+  X(primitive, colors, vec3_array, __VA_ARGS__) \
+  X(primitive, texCoords, vec2_array, __VA_ARGS__) \
   X(mesh, key, key, __VA_ARGS__) \
   X(mesh, primitives, key_array, __VA_ARGS__) \
   X(node, key, key, __VA_ARGS__) \
   X(node, transform, mat4, __VA_ARGS__) \
-  X(node, nodes, blob, __VA_ARGS__) \
   X(node, mesh, key, __VA_ARGS__) \
+  X(camera, key, key, __VA_ARGS__) \
+  X(camera, position, vec3, __VA_ARGS__) \
+  X(camera, rotation, vec4, __VA_ARGS__) \
+  X(camera, fovY, float, __VA_ARGS__) \
+  X(camera, aspectRatio, float, __VA_ARGS__) \
+  X(camera, nearZ, float, __VA_ARGS__) \
+  X(camera, farZ, float, __VA_ARGS__) \
   X(scene, key, key, __VA_ARGS__) \
   X(scene, name, text, __VA_ARGS__) \
   X(scene, nodes, key_array, __VA_ARGS__) \
-  X(scene, cameras, blob, __VA_ARGS__) \
+  X(scene, cameras, key_array, __VA_ARGS__) \
   END_OF_DATA_ASSET_DB_COLUMNS

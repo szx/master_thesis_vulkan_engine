@@ -59,23 +59,23 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
     while ((primitiveIdx = (utarray_next(mesh->primitives, primitiveIdx)))) {
       vulkan_primitive_data *primitive = utarray_eltptr(sceneData->primitives, *primitiveIdx);
       data_asset_db_insert_primitive_topology_int(assetDb, primitive->hash,
-                                                  (data_int){primitive->topology});
-      data_asset_db_insert_primitive_indices_blob(assetDb, primitive->hash,
-                                                  (data_blob){primitive->indices});
-      data_asset_db_insert_primitive_positions_blob(assetDb, primitive->hash,
-                                                    (data_blob){primitive->positions});
-      data_asset_db_insert_primitive_normals_blob(assetDb, primitive->hash,
-                                                  (data_blob){primitive->normals});
-      data_asset_db_insert_primitive_colors_blob(assetDb, primitive->hash,
-                                                 (data_blob){primitive->colors});
-      data_asset_db_insert_primitive_texCoords_blob(assetDb, primitive->hash,
-                                                    (data_blob){primitive->texCoords});
+                                                  data_int_temp(primitive->topology));
+      data_asset_db_insert_primitive_indices_int_array(assetDb, primitive->hash,
+                                                       data_int_array_temp(primitive->indices));
+      data_asset_db_insert_primitive_positions_vec3_array(
+          assetDb, primitive->hash, data_vec3_array_temp(primitive->positions));
+      data_asset_db_insert_primitive_normals_vec3_array(assetDb, primitive->hash,
+                                                        data_vec3_array_temp(primitive->normals));
+      data_asset_db_insert_primitive_colors_vec3_array(assetDb, primitive->hash,
+                                                       data_vec3_array_temp(primitive->colors));
+      data_asset_db_insert_primitive_texCoords_vec2_array(
+          assetDb, primitive->hash, data_vec2_array_temp(primitive->texCoords));
 
       utarray_push_back(primitiveHashes, &primitive->hash);
     }
 
     data_asset_db_insert_mesh_primitives_key_array(assetDb, mesh->hash,
-                                                   (data_key_array){primitiveHashes});
+                                                   data_key_array_temp(primitiveHashes));
     utarray_free(primitiveHashes);
 
     data_mat4 transformMat;
@@ -88,12 +88,9 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
   }
   data_asset_db_insert_scene_name_text(assetDb, sceneData->hash, (data_text){sceneData->name});
   data_asset_db_insert_scene_nodes_key_array(assetDb, sceneData->hash,
-                                             (data_key_array){nodeHashes});
+                                             data_key_array_temp(nodeHashes));
 
-  data_blob cameraBlob = vulkan_camera_serialize(sceneData->camera);
-  data_asset_db_insert_scene_cameras_blob(assetDb, sceneData->hash, cameraBlob);
-  data_blob_deinit(&cameraBlob);
-
+  vulkan_camera_serialize(sceneData->camera, assetDb);
   // TODO: Add textures to pipeline.
 
 #if defined(DEBUG)
@@ -104,11 +101,9 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
     data_text_deinit(&name);
 
     vulkan_camera *camera = vulkan_camera_create();
-    data_blob blob = data_asset_db_select_scene_cameras_blob(assetDb, sceneData->hash);
-    vulkan_camera_deserialize(camera, blob);
+    vulkan_camera_deserialize(camera, assetDb);
     assert(sceneData->camera->nearZ == camera->nearZ);
     vulkan_camera_destroy(camera);
-    data_blob_deinit(&blob);
   }
 #endif
 
