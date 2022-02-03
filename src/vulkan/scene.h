@@ -3,10 +3,10 @@
 
 #include "../core/platform.h"
 
+#include "data/scene_data.h"
 #include "device.h"
 #include "functions.h"
 #include "geometry_buffer.h"
-#include "scene_data.h"
 
 // HIRO SceneGraph, SceneTree, ShapeList, Batches?
 

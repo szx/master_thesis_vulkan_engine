@@ -79,8 +79,12 @@ void vulkan_scene_build_geometry_buffer(vulkan_scene *scene) {
 }
 
 void vulkan_scene_update_data(vulkan_scene *scene) {
-  vulkan_uniform_buffer_update_with_camera(scene->uniformBuffer, scene->data->camera);
-  scene->data->dirty = scene->data->camera->dirty || scene->uniformBuffer->dirty;
+  vulkan_camera *camera = NULL;
+  while ((camera = (utarray_next(scene->data->cameras, camera)))) {
+    vulkan_uniform_buffer_update_with_camera(scene->uniformBuffer, camera);
+  }
+
+  scene->data->dirty = scene->uniformBuffer->dirty;
 }
 
 void vulkan_scene_send_to_device(vulkan_scene *scene) {

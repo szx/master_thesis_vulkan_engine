@@ -2,7 +2,7 @@
  * glTF parsing and loading scene from asset database. */
 #pragma once
 
-#include "../core/platform.h"
+#include "../../data/data.h"
 #include "camera.h"
 
 typedef struct vulkan_scene_data vulkan_scene_data;
@@ -52,9 +52,9 @@ typedef struct vulkan_scene_data {
   UT_string *name;
   UT_array *primitives; /// vulkan_primitive_data array, all primitives used by scene.
   UT_array *nodes;      /// vulkan_node_data array, all nodes in scene.
-  vulkan_camera *camera;
-  bool dirty;    /// True if scene data updated on CPU.
-  data_key hash; /// Hash, used to prevent duplicates in asset database.
+  UT_array *cameras;    /// vulkan_camera array, all cameras in scene
+  bool dirty;           /// True if scene data updated on CPU.
+  data_key hash;        /// Hash, used to prevent duplicates in asset database.
 } vulkan_scene_data;
 
 vulkan_scene_data *vulkan_scene_data_create(UT_string *name);

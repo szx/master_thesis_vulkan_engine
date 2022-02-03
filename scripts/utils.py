@@ -20,6 +20,10 @@ def get_header_paths():
                 yield os.path.join(dirname, filename)
 
 
+def get_relative_path(shorter, longer):
+    return os.path.relpath(longer, shorter)
+
+
 def get_output_path(filename):
     return os.path.join(src_path, 'codegen', filename)
 

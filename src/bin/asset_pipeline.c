@@ -45,6 +45,17 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
            utstring_body(assetInput->sourceAssetPath));
   vulkan_scene_data *sceneData = vulkan_scene_data_create_with_gltf_file(
       assetInput->sourceAssetName, assetInput->sourceAssetPath);
+
+  UT_array *cameraKeys = NULL;
+  utarray_alloc(cameraKeys, sizeof(data_key));
+  vulkan_camera *camera = NULL;
+  while ((camera = (utarray_next(sceneData->cameras, camera)))) {
+    vulkan_camera_serialize(camera, assetDb);
+    utarray_push_back(cameraKeys, &camera->hash);
+  }
+  data_asset_db_insert_scene_cameras_key_array(assetDb, sceneData->hash,
+                                               data_key_array_temp(cameraKeys));
+
   UT_array *nodeHashes = NULL;
   utarray_alloc(nodeHashes, sizeof(data_key));
   vulkan_node_data *node = NULL;
@@ -90,22 +101,7 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
   data_asset_db_insert_scene_nodes_key_array(assetDb, sceneData->hash,
                                              data_key_array_temp(nodeHashes));
 
-  vulkan_camera_serialize(sceneData->camera, assetDb);
   // TODO: Add textures to pipeline.
-
-#if defined(DEBUG)
-  {
-    // Quick sanity check.
-    data_text name = data_asset_db_select_scene_name_text(assetDb, sceneData->hash);
-    assert(strcmp(utstring_body(name.value), utstring_body(sceneData->name)) == 0);
-    data_text_deinit(&name);
-
-    vulkan_camera *camera = vulkan_camera_create();
-    vulkan_camera_deserialize(camera, assetDb);
-    assert(sceneData->camera->nearZ == camera->nearZ);
-    vulkan_camera_destroy(camera);
-  }
-#endif
 
   utarray_free(nodeHashes);
   vulkan_scene_data_destroy(sceneData);

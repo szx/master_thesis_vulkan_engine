@@ -212,7 +212,12 @@ vulkan_scene_data *parse_cgltf_scene(UT_string *name, UT_string *path) {
     utarray_push_back(sceneData->nodes, &node);
   }
 
+  // parse cameras
+  vulkan_camera defaultCamera;
+  vulkan_camera_init(&defaultCamera);
+  utarray_push_back(sceneData->cameras, &defaultCamera);
   // TODO: cameras from gltf file
+
   cgltf_free(cgltfData);
   return sceneData;
 }
@@ -266,7 +271,7 @@ vulkan_scene_data *vulkan_scene_data_create(UT_string *name) {
   utstring_concat(sceneData->name, name);
   utarray_alloc(sceneData->primitives, sizeof(vulkan_primitive_data));
   utarray_alloc(sceneData->nodes, sizeof(vulkan_node_data));
-  sceneData->camera = vulkan_camera_create();
+  utarray_alloc(sceneData->cameras, sizeof(vulkan_camera));
   sceneData->dirty = true;
   sceneData->hash = vulkan_scene_data_calculate_key(sceneData->name);
   return sceneData;
@@ -287,7 +292,12 @@ void vulkan_scene_data_destroy(vulkan_scene_data *sceneData) {
   }
   utarray_free(sceneData->nodes);
 
-  vulkan_camera_destroy(sceneData->camera);
+  vulkan_camera *camera = NULL;
+  while ((camera = (utarray_next(sceneData->cameras, camera)))) {
+    vulkan_camera_deinit(camera);
+  }
+  utarray_free(sceneData->cameras);
+
   core_free(sceneData);
 }
 
@@ -322,20 +332,25 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
                                                           UT_string *sceneName) {
   vulkan_scene_data *sceneData = NULL;
   data_key sceneKey = vulkan_scene_data_calculate_key(sceneName);
-  data_key_array nodeHashArray = data_asset_db_select_scene_nodes_key_array(assetDb, sceneKey);
-  UT_array *nodeHashes = nodeHashArray.values;
+  data_key_array cameraKeyArray = data_asset_db_select_scene_cameras_key_array(assetDb, sceneKey);
+  data_key_array nodeKeyArray = data_asset_db_select_scene_nodes_key_array(assetDb, sceneKey);
 
   sceneData = vulkan_scene_data_create(sceneName);
 
-  vulkan_camera_deserialize(sceneData->camera, assetDb);
+  utarray_resize(sceneData->cameras, utarray_len(cameraKeyArray.values));
+  data_key *cameraHash = NULL;
+  size_t cameraIdx = 0;
+  while ((cameraHash = (utarray_next(cameraKeyArray.values, cameraHash)))) {
+    vulkan_camera_deserialize(utarray_eltptr(sceneData->cameras, cameraIdx), assetDb, *cameraHash);
+    cameraIdx++;
+  }
 
-  data_key *nodeHash = NULL;
-  size_t nodeIdx = 0;
-  while ((nodeHash = (utarray_next(nodeHashes, nodeHash)))) {
+  data_key *nodeKey = NULL;
+  while ((nodeKey = (utarray_next(nodeKeyArray.values, nodeKey)))) {
     /* node data */
-    data_mat4 transform = data_asset_db_select_node_transform_mat4(assetDb, *nodeHash);
+    data_mat4 transform = data_asset_db_select_node_transform_mat4(assetDb, *nodeKey);
     // TODO: Chlid nodes.
-    data_key meshHash = data_asset_db_select_node_mesh_key(assetDb, *nodeHash);
+    data_key meshHash = data_asset_db_select_node_mesh_key(assetDb, *nodeKey);
     vulkan_node_data node;
 
     /* mesh data */
@@ -394,10 +409,10 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
     vulkan_node_data_init(&node);
     node.mesh = mesh;
     glm_mat4_copy(transform.value, node.transform);
-    node.hash = *nodeHash;
+    node.hash = *nodeKey;
     utarray_push_back(sceneData->nodes, &node);
   }
-  data_key_array_deinit(&nodeHashArray);
+  data_key_array_deinit(&nodeKeyArray);
 
   return sceneData;
 }

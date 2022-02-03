@@ -6,8 +6,9 @@ def codegen_headers():
     header_paths = get_header_paths()
     src = defaultdict(list)
     for header in header_paths:
-        dirname = os.path.basename(os.path.dirname(header))
-        filename = os.path.basename(header)
+        rel_dirname = os.path.dirname(get_relative_path(src_path, header))
+        dirname = os.path.basename(rel_dirname) if "/" not in rel_dirname else os.path.dirname(rel_dirname)
+        filename = get_relative_path(src_path / dirname, header)
         if dirname == filename.strip('.h'):
             continue
         src[dirname].append(filename)

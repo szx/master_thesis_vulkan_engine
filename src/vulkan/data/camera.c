@@ -1,7 +1,6 @@
 #include "camera.h"
 
-vulkan_camera *vulkan_camera_create() {
-  vulkan_camera *camera = core_alloc(sizeof(vulkan_camera));
+void vulkan_camera_init(vulkan_camera *camera) {
   glm_vec3((vec3){0.0f, 0.0f, -1.0f}, camera->position);
   glm_quat_identity(camera->rotation);
   camera->fovY = 90.0f;
@@ -10,10 +9,9 @@ vulkan_camera *vulkan_camera_create() {
   camera->farZ = 256.0f;
   camera->dirty = true;
   camera->hash = vulkan_camera_calculate_key(camera);
-  return camera;
 }
 
-void vulkan_camera_destroy(vulkan_camera *camera) { core_free(camera); }
+void vulkan_camera_deinit(vulkan_camera *camera) {}
 
 void vulkan_camera_update_aspect_ratio(vulkan_camera *camera, float aspectRatio) {
   camera->aspectRatio = aspectRatio;
@@ -46,7 +44,8 @@ void vulkan_camera_serialize(vulkan_camera *camera, data_asset_db *assetDb) {
   data_asset_db_insert_camera_farZ_float(assetDb, camera->hash, data_float_temp(camera->farZ));
 }
 
-void vulkan_camera_deserialize(vulkan_camera *camera, data_asset_db *assetDb) {
+void vulkan_camera_deserialize(vulkan_camera *camera, data_asset_db *assetDb, data_key key) {
+  camera->hash = key;
   glm_vec3_copy(data_asset_db_select_camera_position_vec3(assetDb, camera->hash).value,
                 camera->position);
   glm_vec4_copy(data_asset_db_select_camera_rotation_vec4(assetDb, camera->hash).value,

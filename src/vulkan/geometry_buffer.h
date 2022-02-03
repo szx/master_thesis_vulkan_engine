@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "camera.h"
+#include "data/camera.h"
 #include "device.h"
 #include "functions.h"
 

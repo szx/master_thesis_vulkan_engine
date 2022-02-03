@@ -3,9 +3,8 @@
  */
 #pragma once
 
-#include "../core/platform.h"
-#include "../data/data.h"
-#include "functions.h"
+#include "../../data/data.h"
+#include "../functions.h"
 
 typedef struct vulkan_camera {
   /* View matrix: camera position and rotation */
@@ -21,11 +20,11 @@ typedef struct vulkan_camera {
   data_key hash; /// Hash, used to prevent duplicates in asset database.
 } vulkan_camera;
 
-vulkan_camera *vulkan_camera_create();
-void vulkan_camera_destroy(vulkan_camera *camera);
+void vulkan_camera_init(vulkan_camera *camera);
+void vulkan_camera_deinit(vulkan_camera *camera);
 
 void vulkan_camera_update_aspect_ratio(vulkan_camera *camera, float aspectRatio);
 
 data_key vulkan_camera_calculate_key(vulkan_camera *camera);
 void vulkan_camera_serialize(vulkan_camera *camera, data_asset_db *assetDb);
-void vulkan_camera_deserialize(vulkan_camera *camera, data_asset_db *assetDb);
+void vulkan_camera_deserialize(vulkan_camera *camera, data_asset_db *assetDb, data_key key);

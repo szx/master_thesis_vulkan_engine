@@ -21,7 +21,28 @@ TEST gltf_loading() {
   ASSERT_STR_EQ(utstring_body(gltfSceneData->name), utstring_body(assetDbSceneData->name));
   ASSERT_EQ(gltfSceneData->dirty, assetDbSceneData->dirty);
   ASSERT_EQ(utarray_len(gltfSceneData->nodes), utarray_len(assetDbSceneData->nodes));
+  ASSERT_EQ(utarray_len(gltfSceneData->cameras), utarray_len(assetDbSceneData->cameras));
   ASSERT_EQ(utarray_len(gltfSceneData->primitives), utarray_len(assetDbSceneData->primitives));
+
+  vulkan_camera *assetDbCamera = NULL;
+  while ((assetDbCamera = (utarray_next(assetDbSceneData->cameras, assetDbCamera)))) {
+    vulkan_camera *gltfCamera = NULL;
+    bool foundCorrespondingCamera = false;
+    while ((gltfCamera = (utarray_next(gltfSceneData->cameras, gltfCamera)))) {
+      if (gltfCamera->hash.value == assetDbCamera->hash.value) {
+        foundCorrespondingCamera = true;
+        break;
+      }
+    }
+    ASSERT_EQ(foundCorrespondingCamera, true);
+    ASSERT_MEM_EQ(gltfCamera->position, assetDbCamera->position, sizeof(vec3));
+    ASSERT_MEM_EQ(gltfCamera->rotation, assetDbCamera->rotation, sizeof(versor));
+    ASSERT_EQ(gltfCamera->fovY, assetDbCamera->fovY);
+    ASSERT_EQ(gltfCamera->aspectRatio, assetDbCamera->aspectRatio);
+    ASSERT_EQ(gltfCamera->nearZ, assetDbCamera->nearZ);
+    ASSERT_EQ(gltfCamera->farZ, assetDbCamera->farZ);
+  }
+
   vulkan_node_data *assetDbNode = NULL;
   while ((assetDbNode = (utarray_next(assetDbSceneData->nodes, assetDbNode)))) {
     vulkan_node_data *gltfNode = NULL;
