@@ -2,6 +2,7 @@
 
 #include "data/camera.h"
 #include "data/mesh.h"
+#include "data/node.h"
 #include "data/primitive.h"
 #include "data/scene_data.h"
 #include "debug.h"

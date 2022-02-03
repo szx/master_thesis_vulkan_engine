@@ -154,17 +154,12 @@ vulkan_node_data parse_cgltf_node(vulkan_scene_data *sceneData, cgltf_node *cglt
   assert(cgltfMesh->target_names_count == 0);
 
   vulkan_node_data node;
-  vulkan_node_data_init(&node);
+  vulkan_node_data_init(&node, sceneData);
 
   node.mesh = parse_cgltf_mesh(sceneData, cgltfMesh);
   // TODO: Animation, will probably require cgltf_node_transform_local().
   cgltf_node_transform_world(cgltfNode, (float *)node.transform);
-  // TODO: child nodes
-  HASH_START(nodeState)
-  HASH_UPDATE(nodeState, &node.transform, sizeof(node.transform))
-  HASH_UPDATE(nodeState, &node.mesh.hash, sizeof(node.mesh.hash))
-  HASH_DIGEST(nodeState, node.hash.value)
-  HASH_END(nodeState)
+  node.hash = vulkan_node_data_calculate_key(&node);
 
   return node;
 }
@@ -204,13 +199,6 @@ vulkan_scene_data *parse_cgltf_scene(UT_string *name, UT_string *path) {
 }
 
 /* scene data */
-
-void vulkan_node_data_init(vulkan_node_data *node) {
-  glm_mat4_identity(node->transform);
-  data_key_init(&node->hash, 0);
-}
-
-void vulkan_node_data_deinit(vulkan_node_data *node) { vulkan_mesh_data_deinit(&node->mesh); }
 
 data_key vulkan_scene_data_calculate_key(UT_string *sceneName) {
   hash_t value;
@@ -305,21 +293,9 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
   data_key *nodeKey = NULL;
   while ((nodeKey = (utarray_next(nodeKeyArray.values, nodeKey)))) {
     /* node data */
-    data_mat4 transform = data_asset_db_select_node_transform_mat4(assetDb, *nodeKey);
-    // TODO: Chlid nodes.
     vulkan_node_data node;
-    data_key meshHash = data_asset_db_select_node_mesh_key(assetDb, *nodeKey);
-
-    /* mesh data */
-    vulkan_mesh_data mesh;
-    vulkan_mesh_data_init(&mesh, sceneData);
-    vulkan_mesh_data_deserialize(&mesh, assetDb, meshHash);
-
-    /* add node */
-    vulkan_node_data_init(&node);
-    node.mesh = mesh;
-    glm_mat4_copy(transform.value, node.transform);
-    node.hash = *nodeKey;
+    vulkan_node_data_init(&node, sceneData);
+    vulkan_node_data_deserialize(&node, assetDb, *nodeKey);
     utarray_push_back(sceneData->nodes, &node);
   }
   data_key_array_deinit(&nodeKeyArray);
@@ -329,18 +305,10 @@ vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb
 
 /* debug print */
 
-void vulkan_node_data_debug_print(vulkan_node_data *node, vulkan_scene_data *sceneData) {
-  log_debug("node:\n");
-  glm_mat4_print(node->transform, stderr);
-  log_debug("  hash=%zu", node->hash);
-  vulkan_mesh_data *mesh = &node->mesh;
-  vulkan_mesh_data_debug_print(mesh);
-}
-
 void vulkan_scene_data_debug_print(vulkan_scene_data *sceneData) {
   log_debug("SCENE_DATA:\n");
   vulkan_node_data *node = NULL;
   while ((node = (utarray_next(sceneData->nodes, node)))) {
-    vulkan_node_data_debug_print(node, sceneData);
+    vulkan_node_data_debug_print(node);
   }
 }

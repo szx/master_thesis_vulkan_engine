@@ -5,18 +5,8 @@
 #include "../../data/data.h"
 #include "camera.h"
 #include "mesh.h"
+#include "node.h"
 #include "primitive.h"
-
-typedef struct vulkan_node_data {
-  vulkan_mesh_data mesh;
-  mat4 transform;
-  // TODO: child nodes
-  data_key hash; /// Hash, used to prevent duplicates in asset database.
-} vulkan_node_data;
-
-void vulkan_node_data_init(vulkan_node_data *node);
-void vulkan_node_data_deinit(vulkan_node_data *node);
-void vulkan_node_data_debug_print(vulkan_node_data *node, vulkan_scene_data *sceneData);
 
 /// Describes a scene.
 /// Does not create any Vulkan objects (see vulkan_scene).

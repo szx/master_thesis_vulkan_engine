@@ -62,15 +62,7 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
   vulkan_node_data *node = NULL;
   while ((node = (utarray_next(sceneData->nodes, node)))) {
     // vulkan_node_data_debug_print(node);
-
-    vulkan_mesh_data *mesh = &node->mesh;
-    vulkan_mesh_data_serialize(mesh, assetDb);
-
-    data_mat4 transformMat;
-    glm_mat4_copy(node->transform, transformMat.value);
-    data_asset_db_insert_node_transform_mat4(assetDb, node->hash, transformMat);
-
-    data_asset_db_insert_node_mesh_key(assetDb, node->hash, node->mesh.hash);
+    vulkan_node_data_serialize(node, assetDb);
     utarray_push_back(nodeKeys, &node->hash);
   }
   data_asset_db_insert_scene_name_text(assetDb, sceneData->hash, (data_text){sceneData->name});
