@@ -69,19 +69,7 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
     vulkan_primitive_data_index *primitiveIdx = NULL;
     while ((primitiveIdx = (utarray_next(mesh->primitives, primitiveIdx)))) {
       vulkan_primitive_data *primitive = utarray_eltptr(sceneData->primitives, *primitiveIdx);
-      data_asset_db_insert_primitive_topology_int(assetDb, primitive->hash,
-                                                  data_int_temp(primitive->topology));
-      data_asset_db_insert_primitive_indices_int_array(assetDb, primitive->hash,
-                                                       data_int_array_temp(primitive->indices));
-      data_asset_db_insert_primitive_positions_vec3_array(
-          assetDb, primitive->hash, data_vec3_array_temp(primitive->positions));
-      data_asset_db_insert_primitive_normals_vec3_array(assetDb, primitive->hash,
-                                                        data_vec3_array_temp(primitive->normals));
-      data_asset_db_insert_primitive_colors_vec3_array(assetDb, primitive->hash,
-                                                       data_vec3_array_temp(primitive->colors));
-      data_asset_db_insert_primitive_texCoords_vec2_array(
-          assetDb, primitive->hash, data_vec2_array_temp(primitive->texCoords));
-
+      vulkan_primitive_data_serialize(primitive, assetDb);
       utarray_push_back(primitiveHashes, &primitive->hash);
     }
 

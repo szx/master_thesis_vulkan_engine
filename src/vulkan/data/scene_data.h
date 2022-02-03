@@ -4,27 +4,11 @@
 
 #include "../../data/data.h"
 #include "camera.h"
+#include "primitive.h"
 
 typedef struct vulkan_scene_data vulkan_scene_data;
 
-/// Contains index buffer, interleaved vertex stream and topology of the part of the mesh.
-typedef struct vulkan_primitive_data {
-  VkPrimitiveTopology topology;
-  uint32_t vertexCount;
-  UT_array *positions; /// vec3
-  UT_array *normals;   /// vec3
-  UT_array *colors;    /// vec3
-  UT_array *texCoords; /// vec2
-  // TODO: LOD index buffers.
-  UT_array *indices; /// uint32_t
-  data_key hash;     /// Hash, used to prevent duplicates in asset database.
-} vulkan_primitive_data;
-
 typedef size_t vulkan_primitive_data_index;
-
-void vulkan_primitive_data_init(vulkan_primitive_data *primitive);
-void vulkan_primitive_data_deinit(vulkan_primitive_data *primitive);
-void vulkan_primitive_data_debug_print(vulkan_primitive_data *primitive);
 
 typedef struct vulkan_mesh_data {
   UT_array *primitives; /// vulkan_primitive_data_index array.

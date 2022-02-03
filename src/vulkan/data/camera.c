@@ -33,6 +33,7 @@ data_key vulkan_camera_data_calculate_key(vulkan_camera_data *camera) {
 }
 
 void vulkan_camera_data_serialize(vulkan_camera_data *camera, data_asset_db *assetDb) {
+  camera->hash = vulkan_camera_data_calculate_key(camera);
   data_asset_db_insert_camera_position_vec3(assetDb, camera->hash,
                                             data_vec3_temp(camera->position));
   data_asset_db_insert_camera_rotation_vec4(assetDb, camera->hash,
