@@ -1,5 +1,5 @@
 #include "mesh.h"
-#include "scene_data.h"
+#include "scene.h"
 
 void vulkan_mesh_data_init(vulkan_mesh_data *mesh, vulkan_scene_data *sceneData) {
   mesh->sceneData = sceneData;

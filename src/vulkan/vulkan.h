@@ -4,7 +4,7 @@
 #include "data/mesh.h"
 #include "data/node.h"
 #include "data/primitive.h"
-#include "data/scene_data.h"
+#include "data/scene.h"
 #include "debug.h"
 #include "device.h"
 #include "functions.h"

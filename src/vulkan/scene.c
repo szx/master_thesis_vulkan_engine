@@ -19,12 +19,6 @@ void vulkan_scene_destroy(vulkan_scene *scene) {
   core_free(scene);
 }
 
-void vulkan_scene_debug_print(vulkan_scene *scene) {
-  log_debug("SCENE:\n");
-  log_debug("geometryBuffer: %d\n", utarray_len(scene->geometryBuffer->data));
-  vulkan_scene_debug_print(scene);
-}
-
 void vulkan_scene_build_geometry_buffer(vulkan_scene *scene) {
   // HIRO return after research into GPU-driven rendering.
   // TODO: Overlapping index buffers and vertex streams.
@@ -91,4 +85,10 @@ void vulkan_scene_send_to_device(vulkan_scene *scene) {
   assert(!scene->data->dirty);
   vulkan_geometry_buffer_send_to_device(scene->vkd, scene->geometryBuffer);
   vulkan_uniform_buffer_send_to_device(scene->uniformBuffer);
+}
+
+void vulkan_scene_debug_print(vulkan_scene *scene) {
+  log_debug("SCENE:\n");
+  log_debug("geometryBuffer: %d\n", utarray_len(scene->geometryBuffer->data));
+  vulkan_scene_debug_print(scene);
 }

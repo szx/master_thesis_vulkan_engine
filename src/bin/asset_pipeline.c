@@ -46,31 +46,7 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
   vulkan_scene_data *sceneData = vulkan_scene_data_create_with_gltf_file(
       assetInput->sourceAssetName, assetInput->sourceAssetPath);
 
-  UT_array *cameraKeys = NULL;
-  utarray_alloc(cameraKeys, sizeof(data_key));
-  vulkan_camera_data *camera = NULL;
-  while ((camera = (utarray_next(sceneData->cameras, camera)))) {
-    vulkan_camera_data_serialize(camera, assetDb);
-    utarray_push_back(cameraKeys, &camera->hash);
-  }
-  data_asset_db_insert_scene_cameras_key_array(assetDb, sceneData->hash,
-                                               data_key_array_temp(cameraKeys));
-  utarray_free(cameraKeys);
-
-  UT_array *nodeKeys = NULL;
-  utarray_alloc(nodeKeys, sizeof(data_key));
-  vulkan_node_data *node = NULL;
-  while ((node = (utarray_next(sceneData->nodes, node)))) {
-    // vulkan_node_data_debug_print(node);
-    vulkan_node_data_serialize(node, assetDb);
-    utarray_push_back(nodeKeys, &node->hash);
-  }
-  data_asset_db_insert_scene_name_text(assetDb, sceneData->hash, (data_text){sceneData->name});
-  data_asset_db_insert_scene_nodes_key_array(assetDb, sceneData->hash,
-                                             data_key_array_temp(nodeKeys));
-  utarray_free(nodeKeys);
-
-  // TODO: Add materials to pipeline.
+  vulkan_scene_data_serialize(sceneData, assetDb);
 
   vulkan_scene_data_destroy(sceneData);
 }

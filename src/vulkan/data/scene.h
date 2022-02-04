@@ -21,7 +21,10 @@ typedef struct vulkan_scene_data {
 
 vulkan_scene_data *vulkan_scene_data_create(UT_string *name);
 void vulkan_scene_data_destroy(vulkan_scene_data *sceneData);
-void vulkan_scene_data_debug_print(vulkan_scene_data *sceneData);
+
+data_key vulkan_scene_data_calculate_key(vulkan_scene_data *scene);
+void vulkan_scene_data_serialize(vulkan_scene_data *scene, data_asset_db *assetDb);
+void vulkan_scene_data_deserialize(vulkan_scene_data *scene, data_asset_db *assetDb, data_key key);
 
 /// Adds new primitive. Returns integer index.
 vulkan_primitive_data_index vulkan_scene_data_add_primitive(vulkan_scene_data *sceneData,
@@ -32,3 +35,5 @@ vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *sceneName,
                                                            UT_string *gltfPath);
 vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb,
                                                           UT_string *sceneName);
+
+void vulkan_scene_data_debug_print(vulkan_scene_data *sceneData);

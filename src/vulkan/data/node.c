@@ -1,5 +1,5 @@
 #include "node.h"
-#include "scene_data.h"
+#include "scene.h"
 
 void vulkan_node_data_init(vulkan_node_data *node, vulkan_scene_data *sceneData) {
   node->sceneData = sceneData;

@@ -5,8 +5,8 @@
 #define END_OF_DATA_CONFIG_SECTION
 #define DATA_CONFIG_SECTIONS(X, ...) \
   X(graphics, __VA_ARGS__) \
-  X(controls, __VA_ARGS__) \
   X(settings, __VA_ARGS__) \
+  X(controls, __VA_ARGS__) \
   END_OF_DATA_CONFIG_SECTION
 
 #define END_OF_DATA_CONFIG_INT_KEYS
