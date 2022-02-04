@@ -78,15 +78,13 @@ vulkan_material_data *parse_cgltf_material(vulkan_scene_data *sceneData,
   log_debug("adding new material");
   vulkan_material_data *newMaterial = core_alloc(sizeof(vulkan_material_data));
   vulkan_material_data_init(newMaterial);
-  glm_vec4_copy(material.baseColorFactor, newMaterial->baseColorFactor);
-  newMaterial->metallicFactor = material.metallicFactor;
-  newMaterial->roughnessFactor = material.roughnessFactor;
+  core_memcpy(newMaterial, &material, sizeof(material));
   DL_APPEND(sceneData->materials, newMaterial);
   return newMaterial;
 }
 
-vulkan_primitive_data_index parse_cgltf_primitive(vulkan_scene_data *sceneData,
-                                                  cgltf_primitive *cgltfPrimitive) {
+vulkan_primitive_data *parse_cgltf_primitive(vulkan_scene_data *sceneData,
+                                             cgltf_primitive *cgltfPrimitive) {
   // Check if glTF uses only supported capabilities.
   assert(cgltfPrimitive->has_draco_mesh_compression == false);
   assert(cgltfPrimitive->targets_count == 0);
@@ -167,8 +165,18 @@ vulkan_primitive_data_index parse_cgltf_primitive(vulkan_scene_data *sceneData,
 
   primitive.hash = vulkan_primitive_data_calculate_key(&primitive);
 
-  vulkan_primitive_data_index primitiveIdx = vulkan_scene_data_add_primitive(sceneData, primitive);
-  return primitiveIdx;
+  vulkan_primitive_data *existingPrimitive =
+      vulkan_scene_data_get_primitive_by_key(sceneData, NULL, primitive.hash);
+  if (existingPrimitive != NULL) {
+    return existingPrimitive;
+  }
+
+  log_debug("adding new primitive");
+  vulkan_primitive_data *newPrimitive = core_alloc(sizeof(vulkan_primitive_data));
+  vulkan_primitive_data_init(newPrimitive, sceneData);
+  core_memcpy(newPrimitive, &primitive, sizeof(primitive));
+  DL_APPEND(sceneData->primitives, newPrimitive);
+  return newPrimitive;
 }
 
 vulkan_mesh_data parse_cgltf_mesh(vulkan_scene_data *sceneData, cgltf_mesh *cgltfMesh) {
@@ -176,10 +184,9 @@ vulkan_mesh_data parse_cgltf_mesh(vulkan_scene_data *sceneData, cgltf_mesh *cglt
   vulkan_mesh_data_init(&mesh, sceneData);
 
   for (size_t primitiveIdx = 0; primitiveIdx < cgltfMesh->primitives_count; primitiveIdx++) {
-    vulkan_primitive_data_index idx =
+    vulkan_primitive_data *primitive =
         parse_cgltf_primitive(sceneData, &cgltfMesh->primitives[primitiveIdx]);
-    vulkan_primitive_data *primitive = utarray_eltptr(sceneData->primitives, idx);
-    utarray_push_back(mesh.primitives, &idx);
+    utarray_push_back(mesh.primitives, &primitive);
   }
 
   mesh.hash = vulkan_mesh_data_calculate_key(&mesh);
@@ -319,11 +326,14 @@ vulkan_scene_data *vulkan_scene_data_create(UT_string *name) {
   vulkan_scene_data *sceneData = core_alloc(sizeof(vulkan_scene_data));
   utstring_new(sceneData->name);
   utstring_concat(sceneData->name, name);
+
   sceneData->materials = NULL;
   vulkan_material_data *defaultMaterial = core_alloc(sizeof(vulkan_material_data));
   vulkan_material_data_init(defaultMaterial);
   DL_APPEND(sceneData->materials, defaultMaterial);
-  utarray_alloc(sceneData->primitives, sizeof(vulkan_primitive_data));
+
+  sceneData->primitives = NULL;
+
   utarray_alloc(sceneData->nodes, sizeof(vulkan_node_data));
   utarray_alloc(sceneData->cameras, sizeof(vulkan_camera_data));
   sceneData->dirty = true;
@@ -340,11 +350,11 @@ void vulkan_scene_data_destroy(vulkan_scene_data *sceneData) {
     core_free(material);
   }
 
-  vulkan_primitive_data *primitive = NULL;
-  while ((primitive = (utarray_next(sceneData->primitives, primitive)))) {
+  vulkan_primitive_data *primitive, *tempPrimitive;
+  DL_FOREACH_SAFE(sceneData->primitives, primitive, tempPrimitive) {
     vulkan_primitive_data_deinit(primitive);
+    core_free(primitive);
   }
-  utarray_free(sceneData->primitives);
 
   vulkan_node_data *node = NULL;
   while ((node = (utarray_next(sceneData->nodes, node)))) {
@@ -384,25 +394,28 @@ vulkan_material_data *vulkan_scene_data_get_material_by_key(vulkan_scene_data *s
   return material;
 }
 
-vulkan_primitive_data_index vulkan_scene_data_add_primitive(vulkan_scene_data *sceneData,
-                                                            vulkan_primitive_data primitive) {
-  vulkan_primitive_data *primitiveIt = NULL;
-  // Use index instead of pointers, because they can be invalidated when array grows.
-  vulkan_primitive_data_index idx = 0;
-  bool primitiveAlreadyAdded = false;
-  while ((primitiveIt = (utarray_next(sceneData->primitives, primitiveIt)))) {
-    if (primitiveIt->hash.value == primitive.hash.value) {
-      primitiveAlreadyAdded = true;
+vulkan_primitive_data *vulkan_scene_data_get_primitive_by_key(vulkan_scene_data *sceneData,
+                                                              data_asset_db *assetDb,
+                                                              data_key key) {
+  vulkan_primitive_data *primitive = NULL;
+
+  vulkan_primitive_data *existingPrimitive = NULL;
+  DL_FOREACH(sceneData->primitives, existingPrimitive) {
+    if (existingPrimitive->hash.value == key.value) {
+      primitive = existingPrimitive;
       break;
     }
-    idx++;
   }
-  if (!primitiveAlreadyAdded) {
-    utarray_push_back(sceneData->primitives, &primitive);
-  } else {
-    vulkan_primitive_data_deinit(&primitive);
+
+  if (primitive == NULL && assetDb != NULL) {
+    vulkan_primitive_data *newPrimitive = core_alloc(sizeof(vulkan_primitive_data));
+    vulkan_primitive_data_init(newPrimitive, sceneData);
+    vulkan_primitive_data_deserialize(newPrimitive, assetDb, key);
+    LL_PREPEND(sceneData->primitives, newPrimitive);
+    primitive = sceneData->primitives;
   }
-  return idx;
+
+  return primitive;
 }
 
 vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *sceneName,

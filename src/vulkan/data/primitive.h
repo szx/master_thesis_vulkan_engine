@@ -23,6 +23,7 @@ typedef struct vulkan_primitive_data {
   UT_array *indices; /// uint32_t
   vulkan_material_data *material;
   data_key hash; /// Hash, used to prevent duplicates in asset database.
+  struct vulkan_primitive_data *prev, *next;
 } vulkan_primitive_data;
 
 void vulkan_primitive_data_init(vulkan_primitive_data *primitive, vulkan_scene_data *sceneData);

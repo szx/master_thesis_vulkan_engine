@@ -13,8 +13,7 @@ typedef struct vulkan_material_data {
   float roughnessFactor;
   // HIRO material textures
   data_key hash; /// Hash, used to prevent duplicates in asset database.
-  struct vulkan_material_data *prev;
-  struct vulkan_material_data *next;
+  struct vulkan_material_data *prev, *next;
 } vulkan_material_data;
 
 void vulkan_material_data_init(vulkan_material_data *material);

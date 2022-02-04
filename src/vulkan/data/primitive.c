@@ -12,6 +12,8 @@ void vulkan_primitive_data_init(vulkan_primitive_data *primitive, vulkan_scene_d
   utarray_alloc(primitive->indices, sizeof(uint32_t));
   primitive->material = NULL;
   data_key_init(&primitive->hash, 0);
+  primitive->prev = NULL;
+  primitive->next = NULL;
 }
 
 void vulkan_primitive_data_deinit(vulkan_primitive_data *primitive) {
@@ -31,6 +33,7 @@ data_key vulkan_primitive_data_calculate_key(vulkan_primitive_data *primitive) {
   //       It could be optimized with separate hashes and tables for each vertex attribute and
   //       foreign keys in primitive table. Not sure if its worth additional work.
   HASH_START(hashState)
+  HASH_UPDATE(hashState, &primitive->material->hash, sizeof(primitive->material->hash))
   HASH_UPDATE(hashState, &primitive->topology, sizeof(primitive->topology))
 #define HASH_UPDATE_FUNC(_i, _array)                                                               \
   HASH_UPDATE(hashState, utarray_front(_array), utarray_size(_array))

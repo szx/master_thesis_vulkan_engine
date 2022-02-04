@@ -11,7 +11,6 @@
 #include "../functions.h"
 
 typedef struct vulkan_scene_data vulkan_scene_data;
-typedef size_t vulkan_primitive_data_index;
 
 typedef struct vulkan_mesh_data {
   vulkan_scene_data *sceneData; // vulkan_scene_data pointer

@@ -22,7 +22,13 @@ TEST gltf_loading() {
   ASSERT_EQ(gltfSceneData->dirty, assetDbSceneData->dirty);
   ASSERT_EQ(utarray_len(gltfSceneData->nodes), utarray_len(assetDbSceneData->nodes));
   ASSERT_EQ(utarray_len(gltfSceneData->cameras), utarray_len(assetDbSceneData->cameras));
-  ASSERT_EQ(utarray_len(gltfSceneData->primitives), utarray_len(assetDbSceneData->primitives));
+  vulkan_primitive_data *gltfPrimitive = NULL;
+  vulkan_primitive_data *assetDbPrimitive = NULL;
+  size_t gltfPrimitivesCount = 0;
+  DL_COUNT(gltfSceneData->primitives, gltfPrimitive, gltfPrimitivesCount);
+  size_t assetDbPrimitivesCount = 0;
+  DL_COUNT(assetDbSceneData->primitives, assetDbPrimitive, assetDbPrimitivesCount);
+  ASSERT_EQ(gltfPrimitivesCount, assetDbPrimitivesCount);
 
   vulkan_camera_data *assetDbCamera = NULL;
   while ((assetDbCamera = (utarray_next(assetDbSceneData->cameras, assetDbCamera)))) {
@@ -58,21 +64,19 @@ TEST gltf_loading() {
     vulkan_mesh_data *gltfMesh = &gltfNode->mesh;
     vulkan_mesh_data *assetDbMesh = &assetDbNode->mesh;
     ASSERT_EQ(gltfMesh->hash.value, assetDbMesh->hash.value);
-    vulkan_primitive_data *gltfPrimitive = NULL;
-    vulkan_primitive_data *assetDbPrimitive = NULL;
+
     bool foundCorrespondingPrimitive = false;
-    vulkan_primitive_data_index *gltfPrimIdx = NULL;
-    while ((gltfPrimIdx = (utarray_next(gltfMesh->primitives, gltfPrimIdx)))) {
-      gltfPrimitive = utarray_eltptr(gltfSceneData->primitives, *gltfPrimIdx);
-      vulkan_primitive_data_index *assetDbPrimIdx = NULL;
-      while ((assetDbPrimIdx = (utarray_next(gltfMesh->primitives, assetDbPrimIdx)))) {
-        assetDbPrimitive = utarray_eltptr(assetDbSceneData->primitives, *assetDbPrimIdx);
+    gltfPrimitive = NULL;
+    DL_FOREACH(gltfSceneData->primitives, gltfPrimitive) {
+      assetDbPrimitive = NULL;
+      DL_FOREACH(assetDbSceneData->primitives, assetDbPrimitive) {
         if (gltfPrimitive->hash.value == assetDbPrimitive->hash.value) {
           foundCorrespondingPrimitive = true;
-          break;
+          goto primitive_found;
         }
       }
     }
+  primitive_found:
     ASSERT_EQ(foundCorrespondingPrimitive, true);
     ASSERT_EQ(gltfPrimitive->topology, assetDbPrimitive->topology);
     ASSERT_EQ(gltfPrimitive->vertexCount, assetDbPrimitive->vertexCount);
