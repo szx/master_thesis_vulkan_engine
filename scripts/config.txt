@@ -12,7 +12,8 @@ settings.StartScene = "triangles"
 
 [ASSET.DB]
 types = "INT:uint32_t, FLOAT:float, VEC2:vec2, VEC3:vec3, VEC4:vec4, MAT4:mat4, TEXT:UT_string *, KEY:hash_t"
-primitive = "key KEY, topology INT, indices INT_ARRAY, positions VEC3_ARRAY, normals VEC3_ARRAY, colors VEC3_ARRAY, texCoords VEC2_ARRAY"
+material = "key KEY, baseColorFactor VEC4, metallicFactor FLOAT, roughnessFactor FLOAT"
+primitive = "key KEY, material KEY, topology INT, indices INT_ARRAY, positions VEC3_ARRAY, normals VEC3_ARRAY, colors VEC3_ARRAY, texCoords VEC2_ARRAY"
 mesh = "key KEY, primitives KEY_ARRAY"
 node = "key KEY, transform MAT4, mesh KEY"
 camera = "key KEY, position VEC3, rotation VEC4, fovY FLOAT, aspectRatio FLOAT, nearZ FLOAT, farZ FLOAT"

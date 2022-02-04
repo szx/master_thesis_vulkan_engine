@@ -47,7 +47,7 @@ void vulkan_mesh_data_deserialize(vulkan_mesh_data *mesh, data_asset_db *assetDb
   data_key *primitiveKey = NULL;
   while ((primitiveKey = (utarray_next(primitiveHashArray.values, primitiveKey)))) {
     vulkan_primitive_data primitive;
-    vulkan_primitive_data_init(&primitive);
+    vulkan_primitive_data_init(&primitive, mesh->sceneData);
     vulkan_primitive_data_deserialize(&primitive, assetDb, *primitiveKey);
 
     vulkan_primitive_data_index primitiveIdx =

@@ -4,16 +4,16 @@
 
 #define END_OF_DATA_CONFIG_SECTION
 #define DATA_CONFIG_SECTIONS(X, ...) \
+  X(controls, __VA_ARGS__) \
   X(graphics, __VA_ARGS__) \
   X(settings, __VA_ARGS__) \
-  X(controls, __VA_ARGS__) \
   END_OF_DATA_CONFIG_SECTION
 
 #define END_OF_DATA_CONFIG_INT_KEYS
 #define DATA_CONFIG_INT_KEYS(X, ...) \
+  X(controls, Enabled, 1, __VA_ARGS__) \
   X(graphics, WindowWidth, 640, __VA_ARGS__) \
   X(graphics, WindowHeight, 480, __VA_ARGS__) \
-  X(controls, Enabled, 1, __VA_ARGS__) \
   END_OF_DATA_CONFIG_INT_KEYS
 
 #define END_OF_DATA_CONFIG_STR_KEYS
@@ -36,7 +36,8 @@
 
 #define END_OF_DATA_ASSET_DB_TABLES
 #define DATA_ASSET_DB_TABLES(X, ...) \
-  X(primitive, key, key, topology, int, indices, int_array, positions, vec3_array, normals, vec3_array, colors, vec3_array, texcoords, vec2_array, __VA_ARGS__) \
+  X(material, key, key, basecolorfactor, vec4, metallicfactor, float, roughnessfactor, float, __VA_ARGS__) \
+  X(primitive, key, key, material, key, topology, int, indices, int_array, positions, vec3_array, normals, vec3_array, colors, vec3_array, texcoords, vec2_array, __VA_ARGS__) \
   X(mesh, key, key, primitives, key_array, __VA_ARGS__) \
   X(node, key, key, transform, mat4, mesh, key, __VA_ARGS__) \
   X(camera, key, key, position, vec3, rotation, vec4, fovy, float, aspectratio, float, nearz, float, farz, float, __VA_ARGS__) \
@@ -45,7 +46,12 @@
 
 #define END_OF_DATA_ASSET_DB_COLUMNS
 #define DATA_ASSET_DB_COLUMNS(X, ...) \
+  X(material, key, key, __VA_ARGS__) \
+  X(material, baseColorFactor, vec4, __VA_ARGS__) \
+  X(material, metallicFactor, float, __VA_ARGS__) \
+  X(material, roughnessFactor, float, __VA_ARGS__) \
   X(primitive, key, key, __VA_ARGS__) \
+  X(primitive, material, key, __VA_ARGS__) \
   X(primitive, topology, int, __VA_ARGS__) \
   X(primitive, indices, int_array, __VA_ARGS__) \
   X(primitive, positions, vec3_array, __VA_ARGS__) \

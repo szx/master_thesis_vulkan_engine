@@ -7,9 +7,12 @@
 
 #include "../../data/data.h"
 #include "../functions.h"
+#include "material.h"
 
-/// Contains index buffer, interleaved vertex stream and topology of the part of the mesh.
+typedef struct vulkan_scene_data vulkan_scene_data;
+
 typedef struct vulkan_primitive_data {
+  vulkan_scene_data *sceneData; /// vulkan_scene_data pointer
   VkPrimitiveTopology topology;
   uint32_t vertexCount;
   UT_array *positions; /// vec3
@@ -18,11 +21,11 @@ typedef struct vulkan_primitive_data {
   UT_array *texCoords; /// vec2
   // TODO: LOD index buffers.
   UT_array *indices; /// uint32_t
-  // TODO: Material.
+  vulkan_material_data *material;
   data_key hash; /// Hash, used to prevent duplicates in asset database.
 } vulkan_primitive_data;
 
-void vulkan_primitive_data_init(vulkan_primitive_data *primitive);
+void vulkan_primitive_data_init(vulkan_primitive_data *primitive, vulkan_scene_data *sceneData);
 void vulkan_primitive_data_deinit(vulkan_primitive_data *primitive);
 
 data_key vulkan_primitive_data_calculate_key(vulkan_primitive_data *primitive);

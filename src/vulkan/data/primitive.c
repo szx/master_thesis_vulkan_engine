@@ -1,6 +1,8 @@
 #include "primitive.h"
+#include "scene.h"
 
-void vulkan_primitive_data_init(vulkan_primitive_data *primitive) {
+void vulkan_primitive_data_init(vulkan_primitive_data *primitive, vulkan_scene_data *sceneData) {
+  primitive->sceneData = sceneData;
   primitive->topology = VK_PRIMITIVE_TOPOLOGY_MAX_ENUM;
   primitive->vertexCount = 0;
   utarray_alloc(primitive->positions, sizeof(vec3));
@@ -8,6 +10,7 @@ void vulkan_primitive_data_init(vulkan_primitive_data *primitive) {
   utarray_alloc(primitive->colors, sizeof(vec3));
   utarray_alloc(primitive->texCoords, sizeof(vec2));
   utarray_alloc(primitive->indices, sizeof(uint32_t));
+  primitive->material = NULL;
   data_key_init(&primitive->hash, 0);
 }
 
@@ -41,6 +44,10 @@ data_key vulkan_primitive_data_calculate_key(vulkan_primitive_data *primitive) {
 
 void vulkan_primitive_data_serialize(vulkan_primitive_data *primitive, data_asset_db *assetDb) {
   primitive->hash = vulkan_primitive_data_calculate_key(primitive);
+
+  vulkan_material_data_serialize(primitive->material, assetDb);
+
+  data_asset_db_insert_primitive_material_key(assetDb, primitive->hash, primitive->material->hash);
   data_asset_db_insert_primitive_topology_int(assetDb, primitive->hash,
                                               data_int_temp(primitive->topology));
   data_asset_db_insert_primitive_indices_int_array(assetDb, primitive->hash,
@@ -58,6 +65,9 @@ void vulkan_primitive_data_serialize(vulkan_primitive_data *primitive, data_asse
 void vulkan_primitive_data_deserialize(vulkan_primitive_data *primitive, data_asset_db *assetDb,
                                        data_key key) {
   primitive->hash = key;
+  primitive->material = vulkan_scene_data_get_material_by_key(
+      primitive->sceneData, assetDb,
+      data_asset_db_select_primitive_material_key(assetDb, primitive->hash));
   primitive->topology = data_asset_db_select_primitive_topology_int(assetDb, primitive->hash).value;
 
 #define SELECT_ARRAY(_name, _type)                                                                 \
