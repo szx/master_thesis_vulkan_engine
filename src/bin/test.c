@@ -72,23 +72,23 @@ TEST gltf_loading() {
       DL_FOREACH(assetDbSceneData->primitives, assetDbPrimitive) {
         if (gltfPrimitive->hash.value == assetDbPrimitive->hash.value) {
           foundCorrespondingPrimitive = true;
-          goto primitive_found;
+          break;
         }
       }
-    }
-  primitive_found:
-    ASSERT_EQ(foundCorrespondingPrimitive, true);
-    ASSERT_EQ(gltfPrimitive->topology, assetDbPrimitive->topology);
-    ASSERT_EQ(gltfPrimitive->vertexCount, assetDbPrimitive->vertexCount);
+      ASSERT_EQ(foundCorrespondingPrimitive, true);
+      ASSERT_EQ(gltfPrimitive->material->hash.value, assetDbPrimitive->material->hash.value);
+      ASSERT_EQ(gltfPrimitive->topology, assetDbPrimitive->topology);
+      ASSERT_EQ(gltfPrimitive->vertexCount, assetDbPrimitive->vertexCount);
 #define ASSERT_VERTEX_ATTRIBUTE(_name)                                                             \
   ASSERT_EQ(utarray_len(gltfPrimitive->_name), utarray_len(assetDbPrimitive->_name));              \
   if (utarray_len(gltfPrimitive->_name) > 0)                                                       \
     ASSERT_MEM_EQ(utarray_front(gltfPrimitive->_name), utarray_front(assetDbPrimitive->_name),     \
                   utarray_size(gltfPrimitive->_name));
-    ASSERT_VERTEX_ATTRIBUTE(positions)
-    ASSERT_VERTEX_ATTRIBUTE(normals)
-    ASSERT_VERTEX_ATTRIBUTE(colors)
-    ASSERT_VERTEX_ATTRIBUTE(texCoords)
+      ASSERT_VERTEX_ATTRIBUTE(positions)
+      ASSERT_VERTEX_ATTRIBUTE(normals)
+      ASSERT_VERTEX_ATTRIBUTE(colors)
+      ASSERT_VERTEX_ATTRIBUTE(texCoords)
+    }
   }
   utstring_free(gltfPath);
   utstring_free(sceneName);
