@@ -42,13 +42,103 @@ vulkan_attribute_type cgltf_to_vulkan_attribute_type(cgltf_attribute_type type) 
   }
 }
 
+vulkan_image_data *parse_cgltf_image(vulkan_scene_data *sceneData, cgltf_image *cgltfImage) {
+  if (cgltfImage == NULL) {
+    return sceneData->images;
+  }
+  vulkan_image_data image = {0};
+  vulkan_image_data_init(&image);
+
+  UT_string *imagePath = get_path_dirname(sceneData->path);
+  append_to_path(imagePath, cgltfImage->uri);
+  log_debug("%s", utstring_body(imagePath));
+  int w, h, c;
+  stbi_uc *pixels = stbi_load(utstring_body(imagePath), &w, &h, &c, STBI_rgb_alpha);
+  image.width = w;
+  image.height = h;
+  image.depth = 1;
+  image.channels = c;
+  size_t imageSize = image.width * image.height * image.depth * image.channels;
+  utarray_resize(image.data, imageSize);
+  core_memcpy(utarray_front(image.data), pixels, imageSize);
+  core_free(pixels);
+
+  image.hash = vulkan_image_data_calculate_key(&image);
+
+  vulkan_image_data *existingImage =
+      vulkan_scene_data_get_image_by_key(sceneData, NULL, image.hash);
+  if (existingImage != NULL) {
+    return existingImage;
+  }
+
+  log_debug("adding new image");
+  vulkan_image_data *newImage = core_alloc(sizeof(vulkan_image_data));
+  vulkan_image_data_init(newImage);
+  core_memcpy(newImage, &image, sizeof(image));
+  DL_APPEND(sceneData->images, newImage);
+  return newImage;
+}
+
+vulkan_sampler_data *parse_cgltf_sampler(vulkan_scene_data *sceneData,
+                                         cgltf_sampler *cgltfSampler) {
+  if (cgltfSampler == NULL) {
+    return sceneData->samplers;
+  }
+  vulkan_sampler_data sampler = {0};
+  vulkan_sampler_data_init(&sampler);
+
+  // sampler.image = parse_cgltf_image(sceneData, cgltfSampler->image);
+
+  sampler.hash = vulkan_sampler_data_calculate_key(&sampler);
+
+  vulkan_sampler_data *existingSampler =
+      vulkan_scene_data_get_sampler_by_key(sceneData, NULL, sampler.hash);
+  if (existingSampler != NULL) {
+    return existingSampler;
+  }
+
+  log_debug("adding new sampler");
+  vulkan_sampler_data *newSampler = core_alloc(sizeof(vulkan_sampler_data));
+  vulkan_sampler_data_init(newSampler);
+  core_memcpy(newSampler, &sampler, sizeof(sampler));
+  DL_APPEND(sceneData->samplers, newSampler);
+  return newSampler;
+}
+
+vulkan_texture_data *parse_cgltf_texture(vulkan_scene_data *sceneData,
+                                         cgltf_texture *cgltfTexture) {
+  if (cgltfTexture == NULL) {
+    return sceneData->textures;
+  }
+  vulkan_texture_data texture = {0};
+  vulkan_texture_data_init(&texture, sceneData);
+
+  texture.image = parse_cgltf_image(sceneData, cgltfTexture->image);
+  texture.sampler = parse_cgltf_sampler(sceneData, cgltfTexture->sampler);
+
+  texture.hash = vulkan_texture_data_calculate_key(&texture);
+
+  vulkan_texture_data *existingTexture =
+      vulkan_scene_data_get_texture_by_key(sceneData, NULL, texture.hash);
+  if (existingTexture != NULL) {
+    return existingTexture;
+  }
+
+  log_debug("adding new texture");
+  vulkan_texture_data *newTexture = core_alloc(sizeof(vulkan_texture_data));
+  vulkan_texture_data_init(newTexture, sceneData);
+  core_memcpy(newTexture, &texture, sizeof(texture));
+  DL_APPEND(sceneData->textures, newTexture);
+  return newTexture;
+}
+
 vulkan_material_data *parse_cgltf_material(vulkan_scene_data *sceneData,
                                            cgltf_material *cgltfMaterial) {
   if (cgltfMaterial == NULL) {
     return sceneData->materials;
   }
   vulkan_material_data material = {0};
-  vulkan_material_data_init(&material);
+  vulkan_material_data_init(&material, sceneData);
   log_debug("cgltfMaterial->has_pbr_metallic_roughness=%d",
             cgltfMaterial->has_pbr_metallic_roughness);
   log_debug("cgltfMaterial->has_pbr_specular_glossiness=%d",
@@ -65,7 +155,13 @@ vulkan_material_data *parse_cgltf_material(vulkan_scene_data *sceneData,
     material.baseColorFactor[1] = cgltfMaterial->pbr_metallic_roughness.base_color_factor[1];
     material.baseColorFactor[2] = cgltfMaterial->pbr_metallic_roughness.base_color_factor[2];
     material.baseColorFactor[3] = cgltfMaterial->pbr_metallic_roughness.base_color_factor[3];
-    // HIRO material texture
+    material.metallicFactor = cgltfMaterial->pbr_metallic_roughness.metallic_factor;
+    material.roughnessFactor = cgltfMaterial->pbr_metallic_roughness.roughness_factor;
+
+    material.baseColorTexture = parse_cgltf_texture(
+        sceneData, cgltfMaterial->pbr_metallic_roughness.base_color_texture.texture);
+    material.metallicRoughnessTexture = parse_cgltf_texture(
+        sceneData, cgltfMaterial->pbr_metallic_roughness.metallic_roughness_texture.texture);
   }
   material.hash = vulkan_material_data_calculate_key(&material);
 
@@ -77,7 +173,7 @@ vulkan_material_data *parse_cgltf_material(vulkan_scene_data *sceneData,
 
   log_debug("adding new material");
   vulkan_material_data *newMaterial = core_alloc(sizeof(vulkan_material_data));
-  vulkan_material_data_init(newMaterial);
+  vulkan_material_data_init(newMaterial, sceneData);
   core_memcpy(newMaterial, &material, sizeof(material));
   DL_APPEND(sceneData->materials, newMaterial);
   return newMaterial;
@@ -110,73 +206,71 @@ vulkan_primitive_data *parse_cgltf_primitive(vulkan_scene_data *sceneData,
     verify(vertexCount == cgltfAttribute->data->count);
   }
 
-  vulkan_primitive_data primitive;
-  vulkan_primitive_data_init(&primitive, sceneData);
+  vulkan_primitive_data *primitive = core_alloc(sizeof(vulkan_primitive_data));
+  vulkan_primitive_data_init(primitive, sceneData);
 
   vulkan_material_data *material = parse_cgltf_material(sceneData, cgltfPrimitive->material);
-  primitive.material = material;
+  primitive->material = material;
 
-  primitive.topology = topology;
-  primitive.vertexCount = vertexCount;
+  primitive->topology = topology;
+  primitive->vertexCount = vertexCount;
 
   // read indices
-  utarray_resize(primitive.indices, indexCount);
-  for (size_t i = 0; i < utarray_len(primitive.indices); i++) {
+  utarray_resize(primitive->indices, indexCount);
+  for (size_t i = 0; i < utarray_len(primitive->indices); i++) {
     size_t indexValue = cgltf_accessor_read_index(cgltfIndices, i);
-    void *outValue = utarray_eltptr(primitive.indices, i);
+    void *outValue = utarray_eltptr(primitive->indices, i);
     *(uint32_t *)outValue = indexValue;
   }
 
   // read vertex attributes
   if ((vertexAttributes & PositionAttribute) != 0) {
-    utarray_resize(primitive.positions, primitive.vertexCount);
+    utarray_resize(primitive->positions, primitive->vertexCount);
   }
   if ((vertexAttributes & NormalAttribute) != 0) {
-    utarray_resize(primitive.normals, primitive.vertexCount);
+    utarray_resize(primitive->normals, primitive->vertexCount);
   }
   if ((vertexAttributes & ColorAttribute) != 0) {
-    utarray_resize(primitive.colors, primitive.vertexCount);
+    utarray_resize(primitive->colors, primitive->vertexCount);
   }
   if ((vertexAttributes & TexCoordAttribute) != 0) {
-    utarray_resize(primitive.texCoords, primitive.vertexCount);
+    utarray_resize(primitive->texCoords, primitive->vertexCount);
   }
-  for (size_t i = 0; i < primitive.vertexCount; i++) {
+  for (size_t i = 0; i < primitive->vertexCount; i++) {
     for (size_t attributeIdx = 0; attributeIdx < cgltfPrimitive->attributes_count; attributeIdx++) {
       cgltf_attribute *cgltfAttribute = &cgltfPrimitive->attributes[attributeIdx];
       vulkan_attribute_type type = cgltf_to_vulkan_attribute_type(cgltfAttribute->type);
       if (type == PositionAttribute) {
         verify(cgltf_accessor_read_float(cgltfAttribute->data, i,
-                                         (float *)utarray_eltptr(primitive.positions, i), 3));
+                                         (float *)utarray_eltptr(primitive->positions, i), 3));
       }
       if (type == NormalAttribute) {
         verify(cgltf_accessor_read_float(cgltfAttribute->data, i,
-                                         (float *)utarray_eltptr(primitive.normals, i), 3));
+                                         (float *)utarray_eltptr(primitive->normals, i), 3));
       }
       if (type == ColorAttribute) {
         verify(cgltf_accessor_read_float(cgltfAttribute->data, i,
-                                         (float *)utarray_eltptr(primitive.colors, i), 3));
+                                         (float *)utarray_eltptr(primitive->colors, i), 3));
       }
       if (type == TexCoordAttribute) {
         verify(cgltf_accessor_read_float(cgltfAttribute->data, i,
-                                         (float *)utarray_eltptr(primitive.texCoords, i), 2));
+                                         (float *)utarray_eltptr(primitive->texCoords, i), 2));
       }
     }
   }
 
-  primitive.hash = vulkan_primitive_data_calculate_key(&primitive);
+  primitive->hash = vulkan_primitive_data_calculate_key(primitive);
 
   vulkan_primitive_data *existingPrimitive =
-      vulkan_scene_data_get_primitive_by_key(sceneData, NULL, primitive.hash);
+      vulkan_scene_data_get_primitive_by_key(sceneData, NULL, primitive->hash);
   if (existingPrimitive != NULL) {
+    core_free(primitive);
     return existingPrimitive;
   }
 
   log_debug("adding new primitive");
-  vulkan_primitive_data *newPrimitive = core_alloc(sizeof(vulkan_primitive_data));
-  vulkan_primitive_data_init(newPrimitive, sceneData);
-  core_memcpy(newPrimitive, &primitive, sizeof(primitive));
-  DL_APPEND(sceneData->primitives, newPrimitive);
-  return newPrimitive;
+  DL_APPEND(sceneData->primitives, primitive);
+  return primitive;
 }
 
 vulkan_mesh_data parse_cgltf_mesh(vulkan_scene_data *sceneData, cgltf_mesh *cgltfMesh) {
@@ -233,11 +327,7 @@ vulkan_scene_data *parse_cgltf_scene(UT_string *name, UT_string *path) {
   cgltf_scene *cgltfScene = &cgltfData->scene[0];
 
   vulkan_scene_data *sceneData = vulkan_scene_data_create(name);
-
-  // parse materials
-  for (size_t materialIdx = 0; materialIdx < cgltfData->materials_count; materialIdx++) {
-    parse_cgltf_material(sceneData, &cgltfData->materials[materialIdx]);
-  }
+  utstring_concat(sceneData->path, path);
 
   // parse nodes
   for (size_t nodeIdx = 0; nodeIdx < cgltfScene->nodes_count; nodeIdx++) {
@@ -290,8 +380,6 @@ void vulkan_scene_data_serialize(vulkan_scene_data *sceneData, data_asset_db *as
   data_asset_db_insert_scene_nodes_key_array(assetDb, sceneData->hash,
                                              data_key_array_temp(nodeKeys));
   utarray_free(nodeKeys);
-
-  // TODO: Add materials to pipeline.
 }
 
 void vulkan_scene_data_deserialize(vulkan_scene_data *sceneData, data_asset_db *assetDb,
@@ -327,9 +415,32 @@ vulkan_scene_data *vulkan_scene_data_create(UT_string *name) {
   utstring_new(sceneData->name);
   utstring_concat(sceneData->name, name);
 
+  utstring_new(sceneData->path);
+
+  sceneData->images = NULL;
+  vulkan_image_data *defaultImage = core_alloc(sizeof(vulkan_image_data));
+  vulkan_image_data_init(defaultImage);
+  DL_APPEND(sceneData->images, defaultImage);
+
+  sceneData->samplers = NULL;
+  vulkan_sampler_data *defaultSampler = core_alloc(sizeof(vulkan_sampler_data));
+  vulkan_sampler_data_init(defaultSampler);
+  DL_APPEND(sceneData->samplers, defaultSampler);
+
+  sceneData->textures = NULL;
+  vulkan_texture_data *defaultTexture = core_alloc(sizeof(vulkan_texture_data));
+  vulkan_texture_data_init(defaultTexture, sceneData);
+  defaultTexture->image = defaultImage;
+  defaultTexture->sampler = defaultSampler;
+  defaultTexture->hash = vulkan_texture_data_calculate_key(defaultTexture);
+  DL_APPEND(sceneData->textures, defaultTexture);
+
   sceneData->materials = NULL;
   vulkan_material_data *defaultMaterial = core_alloc(sizeof(vulkan_material_data));
-  vulkan_material_data_init(defaultMaterial);
+  vulkan_material_data_init(defaultMaterial, sceneData);
+  defaultMaterial->baseColorTexture = defaultTexture;
+  defaultMaterial->metallicRoughnessTexture = defaultTexture;
+  defaultMaterial->hash = vulkan_material_data_calculate_key(defaultMaterial);
   DL_APPEND(sceneData->materials, defaultMaterial);
 
   sceneData->primitives = NULL;
@@ -343,6 +454,25 @@ vulkan_scene_data *vulkan_scene_data_create(UT_string *name) {
 
 void vulkan_scene_data_destroy(vulkan_scene_data *sceneData) {
   utstring_free(sceneData->name);
+  utstring_free(sceneData->path);
+
+  vulkan_image_data *image, *tempImage;
+  DL_FOREACH_SAFE(sceneData->images, image, tempImage) {
+    vulkan_image_data_deinit(image);
+    core_free(image);
+  }
+
+  vulkan_sampler_data *sampler, *tempSampler;
+  DL_FOREACH_SAFE(sceneData->samplers, sampler, tempSampler) {
+    vulkan_sampler_data_deinit(sampler);
+    core_free(sampler);
+  }
+
+  vulkan_texture_data *texture, *tempTexture;
+  DL_FOREACH_SAFE(sceneData->textures, texture, tempTexture) {
+    vulkan_texture_data_deinit(texture);
+    core_free(texture);
+  }
 
   vulkan_material_data *material, *tempMaterial;
   DL_FOREACH_SAFE(sceneData->materials, material, tempMaterial) {
@@ -371,52 +501,32 @@ void vulkan_scene_data_destroy(vulkan_scene_data *sceneData) {
   core_free(sceneData);
 }
 
-vulkan_material_data *vulkan_scene_data_get_material_by_key(vulkan_scene_data *sceneData,
-                                                            data_asset_db *assetDb, data_key key) {
-  vulkan_material_data *material = NULL;
-
-  vulkan_material_data *existingMaterial = NULL;
-  DL_FOREACH(sceneData->materials, existingMaterial) {
-    if (existingMaterial->hash.value == key.value) {
-      material = existingMaterial;
-      break;
-    }
+#define GET_OBJECT_BY_KEY(_type, ...)                                                              \
+  vulkan_##_type##_data *vulkan_scene_data_get_##_type##_by_key(                                   \
+      vulkan_scene_data *sceneData, data_asset_db *assetDb, data_key key) {                        \
+    vulkan_##_type##_data *object = NULL;                                                          \
+    vulkan_##_type##_data *existingObject = NULL;                                                  \
+    DL_FOREACH(sceneData->_type##s, existingObject) {                                              \
+      if (existingObject->hash.value == key.value) {                                               \
+        object = existingObject;                                                                   \
+        break;                                                                                     \
+      }                                                                                            \
+    }                                                                                              \
+    if (object == NULL && assetDb != NULL) {                                                       \
+      vulkan_##_type##_data *newObject = core_alloc(sizeof(vulkan_##_type##_data));                \
+      vulkan_##_type##_data_init(newObject, ##__VA_ARGS__);                                        \
+      vulkan_##_type##_data_deserialize(newObject, assetDb, key);                                  \
+      LL_PREPEND(sceneData->_type##s, newObject);                                                  \
+      object = sceneData->_type##s;                                                                \
+    }                                                                                              \
+    return object;                                                                                 \
   }
 
-  if (material == NULL && assetDb != NULL) {
-    vulkan_material_data *newMaterial = core_alloc(sizeof(vulkan_material_data));
-    vulkan_material_data_init(newMaterial);
-    vulkan_material_data_deserialize(newMaterial, assetDb, key);
-    LL_PREPEND(sceneData->materials, newMaterial);
-    material = sceneData->materials;
-  }
-
-  return material;
-}
-
-vulkan_primitive_data *vulkan_scene_data_get_primitive_by_key(vulkan_scene_data *sceneData,
-                                                              data_asset_db *assetDb,
-                                                              data_key key) {
-  vulkan_primitive_data *primitive = NULL;
-
-  vulkan_primitive_data *existingPrimitive = NULL;
-  DL_FOREACH(sceneData->primitives, existingPrimitive) {
-    if (existingPrimitive->hash.value == key.value) {
-      primitive = existingPrimitive;
-      break;
-    }
-  }
-
-  if (primitive == NULL && assetDb != NULL) {
-    vulkan_primitive_data *newPrimitive = core_alloc(sizeof(vulkan_primitive_data));
-    vulkan_primitive_data_init(newPrimitive, sceneData);
-    vulkan_primitive_data_deserialize(newPrimitive, assetDb, key);
-    LL_PREPEND(sceneData->primitives, newPrimitive);
-    primitive = sceneData->primitives;
-  }
-
-  return primitive;
-}
+GET_OBJECT_BY_KEY(image)
+GET_OBJECT_BY_KEY(sampler)
+GET_OBJECT_BY_KEY(texture, sceneData)
+GET_OBJECT_BY_KEY(material, sceneData)
+GET_OBJECT_BY_KEY(primitive, sceneData)
 
 vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *sceneName,
                                                            UT_string *gltfPath) {

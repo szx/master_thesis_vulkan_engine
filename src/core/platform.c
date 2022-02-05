@@ -84,16 +84,31 @@ UT_string *get_executable_dir_path() {
 #endif
 }
 
+UT_string *get_path_dirname(UT_string *path) {
+#if defined(PLATFORM_LINUX)
+  char *dirPath = g_path_get_dirname(utstring_body(path));
+  UT_string *newPath;
+  utstring_new(newPath);
+  utstring_printf(newPath, "%s", dirPath);
+  g_free(dirPath);
+  return newPath;
+#else
+#error "plaform.c does not support current platform"
+#endif
+}
+
+void append_to_path(UT_string *path, const char *name) { utstring_printf(path, "/%s", name); }
+
 UT_string *get_executable_dir_file_path(const char *dirName, const char *fileName) {
   UT_string *path = get_executable_dir_path();
-  utstring_printf(path, "/%s", dirName);
-  utstring_printf(path, "/%s", fileName);
+  append_to_path(path, dirName);
+  append_to_path(path, fileName);
   return path;
 }
 
 UT_string *get_asset_file_path(const char *dirName, const char *fileName) { // HIRO remove
   UT_string *path = get_executable_dir_file_path("assets", dirName);
-  utstring_printf(path, "/%s", fileName);
+  append_to_path(path, fileName);
   return path;
 }
 

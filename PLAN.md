@@ -61,26 +61,30 @@ Co należy wyprodukować:
         - [ ] Maybe: GPUView
 
 - [ ] Rendering
-    - [ ] Asset pipeline (30.01)
+    - [x] Asset pipeline (05.02)
         - [x] INI configuration
         - [x] glTF scene input
         - [x] Processing primitives
         - [x] Processing meshes
         - [x] Processing nodes.
         - [x] Processing scenes.
-        - [ ] **Processing images**
-        - [ ] Processing materials.
-        - [ ] Split vertex attributes into seperate arrays.
-        - [ ] **Use Python instead of C.**
-        - [ ] Shader generation.
-            - [ ] Split shader into shader parts. (**blocked by research**)
-            - [ ] Store as many shader parts in asset database.
-            - [ ] Generate GLSL shader strings and SPIR-V shader bytecode.
-        - [ ] Maybe: LOD generation using meshoptimizer.
+        - [x] Processing materials.
+        - [x] Processing images
+        - [x] Processing samplers
         - [x] SQLite database output
         - [x] Write test comparing outputs of glFT with asset database.
+        - [ ] Non-essential features:
+            - [ ] Performance: Split vertex attributes into seperate tables.
+            - [ ] Performance: load images only with channels used by samplers.
+            - [ ] Performance: Lazy loading / streaming.
+            - [ ] Maybe: LOD generation using meshoptimizer.
     - [ ] GPU-driven rendering pipeline (14.02):
         - [x] Loading scene data from asset database.
+        - [ ] **Scene graph.**
+            - [ ] Build scene graph from scene data.
+            - [ ] Build scene tree from scene graph.
+            - [ ] Build object lists from scene tree.
+            - [ ] Build draw indirect buffers from object lists (draw call batching).
         - [ ] Scene geometry buffer
             - [ ] **Building scene geometry buffer**
             - [ ] Uploading scene geometry buffer to GPU

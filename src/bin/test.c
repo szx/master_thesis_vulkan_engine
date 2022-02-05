@@ -14,7 +14,7 @@ TEST gltf_loading() {
   vulkan_device *vkd = vulkan_device_create(config, assetDb);
   UT_string *sceneName;
   utstring_alloc(sceneName, "sponza");
-  UT_string *gltfPath = get_asset_file_path("sponza", "Sponza.gltf");
+  UT_string *gltfPath = get_asset_file_path("sponza", "sponza.gltf");
   vulkan_scene_data *gltfSceneData = vulkan_scene_data_create_with_gltf_file(sceneName, gltfPath);
   vulkan_scene_data *assetDbSceneData = vulkan_scene_data_create_with_asset_db(assetDb, sceneName);
 

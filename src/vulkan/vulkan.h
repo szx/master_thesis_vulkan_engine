@@ -6,6 +6,7 @@
 #include "data/node.h"
 #include "data/primitive.h"
 #include "data/scene.h"
+#include "data/texture.h"
 #include "debug.h"
 #include "device.h"
 #include "functions.h"

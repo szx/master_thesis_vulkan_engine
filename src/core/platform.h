@@ -44,6 +44,12 @@ bool path_ext_equal(UT_string *path, const char *ext);
 /// Returns new path to directory with current executable.
 UT_string *get_executable_dir_path();
 
+/// Returns new path to directory name.
+UT_string *get_path_dirname(UT_string *path);
+
+/// Appends new file/directory name to path.
+void append_to_path(UT_string *path, const char *name);
+
 /// Returns new path to file in specified directory.
 UT_string *get_executable_dir_file_path(const char *dirName, const char *fileName);
 

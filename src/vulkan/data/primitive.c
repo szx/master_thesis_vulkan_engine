@@ -49,8 +49,8 @@ void vulkan_primitive_data_serialize(vulkan_primitive_data *primitive, data_asse
   primitive->hash = vulkan_primitive_data_calculate_key(primitive);
 
   vulkan_material_data_serialize(primitive->material, assetDb);
-
   data_asset_db_insert_primitive_material_key(assetDb, primitive->hash, primitive->material->hash);
+
   data_asset_db_insert_primitive_topology_int(assetDb, primitive->hash,
                                               data_int_temp(primitive->topology));
   data_asset_db_insert_primitive_indices_int_array(assetDb, primitive->hash,

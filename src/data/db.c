@@ -20,6 +20,15 @@ void data_db_destroy(data_db *db) {
 
 /* data types */
 
+void data_byte_init(data_byte *data, uint8_t value) { data->value = value; }
+void data_byte_deinit(data_byte *data) {}
+size_t data_byte_size(uint8_t value) { return sizeof(uint8_t); }
+void data_byte_serialize(uint8_t *memory, uint8_t value) { *(uint8_t *)memory = value; }
+void data_byte_deserialize(const uint8_t *memory, size_t size, uint8_t *value) {
+  verify(size == sizeof(uint8_t));
+  *value = *(uint8_t *)memory;
+}
+
 void data_int_init(data_int *data, uint32_t value) { data->value = value; }
 void data_int_deinit(data_int *data) {}
 size_t data_int_size(uint32_t value) { return sizeof(uint32_t); }

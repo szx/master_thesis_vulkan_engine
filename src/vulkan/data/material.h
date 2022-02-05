@@ -6,17 +6,21 @@
 
 #include "../../data/data.h"
 #include "../functions.h"
+#include "texture.h"
 
 typedef struct vulkan_material_data {
-  vec4 baseColorFactor; /// sRGBA
+  vulkan_scene_data *sceneData; /// vulkan_scene_data pointer
+  vec4 baseColorFactor;         /// sRGBA
   float metallicFactor;
   float roughnessFactor;
-  // HIRO material textures
+  vulkan_texture_data *baseColorTexture;
+  vulkan_texture_data *metallicRoughnessTexture;
+
   data_key hash; /// Hash, used to prevent duplicates in asset database.
   struct vulkan_material_data *prev, *next;
 } vulkan_material_data;
 
-void vulkan_material_data_init(vulkan_material_data *material);
+void vulkan_material_data_init(vulkan_material_data *material, vulkan_scene_data *sceneData);
 void vulkan_material_data_deinit(vulkan_material_data *material);
 
 data_key vulkan_material_data_calculate_key(vulkan_material_data *material);
