@@ -15,24 +15,24 @@ TEST gltf_loading() {
   UT_string *sceneName;
   utstring_alloc(sceneName, "sponza");
   UT_string *gltfPath = get_asset_file_path("sponza", "sponza.gltf");
-  vulkan_scene_data *gltfSceneData = vulkan_scene_data_create_with_gltf_file(sceneName, gltfPath);
-  vulkan_scene_data *assetDbSceneData = vulkan_scene_data_create_with_asset_db(assetDb, sceneName);
+  vulkan_data_scene *gltfSceneData = vulkan_data_scene_create_with_gltf_file(sceneName, gltfPath);
+  vulkan_data_scene *assetDbSceneData = vulkan_data_scene_create_with_asset_db(assetDb, sceneName);
 
   ASSERT_STR_EQ(utstring_body(gltfSceneData->name), utstring_body(assetDbSceneData->name));
   ASSERT_EQ(gltfSceneData->dirty, assetDbSceneData->dirty);
   ASSERT_EQ(utarray_len(gltfSceneData->nodes), utarray_len(assetDbSceneData->nodes));
   ASSERT_EQ(utarray_len(gltfSceneData->cameras), utarray_len(assetDbSceneData->cameras));
-  vulkan_primitive_data *gltfPrimitive = NULL;
-  vulkan_primitive_data *assetDbPrimitive = NULL;
+  vulkan_data_primitive *gltfPrimitive = NULL;
+  vulkan_data_primitive *assetDbPrimitive = NULL;
   size_t gltfPrimitivesCount = 0;
   DL_COUNT(gltfSceneData->primitives, gltfPrimitive, gltfPrimitivesCount);
   size_t assetDbPrimitivesCount = 0;
   DL_COUNT(assetDbSceneData->primitives, assetDbPrimitive, assetDbPrimitivesCount);
   ASSERT_EQ(gltfPrimitivesCount, assetDbPrimitivesCount);
 
-  vulkan_camera_data *assetDbCamera = NULL;
+  vulkan_data_camera *assetDbCamera = NULL;
   while ((assetDbCamera = (utarray_next(assetDbSceneData->cameras, assetDbCamera)))) {
-    vulkan_camera_data *gltfCamera = NULL;
+    vulkan_data_camera *gltfCamera = NULL;
     bool foundCorrespondingCamera = false;
     while ((gltfCamera = (utarray_next(gltfSceneData->cameras, gltfCamera)))) {
       if (gltfCamera->hash.value == assetDbCamera->hash.value) {
@@ -49,9 +49,9 @@ TEST gltf_loading() {
     ASSERT_EQ(gltfCamera->farZ, assetDbCamera->farZ);
   }
 
-  vulkan_node_data *assetDbNode = NULL;
+  vulkan_data_node *assetDbNode = NULL;
   while ((assetDbNode = (utarray_next(assetDbSceneData->nodes, assetDbNode)))) {
-    vulkan_node_data *gltfNode = NULL;
+    vulkan_data_node *gltfNode = NULL;
     bool foundCorrespondingNode = false;
     while ((gltfNode = (utarray_next(gltfSceneData->nodes, gltfNode)))) {
       if (gltfNode->hash.value == assetDbNode->hash.value) {
@@ -61,8 +61,8 @@ TEST gltf_loading() {
     }
     ASSERT_EQ(foundCorrespondingNode, true);
     ASSERT_MEM_EQ(gltfNode->transform, assetDbNode->transform, sizeof(mat4));
-    vulkan_mesh_data *gltfMesh = &gltfNode->mesh;
-    vulkan_mesh_data *assetDbMesh = &assetDbNode->mesh;
+    vulkan_data_mesh *gltfMesh = &gltfNode->mesh;
+    vulkan_data_mesh *assetDbMesh = &assetDbNode->mesh;
     ASSERT_EQ(gltfMesh->hash.value, assetDbMesh->hash.value);
 
     bool foundCorrespondingPrimitive = false;
@@ -92,8 +92,8 @@ TEST gltf_loading() {
   }
   utstring_free(gltfPath);
   utstring_free(sceneName);
-  vulkan_scene_data_destroy(assetDbSceneData);
-  vulkan_scene_data_destroy(gltfSceneData);
+  vulkan_data_scene_destroy(assetDbSceneData);
+  vulkan_data_scene_destroy(gltfSceneData);
   vulkan_device_destroy(vkd);
   data_asset_db_destroy(assetDb);
   data_config_destroy(config);
@@ -156,12 +156,12 @@ TEST scene_graph_building() {
   vulkan_device *vkd = vulkan_device_create(config, assetDb);
   UT_string *sceneName;
   utstring_alloc(sceneName, "sponza");
-  vulkan_scene_data *assetDbSceneData = vulkan_scene_data_create_with_asset_db(assetDb, sceneName);
+  vulkan_data_scene *assetDbSceneData = vulkan_data_scene_create_with_asset_db(assetDb, sceneName);
 
-  // vulkan_scene_data_debug_print(assetDbSceneData);
+  // vulkan_data_scene_debug_print(assetDbSceneData);
 
   utstring_free(sceneName);
-  vulkan_scene_data_destroy(assetDbSceneData);
+  vulkan_data_scene_destroy(assetDbSceneData);
   vulkan_device_destroy(vkd);
   data_asset_db_destroy(assetDb);
   data_config_destroy(config);
@@ -175,8 +175,8 @@ GREATEST_MAIN_DEFS(); // NOLINT
 int main(int argc, char *argv[]) {
   GREATEST_MAIN_BEGIN();
   platform_create();
-  // RUN_SUITE(gltf_suite);
   // RUN_SUITE(shaderc_suite);
+  // RUN_SUITE(gltf_suite);
   RUN_SUITE(scene_graph_suite);
   platform_destroy();
   GREATEST_MAIN_END();

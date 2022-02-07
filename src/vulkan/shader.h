@@ -3,7 +3,6 @@
 
 #include "device.h"
 #include "functions.h"
-#include "scene.h"
 
 /// Describes one vertex input (or output) attribute defined in GLSL shader.
 /// Examples:

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "../core/platform.h"
-#include "scene.h"
+#include "scene/scene.h"
 #include "shader.h"
 #include "swap_chain.h"
 

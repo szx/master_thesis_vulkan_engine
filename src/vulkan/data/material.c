@@ -1,7 +1,7 @@
 #include "material.h"
 #include "scene.h"
 
-void vulkan_material_data_init(vulkan_material_data *material, vulkan_scene_data *sceneData) {
+void vulkan_data_material_init(vulkan_data_material *material, vulkan_data_scene *sceneData) {
   material->sceneData = sceneData;
   glm_vec4_copy((vec4){1.0f, 1.0f, 1.0f, 1.0f}, material->baseColorFactor);
   material->metallicFactor = 0.5f;
@@ -14,9 +14,9 @@ void vulkan_material_data_init(vulkan_material_data *material, vulkan_scene_data
   material->next = NULL;
 }
 
-void vulkan_material_data_deinit(vulkan_material_data *material) {}
+void vulkan_data_material_deinit(vulkan_data_material *material) {}
 
-data_key vulkan_material_data_calculate_key(vulkan_material_data *material) {
+data_key vulkan_data_material_calculate_key(vulkan_data_material *material) {
   hash_t value;
   HASH_START(hashState)
   HASH_UPDATE(hashState, &material->baseColorFactor, sizeof(material->baseColorFactor))
@@ -32,14 +32,14 @@ data_key vulkan_material_data_calculate_key(vulkan_material_data *material) {
   return (data_key){value};
 }
 
-void vulkan_material_data_serialize(vulkan_material_data *material, data_asset_db *assetDb) {
-  material->hash = vulkan_material_data_calculate_key(material);
+void vulkan_data_material_serialize(vulkan_data_material *material, data_asset_db *assetDb) {
+  material->hash = vulkan_data_material_calculate_key(material);
 
-  vulkan_texture_data_serialize(material->baseColorTexture, assetDb);
+  vulkan_data_texture_serialize(material->baseColorTexture, assetDb);
   data_asset_db_insert_material_baseColorTexture_key(assetDb, material->hash,
                                                      material->baseColorTexture->hash);
 
-  vulkan_texture_data_serialize(material->metallicRoughnessTexture, assetDb);
+  vulkan_data_texture_serialize(material->metallicRoughnessTexture, assetDb);
   data_asset_db_insert_material_metallicRoughnessTexture_key(
       assetDb, material->hash, material->metallicRoughnessTexture->hash);
 
@@ -51,7 +51,7 @@ void vulkan_material_data_serialize(vulkan_material_data *material, data_asset_d
                                                       data_float_temp(material->roughnessFactor));
 }
 
-void vulkan_material_data_deserialize(vulkan_material_data *material, data_asset_db *assetDb,
+void vulkan_data_material_deserialize(vulkan_data_material *material, data_asset_db *assetDb,
                                       data_key key) {
   material->hash = key;
   glm_vec4_copy(data_asset_db_select_material_baseColorFactor_vec4(assetDb, material->hash).value,
@@ -61,15 +61,15 @@ void vulkan_material_data_deserialize(vulkan_material_data *material, data_asset
   material->roughnessFactor =
       data_asset_db_select_material_roughnessFactor_float(assetDb, material->hash).value;
 
-  material->baseColorTexture = vulkan_scene_data_get_texture_by_key(
+  material->baseColorTexture = vulkan_data_scene_get_texture_by_key(
       material->sceneData, assetDb,
       data_asset_db_select_material_baseColorTexture_key(assetDb, material->hash));
-  material->metallicRoughnessTexture = vulkan_scene_data_get_texture_by_key(
+  material->metallicRoughnessTexture = vulkan_data_scene_get_texture_by_key(
       material->sceneData, assetDb,
       data_asset_db_select_material_metallicRoughnessTexture_key(assetDb, material->hash));
 }
 
-void vulkan_material_data_debug_print(vulkan_material_data *material) {
+void vulkan_data_material_debug_print(vulkan_data_material *material) {
   log_debug("material:");
   log_debug("  hash=%zu", material->hash);
   log_debug("  baseColorFactor=%f %f %f %f", material->baseColorFactor[0],

@@ -8,24 +8,24 @@
 #include "../functions.h"
 #include "texture.h"
 
-typedef struct vulkan_material_data {
-  vulkan_scene_data *sceneData; /// vulkan_scene_data pointer
+typedef struct vulkan_data_material {
+  vulkan_data_scene *sceneData; /// vulkan_data_scene pointer
   vec4 baseColorFactor;         /// sRGBA
   float metallicFactor;
   float roughnessFactor;
-  vulkan_texture_data *baseColorTexture;
-  vulkan_texture_data *metallicRoughnessTexture;
+  vulkan_data_texture *baseColorTexture;
+  vulkan_data_texture *metallicRoughnessTexture;
 
   data_key hash; /// Hash, used to prevent duplicates in asset database.
-  struct vulkan_material_data *prev, *next;
-} vulkan_material_data;
+  struct vulkan_data_material *prev, *next;
+} vulkan_data_material;
 
-void vulkan_material_data_init(vulkan_material_data *material, vulkan_scene_data *sceneData);
-void vulkan_material_data_deinit(vulkan_material_data *material);
+void vulkan_data_material_init(vulkan_data_material *material, vulkan_data_scene *sceneData);
+void vulkan_data_material_deinit(vulkan_data_material *material);
 
-data_key vulkan_material_data_calculate_key(vulkan_material_data *material);
-void vulkan_material_data_serialize(vulkan_material_data *material, data_asset_db *assetDb);
-void vulkan_material_data_deserialize(vulkan_material_data *material, data_asset_db *assetDb,
+data_key vulkan_data_material_calculate_key(vulkan_data_material *material);
+void vulkan_data_material_serialize(vulkan_data_material *material, data_asset_db *assetDb);
+void vulkan_data_material_deserialize(vulkan_data_material *material, data_asset_db *assetDb,
                                       data_key key);
 
-void vulkan_material_data_debug_print(vulkan_material_data *material);
+void vulkan_data_material_debug_print(vulkan_data_material *material);

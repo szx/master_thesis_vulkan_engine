@@ -43,12 +43,12 @@ void write_default_config() {
 void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetInput) {
   log_info("processing gltf '%s' in '%s'", utstring_body(assetInput->sourceAssetName),
            utstring_body(assetInput->sourceAssetPath));
-  vulkan_scene_data *sceneData = vulkan_scene_data_create_with_gltf_file(
+  vulkan_data_scene *sceneData = vulkan_data_scene_create_with_gltf_file(
       assetInput->sourceAssetName, assetInput->sourceAssetPath);
 
-  vulkan_scene_data_serialize(sceneData, assetDb);
+  vulkan_data_scene_serialize(sceneData, assetDb);
 
-  vulkan_scene_data_destroy(sceneData);
+  vulkan_data_scene_destroy(sceneData);
 }
 
 int main(int argc, char *argv[]) {

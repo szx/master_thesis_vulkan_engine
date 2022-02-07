@@ -1,12 +1,12 @@
 /* Vulkan scene */
 #pragma once
 
-#include "../core/platform.h"
+#include "../../core/platform.h"
 
-#include "data/scene.h"
-#include "device.h"
-#include "functions.h"
-#include "geometry_buffer.h"
+#include "../data/scene.h"
+#include "../device.h"
+#include "../functions.h"
+#include "../geometry_buffer.h"
 
 // HIRO SceneGraph, SceneTree, ShapeList, Batches?
 
@@ -15,7 +15,7 @@
 typedef struct vulkan_scene {
   data_asset_db *assetDb; /// data_asset_db pointer
   vulkan_device *vkd;     /// vulkan_device pointer
-  vulkan_scene_data *data;
+  vulkan_data_scene *data;
   vulkan_geometry_buffer *geometryBuffer;
   vulkan_uniform_buffer *uniformBuffer;
 } vulkan_scene;

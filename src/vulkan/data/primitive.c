@@ -1,7 +1,7 @@
 #include "primitive.h"
 #include "scene.h"
 
-void vulkan_primitive_data_init(vulkan_primitive_data *primitive, vulkan_scene_data *sceneData) {
+void vulkan_data_primitive_init(vulkan_data_primitive *primitive, vulkan_data_scene *sceneData) {
   primitive->sceneData = sceneData;
   primitive->topology = VK_PRIMITIVE_TOPOLOGY_MAX_ENUM;
   primitive->vertexCount = 0;
@@ -16,7 +16,7 @@ void vulkan_primitive_data_init(vulkan_primitive_data *primitive, vulkan_scene_d
   primitive->next = NULL;
 }
 
-void vulkan_primitive_data_deinit(vulkan_primitive_data *primitive) {
+void vulkan_data_primitive_deinit(vulkan_data_primitive *primitive) {
   utarray_free(primitive->positions);
   utarray_free(primitive->normals);
   utarray_free(primitive->colors);
@@ -24,7 +24,7 @@ void vulkan_primitive_data_deinit(vulkan_primitive_data *primitive) {
   utarray_free(primitive->indices);
 }
 
-data_key vulkan_primitive_data_calculate_key(vulkan_primitive_data *primitive) {
+data_key vulkan_data_primitive_calculate_key(vulkan_data_primitive *primitive) {
   hash_t value;
   // TODO: Currently primitive hash is produced using all topology + indices + vertex attributes.
   //       This eliminates duplicated primitives with EXACTLY the same structure, but still
@@ -45,10 +45,10 @@ data_key vulkan_primitive_data_calculate_key(vulkan_primitive_data *primitive) {
   return (data_key){value};
 }
 
-void vulkan_primitive_data_serialize(vulkan_primitive_data *primitive, data_asset_db *assetDb) {
-  primitive->hash = vulkan_primitive_data_calculate_key(primitive);
+void vulkan_data_primitive_serialize(vulkan_data_primitive *primitive, data_asset_db *assetDb) {
+  primitive->hash = vulkan_data_primitive_calculate_key(primitive);
 
-  vulkan_material_data_serialize(primitive->material, assetDb);
+  vulkan_data_material_serialize(primitive->material, assetDb);
   data_asset_db_insert_primitive_material_key(assetDb, primitive->hash, primitive->material->hash);
 
   data_asset_db_insert_primitive_topology_int(assetDb, primitive->hash,
@@ -65,10 +65,10 @@ void vulkan_primitive_data_serialize(vulkan_primitive_data *primitive, data_asse
                                                       data_vec2_array_temp(primitive->texCoords));
 }
 
-void vulkan_primitive_data_deserialize(vulkan_primitive_data *primitive, data_asset_db *assetDb,
+void vulkan_data_primitive_deserialize(vulkan_data_primitive *primitive, data_asset_db *assetDb,
                                        data_key key) {
   primitive->hash = key;
-  primitive->material = vulkan_scene_data_get_material_by_key(
+  primitive->material = vulkan_data_scene_get_material_by_key(
       primitive->sceneData, assetDb,
       data_asset_db_select_primitive_material_key(assetDb, primitive->hash));
   primitive->topology = data_asset_db_select_primitive_topology_int(assetDb, primitive->hash).value;
@@ -100,7 +100,7 @@ void vulkan_primitive_data_deserialize(vulkan_primitive_data *primitive, data_as
 #undef COPY_BLOB_TO_ARRAY
 }
 
-void vulkan_primitive_data_debug_print(vulkan_primitive_data *primitive) {
+void vulkan_data_primitive_debug_print(vulkan_data_primitive *primitive) {
   log_debug("primitive: %s\n", VkPrimitiveTopology_debug_str(primitive->topology));
   log_debug("  hash=%zu", primitive->hash);
   log_debug("  index: count=%d\n", utarray_len(primitive->indices));

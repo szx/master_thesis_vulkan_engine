@@ -9,62 +9,62 @@
 
 /* image */
 
-typedef struct vulkan_image_data {
+typedef struct vulkan_data_image {
   uint32_t width, height, depth, channels;
   UT_array *data; // uint8_t array
 
   data_key hash; /// Hash, used to prevent duplicates in asset database.
-  struct vulkan_image_data *prev, *next;
-} vulkan_image_data;
+  struct vulkan_data_image *prev, *next;
+} vulkan_data_image;
 
-void vulkan_image_data_init(vulkan_image_data *image);
-void vulkan_image_data_deinit(vulkan_image_data *image);
+void vulkan_data_image_init(vulkan_data_image *image);
+void vulkan_data_image_deinit(vulkan_data_image *image);
 
-data_key vulkan_image_data_calculate_key(vulkan_image_data *image);
-void vulkan_image_data_serialize(vulkan_image_data *image, data_asset_db *assetDb);
-void vulkan_image_data_deserialize(vulkan_image_data *image, data_asset_db *assetDb, data_key key);
+data_key vulkan_data_image_calculate_key(vulkan_data_image *image);
+void vulkan_data_image_serialize(vulkan_data_image *image, data_asset_db *assetDb);
+void vulkan_data_image_deserialize(vulkan_data_image *image, data_asset_db *assetDb, data_key key);
 
-void vulkan_image_data_debug_print(vulkan_image_data *sampler);
+void vulkan_data_image_debug_print(vulkan_data_image *sampler);
 
 /* sampler */
 
-typedef struct vulkan_sampler_data {
+typedef struct vulkan_data_sampler {
   VkFilter magFilter, minFilter;
   VkSamplerAddressMode addressModeU, addressModeV;
 
   data_key hash; /// Hash, used to prevent duplicates in asset database.
-  struct vulkan_sampler_data *prev, *next;
-} vulkan_sampler_data;
+  struct vulkan_data_sampler *prev, *next;
+} vulkan_data_sampler;
 
-void vulkan_sampler_data_init(vulkan_sampler_data *sampler);
-void vulkan_sampler_data_deinit(vulkan_sampler_data *sampler);
+void vulkan_data_sampler_init(vulkan_data_sampler *sampler);
+void vulkan_data_sampler_deinit(vulkan_data_sampler *sampler);
 
-data_key vulkan_sampler_data_calculate_key(vulkan_sampler_data *sampler);
-void vulkan_sampler_data_serialize(vulkan_sampler_data *sampler, data_asset_db *assetDb);
-void vulkan_sampler_data_deserialize(vulkan_sampler_data *sampler, data_asset_db *assetDb,
+data_key vulkan_data_sampler_calculate_key(vulkan_data_sampler *sampler);
+void vulkan_data_sampler_serialize(vulkan_data_sampler *sampler, data_asset_db *assetDb);
+void vulkan_data_sampler_deserialize(vulkan_data_sampler *sampler, data_asset_db *assetDb,
                                      data_key key);
 
-void vulkan_sampler_data_debug_print(vulkan_sampler_data *sampler);
+void vulkan_data_sampler_debug_print(vulkan_data_sampler *sampler);
 
 /* texture */
 
-typedef struct vulkan_scene_data vulkan_scene_data;
+typedef struct vulkan_data_scene vulkan_data_scene;
 
-typedef struct vulkan_texture_data {
-  vulkan_scene_data *sceneData; /// vulkan_scene_data pointer
-  vulkan_image_data *image;
-  vulkan_sampler_data *sampler;
+typedef struct vulkan_data_texture {
+  vulkan_data_scene *sceneData; /// vulkan_data_scene pointer
+  vulkan_data_image *image;
+  vulkan_data_sampler *sampler;
 
   data_key hash; /// Hash, used to prevent duplicates in asset database.
-  struct vulkan_texture_data *prev, *next;
-} vulkan_texture_data;
+  struct vulkan_data_texture *prev, *next;
+} vulkan_data_texture;
 
-void vulkan_texture_data_init(vulkan_texture_data *texture, vulkan_scene_data *sceneData);
-void vulkan_texture_data_deinit(vulkan_texture_data *texture);
+void vulkan_data_texture_init(vulkan_data_texture *texture, vulkan_data_scene *sceneData);
+void vulkan_data_texture_deinit(vulkan_data_texture *texture);
 
-data_key vulkan_texture_data_calculate_key(vulkan_texture_data *texture);
-void vulkan_texture_data_serialize(vulkan_texture_data *texture, data_asset_db *assetDb);
-void vulkan_texture_data_deserialize(vulkan_texture_data *texture, data_asset_db *assetDb,
+data_key vulkan_data_texture_calculate_key(vulkan_data_texture *texture);
+void vulkan_data_texture_serialize(vulkan_data_texture *texture, data_asset_db *assetDb);
+void vulkan_data_texture_deserialize(vulkan_data_texture *texture, data_asset_db *assetDb,
                                      data_key key);
 
-void vulkan_texture_data_debug_print(vulkan_texture_data *texture);
+void vulkan_data_texture_debug_print(vulkan_data_texture *texture);

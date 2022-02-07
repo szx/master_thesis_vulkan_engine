@@ -5,47 +5,47 @@
 #include "../../data/data.h"
 #include "camera.h"
 #include "mesh.h"
-#include "node.h"
+#include "object.h"
 #include "primitive.h"
 
 /// Describes a scene.
 /// Does not create any Vulkan objects (see vulkan_scene).
-typedef struct vulkan_scene_data {
+typedef struct vulkan_data_scene {
   UT_string *name;
   UT_string *path;                   /// Empty when loaded from asset db.
-  vulkan_image_data *images;         /// Doubly-linked list, all images used by scene.
-  vulkan_sampler_data *samplers;     /// Doubly-linked list, all samplers used by scene.
-  vulkan_texture_data *textures;     /// Doubly-linked list, all textures used by scene.
-  vulkan_material_data *materials;   /// Doubly-linked list, all materials used by scene.
-  vulkan_primitive_data *primitives; /// Double-linked list, all primitives used by scene.
-  UT_array *nodes;                   /// vulkan_node_data array, all nodes in scene.
-  UT_array *cameras;                 /// vulkan_camera_data array, all cameras in scene
+  vulkan_data_image *images;         /// Doubly-linked list, all images used by scene.
+  vulkan_data_sampler *samplers;     /// Doubly-linked list, all samplers used by scene.
+  vulkan_data_texture *textures;     /// Doubly-linked list, all textures used by scene.
+  vulkan_data_material *materials;   /// Doubly-linked list, all materials used by scene.
+  vulkan_data_primitive *primitives; /// Double-linked list, all primitives used by scene.
+  UT_array *nodes;                   /// vulkan_data_node array, all nodes in scene.
+  UT_array *cameras;                 /// vulkan_data_camera array, all cameras in scene
   bool dirty;                        /// True if scene data updated on CPU.
   data_key hash;                     /// Hash, used to prevent duplicates in asset database.
-} vulkan_scene_data;
+} vulkan_data_scene;
 
-vulkan_scene_data *vulkan_scene_data_create(UT_string *name);
-void vulkan_scene_data_destroy(vulkan_scene_data *sceneData);
+vulkan_data_scene *vulkan_data_scene_create(UT_string *name);
+void vulkan_data_scene_destroy(vulkan_data_scene *sceneData);
 
-data_key vulkan_scene_data_calculate_key(vulkan_scene_data *scene);
-void vulkan_scene_data_serialize(vulkan_scene_data *scene, data_asset_db *assetDb);
-void vulkan_scene_data_deserialize(vulkan_scene_data *scene, data_asset_db *assetDb, data_key key);
+data_key vulkan_data_scene_calculate_key(vulkan_data_scene *scene);
+void vulkan_data_scene_serialize(vulkan_data_scene *scene, data_asset_db *assetDb);
+void vulkan_data_scene_deserialize(vulkan_data_scene *scene, data_asset_db *assetDb, data_key key);
 
-vulkan_image_data *vulkan_scene_data_get_image_by_key(vulkan_scene_data *sceneData,
+vulkan_data_image *vulkan_data_scene_get_image_by_key(vulkan_data_scene *sceneData,
                                                       data_asset_db *assetDb, data_key key);
-vulkan_sampler_data *vulkan_scene_data_get_sampler_by_key(vulkan_scene_data *sceneData,
+vulkan_data_sampler *vulkan_data_scene_get_sampler_by_key(vulkan_data_scene *sceneData,
                                                           data_asset_db *assetDb, data_key key);
-vulkan_texture_data *vulkan_scene_data_get_texture_by_key(vulkan_scene_data *sceneData,
+vulkan_data_texture *vulkan_data_scene_get_texture_by_key(vulkan_data_scene *sceneData,
                                                           data_asset_db *assetDb, data_key key);
-vulkan_material_data *vulkan_scene_data_get_material_by_key(vulkan_scene_data *sceneData,
+vulkan_data_material *vulkan_data_scene_get_material_by_key(vulkan_data_scene *sceneData,
                                                             data_asset_db *assetDb, data_key key);
-vulkan_primitive_data *vulkan_scene_data_get_primitive_by_key(vulkan_scene_data *sceneData,
+vulkan_data_primitive *vulkan_data_scene_get_primitive_by_key(vulkan_data_scene *sceneData,
                                                               data_asset_db *assetDb, data_key key);
 
 /* asset pipeline */
-vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *sceneName,
+vulkan_data_scene *vulkan_data_scene_create_with_gltf_file(UT_string *sceneName,
                                                            UT_string *gltfPath);
-vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb,
+vulkan_data_scene *vulkan_data_scene_create_with_asset_db(data_asset_db *assetDb,
                                                           UT_string *sceneName);
 
-void vulkan_scene_data_debug_print(vulkan_scene_data *sceneData);
+void vulkan_data_scene_debug_print(vulkan_data_scene *sceneData);

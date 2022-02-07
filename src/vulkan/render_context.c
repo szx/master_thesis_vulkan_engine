@@ -350,9 +350,9 @@ void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config
   rctx->scene = NULL;
   vulkan_render_context_load_scene(rctx, sceneName);
   rctx->vks = vulkan_swap_chain_create(rctx->vkd);
-  vulkan_camera_data *camera = NULL;
+  vulkan_data_camera *camera = NULL;
   while ((camera = (utarray_next(rctx->scene->data->cameras, camera)))) {
-    vulkan_camera_data_update_aspect_ratio(camera, vulkan_swap_chain_get_aspect_ratio(rctx->vks));
+    vulkan_data_camera_update_aspect_ratio(camera, vulkan_swap_chain_get_aspect_ratio(rctx->vks));
   }
 
   rctx->pipeline = vulkan_pipeline_create(rctx->vks, rctx->scene);
@@ -403,9 +403,9 @@ void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx) {
   vulkan_swap_chain_destroy(rctx->vks);
 
   rctx->vks = vulkan_swap_chain_create(rctx->vkd);
-  vulkan_camera_data *camera = NULL;
+  vulkan_data_camera *camera = NULL;
   while ((camera = (utarray_next(rctx->scene->data->cameras, camera)))) {
-    vulkan_camera_data_update_aspect_ratio(camera, vulkan_swap_chain_get_aspect_ratio(rctx->vks));
+    vulkan_data_camera_update_aspect_ratio(camera, vulkan_swap_chain_get_aspect_ratio(rctx->vks));
   }
   rctx->pipeline = vulkan_pipeline_create(rctx->vks, rctx->scene);
   core_array_alloc(rctx->swapChainFrames, utarray_len(rctx->vks->swapChainImageViews));
@@ -567,7 +567,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
                           renderPass->pipelineLayout, 0, descriptorSetCount, descriptorSets, 0,
                           NULL);
 
-  vulkan_node_data *node = NULL;
+  vulkan_data_node *node = NULL;
   while ((node = (utarray_next(scene->data->nodes, node)))) {
     // TODO: Check if node should be culled.
     log_trace("draw node");
@@ -581,8 +581,8 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
       vkCmdPushConstants(frame->commandBuffer, renderPass->pipelineLayout, pushConstantStageFlags,
                          pushConstantOffset, sizeof(node->transform), pushConstantValuePtr);
     }
-    vulkan_mesh_data *mesh = &node->mesh;
-    vulkan_primitive_data *primitive = NULL;
+    vulkan_data_mesh *mesh = &node->mesh;
+    vulkan_data_primitive *primitive = NULL;
     while ((primitive = (utarray_next(mesh->primitives, primitive)))) {
       size_t bindingCount = vulkan_shader_info_get_binding_count(&renderPass->vertShader->info);
       assert(bindingCount == 1);
