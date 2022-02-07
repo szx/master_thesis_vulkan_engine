@@ -20,7 +20,12 @@ TEST gltf_loading() {
 
   ASSERT_STR_EQ(utstring_body(gltfSceneData->name), utstring_body(assetDbSceneData->name));
   ASSERT_EQ(gltfSceneData->dirty, assetDbSceneData->dirty);
-  ASSERT_EQ(utarray_len(gltfSceneData->objects), utarray_len(assetDbSceneData->objects));
+  size_t gltfObjectCount, assetDbObjectCount;
+  vulkan_data_object *gltfNode = NULL;
+  vulkan_data_object *assetDbNode = NULL;
+  DL_COUNT(gltfSceneData->objects, gltfNode, gltfObjectCount);
+  DL_COUNT(assetDbSceneData->objects, assetDbNode, assetDbObjectCount);
+  ASSERT_EQ(gltfObjectCount, assetDbObjectCount);
   ASSERT_EQ(utarray_len(gltfSceneData->cameras), utarray_len(assetDbSceneData->cameras));
   vulkan_data_primitive *gltfPrimitive = NULL;
   vulkan_data_primitive *assetDbPrimitive = NULL;
@@ -49,11 +54,11 @@ TEST gltf_loading() {
     ASSERT_EQ(gltfCamera->farZ, assetDbCamera->farZ);
   }
 
-  vulkan_data_object *assetDbNode = NULL;
-  while ((assetDbNode = (utarray_next(assetDbSceneData->objects, assetDbNode)))) {
-    vulkan_data_object *gltfNode = NULL;
+  assetDbNode = NULL;
+  DL_FOREACH(assetDbSceneData->objects, assetDbNode) {
+    gltfNode = NULL;
     bool foundCorrespondingNode = false;
-    while ((gltfNode = (utarray_next(gltfSceneData->objects, gltfNode)))) {
+    DL_FOREACH(gltfSceneData->objects, gltfNode) {
       if (gltfNode->hash.value == assetDbNode->hash.value) {
         foundCorrespondingNode = true;
         break;
@@ -61,6 +66,7 @@ TEST gltf_loading() {
     }
     ASSERT_EQ(foundCorrespondingNode, true);
     ASSERT_MEM_EQ(gltfNode->transform, assetDbNode->transform, sizeof(mat4));
+    ASSERT_EQ(utarray_len(gltfNode->children), utarray_len(assetDbNode->children));
     vulkan_data_mesh *gltfMesh = &gltfNode->mesh;
     vulkan_data_mesh *assetDbMesh = &assetDbNode->mesh;
     ASSERT_EQ(gltfMesh->hash.value, assetDbMesh->hash.value);

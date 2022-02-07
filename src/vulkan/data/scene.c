@@ -185,15 +185,9 @@ vulkan_data_primitive *parse_cgltf_primitive(vulkan_data_scene *sceneData,
   assert(cgltfPrimitive->has_draco_mesh_compression == false);
   assert(cgltfPrimitive->targets_count == 0);
   assert(cgltfPrimitive->mappings_count == 0);
-  assert(cgltfPrimitive->indices != NULL);
 
   VkPrimitiveTopology topology = cgltf_primitive_type_vulkan_topology(cgltfPrimitive->type);
   cgltf_accessor *cgltfIndices = cgltfPrimitive->indices;
-  vulkan_index_type indexType = index_stride_to_index_type(cgltfIndices->stride);
-  if (indexType != vulkan_index_type_uint32) {
-    indexType = vulkan_index_type_uint32;
-  }
-  uint32_t indexCount = cgltfIndices->count;
   vulkan_attribute_type vertexAttributes = 0;
   uint32_t vertexCount = 0;
   for (size_t attributeIdx = 0; attributeIdx < cgltfPrimitive->attributes_count; attributeIdx++) {
@@ -216,11 +210,18 @@ vulkan_data_primitive *parse_cgltf_primitive(vulkan_data_scene *sceneData,
   primitive->vertexCount = vertexCount;
 
   // read indices
-  utarray_resize(primitive->indices, indexCount);
-  for (size_t i = 0; i < utarray_len(primitive->indices); i++) {
-    size_t indexValue = cgltf_accessor_read_index(cgltfIndices, i);
-    void *outValue = utarray_eltptr(primitive->indices, i);
-    *(uint32_t *)outValue = indexValue;
+  if (cgltfIndices != NULL) {
+    vulkan_index_type indexType = index_stride_to_index_type(cgltfIndices->stride);
+    if (indexType != vulkan_index_type_uint32) {
+      indexType = vulkan_index_type_uint32;
+    }
+    uint32_t indexCount = cgltfIndices->count;
+    utarray_resize(primitive->indices, indexCount);
+    for (size_t i = 0; i < utarray_len(primitive->indices); i++) {
+      size_t indexValue = cgltf_accessor_read_index(cgltfIndices, i);
+      void *outValue = utarray_eltptr(primitive->indices, i);
+      *(uint32_t *)outValue = indexValue;
+    }
   }
 
   // read vertex attributes
@@ -277,6 +278,10 @@ vulkan_data_mesh parse_cgltf_mesh(vulkan_data_scene *sceneData, cgltf_mesh *cglt
   vulkan_data_mesh mesh;
   vulkan_data_mesh_init(&mesh, sceneData);
 
+  if (cgltfMesh == NULL) {
+    return mesh;
+  }
+
   for (size_t primitiveIdx = 0; primitiveIdx < cgltfMesh->primitives_count; primitiveIdx++) {
     vulkan_data_primitive *primitive =
         parse_cgltf_primitive(sceneData, &cgltfMesh->primitives[primitiveIdx]);
@@ -288,25 +293,34 @@ vulkan_data_mesh parse_cgltf_mesh(vulkan_data_scene *sceneData, cgltf_mesh *cglt
   return mesh;
 }
 
-vulkan_data_object parse_cgltf_node(vulkan_data_scene *sceneData, cgltf_node *cgltfNode) {
+vulkan_data_object *parse_cgltf_node(vulkan_data_scene *sceneData, cgltf_node *cgltfNode) {
   assert(cgltfNode->extras.start_offset == 0 && cgltfNode->extras.end_offset == 0);
   assert(cgltfNode->camera == NULL);
   assert(cgltfNode->light == NULL);
   assert(cgltfNode->weights_count == 0);
-  assert(cgltfNode->children_count == 0);
   cgltf_mesh *cgltfMesh = cgltfNode->mesh;
-  assert(cgltfMesh != NULL);
-  assert(cgltfMesh->extras.start_offset == 0 && cgltfMesh->extras.end_offset == 0);
-  assert(cgltfMesh->target_names_count == 0);
 
-  vulkan_data_object object;
-  vulkan_data_object_init(&object, sceneData);
+  vulkan_data_object *object = core_alloc(sizeof(vulkan_data_object));
+  vulkan_data_object_init(object, sceneData);
 
-  object.mesh = parse_cgltf_mesh(sceneData, cgltfMesh);
+  object->mesh = parse_cgltf_mesh(sceneData, cgltfMesh);
   // TODO: Animation, will probably require cgltf_node_transform_local().
-  cgltf_node_transform_world(cgltfNode, (float *)object.transform);
-  object.hash = vulkan_data_object_calculate_key(&object);
+  cgltf_node_transform_world(cgltfNode, (float *)object->transform);
+  for (size_t childIdx = 0; childIdx < cgltfNode->children_count; childIdx++) {
+    vulkan_data_object *child = parse_cgltf_node(sceneData, cgltfNode->children[childIdx]);
+    utarray_push_back(object->children, &child);
+  }
+  object->hash = vulkan_data_object_calculate_key(object);
 
+  vulkan_data_object *existingObject =
+      vulkan_data_scene_get_object_by_key(sceneData, NULL, object->hash);
+  if (existingObject != NULL) {
+    core_free(object);
+    return existingObject;
+  }
+
+  log_debug("adding new object");
+  DL_APPEND(sceneData->objects, object);
   return object;
 }
 
@@ -331,8 +345,8 @@ vulkan_data_scene *parse_cgltf_scene(UT_string *name, UT_string *path) {
 
   // parse objects
   for (size_t objectIdx = 0; objectIdx < cgltfScene->nodes_count; objectIdx++) {
-    vulkan_data_object object = parse_cgltf_node(sceneData, cgltfScene->nodes[objectIdx]);
-    utarray_push_back(sceneData->objects, &object);
+    vulkan_data_object *object = parse_cgltf_node(sceneData, cgltfScene->nodes[objectIdx]);
+    DL_APPEND(sceneData->objects, object);
   }
 
   // parse cameras
@@ -371,7 +385,7 @@ void vulkan_data_scene_serialize(vulkan_data_scene *sceneData, data_asset_db *as
   UT_array *objectKeys = NULL;
   utarray_alloc(objectKeys, sizeof(data_key));
   vulkan_data_object *object = NULL;
-  while ((object = (utarray_next(sceneData->objects, object)))) {
+  DL_FOREACH(sceneData->objects, object) {
     // vulkan_data_object_debug_print(object);
     vulkan_data_object_serialize(object, assetDb);
     utarray_push_back(objectKeys, &object->hash);
@@ -402,10 +416,10 @@ void vulkan_data_scene_deserialize(vulkan_data_scene *sceneData, data_asset_db *
   data_key *objectKey = NULL;
   while ((objectKey = (utarray_next(objectKeyArray.values, objectKey)))) {
     /* object data */
-    vulkan_data_object object;
-    vulkan_data_object_init(&object, sceneData);
-    vulkan_data_object_deserialize(&object, assetDb, *objectKey);
-    utarray_push_back(sceneData->objects, &object);
+    vulkan_data_object *object = core_alloc(sizeof(vulkan_data_object));
+    vulkan_data_object_init(object, sceneData);
+    vulkan_data_object_deserialize(object, assetDb, *objectKey);
+    DL_APPEND(sceneData->objects, object);
   }
   data_key_array_deinit(&objectKeyArray);
 }
@@ -445,8 +459,10 @@ vulkan_data_scene *vulkan_data_scene_create(UT_string *name) {
 
   sceneData->primitives = NULL;
 
-  utarray_alloc(sceneData->objects, sizeof(vulkan_data_object));
+  sceneData->objects = NULL;
+
   utarray_alloc(sceneData->cameras, sizeof(vulkan_data_camera));
+
   sceneData->dirty = true;
   sceneData->hash = vulkan_data_scene_calculate_key(sceneData);
   return sceneData;
@@ -486,11 +502,11 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
     core_free(primitive);
   }
 
-  vulkan_data_object *object = NULL;
-  while ((object = (utarray_next(sceneData->objects, object)))) {
+  vulkan_data_object *object, *tempObject;
+  DL_FOREACH_SAFE(sceneData->objects, object, tempObject) {
     vulkan_data_object_deinit(object);
+    core_free(object);
   }
-  utarray_free(sceneData->objects);
 
   vulkan_data_camera *camera = NULL;
   while ((camera = (utarray_next(sceneData->cameras, camera)))) {
@@ -527,6 +543,7 @@ GET_OBJECT_BY_KEY(sampler)
 GET_OBJECT_BY_KEY(texture, sceneData)
 GET_OBJECT_BY_KEY(material, sceneData)
 GET_OBJECT_BY_KEY(primitive, sceneData)
+GET_OBJECT_BY_KEY(object, sceneData)
 
 vulkan_data_scene *vulkan_data_scene_create_with_gltf_file(UT_string *sceneName,
                                                            UT_string *gltfPath) {
@@ -548,7 +565,5 @@ vulkan_data_scene *vulkan_data_scene_create_with_asset_db(data_asset_db *assetDb
 void vulkan_data_scene_debug_print(vulkan_data_scene *sceneData) {
   log_debug("SCENE_DATA:\n");
   vulkan_data_object *object = NULL;
-  while ((object = (utarray_next(sceneData->objects, object)))) {
-    vulkan_data_object_debug_print(object);
-  }
+  DL_FOREACH(sceneData->objects, object) { vulkan_data_object_debug_print(object); }
 }

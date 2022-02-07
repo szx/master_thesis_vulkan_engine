@@ -42,7 +42,6 @@ void vulkan_data_mesh_deserialize(vulkan_data_mesh *mesh, data_asset_db *assetDb
 
   data_key_array primitiveHashArray =
       data_asset_db_select_mesh_primitives_key_array(assetDb, mesh->hash);
-
   data_key *primitiveKey = NULL;
   while ((primitiveKey = (utarray_next(primitiveHashArray.values, primitiveKey)))) {
     vulkan_data_primitive *primitive =

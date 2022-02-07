@@ -17,8 +17,8 @@ typedef struct vulkan_data_scene {
   vulkan_data_sampler *samplers;     /// Doubly-linked list, all samplers used by scene.
   vulkan_data_texture *textures;     /// Doubly-linked list, all textures used by scene.
   vulkan_data_material *materials;   /// Doubly-linked list, all materials used by scene.
-  vulkan_data_primitive *primitives; /// Double-linked list, all primitives used by scene.
-  UT_array *objects;                 /// vulkan_data_object array, all objects in scene.
+  vulkan_data_primitive *primitives; /// Doubly-linked list, all primitives used by scene.
+  vulkan_data_object *objects;       /// Doubly-linked list, all objects in scene.
   UT_array *cameras;                 /// vulkan_data_camera array, all cameras in scene
   bool dirty;                        /// True if scene data updated on CPU.
   data_key hash;                     /// Hash, used to prevent duplicates in asset database.
@@ -41,6 +41,8 @@ vulkan_data_material *vulkan_data_scene_get_material_by_key(vulkan_data_scene *s
                                                             data_asset_db *assetDb, data_key key);
 vulkan_data_primitive *vulkan_data_scene_get_primitive_by_key(vulkan_data_scene *sceneData,
                                                               data_asset_db *assetDb, data_key key);
+vulkan_data_object *vulkan_data_scene_get_object_by_key(vulkan_data_scene *sceneData,
+                                                        data_asset_db *assetDb, data_key key);
 
 /* asset pipeline */
 vulkan_data_scene *vulkan_data_scene_create_with_gltf_file(UT_string *sceneName,

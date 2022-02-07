@@ -6,6 +6,8 @@ void vulkan_data_object_init(vulkan_data_object *object, vulkan_data_scene *scen
   glm_mat4_identity(object->transform);
   utarray_alloc(object->children, sizeof(vulkan_data_object *));
   data_key_init(&object->hash, 0);
+  object->prev = NULL;
+  object->next = NULL;
 }
 
 void vulkan_data_object_deinit(vulkan_data_object *object) {
@@ -62,6 +64,16 @@ void vulkan_data_object_deserialize(vulkan_data_object *object, data_asset_db *a
   data_key meshHash = data_asset_db_select_object_mesh_key(assetDb, object->hash);
   vulkan_data_mesh_init(&object->mesh, object->sceneData);
   vulkan_data_mesh_deserialize(&object->mesh, assetDb, meshHash);
+
+  data_key_array childrenHashArray =
+      data_asset_db_select_object_children_key_array(assetDb, object->hash);
+  data_key *childKey = NULL;
+  while ((childKey = (utarray_next(childrenHashArray.values, childKey)))) {
+    vulkan_data_object *child =
+        vulkan_data_scene_get_object_by_key(object->sceneData, assetDb, *childKey);
+    utarray_push_back(object->children, &child);
+  }
+  data_key_array_deinit(&childrenHashArray);
 }
 
 void vulkan_data_object_debug_print(vulkan_data_object *object) {

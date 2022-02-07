@@ -16,6 +16,7 @@ typedef struct vulkan_data_object {
   UT_array *children; /// vulkan_data_object array
 
   data_key hash; /// Hash, used to prevent duplicates in asset database.
+  struct vulkan_data_object *prev, *next;
 } vulkan_data_object;
 
 void vulkan_data_object_init(vulkan_data_object *object, vulkan_data_scene *sceneData);

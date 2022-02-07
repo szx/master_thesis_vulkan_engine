@@ -569,7 +569,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_render_data *sc
                           NULL);
 
   vulkan_data_object *object = NULL;
-  while ((object = (utarray_next(scene->data->objects, object)))) {
+  DL_FOREACH(scene->data->objects, object) {
     // TODO: Check if object should be culled.
     log_trace("draw object");
     {
