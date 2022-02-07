@@ -1,8 +1,8 @@
 /* Mesh state.
  * Represents a group of primitives.
  * Used to:
- * store all geometry of one object
- * calculate culling boundaries of objects
+ * store all geometry of one object,
+ * calculate culling boundaries of objects.
  * TODO: skinning
  */
 #pragma once

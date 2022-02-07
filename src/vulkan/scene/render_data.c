@@ -2,24 +2,25 @@
 
 vulkan_scene_render_data *
 vulkan_scene_render_data_create(data_asset_db *assetDb, vulkan_device *vkd, UT_string *sceneName) {
-  vulkan_scene_render_data *renderData = core_alloc(sizeof(vulkan_scene_render_data));
-  renderData->assetDb = assetDb;
-  renderData->vkd = vkd;
-  renderData->data = vulkan_data_scene_create_with_asset_db(renderData->assetDb, sceneName);
-  renderData->geometryBuffer = vulkan_geometry_buffer_create();
-  renderData->uniformBuffer = vulkan_uniform_buffer_create(vkd);
-  vulkan_scene_render_data_build_geometry_buffer(renderData);
-  return renderData;
+  vulkan_scene_render_data *sceneRenderData = core_alloc(sizeof(vulkan_scene_render_data));
+  sceneRenderData->assetDb = assetDb;
+  sceneRenderData->vkd = vkd;
+  sceneRenderData->data =
+      vulkan_data_scene_create_with_asset_db(sceneRenderData->assetDb, sceneName);
+  sceneRenderData->geometryBuffer = vulkan_geometry_buffer_create();
+  sceneRenderData->uniformBuffer = vulkan_uniform_buffer_create(vkd);
+  vulkan_scene_render_data_build_geometry_buffer(sceneRenderData);
+  return sceneRenderData;
 }
 
-void vulkan_scene_render_data_destroy(vulkan_scene_render_data *renderData) {
-  vulkan_data_scene_destroy(renderData->data);
-  vulkan_uniform_buffer_destroy(renderData->uniformBuffer);
-  vulkan_geometry_buffer_destroy(renderData->geometryBuffer);
-  core_free(renderData);
+void vulkan_scene_render_data_destroy(vulkan_scene_render_data *sceneRenderData) {
+  vulkan_data_scene_destroy(sceneRenderData->data);
+  vulkan_uniform_buffer_destroy(sceneRenderData->uniformBuffer);
+  vulkan_geometry_buffer_destroy(sceneRenderData->geometryBuffer);
+  core_free(sceneRenderData);
 }
 
-void vulkan_scene_render_data_build_geometry_buffer(vulkan_scene_render_data *renderData) {
+void vulkan_scene_render_data_build_geometry_buffer(vulkan_scene_render_data *sceneRenderData) {
   // HIRO return after research into GPU-driven rendering.
   // TODO: Overlapping index buffers and vertex streams.
   // TODO: Free node resources after building scene.
@@ -72,23 +73,23 @@ void vulkan_scene_render_data_build_geometry_buffer(vulkan_scene_render_data *re
   panic("vulkan_scene_build_geometry_buffer in not implemented"); // HIRO build buffers
 }
 
-void vulkan_scene_render_data_update_data(vulkan_scene_render_data *renderData) {
+void vulkan_scene_render_data_update_data(vulkan_scene_render_data *sceneRenderData) {
   vulkan_data_camera *camera = NULL;
-  while ((camera = (utarray_next(renderData->data->cameras, camera)))) {
-    vulkan_uniform_buffer_update_with_camera(renderData->uniformBuffer, camera);
+  while ((camera = (utarray_next(sceneRenderData->data->cameras, camera)))) {
+    vulkan_uniform_buffer_update_with_camera(sceneRenderData->uniformBuffer, camera);
   }
 
-  renderData->data->dirty = renderData->uniformBuffer->dirty;
+  sceneRenderData->data->dirty = sceneRenderData->uniformBuffer->dirty;
 }
 
-void vulkan_scene_render_data_send_to_device(vulkan_scene_render_data *renderData) {
-  assert(!renderData->data->dirty);
-  vulkan_geometry_buffer_send_to_device(renderData->vkd, renderData->geometryBuffer);
-  vulkan_uniform_buffer_send_to_device(renderData->uniformBuffer);
+void vulkan_scene_render_data_send_to_device(vulkan_scene_render_data *sceneRenderData) {
+  assert(!sceneRenderData->data->dirty);
+  vulkan_geometry_buffer_send_to_device(sceneRenderData->vkd, sceneRenderData->geometryBuffer);
+  vulkan_uniform_buffer_send_to_device(sceneRenderData->uniformBuffer);
 }
 
-void vulkan_scene_render_data_debug_print(vulkan_scene_render_data *renderData) {
+void vulkan_scene_render_data_debug_print(vulkan_scene_render_data *sceneRenderData) {
   log_debug("SCENE:\n");
-  log_debug("geometryBuffer: %d\n", utarray_len(renderData->geometryBuffer->data));
-  vulkan_data_scene_debug_print(renderData->data);
+  log_debug("geometryBuffer: %d\n", utarray_len(sceneRenderData->geometryBuffer->data));
+  vulkan_data_scene_debug_print(sceneRenderData->data);
 }

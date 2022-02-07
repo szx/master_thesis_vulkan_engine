@@ -38,13 +38,13 @@ vulkan_render_pass *vulkan_render_pass_create(vulkan_pipeline *pipeline,
                                               vulkan_render_pass_type type);
 void vulkan_render_pass_destroy(vulkan_render_pass *renderPass);
 /// Validate render pass.
-void vulkan_render_pass_validate(vulkan_render_pass *renderPass, vulkan_scene *scene);
+void vulkan_render_pass_validate(vulkan_render_pass *renderPass, vulkan_scene_render_data *scene);
 
 /// Describes rendering pipeline.
 typedef struct vulkan_pipeline {
-  vulkan_device *vkd;     /// vulkan_device pointer.
-  vulkan_swap_chain *vks; /// vulkan_swap_chain pointer.
-  vulkan_scene *scene;    /// parent scene pointer
+  vulkan_device *vkd;              /// vulkan_device pointer.
+  vulkan_swap_chain *vks;          /// vulkan_swap_chain pointer.
+  vulkan_scene_render_data *scene; /// parent scene pointer
 
   // TODO create descriptors using scene
   VkDescriptorPool descriptorPool;
@@ -56,7 +56,7 @@ typedef struct vulkan_pipeline {
   // TODO: Descriptors, attachments. (store in vulkan_swap_chain_frame?)
 } vulkan_pipeline;
 
-vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_scene *scene);
+vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_scene_render_data *scene);
 void vulkan_pipeline_destroy(vulkan_pipeline *pipeline);
 
 /// Manages frame-specific resources (command buffer, framebuffer) used to
@@ -86,7 +86,7 @@ typedef struct vulkan_render_context {
   vulkan_swap_chain *vks;                              /// Vulkan swap chain.
   vulkan_pipeline *pipeline;                           /// Rendering pipeline.
   core_array(vulkan_swap_chain_frame) swapChainFrames; /// Swap chain frames.
-  vulkan_scene *scene;                                 /// Vulkan scene.
+  vulkan_scene_render_data *scene;                     /// Vulkan scene.
   size_t currentFrameInFlight;                         /// Current frame rendered in flight.
   /// Semaphore signaling that frame has been acquired from swap chain and is ready for rendering.
   VkSemaphore imageAvailableSemaphores[MAX_FRAMES_IN_FLIGHT];
@@ -119,10 +119,11 @@ void vulkan_render_context_draw_frame(vulkan_render_context *rctx);
 /// Records frame command buffer for scene using rendering pipeline.
 /// Calls vulkan_render_pass_record_frame_command_buffer() for each render pass in rendering
 /// pipeline.
-void vulkan_pipeline_record_frame_command_buffer(vulkan_scene *scene, vulkan_pipeline *pipeline,
+void vulkan_pipeline_record_frame_command_buffer(vulkan_scene_render_data *scene,
+                                                 vulkan_pipeline *pipeline,
                                                  vulkan_swap_chain_frame *frame);
 
 /// Records frame command buffer for scene using single render pass of rendering pipeline.
-void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
+void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_render_data *scene,
                                                     vulkan_render_pass *renderPass,
                                                     vulkan_swap_chain_frame *frame);

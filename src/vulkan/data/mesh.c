@@ -23,16 +23,15 @@ data_key vulkan_data_mesh_calculate_key(vulkan_data_mesh *mesh) {
 
 void vulkan_data_mesh_serialize(vulkan_data_mesh *mesh, data_asset_db *assetDb) {
   mesh->hash = vulkan_data_mesh_calculate_key(mesh);
+
   UT_array *primitiveKeys = NULL;
   utarray_alloc(primitiveKeys, sizeof(data_key));
-
   vulkan_data_primitive **primitiveIt = NULL;
   while ((primitiveIt = (utarray_next(mesh->primitives, primitiveIt)))) {
     vulkan_data_primitive *primitive = *primitiveIt;
     vulkan_data_primitive_serialize(primitive, assetDb);
     utarray_push_back(primitiveKeys, &primitive->hash);
   }
-
   data_asset_db_insert_mesh_primitives_key_array(assetDb, mesh->hash,
                                                  data_key_array_temp(primitiveKeys));
   utarray_free(primitiveKeys);

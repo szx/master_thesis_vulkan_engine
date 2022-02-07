@@ -1,12 +1,11 @@
 /* Vulkan scene graph.
- * Used to build scene tree.
+ * Contains scene nodes created from scene data and added/removed by user.
+ * Used to:
+ * build and synchronize scene tree.
  */
 #pragma once
 
 #include "../data/scene.h"
-#include "../device.h"
-#include "../functions.h"
-#include "../geometry_buffer.h"
 
 // HIRO SceneGraph, SceneTree, ShapeList, Batches?
 typedef struct vulkan_scene_graph {

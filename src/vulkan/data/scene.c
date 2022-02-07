@@ -288,7 +288,7 @@ vulkan_data_mesh parse_cgltf_mesh(vulkan_data_scene *sceneData, cgltf_mesh *cglt
   return mesh;
 }
 
-vulkan_data_object parse_cgltf_object(vulkan_data_scene *sceneData, cgltf_object *cgltfNode) {
+vulkan_data_object parse_cgltf_node(vulkan_data_scene *sceneData, cgltf_node *cgltfNode) {
   assert(cgltfNode->extras.start_offset == 0 && cgltfNode->extras.end_offset == 0);
   assert(cgltfNode->camera == NULL);
   assert(cgltfNode->light == NULL);
@@ -303,8 +303,8 @@ vulkan_data_object parse_cgltf_object(vulkan_data_scene *sceneData, cgltf_object
   vulkan_data_object_init(&object, sceneData);
 
   object.mesh = parse_cgltf_mesh(sceneData, cgltfMesh);
-  // TODO: Animation, will probably require cgltf_object_transform_local().
-  cgltf_object_transform_world(cgltfNode, (float *)object.transform);
+  // TODO: Animation, will probably require cgltf_node_transform_local().
+  cgltf_node_transform_world(cgltfNode, (float *)object.transform);
   object.hash = vulkan_data_object_calculate_key(&object);
 
   return object;
@@ -330,8 +330,8 @@ vulkan_data_scene *parse_cgltf_scene(UT_string *name, UT_string *path) {
   utstring_concat(sceneData->path, path);
 
   // parse objects
-  for (size_t objectIdx = 0; objectIdx < cgltfScene->objects_count; objectIdx++) {
-    vulkan_data_object object = parse_cgltf_object(sceneData, cgltfScene->objects[objectIdx]);
+  for (size_t objectIdx = 0; objectIdx < cgltfScene->nodes_count; objectIdx++) {
+    vulkan_data_object object = parse_cgltf_node(sceneData, cgltfScene->nodes[objectIdx]);
     utarray_push_back(sceneData->objects, &object);
   }
 

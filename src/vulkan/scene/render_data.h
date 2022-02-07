@@ -21,8 +21,8 @@ typedef struct vulkan_scene_render_data {
 } vulkan_scene_render_data;
 
 // HIRO sceneName to sceneData/sceneGraph/sceneTree/sceneObjectList/sceneBatches
-vulkan_scene_render_data *vulkan_scene_graph_create(data_asset_db *assetDb, vulkan_device *vkd,
-                                                    UT_string *sceneName);
+vulkan_scene_render_data *vulkan_scene_render_data_create(data_asset_db *assetDb,
+                                                          vulkan_device *vkd, UT_string *sceneName);
 void vulkan_scene_render_data_destroy(vulkan_scene_render_data *renderData);
 
 void vulkan_scene_render_data_build_geometry_buffer(

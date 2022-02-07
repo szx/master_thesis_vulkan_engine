@@ -13,6 +13,7 @@
 #include "geometry_buffer.h"
 #include "render_context.h"
 #include "scene/graph.h"
+#include "scene/node.h"
 #include "scene/render_data.h"
 #include "shader.h"
 #include "swap_chain.h"
