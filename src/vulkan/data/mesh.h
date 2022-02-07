@@ -1,8 +1,8 @@
 /* Mesh state.
  * Represents a group of primitives.
  * Used to:
- * store all geometry of one node
- * cull nodes
+ * store all geometry of one object
+ * calculate culling boundaries of objects
  * TODO: skinning
  */
 #pragma once
@@ -15,6 +15,7 @@ typedef struct vulkan_data_scene vulkan_data_scene;
 typedef struct vulkan_data_mesh {
   vulkan_data_scene *sceneData; // vulkan_data_scene pointer
   UT_array *primitives;         /// vulkan_data_primitive_index array.
+
   data_key hash;                /// Hash, used to prevent duplicates in asset database.
 } vulkan_data_mesh;
 

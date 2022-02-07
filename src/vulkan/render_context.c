@@ -567,7 +567,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene *scene,
                           renderPass->pipelineLayout, 0, descriptorSetCount, descriptorSets, 0,
                           NULL);
 
-  vulkan_data_node *node = NULL;
+  vulkan_data_object *object = NULL;
   while ((node = (utarray_next(scene->data->nodes, node)))) {
     // TODO: Check if node should be culled.
     log_trace("draw node");

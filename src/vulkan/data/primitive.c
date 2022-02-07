@@ -28,7 +28,7 @@ data_key vulkan_data_primitive_calculate_key(vulkan_data_primitive *primitive) {
   hash_t value;
   // TODO: Currently primitive hash is produced using all topology + indices + vertex attributes.
   //       This eliminates duplicated primitives with EXACTLY the same structure, but still
-  //       results in e.g. nodes with same vertex attributes but different indices are stored as
+  //       results in e.g. objects with same vertex attributes but different indices are stored as
   //       separate entries in asset database, even if they share vertex attributes.
   //       It could be optimized with separate hashes and tables for each vertex attribute and
   //       foreign keys in primitive table. Not sure if its worth additional work.

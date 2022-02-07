@@ -49,9 +49,9 @@ TEST gltf_loading() {
     ASSERT_EQ(gltfCamera->farZ, assetDbCamera->farZ);
   }
 
-  vulkan_data_node *assetDbNode = NULL;
+  vulkan_data_object *assetDbNode = NULL;
   while ((assetDbNode = (utarray_next(assetDbSceneData->nodes, assetDbNode)))) {
-    vulkan_data_node *gltfNode = NULL;
+    vulkan_data_object *gltfNode = NULL;
     bool foundCorrespondingNode = false;
     while ((gltfNode = (utarray_next(gltfSceneData->nodes, gltfNode)))) {
       if (gltfNode->hash.value == assetDbNode->hash.value) {

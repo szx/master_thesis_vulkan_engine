@@ -18,7 +18,7 @@ typedef struct vulkan_data_scene {
   vulkan_data_texture *textures;     /// Doubly-linked list, all textures used by scene.
   vulkan_data_material *materials;   /// Doubly-linked list, all materials used by scene.
   vulkan_data_primitive *primitives; /// Double-linked list, all primitives used by scene.
-  UT_array *nodes;                   /// vulkan_data_node array, all nodes in scene.
+  UT_array *objects;                 /// vulkan_data_object array, all objects in scene.
   UT_array *cameras;                 /// vulkan_data_camera array, all cameras in scene
   bool dirty;                        /// True if scene data updated on CPU.
   data_key hash;                     /// Hash, used to prevent duplicates in asset database.

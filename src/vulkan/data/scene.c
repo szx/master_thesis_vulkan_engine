@@ -288,7 +288,7 @@ vulkan_data_mesh parse_cgltf_mesh(vulkan_data_scene *sceneData, cgltf_mesh *cglt
   return mesh;
 }
 
-vulkan_data_node parse_cgltf_node(vulkan_data_scene *sceneData, cgltf_node *cgltfNode) {
+vulkan_data_object parse_cgltf_object(vulkan_data_scene *sceneData, cgltf_object *cgltfNode) {
   assert(cgltfNode->extras.start_offset == 0 && cgltfNode->extras.end_offset == 0);
   assert(cgltfNode->camera == NULL);
   assert(cgltfNode->light == NULL);
@@ -299,15 +299,15 @@ vulkan_data_node parse_cgltf_node(vulkan_data_scene *sceneData, cgltf_node *cglt
   assert(cgltfMesh->extras.start_offset == 0 && cgltfMesh->extras.end_offset == 0);
   assert(cgltfMesh->target_names_count == 0);
 
-  vulkan_data_node node;
-  vulkan_data_node_init(&node, sceneData);
+  vulkan_data_object object;
+  vulkan_data_object_init(&object, sceneData);
 
-  node.mesh = parse_cgltf_mesh(sceneData, cgltfMesh);
-  // TODO: Animation, will probably require cgltf_node_transform_local().
-  cgltf_node_transform_world(cgltfNode, (float *)node.transform);
-  node.hash = vulkan_data_node_calculate_key(&node);
+  object.mesh = parse_cgltf_mesh(sceneData, cgltfMesh);
+  // TODO: Animation, will probably require cgltf_object_transform_local().
+  cgltf_object_transform_world(cgltfNode, (float *)object.transform);
+  object.hash = vulkan_data_object_calculate_key(&object);
 
-  return node;
+  return object;
 }
 
 vulkan_data_scene *parse_cgltf_scene(UT_string *name, UT_string *path) {
@@ -329,10 +329,10 @@ vulkan_data_scene *parse_cgltf_scene(UT_string *name, UT_string *path) {
   vulkan_data_scene *sceneData = vulkan_data_scene_create(name);
   utstring_concat(sceneData->path, path);
 
-  // parse nodes
-  for (size_t nodeIdx = 0; nodeIdx < cgltfScene->nodes_count; nodeIdx++) {
-    vulkan_data_node node = parse_cgltf_node(sceneData, cgltfScene->nodes[nodeIdx]);
-    utarray_push_back(sceneData->nodes, &node);
+  // parse objects
+  for (size_t objectIdx = 0; objectIdx < cgltfScene->objects_count; objectIdx++) {
+    vulkan_data_object object = parse_cgltf_object(sceneData, cgltfScene->objects[objectIdx]);
+    utarray_push_back(sceneData->objects, &object);
   }
 
   // parse cameras
@@ -368,18 +368,18 @@ void vulkan_data_scene_serialize(vulkan_data_scene *sceneData, data_asset_db *as
                                                data_key_array_temp(cameraKeys));
   utarray_free(cameraKeys);
 
-  UT_array *nodeKeys = NULL;
-  utarray_alloc(nodeKeys, sizeof(data_key));
-  vulkan_data_node *node = NULL;
-  while ((node = (utarray_next(sceneData->nodes, node)))) {
-    // vulkan_data_node_debug_print(node);
-    vulkan_data_node_serialize(node, assetDb);
-    utarray_push_back(nodeKeys, &node->hash);
+  UT_array *objectKeys = NULL;
+  utarray_alloc(objectKeys, sizeof(data_key));
+  vulkan_data_object *object = NULL;
+  while ((object = (utarray_next(sceneData->objects, object)))) {
+    // vulkan_data_object_debug_print(object);
+    vulkan_data_object_serialize(object, assetDb);
+    utarray_push_back(objectKeys, &object->hash);
   }
   data_asset_db_insert_scene_name_text(assetDb, sceneData->hash, (data_text){sceneData->name});
-  data_asset_db_insert_scene_nodes_key_array(assetDb, sceneData->hash,
-                                             data_key_array_temp(nodeKeys));
-  utarray_free(nodeKeys);
+  data_asset_db_insert_scene_objects_key_array(assetDb, sceneData->hash,
+                                               data_key_array_temp(objectKeys));
+  utarray_free(objectKeys);
 }
 
 void vulkan_data_scene_deserialize(vulkan_data_scene *sceneData, data_asset_db *assetDb,
@@ -388,8 +388,8 @@ void vulkan_data_scene_deserialize(vulkan_data_scene *sceneData, data_asset_db *
 
   data_key_array cameraKeyArray =
       data_asset_db_select_scene_cameras_key_array(assetDb, sceneData->hash);
-  data_key_array nodeKeyArray =
-      data_asset_db_select_scene_nodes_key_array(assetDb, sceneData->hash);
+  data_key_array objectKeyArray =
+      data_asset_db_select_scene_objects_key_array(assetDb, sceneData->hash);
 
   data_key *cameraHash = NULL;
   while ((cameraHash = (utarray_next(cameraKeyArray.values, cameraHash)))) {
@@ -399,15 +399,15 @@ void vulkan_data_scene_deserialize(vulkan_data_scene *sceneData, data_asset_db *
     utarray_push_back(sceneData->cameras, &camera);
   }
 
-  data_key *nodeKey = NULL;
-  while ((nodeKey = (utarray_next(nodeKeyArray.values, nodeKey)))) {
-    /* node data */
-    vulkan_data_node node;
-    vulkan_data_node_init(&node, sceneData);
-    vulkan_data_node_deserialize(&node, assetDb, *nodeKey);
-    utarray_push_back(sceneData->nodes, &node);
+  data_key *objectKey = NULL;
+  while ((objectKey = (utarray_next(objectKeyArray.values, objectKey)))) {
+    /* object data */
+    vulkan_data_object object;
+    vulkan_data_object_init(&object, sceneData);
+    vulkan_data_object_deserialize(&object, assetDb, *objectKey);
+    utarray_push_back(sceneData->objects, &object);
   }
-  data_key_array_deinit(&nodeKeyArray);
+  data_key_array_deinit(&objectKeyArray);
 }
 
 vulkan_data_scene *vulkan_data_scene_create(UT_string *name) {
@@ -445,7 +445,7 @@ vulkan_data_scene *vulkan_data_scene_create(UT_string *name) {
 
   sceneData->primitives = NULL;
 
-  utarray_alloc(sceneData->nodes, sizeof(vulkan_data_node));
+  utarray_alloc(sceneData->objects, sizeof(vulkan_data_object));
   utarray_alloc(sceneData->cameras, sizeof(vulkan_data_camera));
   sceneData->dirty = true;
   sceneData->hash = vulkan_data_scene_calculate_key(sceneData);
@@ -486,11 +486,11 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
     core_free(primitive);
   }
 
-  vulkan_data_node *node = NULL;
-  while ((node = (utarray_next(sceneData->nodes, node)))) {
-    vulkan_data_node_deinit(node);
+  vulkan_data_object *object = NULL;
+  while ((object = (utarray_next(sceneData->objects, object)))) {
+    vulkan_data_object_deinit(object);
   }
-  utarray_free(sceneData->nodes);
+  utarray_free(sceneData->objects);
 
   vulkan_data_camera *camera = NULL;
   while ((camera = (utarray_next(sceneData->cameras, camera)))) {
@@ -547,8 +547,8 @@ vulkan_data_scene *vulkan_data_scene_create_with_asset_db(data_asset_db *assetDb
 
 void vulkan_data_scene_debug_print(vulkan_data_scene *sceneData) {
   log_debug("SCENE_DATA:\n");
-  vulkan_data_node *node = NULL;
-  while ((node = (utarray_next(sceneData->nodes, node)))) {
-    vulkan_data_node_debug_print(node);
+  vulkan_data_object *object = NULL;
+  while ((object = (utarray_next(sceneData->objects, object)))) {
+    vulkan_data_object_debug_print(object);
   }
 }
