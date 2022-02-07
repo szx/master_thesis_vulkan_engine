@@ -149,13 +149,35 @@ TEST shaderc_compiling() {
 
 SUITE(shaderc_suite) { RUN_TEST(shaderc_compiling); }
 
+// Building scene graph for sponza.
+TEST scene_graph_building() {
+  data_config *config = data_config_create();
+  data_asset_db *assetDb = data_asset_db_create();
+  vulkan_device *vkd = vulkan_device_create(config, assetDb);
+  UT_string *sceneName;
+  utstring_alloc(sceneName, "sponza");
+  vulkan_scene_data *assetDbSceneData = vulkan_scene_data_create_with_asset_db(assetDb, sceneName);
+
+  // vulkan_scene_data_debug_print(assetDbSceneData);
+
+  utstring_free(sceneName);
+  vulkan_scene_data_destroy(assetDbSceneData);
+  vulkan_device_destroy(vkd);
+  data_asset_db_destroy(assetDb);
+  data_config_destroy(config);
+  PASS();
+}
+
+SUITE(scene_graph_suite) { RUN_TEST(scene_graph_building); }
+
 GREATEST_MAIN_DEFS(); // NOLINT
 
 int main(int argc, char *argv[]) {
   GREATEST_MAIN_BEGIN();
   platform_create();
-  RUN_SUITE(gltf_suite);
+  // RUN_SUITE(gltf_suite);
   // RUN_SUITE(shaderc_suite);
+  RUN_SUITE(scene_graph_suite);
   platform_destroy();
   GREATEST_MAIN_END();
 }

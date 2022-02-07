@@ -190,7 +190,7 @@ DATA_DB_TYPES(def_data_type_array, )
     UT_string *_sql;                                                                               \
     utstring_new(_sql);                                                                            \
     utstring_printf(_sql, query, __VA_ARGS__);                                                     \
-    log_debug("SQLITE_PREPARE(%s)", utstring_body(_sql));                                          \
+    log_trace("SQLITE_PREPARE(%s)", utstring_body(_sql));                                          \
     int _rc = sqlite3_prepare_v2(db->db, utstring_body(_sql), -1, &_stmt, NULL);                   \
     if (_rc != SQLITE_OK) {                                                                        \
       panic("database error (prepare): %s", sqlite3_errmsg(db->db));                               \

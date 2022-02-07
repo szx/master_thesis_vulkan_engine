@@ -85,7 +85,7 @@ void vulkan_primitive_data_deserialize(vulkan_primitive_data *primitive, data_as
 #define SELECT_VERTEX_ATTRIBUTE(_name, _type)                                                      \
   SELECT_ARRAY(_name, _type)                                                                       \
   if (primitive->vertexCount == 0) {                                                               \
-    log_debug("primitive->vertexCount=%zu", utarray_len(primitive->_name));                        \
+    log_trace("primitive->vertexCount=%zu", utarray_len(primitive->_name));                        \
     primitive->vertexCount = utarray_len(primitive->_name);                                        \
   } else if (utarray_len(primitive->_name) > 0) {                                                  \
     verify(primitive->vertexCount == utarray_len(primitive->_name));                               \
