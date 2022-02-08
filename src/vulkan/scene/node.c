@@ -10,7 +10,7 @@ vulkan_scene_node *vulkan_scene_node_create(vulkan_scene_node_type type, void *e
     sceneNode->mesh = entity;
   } else if (sceneNode->type == vulkan_scene_node_type_primitive) {
     sceneNode->primitive = entity;
-  } else {
+  } else if (sceneNode->type != vulkan_scene_node_type_root) {
     assert(0);
   }
 
@@ -25,6 +25,11 @@ void vulkan_scene_node_destroy(vulkan_scene_node *sceneNode) {
   // NOTE: Successors are freed by scene graph/tree.
   utarray_free(sceneNode->successors);
   core_free(sceneNode);
+}
+
+void vulkan_scene_node_add_successor(vulkan_scene_node *sceneNode,
+                                     vulkan_scene_node *successorNode) {
+  utarray_push_back(sceneNode->successors, &successorNode);
 }
 
 void vulkan_scene_node_debug_print(vulkan_scene_node *sceneNode) {

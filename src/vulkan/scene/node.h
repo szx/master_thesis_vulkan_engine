@@ -9,6 +9,7 @@
 #include "../data/scene.h"
 
 typedef enum vulkan_scene_node_type {
+  vulkan_scene_node_type_root,
   vulkan_scene_node_type_object,
   vulkan_scene_node_type_mesh,
   vulkan_scene_node_type_primitive,
@@ -29,5 +30,8 @@ typedef struct vulkan_scene_node {
 
 vulkan_scene_node *vulkan_scene_node_create(vulkan_scene_node_type type, void *entity);
 void vulkan_scene_node_destroy(vulkan_scene_node *sceneNode);
+
+void vulkan_scene_node_add_successor(vulkan_scene_node *sceneNode,
+                                     vulkan_scene_node *successorNode);
 
 void vulkan_scene_node_debug_print(vulkan_scene_node *sceneNode);

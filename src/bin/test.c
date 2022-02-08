@@ -163,7 +163,7 @@ TEST scene_graph_building() {
   vulkan_device *vkd = vulkan_device_create(config, assetDb);
 
   UT_string *sceneName;
-  utstring_alloc(sceneName, "sponza");
+  utstring_alloc(sceneName, "triangles");
   vulkan_data_scene *assetDbSceneData = vulkan_data_scene_create_with_asset_db(assetDb, sceneName);
   utstring_free(sceneName);
   // vulkan_data_scene_debug_print(assetDbSceneData);

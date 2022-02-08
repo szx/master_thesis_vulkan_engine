@@ -11,24 +11,57 @@ void vulkan_scene_graph_destroy(vulkan_scene_graph *sceneGraph) {
   vulkan_scene_node *node, *tempNode;
   DL_FOREACH_SAFE(sceneGraph->root, node, tempNode) { vulkan_scene_node_destroy(node); }
 
-  vulkan_data_object_deinit(sceneGraph->rootObject);
-  core_free(sceneGraph->rootObject);
-
   core_free(sceneGraph);
 }
 
-void add_object_data_as_child_scene_node(vulkan_scene_graph *sceneGraph,
-                                         vulkan_scene_node *sceneNode, vulkan_data_object *object) {
-  // HIRO currently we generate tree instead of graph, which is cool but insufficient
-  // HIRO generate graph from scene data, same objects should result in same nodes
-  vulkan_scene_node *childNode = vulkan_scene_node_create(vulkan_scene_node_type_object, object);
+vulkan_scene_node *add_entity(vulkan_scene_graph *sceneGraph, vulkan_scene_node_type type,
+                              void *entity) {
+  // HIRO cache objects/meshes/primitives, currently it behaves like tree
+  vulkan_scene_node *childNode = vulkan_scene_node_create(type, entity);
   DL_APPEND(sceneGraph->root, childNode);
+  return childNode;
+}
+
+vulkan_scene_node *vulkan_scene_graph_add_object(vulkan_scene_graph *sceneGraph,
+                                                 vulkan_scene_node *sceneNode,
+                                                 vulkan_data_object *successorObject) {
+  vulkan_scene_node *childNode =
+      add_entity(sceneGraph, vulkan_scene_node_type_object, successorObject);
   utarray_push_back(sceneNode->successors, &childNode);
 
-  vulkan_data_object **childObject = NULL;
-  while ((childObject = utarray_next(object->children, childObject))) {
-    add_object_data_as_child_scene_node(sceneGraph, childNode, *childObject);
+  if (successorObject->mesh) {
+    vulkan_scene_graph_add_mesh(sceneGraph, childNode, successorObject->mesh);
   }
+
+  vulkan_data_object **childObject = NULL;
+  while ((childObject = utarray_next(successorObject->children, childObject))) {
+    vulkan_scene_graph_add_object(sceneGraph, childNode, *childObject);
+  }
+
+  return childNode;
+}
+
+vulkan_scene_node *vulkan_scene_graph_add_mesh(vulkan_scene_graph *sceneGraph,
+                                               vulkan_scene_node *sceneNode,
+                                               vulkan_data_mesh *successorMesh) {
+  vulkan_scene_node *childNode = add_entity(sceneGraph, vulkan_scene_node_type_mesh, successorMesh);
+  utarray_push_back(sceneNode->successors, &childNode);
+
+  vulkan_data_primitive **primitiveIt = NULL;
+  while ((primitiveIt = (utarray_next(successorMesh->primitives, primitiveIt)))) {
+    vulkan_scene_graph_add_primitive(sceneGraph, childNode, *primitiveIt);
+  }
+
+  return childNode;
+}
+
+vulkan_scene_node *vulkan_scene_graph_add_primitive(vulkan_scene_graph *sceneGraph,
+                                                    vulkan_scene_node *sceneNode,
+                                                    vulkan_data_primitive *successorPrimitive) {
+  vulkan_scene_node *childNode =
+      add_entity(sceneGraph, vulkan_scene_node_type_primitive, successorPrimitive);
+  utarray_push_back(sceneNode->successors, &childNode);
+  return childNode;
 }
 
 void vulkan_scene_graph_create_with_scene_data(vulkan_scene_graph *sceneGraph,
@@ -36,17 +69,12 @@ void vulkan_scene_graph_create_with_scene_data(vulkan_scene_graph *sceneGraph,
   sceneGraph->data = sceneData;
   assert(sceneGraph->root == NULL);
 
-  sceneGraph->rootObject = core_alloc(sizeof(vulkan_data_object));
-  vulkan_data_object_init(sceneGraph->rootObject, sceneGraph->data);
-
-  vulkan_scene_node *rootNode =
-      vulkan_scene_node_create(vulkan_scene_node_type_object, sceneGraph->rootObject);
+  vulkan_scene_node *rootNode = vulkan_scene_node_create(vulkan_scene_node_type_root, NULL);
   DL_APPEND(sceneGraph->root, rootNode);
 
   vulkan_data_object *rootObject = NULL;
   while ((rootObject = utarray_next(sceneGraph->data->rootObjects, rootObject))) {
-    utarray_push_back(sceneGraph->rootObject->children, &rootObject);
-    add_object_data_as_child_scene_node(sceneGraph, sceneGraph->root, rootObject);
+    vulkan_scene_graph_add_object(sceneGraph, sceneGraph->root, rootObject);
   }
   assert(sceneGraph->root);
 }
