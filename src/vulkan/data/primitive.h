@@ -34,4 +34,4 @@ void vulkan_data_primitive_serialize(vulkan_data_primitive *primitive, data_asse
 void vulkan_data_primitive_deserialize(vulkan_data_primitive *primitive, data_asset_db *assetDb,
                                        data_key key);
 
-void vulkan_data_primitive_debug_print(vulkan_data_primitive *primitive);
+void vulkan_data_primitive_debug_print(vulkan_data_primitive *primitive, int indent);

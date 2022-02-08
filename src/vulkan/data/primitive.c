@@ -100,34 +100,38 @@ void vulkan_data_primitive_deserialize(vulkan_data_primitive *primitive, data_as
 #undef COPY_BLOB_TO_ARRAY
 }
 
-void vulkan_data_primitive_debug_print(vulkan_data_primitive *primitive) {
-  log_debug("primitive: %s\n", VkPrimitiveTopology_debug_str(primitive->topology));
-  log_debug("  hash=%zu", primitive->hash);
-  log_debug("  index: count=%d\n", utarray_len(primitive->indices));
+void vulkan_data_primitive_debug_print(vulkan_data_primitive *primitive, int indent) {
+  log_debug("%*sprimitive: %s\n", indent, "", VkPrimitiveTopology_debug_str(primitive->topology));
+  log_debug("%*shash=%zu", indent + 2, "", primitive->hash);
+  log_debug("%*sindex: count=%d\n", indent + 2, "", utarray_len(primitive->indices));
   void *index = NULL;
   while ((index = utarray_next(primitive->indices, index))) {
-    log_debug("    %u\n", *(uint32_t *)index);
+    log_debug("%*s%u\n", indent + 4, "", *(uint32_t *)index);
   }
-  log_debug("  vertices: count=%d\n", primitive->vertexCount, primitive->vertexCount);
+  log_debug("%*svertices: count=%d\n", indent + 2, "", primitive->vertexCount,
+            primitive->vertexCount);
   uint32_t vertexIdx = 0;
   vec3 *position = NULL;
   while ((position = utarray_next(primitive->positions, position))) {
-    log_debug("      position %d: %f %f %f\n", vertexIdx++, (*position)[0], (*position)[1],
-              (*position)[2]);
+    log_debug("%*sposition %d: %f %f %f\n", indent + 4, "", vertexIdx++, (*position)[0],
+              (*position)[1], (*position)[2]);
   }
   vertexIdx = 0;
   vec3 *normal = NULL;
   while ((normal = utarray_next(primitive->normals, normal))) {
-    log_debug("      normal %d: %f %f %f\n", vertexIdx++, (*normal)[0], (*normal)[1], (*normal)[2]);
+    log_debug("%*snormal %d: %f %f %f\n", indent + 4, "", vertexIdx++, (*normal)[0], (*normal)[1],
+              (*normal)[2]);
   }
   vertexIdx = 0;
   vec3 *color = NULL;
   while ((color = utarray_next(primitive->colors, color))) {
-    log_debug("      color %d: %f %f %f\n", vertexIdx++, (*color)[0], (*color)[1], (*color)[2]);
+    log_debug("%*scolor %d: %f %f %f\n", indent + 4, "", vertexIdx++, (*color)[0], (*color)[1],
+              (*color)[2]);
   }
   vertexIdx = 0;
   vec2 *texCoord = NULL;
   while ((texCoord = utarray_next(primitive->texCoords, texCoord))) {
-    log_debug("      texCoord %d: %f %f\n", vertexIdx++, (*texCoord)[0], (*texCoord)[1]);
+    log_debug("%*stexCoord %d: %f %f\n", indent + 4, "", vertexIdx++, (*texCoord)[0],
+              (*texCoord)[1]);
   }
 }

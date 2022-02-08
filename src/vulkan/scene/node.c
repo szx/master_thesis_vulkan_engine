@@ -1,18 +1,19 @@
 #include "node.h"
 
-vulkan_scene_node *vulkan_scene_node_create(vulkan_data_scene *data) {
+vulkan_scene_node *vulkan_scene_node_create(vulkan_scene_node_type type, void *entity) {
   vulkan_scene_node *sceneNode = core_alloc(sizeof(vulkan_scene_node));
-  sceneNode->data = data;
+  sceneNode->type = type;
+  if (sceneNode->type == vulkan_scene_node_type_object) {
+    sceneNode->object = entity;
+  } else if (sceneNode->type == vulkan_scene_node_type_mesh) {
+    sceneNode->mesh = entity;
+  } else if (sceneNode->type == vulkan_scene_node_type_primitive) {
+    sceneNode->primitive = entity;
+  } else {
+    assert(0);
+  }
+  sceneNode->next = NULL;
   return sceneNode;
 }
 
-void vulkan_scene_node_destroy(vulkan_scene_node *sceneNode) {
-  vulkan_data_scene_destroy(sceneNode->data);
-  core_free(sceneNode);
-}
-
-void vulkan_scene_node_debug_print(vulkan_scene_node *sceneNode) {
-  log_debug("SCENE GRAPH:\n");
-  // TODO: Graphviz output.
-  vulkan_data_scene_debug_print(sceneNode->data);
-}
+void vulkan_scene_node_destroy(vulkan_scene_node *sceneNode) { core_free(sceneNode); }

@@ -26,4 +26,4 @@ data_key vulkan_data_mesh_calculate_key(vulkan_data_mesh *mesh);
 void vulkan_data_mesh_serialize(vulkan_data_mesh *mesh, data_asset_db *assetDb);
 void vulkan_data_mesh_deserialize(vulkan_data_mesh *mesh, data_asset_db *assetDb, data_key key);
 
-void vulkan_data_mesh_debug_print(vulkan_data_mesh *mesh);
+void vulkan_data_mesh_debug_print(vulkan_data_mesh *mesh, int indent);

@@ -2975,3 +2975,10 @@ const char *vulkan_render_pass_type_debug_str(int value) {
   if (value == 0) { return "ForwardRenderPass"; }
   return "UNKNOWN vulkan_render_pass_type";
 }
+const char *vulkan_scene_node_type_debug_str(int value) {
+  if (value == 0) { return "vulkan_scene_node_type_object"; }
+  if (value == 1) { return "vulkan_scene_node_type_mesh"; }
+  if (value == 2) { return "vulkan_scene_node_type_primitive"; }
+  if (value == 3) { return "vulkan_scene_node_type_count"; }
+  return "UNKNOWN vulkan_scene_node_type";
+}

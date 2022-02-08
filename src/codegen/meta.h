@@ -181,3 +181,4 @@ const char *parser_error_type_debug_str(int value);
 void vulkan_attribute_type_debug_print(int flags);
 const char *vulkan_index_type_debug_str(int value);
 const char *vulkan_render_pass_type_debug_str(int value);
+const char *vulkan_scene_node_type_debug_str(int value);

@@ -76,10 +76,24 @@ void vulkan_data_object_deserialize(vulkan_data_object *object, data_asset_db *a
   data_key_array_deinit(&childrenHashArray);
 }
 
-void vulkan_data_object_debug_print(vulkan_data_object *object) {
-  log_debug("object:\n");
-  glm_mat4_print(object->transform, stderr);
-  log_debug("  hash=%zu", object->hash);
+void vulkan_data_object_debug_print(vulkan_data_object *object, int indent) {
+  log_debug("%*sobject:", indent, "");
+  log_debug("%*stransform=%f %f %f %f|%f %f %f %f|%f %f %f %f|%f %f %f %f", indent + 2, "",
+            object->transform[0][0], object->transform[0][1], object->transform[0][2],
+            object->transform[0][3], object->transform[1][0], object->transform[1][1],
+            object->transform[1][2], object->transform[1][3], object->transform[2][0],
+            object->transform[2][1], object->transform[2][2], object->transform[2][3],
+            object->transform[3][0], object->transform[3][1], object->transform[3][2],
+            object->transform[3][3]);
+  log_debug("%*shash=%zu", indent + 2, "", object->hash);
   vulkan_data_mesh *mesh = &object->mesh;
-  vulkan_data_mesh_debug_print(mesh);
+  vulkan_data_mesh_debug_print(mesh, indent + 2);
+
+  vulkan_data_object **childIt = NULL;
+  size_t i = 0;
+  while ((childIt = utarray_next(object->children, childIt))) {
+    vulkan_data_object *child = *childIt;
+    log_debug("%*schild #%d", indent + 2, "", i++);
+    vulkan_data_object_debug_print(child, indent + 2);
+  }
 }

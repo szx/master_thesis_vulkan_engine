@@ -13,7 +13,7 @@ typedef struct vulkan_data_object {
   vulkan_data_scene *sceneData; // vulkan_data_scene pointer
   vulkan_data_mesh mesh;
   mat4 transform;
-  UT_array *children; /// vulkan_data_object array
+  UT_array *children; /// vulkan_data_object* array
 
   data_key hash; /// Hash, used to prevent duplicates in asset database.
   struct vulkan_data_object *prev, *next;
@@ -27,4 +27,4 @@ void vulkan_data_object_serialize(vulkan_data_object *object, data_asset_db *ass
 void vulkan_data_object_deserialize(vulkan_data_object *object, data_asset_db *assetDb,
                                     data_key key);
 
-void vulkan_data_object_debug_print(vulkan_data_object *object);
+void vulkan_data_object_debug_print(vulkan_data_object *object, int indent);

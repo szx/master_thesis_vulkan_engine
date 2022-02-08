@@ -20,8 +20,9 @@ typedef struct vulkan_data_scene {
   vulkan_data_primitive *primitives; /// Doubly-linked list, all primitives used by scene.
   vulkan_data_object *objects;       /// Doubly-linked list, all objects in scene.
   UT_array *cameras;                 /// vulkan_data_camera array, all cameras in scene
-  bool dirty;                        /// True if scene data updated on CPU.
-  data_key hash;                     /// Hash, used to prevent duplicates in asset database.
+  UT_array *rootObjects; /// vulkan_data_object array, object that are direct descendants of scene
+  bool dirty;            /// True if scene data updated on CPU.
+  data_key hash;         /// Hash, used to prevent duplicates in asset database.
 } vulkan_data_scene;
 
 vulkan_data_scene *vulkan_data_scene_create(UT_string *name);

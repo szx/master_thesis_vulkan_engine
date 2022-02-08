@@ -51,12 +51,12 @@ void vulkan_data_mesh_deserialize(vulkan_data_mesh *mesh, data_asset_db *assetDb
   data_key_array_deinit(&primitiveHashArray);
 }
 
-void vulkan_data_mesh_debug_print(vulkan_data_mesh *mesh) {
-  log_debug("mesh:\n");
-  log_debug("  hash=%zu", mesh->hash);
+void vulkan_data_mesh_debug_print(vulkan_data_mesh *mesh, int indent) {
+  log_debug("%*smesh:", (int)indent, "");
+  log_debug("%*shash=%zu", (int)indent + 2, "", mesh->hash);
   vulkan_data_primitive **primitiveIt = NULL;
   while ((primitiveIt = (utarray_next(mesh->primitives, primitiveIt)))) {
     vulkan_data_primitive *primitive = *primitiveIt;
-    vulkan_data_primitive_debug_print(primitive);
+    vulkan_data_primitive_debug_print(primitive, indent + 2);
   }
 }
