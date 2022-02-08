@@ -23,8 +23,11 @@ typedef struct vulkan_scene_node {
     vulkan_data_primitive *primitive;
   }; // pointer to entity in scene data
 
-  struct vulkan_scene_node *next;
+  UT_array *successors;                  /// vulkan_scene_node* list.
+  struct vulkan_scene_node *prev, *next; /// Doubly-linked list of all nodes in scene graph/tree.
 } vulkan_scene_node;
 
 vulkan_scene_node *vulkan_scene_node_create(vulkan_scene_node_type type, void *entity);
 void vulkan_scene_node_destroy(vulkan_scene_node *sceneNode);
+
+void vulkan_scene_node_debug_print(vulkan_scene_node *sceneNode);

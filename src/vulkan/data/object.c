@@ -3,6 +3,7 @@
 
 void vulkan_data_object_init(vulkan_data_object *object, vulkan_data_scene *sceneData) {
   object->sceneData = sceneData;
+  object->mesh = NULL;
   glm_mat4_identity(object->transform);
   utarray_alloc(object->children, sizeof(vulkan_data_object *));
   data_key_init(&object->hash, 0);
@@ -11,7 +12,10 @@ void vulkan_data_object_init(vulkan_data_object *object, vulkan_data_scene *scen
 }
 
 void vulkan_data_object_deinit(vulkan_data_object *object) {
-  vulkan_data_mesh_deinit(&object->mesh);
+  if (object->mesh) {
+    vulkan_data_mesh_deinit(object->mesh);
+    core_free(object->mesh);
+  }
   utarray_free(object->children);
 }
 
@@ -24,7 +28,9 @@ data_key vulkan_data_object_calculate_key(vulkan_data_object *object) {
     vulkan_data_object *child = *childIt;
     HASH_UPDATE(hashState, &child->hash.value, sizeof(child->hash.value));
   }
-  HASH_UPDATE(hashState, &object->mesh.hash, sizeof(object->mesh.hash))
+  if (object->mesh) {
+    HASH_UPDATE(hashState, &object->mesh->hash, sizeof(object->mesh->hash))
+  }
   HASH_DIGEST(hashState, value)
   HASH_END(hashState)
   return (data_key){value};
@@ -32,14 +38,15 @@ data_key vulkan_data_object_calculate_key(vulkan_data_object *object) {
 
 void vulkan_data_object_serialize(vulkan_data_object *object, data_asset_db *assetDb) {
   object->hash = vulkan_data_object_calculate_key(object);
-  vulkan_data_mesh *mesh = &object->mesh;
-  vulkan_data_mesh_serialize(mesh, assetDb);
+
+  if (object->mesh) {
+    vulkan_data_mesh_serialize(object->mesh, assetDb);
+    data_asset_db_insert_object_mesh_key(assetDb, object->hash, object->mesh->hash);
+  }
 
   data_mat4 transformMat;
   glm_mat4_copy(object->transform, transformMat.value);
   data_asset_db_insert_object_transform_mat4(assetDb, object->hash, transformMat);
-
-  data_asset_db_insert_object_mesh_key(assetDb, object->hash, object->mesh.hash);
 
   UT_array *childKeys = NULL;
   utarray_alloc(childKeys, sizeof(data_key));
@@ -62,8 +69,14 @@ void vulkan_data_object_deserialize(vulkan_data_object *object, data_asset_db *a
                 object->transform);
 
   data_key meshHash = data_asset_db_select_object_mesh_key(assetDb, object->hash);
-  vulkan_data_mesh_init(&object->mesh, object->sceneData);
-  vulkan_data_mesh_deserialize(&object->mesh, assetDb, meshHash);
+
+  if (meshHash.value != 0) {
+    object->mesh = core_alloc(sizeof(vulkan_data_mesh));
+    vulkan_data_mesh_init(object->mesh, object->sceneData);
+    vulkan_data_mesh_deserialize(object->mesh, assetDb, meshHash);
+  } else {
+    log_debug("deserializing object without mesh");
+  }
 
   data_key_array childrenHashArray =
       data_asset_db_select_object_children_key_array(assetDb, object->hash);
@@ -86,8 +99,10 @@ void vulkan_data_object_debug_print(vulkan_data_object *object, int indent) {
             object->transform[3][0], object->transform[3][1], object->transform[3][2],
             object->transform[3][3]);
   log_debug("%*shash=%zu", indent + 2, "", object->hash);
-  vulkan_data_mesh *mesh = &object->mesh;
-  vulkan_data_mesh_debug_print(mesh, indent + 2);
+
+  if (object->mesh) {
+    vulkan_data_mesh_debug_print(object->mesh, indent + 2);
+  }
 
   vulkan_data_object **childIt = NULL;
   size_t i = 0;

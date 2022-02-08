@@ -583,7 +583,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_render_data *sc
       vkCmdPushConstants(frame->commandBuffer, renderPass->pipelineLayout, pushConstantStageFlags,
                          pushConstantOffset, sizeof(object->transform), pushConstantValuePtr);
     }
-    vulkan_data_mesh *mesh = &object->mesh;
+    vulkan_data_mesh *mesh = object->mesh;
     vulkan_data_primitive *primitive = NULL;
     while ((primitive = (utarray_next(mesh->primitives, primitive)))) {
       size_t bindingCount = vulkan_shader_info_get_binding_count(&renderPass->vertShader->info);

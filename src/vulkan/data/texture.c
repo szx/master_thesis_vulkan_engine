@@ -45,6 +45,7 @@ void vulkan_data_image_deserialize(vulkan_data_image *image, data_asset_db *asse
   data_byte_array data = data_asset_db_select_image_data_byte_array(assetDb, image->hash);
   utarray_resize(image->data, utarray_len(data.values));
   core_memcpy(image->data->d, data.values->d, utarray_size(image->data));
+  data_byte_array_deinit(&data);
 }
 
 void vulkan_data_image_debug_print(vulkan_data_image *image) {

@@ -67,9 +67,10 @@ TEST gltf_loading() {
     ASSERT_EQ(foundCorrespondingNode, true);
     ASSERT_MEM_EQ(gltfNode->transform, assetDbNode->transform, sizeof(mat4));
     ASSERT_EQ(utarray_len(gltfNode->children), utarray_len(assetDbNode->children));
-    vulkan_data_mesh *gltfMesh = &gltfNode->mesh;
-    vulkan_data_mesh *assetDbMesh = &assetDbNode->mesh;
-    ASSERT_EQ(gltfMesh->hash.value, assetDbMesh->hash.value);
+    vulkan_data_mesh *gltfMesh = gltfNode->mesh;
+    vulkan_data_mesh *assetDbMesh = assetDbNode->mesh;
+    ASSERT((gltfMesh == NULL && assetDbMesh == NULL) ||
+           (gltfMesh->hash.value == assetDbMesh->hash.value));
 
     bool foundCorrespondingPrimitive = false;
     gltfPrimitive = NULL;
@@ -160,13 +161,17 @@ TEST scene_graph_building() {
   data_config *config = data_config_create();
   data_asset_db *assetDb = data_asset_db_create();
   vulkan_device *vkd = vulkan_device_create(config, assetDb);
-  UT_string *sceneName;
-  utstring_alloc(sceneName, "sponza");
-  vulkan_data_scene *assetDbSceneData = vulkan_data_scene_create_with_asset_db(assetDb, sceneName);
 
+  UT_string *sceneName;
+  utstring_alloc(sceneName, "fox");
+  vulkan_data_scene *assetDbSceneData = vulkan_data_scene_create_with_asset_db(assetDb, sceneName);
+  utstring_free(sceneName);
   // vulkan_data_scene_debug_print(assetDbSceneData);
 
-  utstring_free(sceneName);
+  vulkan_scene_graph *sceneGraph = vulkan_scene_graph_create(assetDbSceneData);
+  vulkan_scene_graph_debug_print(sceneGraph);
+
+  vulkan_scene_graph_destroy(sceneGraph);
   vulkan_data_scene_destroy(assetDbSceneData);
   vulkan_device_destroy(vkd);
   data_asset_db_destroy(assetDb);
@@ -182,8 +187,8 @@ int main(int argc, char *argv[]) {
   GREATEST_MAIN_BEGIN();
   platform_create();
   // RUN_SUITE(shaderc_suite);
-  // RUN_SUITE(gltf_suite);
-  RUN_SUITE(scene_graph_suite);
+  RUN_SUITE(gltf_suite);
+  // RUN_SUITE(scene_graph_suite);
   platform_destroy();
   GREATEST_MAIN_END();
 }

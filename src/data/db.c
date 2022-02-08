@@ -146,8 +146,12 @@ void data_key_deinit(data_key *data) {}
 size_t data_key_size(hash_t value) { return sizeof(value); }
 void data_key_serialize(uint8_t *memory, hash_t value) { *(hash_t *)memory = value; }
 void data_key_deserialize(const uint8_t *memory, size_t size, hash_t *value) {
-  verify(size == sizeof(hash_t));
-  *value = *(hash_t *)memory;
+  if (size == sizeof(hash_t)) {
+    *value = *(hash_t *)memory;
+  } else {
+    verify(size == 0);
+    *value = 0;
+  }
 }
 
 #define def_data_type_temp(_type, _value, ...)                                                     \

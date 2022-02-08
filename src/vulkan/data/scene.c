@@ -46,37 +46,37 @@ vulkan_data_image *parse_cgltf_image(vulkan_data_scene *sceneData, cgltf_image *
   if (cgltfImage == NULL) {
     return sceneData->images;
   }
-  vulkan_data_image image = {0};
-  vulkan_data_image_init(&image);
+  vulkan_data_image *image = core_alloc(sizeof(vulkan_data_image));
+  vulkan_data_image_init(image);
 
   UT_string *imagePath = get_path_dirname(sceneData->path);
   append_to_path(imagePath, cgltfImage->uri);
   log_debug("%s", utstring_body(imagePath));
   int w, h, c;
   stbi_uc *pixels = stbi_load(utstring_body(imagePath), &w, &h, &c, STBI_rgb_alpha);
-  image.width = w;
-  image.height = h;
-  image.depth = 1;
-  image.channels = c;
-  size_t imageSize = image.width * image.height * image.depth * image.channels;
-  utarray_resize(image.data, imageSize);
-  core_memcpy(utarray_front(image.data), pixels, imageSize);
+  utstring_free(imagePath);
+  image->width = w;
+  image->height = h;
+  image->depth = 1;
+  image->channels = c;
+  size_t imageSize = image->width * image->height * image->depth * image->channels;
+  utarray_resize(image->data, imageSize);
+  core_memcpy(utarray_front(image->data), pixels, imageSize);
   core_free(pixels);
 
-  image.hash = vulkan_data_image_calculate_key(&image);
+  image->hash = vulkan_data_image_calculate_key(image);
 
   vulkan_data_image *existingImage =
-      vulkan_data_scene_get_image_by_key(sceneData, NULL, image.hash);
+      vulkan_data_scene_get_image_by_key(sceneData, NULL, image->hash);
   if (existingImage != NULL) {
+    vulkan_data_image_deinit(image);
+    core_free(image);
     return existingImage;
   }
 
   log_debug("adding new image");
-  vulkan_data_image *newImage = core_alloc(sizeof(vulkan_data_image));
-  vulkan_data_image_init(newImage);
-  core_memcpy(newImage, &image, sizeof(image));
-  DL_APPEND(sceneData->images, newImage);
-  return newImage;
+  DL_APPEND(sceneData->images, image);
+  return image;
 }
 
 vulkan_data_sampler *parse_cgltf_sampler(vulkan_data_scene *sceneData,
@@ -265,6 +265,7 @@ vulkan_data_primitive *parse_cgltf_primitive(vulkan_data_scene *sceneData,
   vulkan_data_primitive *existingPrimitive =
       vulkan_data_scene_get_primitive_by_key(sceneData, NULL, primitive->hash);
   if (existingPrimitive != NULL) {
+    vulkan_data_primitive_deinit(primitive);
     core_free(primitive);
     return existingPrimitive;
   }
@@ -274,21 +275,21 @@ vulkan_data_primitive *parse_cgltf_primitive(vulkan_data_scene *sceneData,
   return primitive;
 }
 
-vulkan_data_mesh parse_cgltf_mesh(vulkan_data_scene *sceneData, cgltf_mesh *cgltfMesh) {
-  vulkan_data_mesh mesh;
-  vulkan_data_mesh_init(&mesh, sceneData);
-
+vulkan_data_mesh *parse_cgltf_mesh(vulkan_data_scene *sceneData, cgltf_mesh *cgltfMesh) {
   if (cgltfMesh == NULL) {
-    return mesh;
+    return NULL;
   }
+
+  vulkan_data_mesh *mesh = core_alloc(sizeof(vulkan_data_mesh));
+  vulkan_data_mesh_init(mesh, sceneData);
 
   for (size_t primitiveIdx = 0; primitiveIdx < cgltfMesh->primitives_count; primitiveIdx++) {
     vulkan_data_primitive *primitive =
         parse_cgltf_primitive(sceneData, &cgltfMesh->primitives[primitiveIdx]);
-    utarray_push_back(mesh.primitives, &primitive);
+    utarray_push_back(mesh->primitives, &primitive);
   }
 
-  mesh.hash = vulkan_data_mesh_calculate_key(&mesh);
+  mesh->hash = vulkan_data_mesh_calculate_key(mesh);
 
   return mesh;
 }
@@ -413,6 +414,7 @@ void vulkan_data_scene_deserialize(vulkan_data_scene *sceneData, data_asset_db *
     vulkan_data_camera_deserialize(&camera, assetDb, *cameraHash);
     utarray_push_back(sceneData->cameras, &camera);
   }
+  data_key_array_deinit(&cameraKeyArray);
 
   data_key *objectKey = NULL;
   while ((objectKey = (utarray_next(objectKeyArray.values, objectKey)))) {

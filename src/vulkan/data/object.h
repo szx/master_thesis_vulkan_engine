@@ -11,7 +11,7 @@
 
 typedef struct vulkan_data_object {
   vulkan_data_scene *sceneData; // vulkan_data_scene pointer
-  vulkan_data_mesh mesh;
+  vulkan_data_mesh *mesh;       /// Can be NULL if object is only transforms children.
   mat4 transform;
   UT_array *children; /// vulkan_data_object* array
 
