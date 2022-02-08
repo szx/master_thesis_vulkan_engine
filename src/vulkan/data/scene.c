@@ -346,7 +346,6 @@ vulkan_data_scene *parse_cgltf_scene(UT_string *name, UT_string *path) {
   // parse objects
   for (size_t objectIdx = 0; objectIdx < cgltfScene->nodes_count; objectIdx++) {
     vulkan_data_object *object = parse_cgltf_node(sceneData, cgltfScene->nodes[objectIdx]);
-    DL_APPEND(sceneData->objects, object);
     utarray_push_back(sceneData->rootObjects, object);
   }
 
@@ -387,7 +386,7 @@ void vulkan_data_scene_serialize(vulkan_data_scene *sceneData, data_asset_db *as
   UT_array *objectKeys = NULL;
   utarray_alloc(objectKeys, sizeof(data_key));
   vulkan_data_object *object = NULL;
-  DL_FOREACH(sceneData->objects, object) {
+  while ((object = utarray_next(sceneData->rootObjects, object))) {
     // vulkan_data_object_debug_print(object);
     vulkan_data_object_serialize(object, assetDb);
     utarray_push_back(objectKeys, &object->hash);
@@ -418,10 +417,9 @@ void vulkan_data_scene_deserialize(vulkan_data_scene *sceneData, data_asset_db *
   data_key *objectKey = NULL;
   while ((objectKey = (utarray_next(objectKeyArray.values, objectKey)))) {
     /* object data */
-    vulkan_data_object *object = core_alloc(sizeof(vulkan_data_object));
-    vulkan_data_object_init(object, sceneData);
-    vulkan_data_object_deserialize(object, assetDb, *objectKey);
-    DL_APPEND(sceneData->objects, object);
+    vulkan_data_object *object =
+        vulkan_data_scene_get_object_by_key(sceneData, assetDb, *objectKey);
+    utarray_push_back(sceneData->rootObjects, object);
   }
   data_key_array_deinit(&objectKeyArray);
 }
