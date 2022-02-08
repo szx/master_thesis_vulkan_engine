@@ -163,7 +163,7 @@ TEST scene_graph_building() {
   vulkan_device *vkd = vulkan_device_create(config, assetDb);
 
   UT_string *sceneName;
-  utstring_alloc(sceneName, "fox");
+  utstring_alloc(sceneName, "sponza");
   vulkan_data_scene *assetDbSceneData = vulkan_data_scene_create_with_asset_db(assetDb, sceneName);
   utstring_free(sceneName);
   // vulkan_data_scene_debug_print(assetDbSceneData);
@@ -187,8 +187,8 @@ int main(int argc, char *argv[]) {
   GREATEST_MAIN_BEGIN();
   platform_create();
   // RUN_SUITE(shaderc_suite);
-  RUN_SUITE(gltf_suite);
-  // RUN_SUITE(scene_graph_suite);
+  // RUN_SUITE(gltf_suite);
+  RUN_SUITE(scene_graph_suite);
   platform_destroy();
   GREATEST_MAIN_END();
 }
