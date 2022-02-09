@@ -8,6 +8,7 @@
 #include "node.h"
 
 // HIRO implement scene tree from scene graph
+// HIRO ignore paths without primitive leaves (currently no support for skinning)
 
 typedef struct vulkan_scene_tree {
   vulkan_data_scene *data; /// vulkan_data_scene pointer.

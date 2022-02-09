@@ -2,7 +2,7 @@
  * Contains pointers to entities in scene data
  * Used to:
  * build scene graph with nodes corresponding 1:1 to scene data
- * build scene tree with nodes either from scene graph
+ * build scene tree with nodes from scene graph
  */
 #pragma once
 
@@ -15,6 +15,9 @@ typedef enum vulkan_scene_node_type {
   vulkan_scene_node_type_primitive,
   vulkan_scene_node_type_count
 } vulkan_scene_node_type;
+
+// NOTE: There is no material node type - primitives are processed according to their materials
+// only during draw call batching.
 
 typedef struct vulkan_scene_node {
   vulkan_scene_node_type type;
