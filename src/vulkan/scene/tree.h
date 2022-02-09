@@ -6,13 +6,15 @@
 
 #include "graph.h"
 
-// HIRO ignore paths without primitive leaves (currently no support for skinning)
+// HIRO add adding/removing nodes from scene graph
+// HIRO add accumulated parameters to nodes
 // HIRO add invalidation
 
 typedef struct vulkan_scene_tree {
   vulkan_scene_graph *graph; /// vulkan_data_scene pointer.
 
-  vulkan_scene_node *root; /// Root node and doubly-linked list of all nodes of scene graph.
+  vulkan_scene_node *root;  /// Root node.
+  vulkan_scene_node *nodes; /// Doubly-linked list of all nodes of scene graph.
 } vulkan_scene_tree;
 
 vulkan_scene_tree *vulkan_scene_tree_create(vulkan_scene_graph *sceneGraph);

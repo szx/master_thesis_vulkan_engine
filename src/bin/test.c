@@ -173,6 +173,8 @@ TEST scene_graph_building() {
   vulkan_scene_graph_debug_print(sceneGraph);
   vulkan_scene_tree_debug_print(sceneTree);
 
+  // HIRO check observers
+
   vulkan_scene_tree_destroy(sceneTree);
   vulkan_scene_graph_destroy(sceneGraph);
   vulkan_data_scene_destroy(assetDbSceneData);

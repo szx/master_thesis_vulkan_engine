@@ -4,6 +4,7 @@ vulkan_scene_node *vulkan_scene_node_create(vulkan_scene_node_type type, void *e
   vulkan_scene_node *sceneNode = core_alloc(sizeof(vulkan_scene_node));
 
   sceneNode->type = type;
+  sceneNode->entity = entity;
   if (sceneNode->type == vulkan_scene_node_type_object) {
     sceneNode->object = entity;
   } else if (sceneNode->type == vulkan_scene_node_type_mesh) {
