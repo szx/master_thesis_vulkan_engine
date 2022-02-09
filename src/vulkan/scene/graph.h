@@ -1,7 +1,6 @@
 /* Vulkan scene graph.
  * Contains scene nodes created from scene data and added/removed by user.
- * Used to:
- * build and synchronize scene tree.
+ * Used to build and synchronize scene tree.
  */
 #pragma once
 
@@ -10,7 +9,7 @@
 typedef struct vulkan_scene_graph {
   vulkan_data_scene *data; /// vulkan_data_scene pointer.
 
-  vulkan_scene_node *root; /// Both root node and list of all nodes to scene graph.
+  vulkan_scene_node *root; /// Both root node and list of all nodes of scene graph.
 } vulkan_scene_graph;
 
 vulkan_scene_graph *vulkan_scene_graph_create(vulkan_data_scene *sceneData);

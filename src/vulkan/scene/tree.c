@@ -1,44 +1,49 @@
 #include "tree.h"
 
-vulkan_scene_tree *vulkan_scene_tree_create(vulkan_data_scene *data) {
-  vulkan_scene_tree *sceneGraph = core_alloc(sizeof(vulkan_scene_tree));
-  sceneGraph->root = NULL;
-  vulkan_scene_tree_create_with_scene_data(sceneGraph, data);
-  return sceneGraph;
+vulkan_scene_tree *vulkan_scene_tree_create(vulkan_scene_graph *sceneGraph) {
+  vulkan_scene_tree *sceneTree = core_alloc(sizeof(vulkan_scene_tree));
+  sceneTree->graph = NULL;
+  sceneTree->root = NULL;
+  vulkan_scene_tree_create_with_scene_graph(sceneTree, sceneGraph);
+  return sceneTree;
 }
 
-void vulkan_scene_tree_destroy(vulkan_scene_tree *sceneGraph) {
+void vulkan_scene_tree_destroy(vulkan_scene_tree *sceneTree) {
   vulkan_scene_node *node, *tempNode;
-  DL_FOREACH_SAFE(sceneGraph->root, node, tempNode) { vulkan_scene_node_destroy(node); }
+  DL_FOREACH_SAFE(sceneTree->root, node, tempNode) { vulkan_scene_node_destroy(node); }
 
-  vulkan_data_object_deinit(sceneGraph->rootObject);
-  core_free(sceneGraph->rootObject);
-
-  core_free(sceneGraph);
+  core_free(sceneTree);
 }
 
-void vulkan_scene_tree_create_with_scene_data(vulkan_scene_tree *sceneGraph,
-                                              vulkan_data_scene *sceneData) {
-  sceneGraph->data = sceneData;
-  assert(sceneGraph->root == NULL);
+vulkan_scene_node *add_graph_node_to_tree(vulkan_scene_tree *sceneTree,
+                                          vulkan_scene_node *graphNode) {
+  vulkan_scene_node *treeNode = vulkan_scene_node_create(graphNode->type, graphNode->entity);
+  DL_APPEND(sceneTree->root, treeNode);
 
-  sceneGraph->rootObject = core_alloc(sizeof(vulkan_data_object));
-  vulkan_data_object_init(sceneGraph->rootObject, sceneGraph->data);
+  vulkan_scene_node_add_observer(graphNode, treeNode);
 
-  vulkan_scene_node *rootNode =
-      vulkan_scene_node_create(vulkan_scene_node_type_object, sceneGraph->rootObject);
-  DL_APPEND(sceneGraph->root, rootNode);
-
-  vulkan_data_object *rootObject = NULL;
-  while ((rootObject = utarray_next(sceneGraph->data->rootObjects, rootObject))) {
-    utarray_push_back(sceneGraph->rootObject->children, &rootObject);
-    // add_object_data_as_child_scene_node(sceneGraph, sceneGraph->root, rootObject);
+  vulkan_scene_node **successorIt = NULL;
+  while ((successorIt = utarray_next(graphNode->successors, successorIt))) {
+    vulkan_scene_node *successor = *successorIt;
+    vulkan_scene_node *childTreeNode = add_graph_node_to_tree(sceneTree, successor);
+    vulkan_scene_node_add_successor(treeNode, childTreeNode);
   }
-  assert(sceneGraph->root);
+
+  return treeNode;
 }
 
-void vulkan_scene_tree_debug_print(vulkan_scene_tree *sceneGraph) {
+void vulkan_scene_tree_create_with_scene_graph(vulkan_scene_tree *sceneTree,
+                                               vulkan_scene_graph *sceneGraph) {
+  sceneTree->graph = sceneGraph;
+  assert(sceneTree->root == NULL);
+
+  add_graph_node_to_tree(sceneTree, sceneGraph->root);
+
+  assert(sceneTree->root);
+}
+
+void vulkan_scene_tree_debug_print(vulkan_scene_tree *sceneTree) {
   log_raw(stdout, "digraph scene_tree {");
-  vulkan_scene_node_debug_print(sceneGraph->root);
-  log_raw(stdout, "}");
+  vulkan_scene_node_debug_print(sceneTree->root);
+  log_raw(stdout, "}\n");
 }

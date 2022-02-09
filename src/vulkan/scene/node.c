@@ -16,14 +16,17 @@ vulkan_scene_node *vulkan_scene_node_create(vulkan_scene_node_type type, void *e
 
   utarray_alloc(sceneNode->successors, sizeof(vulkan_scene_node *));
 
+  utarray_alloc(sceneNode->observers, sizeof(vulkan_scene_node *));
+
   sceneNode->prev = NULL;
   sceneNode->next = NULL;
   return sceneNode;
 }
 
 void vulkan_scene_node_destroy(vulkan_scene_node *sceneNode) {
-  // NOTE: Successors are freed by scene graph/tree.
+  // NOTE: Successor and observer nodes are freed by scene graph and scene tree.
   utarray_free(sceneNode->successors);
+  utarray_free(sceneNode->observers);
   core_free(sceneNode);
 }
 
@@ -32,8 +35,14 @@ void vulkan_scene_node_add_successor(vulkan_scene_node *sceneNode,
   utarray_push_back(sceneNode->successors, &successorNode);
 }
 
+void vulkan_scene_node_add_observer(vulkan_scene_node *sceneNode, vulkan_scene_node *observerNode) {
+  utarray_push_back(sceneNode->observers, &observerNode);
+}
+
 void debug_log_node(vulkan_scene_node *sceneNode) {
-  log_raw(stdout, "%s_%p", vulkan_scene_node_type_debug_str(sceneNode->type), sceneNode);
+  log_raw(stdout, "%s_%p_successor_%zu_observer_%zu",
+          vulkan_scene_node_type_debug_str(sceneNode->type), sceneNode,
+          utarray_len(sceneNode->successors), utarray_len(sceneNode->observers));
   if (sceneNode->type == vulkan_scene_node_type_primitive) {
     log_raw(stdout, "_vertexCount_%d", sceneNode->primitive->vertexCount);
   }
