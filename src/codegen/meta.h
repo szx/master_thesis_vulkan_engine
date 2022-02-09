@@ -176,6 +176,7 @@ const char *VkValidationFeatureEnableEXT_debug_str(int value);
 const char *VkVendorId_debug_str(int value);
 const char *VkVertexInputRate_debug_str(int value);
 const char *VkViewportCoordinateSwizzleNV_debug_str(int value);
+const char *log_level_debug_str(int value);
 const char *parser_ast_node_type_debug_str(int value);
 const char *parser_error_type_debug_str(int value);
 void vulkan_attribute_type_debug_print(int flags);

@@ -38,7 +38,7 @@ void vulkan_scene_tree_create_with_scene_data(vulkan_scene_tree *sceneGraph,
 }
 
 void vulkan_scene_tree_debug_print(vulkan_scene_tree *sceneGraph) {
-  log_debug("digraph scene_tree {");
+  log_raw(stdout, "digraph scene_tree {");
   vulkan_scene_node_debug_print(sceneGraph->root);
-  log_debug("}");
+  log_raw(stdout, "}");
 }

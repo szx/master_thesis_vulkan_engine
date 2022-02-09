@@ -16,7 +16,14 @@ void vulkan_scene_graph_destroy(vulkan_scene_graph *sceneGraph) {
 
 vulkan_scene_node *add_entity(vulkan_scene_graph *sceneGraph, vulkan_scene_node_type type,
                               void *entity) {
-  // HIRO cache objects/meshes/primitives, currently it behaves like tree
+  vulkan_scene_node *sceneNode = NULL;
+  DL_FOREACH(sceneGraph->root, sceneNode) {
+    if (sceneNode->entity == entity) {
+      // Return already added node.
+      assert(sceneNode->type == type);
+      return sceneNode;
+    }
+  }
   vulkan_scene_node *childNode = vulkan_scene_node_create(type, entity);
   DL_APPEND(sceneGraph->root, childNode);
   return childNode;
@@ -80,7 +87,7 @@ void vulkan_scene_graph_create_with_scene_data(vulkan_scene_graph *sceneGraph,
 }
 
 void vulkan_scene_graph_debug_print(vulkan_scene_graph *sceneGraph) {
-  log_debug("digraph scene_graph {");
+  log_raw(stdout, "digraph scene_graph { ");
   vulkan_scene_node_debug_print(sceneGraph->root);
-  log_debug("}");
+  log_raw(stdout, " }\n");
 }

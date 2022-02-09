@@ -11,8 +11,6 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 
-#include "log.h"
-
 #include "xxhash.h"
 
 #include "utarray.h"

@@ -34,13 +34,13 @@ void vulkan_scene_node_add_successor(vulkan_scene_node *sceneNode,
 
 void vulkan_scene_node_debug_print(vulkan_scene_node *sceneNode) {
   if (utarray_len(sceneNode->successors) == 0) {
-    log_debug("%s_%p;", vulkan_scene_node_type_debug_str(sceneNode->type), sceneNode);
+    log_raw(stdout, "%s_%p; ", vulkan_scene_node_type_debug_str(sceneNode->type), sceneNode);
   } else {
     vulkan_scene_node **successorIt = NULL;
     while ((successorIt = utarray_next(sceneNode->successors, successorIt))) {
       vulkan_scene_node *successor = *successorIt;
-      log_debug("%s_%p -> %s_%p;", vulkan_scene_node_type_debug_str(sceneNode->type), sceneNode,
-                vulkan_scene_node_type_debug_str(successor->type), successor);
+      log_raw(stdout, "%s_%p -> %s_%p; ", vulkan_scene_node_type_debug_str(sceneNode->type),
+              sceneNode, vulkan_scene_node_type_debug_str(successor->type), successor);
       vulkan_scene_node_debug_print(successor);
     }
   }

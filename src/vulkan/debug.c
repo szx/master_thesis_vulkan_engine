@@ -28,19 +28,19 @@ static void destroy_debug_utils_messenger_ext(VkInstance instance,
 static VKAPI_ATTR void
 debug_callback_log_prepare(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
                            VkDebugUtilsMessageTypeFlagsEXT messageType,
-                           const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, int *logLevel,
-                           UT_string *msg) {
-  (*logLevel) = LOG_FATAL;
+                           const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
+                           log_level *logLevel, UT_string *msg) {
+  (*logLevel) = log_level_fatal;
   if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) {
-    (*logLevel) = LOG_DEBUG;
+    (*logLevel) = log_level_debug;
   } else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT) {
-    (*logLevel) = LOG_INFO;
+    (*logLevel) = log_level_info;
   }
   if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
-    (*logLevel) = LOG_WARN;
+    (*logLevel) = log_level_warn;
   }
   if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
-    (*logLevel) = LOG_ERROR;
+    (*logLevel) = log_level_error;
   }
 
   if (messageType & VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT) {
@@ -84,12 +84,13 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL
 debug_callback_general(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
                        VkDebugUtilsMessageTypeFlagsEXT messageType,
                        const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData) {
-  int logLevel;
+  log_level logLevel;
   UT_string *msg;
   utstring_new(msg);
 
   debug_callback_log_prepare(messageSeverity, messageType, pCallbackData, &logLevel, msg);
-  log_log(logLevel, __FILE__, __LINE__, "vulkan_debug_callback_general: %s", utstring_body(msg));
+  log_pretty(logLevel, __func__, __FILE__, __LINE__, "vulkan_debug_callback_general: %s",
+             utstring_body(msg));
   utstring_free(msg);
 
   // TODO: debug callback user data
@@ -204,13 +205,13 @@ VkBool32 VKAPI_CALL vulkan_debug_callback_for_instance(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
     VkDebugUtilsMessageTypeFlagsEXT messageType,
     const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData) {
-  int logLevel;
+  log_level logLevel;
   UT_string *msg;
   utstring_new(msg);
 
   debug_callback_log_prepare(messageSeverity, messageType, pCallbackData, &logLevel, msg);
-  log_log(logLevel, __FILE__, __LINE__, "vulkan_debug_callback_for_instance: %s",
-          utstring_body(msg));
+  log_pretty(logLevel, __func__, __FILE__, __LINE__, "vulkan_debug_callback_instance: %s",
+             utstring_body(msg));
   utstring_free(msg);
 
   return VK_FALSE; // True is reserved for layers.

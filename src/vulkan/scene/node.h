@@ -19,6 +19,7 @@ typedef enum vulkan_scene_node_type {
 typedef struct vulkan_scene_node {
   vulkan_scene_node_type type;
   union {
+    void *entity;
     vulkan_data_object *object;
     vulkan_data_mesh *mesh;
     vulkan_data_primitive *primitive;

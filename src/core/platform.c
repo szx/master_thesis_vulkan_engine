@@ -1,7 +1,5 @@
 #include "platform.h"
 
-static FILE *logFile;
-
 void platform_create() {
   globals_create();
   log_create();
@@ -13,23 +11,12 @@ void platform_destroy() {
 }
 
 void log_create() {
-#if defined(DEBUG)
-  int logLevel = LOG_DEBUG;
-#else
-  int logLevel = LOG_INFO;
-#endif
-  log_set_level(logLevel);
   UT_string *path = get_executable_dir_file_path("", "log.txt");
-  logFile = fopen(utstring_body(path), "wb");
+  log_set_file(path);
   utstring_free(path);
-  if (logFile) {
-    log_add_fp(logFile, logLevel);
-  }
 }
 
-void log_destroy() { fclose(logFile); }
-
-void dummy_func() {}
+void log_destroy() { log_close_file(); }
 
 typedef struct panic_args {
   char *msg;

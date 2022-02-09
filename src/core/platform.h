@@ -10,10 +10,12 @@
 #define VULKAN_HEADER_PATH "VULKAN_HEADER_PATH should be defined by CMake"
 #endif
 
-#include "../codegen/globals.h"
-#include "../codegen/meta.h"
 #include "alloc.h"
 #include "junk.h"
+#include "log.h"
+
+#include "../codegen/globals.h"
+#include "../codegen/meta.h"
 
 /// Allocates and initializes all global state used by functions below.
 void platform_create();

@@ -85,7 +85,7 @@ def codegen_meta():
     enum_decls = find_enum_decls(header_paths)
 
     decls = []
-    defs = []
+    defs = ['#include "../core/log.h"']
     decls.extend(generate_strings(enum_decls, enum_helpers_decls_template))
     defs.extend(generate_strings(enum_decls, enum_helpers_defs_template))
 

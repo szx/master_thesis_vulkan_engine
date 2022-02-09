@@ -571,7 +571,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_render_data *sc
   vulkan_data_object *object = NULL;
   DL_FOREACH(scene->data->objects, object) {
     // TODO: Check if object should be culled.
-    log_trace("draw object");
+    log_debug("draw object");
     {
       // TODO: separate push constants to another function
       void *pushConstantValuePtr = &object->transform;
