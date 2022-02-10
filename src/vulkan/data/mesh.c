@@ -4,7 +4,7 @@
 void vulkan_data_mesh_init(vulkan_data_mesh *mesh, vulkan_data_scene *sceneData) {
   mesh->sceneData = sceneData;
   utarray_alloc(mesh->primitives, sizeof(vulkan_data_primitive *));
-  DEF_SCENE_DATA(mesh)
+  DEF_VULKAN_ENTITY(mesh)
 }
 
 void vulkan_data_mesh_deinit(vulkan_data_mesh *mesh) { utarray_free(mesh->primitives); }

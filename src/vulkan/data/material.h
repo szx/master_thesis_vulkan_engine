@@ -10,14 +10,13 @@
 typedef struct vulkan_scene_node vulkan_scene_node;
 
 typedef struct vulkan_data_material {
-  vulkan_data_scene *sceneData; /// vulkan_data_scene pointer
   vec4 baseColorFactor;         /// sRGBA
   float metallicFactor;
   float roughnessFactor;
   vulkan_data_texture *baseColorTexture;
   vulkan_data_texture *metallicRoughnessTexture;
 
-  DECL_SCENE_DATA(material)
+  DECL_VULKAN_ENTITY(material)
 } vulkan_data_material;
 
 void vulkan_data_material_init(vulkan_data_material *material, vulkan_data_scene *sceneData);

@@ -47,7 +47,7 @@ vulkan_data_image *parse_cgltf_image(vulkan_data_scene *sceneData, cgltf_image *
     return sceneData->images;
   }
   vulkan_data_image *image = core_alloc(sizeof(vulkan_data_image));
-  vulkan_data_image_init(image);
+  vulkan_data_image_init(image, sceneData);
 
   UT_string *imagePath = get_path_dirname(sceneData->path);
   append_to_path(imagePath, cgltfImage->uri);
@@ -85,7 +85,7 @@ vulkan_data_sampler *parse_cgltf_sampler(vulkan_data_scene *sceneData,
     return sceneData->samplers;
   }
   vulkan_data_sampler sampler = {0};
-  vulkan_data_sampler_init(&sampler);
+  vulkan_data_sampler_init(&sampler, sceneData);
 
   // sampler.image = parse_cgltf_image(sceneData, cgltfSampler->image);
 
@@ -99,7 +99,7 @@ vulkan_data_sampler *parse_cgltf_sampler(vulkan_data_scene *sceneData,
 
   log_debug("adding new sampler");
   vulkan_data_sampler *newSampler = core_alloc(sizeof(vulkan_data_sampler));
-  vulkan_data_sampler_init(newSampler);
+  vulkan_data_sampler_init(newSampler, sceneData);
   core_memcpy(newSampler, &sampler, sizeof(sampler));
   DL_APPEND(sceneData->samplers, newSampler);
   return newSampler;
@@ -352,7 +352,7 @@ vulkan_data_scene *parse_cgltf_scene(UT_string *name, UT_string *path) {
 
   // parse cameras
   vulkan_data_camera defaultCamera;
-  vulkan_data_camera_init(&defaultCamera);
+  vulkan_data_camera_init(&defaultCamera, sceneData);
   utarray_push_back(sceneData->cameras, &defaultCamera);
   // TODO: cameras from gltf file
 
@@ -411,7 +411,7 @@ void vulkan_data_scene_deserialize(vulkan_data_scene *sceneData, data_asset_db *
   data_key *cameraHash = NULL;
   while ((cameraHash = (utarray_next(cameraKeyArray.values, cameraHash)))) {
     vulkan_data_camera camera;
-    vulkan_data_camera_init(&camera);
+    vulkan_data_camera_init(&camera, sceneData);
     vulkan_data_camera_deserialize(&camera, assetDb, *cameraHash);
     utarray_push_back(sceneData->cameras, &camera);
   }
@@ -436,12 +436,12 @@ vulkan_data_scene *vulkan_data_scene_create(UT_string *name) {
 
   sceneData->images = NULL;
   vulkan_data_image *defaultImage = core_alloc(sizeof(vulkan_data_image));
-  vulkan_data_image_init(defaultImage);
+  vulkan_data_image_init(defaultImage, sceneData);
   DL_APPEND(sceneData->images, defaultImage);
 
   sceneData->samplers = NULL;
   vulkan_data_sampler *defaultSampler = core_alloc(sizeof(vulkan_data_sampler));
-  vulkan_data_sampler_init(defaultSampler);
+  vulkan_data_sampler_init(defaultSampler, sceneData);
   DL_APPEND(sceneData->samplers, defaultSampler);
 
   sceneData->textures = NULL;
@@ -523,7 +523,7 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
   core_free(sceneData);
 }
 
-#define GET_OBJECT_BY_KEY(_type, ...)                                                              \
+#define GET_VULKAN_ENTITY_BY_KEY(_type)                                                            \
   vulkan_data_##_type *vulkan_data_scene_get_##_type##_by_key(                                     \
       vulkan_data_scene *sceneData, data_asset_db *assetDb, data_key key) {                        \
     vulkan_data_##_type *object = NULL;                                                            \
@@ -536,7 +536,7 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
     }                                                                                              \
     if (object == NULL && assetDb != NULL) {                                                       \
       vulkan_data_##_type *newObject = core_alloc(sizeof(vulkan_data_##_type));                    \
-      vulkan_data_##_type##_init(newObject, ##__VA_ARGS__);                                        \
+      vulkan_data_##_type##_init(newObject, sceneData);                                            \
       vulkan_data_##_type##_deserialize(newObject, assetDb, key);                                  \
       LL_PREPEND(sceneData->_type##s, newObject);                                                  \
       object = sceneData->_type##s;                                                                \
@@ -544,12 +544,12 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
     return object;                                                                                 \
   }
 
-GET_OBJECT_BY_KEY(image)
-GET_OBJECT_BY_KEY(sampler)
-GET_OBJECT_BY_KEY(texture, sceneData)
-GET_OBJECT_BY_KEY(material, sceneData)
-GET_OBJECT_BY_KEY(primitive, sceneData)
-GET_OBJECT_BY_KEY(object, sceneData)
+GET_VULKAN_ENTITY_BY_KEY(image)
+GET_VULKAN_ENTITY_BY_KEY(sampler)
+GET_VULKAN_ENTITY_BY_KEY(texture)
+GET_VULKAN_ENTITY_BY_KEY(material)
+GET_VULKAN_ENTITY_BY_KEY(primitive)
+GET_VULKAN_ENTITY_BY_KEY(object)
 
 vulkan_data_scene *vulkan_data_scene_create_with_gltf_file(UT_string *sceneName,
                                                            UT_string *gltfPath) {

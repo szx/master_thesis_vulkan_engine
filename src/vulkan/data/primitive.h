@@ -12,7 +12,6 @@
 typedef struct vulkan_data_scene vulkan_data_scene;
 
 typedef struct vulkan_data_primitive {
-  vulkan_data_scene *sceneData; /// vulkan_data_scene pointer
   VkPrimitiveTopology topology;
   uint32_t vertexCount;
   UT_array *positions; /// vec3
@@ -23,7 +22,7 @@ typedef struct vulkan_data_primitive {
   UT_array *indices; /// uint32_t
   vulkan_data_material *material;
 
-  DECL_SCENE_DATA(primitive)
+  DECL_VULKAN_ENTITY(primitive)
 } vulkan_data_primitive;
 
 void vulkan_data_primitive_init(vulkan_data_primitive *primitive, vulkan_data_scene *sceneData);

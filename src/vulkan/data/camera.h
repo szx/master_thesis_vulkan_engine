@@ -17,10 +17,10 @@ typedef struct vulkan_data_camera {
   float farZ;        /// Max depth range: distance from far clipping plane (along +Z axis!)
 
   bool dirty;    /// True if camera state updated.
-  DECL_SCENE_DATA(camera)
+  DECL_VULKAN_ENTITY(camera)
 } vulkan_data_camera;
 
-void vulkan_data_camera_init(vulkan_data_camera *camera);
+void vulkan_data_camera_init(vulkan_data_camera *camera, vulkan_data_scene *sceneData);
 void vulkan_data_camera_deinit(vulkan_data_camera *camera);
 
 void vulkan_data_camera_update_aspect_ratio(vulkan_data_camera *camera, float aspectRatio);

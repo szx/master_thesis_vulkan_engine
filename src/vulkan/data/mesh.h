@@ -10,10 +10,9 @@
 #include "common.h"
 
 typedef struct vulkan_data_mesh {
-  vulkan_data_scene *sceneData; // vulkan_data_scene pointer
   UT_array *primitives;         /// vulkan_data_primitive_index array.
 
-  DECL_SCENE_DATA(mesh)
+  DECL_VULKAN_ENTITY(mesh)
 } vulkan_data_mesh;
 
 void vulkan_data_mesh_init(vulkan_data_mesh *mesh, vulkan_data_scene *sceneData);

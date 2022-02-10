@@ -11,7 +11,7 @@ void vulkan_data_primitive_init(vulkan_data_primitive *primitive, vulkan_data_sc
   utarray_alloc(primitive->texCoords, sizeof(vec2));
   utarray_alloc(primitive->indices, sizeof(uint32_t));
   primitive->material = NULL;
-  DEF_SCENE_DATA(primitive)
+  DEF_VULKAN_ENTITY(primitive)
 }
 
 void vulkan_data_primitive_deinit(vulkan_data_primitive *primitive) {

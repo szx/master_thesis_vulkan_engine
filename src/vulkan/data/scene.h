@@ -45,6 +45,9 @@ vulkan_data_primitive *vulkan_data_scene_get_primitive_by_key(vulkan_data_scene 
 vulkan_data_object *vulkan_data_scene_get_object_by_key(vulkan_data_scene *sceneData,
                                                         data_asset_db *assetDb, data_key key);
 
+// HIRO vulkan_data_object *vulkan_data_scene_add_image(vulkan_data_scene *sceneData, data_asset_db
+// *assetDb);
+
 /* asset pipeline */
 vulkan_data_scene *vulkan_data_scene_create_with_gltf_file(UT_string *sceneName,
                                                            UT_string *gltfPath);

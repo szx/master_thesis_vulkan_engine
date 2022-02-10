@@ -9,12 +9,11 @@
 #include "mesh.h"
 
 typedef struct vulkan_data_object {
-  vulkan_data_scene *sceneData; /// vulkan_data_scene pointer
   vulkan_data_mesh *mesh;       /// Can be NULL if object is only transforms children.
   mat4 transform;
   UT_array *children; /// vulkan_data_object* array
 
-  DECL_SCENE_DATA(object)
+  DECL_VULKAN_ENTITY(object)
 } vulkan_data_object;
 
 void vulkan_data_object_init(vulkan_data_object *object, vulkan_data_scene *sceneData);

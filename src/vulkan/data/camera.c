@@ -1,6 +1,6 @@
 #include "camera.h"
 
-void vulkan_data_camera_init(vulkan_data_camera *camera) {
+void vulkan_data_camera_init(vulkan_data_camera *camera, vulkan_data_scene *sceneData) {
   glm_vec3((vec3){0.0f, 0.0f, -1.0f}, camera->position);
   glm_quat_identity(camera->rotation);
   camera->fovY = 90.0f;
@@ -8,7 +8,7 @@ void vulkan_data_camera_init(vulkan_data_camera *camera) {
   camera->nearZ = 0.1f;
   camera->farZ = 256.0f;
   camera->dirty = true;
-  DEF_SCENE_DATA(camera)
+  DEF_VULKAN_ENTITY(camera)
 }
 
 void vulkan_data_camera_deinit(vulkan_data_camera *camera) {}

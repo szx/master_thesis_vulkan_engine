@@ -3,14 +3,14 @@
 
 /* image */
 
-void vulkan_data_image_init(vulkan_data_image *image) {
+void vulkan_data_image_init(vulkan_data_image *image, vulkan_data_scene *sceneData) {
   image->width = 0;
   image->height = 0;
   image->depth = 0;
   image->channels = 0;
   utarray_alloc(image->data, sizeof(uint8_t));
 
-  DEF_SCENE_DATA(image)
+  DEF_VULKAN_ENTITY(image)
 }
 
 void vulkan_data_image_deinit(vulkan_data_image *image) { utarray_free(image->data); }
@@ -54,15 +54,13 @@ void vulkan_data_image_debug_print(vulkan_data_image *image) {
 
 /* sampler */
 
-void vulkan_data_sampler_init(vulkan_data_sampler *sampler) {
+void vulkan_data_sampler_init(vulkan_data_sampler *sampler, vulkan_data_scene *sceneData) {
   sampler->magFilter = VK_FILTER_NEAREST;
   sampler->minFilter = VK_FILTER_NEAREST;
   sampler->addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
   sampler->addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 
-  sampler->hash = vulkan_data_sampler_calculate_key(sampler);
-  sampler->prev = NULL;
-  sampler->next = NULL;
+  DEF_VULKAN_ENTITY(sampler)
 }
 
 void vulkan_data_sampler_deinit(vulkan_data_sampler *sampler) {}
@@ -114,13 +112,10 @@ void vulkan_data_sampler_debug_print(vulkan_data_sampler *sampler) {
 /* texture */
 
 void vulkan_data_texture_init(vulkan_data_texture *texture, vulkan_data_scene *sceneData) {
-  texture->sceneData = sceneData;
   texture->image = NULL;
   texture->sampler = NULL;
 
-  data_key_init(&texture->hash, 0);
-  texture->prev = NULL;
-  texture->next = NULL;
+  DEF_VULKAN_ENTITY(texture)
 }
 
 void vulkan_data_texture_deinit(vulkan_data_texture *texture) {}
@@ -128,8 +123,12 @@ void vulkan_data_texture_deinit(vulkan_data_texture *texture) {}
 data_key vulkan_data_texture_calculate_key(vulkan_data_texture *texture) {
   hash_t value;
   HASH_START(hashState)
-  HASH_UPDATE(hashState, &texture->image->hash, sizeof(texture->image->hash))
-  HASH_UPDATE(hashState, &texture->sampler->hash, sizeof(texture->sampler->hash))
+  if (texture->image) {
+    HASH_UPDATE(hashState, &texture->image->hash, sizeof(texture->image->hash))
+  }
+  if (texture->sampler) {
+    HASH_UPDATE(hashState, &texture->sampler->hash, sizeof(texture->sampler->hash))
+  }
   HASH_DIGEST(hashState, value)
   HASH_END(hashState)
   return (data_key){value};

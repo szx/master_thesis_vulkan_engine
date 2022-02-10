@@ -7,7 +7,7 @@ void vulkan_data_object_init(vulkan_data_object *object, vulkan_data_scene *scen
   glm_mat4_identity(object->transform);
   utarray_alloc(object->children, sizeof(vulkan_data_object *));
 
-  DEF_SCENE_DATA(object)
+  DEF_VULKAN_ENTITY(object)
 }
 
 void vulkan_data_object_deinit(vulkan_data_object *object) {
