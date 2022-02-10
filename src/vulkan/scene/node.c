@@ -18,8 +18,10 @@ vulkan_scene_node *vulkan_scene_node_create(vulkan_scene_node_type type, void *e
 
   if (createCache) {
     sceneNode->cache = vulkan_scene_cache_create(sceneNode);
+    sceneNode->dirty = true;
   } else {
     sceneNode->cache = NULL;
+    sceneNode->dirty = false;
   }
 
   utarray_alloc(sceneNode->successors, sizeof(vulkan_scene_node *));
@@ -52,13 +54,16 @@ void vulkan_scene_node_add_observer(vulkan_scene_node *sceneNode, vulkan_scene_n
 }
 
 void debug_log_node(vulkan_scene_node *sceneNode) {
-  log_raw(stdout, "\"%p\\n%s\\nsuccessor_%zu\\nobserver_%zu\\n", sceneNode,
+  log_raw(stdout, "\"%p\\n%s\\nsuccessors: %zu\\nobservers: %zu\\n", sceneNode,
           vulkan_scene_node_type_debug_str(sceneNode->type), utarray_len(sceneNode->successors),
           utarray_len(sceneNode->observers));
   if (sceneNode->type == vulkan_scene_node_type_primitive) {
-    log_raw(stdout, "vertexCount_%d\\n", sceneNode->primitive->vertexCount);
+    log_raw(stdout, "vertex count: %d\\n", sceneNode->primitive->vertexCount);
   }
-  log_raw(stdout, "\"");
+  if (sceneNode->cache) {
+    log_raw(stdout, "dirty: %d\\n", sceneNode->dirty);
+  }
+  log_raw(stdout, "\"", sceneNode->dirty);
 }
 
 void vulkan_scene_node_debug_print(vulkan_scene_node *sceneNode) {

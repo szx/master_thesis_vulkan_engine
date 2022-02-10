@@ -184,6 +184,8 @@ TEST scene_graph_building() {
       }
     }
     ASSERT_EQ(utarray_len(sceneNode->observers), 0);
+
+    ASSERT_FALSE(sceneNode->dirty);
   }
 
   vulkan_scene_tree_destroy(sceneTree);

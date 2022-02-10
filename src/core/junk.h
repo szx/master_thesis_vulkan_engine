@@ -46,6 +46,14 @@ typedef XXH64_hash_t hash_t;
 #define HASH_DIGEST(_state, _var) _var = XXH64_digest(_state);
 #define HASH_END(_state) XXH64_freeState(_state);
 
+#define MAT4_FORMAT_STRING(_separator)                                                             \
+  "%f %f %f %f" _separator "%f %f %f %f" _separator "%f %f %f %f" _separator "%f %f %f %f"
+
+#define MAT4_FORMAT_ARGS(_prefix)                                                                  \
+  _prefix[0][0], _prefix[0][1], _prefix[0][2], _prefix[0][3], _prefix[1][0], _prefix[1][1],        \
+      _prefix[1][2], _prefix[1][3], _prefix[2][0], _prefix[2][1], _prefix[2][2], _prefix[2][3],    \
+      _prefix[3][0], _prefix[3][1], _prefix[3][2], _prefix[3][3]
+
 /* macro magic */
 // https://embeddedartistry.com/blog/2020/07/27/exploiting-the-preprocessor-for-fun-and-profit/
 

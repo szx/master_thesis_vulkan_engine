@@ -13,8 +13,9 @@ typedef struct vulkan_scene_node vulkan_scene_node;
 
 typedef struct vulkan_scene_cache {
   vulkan_scene_node *node;
+  /* scene node state */
   bool visible;
-  // HIRO more cached state
+  mat4 transform; /// Accumulated from object data.
 } vulkan_scene_cache;
 
 vulkan_scene_cache *vulkan_scene_cache_create(vulkan_scene_node *sceneNode);

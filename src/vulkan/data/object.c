@@ -91,13 +91,8 @@ void vulkan_data_object_deserialize(vulkan_data_object *object, data_asset_db *a
 
 void vulkan_data_object_debug_print(vulkan_data_object *object, int indent) {
   log_debug("%*sobject:", indent, "");
-  log_debug("%*stransform=%f %f %f %f|%f %f %f %f|%f %f %f %f|%f %f %f %f", indent + 2, "",
-            object->transform[0][0], object->transform[0][1], object->transform[0][2],
-            object->transform[0][3], object->transform[1][0], object->transform[1][1],
-            object->transform[1][2], object->transform[1][3], object->transform[2][0],
-            object->transform[2][1], object->transform[2][2], object->transform[2][3],
-            object->transform[3][0], object->transform[3][1], object->transform[3][2],
-            object->transform[3][3]);
+  log_debug("%*stransform=" MAT4_FORMAT_STRING(" | "), indent + 2, "",
+            MAT4_FORMAT_ARGS(object->transform));
   log_debug("%*shash=%zu", indent + 2, "", object->hash);
 
   if (object->mesh) {

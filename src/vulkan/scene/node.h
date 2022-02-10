@@ -31,6 +31,7 @@ typedef struct vulkan_scene_node {
   }; // pointer to entity in scene data
 
   vulkan_scene_cache *cache; /// NULL for scene graph nodes.
+  bool dirty;                /// True if scene node state changed and cache is out of sync.
 
   UT_array *successors; /// vulkan_scene_node* list of successors in scene graph
 
