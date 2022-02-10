@@ -171,22 +171,33 @@ TEST scene_graph_building() {
   vulkan_scene_graph *sceneGraph = vulkan_scene_graph_create(assetDbSceneData);
   vulkan_scene_tree *sceneTree = vulkan_scene_tree_create(sceneGraph);
   vulkan_scene_graph_debug_print(sceneGraph);
-  vulkan_scene_tree_debug_print(sceneTree);
 
-  // Verify scene tree.
-  vulkan_scene_node *sceneNode = NULL;
-  DL_FOREACH(sceneTree->nodes, sceneNode) {
-    if (sceneNode->type != vulkan_scene_node_type_root) {
-      if (sceneNode->type != vulkan_scene_node_type_primitive) {
-        ASSERT_EQ(utarray_len(sceneNode->successors), 1);
-      } else {
-        ASSERT_EQ(utarray_len(sceneNode->successors), 0);
-      }
-    }
-    ASSERT_EQ(utarray_len(sceneNode->observers), 0);
+#define ASSERT_TREE()                                                                              \
+  do {                                                                                             \
+    vulkan_scene_tree_debug_print(sceneTree);                                                      \
+    ASSERT_EQ(utarray_len(sceneTree->dirtyNodes), 0);                                              \
+    vulkan_scene_node *sceneNode = NULL;                                                           \
+    DL_FOREACH(sceneTree->nodes, sceneNode) {                                                      \
+      if (sceneNode->type == vulkan_scene_node_type_root ||                                        \
+          sceneNode->type == vulkan_scene_node_type_mesh) {                                        \
+        ASSERT_GT(utarray_len(sceneNode->successors), 0);                                          \
+      } else if (sceneNode->type == vulkan_scene_node_type_primitive) {                            \
+        ASSERT_EQ(utarray_len(sceneNode->successors), 0);                                          \
+      } else {                                                                                     \
+        ASSERT_EQ(utarray_len(sceneNode->successors), 1);                                          \
+      }                                                                                            \
+      ASSERT_FALSE(sceneNode->dirty);                                                              \
+    }                                                                                              \
+  } while (0)
 
-    ASSERT_FALSE(sceneNode->dirty);
-  }
+  ASSERT_TREE();
+  vulkan_data_object *firstObject = assetDbSceneData->objects;
+  firstObject->transform[0][0] = 2;
+  // HIRO refactor
+  vulkan_scene_graph_set_dirty(sceneGraph, firstObject->graphNode);
+  vulkan_scene_tree_validate(sceneTree);
+
+  ASSERT_TREE();
 
   vulkan_scene_tree_destroy(sceneTree);
   vulkan_scene_graph_destroy(sceneGraph);

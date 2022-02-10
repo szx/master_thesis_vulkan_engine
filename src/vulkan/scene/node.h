@@ -33,7 +33,8 @@ typedef struct vulkan_scene_node {
   vulkan_scene_cache *cache; /// NULL for scene graph nodes.
   bool dirty;                /// True if scene node state changed and cache is out of sync.
 
-  UT_array *successors; /// vulkan_scene_node* list of successors in scene graph
+  vulkan_scene_node *parent; /// Parent node for scene tree. Last parent node for scene graph.
+  UT_array *successors;      /// vulkan_scene_node* list of successors in scene graph
 
   UT_array *observers; /// vulkan_scene_node* list of dependent scene tree nodes created from this
                        /// node that should be notified when this node's state changes.

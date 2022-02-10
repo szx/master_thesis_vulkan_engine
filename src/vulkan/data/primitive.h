@@ -22,8 +22,10 @@ typedef struct vulkan_data_primitive {
   // TODO: LOD index buffers.
   UT_array *indices; /// uint32_t
   vulkan_data_material *material;
+
   data_key hash; /// Hash, used to prevent duplicates in asset database.
   struct vulkan_data_primitive *prev, *next;
+  vulkan_scene_node *graphNode; /// Corresponding scene graph node pointer.
 } vulkan_data_primitive;
 
 void vulkan_data_primitive_init(vulkan_data_primitive *primitive, vulkan_data_scene *sceneData);

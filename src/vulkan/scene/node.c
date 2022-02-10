@@ -18,12 +18,12 @@ vulkan_scene_node *vulkan_scene_node_create(vulkan_scene_node_type type, void *e
 
   if (createCache) {
     sceneNode->cache = vulkan_scene_cache_create(sceneNode);
-    sceneNode->dirty = true;
   } else {
     sceneNode->cache = NULL;
-    sceneNode->dirty = false;
   }
+  sceneNode->dirty = false;
 
+  sceneNode->parent = NULL;
   utarray_alloc(sceneNode->successors, sizeof(vulkan_scene_node *));
 
   utarray_alloc(sceneNode->observers, sizeof(vulkan_scene_node *));
@@ -47,6 +47,7 @@ void vulkan_scene_node_destroy(vulkan_scene_node *sceneNode) {
 void vulkan_scene_node_add_successor(vulkan_scene_node *sceneNode,
                                      vulkan_scene_node *successorNode) {
   utarray_push_back(sceneNode->successors, &successorNode);
+  successorNode->parent = sceneNode;
 }
 
 void vulkan_scene_node_add_observer(vulkan_scene_node *sceneNode, vulkan_scene_node *observerNode) {

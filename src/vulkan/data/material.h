@@ -8,6 +8,8 @@
 #include "../functions.h"
 #include "texture.h"
 
+typedef struct vulkan_scene_node vulkan_scene_node;
+
 typedef struct vulkan_data_material {
   vulkan_data_scene *sceneData; /// vulkan_data_scene pointer
   vec4 baseColorFactor;         /// sRGBA
@@ -18,6 +20,7 @@ typedef struct vulkan_data_material {
 
   data_key hash; /// Hash, used to prevent duplicates in asset database.
   struct vulkan_data_material *prev, *next;
+  vulkan_scene_node *graphNode; /// Corresponding scene graph node pointer.
 } vulkan_data_material;
 
 void vulkan_data_material_init(vulkan_data_material *material, vulkan_data_scene *sceneData);

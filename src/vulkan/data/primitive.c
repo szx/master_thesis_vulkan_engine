@@ -14,6 +14,7 @@ void vulkan_data_primitive_init(vulkan_data_primitive *primitive, vulkan_data_sc
   data_key_init(&primitive->hash, 0);
   primitive->prev = NULL;
   primitive->next = NULL;
+  primitive->graphNode = NULL;
 }
 
 void vulkan_data_primitive_deinit(vulkan_data_primitive *primitive) {

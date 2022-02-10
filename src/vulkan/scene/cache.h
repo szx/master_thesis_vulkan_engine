@@ -13,7 +13,9 @@ typedef struct vulkan_scene_node vulkan_scene_node;
 
 typedef struct vulkan_scene_cache {
   vulkan_scene_node *node;
-  /* scene node state */
+
+  /* cache state */
+  size_t distanceFromRoot;
   bool visible;
   mat4 transform; /// Accumulated from object data.
 } vulkan_scene_cache;
@@ -21,6 +23,7 @@ typedef struct vulkan_scene_cache {
 vulkan_scene_cache *vulkan_scene_cache_create(vulkan_scene_node *sceneNode);
 void vulkan_scene_cache_destroy(vulkan_scene_cache *sceneCache);
 
-// HIRO accumulate_from_node
+void vulkan_scene_cache_set_with_node(vulkan_scene_cache *sceneCache);
+void vulkan_scene_cache_accumulate(vulkan_scene_cache *sceneCache, vulkan_scene_cache *parentCache);
 
 void vulkan_scene_cache_debug_print(vulkan_scene_cache *sceneCache);

@@ -12,6 +12,7 @@ void vulkan_data_material_init(vulkan_data_material *material, vulkan_data_scene
   data_key_init(&material->hash, 0);
   material->prev = NULL;
   material->next = NULL;
+  material->graphNode = NULL;
 }
 
 void vulkan_data_material_deinit(vulkan_data_material *material) {}

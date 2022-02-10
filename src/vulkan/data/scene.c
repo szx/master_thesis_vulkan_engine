@@ -347,7 +347,7 @@ vulkan_data_scene *parse_cgltf_scene(UT_string *name, UT_string *path) {
   // parse objects
   for (size_t objectIdx = 0; objectIdx < cgltfScene->nodes_count; objectIdx++) {
     vulkan_data_object *object = parse_cgltf_node(sceneData, cgltfScene->nodes[objectIdx]);
-    utarray_push_back(sceneData->rootObjects, object);
+    utarray_push_back(sceneData->rootObjects, &object);
   }
 
   // parse cameras
@@ -386,8 +386,9 @@ void vulkan_data_scene_serialize(vulkan_data_scene *sceneData, data_asset_db *as
 
   UT_array *objectKeys = NULL;
   utarray_alloc(objectKeys, sizeof(data_key));
-  vulkan_data_object *object = NULL;
-  while ((object = utarray_next(sceneData->rootObjects, object))) {
+  vulkan_data_object **objectIt = NULL;
+  while ((objectIt = utarray_next(sceneData->rootObjects, objectIt))) {
+    vulkan_data_object *object = *objectIt;
     // vulkan_data_object_debug_print(object);
     vulkan_data_object_serialize(object, assetDb);
     utarray_push_back(objectKeys, &object->hash);
@@ -421,7 +422,7 @@ void vulkan_data_scene_deserialize(vulkan_data_scene *sceneData, data_asset_db *
     /* object data */
     vulkan_data_object *object =
         vulkan_data_scene_get_object_by_key(sceneData, assetDb, *objectKey);
-    utarray_push_back(sceneData->rootObjects, object);
+    utarray_push_back(sceneData->rootObjects, &object);
   }
   data_key_array_deinit(&objectKeyArray);
 }
@@ -465,7 +466,7 @@ vulkan_data_scene *vulkan_data_scene_create(UT_string *name) {
 
   utarray_alloc(sceneData->cameras, sizeof(vulkan_data_camera));
 
-  utarray_alloc(sceneData->rootObjects, sizeof(vulkan_data_object));
+  utarray_alloc(sceneData->rootObjects, sizeof(vulkan_data_object *));
 
   sceneData->hash = vulkan_data_scene_calculate_key(sceneData);
   return sceneData;
@@ -569,10 +570,10 @@ vulkan_data_scene *vulkan_data_scene_create_with_asset_db(data_asset_db *assetDb
 
 void vulkan_data_scene_debug_print(vulkan_data_scene *sceneData) {
   log_debug("SCENE_DATA:");
-  vulkan_data_object *object = NULL;
+  vulkan_data_object **objectIt = NULL;
   size_t i = 0;
-  while ((object = utarray_next(sceneData->rootObjects, object))) {
+  while ((objectIt = utarray_next(sceneData->rootObjects, objectIt))) {
     log_debug("root object #%d", i++);
-    vulkan_data_object_debug_print(object, 2);
+    vulkan_data_object_debug_print(*objectIt, 2);
   }
 }

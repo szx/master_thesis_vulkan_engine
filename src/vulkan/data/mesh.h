@@ -11,12 +11,14 @@
 #include "../functions.h"
 
 typedef struct vulkan_data_scene vulkan_data_scene;
+typedef struct vulkan_scene_node vulkan_scene_node;
 
 typedef struct vulkan_data_mesh {
   vulkan_data_scene *sceneData; // vulkan_data_scene pointer
   UT_array *primitives;         /// vulkan_data_primitive_index array.
 
   data_key hash;                /// Hash, used to prevent duplicates in asset database.
+  vulkan_scene_node *graphNode; /// Corresponding scene graph node pointer.
 } vulkan_data_mesh;
 
 void vulkan_data_mesh_init(vulkan_data_mesh *mesh, vulkan_data_scene *sceneData);
