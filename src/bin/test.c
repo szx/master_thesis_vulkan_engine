@@ -19,7 +19,7 @@ TEST gltf_loading() {
   vulkan_data_scene *assetDbSceneData = vulkan_data_scene_create_with_asset_db(assetDb, sceneName);
 
   ASSERT_STR_EQ(utstring_body(gltfSceneData->name), utstring_body(assetDbSceneData->name));
-  ASSERT_EQ(gltfSceneData->dirty, assetDbSceneData->dirty);
+  ASSERT_EQ(gltfSceneData->hash.value, assetDbSceneData->hash.value);
   size_t gltfObjectCount, assetDbObjectCount;
   vulkan_data_object *gltfNode = NULL;
   vulkan_data_object *assetDbNode = NULL;
@@ -173,7 +173,18 @@ TEST scene_graph_building() {
   vulkan_scene_graph_debug_print(sceneGraph);
   vulkan_scene_tree_debug_print(sceneTree);
 
-  // HIRO check observers
+  // Verify scene tree.
+  vulkan_scene_node *sceneNode = NULL;
+  DL_FOREACH(sceneTree->nodes, sceneNode) {
+    if (sceneNode->type != vulkan_scene_node_type_root) {
+      if (sceneNode->type != vulkan_scene_node_type_primitive) {
+        ASSERT_EQ(utarray_len(sceneNode->successors), 1);
+      } else {
+        ASSERT_EQ(utarray_len(sceneNode->successors), 0);
+      }
+    }
+    ASSERT_EQ(utarray_len(sceneNode->observers), 0);
+  }
 
   vulkan_scene_tree_destroy(sceneTree);
   vulkan_scene_graph_destroy(sceneGraph);

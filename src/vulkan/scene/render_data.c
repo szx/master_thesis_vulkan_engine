@@ -79,11 +79,11 @@ void vulkan_scene_render_data_update_data(vulkan_scene_render_data *sceneRenderD
     vulkan_uniform_buffer_update_with_camera(sceneRenderData->uniformBuffer, camera);
   }
 
-  sceneRenderData->data->dirty = sceneRenderData->uniformBuffer->dirty;
+  // sceneRenderData->data->dirty = sceneRenderData->uniformBuffer->dirty;
 }
 
 void vulkan_scene_render_data_send_to_device(vulkan_scene_render_data *sceneRenderData) {
-  assert(!sceneRenderData->data->dirty);
+  // assert(!sceneRenderData->data->dirty);
   vulkan_geometry_buffer_send_to_device(sceneRenderData->vkd, sceneRenderData->geometryBuffer);
   vulkan_uniform_buffer_send_to_device(sceneRenderData->uniformBuffer);
 }

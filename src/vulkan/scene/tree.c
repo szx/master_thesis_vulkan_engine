@@ -18,7 +18,7 @@ void vulkan_scene_tree_destroy(vulkan_scene_tree *sceneTree) {
 
 vulkan_scene_node *add_node(vulkan_scene_tree *sceneTree, vulkan_scene_node_type type,
                             void *entity) {
-  vulkan_scene_node *childNode = vulkan_scene_node_create(type, entity);
+  vulkan_scene_node *childNode = vulkan_scene_node_create(type, entity, true);
   DL_APPEND(sceneTree->nodes, childNode);
   return childNode;
 }

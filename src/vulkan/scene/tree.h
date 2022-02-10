@@ -7,6 +7,7 @@
 #include "graph.h"
 
 // HIRO add adding/removing nodes from scene graph
+//  - Scene graph set_dirty() sets observers as dirty and adds to scene tree's dirty vector.
 // HIRO add accumulated parameters to nodes
 // HIRO add invalidation
 

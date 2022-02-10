@@ -25,7 +25,7 @@ vulkan_scene_node *add_entity(vulkan_scene_graph *sceneGraph, vulkan_scene_node_
       return sceneNode;
     }
   }
-  vulkan_scene_node *childNode = vulkan_scene_node_create(type, entity);
+  vulkan_scene_node *childNode = vulkan_scene_node_create(type, entity, false);
   DL_APPEND(sceneGraph->root, childNode);
   return childNode;
 }
@@ -77,7 +77,7 @@ void vulkan_scene_graph_create_with_scene_data(vulkan_scene_graph *sceneGraph,
   sceneGraph->data = sceneData;
   assert(sceneGraph->root == NULL);
 
-  vulkan_scene_node *rootNode = vulkan_scene_node_create(vulkan_scene_node_type_root, NULL);
+  vulkan_scene_node *rootNode = vulkan_scene_node_create(vulkan_scene_node_type_root, NULL, false);
   DL_APPEND(sceneGraph->root, rootNode);
 
   vulkan_data_object *rootObject = NULL;

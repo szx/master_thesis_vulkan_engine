@@ -1,6 +1,7 @@
 #include "node.h"
 
-vulkan_scene_node *vulkan_scene_node_create(vulkan_scene_node_type type, void *entity) {
+vulkan_scene_node *vulkan_scene_node_create(vulkan_scene_node_type type, void *entity,
+                                            bool createCache) {
   vulkan_scene_node *sceneNode = core_alloc(sizeof(vulkan_scene_node));
 
   sceneNode->type = type;
@@ -15,6 +16,12 @@ vulkan_scene_node *vulkan_scene_node_create(vulkan_scene_node_type type, void *e
     assert(0);
   }
 
+  if (createCache) {
+    sceneNode->cache = vulkan_scene_cache_create(sceneNode);
+  } else {
+    sceneNode->cache = NULL;
+  }
+
   utarray_alloc(sceneNode->successors, sizeof(vulkan_scene_node *));
 
   utarray_alloc(sceneNode->observers, sizeof(vulkan_scene_node *));
@@ -25,6 +32,10 @@ vulkan_scene_node *vulkan_scene_node_create(vulkan_scene_node_type type, void *e
 }
 
 void vulkan_scene_node_destroy(vulkan_scene_node *sceneNode) {
+  if (sceneNode->cache) {
+    vulkan_scene_cache_destroy(sceneNode->cache);
+  }
+
   // NOTE: Successor and observer nodes are freed by scene graph and scene tree.
   utarray_free(sceneNode->successors);
   utarray_free(sceneNode->observers);
@@ -41,17 +52,26 @@ void vulkan_scene_node_add_observer(vulkan_scene_node *sceneNode, vulkan_scene_n
 }
 
 void debug_log_node(vulkan_scene_node *sceneNode) {
-  log_raw(stdout, "%s_%p_successor_%zu_observer_%zu",
-          vulkan_scene_node_type_debug_str(sceneNode->type), sceneNode,
-          utarray_len(sceneNode->successors), utarray_len(sceneNode->observers));
+  log_raw(stdout, "\"%p\\n%s\\nsuccessor_%zu\\nobserver_%zu\\n", sceneNode,
+          vulkan_scene_node_type_debug_str(sceneNode->type), utarray_len(sceneNode->successors),
+          utarray_len(sceneNode->observers));
   if (sceneNode->type == vulkan_scene_node_type_primitive) {
-    log_raw(stdout, "_vertexCount_%d", sceneNode->primitive->vertexCount);
+    log_raw(stdout, "vertexCount_%d\\n", sceneNode->primitive->vertexCount);
   }
+  log_raw(stdout, "\"");
 }
 
 void vulkan_scene_node_debug_print(vulkan_scene_node *sceneNode) {
   debug_log_node(sceneNode);
   log_raw(stdout, "; ");
+
+  if (sceneNode->cache) {
+    log_raw(stdout, " { rank=same; ");
+    debug_log_node(sceneNode);
+    log_raw(stdout, " -> ");
+    vulkan_scene_cache_debug_print(sceneNode->cache);
+    log_raw(stdout, " } ");
+  }
 
   vulkan_scene_node **successorIt = NULL;
   while ((successorIt = utarray_next(sceneNode->successors, successorIt))) {

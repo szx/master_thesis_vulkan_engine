@@ -467,7 +467,6 @@ vulkan_data_scene *vulkan_data_scene_create(UT_string *name) {
 
   utarray_alloc(sceneData->rootObjects, sizeof(vulkan_data_object));
 
-  sceneData->dirty = true;
   sceneData->hash = vulkan_data_scene_calculate_key(sceneData);
   return sceneData;
 }
