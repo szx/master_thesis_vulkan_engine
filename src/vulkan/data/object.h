@@ -5,8 +5,7 @@
  */
 #pragma once
 
-#include "../../data/data.h"
-#include "../functions.h"
+#include "common.h"
 #include "mesh.h"
 
 typedef struct vulkan_data_object {
@@ -15,9 +14,7 @@ typedef struct vulkan_data_object {
   mat4 transform;
   UT_array *children; /// vulkan_data_object* array
 
-  data_key hash; /// Hash, used to prevent duplicates in asset database.
-  struct vulkan_data_object *prev, *next;
-  vulkan_scene_node *graphNode; /// Corresponding scene graph node pointer.
+  DECL_SCENE_DATA(object)
 } vulkan_data_object;
 
 void vulkan_data_object_init(vulkan_data_object *object, vulkan_data_scene *sceneData);

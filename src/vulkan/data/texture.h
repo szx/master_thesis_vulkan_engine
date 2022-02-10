@@ -4,8 +4,7 @@
  */
 #pragma once
 
-#include "../../data/data.h"
-#include "../functions.h"
+#include "common.h"
 
 /* image */
 
@@ -13,8 +12,7 @@ typedef struct vulkan_data_image {
   uint32_t width, height, depth, channels;
   UT_array *data; // uint8_t array
 
-  data_key hash; /// Hash, used to prevent duplicates in asset database.
-  struct vulkan_data_image *prev, *next;
+  DECL_SCENE_DATA(image)
 } vulkan_data_image;
 
 void vulkan_data_image_init(vulkan_data_image *image);
@@ -32,8 +30,7 @@ typedef struct vulkan_data_sampler {
   VkFilter magFilter, minFilter;
   VkSamplerAddressMode addressModeU, addressModeV;
 
-  data_key hash; /// Hash, used to prevent duplicates in asset database.
-  struct vulkan_data_sampler *prev, *next;
+  DECL_SCENE_DATA(sampler)
 } vulkan_data_sampler;
 
 void vulkan_data_sampler_init(vulkan_data_sampler *sampler);
@@ -55,8 +52,7 @@ typedef struct vulkan_data_texture {
   vulkan_data_image *image;
   vulkan_data_sampler *sampler;
 
-  data_key hash; /// Hash, used to prevent duplicates in asset database.
-  struct vulkan_data_texture *prev, *next;
+  DECL_SCENE_DATA(texture)
 } vulkan_data_texture;
 
 void vulkan_data_texture_init(vulkan_data_texture *texture, vulkan_data_scene *sceneData);

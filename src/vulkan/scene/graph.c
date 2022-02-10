@@ -29,6 +29,8 @@ vulkan_scene_node *add_entity(vulkan_scene_graph *sceneGraph, vulkan_scene_node_
   }
   vulkan_scene_node *childNode = vulkan_scene_node_create(type, entity, false);
   DL_APPEND(sceneGraph->root, childNode);
+  childNode->sceneGraph = sceneGraph;
+
   return childNode;
 }
 
@@ -37,7 +39,7 @@ vulkan_scene_node *vulkan_scene_graph_add_object(vulkan_scene_graph *sceneGraph,
                                                  vulkan_data_object *successorObject) {
   vulkan_scene_node *childNode =
       add_entity(sceneGraph, vulkan_scene_node_type_object, successorObject);
-  successorObject->graphNode = childNode;
+  successorObject->sceneGraphNode = childNode;
   vulkan_scene_node_add_successor(sceneNode, childNode);
 
   if (successorObject->mesh) {
@@ -56,7 +58,7 @@ vulkan_scene_node *vulkan_scene_graph_add_mesh(vulkan_scene_graph *sceneGraph,
                                                vulkan_scene_node *sceneNode,
                                                vulkan_data_mesh *successorMesh) {
   vulkan_scene_node *childNode = add_entity(sceneGraph, vulkan_scene_node_type_mesh, successorMesh);
-  successorMesh->graphNode = childNode;
+  successorMesh->sceneGraphNode = childNode;
   vulkan_scene_node_add_successor(sceneNode, childNode);
 
   vulkan_data_primitive **primitiveIt = NULL;
@@ -72,7 +74,7 @@ vulkan_scene_node *vulkan_scene_graph_add_primitive(vulkan_scene_graph *sceneGra
                                                     vulkan_data_primitive *successorPrimitive) {
   vulkan_scene_node *childNode =
       add_entity(sceneGraph, vulkan_scene_node_type_primitive, successorPrimitive);
-  successorPrimitive->graphNode = childNode;
+  successorPrimitive->sceneGraphNode = childNode;
   vulkan_scene_node_add_successor(sceneNode, childNode);
   return childNode;
 }

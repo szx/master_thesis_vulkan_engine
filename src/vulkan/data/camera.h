@@ -4,8 +4,7 @@
  */
 #pragma once
 
-#include "../../data/data.h"
-#include "../functions.h"
+#include "common.h"
 
 typedef struct vulkan_data_camera {
   /* View matrix: camera position and rotation */
@@ -18,7 +17,7 @@ typedef struct vulkan_data_camera {
   float farZ;        /// Max depth range: distance from far clipping plane (along +Z axis!)
 
   bool dirty;    /// True if camera state updated.
-  data_key hash; /// Hash, used to prevent duplicates in asset database.
+  DECL_SCENE_DATA(camera)
 } vulkan_data_camera;
 
 void vulkan_data_camera_init(vulkan_data_camera *camera);

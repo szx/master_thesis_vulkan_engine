@@ -10,9 +10,7 @@ void vulkan_data_image_init(vulkan_data_image *image) {
   image->channels = 0;
   utarray_alloc(image->data, sizeof(uint8_t));
 
-  image->hash = vulkan_data_image_calculate_key(image);
-  image->prev = NULL;
-  image->next = NULL;
+  DEF_SCENE_DATA(image)
 }
 
 void vulkan_data_image_deinit(vulkan_data_image *image) { utarray_free(image->data); }

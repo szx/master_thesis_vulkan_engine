@@ -193,8 +193,7 @@ TEST scene_graph_building() {
   ASSERT_TREE();
   vulkan_data_object *firstObject = assetDbSceneData->objects;
   firstObject->transform[0][0] = 2;
-  // HIRO refactor
-  vulkan_scene_graph_set_dirty(sceneGraph, firstObject->graphNode);
+  vulkan_scene_node_set_dirty(firstObject->sceneGraphNode);
   vulkan_scene_tree_validate(sceneTree);
 
   ASSERT_TREE();

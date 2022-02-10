@@ -1,4 +1,5 @@
 #include "node.h"
+#include "graph.h"
 
 vulkan_scene_node *vulkan_scene_node_create(vulkan_scene_node_type type, void *entity,
                                             bool createCache) {
@@ -52,6 +53,11 @@ void vulkan_scene_node_add_successor(vulkan_scene_node *sceneNode,
 
 void vulkan_scene_node_add_observer(vulkan_scene_node *sceneNode, vulkan_scene_node *observerNode) {
   utarray_push_back(sceneNode->observers, &observerNode);
+}
+
+void vulkan_scene_node_set_dirty(vulkan_scene_node *sceneNode) {
+  assert(sceneNode);
+  vulkan_scene_graph_set_dirty(sceneNode->sceneGraph, sceneNode);
 }
 
 void debug_log_node(vulkan_scene_node *sceneNode) {

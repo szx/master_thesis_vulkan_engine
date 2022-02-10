@@ -9,10 +9,7 @@ void vulkan_data_material_init(vulkan_data_material *material, vulkan_data_scene
   material->baseColorTexture = NULL;
   material->metallicRoughnessTexture = NULL;
 
-  data_key_init(&material->hash, 0);
-  material->prev = NULL;
-  material->next = NULL;
-  material->graphNode = NULL;
+  DEF_SCENE_DATA(material)
 }
 
 void vulkan_data_material_deinit(vulkan_data_material *material) {}
@@ -24,10 +21,14 @@ data_key vulkan_data_material_calculate_key(vulkan_data_material *material) {
   HASH_UPDATE(hashState, &material->metallicFactor, sizeof(material->metallicFactor))
   HASH_UPDATE(hashState, &material->roughnessFactor, sizeof(material->roughnessFactor))
   HASH_UPDATE(hashState, &material->baseColorFactor, sizeof(material->baseColorTexture))
-  HASH_UPDATE(hashState, &material->baseColorTexture->hash,
-              sizeof(material->baseColorTexture->hash))
-  HASH_UPDATE(hashState, &material->metallicRoughnessTexture->hash,
-              sizeof(material->metallicRoughnessTexture->hash))
+  if (material->baseColorTexture) {
+    HASH_UPDATE(hashState, &material->baseColorTexture->hash,
+                sizeof(material->baseColorTexture->hash))
+  }
+  if (material->metallicRoughnessTexture) {
+    HASH_UPDATE(hashState, &material->metallicRoughnessTexture->hash,
+                sizeof(material->metallicRoughnessTexture->hash))
+  }
   HASH_DIGEST(hashState, value)
   HASH_END(hashState)
   return (data_key){value};

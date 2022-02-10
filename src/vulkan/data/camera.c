@@ -8,7 +8,7 @@ void vulkan_data_camera_init(vulkan_data_camera *camera) {
   camera->nearZ = 0.1f;
   camera->farZ = 256.0f;
   camera->dirty = true;
-  camera->hash = vulkan_data_camera_calculate_key(camera);
+  DEF_SCENE_DATA(camera)
 }
 
 void vulkan_data_camera_deinit(vulkan_data_camera *camera) {}

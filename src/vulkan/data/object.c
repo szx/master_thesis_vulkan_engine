@@ -6,10 +6,8 @@ void vulkan_data_object_init(vulkan_data_object *object, vulkan_data_scene *scen
   object->mesh = NULL;
   glm_mat4_identity(object->transform);
   utarray_alloc(object->children, sizeof(vulkan_data_object *));
-  data_key_init(&object->hash, 0);
-  object->prev = NULL;
-  object->next = NULL;
-  object->graphNode = NULL;
+
+  DEF_SCENE_DATA(object)
 }
 
 void vulkan_data_object_deinit(vulkan_data_object *object) {

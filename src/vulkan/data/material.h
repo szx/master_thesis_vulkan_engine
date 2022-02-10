@@ -4,8 +4,7 @@
  */
 #pragma once
 
-#include "../../data/data.h"
-#include "../functions.h"
+#include "common.h"
 #include "texture.h"
 
 typedef struct vulkan_scene_node vulkan_scene_node;
@@ -18,9 +17,7 @@ typedef struct vulkan_data_material {
   vulkan_data_texture *baseColorTexture;
   vulkan_data_texture *metallicRoughnessTexture;
 
-  data_key hash; /// Hash, used to prevent duplicates in asset database.
-  struct vulkan_data_material *prev, *next;
-  vulkan_scene_node *graphNode; /// Corresponding scene graph node pointer.
+  DECL_SCENE_DATA(material)
 } vulkan_data_material;
 
 void vulkan_data_material_init(vulkan_data_material *material, vulkan_data_scene *sceneData);

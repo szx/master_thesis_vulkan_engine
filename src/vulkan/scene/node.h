@@ -10,6 +10,9 @@
 #include "../data/scene.h"
 #include "cache.h"
 
+typedef struct vulkan_scene_graph vulkan_scene_graph;
+typedef struct vulkan_scene_tree vulkan_scene_tree;
+
 typedef enum vulkan_scene_node_type {
   vulkan_scene_node_type_root,
   vulkan_scene_node_type_object,
@@ -29,6 +32,11 @@ typedef struct vulkan_scene_node {
     vulkan_data_mesh *mesh;
     vulkan_data_primitive *primitive;
   }; // pointer to entity in scene data
+
+  union {
+    vulkan_scene_graph *sceneGraph;
+    vulkan_scene_tree *sceneTree;
+  };
 
   vulkan_scene_cache *cache; /// NULL for scene graph nodes.
   bool dirty;                /// True if scene node state changed and cache is out of sync.
@@ -50,5 +58,7 @@ void vulkan_scene_node_add_successor(vulkan_scene_node *sceneNode,
                                      vulkan_scene_node *successorNode);
 
 void vulkan_scene_node_add_observer(vulkan_scene_node *sceneNode, vulkan_scene_node *observerNode);
+
+void vulkan_scene_node_set_dirty(vulkan_scene_node *sceneNode);
 
 void vulkan_scene_node_debug_print(vulkan_scene_node *sceneNode);
