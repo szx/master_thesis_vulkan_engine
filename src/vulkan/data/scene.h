@@ -32,21 +32,28 @@ data_key vulkan_data_scene_calculate_key(vulkan_data_scene *scene);
 void vulkan_data_scene_serialize(vulkan_data_scene *scene, data_asset_db *assetDb);
 void vulkan_data_scene_deserialize(vulkan_data_scene *scene, data_asset_db *assetDb, data_key key);
 
-vulkan_data_image *vulkan_data_scene_get_image_by_key(vulkan_data_scene *sceneData,
-                                                      data_asset_db *assetDb, data_key key);
-vulkan_data_sampler *vulkan_data_scene_get_sampler_by_key(vulkan_data_scene *sceneData,
-                                                          data_asset_db *assetDb, data_key key);
-vulkan_data_texture *vulkan_data_scene_get_texture_by_key(vulkan_data_scene *sceneData,
-                                                          data_asset_db *assetDb, data_key key);
-vulkan_data_material *vulkan_data_scene_get_material_by_key(vulkan_data_scene *sceneData,
-                                                            data_asset_db *assetDb, data_key key);
-vulkan_data_primitive *vulkan_data_scene_get_primitive_by_key(vulkan_data_scene *sceneData,
-                                                              data_asset_db *assetDb, data_key key);
-vulkan_data_object *vulkan_data_scene_get_object_by_key(vulkan_data_scene *sceneData,
-                                                        data_asset_db *assetDb, data_key key);
+/* get_*_by_key() and add_*() */
+#define DECL_GET_VULKAN_ENTITY_BY_KEY(_type)                                                       \
+  vulkan_data_##_type *vulkan_data_scene_get_##_type##_by_key(                                     \
+      vulkan_data_scene *sceneData, data_asset_db *assetDb, data_key key);
 
-// HIRO vulkan_data_object *vulkan_data_scene_add_image(vulkan_data_scene *sceneData, data_asset_db
-// *assetDb);
+#define DECL_ADD_VULKAN_ENTITY(_type)                                                              \
+  vulkan_data_##_type *vulkan_data_scene_add_##_type(vulkan_data_scene *sceneData,                 \
+                                                     vulkan_data_##_type *entity);
+
+#define DECL_VULKAN_ENTITY_FUNCS(_type)                                                            \
+  DECL_GET_VULKAN_ENTITY_BY_KEY(_type) DECL_ADD_VULKAN_ENTITY(_type)
+
+DECL_VULKAN_ENTITY_FUNCS(image)
+DECL_VULKAN_ENTITY_FUNCS(sampler)
+DECL_VULKAN_ENTITY_FUNCS(texture)
+DECL_VULKAN_ENTITY_FUNCS(material)
+DECL_VULKAN_ENTITY_FUNCS(primitive)
+DECL_VULKAN_ENTITY_FUNCS(object)
+
+#undef DECL_GET_VULKAN_ENTITY_BY_KEY
+#undef DECL_ADD_VULKAN_ENTITY
+#undef DECL_VULKAN_ENTITY_FUNCS
 
 /* asset pipeline */
 vulkan_data_scene *vulkan_data_scene_create_with_gltf_file(UT_string *sceneName,

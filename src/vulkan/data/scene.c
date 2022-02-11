@@ -64,19 +64,7 @@ vulkan_data_image *parse_cgltf_image(vulkan_data_scene *sceneData, cgltf_image *
   core_memcpy(utarray_front(image->data), pixels, imageSize);
   core_free(pixels);
 
-  image->hash = vulkan_data_image_calculate_key(image);
-
-  vulkan_data_image *existingImage =
-      vulkan_data_scene_get_image_by_key(sceneData, NULL, image->hash);
-  if (existingImage != NULL) {
-    vulkan_data_image_deinit(image);
-    core_free(image);
-    return existingImage;
-  }
-
-  log_debug("adding new image");
-  DL_APPEND(sceneData->images, image);
-  return image;
+  return vulkan_data_scene_add_image(sceneData, image);
 }
 
 vulkan_data_sampler *parse_cgltf_sampler(vulkan_data_scene *sceneData,
@@ -84,25 +72,22 @@ vulkan_data_sampler *parse_cgltf_sampler(vulkan_data_scene *sceneData,
   if (cgltfSampler == NULL) {
     return sceneData->samplers;
   }
-  vulkan_data_sampler sampler = {0};
-  vulkan_data_sampler_init(&sampler, sceneData);
+  vulkan_data_sampler *sampler = core_alloc(sizeof(vulkan_data_sampler));
+  vulkan_data_sampler_init(sampler, sceneData);
+  sampler->magFilter = cgltfSampler->mag_filter == 9728 ? VK_FILTER_NEAREST : VK_FILTER_LINEAR;
+  sampler->minFilter = cgltfSampler->min_filter == 9728 ? VK_FILTER_NEAREST : VK_FILTER_LINEAR;
+  sampler->addressModeU =
+      cgltfSampler->wrap_s == 33071
+          ? VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
+          : (cgltfSampler->wrap_s == 33648 ? VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT
+                                           : VK_SAMPLER_ADDRESS_MODE_REPEAT);
+  sampler->addressModeV =
+      cgltfSampler->wrap_t == 33071
+          ? VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
+          : (cgltfSampler->wrap_s == 33648 ? VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT
+                                           : VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
-  // sampler.image = parse_cgltf_image(sceneData, cgltfSampler->image);
-
-  sampler.hash = vulkan_data_sampler_calculate_key(&sampler);
-
-  vulkan_data_sampler *existingSampler =
-      vulkan_data_scene_get_sampler_by_key(sceneData, NULL, sampler.hash);
-  if (existingSampler != NULL) {
-    return existingSampler;
-  }
-
-  log_debug("adding new sampler");
-  vulkan_data_sampler *newSampler = core_alloc(sizeof(vulkan_data_sampler));
-  vulkan_data_sampler_init(newSampler, sceneData);
-  core_memcpy(newSampler, &sampler, sizeof(sampler));
-  DL_APPEND(sceneData->samplers, newSampler);
-  return newSampler;
+  return vulkan_data_scene_add_sampler(sceneData, sampler);
 }
 
 vulkan_data_texture *parse_cgltf_texture(vulkan_data_scene *sceneData,
@@ -110,26 +95,13 @@ vulkan_data_texture *parse_cgltf_texture(vulkan_data_scene *sceneData,
   if (cgltfTexture == NULL) {
     return sceneData->textures;
   }
-  vulkan_data_texture texture = {0};
-  vulkan_data_texture_init(&texture, sceneData);
+  vulkan_data_texture *texture = core_alloc(sizeof(vulkan_data_texture));
+  vulkan_data_texture_init(texture, sceneData);
 
-  texture.image = parse_cgltf_image(sceneData, cgltfTexture->image);
-  texture.sampler = parse_cgltf_sampler(sceneData, cgltfTexture->sampler);
+  texture->image = parse_cgltf_image(sceneData, cgltfTexture->image);
+  texture->sampler = parse_cgltf_sampler(sceneData, cgltfTexture->sampler);
 
-  texture.hash = vulkan_data_texture_calculate_key(&texture);
-
-  vulkan_data_texture *existingTexture =
-      vulkan_data_scene_get_texture_by_key(sceneData, NULL, texture.hash);
-  if (existingTexture != NULL) {
-    return existingTexture;
-  }
-
-  log_debug("adding new texture");
-  vulkan_data_texture *newTexture = core_alloc(sizeof(vulkan_data_texture));
-  vulkan_data_texture_init(newTexture, sceneData);
-  core_memcpy(newTexture, &texture, sizeof(texture));
-  DL_APPEND(sceneData->textures, newTexture);
-  return newTexture;
+  return vulkan_data_scene_add_texture(sceneData, texture);
 }
 
 vulkan_data_material *parse_cgltf_material(vulkan_data_scene *sceneData,
@@ -137,8 +109,8 @@ vulkan_data_material *parse_cgltf_material(vulkan_data_scene *sceneData,
   if (cgltfMaterial == NULL) {
     return sceneData->materials;
   }
-  vulkan_data_material material = {0};
-  vulkan_data_material_init(&material, sceneData);
+  vulkan_data_material *material = core_alloc(sizeof(vulkan_data_material));
+  vulkan_data_material_init(material, sceneData);
   log_debug("cgltfMaterial->has_pbr_metallic_roughness=%d",
             cgltfMaterial->has_pbr_metallic_roughness);
   log_debug("cgltfMaterial->has_pbr_specular_glossiness=%d",
@@ -151,32 +123,20 @@ vulkan_data_material *parse_cgltf_material(vulkan_data_scene *sceneData,
   log_debug("cgltfMaterial->has_sheen=%d", cgltfMaterial->has_sheen);
   verify(cgltfMaterial->has_pbr_metallic_roughness); // TODO: Support specular-glossiness ext?
   if (cgltfMaterial->has_pbr_metallic_roughness) {
-    material.baseColorFactor[0] = cgltfMaterial->pbr_metallic_roughness.base_color_factor[0];
-    material.baseColorFactor[1] = cgltfMaterial->pbr_metallic_roughness.base_color_factor[1];
-    material.baseColorFactor[2] = cgltfMaterial->pbr_metallic_roughness.base_color_factor[2];
-    material.baseColorFactor[3] = cgltfMaterial->pbr_metallic_roughness.base_color_factor[3];
-    material.metallicFactor = cgltfMaterial->pbr_metallic_roughness.metallic_factor;
-    material.roughnessFactor = cgltfMaterial->pbr_metallic_roughness.roughness_factor;
+    material->baseColorFactor[0] = cgltfMaterial->pbr_metallic_roughness.base_color_factor[0];
+    material->baseColorFactor[1] = cgltfMaterial->pbr_metallic_roughness.base_color_factor[1];
+    material->baseColorFactor[2] = cgltfMaterial->pbr_metallic_roughness.base_color_factor[2];
+    material->baseColorFactor[3] = cgltfMaterial->pbr_metallic_roughness.base_color_factor[3];
+    material->metallicFactor = cgltfMaterial->pbr_metallic_roughness.metallic_factor;
+    material->roughnessFactor = cgltfMaterial->pbr_metallic_roughness.roughness_factor;
 
-    material.baseColorTexture = parse_cgltf_texture(
+    material->baseColorTexture = parse_cgltf_texture(
         sceneData, cgltfMaterial->pbr_metallic_roughness.base_color_texture.texture);
-    material.metallicRoughnessTexture = parse_cgltf_texture(
+    material->metallicRoughnessTexture = parse_cgltf_texture(
         sceneData, cgltfMaterial->pbr_metallic_roughness.metallic_roughness_texture.texture);
   }
-  material.hash = vulkan_data_material_calculate_key(&material);
 
-  vulkan_data_material *existingMaterial =
-      vulkan_data_scene_get_material_by_key(sceneData, NULL, material.hash);
-  if (existingMaterial != NULL) {
-    return existingMaterial;
-  }
-
-  log_debug("adding new material");
-  vulkan_data_material *newMaterial = core_alloc(sizeof(vulkan_data_material));
-  vulkan_data_material_init(newMaterial, sceneData);
-  core_memcpy(newMaterial, &material, sizeof(material));
-  DL_APPEND(sceneData->materials, newMaterial);
-  return newMaterial;
+  return vulkan_data_scene_add_material(sceneData, material);
 }
 
 vulkan_data_primitive *parse_cgltf_primitive(vulkan_data_scene *sceneData,
@@ -260,19 +220,7 @@ vulkan_data_primitive *parse_cgltf_primitive(vulkan_data_scene *sceneData,
     }
   }
 
-  primitive->hash = vulkan_data_primitive_calculate_key(primitive);
-
-  vulkan_data_primitive *existingPrimitive =
-      vulkan_data_scene_get_primitive_by_key(sceneData, NULL, primitive->hash);
-  if (existingPrimitive != NULL) {
-    vulkan_data_primitive_deinit(primitive);
-    core_free(primitive);
-    return existingPrimitive;
-  }
-
-  log_debug("adding new primitive");
-  DL_APPEND(sceneData->primitives, primitive);
-  return primitive;
+  return vulkan_data_scene_add_primitive(sceneData, primitive);
 }
 
 vulkan_data_mesh *parse_cgltf_mesh(vulkan_data_scene *sceneData, cgltf_mesh *cgltfMesh) {
@@ -311,18 +259,8 @@ vulkan_data_object *parse_cgltf_node(vulkan_data_scene *sceneData, cgltf_node *c
     vulkan_data_object *child = parse_cgltf_node(sceneData, cgltfNode->children[childIdx]);
     utarray_push_back(object->children, &child);
   }
-  object->hash = vulkan_data_object_calculate_key(object);
 
-  vulkan_data_object *existingObject =
-      vulkan_data_scene_get_object_by_key(sceneData, NULL, object->hash);
-  if (existingObject != NULL) {
-    core_free(object);
-    return existingObject;
-  }
-
-  log_debug("adding new object");
-  DL_APPEND(sceneData->objects, object);
-  return object;
+  return vulkan_data_scene_add_object(sceneData, object);
 }
 
 vulkan_data_scene *parse_cgltf_scene(UT_string *name, UT_string *path) {
@@ -523,7 +461,7 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
   core_free(sceneData);
 }
 
-#define GET_VULKAN_ENTITY_BY_KEY(_type)                                                            \
+#define DEF_GET_VULKAN_ENTITY_BY_KEY(_type)                                                        \
   vulkan_data_##_type *vulkan_data_scene_get_##_type##_by_key(                                     \
       vulkan_data_scene *sceneData, data_asset_db *assetDb, data_key key) {                        \
     vulkan_data_##_type *object = NULL;                                                            \
@@ -544,12 +482,36 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
     return object;                                                                                 \
   }
 
-GET_VULKAN_ENTITY_BY_KEY(image)
-GET_VULKAN_ENTITY_BY_KEY(sampler)
-GET_VULKAN_ENTITY_BY_KEY(texture)
-GET_VULKAN_ENTITY_BY_KEY(material)
-GET_VULKAN_ENTITY_BY_KEY(primitive)
-GET_VULKAN_ENTITY_BY_KEY(object)
+#define DEF_ADD_VULKAN_ENTITY(_type)                                                               \
+  vulkan_data_##_type *vulkan_data_scene_add_##_type(vulkan_data_scene *sceneData,                 \
+                                                     vulkan_data_##_type *entity) {                \
+                                                                                                   \
+    entity->hash = vulkan_data_##_type##_calculate_key(entity);                                    \
+    vulkan_data_##_type *existingEntity =                                                          \
+        vulkan_data_scene_get_##_type##_by_key(sceneData, NULL, entity->hash);                     \
+    if (existingEntity != NULL) {                                                                  \
+      vulkan_data_##_type##_deinit(entity);                                                        \
+      core_free(entity);                                                                           \
+      return existingEntity;                                                                       \
+    }                                                                                              \
+    log_debug("adding new " #_type);                                                               \
+    DL_APPEND(sceneData->_type##s, entity);                                                        \
+    return entity;                                                                                 \
+  }
+
+#define DEF_VULKAN_ENTITY_FUNCS(_type)                                                             \
+  DEF_GET_VULKAN_ENTITY_BY_KEY(_type) DEF_ADD_VULKAN_ENTITY(_type)
+
+DEF_VULKAN_ENTITY_FUNCS(image)
+DEF_VULKAN_ENTITY_FUNCS(sampler)
+DEF_VULKAN_ENTITY_FUNCS(texture)
+DEF_VULKAN_ENTITY_FUNCS(material)
+DEF_VULKAN_ENTITY_FUNCS(primitive)
+DEF_VULKAN_ENTITY_FUNCS(object)
+
+#undef DEF_GET_VULKAN_ENTITY_BY_KEY
+#undef DEF_ADD_VULKAN_ENTITY
+#undef DEF_VULKAN_ENTITY_FUNCS
 
 vulkan_data_scene *vulkan_data_scene_create_with_gltf_file(UT_string *sceneName,
                                                            UT_string *gltfPath) {
