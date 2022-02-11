@@ -19,10 +19,10 @@ typedef struct vulkan_scene_tree {
 vulkan_scene_tree *vulkan_scene_tree_create(vulkan_scene_graph *sceneGraph);
 void vulkan_scene_tree_destroy(vulkan_scene_tree *sceneTree);
 
+vulkan_scene_node *vulkan_scene_tree_add_primitive_node(vulkan_scene_tree *sceneTree,
+                                                        vulkan_scene_node *sceneGraphNode);
+
 void vulkan_scene_tree_set_dirty(vulkan_scene_tree *sceneTree, vulkan_scene_node *sceneNode);
 void vulkan_scene_tree_validate(vulkan_scene_tree *sceneTree);
-
-void vulkan_scene_tree_create_with_scene_graph(vulkan_scene_tree *sceneTree,
-                                               vulkan_scene_graph *sceneGraph);
 
 void vulkan_scene_tree_debug_print(vulkan_scene_tree *sceneTree);

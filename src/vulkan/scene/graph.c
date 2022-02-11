@@ -4,13 +4,20 @@
 vulkan_scene_graph *vulkan_scene_graph_create(vulkan_data_scene *data) {
   vulkan_scene_graph *sceneGraph = core_alloc(sizeof(vulkan_scene_graph));
   sceneGraph->data = NULL;
-  sceneGraph->tree = NULL;
+  sceneGraph->sceneTree = vulkan_scene_tree_create(sceneGraph);
+
   sceneGraph->root = NULL;
   vulkan_scene_graph_create_with_scene_data(sceneGraph, data);
+
+  vulkan_scene_graph_set_dirty(sceneGraph, sceneGraph->root);
+  vulkan_scene_tree_validate(sceneGraph->sceneTree);
+
   return sceneGraph;
 }
 
 void vulkan_scene_graph_destroy(vulkan_scene_graph *sceneGraph) {
+  vulkan_scene_tree_destroy(sceneGraph->sceneTree);
+
   vulkan_scene_node *node, *tempNode;
   DL_FOREACH_SAFE(sceneGraph->root, node, tempNode) { vulkan_scene_node_destroy(node); }
 
@@ -76,15 +83,16 @@ vulkan_scene_node *vulkan_scene_graph_add_primitive(vulkan_scene_graph *sceneGra
       add_entity(sceneGraph, vulkan_scene_node_type_primitive, successorPrimitive);
   successorPrimitive->sceneGraphNode = childNode;
   vulkan_scene_node_add_successor(sceneNode, childNode);
+
+  vulkan_scene_tree_add_primitive_node(sceneGraph->sceneTree, childNode);
+
   return childNode;
 }
 
 void vulkan_scene_graph_set_dirty(vulkan_scene_graph *sceneGraph, vulkan_scene_node *sceneNode) {
-  assert(sceneGraph->tree);
-
   vulkan_scene_node **observerNodeIt = NULL;
   while ((observerNodeIt = utarray_next(sceneNode->observers, observerNodeIt))) {
-    vulkan_scene_tree_set_dirty(sceneGraph->tree, *observerNodeIt);
+    vulkan_scene_tree_set_dirty(sceneGraph->sceneTree, *observerNodeIt);
   }
 }
 
@@ -93,8 +101,7 @@ void vulkan_scene_graph_create_with_scene_data(vulkan_scene_graph *sceneGraph,
   sceneGraph->data = sceneData;
   assert(sceneGraph->root == NULL);
 
-  vulkan_scene_node *rootNode = vulkan_scene_node_create(vulkan_scene_node_type_root, NULL, false);
-  DL_APPEND(sceneGraph->root, rootNode);
+  add_entity(sceneGraph, vulkan_scene_node_type_root, NULL);
 
   vulkan_data_object **rootObjectIt = NULL;
   while ((rootObjectIt = utarray_next(sceneGraph->data->rootObjects, rootObjectIt))) {

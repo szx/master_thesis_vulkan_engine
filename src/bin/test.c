@@ -169,7 +169,7 @@ TEST scene_graph_building() {
   // vulkan_data_scene_debug_print(assetDbSceneData);
 
   vulkan_scene_graph *sceneGraph = vulkan_scene_graph_create(assetDbSceneData);
-  vulkan_scene_tree *sceneTree = vulkan_scene_tree_create(sceneGraph);
+  vulkan_scene_tree *sceneTree = sceneGraph->sceneTree;
   vulkan_scene_graph_debug_print(sceneGraph);
 
 #define ASSERT_TREE()                                                                              \
@@ -191,14 +191,26 @@ TEST scene_graph_building() {
   } while (0)
 
   ASSERT_TREE();
+
+  // Verify cache accumulation.
   vulkan_data_object *firstObject = assetDbSceneData->objects;
+  ASSERT_NEQ(firstObject, NULL);
   firstObject->transform[0][0] = 2;
   vulkan_scene_node_set_dirty(firstObject->sceneGraphNode);
   vulkan_scene_tree_validate(sceneTree);
-
   ASSERT_TREE();
+  ASSERT_EQ(firstObject->mesh->sceneTreeNode->cache->transform[0][0], 2);
 
-  vulkan_scene_tree_destroy(sceneTree);
+  // Verify adding new objects.
+  /*
+  vulkan_scene_graph_add_primitive_node(sceneGraph, )
+  utarray_push_back(firstObject->children, &secondObject);
+  vulkan_scene_node_set_dirty(firstObject->sceneGraphNode);
+  vulkan_scene_tree_validate(sceneTree);
+  ASSERT_TREE();
+  ASSERT_EQ(utarray_len(firstObject->sceneGraphNode->successors), 2);
+  */
+
   vulkan_scene_graph_destroy(sceneGraph);
   vulkan_data_scene_destroy(assetDbSceneData);
   vulkan_device_destroy(vkd);

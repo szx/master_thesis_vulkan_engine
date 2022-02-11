@@ -2,11 +2,10 @@
 
 vulkan_scene_tree *vulkan_scene_tree_create(vulkan_scene_graph *sceneGraph) {
   vulkan_scene_tree *sceneTree = core_alloc(sizeof(vulkan_scene_tree));
-  sceneTree->graph = NULL;
+  sceneTree->graph = sceneGraph;
   sceneTree->root = NULL;
   sceneTree->nodes = NULL;
   utarray_alloc(sceneTree->dirtyNodes, sizeof(vulkan_scene_node *));
-  vulkan_scene_tree_create_with_scene_graph(sceneTree, sceneGraph);
   return sceneTree;
 }
 
@@ -17,6 +16,55 @@ void vulkan_scene_tree_destroy(vulkan_scene_tree *sceneTree) {
   DL_FOREACH_SAFE(sceneTree->nodes, node, tempNode) { vulkan_scene_node_destroy(node); }
 
   core_free(sceneTree);
+}
+
+vulkan_scene_node *add_tree_node_from_graph_node(vulkan_scene_tree *sceneTree,
+                                                 vulkan_scene_node *sceneGraphNode) {
+  vulkan_scene_node *treeNode =
+      vulkan_scene_node_create(sceneGraphNode->type, sceneGraphNode->entity, true);
+  DL_APPEND(sceneTree->nodes, treeNode);
+  treeNode->sceneTree = sceneTree;
+  vulkan_scene_node_add_observer(sceneGraphNode, treeNode);
+  return treeNode;
+}
+
+vulkan_scene_node *vulkan_scene_tree_add_primitive_node(vulkan_scene_tree *sceneTree,
+                                                        vulkan_scene_node *sceneGraphNode) {
+  vulkan_scene_node *treeNode = add_tree_node_from_graph_node(sceneTree, sceneGraphNode);
+  sceneGraphNode->primitive->sceneTreeNode = treeNode;
+
+  vulkan_scene_node *currentTreeNode = treeNode;
+  vulkan_scene_node *parentGraphNode = sceneGraphNode->parent;
+  while (parentGraphNode != NULL) {
+    if (parentGraphNode->type == vulkan_scene_node_type_root) {
+      if (sceneTree->root == NULL) {
+        sceneTree->root = add_tree_node_from_graph_node(sceneTree, sceneTree->graph->root);
+      }
+      vulkan_scene_node_add_successor(sceneTree->root, currentTreeNode);
+      break;
+    }
+
+    if (parentGraphNode->type == vulkan_scene_node_type_mesh) {
+      if (parentGraphNode->mesh->sceneTreeNode == NULL) {
+        parentGraphNode->mesh->sceneTreeNode =
+            add_tree_node_from_graph_node(sceneTree, parentGraphNode);
+      }
+      vulkan_scene_node *parentTreeNode = parentGraphNode->mesh->sceneTreeNode;
+      vulkan_scene_node_add_successor(parentTreeNode, currentTreeNode);
+      currentTreeNode = parentTreeNode;
+    } else if (parentGraphNode->type == vulkan_scene_node_type_object) {
+      if (parentGraphNode->object->sceneTreeNode == NULL) {
+        parentGraphNode->object->sceneTreeNode =
+            add_tree_node_from_graph_node(sceneTree, parentGraphNode);
+      }
+      vulkan_scene_node *parentTreeNode = parentGraphNode->object->sceneTreeNode;
+      vulkan_scene_node_add_successor(parentTreeNode, currentTreeNode);
+      currentTreeNode = parentTreeNode;
+    }
+
+    parentGraphNode = parentGraphNode->parent;
+  }
+  return treeNode;
 }
 
 void vulkan_scene_tree_set_dirty(vulkan_scene_tree *sceneTree, vulkan_scene_node *sceneNode) {
@@ -63,57 +111,6 @@ void vulkan_scene_tree_validate(vulkan_scene_tree *sceneTree) {
     }
   }
   utarray_clear(sceneTree->dirtyNodes);
-}
-
-vulkan_scene_node *add_node(vulkan_scene_tree *sceneTree, vulkan_scene_node_type type,
-                            void *entity) {
-  vulkan_scene_node *childNode = vulkan_scene_node_create(type, entity, true);
-  DL_APPEND(sceneTree->nodes, childNode);
-  return childNode;
-}
-
-vulkan_scene_node *add_graph_node_to_tree(vulkan_scene_tree *sceneTree,
-                                          vulkan_scene_node *graphNode) {
-  if (utarray_len(graphNode->successors) == 0) {
-    if (graphNode->type == vulkan_scene_node_type_primitive) {
-      // Found valid leaf.
-      vulkan_scene_node *treeNode = add_node(sceneTree, graphNode->type, graphNode->entity);
-      vulkan_scene_node_add_observer(graphNode, treeNode);
-      return treeNode;
-    }
-    // Found invalid leaf, skip whole branch.
-    return NULL;
-  }
-
-  vulkan_scene_node *treeNode = NULL;
-
-  vulkan_scene_node **successorIt = NULL;
-  while ((successorIt = utarray_next(graphNode->successors, successorIt))) {
-    vulkan_scene_node *successor = *successorIt;
-    vulkan_scene_node *childTreeNode = add_graph_node_to_tree(sceneTree, successor);
-    if (childTreeNode != NULL) {
-      if (treeNode == NULL) {
-        treeNode = add_node(sceneTree, graphNode->type, graphNode->entity);
-        vulkan_scene_node_add_observer(graphNode, treeNode);
-      }
-      vulkan_scene_node_add_successor(treeNode, childTreeNode);
-    }
-  }
-
-  return treeNode;
-}
-
-void vulkan_scene_tree_create_with_scene_graph(vulkan_scene_tree *sceneTree,
-                                               vulkan_scene_graph *sceneGraph) {
-  sceneTree->graph = sceneGraph;
-  sceneTree->graph->tree = sceneTree;
-  assert(sceneTree->root == NULL && sceneTree->nodes == NULL);
-
-  sceneTree->root = add_graph_node_to_tree(sceneTree, sceneGraph->root);
-  vulkan_scene_graph_set_dirty(sceneGraph, sceneGraph->root);
-  vulkan_scene_tree_validate(sceneTree);
-
-  assert(sceneTree->root && sceneTree->nodes);
 }
 
 void vulkan_scene_tree_debug_print(vulkan_scene_tree *sceneTree) {
