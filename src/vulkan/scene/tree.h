@@ -6,8 +6,6 @@
 
 #include "graph.h"
 
-// HIRO add removing nodes from scene graph
-
 typedef struct vulkan_scene_tree {
   vulkan_scene_graph *graph; /// vulkan_scene_graph pointer.
 

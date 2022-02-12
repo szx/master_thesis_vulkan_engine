@@ -39,7 +39,7 @@ typedef struct vulkan_scene_node {
   vulkan_scene_cache *cache; /// NULL for scene graph nodes.
   bool dirty;                /// True if scene node state changed and cache is out of sync.
 
-  vulkan_scene_node *parent;  /// Parent node for scene tree. Last parent node for scene graph.
+  UT_array *parentNodes;      /// vulkan_scene_node* list
   UT_array *childObjectNodes; /// vulkan_scene_node* list
   vulkan_scene_node *meshNode;
   UT_array *primitiveNodes; /// vulkan_scene_node* list
@@ -53,5 +53,7 @@ vulkan_scene_node *vulkan_scene_node_create(vulkan_scene_node_type type, void *e
 void vulkan_scene_node_destroy(vulkan_scene_node *sceneNode);
 
 void vulkan_scene_node_set_dirty(vulkan_scene_node *sceneNode);
+
+void vulkan_scene_node_remove_util(vulkan_scene_node *sceneNode, vulkan_scene_node *nodes);
 
 void vulkan_scene_node_debug_print(vulkan_scene_node *sceneNode);

@@ -169,17 +169,17 @@ TEST scene_graph_building() {
   // vulkan_data_scene_debug_print(assetDbSceneData);
 
   vulkan_scene_graph *sceneGraph = vulkan_scene_graph_create(assetDbSceneData);
-  vulkan_scene_tree *sceneTree = sceneGraph->sceneTree;
 
 #define ASSERT_TREE()                                                                              \
   do {                                                                                             \
     vulkan_scene_graph_debug_print(sceneGraph);                                                    \
-    vulkan_scene_tree_debug_print(sceneTree);                                                      \
-    ASSERT_EQ(utarray_len(sceneTree->dirtyNodes), 0);                                              \
+    vulkan_scene_tree_debug_print(sceneGraph->sceneTree);                                          \
+    ASSERT_EQ(utarray_len(sceneGraph->sceneTree->dirtyNodes), 0);                                  \
     vulkan_scene_node *sceneNode = NULL;                                                           \
-    DL_FOREACH(sceneTree->nodes, sceneNode) {                                                      \
-      log_debug("tree node: %p", sceneNode);                                                       \
-      ASSERT(sceneNode->type == vulkan_scene_node_type_root || sceneNode->parent != NULL);         \
+    DL_FOREACH(sceneGraph->sceneTree->nodes, sceneNode) {                                          \
+      /*log_debug("tree node: %p", sceneNode);*/                                                   \
+      ASSERT(sceneNode->type == vulkan_scene_node_type_root ||                                     \
+             utarray_len(sceneNode->parentNodes) > 0);                                             \
       ASSERT_EQ(utarray_len(sceneNode->observers), 0);                                             \
       if (sceneNode->type == vulkan_scene_node_type_root) {                                        \
         ASSERT_GT(utarray_len(sceneNode->childObjectNodes), 0);                                    \
@@ -212,7 +212,7 @@ TEST scene_graph_building() {
   ASSERT_EQ(firstObjectNode->type, vulkan_scene_node_type_object);
   firstObjectNode->object->transform[0][0] = 2;
   vulkan_scene_node_set_dirty(firstObjectNode);
-  vulkan_scene_tree_validate(sceneTree);
+  vulkan_scene_tree_validate(sceneGraph->sceneTree);
   ASSERT_TREE();
 
   vulkan_scene_node *sceneTreeNode =
@@ -233,11 +233,17 @@ TEST scene_graph_building() {
   // Verify adding new objects.
   vulkan_data_object *secondObject = assetDbSceneData->objects;
   ASSERT_NEQ(secondObject, NULL);
+  vulkan_scene_node *firstAddedNode =
+      vulkan_scene_graph_add_object(sceneGraph, firstObjectNode, secondObject);
   vulkan_scene_graph_add_object(sceneGraph, firstObjectNode, secondObject);
-  vulkan_scene_tree_debug_print(sceneTree);
-  vulkan_scene_tree_validate(sceneTree);
+  vulkan_scene_tree_debug_print(sceneGraph->sceneTree);
+  vulkan_scene_tree_validate(sceneGraph->sceneTree);
   ASSERT_TREE();
-  ASSERT_EQ(utarray_len(firstObjectNode->childObjectNodes), 1);
+  ASSERT_EQ(utarray_len(firstObjectNode->childObjectNodes), 2);
+  vulkan_scene_graph_remove_object(sceneGraph, firstAddedNode);
+  vulkan_scene_graph_debug_print(sceneGraph);
+  ASSERT_TREE();
+  ASSERT_EQ(utarray_len(firstObjectNode->childObjectNodes), 0);
 
   vulkan_scene_graph_destroy(sceneGraph);
   vulkan_data_scene_destroy(assetDbSceneData);

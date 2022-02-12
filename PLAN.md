@@ -81,10 +81,14 @@ Co należy wyprodukować:
     - [ ] GPU-driven rendering pipeline (14.02):
         - [x] Loading scene data from asset database.
         - [ ] **Scene graph.**
-            - [ ] Build scene graph from scene data.
-            - [ ] Build scene tree from scene graph.
+            - [x] Build scene graph from scene data.
+            - [x] Build scene tree from scene graph.
             - [ ] Build object lists from scene tree.
             - [ ] Build draw indirect buffers from object lists (draw call batching).
+            - [ ] Non-essential features:
+                - [ ] Detection of cycles in scene graph (currently they result in infinite loops).
+                - [ ] Exhaustive testing (currently only example glTF scene is tested).
+                - [ ] Adding and removing primitives (currently only objects are supported).
         - [ ] Scene geometry buffer
             - [ ] **Building scene geometry buffer**
             - [ ] Uploading scene geometry buffer to GPU

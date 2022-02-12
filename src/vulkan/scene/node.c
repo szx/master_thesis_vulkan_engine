@@ -27,7 +27,7 @@ vulkan_scene_node *vulkan_scene_node_create(vulkan_scene_node_type type, void *e
   }
   sceneNode->dirty = false;
 
-  sceneNode->parent = NULL;
+  utarray_alloc(sceneNode->parentNodes, sizeof(vulkan_scene_node *));
   utarray_alloc(sceneNode->childObjectNodes, sizeof(vulkan_scene_node *));
   sceneNode->meshNode = NULL;
   utarray_alloc(sceneNode->primitiveNodes, sizeof(vulkan_scene_node *));
@@ -44,6 +44,7 @@ void vulkan_scene_node_destroy(vulkan_scene_node *sceneNode) {
   }
 
   // NOTE: Successor and observer nodes are freed by scene graph and scene tree.
+  utarray_free(sceneNode->parentNodes);
   utarray_free(sceneNode->childObjectNodes);
   utarray_free(sceneNode->primitiveNodes);
   utarray_free(sceneNode->observers);
@@ -70,6 +71,53 @@ void debug_log_node(vulkan_scene_node *sceneNode) {
     log_raw(stdout, "dirty: %d\\n", sceneNode->dirty);
   }
   log_raw(stdout, "\"", sceneNode->dirty);
+}
+
+void vulkan_scene_node_remove_util(vulkan_scene_node *sceneNode, vulkan_scene_node *nodes) {
+  assert(sceneNode->type != vulkan_scene_node_type_root);
+
+  // remove from list of nodes
+  bool found = false;
+  vulkan_scene_node *node, *tempNode;
+  DL_FOREACH_SAFE(nodes, node, tempNode) {
+    if (sceneNode == node) {
+      found = true;
+      DL_DELETE(nodes, sceneNode);
+      break;
+    }
+  }
+  if (!found) {
+    log_error("deleting node not in nodes");
+    return;
+  }
+
+  // remove from parents
+  vulkan_scene_node **parentNodeIt = NULL;
+  while ((parentNodeIt = utarray_next(sceneNode->parentNodes, parentNodeIt))) {
+    vulkan_scene_node *parentSceneNode = *parentNodeIt;
+    if (sceneNode->type == vulkan_scene_node_type_mesh) {
+      assert(parentSceneNode->type == vulkan_scene_node_type_object);
+      parentSceneNode->meshNode = NULL;
+    } else {
+      size_t idx = 0;
+      vulkan_scene_node **successorIt = NULL;
+      UT_array *successors = NULL;
+      if (sceneNode->type == vulkan_scene_node_type_primitive) {
+        successors = parentSceneNode->primitiveNodes;
+      } else if (sceneNode->type == vulkan_scene_node_type_object) {
+        successors = parentSceneNode->childObjectNodes;
+      }
+      while ((successorIt = utarray_next(successors, successorIt))) {
+        vulkan_scene_node *successor = *successorIt;
+        if (successor == sceneNode) {
+          break;
+        }
+        idx++;
+      }
+      assert(idx < utarray_len(successors));
+      utarray_erase(successors, idx, 1);
+    }
+  }
 }
 
 void vulkan_scene_node_debug_print(vulkan_scene_node *sceneNode) {

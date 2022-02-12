@@ -19,9 +19,13 @@ typedef struct vulkan_scene_graph {
 vulkan_scene_graph *vulkan_scene_graph_create(vulkan_data_scene *sceneData);
 void vulkan_scene_graph_destroy(vulkan_scene_graph *sceneGraph);
 
+/// Adds object data as new scene node.
 vulkan_scene_node *vulkan_scene_graph_add_object(vulkan_scene_graph *sceneGraph,
                                                  vulkan_scene_node *sceneNode,
                                                  vulkan_data_object *successorObject);
+
+/// Removes all instances of scene node from scene graph.
+void vulkan_scene_graph_remove_object(vulkan_scene_graph *sceneGraph, vulkan_scene_node *sceneNode);
 
 void vulkan_scene_graph_set_dirty(vulkan_scene_graph *sceneGraph, vulkan_scene_node *sceneNode);
 

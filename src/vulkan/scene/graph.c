@@ -54,7 +54,7 @@ vulkan_scene_node *add_entity(vulkan_scene_graph *sceneGraph,
 
   if (parentSceneGraphNode != NULL) {
     assert(sceneGraphNode != parentSceneGraphNode);
-    sceneGraphNode->parent = parentSceneGraphNode;
+    utarray_push_back(sceneGraphNode->parentNodes, &parentSceneGraphNode);
     if (sceneGraphNode->type == vulkan_scene_node_type_object) {
       utarray_push_back(parentSceneGraphNode->childObjectNodes, &sceneGraphNode);
     } else if (sceneGraphNode->type == vulkan_scene_node_type_mesh) {
@@ -87,7 +87,7 @@ vulkan_scene_node *add_entity(vulkan_scene_graph *sceneGraph,
       DL_APPEND(sceneTree->nodes, sceneTreeNode);
 
       utarray_push_back(sceneGraphNode->observers, &sceneTreeNode);
-      sceneTreeNode->parent = parentSceneTreeNode;
+      utarray_push_back(sceneTreeNode->parentNodes, &parentSceneTreeNode);
 
       if (sceneTreeNode->type == vulkan_scene_node_type_object) {
         utarray_push_back(parentSceneTreeNode->childObjectNodes, &sceneTreeNode);
@@ -125,6 +125,24 @@ vulkan_scene_node *add_entity(vulkan_scene_graph *sceneGraph,
   return sceneGraphNode;
 }
 
+void remove_entity(vulkan_scene_graph *sceneGraph, vulkan_scene_node *sceneGraphNode) {
+  // FIXME: Simplify scene graph logic further - too many hoops to jump through right now.
+
+  assert(sceneGraphNode->type == vulkan_scene_node_type_object);
+  vulkan_scene_node_remove_util(sceneGraphNode, sceneGraph->root);
+
+  // remove observers and their successors
+  vulkan_scene_node **observerNodeIt = NULL;
+  while ((observerNodeIt = utarray_next(sceneGraphNode->observers, observerNodeIt))) {
+    vulkan_scene_node *sceneTreeNode = *observerNodeIt;
+    vulkan_scene_node_remove_util(sceneTreeNode, sceneGraph->sceneTree->nodes);
+    vulkan_scene_node_destroy(sceneTreeNode);
+  }
+
+  // free
+  vulkan_scene_node_destroy(sceneGraphNode);
+}
+
 vulkan_scene_node *vulkan_scene_graph_add_object(vulkan_scene_graph *sceneGraph,
                                                  vulkan_scene_node *sceneNode,
                                                  vulkan_data_object *successorObject) {
@@ -134,6 +152,11 @@ vulkan_scene_node *vulkan_scene_graph_add_object(vulkan_scene_graph *sceneGraph,
   vulkan_scene_node_set_dirty(childNode);
 
   return childNode;
+}
+
+void vulkan_scene_graph_remove_object(vulkan_scene_graph *sceneGraph,
+                                      vulkan_scene_node *sceneNode) {
+  remove_entity(sceneGraph, sceneNode);
 }
 
 void vulkan_scene_graph_set_dirty(vulkan_scene_graph *sceneGraph, vulkan_scene_node *sceneNode) {

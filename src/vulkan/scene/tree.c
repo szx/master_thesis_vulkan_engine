@@ -28,11 +28,15 @@ void vulkan_scene_tree_set_dirty(vulkan_scene_tree *sceneTree, vulkan_scene_node
 
 vulkan_scene_node *find_top_dirty_node(vulkan_scene_node *dirtyNode) {
   vulkan_scene_node *topNode = dirtyNode;
-  while (topNode != NULL) {
+  while (true) {
     if (topNode->dirty) {
       dirtyNode = topNode;
     }
-    topNode = topNode->parent;
+    if (topNode->type == vulkan_scene_node_type_root) {
+      break;
+    }
+    assert(utarray_len(topNode->parentNodes) == 1);
+    topNode = *(vulkan_scene_node **)utarray_front(topNode->parentNodes);
   }
   return dirtyNode;
 }
@@ -42,8 +46,10 @@ void validate_node(vulkan_scene_node *node) {
     node->dirty = false;
   }
 
-  if (node->parent) {
-    vulkan_scene_cache_accumulate(node->cache, node->parent->cache);
+  assert(utarray_len(node->parentNodes) == 0 || utarray_len(node->parentNodes) == 1);
+  if (utarray_len(node->parentNodes) == 1) {
+    vulkan_scene_node *parent = *(vulkan_scene_node **)utarray_front(node->parentNodes);
+    vulkan_scene_cache_accumulate(node->cache, parent->cache);
   }
 
   vulkan_scene_node **successorIt = NULL;
