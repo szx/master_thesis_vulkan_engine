@@ -170,21 +170,34 @@ TEST scene_graph_building() {
 
   vulkan_scene_graph *sceneGraph = vulkan_scene_graph_create(assetDbSceneData);
   vulkan_scene_tree *sceneTree = sceneGraph->sceneTree;
-  vulkan_scene_graph_debug_print(sceneGraph);
 
 #define ASSERT_TREE()                                                                              \
   do {                                                                                             \
+    vulkan_scene_graph_debug_print(sceneGraph);                                                    \
     vulkan_scene_tree_debug_print(sceneTree);                                                      \
     ASSERT_EQ(utarray_len(sceneTree->dirtyNodes), 0);                                              \
     vulkan_scene_node *sceneNode = NULL;                                                           \
     DL_FOREACH(sceneTree->nodes, sceneNode) {                                                      \
-      if (sceneNode->type == vulkan_scene_node_type_root ||                                        \
-          sceneNode->type == vulkan_scene_node_type_mesh) {                                        \
-        ASSERT_GT(utarray_len(sceneNode->successors), 0);                                          \
+      log_debug("tree node: %p", sceneNode);                                                       \
+      ASSERT(sceneNode->type == vulkan_scene_node_type_root || sceneNode->parent != NULL);         \
+      ASSERT_EQ(utarray_len(sceneNode->observers), 0);                                             \
+      if (sceneNode->type == vulkan_scene_node_type_root) {                                        \
+        ASSERT_GT(utarray_len(sceneNode->childObjectNodes), 0);                                    \
+        ASSERT_EQ(sceneNode->meshNode, NULL);                                                      \
+        ASSERT_EQ(utarray_len(sceneNode->primitiveNodes), 0);                                      \
+      } else if (sceneNode->type == vulkan_scene_node_type_object) {                               \
+        ASSERT(sceneNode->mesh != NULL || utarray_len(sceneNode->childObjectNodes) > 0);           \
+        ASSERT_EQ(utarray_len(sceneNode->primitiveNodes), 0);                                      \
+      } else if (sceneNode->type == vulkan_scene_node_type_mesh) {                                 \
+        ASSERT_EQ(utarray_len(sceneNode->childObjectNodes), 0);                                    \
+        ASSERT_EQ(sceneNode->meshNode, NULL);                                                      \
+        ASSERT_GT(utarray_len(sceneNode->primitiveNodes), 0);                                      \
       } else if (sceneNode->type == vulkan_scene_node_type_primitive) {                            \
-        ASSERT_EQ(utarray_len(sceneNode->successors), 0);                                          \
+        ASSERT_EQ(utarray_len(sceneNode->childObjectNodes), 0);                                    \
+        ASSERT_EQ(sceneNode->meshNode, NULL);                                                      \
+        ASSERT_EQ(utarray_len(sceneNode->primitiveNodes), 0);                                      \
       } else {                                                                                     \
-        ASSERT_EQ(utarray_len(sceneNode->successors), 1);                                          \
+        FAILm("unknown node type");                                                                \
       }                                                                                            \
       ASSERT_FALSE(sceneNode->dirty);                                                              \
     }                                                                                              \
@@ -193,23 +206,38 @@ TEST scene_graph_building() {
   ASSERT_TREE();
 
   // Verify cache accumulation.
-  vulkan_data_object *firstObject = assetDbSceneData->objects;
-  ASSERT_NEQ(firstObject, NULL);
-  firstObject->transform[0][0] = 2;
-  vulkan_scene_node_set_dirty(firstObject->sceneGraphNode);
+  vulkan_scene_node *firstObjectNode =
+      *(vulkan_scene_node **)utarray_front(sceneGraph->root->childObjectNodes);
+  ASSERT_NEQ(firstObjectNode, NULL);
+  ASSERT_EQ(firstObjectNode->type, vulkan_scene_node_type_object);
+  firstObjectNode->object->transform[0][0] = 2;
+  vulkan_scene_node_set_dirty(firstObjectNode);
   vulkan_scene_tree_validate(sceneTree);
   ASSERT_TREE();
-  ASSERT_EQ(firstObject->mesh->sceneTreeNode->cache->transform[0][0], 2);
+
+  vulkan_scene_node *sceneTreeNode =
+      *(vulkan_scene_node **)utarray_front(firstObjectNode->observers);
+  while (sceneTreeNode != NULL) {
+    ASSERT_EQ(sceneTreeNode->cache->transform[0][0], 2);
+    if (utarray_len(sceneTreeNode->childObjectNodes) > 0) {
+      sceneTreeNode = *(vulkan_scene_node **)utarray_front(sceneTreeNode->childObjectNodes);
+    } else if (sceneTreeNode->meshNode != NULL) {
+      sceneTreeNode = sceneTreeNode->meshNode;
+    } else if (utarray_len(sceneTreeNode->primitiveNodes) > 0) {
+      sceneTreeNode = *(vulkan_scene_node **)utarray_front(sceneTreeNode->primitiveNodes);
+    } else {
+      sceneTreeNode = NULL;
+    }
+  }
 
   // Verify adding new objects.
-  /*
-  vulkan_scene_graph_add_primitive_node(sceneGraph, )
-  utarray_push_back(firstObject->children, &secondObject);
-  vulkan_scene_node_set_dirty(firstObject->sceneGraphNode);
+  vulkan_data_object *secondObject = assetDbSceneData->objects;
+  ASSERT_NEQ(secondObject, NULL);
+  vulkan_scene_graph_add_object(sceneGraph, firstObjectNode, secondObject);
+  vulkan_scene_tree_debug_print(sceneTree);
   vulkan_scene_tree_validate(sceneTree);
   ASSERT_TREE();
-  ASSERT_EQ(utarray_len(firstObject->sceneGraphNode->successors), 2);
-  */
+  ASSERT_EQ(utarray_len(firstObjectNode->childObjectNodes), 1);
 
   vulkan_scene_graph_destroy(sceneGraph);
   vulkan_data_scene_destroy(assetDbSceneData);

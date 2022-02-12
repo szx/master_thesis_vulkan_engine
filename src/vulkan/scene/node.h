@@ -33,19 +33,17 @@ typedef struct vulkan_scene_node {
     vulkan_data_primitive *primitive;
   }; // pointer to entity in scene data
 
-  union {
-    vulkan_scene_graph *sceneGraph;
-    vulkan_scene_tree *sceneTree;
-  };
+  vulkan_scene_graph *sceneGraph;
+  vulkan_scene_tree *sceneTree;
 
   vulkan_scene_cache *cache; /// NULL for scene graph nodes.
   bool dirty;                /// True if scene node state changed and cache is out of sync.
 
-  vulkan_scene_node *parent; /// Parent node for scene tree. Last parent node for scene graph.
-  UT_array *successors;      /// vulkan_scene_node* list of successors in scene graph
-
-  UT_array *observers; /// vulkan_scene_node* list of dependent scene tree nodes created from this
-                       /// node that should be notified when this node's state changes.
+  vulkan_scene_node *parent;  /// Parent node for scene tree. Last parent node for scene graph.
+  UT_array *childObjectNodes; /// vulkan_scene_node* list
+  vulkan_scene_node *meshNode;
+  UT_array *primitiveNodes; /// vulkan_scene_node* list
+  UT_array *observers;      /// vulkan_scene_node* list of dependent scene tree nodes
 
   struct vulkan_scene_node *prev, *next; /// Doubly-linked list of all nodes in scene graph/tree.
 } vulkan_scene_node;
@@ -53,11 +51,6 @@ typedef struct vulkan_scene_node {
 vulkan_scene_node *vulkan_scene_node_create(vulkan_scene_node_type type, void *entity,
                                             bool createCache);
 void vulkan_scene_node_destroy(vulkan_scene_node *sceneNode);
-
-void vulkan_scene_node_add_successor(vulkan_scene_node *sceneNode,
-                                     vulkan_scene_node *successorNode);
-
-void vulkan_scene_node_add_observer(vulkan_scene_node *sceneNode, vulkan_scene_node *observerNode);
 
 void vulkan_scene_node_set_dirty(vulkan_scene_node *sceneNode);
 

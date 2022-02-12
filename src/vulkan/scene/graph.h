@@ -22,12 +22,6 @@ void vulkan_scene_graph_destroy(vulkan_scene_graph *sceneGraph);
 vulkan_scene_node *vulkan_scene_graph_add_object(vulkan_scene_graph *sceneGraph,
                                                  vulkan_scene_node *sceneNode,
                                                  vulkan_data_object *successorObject);
-vulkan_scene_node *vulkan_scene_graph_add_mesh(vulkan_scene_graph *sceneGraph,
-                                               vulkan_scene_node *sceneNode,
-                                               vulkan_data_mesh *successorMesh);
-vulkan_scene_node *vulkan_scene_graph_add_primitive(vulkan_scene_graph *sceneGraph,
-                                                    vulkan_scene_node *sceneNode,
-                                                    vulkan_data_primitive *successorPrimitive);
 
 void vulkan_scene_graph_set_dirty(vulkan_scene_graph *sceneGraph, vulkan_scene_node *sceneNode);
 
