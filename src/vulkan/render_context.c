@@ -350,8 +350,7 @@ void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config
   rctx->scene = NULL;
   vulkan_render_context_load_scene(rctx, sceneName);
   rctx->vks = vulkan_swap_chain_create(rctx->vkd);
-  vulkan_data_camera *camera = NULL;
-  while ((camera = (utarray_next(rctx->scene->data->cameras, camera)))) {
+  utarray_foreach_elem_it(vulkan_data_camera *, camera, rctx->scene->data->cameras) {
     vulkan_data_camera_update_aspect_ratio(camera, vulkan_swap_chain_get_aspect_ratio(rctx->vks));
   }
 
@@ -403,8 +402,7 @@ void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx) {
   vulkan_swap_chain_destroy(rctx->vks);
 
   rctx->vks = vulkan_swap_chain_create(rctx->vkd);
-  vulkan_data_camera *camera = NULL;
-  while ((camera = (utarray_next(rctx->scene->data->cameras, camera)))) {
+  utarray_foreach_elem_it(vulkan_data_camera *, camera, rctx->scene->data->cameras) {
     vulkan_data_camera_update_aspect_ratio(camera, vulkan_swap_chain_get_aspect_ratio(rctx->vks));
   }
   rctx->pipeline = vulkan_pipeline_create(rctx->vks, rctx->scene);
@@ -584,8 +582,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_render_data *sc
                          pushConstantOffset, sizeof(object->transform), pushConstantValuePtr);
     }
     vulkan_data_mesh *mesh = object->mesh;
-    vulkan_data_primitive *primitive = NULL;
-    while ((primitive = (utarray_next(mesh->primitives, primitive)))) {
+    utarray_foreach_elem_deref (vulkan_data_primitive *, primitive, mesh->primitives) {
       size_t bindingCount = vulkan_shader_info_get_binding_count(&renderPass->vertShader->info);
       assert(bindingCount == 1);
       VkBuffer vertexBuffer = scene->geometryBuffer->buffer;

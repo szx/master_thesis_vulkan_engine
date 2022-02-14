@@ -313,8 +313,7 @@ void vulkan_data_scene_serialize(vulkan_data_scene *sceneData, data_asset_db *as
   // vulkan_data_scene_debug_print(sceneData);
   UT_array *cameraKeys = NULL;
   utarray_alloc(cameraKeys, sizeof(data_key));
-  vulkan_data_camera *camera = NULL;
-  while ((camera = (utarray_next(sceneData->cameras, camera)))) {
+  utarray_foreach_elem_it(vulkan_data_camera *, camera, sceneData->cameras) {
     vulkan_data_camera_serialize(camera, assetDb);
     utarray_push_back(cameraKeys, &camera->hash);
   }
@@ -324,12 +323,9 @@ void vulkan_data_scene_serialize(vulkan_data_scene *sceneData, data_asset_db *as
 
   UT_array *objectKeys = NULL;
   utarray_alloc(objectKeys, sizeof(data_key));
-  vulkan_data_object **objectIt = NULL;
-  while ((objectIt = utarray_next(sceneData->rootObjects, objectIt))) {
-    vulkan_data_object *object = *objectIt;
-    // vulkan_data_object_debug_print(object);
-    vulkan_data_object_serialize(object, assetDb);
-    utarray_push_back(objectKeys, &object->hash);
+  utarray_foreach_elem_deref (vulkan_data_object *, rootObject, sceneData->rootObjects) {
+    vulkan_data_object_serialize(rootObject, assetDb);
+    utarray_push_back(objectKeys, &rootObject->hash);
   }
   data_asset_db_insert_scene_name_text(assetDb, sceneData->hash, (data_text){sceneData->name});
   data_asset_db_insert_scene_objects_key_array(assetDb, sceneData->hash,
@@ -346,20 +342,17 @@ void vulkan_data_scene_deserialize(vulkan_data_scene *sceneData, data_asset_db *
   data_key_array objectKeyArray =
       data_asset_db_select_scene_objects_key_array(assetDb, sceneData->hash);
 
-  data_key *cameraHash = NULL;
-  while ((cameraHash = (utarray_next(cameraKeyArray.values, cameraHash)))) {
+  utarray_foreach_elem_deref (data_key, cameraKey, cameraKeyArray.values) {
     vulkan_data_camera camera;
     vulkan_data_camera_init(&camera, sceneData);
-    vulkan_data_camera_deserialize(&camera, assetDb, *cameraHash);
+    vulkan_data_camera_deserialize(&camera, assetDb, cameraKey);
     utarray_push_back(sceneData->cameras, &camera);
   }
   data_key_array_deinit(&cameraKeyArray);
 
-  data_key *objectKey = NULL;
-  while ((objectKey = (utarray_next(objectKeyArray.values, objectKey)))) {
+  utarray_foreach_elem_deref (data_key, objectKey, objectKeyArray.values) {
     /* object data */
-    vulkan_data_object *object =
-        vulkan_data_scene_get_object_by_key(sceneData, assetDb, *objectKey);
+    vulkan_data_object *object = vulkan_data_scene_get_object_by_key(sceneData, assetDb, objectKey);
     utarray_push_back(sceneData->rootObjects, &object);
   }
   data_key_array_deinit(&objectKeyArray);
@@ -450,8 +443,7 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
     core_free(object);
   }
 
-  vulkan_data_camera *camera = NULL;
-  while ((camera = (utarray_next(sceneData->cameras, camera)))) {
+  utarray_foreach_elem_it(vulkan_data_camera *, camera, sceneData->cameras) {
     vulkan_data_camera_deinit(camera);
   }
   utarray_free(sceneData->cameras);
@@ -532,10 +524,9 @@ vulkan_data_scene *vulkan_data_scene_create_with_asset_db(data_asset_db *assetDb
 
 void vulkan_data_scene_debug_print(vulkan_data_scene *sceneData) {
   log_debug("SCENE_DATA:");
-  vulkan_data_object **objectIt = NULL;
   size_t i = 0;
-  while ((objectIt = utarray_next(sceneData->rootObjects, objectIt))) {
+  utarray_foreach_elem_deref (vulkan_data_object *, object, sceneData->rootObjects) {
     log_debug("root object #%d", i++);
-    vulkan_data_object_debug_print(*objectIt, 2);
+    vulkan_data_object_debug_print(object, 2);
   }
 }

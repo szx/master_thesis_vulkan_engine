@@ -54,6 +54,20 @@ typedef XXH64_hash_t hash_t;
       _prefix[1][2], _prefix[1][3], _prefix[2][0], _prefix[2][1], _prefix[2][2], _prefix[2][3],    \
       _prefix[3][0], _prefix[3][1], _prefix[3][2], _prefix[3][3]
 
+#define utarray_foreach_elem_it(_type, _elem, _utarray)                                            \
+  UT_array *_elem##_array = _utarray;                                                              \
+  _type _elem = {0};                                                                               \
+  assert(_elem##_array->icd.sz == sizeof(*_elem));                                                 \
+  while ((_elem = utarray_next(_elem##_array, _elem)))
+
+#define utarray_foreach_elem_deref(_type, _elem, _utarray)                                         \
+  UT_array *_elem##_array = _utarray;                                                              \
+  _type *_elem##It = {0};                                                                          \
+  _type _elem = {0};                                                                               \
+  assert(_elem##_array->icd.sz == sizeof(_elem));                                                  \
+  while ((_elem##It = utarray_next(_elem##_array, _elem##It)))                                     \
+    if ((_elem = *_elem##It), true)
+
 /* macro magic */
 // https://embeddedartistry.com/blog/2020/07/27/exploiting-the-preprocessor-for-fun-and-profit/
 

@@ -20,9 +20,8 @@ vulkan_swap_chain *vulkan_swap_chain_create(vulkan_device *vkd) {
 }
 
 void vulkan_swap_chain_destroy(vulkan_swap_chain *vks) {
-  VkImageView *swapChainImageView = NULL;
-  while ((swapChainImageView = utarray_next(vks->swapChainImageViews, swapChainImageView))) {
-    vkDestroyImageView(vks->vkd->device, *swapChainImageView, vka);
+  utarray_foreach_elem_deref (VkImageView, swapChainImageView, vks->swapChainImageViews) {
+    vkDestroyImageView(vks->vkd->device, swapChainImageView, vka);
   }
   utarray_free(vks->swapChainImageViews);
   utarray_free(vks->swapChainImages);

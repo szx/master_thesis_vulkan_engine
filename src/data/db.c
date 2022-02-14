@@ -172,9 +172,8 @@ DATA_DB_TYPES(def_data_type_temp, )
     utarray_alloc(array->values, sizeof(data##_##_type));                                          \
   }                                                                                                \
   void data##_##_type##_array_deinit(data##_##_type##_array *array) {                              \
-    data##_##_type *data = NULL;                                                                   \
-    while ((data = (utarray_next(array->values, data)))) {                                         \
-      data##_##_type##_deinit(data);                                                               \
+    utarray_foreach_elem_deref (data##_##_type, data, array->values) {                             \
+      data##_##_type##_deinit(&data);                                                              \
     }                                                                                              \
     utarray_free(array->values);                                                                   \
   }                                                                                                \

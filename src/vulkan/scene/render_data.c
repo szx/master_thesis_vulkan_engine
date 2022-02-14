@@ -74,8 +74,7 @@ void vulkan_scene_render_data_build_geometry_buffer(vulkan_scene_render_data *sc
 }
 
 void vulkan_scene_render_data_update_data(vulkan_scene_render_data *sceneRenderData) {
-  vulkan_data_camera *camera = NULL;
-  while ((camera = (utarray_next(sceneRenderData->data->cameras, camera)))) {
+  utarray_foreach_elem_it(vulkan_data_camera *, camera, sceneRenderData->data->cameras) {
     vulkan_uniform_buffer_update_with_camera(sceneRenderData->uniformBuffer, camera);
   }
 

@@ -103,33 +103,28 @@ void vulkan_data_primitive_debug_print(vulkan_data_primitive *primitive, int ind
   log_debug("%*sprimitive: %s\n", indent, "", VkPrimitiveTopology_debug_str(primitive->topology));
   log_debug("%*shash=%zu", indent + 2, "", primitive->hash);
   log_debug("%*sindex: count=%d\n", indent + 2, "", utarray_len(primitive->indices));
-  void *index = NULL;
-  while ((index = utarray_next(primitive->indices, index))) {
-    log_debug("%*s%u\n", indent + 4, "", *(uint32_t *)index);
+  utarray_foreach_elem_deref (uint32_t, index, primitive->indices) {
+    log_debug("%*s%u\n", indent + 4, "", index);
   }
   log_debug("%*svertices: count=%d\n", indent + 2, "", primitive->vertexCount,
             primitive->vertexCount);
   uint32_t vertexIdx = 0;
-  vec3 *position = NULL;
-  while ((position = utarray_next(primitive->positions, position))) {
+  utarray_foreach_elem_it(vec3 *, position, primitive->positions) {
     log_debug("%*sposition %d: %f %f %f\n", indent + 4, "", vertexIdx++, (*position)[0],
               (*position)[1], (*position)[2]);
   }
   vertexIdx = 0;
-  vec3 *normal = NULL;
-  while ((normal = utarray_next(primitive->normals, normal))) {
+  utarray_foreach_elem_it(vec3 *, normal, primitive->normals) {
     log_debug("%*snormal %d: %f %f %f\n", indent + 4, "", vertexIdx++, (*normal)[0], (*normal)[1],
               (*normal)[2]);
   }
   vertexIdx = 0;
-  vec3 *color = NULL;
-  while ((color = utarray_next(primitive->colors, color))) {
+  utarray_foreach_elem_it(vec3 *, color, primitive->colors) {
     log_debug("%*scolor %d: %f %f %f\n", indent + 4, "", vertexIdx++, (*color)[0], (*color)[1],
               (*color)[2]);
   }
   vertexIdx = 0;
-  vec2 *texCoord = NULL;
-  while ((texCoord = utarray_next(primitive->texCoords, texCoord))) {
+  utarray_foreach_elem_it(vec2 *, texCoord, primitive->texCoords) {
     log_debug("%*stexCoord %d: %f %f\n", indent + 4, "", vertexIdx++, (*texCoord)[0],
               (*texCoord)[1]);
   }

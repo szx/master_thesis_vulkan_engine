@@ -18,7 +18,6 @@ void vulkan_scene_tree_destroy(vulkan_scene_tree *sceneTree) {
   core_free(sceneTree);
 }
 
-
 void vulkan_scene_tree_set_dirty(vulkan_scene_tree *sceneTree, vulkan_scene_node *sceneNode) {
   if (!sceneNode->dirty) {
     sceneNode->dirty = true;
@@ -52,27 +51,21 @@ void validate_node(vulkan_scene_node *node) {
     vulkan_scene_cache_accumulate(node->cache, parent->cache);
   }
 
-  vulkan_scene_node **successorIt = NULL;
-  while ((successorIt = utarray_next(node->childObjectNodes, successorIt))) {
-    vulkan_scene_node *successor = *successorIt;
-    validate_node(successor);
+  utarray_foreach_elem_deref (vulkan_scene_node *, childObjectNode, node->childObjectNodes) {
+    validate_node(childObjectNode);
   }
 
   if (node->meshNode != NULL) {
     validate_node(node->meshNode);
   }
 
-  successorIt = NULL;
-  while ((successorIt = utarray_next(node->primitiveNodes, successorIt))) {
-    vulkan_scene_node *successor = *successorIt;
-    validate_node(successor);
+  utarray_foreach_elem_deref (vulkan_scene_node *, primitiveNode, node->primitiveNodes) {
+    validate_node(primitiveNode);
   }
 }
 
 void vulkan_scene_tree_validate(vulkan_scene_tree *sceneTree) {
-  vulkan_scene_node **dirtyNodeIt = NULL;
-  while ((dirtyNodeIt = utarray_next(sceneTree->dirtyNodes, dirtyNodeIt))) {
-    vulkan_scene_node *dirtyNode = *dirtyNodeIt;
+  utarray_foreach_elem_deref (vulkan_scene_node *, dirtyNode, sceneTree->dirtyNodes) {
     if (dirtyNode->dirty) {
       vulkan_scene_node *topDirtyNode = find_top_dirty_node(dirtyNode);
       validate_node(topDirtyNode);

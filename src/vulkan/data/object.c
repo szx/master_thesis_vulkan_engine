@@ -22,9 +22,8 @@ data_key vulkan_data_object_calculate_key(vulkan_data_object *object) {
   hash_t value;
   HASH_START(hashState)
   HASH_UPDATE(hashState, &object->transform, sizeof(object->transform))
-  vulkan_data_object **childIt = NULL;
-  while ((childIt = (utarray_next(object->children, childIt)))) {
-    vulkan_data_object *child = *childIt;
+
+  utarray_foreach_elem_deref (vulkan_data_object *, child, object->children) {
     HASH_UPDATE(hashState, &child->hash.value, sizeof(child->hash.value));
   }
   if (object->mesh) {
@@ -49,9 +48,7 @@ void vulkan_data_object_serialize(vulkan_data_object *object, data_asset_db *ass
 
   UT_array *childKeys = NULL;
   utarray_alloc(childKeys, sizeof(data_key));
-  vulkan_data_object **childIt = NULL;
-  while ((childIt = (utarray_next(object->children, childIt)))) {
-    vulkan_data_object *child = *childIt;
+  utarray_foreach_elem_deref (vulkan_data_object *, child, object->children) {
     vulkan_data_object_serialize(child, assetDb);
     utarray_push_back(childKeys, &child->hash);
   }
@@ -79,10 +76,9 @@ void vulkan_data_object_deserialize(vulkan_data_object *object, data_asset_db *a
 
   data_key_array childrenHashArray =
       data_asset_db_select_object_children_key_array(assetDb, object->hash);
-  data_key *childKey = NULL;
-  while ((childKey = (utarray_next(childrenHashArray.values, childKey)))) {
+  utarray_foreach_elem_deref (data_key, childKey, childrenHashArray.values) {
     vulkan_data_object *child =
-        vulkan_data_scene_get_object_by_key(object->sceneData, assetDb, *childKey);
+        vulkan_data_scene_get_object_by_key(object->sceneData, assetDb, childKey);
     utarray_push_back(object->children, &child);
   }
   data_key_array_deinit(&childrenHashArray);
@@ -98,10 +94,8 @@ void vulkan_data_object_debug_print(vulkan_data_object *object, int indent) {
     vulkan_data_mesh_debug_print(object->mesh, indent + 2);
   }
 
-  vulkan_data_object **childIt = NULL;
   size_t i = 0;
-  while ((childIt = utarray_next(object->children, childIt))) {
-    vulkan_data_object *child = *childIt;
+  utarray_foreach_elem_deref (vulkan_data_object *, child, object->children) {
     log_debug("%*schild #%d", indent + 2, "", i++);
     vulkan_data_object_debug_print(child, indent + 2);
   }

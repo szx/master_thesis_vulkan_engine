@@ -92,23 +92,19 @@ void vulkan_scene_node_remove_util(vulkan_scene_node *sceneNode, vulkan_scene_no
   }
 
   // remove from parents
-  vulkan_scene_node **parentNodeIt = NULL;
-  while ((parentNodeIt = utarray_next(sceneNode->parentNodes, parentNodeIt))) {
-    vulkan_scene_node *parentSceneNode = *parentNodeIt;
+  utarray_foreach_elem_deref (vulkan_scene_node *, parentSceneNode, sceneNode->parentNodes) {
     if (sceneNode->type == vulkan_scene_node_type_mesh) {
       assert(parentSceneNode->type == vulkan_scene_node_type_object);
       parentSceneNode->meshNode = NULL;
     } else {
       size_t idx = 0;
-      vulkan_scene_node **successorIt = NULL;
       UT_array *successors = NULL;
       if (sceneNode->type == vulkan_scene_node_type_primitive) {
         successors = parentSceneNode->primitiveNodes;
       } else if (sceneNode->type == vulkan_scene_node_type_object) {
         successors = parentSceneNode->childObjectNodes;
       }
-      while ((successorIt = utarray_next(successors, successorIt))) {
-        vulkan_scene_node *successor = *successorIt;
+      utarray_foreach_elem_deref (vulkan_scene_node *, successor, successors) {
         if (successor == sceneNode) {
           break;
         }
@@ -132,14 +128,12 @@ void vulkan_scene_node_debug_print(vulkan_scene_node *sceneNode) {
     log_raw(stdout, " } ");
   }
 
-  vulkan_scene_node **successorIt = NULL;
-  while ((successorIt = utarray_next(sceneNode->childObjectNodes, successorIt))) {
-    vulkan_scene_node *successor = *successorIt;
+  utarray_foreach_elem_deref (vulkan_scene_node *, childObjectNode, sceneNode->childObjectNodes) {
     debug_log_node(sceneNode);
     log_raw(stdout, " -> ");
-    debug_log_node(successor);
+    debug_log_node(childObjectNode);
     log_raw(stdout, "; ");
-    vulkan_scene_node_debug_print(successor);
+    vulkan_scene_node_debug_print(childObjectNode);
   }
   if (sceneNode->meshNode != NULL) {
     debug_log_node(sceneNode);
@@ -148,13 +142,11 @@ void vulkan_scene_node_debug_print(vulkan_scene_node *sceneNode) {
     log_raw(stdout, "; ");
     vulkan_scene_node_debug_print(sceneNode->meshNode);
   }
-  successorIt = NULL;
-  while ((successorIt = utarray_next(sceneNode->primitiveNodes, successorIt))) {
-    vulkan_scene_node *successor = *successorIt;
+  utarray_foreach_elem_deref (vulkan_scene_node *, primitiveNode, sceneNode->primitiveNodes) {
     debug_log_node(sceneNode);
     log_raw(stdout, " -> ");
-    debug_log_node(successor);
+    debug_log_node(primitiveNode);
     log_raw(stdout, "; ");
-    vulkan_scene_node_debug_print(successor);
+    vulkan_scene_node_debug_print(primitiveNode);
   }
 }
