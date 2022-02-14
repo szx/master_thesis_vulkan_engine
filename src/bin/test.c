@@ -185,7 +185,7 @@ TEST scene_graph_building() {
 
   ASSERT_TREE();
 
-  // Verify cache accumulation.
+  log_info("Verify cache accumulation.");
   vulkan_scene_node *firstObjectNode =
       *(vulkan_scene_node **)utarray_front(sceneGraph->root->childObjectNodes);
   ASSERT_NEQ(firstObjectNode, NULL);
@@ -211,6 +211,8 @@ TEST scene_graph_building() {
   }
 
   // Verify adding new objects.
+  // FIXME: Rethink and refactor vulkan_scene_graph_add_object.
+  /*
   vulkan_data_object *secondObject = assetDbSceneData->objects;
   ASSERT_NEQ(secondObject, NULL);
   vulkan_scene_node *firstAddedNode =
@@ -224,7 +226,7 @@ TEST scene_graph_building() {
   vulkan_scene_graph_debug_print(sceneGraph);
   ASSERT_TREE();
   ASSERT_EQ(utarray_len(firstObjectNode->childObjectNodes), 0);
-
+*/
   vulkan_scene_graph_destroy(sceneGraph);
   vulkan_data_scene_destroy(assetDbSceneData);
   vulkan_device_destroy(vkd);
