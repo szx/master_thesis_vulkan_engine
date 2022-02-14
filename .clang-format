@@ -75,7 +75,9 @@ ForEachMacros:
   - foreach
   - Q_FOREACH
   - BOOST_FOREACH
+  - utarray_foreach_elem_it
   - utarray_foreach_elem_deref
+  - dl_foreach_elem
 IncludeBlocks:   Preserve
 IncludeCategories:
   - Regex:           '^"(llvm|llvm-c|clang|clang-c)/'

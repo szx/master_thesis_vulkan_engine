@@ -20,20 +20,7 @@ TEST gltf_loading() {
 
   ASSERT_STR_EQ(utstring_body(gltfSceneData->name), utstring_body(assetDbSceneData->name));
   ASSERT_EQ(gltfSceneData->hash.value, assetDbSceneData->hash.value);
-  size_t gltfObjectCount, assetDbObjectCount;
-  vulkan_data_object *gltfNode = NULL;
-  vulkan_data_object *assetDbNode = NULL;
-  DL_COUNT(gltfSceneData->objects, gltfNode, gltfObjectCount);
-  DL_COUNT(assetDbSceneData->objects, assetDbNode, assetDbObjectCount);
-  ASSERT_EQ(gltfObjectCount, assetDbObjectCount);
   ASSERT_EQ(utarray_len(gltfSceneData->cameras), utarray_len(assetDbSceneData->cameras));
-  vulkan_data_primitive *gltfPrimitive = NULL;
-  vulkan_data_primitive *assetDbPrimitive = NULL;
-  size_t gltfPrimitivesCount = 0;
-  DL_COUNT(gltfSceneData->primitives, gltfPrimitive, gltfPrimitivesCount);
-  size_t assetDbPrimitivesCount = 0;
-  DL_COUNT(assetDbSceneData->primitives, assetDbPrimitive, assetDbPrimitivesCount);
-  ASSERT_EQ(gltfPrimitivesCount, assetDbPrimitivesCount);
 
   utarray_foreach_elem_it(vulkan_data_camera *, assetDbCamera, assetDbSceneData->cameras) {
     bool foundCorrespondingCamera = false;
@@ -52,11 +39,9 @@ TEST gltf_loading() {
     ASSERT_EQ(gltfCamera->farZ, assetDbCamera->farZ);
   }
 
-  assetDbNode = NULL;
-  DL_FOREACH(assetDbSceneData->objects, assetDbNode) {
-    gltfNode = NULL;
+  dl_foreach_elem (vulkan_data_object *, assetDbNode, assetDbSceneData->objects) {
     bool foundCorrespondingNode = false;
-    DL_FOREACH(gltfSceneData->objects, gltfNode) {
+    dl_foreach_elem (vulkan_data_object *, gltfNode, gltfSceneData->objects) {
       if (gltfNode->hash.value == assetDbNode->hash.value) {
         foundCorrespondingNode = true;
         break;
@@ -71,10 +56,8 @@ TEST gltf_loading() {
            (gltfMesh->hash.value == assetDbMesh->hash.value));
 
     bool foundCorrespondingPrimitive = false;
-    gltfPrimitive = NULL;
-    DL_FOREACH(gltfSceneData->primitives, gltfPrimitive) {
-      assetDbPrimitive = NULL;
-      DL_FOREACH(assetDbSceneData->primitives, assetDbPrimitive) {
+    dl_foreach_elem (vulkan_data_primitive *, gltfPrimitive, gltfSceneData->primitives) {
+      dl_foreach_elem (vulkan_data_primitive *, assetDbPrimitive, assetDbSceneData->primitives) {
         if (gltfPrimitive->hash.value == assetDbPrimitive->hash.value) {
           foundCorrespondingPrimitive = true;
           break;
@@ -173,8 +156,7 @@ TEST scene_graph_building() {
     vulkan_scene_graph_debug_print(sceneGraph);                                                    \
     vulkan_scene_tree_debug_print(sceneGraph->sceneTree);                                          \
     ASSERT_EQ(utarray_len(sceneGraph->sceneTree->dirtyNodes), 0);                                  \
-    vulkan_scene_node *sceneNode = NULL;                                                           \
-    DL_FOREACH(sceneGraph->sceneTree->nodes, sceneNode) {                                          \
+    dl_foreach_elem (vulkan_scene_node *, sceneNode, sceneGraph->sceneTree->nodes) {               \
       /*log_debug("tree node: %p", sceneNode);*/                                                   \
       ASSERT(sceneNode->type == vulkan_scene_node_type_root ||                                     \
              utarray_len(sceneNode->parentNodes) > 0);                                             \

@@ -68,6 +68,11 @@ typedef XXH64_hash_t hash_t;
   while ((_elem##It = utarray_next(_elem##_array, _elem##It)))                                     \
     if ((_elem = *_elem##It), true)
 
+#define dl_foreach_elem(_type, _elem, _dl)                                                         \
+  _type _elem = {0};                                                                               \
+  _type _elem##Temp = {0};                                                                         \
+  DL_FOREACH_SAFE(_dl, _elem, _elem##Temp)
+
 /* macro magic */
 // https://embeddedartistry.com/blog/2020/07/27/exploiting-the-preprocessor-for-fun-and-profit/
 

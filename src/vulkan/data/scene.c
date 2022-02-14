@@ -407,43 +407,37 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
   utstring_free(sceneData->name);
   utstring_free(sceneData->path);
 
-  vulkan_data_image *image, *tempImage;
-  DL_FOREACH_SAFE(sceneData->images, image, tempImage) {
+  dl_foreach_elem (vulkan_data_image *, image, sceneData->images) {
     vulkan_data_image_deinit(image);
     core_free(image);
   }
 
-  vulkan_data_sampler *sampler, *tempSampler;
-  DL_FOREACH_SAFE(sceneData->samplers, sampler, tempSampler) {
+  dl_foreach_elem (vulkan_data_sampler *, sampler, sceneData->samplers) {
     vulkan_data_sampler_deinit(sampler);
     core_free(sampler);
   }
 
-  vulkan_data_texture *texture, *tempTexture;
-  DL_FOREACH_SAFE(sceneData->textures, texture, tempTexture) {
+  dl_foreach_elem (vulkan_data_texture *, texture, sceneData->textures) {
     vulkan_data_texture_deinit(texture);
     core_free(texture);
   }
 
-  vulkan_data_material *material, *tempMaterial;
-  DL_FOREACH_SAFE(sceneData->materials, material, tempMaterial) {
+  dl_foreach_elem (vulkan_data_material *, material, sceneData->materials) {
     vulkan_data_material_deinit(material);
     core_free(material);
   }
 
-  vulkan_data_primitive *primitive, *tempPrimitive;
-  DL_FOREACH_SAFE(sceneData->primitives, primitive, tempPrimitive) {
+  dl_foreach_elem (vulkan_data_primitive *, primitive, sceneData->primitives) {
     vulkan_data_primitive_deinit(primitive);
     core_free(primitive);
   }
 
-  vulkan_data_object *object, *tempObject;
-  DL_FOREACH_SAFE(sceneData->objects, object, tempObject) {
+  dl_foreach_elem (vulkan_data_object *, object, sceneData->objects) {
     vulkan_data_object_deinit(object);
     core_free(object);
   }
 
-  utarray_foreach_elem_it(vulkan_data_camera *, camera, sceneData->cameras) {
+  utarray_foreach_elem_it (vulkan_data_camera *, camera, sceneData->cameras) {
     vulkan_data_camera_deinit(camera);
   }
   utarray_free(sceneData->cameras);
@@ -456,22 +450,21 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
 #define DEF_GET_VULKAN_ENTITY_BY_KEY(_type)                                                        \
   vulkan_data_##_type *vulkan_data_scene_get_##_type##_by_key(                                     \
       vulkan_data_scene *sceneData, data_asset_db *assetDb, data_key key) {                        \
-    vulkan_data_##_type *object = NULL;                                                            \
-    vulkan_data_##_type *existingObject = NULL;                                                    \
-    DL_FOREACH(sceneData->_type##s, existingObject) {                                              \
-      if (existingObject->hash.value == key.value) {                                               \
-        object = existingObject;                                                                   \
+    vulkan_data_##_type *entity = NULL;                                                            \
+    dl_foreach_elem (vulkan_data_##_type *, existingEntity, sceneData->_type##s) {                 \
+      if (existingEntity->hash.value == key.value) {                                               \
+        entity = existingEntity;                                                                   \
         break;                                                                                     \
       }                                                                                            \
     }                                                                                              \
-    if (object == NULL && assetDb != NULL) {                                                       \
+    if (entity == NULL && assetDb != NULL) {                                                       \
       vulkan_data_##_type *newObject = core_alloc(sizeof(vulkan_data_##_type));                    \
       vulkan_data_##_type##_init(newObject, sceneData);                                            \
       vulkan_data_##_type##_deserialize(newObject, assetDb, key);                                  \
       LL_PREPEND(sceneData->_type##s, newObject);                                                  \
-      object = sceneData->_type##s;                                                                \
+      entity = sceneData->_type##s;                                                                \
     }                                                                                              \
-    return object;                                                                                 \
+    return entity;                                                                                 \
   }
 
 #define DEF_ADD_VULKAN_ENTITY(_type)                                                               \
