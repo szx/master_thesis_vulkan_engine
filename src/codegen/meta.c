@@ -2985,11 +2985,18 @@ const char *vulkan_render_pass_type_debug_str(int value) {
   if (value == 0) { return "ForwardRenderPass"; }
   return "UNKNOWN vulkan_render_pass_type";
 }
-const char *vulkan_scene_node_type_debug_str(int value) {
-  if (value == 0) { return "vulkan_scene_node_type_root"; }
-  if (value == 1) { return "vulkan_scene_node_type_object"; }
-  if (value == 2) { return "vulkan_scene_node_type_mesh"; }
-  if (value == 3) { return "vulkan_scene_node_type_primitive"; }
-  if (value == 4) { return "vulkan_scene_node_type_count"; }
-  return "UNKNOWN vulkan_scene_node_type";
+void vulkan_scene_node_container_type_debug_print(int flags) {
+  log_debug("vulkan_scene_node_container_type: {");
+  if ((flags & 0) != 0) { log_debug("  vulkan_scene_node_container_type_scene_graph"); }
+  if ((flags & 1) != 0) { log_debug("  vulkan_scene_node_container_type_scene_tree"); }
+  if ((flags & 2) != 0) { log_debug("  vulkan_scene_node_container_type_count"); }
+  log_debug("vulkan_scene_node_container_type: }");
+}
+const char *vulkan_scene_node_entity_type_debug_str(int value) {
+  if (value == 0) { return "vulkan_scene_node_entity_type_root"; }
+  if (value == 1) { return "vulkan_scene_node_entity_type_object"; }
+  if (value == 2) { return "vulkan_scene_node_entity_type_mesh"; }
+  if (value == 3) { return "vulkan_scene_node_entity_type_primitive"; }
+  if (value == 4) { return "vulkan_scene_node_entity_type_count"; }
+  return "UNKNOWN vulkan_scene_node_entity_type";
 }

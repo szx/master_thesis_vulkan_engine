@@ -15,7 +15,7 @@ void vulkan_scene_cache_destroy(vulkan_scene_cache *sceneCache) { core_free(scen
 void vulkan_scene_cache_set_with_node(vulkan_scene_cache *sceneCache) {
   sceneCache->distanceFromRoot = 0;
   sceneCache->visible = true;
-  if (sceneCache->node->type == vulkan_scene_node_type_object) {
+  if (sceneCache->node->type == vulkan_scene_node_entity_type_object) {
     glm_mat4_copy(sceneCache->node->object->transform, sceneCache->transform);
   } else {
     glm_mat4_identity(sceneCache->transform);

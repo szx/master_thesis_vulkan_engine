@@ -13,7 +13,8 @@ typedef struct vulkan_scene_graph {
   vulkan_scene_tree *sceneTree; /// Scene tree.
   // HIRO Scene render data.
 
-  vulkan_scene_node *root; /// Both root node and list of all nodes of scene graph.
+  vulkan_scene_node *root;  /// The root node.
+  vulkan_scene_node *nodes; /// Linked list of all nodes of scene graph.
 } vulkan_scene_graph;
 
 vulkan_scene_graph *vulkan_scene_graph_create(vulkan_data_scene *sceneData);

@@ -30,7 +30,7 @@ vulkan_scene_node *find_top_dirty_node(vulkan_scene_node *dirtyNode) {
     if (topNode->dirty) {
       dirtyNode = topNode;
     }
-    if (topNode->type == vulkan_scene_node_type_root) {
+    if (topNode->type == vulkan_scene_node_entity_type_root) {
       break;
     }
     assert(utarray_len(topNode->parentNodes) == 1);

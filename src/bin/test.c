@@ -22,9 +22,9 @@ TEST gltf_loading() {
   ASSERT_EQ(gltfSceneData->hash.value, assetDbSceneData->hash.value);
   ASSERT_EQ(utarray_len(gltfSceneData->cameras), utarray_len(assetDbSceneData->cameras));
 
-  utarray_foreach_elem_it(vulkan_data_camera *, assetDbCamera, assetDbSceneData->cameras) {
+  utarray_foreach_elem_it (vulkan_data_camera *, assetDbCamera, assetDbSceneData->cameras) {
     bool foundCorrespondingCamera = false;
-    utarray_foreach_elem_it(vulkan_data_camera *, gltfCamera, gltfSceneData->cameras) {
+    utarray_foreach_elem_it (vulkan_data_camera *, gltfCamera, gltfSceneData->cameras) {
       if (gltfCamera->hash.value == assetDbCamera->hash.value) {
         foundCorrespondingCamera = true;
         break;
@@ -158,21 +158,21 @@ TEST scene_graph_building() {
     ASSERT_EQ(utarray_len(sceneGraph->sceneTree->dirtyNodes), 0);                                  \
     dl_foreach_elem (vulkan_scene_node *, sceneNode, sceneGraph->sceneTree->nodes) {               \
       /*log_debug("tree node: %p", sceneNode);*/                                                   \
-      ASSERT(sceneNode->type == vulkan_scene_node_type_root ||                                     \
+      ASSERT_EQ(sceneNode->containerType, vulkan_scene_node_container_type_scene_tree);            \
+      ASSERT(sceneNode->type == vulkan_scene_node_entity_type_root ||                              \
              utarray_len(sceneNode->parentNodes) > 0);                                             \
-      ASSERT_EQ(utarray_len(sceneNode->observers), 0);                                             \
-      if (sceneNode->type == vulkan_scene_node_type_root) {                                        \
+      if (sceneNode->type == vulkan_scene_node_entity_type_root) {                                 \
         ASSERT_GT(utarray_len(sceneNode->childObjectNodes), 0);                                    \
         ASSERT_EQ(sceneNode->meshNode, NULL);                                                      \
         ASSERT_EQ(utarray_len(sceneNode->primitiveNodes), 0);                                      \
-      } else if (sceneNode->type == vulkan_scene_node_type_object) {                               \
+      } else if (sceneNode->type == vulkan_scene_node_entity_type_object) {                        \
         ASSERT(sceneNode->mesh != NULL || utarray_len(sceneNode->childObjectNodes) > 0);           \
         ASSERT_EQ(utarray_len(sceneNode->primitiveNodes), 0);                                      \
-      } else if (sceneNode->type == vulkan_scene_node_type_mesh) {                                 \
+      } else if (sceneNode->type == vulkan_scene_node_entity_type_mesh) {                          \
         ASSERT_EQ(utarray_len(sceneNode->childObjectNodes), 0);                                    \
         ASSERT_EQ(sceneNode->meshNode, NULL);                                                      \
         ASSERT_GT(utarray_len(sceneNode->primitiveNodes), 0);                                      \
-      } else if (sceneNode->type == vulkan_scene_node_type_primitive) {                            \
+      } else if (sceneNode->type == vulkan_scene_node_entity_type_primitive) {                     \
         ASSERT_EQ(utarray_len(sceneNode->childObjectNodes), 0);                                    \
         ASSERT_EQ(sceneNode->meshNode, NULL);                                                      \
         ASSERT_EQ(utarray_len(sceneNode->primitiveNodes), 0);                                      \
@@ -189,7 +189,7 @@ TEST scene_graph_building() {
   vulkan_scene_node *firstObjectNode =
       *(vulkan_scene_node **)utarray_front(sceneGraph->root->childObjectNodes);
   ASSERT_NEQ(firstObjectNode, NULL);
-  ASSERT_EQ(firstObjectNode->type, vulkan_scene_node_type_object);
+  ASSERT_EQ(firstObjectNode->type, vulkan_scene_node_entity_type_object);
   firstObjectNode->object->transform[0][0] = 2;
   vulkan_scene_node_set_dirty(firstObjectNode);
   vulkan_scene_tree_validate(sceneGraph->sceneTree);
