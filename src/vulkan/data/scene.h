@@ -22,7 +22,7 @@ typedef struct vulkan_data_scene {
   UT_array *cameras;                 /// vulkan_data_camera array, all cameras in scene
   UT_array *rootObjects; /// vulkan_data_object* array, object that are direct descendants of scene
 
-  data_key hash; /// Hash, used to prevent duplicates in asset database.
+  data_key key; /// Hash, used to prevent duplicates in asset database.
 } vulkan_data_scene;
 
 vulkan_data_scene *vulkan_data_scene_create(UT_string *name);

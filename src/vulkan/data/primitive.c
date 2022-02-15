@@ -40,7 +40,7 @@ data_key vulkan_data_primitive_calculate_key(vulkan_data_primitive *primitive) {
 #undef HASH_UPDATE_FUNC
   HASH_DIGEST(hashState, primitive->geometryHash);
   if (primitive->material) {
-    HASH_UPDATE(hashState, &primitive->material->hash, sizeof(primitive->material->hash))
+    HASH_UPDATE(hashState, &primitive->material->key, sizeof(primitive->material->key))
   }
   HASH_DIGEST(hashState, value)
   HASH_END(hashState)
@@ -48,36 +48,36 @@ data_key vulkan_data_primitive_calculate_key(vulkan_data_primitive *primitive) {
 }
 
 void vulkan_data_primitive_serialize(vulkan_data_primitive *primitive, data_asset_db *assetDb) {
-  primitive->hash = vulkan_data_primitive_calculate_key(primitive);
+  primitive->key = vulkan_data_primitive_calculate_key(primitive);
 
   vulkan_data_material_serialize(primitive->material, assetDb);
-  data_asset_db_insert_primitive_material_key(assetDb, primitive->hash, primitive->material->hash);
+  data_asset_db_insert_primitive_material_key(assetDb, primitive->key, primitive->material->key);
 
-  data_asset_db_insert_primitive_topology_int(assetDb, primitive->hash,
+  data_asset_db_insert_primitive_topology_int(assetDb, primitive->key,
                                               data_int_temp(primitive->topology));
-  data_asset_db_insert_primitive_indices_int_array(assetDb, primitive->hash,
+  data_asset_db_insert_primitive_indices_int_array(assetDb, primitive->key,
                                                    data_int_array_temp(primitive->indices));
-  data_asset_db_insert_primitive_positions_vec3_array(assetDb, primitive->hash,
+  data_asset_db_insert_primitive_positions_vec3_array(assetDb, primitive->key,
                                                       data_vec3_array_temp(primitive->positions));
-  data_asset_db_insert_primitive_normals_vec3_array(assetDb, primitive->hash,
+  data_asset_db_insert_primitive_normals_vec3_array(assetDb, primitive->key,
                                                     data_vec3_array_temp(primitive->normals));
-  data_asset_db_insert_primitive_colors_vec3_array(assetDb, primitive->hash,
+  data_asset_db_insert_primitive_colors_vec3_array(assetDb, primitive->key,
                                                    data_vec3_array_temp(primitive->colors));
-  data_asset_db_insert_primitive_texCoords_vec2_array(assetDb, primitive->hash,
+  data_asset_db_insert_primitive_texCoords_vec2_array(assetDb, primitive->key,
                                                       data_vec2_array_temp(primitive->texCoords));
 }
 
 void vulkan_data_primitive_deserialize(vulkan_data_primitive *primitive, data_asset_db *assetDb,
                                        data_key key) {
-  primitive->hash = key;
+  primitive->key = key;
   primitive->material = vulkan_data_scene_get_material_by_key(
       primitive->sceneData, assetDb,
-      data_asset_db_select_primitive_material_key(assetDb, primitive->hash));
-  primitive->topology = data_asset_db_select_primitive_topology_int(assetDb, primitive->hash).value;
+      data_asset_db_select_primitive_material_key(assetDb, primitive->key));
+  primitive->topology = data_asset_db_select_primitive_topology_int(assetDb, primitive->key).value;
 
 #define SELECT_ARRAY(_name, _type)                                                                 \
   data_##_type _name##Blob =                                                                       \
-      data_asset_db_select_primitive_##_name##_##_type(assetDb, primitive->hash);                  \
+      data_asset_db_select_primitive_##_name##_##_type(assetDb, primitive->key);                   \
   utarray_resize(primitive->_name, utarray_len(_name##Blob.values));                               \
   core_memcpy(primitive->_name->d, _name##Blob.values->d, utarray_size(primitive->_name));         \
   data_##_type##_deinit(&_name##Blob);
@@ -104,7 +104,7 @@ void vulkan_data_primitive_deserialize(vulkan_data_primitive *primitive, data_as
 void vulkan_data_primitive_debug_print(vulkan_data_primitive *primitive, int indent) {
   log_debug("%*sprimitive: %s\n", indent, "", VkPrimitiveTopology_debug_str(primitive->topology));
   log_debug("%*sgeometryHash=%zu", indent + 2, "", primitive->geometryHash);
-  log_debug("%*shash=%zu", indent + 2, "", primitive->hash);
+  log_debug("%*shash=%zu", indent + 2, "", primitive->key);
   log_debug("%*sindex: count=%d\n", indent + 2, "", utarray_len(primitive->indices));
   utarray_foreach_elem_deref (uint32_t, index, primitive->indices) {
     log_debug("%*s%u\n", indent + 4, "", index);

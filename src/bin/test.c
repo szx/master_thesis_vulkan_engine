@@ -19,13 +19,13 @@ TEST gltf_loading() {
   vulkan_data_scene *assetDbSceneData = vulkan_data_scene_create_with_asset_db(assetDb, sceneName);
 
   ASSERT_STR_EQ(utstring_body(gltfSceneData->name), utstring_body(assetDbSceneData->name));
-  ASSERT_EQ(gltfSceneData->hash.value, assetDbSceneData->hash.value);
+  ASSERT_EQ(gltfSceneData->key.value, assetDbSceneData->key.value);
   ASSERT_EQ(utarray_len(gltfSceneData->cameras), utarray_len(assetDbSceneData->cameras));
 
   utarray_foreach_elem_it (vulkan_data_camera *, assetDbCamera, assetDbSceneData->cameras) {
     bool foundCorrespondingCamera = false;
     utarray_foreach_elem_it (vulkan_data_camera *, gltfCamera, gltfSceneData->cameras) {
-      if (gltfCamera->hash.value == assetDbCamera->hash.value) {
+      if (gltfCamera->key.value == assetDbCamera->key.value) {
         foundCorrespondingCamera = true;
         break;
       }
@@ -42,7 +42,7 @@ TEST gltf_loading() {
   dl_foreach_elem (vulkan_data_object *, assetDbNode, assetDbSceneData->objects) {
     bool foundCorrespondingNode = false;
     dl_foreach_elem (vulkan_data_object *, gltfNode, gltfSceneData->objects) {
-      if (gltfNode->hash.value == assetDbNode->hash.value) {
+      if (gltfNode->key.value == assetDbNode->key.value) {
         foundCorrespondingNode = true;
         break;
       }
@@ -53,18 +53,18 @@ TEST gltf_loading() {
     vulkan_data_mesh *gltfMesh = gltfNode->mesh;
     vulkan_data_mesh *assetDbMesh = assetDbNode->mesh;
     ASSERT((gltfMesh == NULL && assetDbMesh == NULL) ||
-           (gltfMesh->hash.value == assetDbMesh->hash.value));
+           (gltfMesh->key.value == assetDbMesh->key.value));
 
     bool foundCorrespondingPrimitive = false;
     dl_foreach_elem (vulkan_data_primitive *, gltfPrimitive, gltfSceneData->primitives) {
       dl_foreach_elem (vulkan_data_primitive *, assetDbPrimitive, assetDbSceneData->primitives) {
-        if (gltfPrimitive->hash.value == assetDbPrimitive->hash.value) {
+        if (gltfPrimitive->key.value == assetDbPrimitive->key.value) {
           foundCorrespondingPrimitive = true;
           break;
         }
       }
       ASSERT_EQ(foundCorrespondingPrimitive, true);
-      ASSERT_EQ(gltfPrimitive->material->hash.value, assetDbPrimitive->material->hash.value);
+      ASSERT_EQ(gltfPrimitive->material->key.value, assetDbPrimitive->material->key.value);
       ASSERT_EQ(gltfPrimitive->topology, assetDbPrimitive->topology);
       ASSERT_EQ(gltfPrimitive->vertexCount, assetDbPrimitive->vertexCount);
 #define ASSERT_VERTEX_ATTRIBUTE(_name)                                                             \

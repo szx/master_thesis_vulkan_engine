@@ -13,7 +13,7 @@ data_key vulkan_data_mesh_calculate_key(vulkan_data_mesh *mesh) {
   hash_t value;
   HASH_START(hashState)
   utarray_foreach_elem_deref (vulkan_data_primitive *, primitive, mesh->primitives) {
-    HASH_UPDATE(hashState, &primitive->hash.value, sizeof(primitive->hash.value));
+    HASH_UPDATE(hashState, &primitive->key.value, sizeof(primitive->key.value));
   }
   HASH_DIGEST(hashState, value)
   HASH_END(hashState)
@@ -21,24 +21,24 @@ data_key vulkan_data_mesh_calculate_key(vulkan_data_mesh *mesh) {
 }
 
 void vulkan_data_mesh_serialize(vulkan_data_mesh *mesh, data_asset_db *assetDb) {
-  mesh->hash = vulkan_data_mesh_calculate_key(mesh);
+  mesh->key = vulkan_data_mesh_calculate_key(mesh);
 
   UT_array *primitiveKeys = NULL;
   utarray_alloc(primitiveKeys, sizeof(data_key));
   utarray_foreach_elem_deref (vulkan_data_primitive *, primitive, mesh->primitives) {
     vulkan_data_primitive_serialize(primitive, assetDb);
-    utarray_push_back(primitiveKeys, &primitive->hash);
+    utarray_push_back(primitiveKeys, &primitive->key);
   }
-  data_asset_db_insert_mesh_primitives_key_array(assetDb, mesh->hash,
+  data_asset_db_insert_mesh_primitives_key_array(assetDb, mesh->key,
                                                  data_key_array_temp(primitiveKeys));
   utarray_free(primitiveKeys);
 }
 
 void vulkan_data_mesh_deserialize(vulkan_data_mesh *mesh, data_asset_db *assetDb, data_key key) {
-  mesh->hash = key;
+  mesh->key = key;
 
   data_key_array primitiveHashArray =
-      data_asset_db_select_mesh_primitives_key_array(assetDb, mesh->hash);
+      data_asset_db_select_mesh_primitives_key_array(assetDb, mesh->key);
   utarray_foreach_elem_deref (data_key, primitiveKey, primitiveHashArray.values) {
     vulkan_data_primitive *primitive =
         vulkan_data_scene_get_primitive_by_key(mesh->sceneData, assetDb, primitiveKey);
@@ -50,7 +50,7 @@ void vulkan_data_mesh_deserialize(vulkan_data_mesh *mesh, data_asset_db *assetDb
 
 void vulkan_data_mesh_debug_print(vulkan_data_mesh *mesh, int indent) {
   log_debug("%*smesh:", (int)indent, "");
-  log_debug("%*shash=%zu", (int)indent + 2, "", mesh->hash);
+  log_debug("%*shash=%zu", (int)indent + 2, "", mesh->key);
   utarray_foreach_elem_deref (vulkan_data_primitive *, primitive, mesh->primitives) {
     vulkan_data_primitive_debug_print(primitive, indent + 2);
   }

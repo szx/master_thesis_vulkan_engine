@@ -33,28 +33,26 @@ data_key vulkan_data_camera_calculate_key(vulkan_data_camera *camera) {
 }
 
 void vulkan_data_camera_serialize(vulkan_data_camera *camera, data_asset_db *assetDb) {
-  camera->hash = vulkan_data_camera_calculate_key(camera);
-  data_asset_db_insert_camera_position_vec3(assetDb, camera->hash,
-                                            data_vec3_temp(camera->position));
-  data_asset_db_insert_camera_rotation_vec4(assetDb, camera->hash,
-                                            data_vec4_temp(camera->rotation));
-  data_asset_db_insert_camera_fovY_float(assetDb, camera->hash, data_float_temp(camera->fovY));
-  data_asset_db_insert_camera_aspectRatio_float(assetDb, camera->hash,
+  camera->key = vulkan_data_camera_calculate_key(camera);
+  data_asset_db_insert_camera_position_vec3(assetDb, camera->key, data_vec3_temp(camera->position));
+  data_asset_db_insert_camera_rotation_vec4(assetDb, camera->key, data_vec4_temp(camera->rotation));
+  data_asset_db_insert_camera_fovY_float(assetDb, camera->key, data_float_temp(camera->fovY));
+  data_asset_db_insert_camera_aspectRatio_float(assetDb, camera->key,
                                                 data_float_temp(camera->aspectRatio));
-  data_asset_db_insert_camera_nearZ_float(assetDb, camera->hash, data_float_temp(camera->nearZ));
-  data_asset_db_insert_camera_farZ_float(assetDb, camera->hash, data_float_temp(camera->farZ));
+  data_asset_db_insert_camera_nearZ_float(assetDb, camera->key, data_float_temp(camera->nearZ));
+  data_asset_db_insert_camera_farZ_float(assetDb, camera->key, data_float_temp(camera->farZ));
 }
 
 void vulkan_data_camera_deserialize(vulkan_data_camera *camera, data_asset_db *assetDb,
                                     data_key key) {
-  camera->hash = key;
-  glm_vec3_copy(data_asset_db_select_camera_position_vec3(assetDb, camera->hash).value,
+  camera->key = key;
+  glm_vec3_copy(data_asset_db_select_camera_position_vec3(assetDb, camera->key).value,
                 camera->position);
-  glm_vec4_copy(data_asset_db_select_camera_rotation_vec4(assetDb, camera->hash).value,
+  glm_vec4_copy(data_asset_db_select_camera_rotation_vec4(assetDb, camera->key).value,
                 camera->rotation);
-  camera->fovY = data_asset_db_select_camera_fovY_float(assetDb, camera->hash).value;
-  camera->aspectRatio = data_asset_db_select_camera_aspectRatio_float(assetDb, camera->hash).value;
-  camera->nearZ = data_asset_db_select_camera_nearZ_float(assetDb, camera->hash).value;
-  data_float d = data_asset_db_select_camera_farZ_float(assetDb, camera->hash);
+  camera->fovY = data_asset_db_select_camera_fovY_float(assetDb, camera->key).value;
+  camera->aspectRatio = data_asset_db_select_camera_aspectRatio_float(assetDb, camera->key).value;
+  camera->nearZ = data_asset_db_select_camera_nearZ_float(assetDb, camera->key).value;
+  data_float d = data_asset_db_select_camera_farZ_float(assetDb, camera->key);
   camera->farZ = d.value;
 }

@@ -237,7 +237,7 @@ vulkan_data_mesh *parse_cgltf_mesh(vulkan_data_scene *sceneData, cgltf_mesh *cgl
     utarray_push_back(mesh->primitives, &primitive);
   }
 
-  mesh->hash = vulkan_data_mesh_calculate_key(mesh);
+  mesh->key = vulkan_data_mesh_calculate_key(mesh);
 
   return mesh;
 }
@@ -315,9 +315,9 @@ void vulkan_data_scene_serialize(vulkan_data_scene *sceneData, data_asset_db *as
   utarray_alloc(cameraKeys, sizeof(data_key));
   utarray_foreach_elem_it(vulkan_data_camera *, camera, sceneData->cameras) {
     vulkan_data_camera_serialize(camera, assetDb);
-    utarray_push_back(cameraKeys, &camera->hash);
+    utarray_push_back(cameraKeys, &camera->key);
   }
-  data_asset_db_insert_scene_cameras_key_array(assetDb, sceneData->hash,
+  data_asset_db_insert_scene_cameras_key_array(assetDb, sceneData->key,
                                                data_key_array_temp(cameraKeys));
   utarray_free(cameraKeys);
 
@@ -325,22 +325,22 @@ void vulkan_data_scene_serialize(vulkan_data_scene *sceneData, data_asset_db *as
   utarray_alloc(objectKeys, sizeof(data_key));
   utarray_foreach_elem_deref (vulkan_data_object *, rootObject, sceneData->rootObjects) {
     vulkan_data_object_serialize(rootObject, assetDb);
-    utarray_push_back(objectKeys, &rootObject->hash);
+    utarray_push_back(objectKeys, &rootObject->key);
   }
-  data_asset_db_insert_scene_name_text(assetDb, sceneData->hash, (data_text){sceneData->name});
-  data_asset_db_insert_scene_objects_key_array(assetDb, sceneData->hash,
+  data_asset_db_insert_scene_name_text(assetDb, sceneData->key, (data_text){sceneData->name});
+  data_asset_db_insert_scene_objects_key_array(assetDb, sceneData->key,
                                                data_key_array_temp(objectKeys));
   utarray_free(objectKeys);
 }
 
 void vulkan_data_scene_deserialize(vulkan_data_scene *sceneData, data_asset_db *assetDb,
                                    data_key key) {
-  sceneData->hash = key;
+  sceneData->key = key;
 
   data_key_array cameraKeyArray =
-      data_asset_db_select_scene_cameras_key_array(assetDb, sceneData->hash);
+      data_asset_db_select_scene_cameras_key_array(assetDb, sceneData->key);
   data_key_array objectKeyArray =
-      data_asset_db_select_scene_objects_key_array(assetDb, sceneData->hash);
+      data_asset_db_select_scene_objects_key_array(assetDb, sceneData->key);
 
   utarray_foreach_elem_deref (data_key, cameraKey, cameraKeyArray.values) {
     vulkan_data_camera camera;
@@ -380,7 +380,7 @@ vulkan_data_scene *vulkan_data_scene_create(UT_string *name) {
   vulkan_data_texture_init(defaultTexture, sceneData);
   defaultTexture->image = defaultImage;
   defaultTexture->sampler = defaultSampler;
-  defaultTexture->hash = vulkan_data_texture_calculate_key(defaultTexture);
+  defaultTexture->key = vulkan_data_texture_calculate_key(defaultTexture);
   DL_APPEND(sceneData->textures, defaultTexture);
 
   sceneData->materials = NULL;
@@ -388,7 +388,7 @@ vulkan_data_scene *vulkan_data_scene_create(UT_string *name) {
   vulkan_data_material_init(defaultMaterial, sceneData);
   defaultMaterial->baseColorTexture = defaultTexture;
   defaultMaterial->metallicRoughnessTexture = defaultTexture;
-  defaultMaterial->hash = vulkan_data_material_calculate_key(defaultMaterial);
+  defaultMaterial->key = vulkan_data_material_calculate_key(defaultMaterial);
   DL_APPEND(sceneData->materials, defaultMaterial);
 
   sceneData->primitives = NULL;
@@ -399,7 +399,7 @@ vulkan_data_scene *vulkan_data_scene_create(UT_string *name) {
 
   utarray_alloc(sceneData->rootObjects, sizeof(vulkan_data_object *));
 
-  sceneData->hash = vulkan_data_scene_calculate_key(sceneData);
+  sceneData->key = vulkan_data_scene_calculate_key(sceneData);
   return sceneData;
 }
 
@@ -452,7 +452,7 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
       vulkan_data_scene *sceneData, data_asset_db *assetDb, data_key key) {                        \
     vulkan_data_##_type *entity = NULL;                                                            \
     dl_foreach_elem (vulkan_data_##_type *, existingEntity, sceneData->_type##s) {                 \
-      if (existingEntity->hash.value == key.value) {                                               \
+      if (existingEntity->key.value == key.value) {                                                \
         entity = existingEntity;                                                                   \
         break;                                                                                     \
       }                                                                                            \
@@ -471,9 +471,9 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
   vulkan_data_##_type *vulkan_data_scene_add_##_type(vulkan_data_scene *sceneData,                 \
                                                      vulkan_data_##_type *entity) {                \
                                                                                                    \
-    entity->hash = vulkan_data_##_type##_calculate_key(entity);                                    \
+    entity->key = vulkan_data_##_type##_calculate_key(entity);                                     \
     vulkan_data_##_type *existingEntity =                                                          \
-        vulkan_data_scene_get_##_type##_by_key(sceneData, NULL, entity->hash);                     \
+        vulkan_data_scene_get_##_type##_by_key(sceneData, NULL, entity->key);                      \
     if (existingEntity != NULL) {                                                                  \
       vulkan_data_##_type##_deinit(entity);                                                        \
       core_free(entity);                                                                           \

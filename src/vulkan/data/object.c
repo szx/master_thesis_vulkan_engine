@@ -24,10 +24,10 @@ data_key vulkan_data_object_calculate_key(vulkan_data_object *object) {
   HASH_UPDATE(hashState, &object->transform, sizeof(object->transform))
 
   utarray_foreach_elem_deref (vulkan_data_object *, child, object->children) {
-    HASH_UPDATE(hashState, &child->hash.value, sizeof(child->hash.value));
+    HASH_UPDATE(hashState, &child->key.value, sizeof(child->key.value));
   }
   if (object->mesh) {
-    HASH_UPDATE(hashState, &object->mesh->hash, sizeof(object->mesh->hash))
+    HASH_UPDATE(hashState, &object->mesh->key, sizeof(object->mesh->key))
   }
   HASH_DIGEST(hashState, value)
   HASH_END(hashState)
@@ -35,36 +35,36 @@ data_key vulkan_data_object_calculate_key(vulkan_data_object *object) {
 }
 
 void vulkan_data_object_serialize(vulkan_data_object *object, data_asset_db *assetDb) {
-  object->hash = vulkan_data_object_calculate_key(object);
+  object->key = vulkan_data_object_calculate_key(object);
 
   if (object->mesh) {
     vulkan_data_mesh_serialize(object->mesh, assetDb);
-    data_asset_db_insert_object_mesh_key(assetDb, object->hash, object->mesh->hash);
+    data_asset_db_insert_object_mesh_key(assetDb, object->key, object->mesh->key);
   }
 
   data_mat4 transformMat;
   glm_mat4_copy(object->transform, transformMat.value);
-  data_asset_db_insert_object_transform_mat4(assetDb, object->hash, transformMat);
+  data_asset_db_insert_object_transform_mat4(assetDb, object->key, transformMat);
 
   UT_array *childKeys = NULL;
   utarray_alloc(childKeys, sizeof(data_key));
   utarray_foreach_elem_deref (vulkan_data_object *, child, object->children) {
     vulkan_data_object_serialize(child, assetDb);
-    utarray_push_back(childKeys, &child->hash);
+    utarray_push_back(childKeys, &child->key);
   }
-  data_asset_db_insert_object_children_key_array(assetDb, object->hash,
+  data_asset_db_insert_object_children_key_array(assetDb, object->key,
                                                  data_key_array_temp(childKeys));
   utarray_free(childKeys);
 }
 
 void vulkan_data_object_deserialize(vulkan_data_object *object, data_asset_db *assetDb,
                                     data_key key) {
-  object->hash = key;
+  object->key = key;
 
-  glm_mat4_copy(data_asset_db_select_object_transform_mat4(assetDb, object->hash).value,
+  glm_mat4_copy(data_asset_db_select_object_transform_mat4(assetDb, object->key).value,
                 object->transform);
 
-  data_key meshHash = data_asset_db_select_object_mesh_key(assetDb, object->hash);
+  data_key meshHash = data_asset_db_select_object_mesh_key(assetDb, object->key);
 
   if (meshHash.value != 0) {
     object->mesh = core_alloc(sizeof(vulkan_data_mesh));
@@ -75,7 +75,7 @@ void vulkan_data_object_deserialize(vulkan_data_object *object, data_asset_db *a
   }
 
   data_key_array childrenHashArray =
-      data_asset_db_select_object_children_key_array(assetDb, object->hash);
+      data_asset_db_select_object_children_key_array(assetDb, object->key);
   utarray_foreach_elem_deref (data_key, childKey, childrenHashArray.values) {
     vulkan_data_object *child =
         vulkan_data_scene_get_object_by_key(object->sceneData, assetDb, childKey);
@@ -88,7 +88,7 @@ void vulkan_data_object_debug_print(vulkan_data_object *object, int indent) {
   log_debug("%*sobject:", indent, "");
   log_debug("%*stransform=" MAT4_FORMAT_STRING(" | "), indent + 2, "",
             MAT4_FORMAT_ARGS(object->transform));
-  log_debug("%*shash=%zu", indent + 2, "", object->hash);
+  log_debug("%*shash=%zu", indent + 2, "", object->key);
 
   if (object->mesh) {
     vulkan_data_mesh_debug_print(object->mesh, indent + 2);
