@@ -154,8 +154,8 @@ TEST scene_graph_building() {
 #define ASSERT_TREE()                                                                              \
   do {                                                                                             \
     vulkan_scene_graph_debug_print(sceneGraph);                                                    \
-    vulkan_scene_tree_debug_print(sceneGraph->sceneTree);                                          \
     ASSERT_EQ(utarray_len(sceneGraph->sceneTree->dirtyNodes), 0);                                  \
+    size_t primitiveNodeNum = 0;                                                                   \
     dl_foreach_elem (vulkan_scene_node *, sceneNode, sceneGraph->sceneTree->nodes) {               \
       /*log_debug("tree node: %p", sceneNode);*/                                                   \
       ASSERT_EQ(sceneNode->containerType, vulkan_scene_node_container_type_scene_tree);            \
@@ -170,11 +170,13 @@ TEST scene_graph_building() {
       } else if (sceneNode->type == vulkan_scene_node_entity_type_primitive) {                     \
         ASSERT_EQ(utarray_len(sceneNode->childObjectNodes), 0);                                    \
         ASSERT_EQ(utarray_len(sceneNode->primitiveNodes), 0);                                      \
+        primitiveNodeNum++;                                                                        \
       } else {                                                                                     \
         FAILm("unknown node type");                                                                \
       }                                                                                            \
       ASSERT_FALSE(sceneNode->dirty);                                                              \
     }                                                                                              \
+    ASSERT(utarray_len(sceneGraph->sceneTree->primitiveList->primitives) == primitiveNodeNum);     \
   } while (0)
 
   ASSERT_TREE();

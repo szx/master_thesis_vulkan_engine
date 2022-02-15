@@ -1,8 +1,10 @@
 #include "tree.h"
+#include "primitive_list.h"
 
 vulkan_scene_tree *vulkan_scene_tree_create(vulkan_scene_graph *sceneGraph) {
   vulkan_scene_tree *sceneTree = core_alloc(sizeof(vulkan_scene_tree));
   sceneTree->graph = sceneGraph;
+  sceneTree->primitiveList = vulkan_scene_primitive_list_create(sceneTree);
   sceneTree->root = NULL;
   sceneTree->nodes = NULL;
   utarray_alloc(sceneTree->dirtyNodes, sizeof(vulkan_scene_node *));
@@ -14,7 +16,53 @@ void vulkan_scene_tree_destroy(vulkan_scene_tree *sceneTree) {
 
   dl_foreach_elem (vulkan_scene_node *, node, sceneTree->nodes) { vulkan_scene_node_destroy(node); }
 
+  vulkan_scene_primitive_list_destroy(sceneTree->primitiveList);
+
   core_free(sceneTree);
+}
+
+vulkan_scene_node *vulkan_scene_tree_add_node(vulkan_scene_tree *sceneTree,
+                                              vulkan_scene_node *sceneGraphNode,
+                                              vulkan_scene_node *parentSceneGraphNode,
+                                              vulkan_scene_node *parentSceneTreeNode,
+                                              vulkan_scene_node_entity_type type, void *entity) {
+  assert(type != vulkan_scene_node_entity_type_root);
+  assert(parentSceneGraphNode != NULL);
+
+  vulkan_scene_node *sceneTreeNode =
+      vulkan_scene_node_create_for_scene_tree(type, entity, sceneTree);
+  DL_APPEND(sceneTree->nodes, sceneTreeNode);
+  utarray_push_back(sceneTreeNode->parentNodes, &parentSceneTreeNode);
+
+  utarray_push_back(sceneGraphNode->observers, &sceneTreeNode);
+  if (type == vulkan_scene_node_entity_type_primitive) {
+    vulkan_scene_primitive_list_add_primitive(sceneTree->primitiveList, sceneTreeNode);
+  }
+
+  if (sceneTreeNode->type == vulkan_scene_node_entity_type_object) {
+    utarray_push_back(parentSceneTreeNode->childObjectNodes, &sceneTreeNode);
+  } else if (sceneTreeNode->type == vulkan_scene_node_entity_type_primitive) {
+    utarray_push_back(parentSceneTreeNode->primitiveNodes, &sceneTreeNode);
+  } else {
+    verify(0);
+  }
+
+  if (type == vulkan_scene_node_entity_type_object) {
+    utarray_foreach_elem_deref (vulkan_scene_node *, primitiveNode,
+                                sceneGraphNode->primitiveNodes) {
+      vulkan_scene_node *childSceneTreeNode = vulkan_scene_tree_add_node(
+          sceneTree, primitiveNode, sceneGraphNode, sceneTreeNode,
+          vulkan_scene_node_entity_type_primitive, primitiveNode->primitive);
+    }
+
+    utarray_foreach_elem_deref (vulkan_scene_node *, child, sceneGraphNode->childObjectNodes) {
+      vulkan_scene_node *childSceneTreeNode =
+          vulkan_scene_tree_add_node(sceneTree, child, sceneGraphNode, sceneTreeNode,
+                                     vulkan_scene_node_entity_type_object, child->object);
+    }
+  }
+
+  return sceneTreeNode;
 }
 
 void vulkan_scene_tree_set_dirty(vulkan_scene_tree *sceneTree, vulkan_scene_node *sceneNode) {
@@ -72,4 +120,5 @@ void vulkan_scene_tree_debug_print(vulkan_scene_tree *sceneTree) {
   log_raw(stdout, "digraph scene_tree {");
   vulkan_scene_node_debug_print(sceneTree->root);
   log_raw(stdout, "}\n");
+  vulkan_scene_primitive_list_debug_print(sceneTree->primitiveList);
 }
