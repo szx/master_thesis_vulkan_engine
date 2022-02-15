@@ -2995,8 +2995,7 @@ void vulkan_scene_node_container_type_debug_print(int flags) {
 const char *vulkan_scene_node_entity_type_debug_str(int value) {
   if (value == 0) { return "vulkan_scene_node_entity_type_root"; }
   if (value == 1) { return "vulkan_scene_node_entity_type_object"; }
-  if (value == 2) { return "vulkan_scene_node_entity_type_mesh"; }
-  if (value == 3) { return "vulkan_scene_node_entity_type_primitive"; }
-  if (value == 4) { return "vulkan_scene_node_entity_type_count"; }
+  if (value == 2) { return "vulkan_scene_node_entity_type_primitive"; }
+  if (value == 3) { return "vulkan_scene_node_entity_type_count"; }
   return "UNKNOWN vulkan_scene_node_entity_type";
 }

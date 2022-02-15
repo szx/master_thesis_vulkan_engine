@@ -39,8 +39,6 @@ vulkan_scene_node *add_tree_node(vulkan_scene_tree *sceneTree, vulkan_scene_node
 
   if (sceneTreeNode->type == vulkan_scene_node_entity_type_object) {
     utarray_push_back(parentSceneTreeNode->childObjectNodes, &sceneTreeNode);
-  } else if (sceneTreeNode->type == vulkan_scene_node_entity_type_mesh) {
-    parentSceneTreeNode->meshNode = sceneTreeNode;
   } else if (sceneTreeNode->type == vulkan_scene_node_entity_type_primitive) {
     utarray_push_back(parentSceneTreeNode->primitiveNodes, &sceneTreeNode);
   } else {
@@ -48,23 +46,17 @@ vulkan_scene_node *add_tree_node(vulkan_scene_tree *sceneTree, vulkan_scene_node
   }
 
   if (type == vulkan_scene_node_entity_type_object) {
-    if (sceneGraphNode->meshNode) {
+    utarray_foreach_elem_deref (vulkan_scene_node *, primitiveNode,
+                                sceneGraphNode->primitiveNodes) {
       vulkan_scene_node *childSceneTreeNode =
-          add_tree_node(sceneTree, sceneGraphNode->meshNode, sceneGraphNode, sceneTreeNode,
-                        vulkan_scene_node_entity_type_mesh, sceneGraphNode->mesh);
+          add_tree_node(sceneTree, primitiveNode, sceneGraphNode, sceneTreeNode,
+                        vulkan_scene_node_entity_type_primitive, primitiveNode->primitive);
     }
 
     utarray_foreach_elem_deref (vulkan_scene_node *, child, sceneGraphNode->childObjectNodes) {
       vulkan_scene_node *childSceneTreeNode =
           add_tree_node(sceneTree, child, sceneGraphNode, sceneTreeNode,
                         vulkan_scene_node_entity_type_object, child->object);
-    }
-  } else if (type == vulkan_scene_node_entity_type_mesh) {
-    utarray_foreach_elem_deref (vulkan_scene_node *, primitiveNode,
-                                sceneGraphNode->primitiveNodes) {
-      vulkan_scene_node *childSceneTreeNode =
-          add_tree_node(sceneTree, primitiveNode, sceneGraphNode, sceneTreeNode,
-                        vulkan_scene_node_entity_type_primitive, primitiveNode->primitive);
     }
   }
 
@@ -105,8 +97,6 @@ vulkan_scene_node *add_entity(vulkan_scene_graph *sceneGraph,
       utarray_push_back(sceneGraphNode->parentNodes, &parentSceneGraphNode);
       if (sceneGraphNode->type == vulkan_scene_node_entity_type_object) {
         utarray_push_back(parentSceneGraphNode->childObjectNodes, &sceneGraphNode);
-      } else if (sceneGraphNode->type == vulkan_scene_node_entity_type_mesh) {
-        parentSceneGraphNode->meshNode = sceneGraphNode;
       } else if (sceneGraphNode->type == vulkan_scene_node_entity_type_primitive) {
         utarray_push_back(parentSceneGraphNode->primitiveNodes, &sceneGraphNode);
       } else {
@@ -124,23 +114,16 @@ vulkan_scene_node *add_entity(vulkan_scene_graph *sceneGraph,
   } else if (type == vulkan_scene_node_entity_type_object) {
     vulkan_data_object *object = entity;
 
-    if (object->mesh) {
-      vulkan_scene_node *childSceneGraphNode =
-          add_entity(sceneGraph, sceneGraphNode, vulkan_scene_node_entity_type_mesh, object->mesh,
-                     !existsSceneGraphNode);
+    if (object->mesh != NULL) {
+      utarray_foreach_elem_deref (vulkan_data_primitive *, primitive, object->mesh->primitives) {
+        vulkan_scene_node *childSceneGraphNode =
+            add_entity(sceneGraph, sceneGraphNode, vulkan_scene_node_entity_type_primitive,
+                       primitive, !existsSceneGraphNode);
+      }
     }
-
     utarray_foreach_elem_deref (vulkan_data_object *, child, object->children) {
       vulkan_scene_node *childSceneGraphNode =
           add_entity(sceneGraph, sceneGraphNode, vulkan_scene_node_entity_type_object, child,
-                     !existsSceneGraphNode);
-    }
-  } else if (type == vulkan_scene_node_entity_type_mesh) {
-    vulkan_data_mesh *mesh = entity;
-
-    utarray_foreach_elem_deref (vulkan_data_primitive *, primitive, mesh->primitives) {
-      vulkan_scene_node *childSceneGraphNode =
-          add_entity(sceneGraph, sceneGraphNode, vulkan_scene_node_entity_type_primitive, primitive,
                      !existsSceneGraphNode);
     }
   }

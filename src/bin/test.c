@@ -163,18 +163,12 @@ TEST scene_graph_building() {
              utarray_len(sceneNode->parentNodes) > 0);                                             \
       if (sceneNode->type == vulkan_scene_node_entity_type_root) {                                 \
         ASSERT_GT(utarray_len(sceneNode->childObjectNodes), 0);                                    \
-        ASSERT_EQ(sceneNode->meshNode, NULL);                                                      \
         ASSERT_EQ(utarray_len(sceneNode->primitiveNodes), 0);                                      \
       } else if (sceneNode->type == vulkan_scene_node_entity_type_object) {                        \
-        ASSERT(sceneNode->mesh != NULL || utarray_len(sceneNode->childObjectNodes) > 0);           \
-        ASSERT_EQ(utarray_len(sceneNode->primitiveNodes), 0);                                      \
-      } else if (sceneNode->type == vulkan_scene_node_entity_type_mesh) {                          \
-        ASSERT_EQ(utarray_len(sceneNode->childObjectNodes), 0);                                    \
-        ASSERT_EQ(sceneNode->meshNode, NULL);                                                      \
-        ASSERT_GT(utarray_len(sceneNode->primitiveNodes), 0);                                      \
+        ASSERT(utarray_len(sceneNode->primitiveNodes) > 0 ||                                       \
+               utarray_len(sceneNode->childObjectNodes) > 0);                                      \
       } else if (sceneNode->type == vulkan_scene_node_entity_type_primitive) {                     \
         ASSERT_EQ(utarray_len(sceneNode->childObjectNodes), 0);                                    \
-        ASSERT_EQ(sceneNode->meshNode, NULL);                                                      \
         ASSERT_EQ(utarray_len(sceneNode->primitiveNodes), 0);                                      \
       } else {                                                                                     \
         FAILm("unknown node type");                                                                \
@@ -201,8 +195,6 @@ TEST scene_graph_building() {
     ASSERT_EQ(sceneTreeNode->cache->transform[0][0], 2);
     if (utarray_len(sceneTreeNode->childObjectNodes) > 0) {
       sceneTreeNode = *(vulkan_scene_node **)utarray_front(sceneTreeNode->childObjectNodes);
-    } else if (sceneTreeNode->meshNode != NULL) {
-      sceneTreeNode = sceneTreeNode->meshNode;
     } else if (utarray_len(sceneTreeNode->primitiveNodes) > 0) {
       sceneTreeNode = *(vulkan_scene_node **)utarray_front(sceneTreeNode->primitiveNodes);
     } else {

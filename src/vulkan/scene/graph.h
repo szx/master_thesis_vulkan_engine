@@ -11,7 +11,6 @@ typedef struct vulkan_scene_tree vulkan_scene_tree;
 typedef struct vulkan_scene_graph {
   vulkan_data_scene *data;      /// vulkan_data_scene pointer.
   vulkan_scene_tree *sceneTree; /// Scene tree.
-  // HIRO Scene render data.
 
   vulkan_scene_node *root;  /// The root node.
   vulkan_scene_node *nodes; /// Linked list of all nodes of scene graph.

@@ -16,7 +16,6 @@ typedef struct vulkan_scene_tree vulkan_scene_tree;
 typedef enum vulkan_scene_node_entity_type {
   vulkan_scene_node_entity_type_root,
   vulkan_scene_node_entity_type_object,
-  vulkan_scene_node_entity_type_mesh,
   vulkan_scene_node_entity_type_primitive,
   vulkan_scene_node_entity_type_count
 } vulkan_scene_node_entity_type;
@@ -35,7 +34,6 @@ typedef struct vulkan_scene_node {
   union {
     void *entity;
     vulkan_data_object *object;
-    vulkan_data_mesh *mesh;
     vulkan_data_primitive *primitive;
   }; /// Pointer to entity in scene data
 
@@ -54,7 +52,6 @@ typedef struct vulkan_scene_node {
 
   UT_array *parentNodes;      /// vulkan_scene_node* list
   UT_array *childObjectNodes; /// vulkan_scene_node* list
-  vulkan_scene_node *meshNode;
   UT_array *primitiveNodes; /// vulkan_scene_node* list
 
   struct vulkan_scene_node *prev, *next; /// List of all nodes in scene graph/tree.

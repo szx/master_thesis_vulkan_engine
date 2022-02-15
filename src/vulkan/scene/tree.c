@@ -53,11 +53,6 @@ void validate_node(vulkan_scene_node *node) {
   utarray_foreach_elem_deref (vulkan_scene_node *, childObjectNode, node->childObjectNodes) {
     validate_node(childObjectNode);
   }
-
-  if (node->meshNode != NULL) {
-    validate_node(node->meshNode);
-  }
-
   utarray_foreach_elem_deref (vulkan_scene_node *, primitiveNode, node->primitiveNodes) {
     validate_node(primitiveNode);
   }
