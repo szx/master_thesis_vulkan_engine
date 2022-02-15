@@ -8,7 +8,7 @@ void vulkan_data_camera_init(vulkan_data_camera *camera, vulkan_data_scene *scen
   camera->nearZ = 0.1f;
   camera->farZ = 256.0f;
   camera->dirty = true;
-  DEF_VULKAN_ENTITY(camera)
+  DEF_VULKAN_ENTITY(camera, camera)
 }
 
 void vulkan_data_camera_deinit(vulkan_data_camera *camera) {}

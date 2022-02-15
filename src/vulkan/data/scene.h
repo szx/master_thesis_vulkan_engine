@@ -12,14 +12,15 @@
 /// Does not create any Vulkan objects (see vulkan_scene).
 typedef struct vulkan_data_scene {
   UT_string *name;
-  UT_string *path;                   /// Empty when loaded from asset db.
-  vulkan_data_image *images;         /// Doubly-linked list, all images used by scene.
-  vulkan_data_sampler *samplers;     /// Doubly-linked list, all samplers used by scene.
-  vulkan_data_texture *textures;     /// Doubly-linked list, all textures used by scene.
-  vulkan_data_material *materials;   /// Doubly-linked list, all materials used by scene.
-  vulkan_data_primitive *primitives; /// Doubly-linked list, all primitives used by scene.
-  vulkan_data_object *objects;       /// Doubly-linked list, all objects in scene.
-  UT_array *cameras;                 /// vulkan_data_camera array, all cameras in scene
+  UT_string *path;                                 /// Empty when loaded from asset db.
+  vulkan_data_image *images;                       /// List of all images used by scene.
+  vulkan_data_sampler *samplers;                   /// List of all samplers used by scene.
+  vulkan_data_texture *textures;                   /// List of all textures used by scene.
+  vulkan_data_material *materials;                 /// List of all materials used by scene.
+  vulkan_data_vertex_attribute *vertex_attributes; /// List of all vertex attributes used by scene.
+  vulkan_data_primitive *primitives;               /// List of all primitives used by scene.
+  vulkan_data_object *objects;                     /// List of all objects in scene.
+  UT_array *cameras;     /// vulkan_data_camera array, all cameras in scene
   UT_array *rootObjects; /// vulkan_data_object* array, object that are direct descendants of scene
 
   data_key key; /// Hash, used to prevent duplicates in asset database.
@@ -48,6 +49,7 @@ DECL_VULKAN_ENTITY_FUNCS(image)
 DECL_VULKAN_ENTITY_FUNCS(sampler)
 DECL_VULKAN_ENTITY_FUNCS(texture)
 DECL_VULKAN_ENTITY_FUNCS(material)
+DECL_VULKAN_ENTITY_FUNCS(vertex_attribute)
 DECL_VULKAN_ENTITY_FUNCS(primitive)
 DECL_VULKAN_ENTITY_FUNCS(object)
 

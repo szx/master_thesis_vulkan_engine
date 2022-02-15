@@ -10,7 +10,7 @@ void vulkan_data_image_init(vulkan_data_image *image, vulkan_data_scene *sceneDa
   image->channels = 0;
   utarray_alloc(image->data, sizeof(uint8_t));
 
-  DEF_VULKAN_ENTITY(image)
+  DEF_VULKAN_ENTITY(image, image)
 }
 
 void vulkan_data_image_deinit(vulkan_data_image *image) { utarray_free(image->data); }
@@ -60,7 +60,7 @@ void vulkan_data_sampler_init(vulkan_data_sampler *sampler, vulkan_data_scene *s
   sampler->addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
   sampler->addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 
-  DEF_VULKAN_ENTITY(sampler)
+  DEF_VULKAN_ENTITY(sampler, sampler)
 }
 
 void vulkan_data_sampler_deinit(vulkan_data_sampler *sampler) {}
@@ -115,7 +115,7 @@ void vulkan_data_texture_init(vulkan_data_texture *texture, vulkan_data_scene *s
   texture->image = NULL;
   texture->sampler = NULL;
 
-  DEF_VULKAN_ENTITY(texture)
+  DEF_VULKAN_ENTITY(texture, texture)
 }
 
 void vulkan_data_texture_deinit(vulkan_data_texture *texture) {}

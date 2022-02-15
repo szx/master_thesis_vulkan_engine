@@ -2976,6 +2976,13 @@ void vulkan_attribute_type_debug_print(int flags) {
   if ((flags & 32) != 0) { log_debug("  TangentAttribute"); }
   log_debug("vulkan_attribute_type: }");
 }
+void vulkan_data_vertex_attribute_component_type_debug_print(int flags) {
+  log_debug("vulkan_data_vertex_attribute_component_type: {");
+  if ((flags & 0) != 0) { log_debug("  vulkan_data_vertex_attribute_component_uint32_t"); }
+  if ((flags & 1) != 0) { log_debug("  vulkan_data_vertex_attribute_component_vec2"); }
+  if ((flags & 2) != 0) { log_debug("  vulkan_data_vertex_attribute_component_vec3"); }
+  log_debug("vulkan_data_vertex_attribute_component_type: }");
+}
 const char *vulkan_index_type_debug_str(int value) {
   if (value == 0) { return "vulkan_index_type_unknown"; }
   if (value == 1) { return "vulkan_index_type_uint32"; }

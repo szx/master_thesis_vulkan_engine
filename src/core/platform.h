@@ -35,7 +35,7 @@ void panic(const char *format, ...);
 #define verify(cond)                                                                               \
   do {                                                                                             \
     if (!(cond)) {                                                                                 \
-      panic("%s:%d: %s failed", __FILE__, __LINE__, #cond);                                        \
+      panic("%s in %s:%d: %s failed", __func__, __FILE__, __LINE__, #cond);                        \
     }                                                                                              \
   } while (0)
 

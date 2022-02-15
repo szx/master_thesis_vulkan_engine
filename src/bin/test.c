@@ -13,8 +13,8 @@ TEST gltf_loading() {
   data_asset_db *assetDb = data_asset_db_create();
   vulkan_device *vkd = vulkan_device_create(config, assetDb);
   UT_string *sceneName;
-  utstring_alloc(sceneName, "sponza");
-  UT_string *gltfPath = get_asset_file_path("sponza", "sponza.gltf");
+  utstring_alloc(sceneName, "triangles");
+  UT_string *gltfPath = get_asset_file_path("triangles", "triangles.gltf");
   vulkan_data_scene *gltfSceneData = vulkan_data_scene_create_with_gltf_file(sceneName, gltfPath);
   vulkan_data_scene *assetDbSceneData = vulkan_data_scene_create_with_asset_db(assetDb, sceneName);
 
@@ -237,8 +237,8 @@ int main(int argc, char *argv[]) {
   GREATEST_MAIN_BEGIN();
   platform_create();
   // RUN_SUITE(shaderc_suite);
-  // RUN_SUITE(gltf_suite);
-  RUN_SUITE(scene_graph_suite);
+  RUN_SUITE(gltf_suite);
+  // RUN_SUITE(scene_graph_suite);
   platform_destroy();
   GREATEST_MAIN_END();
 }

@@ -7,7 +7,7 @@ void vulkan_data_object_init(vulkan_data_object *object, vulkan_data_scene *scen
   glm_mat4_identity(object->transform);
   utarray_alloc(object->children, sizeof(vulkan_data_object *));
 
-  DEF_VULKAN_ENTITY(object)
+  DEF_VULKAN_ENTITY(object, object)
 }
 
 void vulkan_data_object_deinit(vulkan_data_object *object) {
@@ -85,10 +85,10 @@ void vulkan_data_object_deserialize(vulkan_data_object *object, data_asset_db *a
 }
 
 void vulkan_data_object_debug_print(vulkan_data_object *object, int indent) {
-  log_debug("%*sobject:", indent, "");
-  log_debug("%*stransform=" MAT4_FORMAT_STRING(" | "), indent + 2, "",
+  log_debug(INDENT_FORMAT_STRING "object:", INDENT_FORMAT_ARGS(0));
+  log_debug(INDENT_FORMAT_STRING "transform=" MAT4_FORMAT_STRING(" | "), INDENT_FORMAT_ARGS(2),
             MAT4_FORMAT_ARGS(object->transform));
-  log_debug("%*shash=%zu", indent + 2, "", object->key);
+  log_debug(INDENT_FORMAT_STRING "hash=%zu", INDENT_FORMAT_ARGS(2), object->key);
 
   if (object->mesh) {
     vulkan_data_mesh_debug_print(object->mesh, indent + 2);
@@ -96,7 +96,7 @@ void vulkan_data_object_debug_print(vulkan_data_object *object, int indent) {
 
   size_t i = 0;
   utarray_foreach_elem_deref (vulkan_data_object *, child, object->children) {
-    log_debug("%*schild #%d", indent + 2, "", i++);
+    log_debug(INDENT_FORMAT_STRING "child #%d", INDENT_FORMAT_ARGS(2), i++);
     vulkan_data_object_debug_print(child, indent + 2);
   }
 }

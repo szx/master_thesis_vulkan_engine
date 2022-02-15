@@ -9,7 +9,7 @@ void vulkan_data_material_init(vulkan_data_material *material, vulkan_data_scene
   material->baseColorTexture = NULL;
   material->metallicRoughnessTexture = NULL;
 
-  DEF_VULKAN_ENTITY(material)
+  DEF_VULKAN_ENTITY(material, material)
 }
 
 void vulkan_data_material_deinit(vulkan_data_material *material) {}

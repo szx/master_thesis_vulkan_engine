@@ -2,6 +2,7 @@
  */
 #pragma once
 
+#include "../../core/core.h"
 #include "../../data/data.h"
 #include "../functions.h"
 
@@ -13,8 +14,8 @@ typedef struct vulkan_scene_node vulkan_scene_node;
   vulkan_data_scene *sceneData;                                                                    \
   struct vulkan_data_##_name *prev, *next;
 
-#define DEF_VULKAN_ENTITY(_name)                                                                   \
-  (_name)->sceneData = sceneData;                                                                  \
-  (_name)->key = vulkan_data_##_name##_calculate_key(_name);                                       \
-  (_name)->prev = NULL;                                                                            \
-  (_name)->next = NULL;
+#define DEF_VULKAN_ENTITY(_name, _var)                                                             \
+  (_var)->sceneData = sceneData;                                                                   \
+  (_var)->key = vulkan_data_##_name##_calculate_key(_var);                                         \
+  (_var)->prev = NULL;                                                                             \
+  (_var)->next = NULL;

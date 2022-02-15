@@ -4,7 +4,7 @@
 void vulkan_data_mesh_init(vulkan_data_mesh *mesh, vulkan_data_scene *sceneData) {
   mesh->sceneData = sceneData;
   utarray_alloc(mesh->primitives, sizeof(vulkan_data_primitive *));
-  DEF_VULKAN_ENTITY(mesh)
+  DEF_VULKAN_ENTITY(mesh, mesh)
 }
 
 void vulkan_data_mesh_deinit(vulkan_data_mesh *mesh) { utarray_free(mesh->primitives); }
@@ -49,8 +49,8 @@ void vulkan_data_mesh_deserialize(vulkan_data_mesh *mesh, data_asset_db *assetDb
 }
 
 void vulkan_data_mesh_debug_print(vulkan_data_mesh *mesh, int indent) {
-  log_debug("%*smesh:", (int)indent, "");
-  log_debug("%*shash=%zu", (int)indent + 2, "", mesh->key);
+  log_debug(INDENT_FORMAT_STRING "mesh:", (int)INDENT_FORMAT_ARGS(0));
+  log_debug(INDENT_FORMAT_STRING "hash=%zu", (int)INDENT_FORMAT_ARGS(2), mesh->key);
   utarray_foreach_elem_deref (vulkan_data_primitive *, primitive, mesh->primitives) {
     vulkan_data_primitive_debug_print(primitive, indent + 2);
   }

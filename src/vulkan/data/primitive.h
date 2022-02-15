@@ -8,19 +8,19 @@
 #include "../../data/data.h"
 #include "../functions.h"
 #include "material.h"
+#include "vertex_attribute.h"
 
 typedef struct vulkan_data_scene vulkan_data_scene;
 
 typedef struct vulkan_data_primitive {
   VkPrimitiveTopology topology;
   uint32_t vertexCount;
-  UT_array *positions; /// vec3
-  UT_array *normals;   /// vec3
-  UT_array *colors;    /// vec3
-  UT_array *texCoords; /// vec2
+  vulkan_data_vertex_attribute *positions; /// vec3
+  vulkan_data_vertex_attribute *normals;   /// vec3
+  vulkan_data_vertex_attribute *colors;    /// vec3
+  vulkan_data_vertex_attribute *texCoords; /// vec2
   // TODO: LOD index buffers.
-  UT_array *indices;   /// uint32_t
-  hash_t geometryHash; // TODO: Split vertex streams.
+  vulkan_data_vertex_attribute *indices; /// uint32_t
 
   vulkan_data_material *material;
 
