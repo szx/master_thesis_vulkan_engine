@@ -19,7 +19,9 @@ typedef struct vulkan_data_primitive {
   UT_array *colors;    /// vec3
   UT_array *texCoords; /// vec2
   // TODO: LOD index buffers.
-  UT_array *indices; /// uint32_t
+  UT_array *indices;   /// uint32_t
+  hash_t geometryHash; // TODO: Split vertex streams.
+
   vulkan_data_material *material;
 
   DECL_VULKAN_ENTITY(primitive)

@@ -10,6 +10,7 @@ void vulkan_data_primitive_init(vulkan_data_primitive *primitive, vulkan_data_sc
   utarray_alloc(primitive->colors, sizeof(vec3));
   utarray_alloc(primitive->texCoords, sizeof(vec2));
   utarray_alloc(primitive->indices, sizeof(uint32_t));
+  primitive->geometryHash = 0;
   primitive->material = NULL;
   DEF_VULKAN_ENTITY(primitive)
 }
@@ -31,15 +32,16 @@ data_key vulkan_data_primitive_calculate_key(vulkan_data_primitive *primitive) {
   //       It could be optimized with separate hashes and tables for each vertex attribute and
   //       foreign keys in primitive table. Not sure if its worth additional work.
   HASH_START(hashState)
-  if (primitive->material) {
-    HASH_UPDATE(hashState, &primitive->material->hash, sizeof(primitive->material->hash))
-  }
   HASH_UPDATE(hashState, &primitive->topology, sizeof(primitive->topology))
 #define HASH_UPDATE_FUNC(_i, _array)                                                               \
   HASH_UPDATE(hashState, utarray_front(_array), utarray_size(_array))
   MACRO_FOREACH(HASH_UPDATE_FUNC, primitive->indices, primitive->positions, primitive->normals,
                 primitive->colors, primitive->texCoords)
 #undef HASH_UPDATE_FUNC
+  HASH_DIGEST(hashState, primitive->geometryHash);
+  if (primitive->material) {
+    HASH_UPDATE(hashState, &primitive->material->hash, sizeof(primitive->material->hash))
+  }
   HASH_DIGEST(hashState, value)
   HASH_END(hashState)
   return (data_key){value};
@@ -101,6 +103,7 @@ void vulkan_data_primitive_deserialize(vulkan_data_primitive *primitive, data_as
 
 void vulkan_data_primitive_debug_print(vulkan_data_primitive *primitive, int indent) {
   log_debug("%*sprimitive: %s\n", indent, "", VkPrimitiveTopology_debug_str(primitive->topology));
+  log_debug("%*sgeometryHash=%zu", indent + 2, "", primitive->geometryHash);
   log_debug("%*shash=%zu", indent + 2, "", primitive->hash);
   log_debug("%*sindex: count=%d\n", indent + 2, "", utarray_len(primitive->indices));
   utarray_foreach_elem_deref (uint32_t, index, primitive->indices) {
@@ -109,7 +112,7 @@ void vulkan_data_primitive_debug_print(vulkan_data_primitive *primitive, int ind
   log_debug("%*svertices: count=%d\n", indent + 2, "", primitive->vertexCount,
             primitive->vertexCount);
   uint32_t vertexIdx = 0;
-  utarray_foreach_elem_it(vec3 *, position, primitive->positions) {
+  utarray_foreach_elem_it (vec3 *, position, primitive->positions) {
     log_debug("%*sposition %d: %f %f %f\n", indent + 4, "", vertexIdx++, (*position)[0],
               (*position)[1], (*position)[2]);
   }

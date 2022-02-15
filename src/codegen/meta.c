@@ -2985,6 +2985,12 @@ const char *vulkan_render_pass_type_debug_str(int value) {
   if (value == 0) { return "ForwardRenderPass"; }
   return "UNKNOWN vulkan_render_pass_type";
 }
+void vulkan_scene_batch_flags_debug_print(int flags) {
+  log_debug("vulkan_scene_batch_flags: {");
+  if ((flags & 1) != 0) { log_debug("  vulkan_scene_batch_primitive_flag"); }
+  if ((flags & 2) != 0) { log_debug("  vulkan_scene_batch_material_flag"); }
+  log_debug("vulkan_scene_batch_flags: }");
+}
 void vulkan_scene_node_container_type_debug_print(int flags) {
   log_debug("vulkan_scene_node_container_type: {");
   if ((flags & 0) != 0) { log_debug("  vulkan_scene_node_container_type_scene_graph"); }

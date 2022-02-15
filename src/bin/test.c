@@ -176,7 +176,7 @@ TEST scene_graph_building() {
       }                                                                                            \
       ASSERT_FALSE(sceneNode->dirty);                                                              \
     }                                                                                              \
-    ASSERT(utarray_len(sceneGraph->sceneTree->primitiveList->primitives) == primitiveNodeNum);     \
+    ASSERT(utarray_len(sceneGraph->sceneTree->primitiveList->primitiveNodes) == primitiveNodeNum); \
   } while (0)
 
   ASSERT_TREE();

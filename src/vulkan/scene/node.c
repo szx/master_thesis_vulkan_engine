@@ -78,6 +78,7 @@ void debug_log_node(vulkan_scene_node *sceneNode) {
     log_raw(stdout, "primitiveNodes: %zu\\n", utarray_len(sceneNode->primitiveNodes));
   } else if (sceneNode->type == vulkan_scene_node_entity_type_primitive) {
     log_raw(stdout, "vertex count: %d\\n", sceneNode->primitive->vertexCount);
+    log_raw(stdout, "geometry hash: %d\\n", sceneNode->primitive->geometryHash);
   }
   if (sceneNode->containerType == vulkan_scene_node_container_type_scene_graph) {
     log_raw(stdout, "observers: %zu\\n", utarray_len(sceneNode->observers));
