@@ -2992,11 +2992,12 @@ const char *vulkan_render_pass_type_debug_str(int value) {
   if (value == 0) { return "ForwardRenderPass"; }
   return "UNKNOWN vulkan_render_pass_type";
 }
-void vulkan_scene_batch_flags_debug_print(int flags) {
-  log_debug("vulkan_scene_batch_flags: {");
-  if ((flags & 1) != 0) { log_debug("  vulkan_scene_batch_primitive_flag"); }
-  if ((flags & 2) != 0) { log_debug("  vulkan_scene_batch_material_flag"); }
-  log_debug("vulkan_scene_batch_flags: }");
+const char *vulkan_scene_batch_flags_debug_str(int value) {
+  if (value == 0) { return "vulkan_scene_batch_none_flag"; }
+  if (value == 1) { return "vulkan_scene_batch_vertex_attributes_flag"; }
+  if (value == 2) { return "vulkan_scene_batch_material_flag"; }
+  if (value == 3) { return "vulkan_scene_batch_vertex_all_flag"; }
+  return "UNKNOWN vulkan_scene_batch_flags";
 }
 void vulkan_scene_node_container_type_debug_print(int flags) {
   log_debug("vulkan_scene_node_container_type: {");

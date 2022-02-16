@@ -35,4 +35,9 @@ void vulkan_data_primitive_serialize(vulkan_data_primitive *primitive, data_asse
 void vulkan_data_primitive_deserialize(vulkan_data_primitive *primitive, data_asset_db *assetDb,
                                        data_key key);
 
+bool vulkan_data_primitive_vulkan_attributes_match(vulkan_data_primitive *primitive,
+                                                   vulkan_data_primitive *other);
+bool vulkan_data_primitive_material_match(vulkan_data_primitive *primitive,
+                                          vulkan_data_primitive *other);
+
 void vulkan_data_primitive_debug_print(vulkan_data_primitive *primitive, int indent);

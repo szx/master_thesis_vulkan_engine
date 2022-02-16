@@ -36,7 +36,7 @@ vulkan_scene_node *vulkan_scene_tree_add_node(vulkan_scene_tree *sceneTree,
 
   utarray_push_back(sceneGraphNode->observers, &sceneTreeNode);
   if (type == vulkan_scene_node_entity_type_primitive) {
-    vulkan_scene_primitive_list_add_primitive(sceneTree->primitiveList, sceneTreeNode);
+    vulkan_scene_primitive_list_add_cache(sceneTree->primitiveList, sceneTreeNode->cache);
   }
 
   if (sceneTreeNode->type == vulkan_scene_node_entity_type_object) {
