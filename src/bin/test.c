@@ -182,11 +182,8 @@ TEST scene_graph_building() {
       ASSERT_FALSE(sceneNode->dirty);                                                              \
     }                                                                                              \
     /* primitive list */                                                                           \
-    vulkan_scene_primitive_list *primitive_list = sceneTree->primitiveList;                        \
-    ASSERT(utarray_len(primitive_list->caches) == primitiveNodeNum);                               \
-    size_t batchesNum = 0;                                                                         \
-    dl_foreach_elem (vulkan_scene_batch *, batch, primitive_list->batches) { batchesNum++; }       \
-    log_debug("batchesNum: %zu", batchesNum);                                                      \
+    vulkan_scene_cache_list *cacheList = sceneTree->primitiveList;                                 \
+    ASSERT(utarray_len(cacheList->caches) == primitiveNodeNum);                                    \
   } while (0)
 
   ASSERT_GRAPH();

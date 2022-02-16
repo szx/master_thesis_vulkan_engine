@@ -119,9 +119,9 @@ void vulkan_data_primitive_deserialize(vulkan_data_primitive *primitive, data_as
 
 bool vulkan_data_primitive_vulkan_attributes_match(vulkan_data_primitive *primitive,
                                                    vulkan_data_primitive *other) {
-  return primitive->indices == other->indices && primitive->positions == other->positions &&
-         primitive->normals == other->normals && primitive->colors == other->colors &&
-         primitive->texCoords == other->texCoords;
+  return primitive->topology == other->topology && primitive->indices == other->indices &&
+         primitive->positions == other->positions && primitive->normals == other->normals &&
+         primitive->colors == other->colors && primitive->texCoords == other->texCoords;
 }
 
 bool vulkan_data_primitive_material_match(vulkan_data_primitive *primitive,

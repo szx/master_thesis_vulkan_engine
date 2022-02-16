@@ -11,7 +11,8 @@ void create_render_pass_info(vulkan_render_pass *renderPass) {
   // TODO: vertex input attributes of shader have to match those of scene.
 }
 
-void vulkan_render_pass_validate(vulkan_render_pass *renderPass, vulkan_scene_render_data *scene) {
+void vulkan_render_pass_validate(vulkan_render_pass *renderPass,
+                                 vulkan_scene_render_context *scene) {
   // TODO: Previous and next render pass?
   vulkan_render_pass_info *info = &renderPass->info;
   vulkan_shader *vertShader = renderPass->vertShader;
@@ -255,7 +256,8 @@ void vulkan_render_pass_destroy(vulkan_render_pass *renderPass) {
   core_free(renderPass);
 }
 
-vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_scene_render_data *scene) {
+vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks,
+                                        vulkan_scene_render_context *scene) {
   assert(scene != NULL);
   vulkan_pipeline *pipeline = core_alloc(sizeof(vulkan_pipeline));
   pipeline->vks = vks;
@@ -366,7 +368,7 @@ void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config
 void vulkan_render_context_deinit(vulkan_render_context *rctx) {
   assert(rctx->scene != NULL);
   rctx->currentFrameInFlight = -1;
-  vulkan_scene_render_data_destroy(rctx->scene);
+  vulkan_scene_render_context_destroy(rctx->scene);
   for (uint32_t i = 0; i < core_array_count(rctx->swapChainFrames); i++) {
     vulkan_swap_chain_frame_deinit(&rctx->swapChainFrames.ptr[i]);
   }
@@ -416,21 +418,21 @@ void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx) {
 void vulkan_render_context_load_scene(vulkan_render_context *rctx, UT_string *sceneName) {
   verify(rctx->vkd != NULL);
   if (rctx->scene != NULL) {
-    vulkan_scene_render_data_destroy(rctx->scene);
+    vulkan_scene_render_context_destroy(rctx->scene);
   }
-  rctx->scene = vulkan_scene_render_data_create(rctx->assetDb, rctx->vkd, sceneName);
-  vulkan_scene_render_data_debug_print(rctx->scene);
+  rctx->scene = vulkan_scene_render_context_create(rctx->assetDb, rctx->vkd, sceneName);
+  vulkan_scene_render_context_debug_print(rctx->scene);
   // vulkan_render_pass_validate(rctx->pipeline->renderPass,
   //                             rctx->scene); // TODO: vulkan_pipeline_validate().
   //  TODO: Copy resources to GPU. (deferred? tracking)
 }
 
 void vulkan_render_context_update_data(vulkan_render_context *rctx) {
-  vulkan_scene_render_data_update_data(rctx->scene);
+  vulkan_scene_render_context_update_data(rctx->scene);
 }
 
 void vulkan_render_context_send_to_device(vulkan_render_context *rctx) {
-  vulkan_scene_render_data_send_to_device(rctx->scene);
+  vulkan_scene_render_context_send_to_device(rctx->scene);
 }
 
 void vulkan_render_context_draw_frame(vulkan_render_context *rctx) {
@@ -509,7 +511,7 @@ void vulkan_render_context_draw_frame(vulkan_render_context *rctx) {
   rctx->currentFrameInFlight = (rctx->currentFrameInFlight + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
-void vulkan_pipeline_record_frame_command_buffer(vulkan_scene_render_data *scene,
+void vulkan_pipeline_record_frame_command_buffer(vulkan_scene_render_context *scene,
                                                  vulkan_pipeline *pipeline,
                                                  vulkan_swap_chain_frame *frame) {
   VkCommandBufferBeginInfo beginInfo = {0};
@@ -522,7 +524,7 @@ void vulkan_pipeline_record_frame_command_buffer(vulkan_scene_render_data *scene
   verify(vkEndCommandBuffer(frame->commandBuffer) == VK_SUCCESS);
 }
 
-void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_render_data *scene,
+void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_render_context *scene,
                                                     vulkan_render_pass *renderPass,
                                                     vulkan_swap_chain_frame *frame) {
   assert(scene->geometryBuffer->vkd != NULL);
