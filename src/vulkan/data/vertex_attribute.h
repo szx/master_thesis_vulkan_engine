@@ -14,7 +14,6 @@ typedef enum vulkan_data_vertex_attribute_component_type {
 } vulkan_data_vertex_attribute_component_type;
 
 typedef struct vulkan_data_vertex_attribute {
-  vulkan_attribute_type type;
   vulkan_data_vertex_attribute_component_type componentType;
   UT_array *data; /// uint32_t/vec2/vec3 array
 

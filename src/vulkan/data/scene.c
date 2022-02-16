@@ -139,6 +139,44 @@ vulkan_data_material *parse_cgltf_material(vulkan_data_scene *sceneData,
   return vulkan_data_scene_add_material(sceneData, material);
 }
 
+vulkan_data_vertex_attribute *parse_cgltf_vertex_attribute(vulkan_data_scene *sceneData,
+                                                           cgltf_accessor *cgltfAccessor) {
+  if (cgltfAccessor == NULL) {
+    verify(sceneData->vertexAttributes != NULL);
+    return sceneData->vertexAttributes;
+  }
+  vulkan_data_vertex_attribute *vertexAttribute = core_alloc(sizeof(vulkan_data_vertex_attribute));
+  vulkan_data_vertex_attribute_init(vertexAttribute, sceneData);
+
+  if (cgltfAccessor->type == cgltf_type_scalar) {
+    utarray_realloc(vertexAttribute->data, sizeof(uint32_t));
+    utarray_resize(vertexAttribute->data, cgltfAccessor->count);
+    for (size_t idx = 0; idx < utarray_len(vertexAttribute->data); idx++) {
+      uint32_t indexValue = cgltf_accessor_read_index(cgltfAccessor, idx);
+      *(uint32_t *)utarray_eltptr(vertexAttribute->data, idx) = indexValue;
+    }
+    vertexAttribute->componentType = vulkan_data_vertex_attribute_component_uint32_t;
+  } else if (cgltfAccessor->type == cgltf_type_vec2) {
+    utarray_realloc(vertexAttribute->data, sizeof(vec2));
+    utarray_resize(vertexAttribute->data, cgltfAccessor->count);
+    for (size_t idx = 0; idx < utarray_len(vertexAttribute->data); idx++) {
+      verify(cgltf_accessor_read_float(cgltfAccessor, idx,
+                                       (float *)utarray_eltptr(vertexAttribute->data, idx), 2));
+    }
+    vertexAttribute->componentType = vulkan_data_vertex_attribute_component_vec2;
+  } else if (cgltfAccessor->type == cgltf_type_vec3) {
+    utarray_realloc(vertexAttribute->data, sizeof(vec3));
+    utarray_resize(vertexAttribute->data, cgltfAccessor->count);
+    for (size_t idx = 0; idx < utarray_len(vertexAttribute->data); idx++) {
+      verify(cgltf_accessor_read_float(cgltfAccessor, idx,
+                                       (float *)utarray_eltptr(vertexAttribute->data, idx), 3));
+    }
+    vertexAttribute->componentType = vulkan_data_vertex_attribute_component_vec3;
+  }
+
+  return vulkan_data_scene_add_vertex_attribute(sceneData, vertexAttribute);
+}
+
 vulkan_data_primitive *parse_cgltf_primitive(vulkan_data_scene *sceneData,
                                              cgltf_primitive *cgltfPrimitive) {
   // Check if glTF uses only supported capabilities.
@@ -169,56 +207,33 @@ vulkan_data_primitive *parse_cgltf_primitive(vulkan_data_scene *sceneData,
   primitive->topology = topology;
   primitive->vertexCount = vertexCount;
 
-  // read indices
-  if (cgltfIndices != NULL) {
-    vulkan_index_type indexType = index_stride_to_index_type(cgltfIndices->stride);
-    if (indexType != vulkan_index_type_uint32) {
-      indexType = vulkan_index_type_uint32;
-    }
-    uint32_t indexCount = cgltfIndices->count;
-    utarray_resize(primitive->indices, indexCount);
-    for (size_t i = 0; i < utarray_len(primitive->indices); i++) {
-      size_t indexValue = cgltf_accessor_read_index(cgltfIndices, i);
-      void *outValue = utarray_eltptr(primitive->indices, i);
-      *(uint32_t *)outValue = indexValue;
-    }
-  }
+  primitive->indices = parse_cgltf_vertex_attribute(sceneData, cgltfIndices);
 
-  // read vertex attributes
-  if ((vertexAttributes & PositionAttribute) != 0) {
-    utarray_resize(primitive->positions, primitive->vertexCount);
-  }
-  if ((vertexAttributes & NormalAttribute) != 0) {
-    utarray_resize(primitive->normals, primitive->vertexCount);
-  }
-  if ((vertexAttributes & ColorAttribute) != 0) {
-    utarray_resize(primitive->colors, primitive->vertexCount);
-  }
-  if ((vertexAttributes & TexCoordAttribute) != 0) {
-    utarray_resize(primitive->texCoords, primitive->vertexCount);
-  }
-  for (size_t i = 0; i < primitive->vertexCount; i++) {
-    for (size_t attributeIdx = 0; attributeIdx < cgltfPrimitive->attributes_count; attributeIdx++) {
-      cgltf_attribute *cgltfAttribute = &cgltfPrimitive->attributes[attributeIdx];
-      vulkan_attribute_type type = cgltf_to_vulkan_attribute_type(cgltfAttribute->type);
-      if (type == PositionAttribute) {
-        verify(cgltf_accessor_read_float(cgltfAttribute->data, i,
-                                         (float *)utarray_eltptr(primitive->positions, i), 3));
-      }
-      if (type == NormalAttribute) {
-        verify(cgltf_accessor_read_float(cgltfAttribute->data, i,
-                                         (float *)utarray_eltptr(primitive->normals, i), 3));
-      }
-      if (type == ColorAttribute) {
-        verify(cgltf_accessor_read_float(cgltfAttribute->data, i,
-                                         (float *)utarray_eltptr(primitive->colors, i), 3));
-      }
-      if (type == TexCoordAttribute) {
-        verify(cgltf_accessor_read_float(cgltfAttribute->data, i,
-                                         (float *)utarray_eltptr(primitive->texCoords, i), 2));
-      }
+  for (size_t attributeIdx = 0; attributeIdx < cgltfPrimitive->attributes_count; attributeIdx++) {
+    cgltf_attribute *cgltfAttribute = &cgltfPrimitive->attributes[attributeIdx];
+    vulkan_attribute_type type = cgltf_to_vulkan_attribute_type(cgltfAttribute->type);
+    if (type == PositionAttribute) {
+      primitive->positions = parse_cgltf_vertex_attribute(sceneData, cgltfAttribute->data);
+    } else if (type == NormalAttribute) {
+      primitive->normals = parse_cgltf_vertex_attribute(sceneData, cgltfAttribute->data);
+    } else if (type == ColorAttribute) {
+      primitive->colors = parse_cgltf_vertex_attribute(sceneData, cgltfAttribute->data);
+    } else if (type == TexCoordAttribute) {
+      primitive->texCoords = parse_cgltf_vertex_attribute(sceneData, cgltfAttribute->data);
+    } else {
+      vulkan_attribute_type_debug_print(type);
+      log_warn("unsupported vertex attribute type, skipping");
     }
   }
+  primitive->indices =
+      (primitive->indices == NULL) ? sceneData->vertexAttributes : primitive->indices;
+  primitive->positions =
+      (primitive->positions == NULL) ? sceneData->vertexAttributes : primitive->positions;
+  primitive->normals =
+      (primitive->normals == NULL) ? sceneData->vertexAttributes : primitive->normals;
+  primitive->colors = (primitive->colors == NULL) ? sceneData->vertexAttributes : primitive->colors;
+  primitive->texCoords =
+      (primitive->texCoords == NULL) ? sceneData->vertexAttributes : primitive->texCoords;
 
   return vulkan_data_scene_add_primitive(sceneData, primitive);
 }
@@ -313,7 +328,7 @@ void vulkan_data_scene_serialize(vulkan_data_scene *sceneData, data_asset_db *as
   // vulkan_data_scene_debug_print(sceneData);
   UT_array *cameraKeys = NULL;
   utarray_alloc(cameraKeys, sizeof(data_key));
-  utarray_foreach_elem_it(vulkan_data_camera *, camera, sceneData->cameras) {
+  utarray_foreach_elem_it (vulkan_data_camera *, camera, sceneData->cameras) {
     vulkan_data_camera_serialize(camera, assetDb);
     utarray_push_back(cameraKeys, &camera->key);
   }
@@ -391,6 +406,12 @@ vulkan_data_scene *vulkan_data_scene_create(UT_string *name) {
   defaultMaterial->key = vulkan_data_material_calculate_key(defaultMaterial);
   DL_APPEND(sceneData->materials, defaultMaterial);
 
+  sceneData->vertexAttributes = NULL;
+  vulkan_data_vertex_attribute *defaultVertexAttribute =
+      core_alloc(sizeof(vulkan_data_vertex_attribute));
+  vulkan_data_vertex_attribute_init(defaultVertexAttribute, sceneData);
+  DL_APPEND(sceneData->vertexAttributes, defaultVertexAttribute);
+
   sceneData->primitives = NULL;
 
   sceneData->objects = NULL;
@@ -427,6 +448,11 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
     core_free(material);
   }
 
+  dl_foreach_elem (vulkan_data_vertex_attribute *, vertexAttribute, sceneData->vertexAttributes) {
+    vulkan_data_vertex_attribute_deinit(vertexAttribute);
+    core_free(vertexAttribute);
+  }
+
   dl_foreach_elem (vulkan_data_primitive *, primitive, sceneData->primitives) {
     vulkan_data_primitive_deinit(primitive);
     core_free(primitive);
@@ -447,11 +473,11 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
   core_free(sceneData);
 }
 
-#define DEF_GET_VULKAN_ENTITY_BY_KEY(_type)                                                        \
+#define DEF_GET_VULKAN_ENTITY_BY_KEY(_type, _var)                                                  \
   vulkan_data_##_type *vulkan_data_scene_get_##_type##_by_key(                                     \
       vulkan_data_scene *sceneData, data_asset_db *assetDb, data_key key) {                        \
     vulkan_data_##_type *entity = NULL;                                                            \
-    dl_foreach_elem (vulkan_data_##_type *, existingEntity, sceneData->_type##s) {                 \
+    dl_foreach_elem (vulkan_data_##_type *, existingEntity, sceneData->_var) {                     \
       if (existingEntity->key.value == key.value) {                                                \
         entity = existingEntity;                                                                   \
         break;                                                                                     \
@@ -461,13 +487,13 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
       vulkan_data_##_type *newObject = core_alloc(sizeof(vulkan_data_##_type));                    \
       vulkan_data_##_type##_init(newObject, sceneData);                                            \
       vulkan_data_##_type##_deserialize(newObject, assetDb, key);                                  \
-      LL_PREPEND(sceneData->_type##s, newObject);                                                  \
-      entity = sceneData->_type##s;                                                                \
+      DL_PREPEND(sceneData->_var, newObject);                                                      \
+      entity = sceneData->_var;                                                                    \
     }                                                                                              \
     return entity;                                                                                 \
   }
 
-#define DEF_ADD_VULKAN_ENTITY(_type)                                                               \
+#define DEF_ADD_VULKAN_ENTITY(_type, _var)                                                         \
   vulkan_data_##_type *vulkan_data_scene_add_##_type(vulkan_data_scene *sceneData,                 \
                                                      vulkan_data_##_type *entity) {                \
                                                                                                    \
@@ -480,20 +506,20 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
       return existingEntity;                                                                       \
     }                                                                                              \
     log_debug("adding new " #_type);                                                               \
-    DL_APPEND(sceneData->_type##s, entity);                                                        \
+    DL_APPEND(sceneData->_var, entity);                                                            \
     return entity;                                                                                 \
   }
 
-#define DEF_VULKAN_ENTITY_FUNCS(_type)                                                             \
-  DEF_GET_VULKAN_ENTITY_BY_KEY(_type) DEF_ADD_VULKAN_ENTITY(_type)
+#define DEF_VULKAN_ENTITY_FUNCS(_type, _var)                                                       \
+  DEF_GET_VULKAN_ENTITY_BY_KEY(_type, _var) DEF_ADD_VULKAN_ENTITY(_type, _var)
 
-DEF_VULKAN_ENTITY_FUNCS(image)
-DEF_VULKAN_ENTITY_FUNCS(sampler)
-DEF_VULKAN_ENTITY_FUNCS(texture)
-DEF_VULKAN_ENTITY_FUNCS(material)
-DEF_VULKAN_ENTITY_FUNCS(vertex_attribute)
-DEF_VULKAN_ENTITY_FUNCS(primitive)
-DEF_VULKAN_ENTITY_FUNCS(object)
+DEF_VULKAN_ENTITY_FUNCS(image, images)
+DEF_VULKAN_ENTITY_FUNCS(sampler, samplers)
+DEF_VULKAN_ENTITY_FUNCS(texture, textures)
+DEF_VULKAN_ENTITY_FUNCS(material, materials)
+DEF_VULKAN_ENTITY_FUNCS(vertex_attribute, vertexAttributes)
+DEF_VULKAN_ENTITY_FUNCS(primitive, primitives)
+DEF_VULKAN_ENTITY_FUNCS(object, objects)
 
 #undef DEF_GET_VULKAN_ENTITY_BY_KEY
 #undef DEF_ADD_VULKAN_ENTITY

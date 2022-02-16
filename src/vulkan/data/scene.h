@@ -12,15 +12,15 @@
 /// Does not create any Vulkan objects (see vulkan_scene).
 typedef struct vulkan_data_scene {
   UT_string *name;
-  UT_string *path;                                 /// Empty when loaded from asset db.
-  vulkan_data_image *images;                       /// List of all images used by scene.
-  vulkan_data_sampler *samplers;                   /// List of all samplers used by scene.
-  vulkan_data_texture *textures;                   /// List of all textures used by scene.
-  vulkan_data_material *materials;                 /// List of all materials used by scene.
-  vulkan_data_vertex_attribute *vertex_attributes; /// List of all vertex attributes used by scene.
-  vulkan_data_primitive *primitives;               /// List of all primitives used by scene.
-  vulkan_data_object *objects;                     /// List of all objects in scene.
-  UT_array *cameras;     /// vulkan_data_camera array, all cameras in scene
+  UT_string *path;                                /// Empty when loaded from asset db.
+  vulkan_data_image *images;                      /// List of all images used by scene.
+  vulkan_data_sampler *samplers;                  /// List of all samplers used by scene.
+  vulkan_data_texture *textures;                  /// List of all textures used by scene.
+  vulkan_data_material *materials;                /// List of all materials used by scene.
+  vulkan_data_vertex_attribute *vertexAttributes; /// List of all vertex attributes used by scene.
+  vulkan_data_primitive *primitives;              /// List of all primitives used by scene.
+  vulkan_data_object *objects;                    /// List of all objects in scene.
+  UT_array *cameras;                              /// vulkan_data_camera array, all cameras in scene
   UT_array *rootObjects; /// vulkan_data_object* array, object that are direct descendants of scene
 
   data_key key; /// Hash, used to prevent duplicates in asset database.

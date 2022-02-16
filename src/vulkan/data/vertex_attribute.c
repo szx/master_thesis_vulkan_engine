@@ -3,26 +3,20 @@
 
 void vulkan_data_vertex_attribute_init(vulkan_data_vertex_attribute *vertexAttribute,
                                        vulkan_data_scene *sceneData) {
-  vertexAttribute->type = UnknownAttribute;
   vertexAttribute->componentType = vulkan_data_vertex_attribute_component_uint32_t;
-  vertexAttribute->data = NULL;
+  utarray_alloc(vertexAttribute->data, sizeof(uint32_t));
   DEF_VULKAN_ENTITY(vertex_attribute, vertexAttribute)
 }
 
 void vulkan_data_vertex_attribute_deinit(vulkan_data_vertex_attribute *vertexAttribute) {
-  if (vertexAttribute->data) {
-    utarray_free(vertexAttribute->data);
-  }
+  utarray_free(vertexAttribute->data);
 }
 
 data_key vulkan_data_vertex_attribute_calculate_key(vulkan_data_vertex_attribute *vertexAttribute) {
   hash_t value;
   HASH_START(hashState)
-  HASH_UPDATE(hashState, &vertexAttribute->type, sizeof(vertexAttribute->type))
-  if (vertexAttribute->data) {
-    HASH_UPDATE(hashState, utarray_front(vertexAttribute->data),
-                utarray_size(vertexAttribute->data))
-  }
+  HASH_UPDATE(hashState, &vertexAttribute->componentType, sizeof(vertexAttribute->componentType))
+  HASH_UPDATE(hashState, utarray_front(vertexAttribute->data), utarray_size(vertexAttribute->data))
   HASH_DIGEST(hashState, value)
   HASH_END(hashState)
   return (data_key){value};
@@ -32,8 +26,6 @@ void vulkan_data_vertex_attribute_serialize(vulkan_data_vertex_attribute *vertex
                                             data_asset_db *assetDb) {
   vertexAttribute->key = vulkan_data_vertex_attribute_calculate_key(vertexAttribute);
 
-  data_asset_db_insert_vertexAttribute_type_int(assetDb, vertexAttribute->key,
-                                                data_int_temp(vertexAttribute->type));
   if (vertexAttribute->componentType == vulkan_data_vertex_attribute_component_uint32_t) {
     data_asset_db_insert_vertexAttribute_valuesInt_int_array(
         assetDb, vertexAttribute->key, data_int_array_temp(vertexAttribute->data));
@@ -49,8 +41,6 @@ void vulkan_data_vertex_attribute_serialize(vulkan_data_vertex_attribute *vertex
 void vulkan_data_vertex_attribute_deserialize(vulkan_data_vertex_attribute *vertexAttribute,
                                               data_asset_db *assetDb, data_key key) {
   vertexAttribute->key = key;
-  vertexAttribute->type =
-      data_asset_db_select_vertexAttribute_type_int(assetDb, vertexAttribute->key).value;
 
   data_int_array valuesInt =
       data_asset_db_select_vertexAttribute_valuesInt_int_array(assetDb, vertexAttribute->key);
@@ -60,19 +50,22 @@ void vulkan_data_vertex_attribute_deserialize(vulkan_data_vertex_attribute *vert
       data_asset_db_select_vertexAttribute_valuesVec3_vec3_array(assetDb, vertexAttribute->key);
   if (utarray_len(valuesInt.values) > 0) {
     verify(utarray_len(valuesVec2.values) == 0 && utarray_len(valuesVec3.values) == 0);
-    utarray_alloc(vertexAttribute->data, sizeof(uint32_t));
+    utarray_realloc(vertexAttribute->data, sizeof(uint32_t));
+    utarray_resize(vertexAttribute->data, utarray_len(valuesInt.values));
     core_memcpy(utarray_front(vertexAttribute->data), utarray_front(valuesInt.values),
                 utarray_size(valuesInt.values));
     vertexAttribute->componentType = vulkan_data_vertex_attribute_component_uint32_t;
   } else if (utarray_len(valuesVec2.values) > 0) {
     verify(utarray_len(valuesInt.values) == 0 && utarray_len(valuesVec3.values) == 0);
-    utarray_alloc(vertexAttribute->data, sizeof(vec2));
+    utarray_realloc(vertexAttribute->data, sizeof(vec2));
+    utarray_resize(vertexAttribute->data, utarray_len(valuesVec2.values));
     core_memcpy(utarray_front(vertexAttribute->data), utarray_front(valuesVec2.values),
                 utarray_size(valuesVec2.values));
     vertexAttribute->componentType = vulkan_data_vertex_attribute_component_vec2;
   } else if (utarray_len(valuesVec3.values) > 0) {
     verify(utarray_len(valuesInt.values) == 0 && utarray_len(valuesVec2.values) == 0);
-    utarray_alloc(vertexAttribute->data, sizeof(vec3));
+    utarray_realloc(vertexAttribute->data, sizeof(vec3));
+    utarray_resize(vertexAttribute->data, utarray_len(valuesVec3.values));
     core_memcpy(utarray_front(vertexAttribute->data), utarray_front(valuesVec3.values),
                 utarray_size(valuesVec3.values));
     vertexAttribute->componentType = vulkan_data_vertex_attribute_component_vec3;

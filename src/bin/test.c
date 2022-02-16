@@ -6,6 +6,8 @@
 
 #include <stdlib.h>
 
+#define GLTF_NAME "sponza"
+
 // Loading sponza.gltf.
 TEST gltf_loading() {
   // TODO: Loading extra files (images).
@@ -13,8 +15,8 @@ TEST gltf_loading() {
   data_asset_db *assetDb = data_asset_db_create();
   vulkan_device *vkd = vulkan_device_create(config, assetDb);
   UT_string *sceneName;
-  utstring_alloc(sceneName, "triangles");
-  UT_string *gltfPath = get_asset_file_path("triangles", "triangles.gltf");
+  utstring_alloc(sceneName, GLTF_NAME);
+  UT_string *gltfPath = get_asset_file_path(GLTF_NAME, GLTF_NAME ".gltf");
   vulkan_data_scene *gltfSceneData = vulkan_data_scene_create_with_gltf_file(sceneName, gltfPath);
   vulkan_data_scene *assetDbSceneData = vulkan_data_scene_create_with_asset_db(assetDb, sceneName);
 
@@ -68,10 +70,11 @@ TEST gltf_loading() {
       ASSERT_EQ(gltfPrimitive->topology, assetDbPrimitive->topology);
       ASSERT_EQ(gltfPrimitive->vertexCount, assetDbPrimitive->vertexCount);
 #define ASSERT_VERTEX_ATTRIBUTE(_name)                                                             \
-  ASSERT_EQ(utarray_len(gltfPrimitive->_name), utarray_len(assetDbPrimitive->_name));              \
-  if (utarray_len(gltfPrimitive->_name) > 0)                                                       \
-    ASSERT_MEM_EQ(utarray_front(gltfPrimitive->_name), utarray_front(assetDbPrimitive->_name),     \
-                  utarray_size(gltfPrimitive->_name));
+  ASSERT_EQ(utarray_len(gltfPrimitive->_name->data), utarray_len(assetDbPrimitive->_name->data));  \
+  if (utarray_len(gltfPrimitive->_name->data) > 0)                                                 \
+    ASSERT_MEM_EQ(utarray_front(gltfPrimitive->_name->data),                                       \
+                  utarray_front(assetDbPrimitive->_name->data),                                    \
+                  utarray_size(gltfPrimitive->_name->data));
       ASSERT_VERTEX_ATTRIBUTE(positions)
       ASSERT_VERTEX_ATTRIBUTE(normals)
       ASSERT_VERTEX_ATTRIBUTE(colors)
@@ -237,8 +240,8 @@ int main(int argc, char *argv[]) {
   GREATEST_MAIN_BEGIN();
   platform_create();
   // RUN_SUITE(shaderc_suite);
-  RUN_SUITE(gltf_suite);
-  // RUN_SUITE(scene_graph_suite);
+  // RUN_SUITE(gltf_suite);
+  RUN_SUITE(scene_graph_suite);
   platform_destroy();
   GREATEST_MAIN_END();
 }

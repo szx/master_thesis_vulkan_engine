@@ -4,22 +4,22 @@
 
 #define END_OF_DATA_CONFIG_SECTION
 #define DATA_CONFIG_SECTIONS(X, ...) \
-  X(graphics, __VA_ARGS__) \
-  X(controls, __VA_ARGS__) \
   X(settings, __VA_ARGS__) \
+  X(controls, __VA_ARGS__) \
+  X(graphics, __VA_ARGS__) \
   END_OF_DATA_CONFIG_SECTION
 
 #define END_OF_DATA_CONFIG_INT_KEYS
 #define DATA_CONFIG_INT_KEYS(X, ...) \
+  X(controls, Enabled, 1, __VA_ARGS__) \
   X(graphics, WindowWidth, 640, __VA_ARGS__) \
   X(graphics, WindowHeight, 480, __VA_ARGS__) \
-  X(controls, Enabled, 1, __VA_ARGS__) \
   END_OF_DATA_CONFIG_INT_KEYS
 
 #define END_OF_DATA_CONFIG_STR_KEYS
 #define DATA_CONFIG_STR_KEYS(X, ...) \
-  X(graphics, WindowTitle, "cpptest", __VA_ARGS__) \
   X(settings, StartScene, "triangles", __VA_ARGS__) \
+  X(graphics, WindowTitle, "cpptest", __VA_ARGS__) \
   END_OF_DATA_CONFIG_STR_KEYS
 
 #define END_OF_DATA_DB_TYPES
@@ -41,7 +41,7 @@
   X(sampler, key, key, magfilter, int, minfilter, int, addresswrapu, int, addresswrapv, int, __VA_ARGS__) \
   X(texture, key, key, image, key, sampler, key, __VA_ARGS__) \
   X(material, key, key, basecolorfactor, vec4, metallicfactor, float, roughnessfactor, float, basecolortexture, key, metallicroughnesstexture, key, __VA_ARGS__) \
-  X(vertexAttribute, key, key, type, int, valuesint, int_array, valuesvec2, vec2_array, valuesvec3, vec3_array, __VA_ARGS__) \
+  X(vertexAttribute, key, key, valuesint, int_array, valuesvec2, vec2_array, valuesvec3, vec3_array, __VA_ARGS__) \
   X(primitive, key, key, material, key, topology, int, indices, key, positions, key, normals, key, colors, key, texcoords, key, __VA_ARGS__) \
   X(mesh, key, key, primitives, key_array, __VA_ARGS__) \
   X(object, key, key, transform, mat4, mesh, key, children, key_array, __VA_ARGS__) \
@@ -72,7 +72,6 @@
   X(material, baseColorTexture, key, __VA_ARGS__) \
   X(material, metallicRoughnessTexture, key, __VA_ARGS__) \
   X(vertexAttribute, key, key, __VA_ARGS__) \
-  X(vertexAttribute, type, int, __VA_ARGS__) \
   X(vertexAttribute, valuesInt, int_array, __VA_ARGS__) \
   X(vertexAttribute, valuesVec2, vec2_array, __VA_ARGS__) \
   X(vertexAttribute, valuesVec3, vec3_array, __VA_ARGS__) \
