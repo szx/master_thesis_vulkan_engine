@@ -16,53 +16,7 @@ uint32_t find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
 
 VkFormat find_depth_format(vulkan_device *vkd) { return VK_FORMAT_R32_UINT; }
 
-uint32_t vertex_types_to_vertex_stride(vulkan_attribute_type vertexAttributes) {
-  if ((vertexAttributes & TexCoordAttribute) != 0) {
-    return offsetof(vulkan_vertex_stream_element, texCoord) +
-           member_size(vulkan_vertex_stream_element, texCoord);
-  }
-  if ((vertexAttributes & ColorAttribute) != 0) {
-    return offsetof(vulkan_vertex_stream_element, color) +
-           member_size(vulkan_vertex_stream_element, color);
-  }
-  if ((vertexAttributes & NormalAttribute) != 0) {
-    return offsetof(vulkan_vertex_stream_element, normal) +
-           member_size(vulkan_vertex_stream_element, normal);
-  }
-  if ((vertexAttributes & PositionAttribute) != 0) {
-    return offsetof(vulkan_vertex_stream_element, position) +
-           member_size(vulkan_vertex_stream_element, position);
-  }
-  panic("unsupported vertex attribute %d", vertexAttributes);
-  return 0; // TODO: Unreachable.
-}
 
-uint32_t index_type_to_index_stride(vulkan_index_type indexType) {
-  if (indexType == vulkan_index_type_uint32) {
-    return 4;
-  }
-  panic("unsupported index type %d", indexType);
-  return 0; // TODO unreachable
-}
-
-vulkan_index_type index_stride_to_index_type(uint32_t indexStride) {
-  switch (indexStride) {
-  case 4:
-    return vulkan_index_type_uint32;
-  default:
-    return vulkan_index_type_unknown;
-  }
-}
-
-VkIndexType stride_to_index_format(uint32_t indexStride) {
-  VkIndexType indexType = VK_INDEX_TYPE_NONE_KHR;
-  if (indexStride == 2) {
-    indexType = VK_INDEX_TYPE_UINT16;
-  } else if (indexStride == 4) {
-    indexType = VK_INDEX_TYPE_UINT32;
-  }
-  return indexType;
-}
 
 #define DEBUG_NAME_FORMAT_START()                                                                  \
   va_list args;                                                                                    \

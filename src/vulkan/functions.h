@@ -1,50 +1,15 @@
-/* Vulkan API and helper functions and structures */
+/* Vulkan API helper functions. */
 
 #pragma once
 
 #include "../core/platform.h"
 typedef struct vulkan_device vulkan_device;
 
-/* Vulkan helper structures */
-
-/// One element of vertex stream.
-/// Assumes that all vertex attributes are interleaved.
-/// If vertex attribute is not used, we have to do one of following:
-///     - adjust vertex binding stride and shader (if it is after all other used vertex attributes)
-///     - fill vertex attribute with default value
-typedef struct vulkan_vertex_stream_element {
-  vec3 position;
-  vec3 normal;
-  vec3 color;
-  vec2 texCoord;
-} vulkan_vertex_stream_element; // HIRO create interleaved vertex stream when building scene
-// TODO: Packing.
-
-typedef enum vulkan_attribute_type {
-  UnknownAttribute = 1 << 0, // TODO naming
-  PositionAttribute = 1 << 1,
-  NormalAttribute = 1 << 2,
-  ColorAttribute = 1 << 3,
-  TexCoordAttribute = 1 << 4,
-  TangentAttribute = 1 << 5,
-} vulkan_attribute_type;
-
-typedef enum vulkan_index_type {
-  vulkan_index_type_unknown = 0,
-  vulkan_index_type_uint32 = 1
-} vulkan_index_type;
-
-/* Vulkan helper functions */
 // TODO: Implement all Vulkan helper functions.
 
 uint32_t find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
                           VkMemoryPropertyFlags properties);
 VkFormat find_depth_format(vulkan_device *vkd);
-
-uint32_t vertex_types_to_vertex_stride(vulkan_attribute_type vertexAttributes);
-uint32_t index_type_to_index_stride(vulkan_index_type indexType);
-vulkan_index_type index_stride_to_index_type(uint32_t indexStride);
-VkIndexType stride_to_index_format(uint32_t indexStride);
 
 /* vulkan object creation */
 

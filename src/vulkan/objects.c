@@ -1,4 +1,52 @@
-#include "geometry_buffer.h"
+#include "objects.h"
+
+uint32_t vertex_types_to_vertex_stride(vulkan_attribute_type vertexAttributes) {
+  if ((vertexAttributes & TexCoordAttribute) != 0) {
+    return offsetof(vulkan_vertex_stream_element, texCoord) +
+           member_size(vulkan_vertex_stream_element, texCoord);
+  }
+  if ((vertexAttributes & ColorAttribute) != 0) {
+    return offsetof(vulkan_vertex_stream_element, color) +
+           member_size(vulkan_vertex_stream_element, color);
+  }
+  if ((vertexAttributes & NormalAttribute) != 0) {
+    return offsetof(vulkan_vertex_stream_element, normal) +
+           member_size(vulkan_vertex_stream_element, normal);
+  }
+  if ((vertexAttributes & PositionAttribute) != 0) {
+    return offsetof(vulkan_vertex_stream_element, position) +
+           member_size(vulkan_vertex_stream_element, position);
+  }
+  panic("unsupported vertex attribute %d", vertexAttributes);
+  return 0; // TODO: Unreachable.
+}
+
+uint32_t index_type_to_index_stride(vulkan_index_type indexType) {
+  if (indexType == vulkan_index_type_uint32) {
+    return 4;
+  }
+  panic("unsupported index type %d", indexType);
+  return 0; // TODO unreachable
+}
+
+vulkan_index_type index_stride_to_index_type(uint32_t indexStride) {
+  switch (indexStride) {
+  case 4:
+    return vulkan_index_type_uint32;
+  default:
+    return vulkan_index_type_unknown;
+  }
+}
+
+VkIndexType stride_to_index_format(uint32_t indexStride) {
+  VkIndexType indexType = VK_INDEX_TYPE_NONE_KHR;
+  if (indexStride == 2) {
+    indexType = VK_INDEX_TYPE_UINT16;
+  } else if (indexStride == 4) {
+    indexType = VK_INDEX_TYPE_UINT32;
+  }
+  return indexType;
+}
 
 vulkan_geometry_buffer *vulkan_geometry_buffer_create() {
   vulkan_geometry_buffer *geometryBuffer = core_alloc(sizeof(vulkan_geometry_buffer));
@@ -98,24 +146,4 @@ void vulkan_uniform_buffer_send_to_device(vulkan_uniform_buffer *uniformBuffer) 
   core_memcpy(data, &uniformBuffer->data, uniformBuffer->bufferMemorySize);
   vkUnmapMemory(uniformBuffer->vkd->device, uniformBuffer->bufferMemory);
   uniformBuffer->dirty = false;
-}
-
-void vulkan_uniform_buffer_update_with_camera(vulkan_uniform_buffer *uniformBuffer,
-                                              vulkan_data_camera *camera) {
-  if (!camera->dirty) {
-    return;
-  }
-  vec3 negativePosition;
-  mat4 translationMat;
-  glm_vec3_negate_to(camera->position, negativePosition);
-  glm_translate_make(translationMat, negativePosition);
-  mat4 rotationMat;
-  glm_quat_mat4(camera->rotation, rotationMat);
-  glm_mat4_mul(rotationMat, translationMat, uniformBuffer->data.viewMat);
-
-  glm_perspective(camera->fovY, camera->aspectRatio, camera->nearZ, camera->farZ,
-                  uniformBuffer->data.projMat);
-  uniformBuffer->data.projMat[1][1] *= -1; // invert for Y+ pointing up
-  camera->dirty = false;
-  uniformBuffer->dirty = true;
 }

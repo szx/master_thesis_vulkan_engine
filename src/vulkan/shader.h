@@ -2,7 +2,7 @@
 #pragma once
 
 #include "device.h"
-#include "functions.h"
+#include "objects.h"
 
 /// Describes one vertex input (or output) attribute defined in GLSL shader.
 /// Examples:
