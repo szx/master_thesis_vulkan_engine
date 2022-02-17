@@ -9,8 +9,8 @@
 typedef struct vulkan_scene_cache_list vulkan_scene_cache_list;
 
 typedef struct vulkan_scene_tree {
-  vulkan_scene_graph *graph;              /// vulkan_scene_graph pointer.
-  vulkan_scene_cache_list *primitiveList; /// List of all primitives in scene tree.
+  vulkan_scene_graph *graph;          /// vulkan_scene_graph pointer.
+  vulkan_scene_cache_list *cacheList; /// List of all primitives in scene tree.
 
   vulkan_scene_node *root;  /// Root node.
   vulkan_scene_node *nodes; /// Doubly-linked list of all nodes of scene tree.

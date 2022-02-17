@@ -4,7 +4,7 @@
 vulkan_scene_tree *vulkan_scene_tree_create(vulkan_scene_graph *sceneGraph) {
   vulkan_scene_tree *sceneTree = core_alloc(sizeof(vulkan_scene_tree));
   sceneTree->graph = sceneGraph;
-  sceneTree->primitiveList = vulkan_scene_cache_list_create(sceneTree);
+  sceneTree->cacheList = vulkan_scene_cache_list_create(sceneTree);
   sceneTree->root = NULL;
   sceneTree->nodes = NULL;
   utarray_alloc(sceneTree->dirtyNodes, sizeof(vulkan_scene_node *));
@@ -16,7 +16,7 @@ void vulkan_scene_tree_destroy(vulkan_scene_tree *sceneTree) {
 
   dl_foreach_elem (vulkan_scene_node *, node, sceneTree->nodes) { vulkan_scene_node_destroy(node); }
 
-  vulkan_scene_cache_list_destroy(sceneTree->primitiveList);
+  vulkan_scene_cache_list_destroy(sceneTree->cacheList);
 
   core_free(sceneTree);
 }
@@ -36,7 +36,7 @@ vulkan_scene_node *vulkan_scene_tree_add_node(vulkan_scene_tree *sceneTree,
 
   utarray_push_back(sceneGraphNode->observers, &sceneTreeNode);
   if (type == vulkan_scene_node_entity_type_primitive) {
-    vulkan_scene_cache_list_add_cache(sceneTree->primitiveList, sceneTreeNode->cache);
+    vulkan_scene_cache_list_add_cache(sceneTree->cacheList, sceneTreeNode->cache);
   }
 
   if (sceneTreeNode->type == vulkan_scene_node_entity_type_object) {
@@ -120,5 +120,5 @@ void vulkan_scene_tree_debug_print(vulkan_scene_tree *sceneTree) {
   log_raw(stdout, "digraph scene_tree {");
   vulkan_scene_node_debug_print(sceneTree->root);
   log_raw(stdout, "}\n");
-  vulkan_scene_cache_list_debug_print(sceneTree->primitiveList);
+  vulkan_scene_cache_list_debug_print(sceneTree->cacheList);
 }

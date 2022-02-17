@@ -10,6 +10,7 @@ void vulkan_data_primitive_init(vulkan_data_primitive *primitive, vulkan_data_sc
   primitive->colors = NULL;
   primitive->texCoords = NULL;
   primitive->indices = NULL;
+  primitive->geometryHash = 0;
   primitive->material = NULL;
   DEF_VULKAN_ENTITY(primitive, primitive)
 }
@@ -35,6 +36,7 @@ data_key vulkan_data_primitive_calculate_key(vulkan_data_primitive *primitive) {
   if (primitive->indices) {
     HASH_UPDATE(hashState, &primitive->indices->key, sizeof(primitive->indices->key))
   }
+  HASH_DIGEST(hashState, primitive->geometryHash);
   if (primitive->material) {
     HASH_UPDATE(hashState, &primitive->material->key, sizeof(primitive->material->key))
   }
@@ -133,6 +135,8 @@ void vulkan_data_primitive_debug_print(vulkan_data_primitive *primitive, int ind
   log_debug(INDENT_FORMAT_STRING "primitive: %s\n", INDENT_FORMAT_ARGS(0),
             VkPrimitiveTopology_debug_str(primitive->topology));
   log_debug(INDENT_FORMAT_STRING "hash=%zu", INDENT_FORMAT_ARGS(2), primitive->key);
+  log_debug(INDENT_FORMAT_STRING "geometry_hash=%zu", INDENT_FORMAT_ARGS(2),
+            primitive->geometryHash);
   vulkan_data_vertex_attribute_debug_print(primitive->indices, indent + 2);
   log_debug(INDENT_FORMAT_STRING "vertices: count=%d\n", INDENT_FORMAT_ARGS(2),
             primitive->vertexCount);

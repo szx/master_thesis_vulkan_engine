@@ -2976,12 +2976,12 @@ void vulkan_attribute_type_debug_print(int flags) {
   if ((flags & 32) != 0) { log_debug("  TangentAttribute"); }
   log_debug("vulkan_attribute_type: }");
 }
-const char *vulkan_batch_flags_debug_str(int value) {
-  if (value == 0) { return "vulkan_batch_none_flag"; }
-  if (value == 1) { return "vulkan_batch_vertex_attributes_flag"; }
-  if (value == 2) { return "vulkan_batch_material_flag"; }
-  if (value == 3) { return "vulkan_batch_vertex_all_flag"; }
-  return "UNKNOWN vulkan_batch_flags";
+void vulkan_batch_policy_debug_print(int flags) {
+  log_debug("vulkan_batch_policy: {");
+  if ((flags & 0) != 0) { log_debug("  vulkan_batch_policy_none"); }
+  if ((flags & 1) != 0) { log_debug("  vulkan_batch_policy_matching_materials"); }
+  if ((flags & 2) != 0) { log_debug("  vulkan_batch_policy_matching_vertex_attributes"); }
+  log_debug("vulkan_batch_policy: }");
 }
 void vulkan_data_vertex_attribute_component_type_debug_print(int flags) {
   log_debug("vulkan_data_vertex_attribute_component_type: {");

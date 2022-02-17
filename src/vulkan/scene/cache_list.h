@@ -1,10 +1,10 @@
-/* Vulkan scene primitive list.
+/* Vulkan scene cache list.
  * Tracks primitive scene nodes that are leaves of scene tree.
  * Used to build draw call batches.
  */
 #pragma once
 
-#include "graph.h"
+#include "tree.h"
 
 typedef struct vulkan_batches vulkan_batches;
 
@@ -17,12 +17,15 @@ typedef struct vulkan_scene_cache_list {
 } vulkan_scene_cache_list;
 
 vulkan_scene_cache_list *vulkan_scene_cache_list_create(vulkan_scene_tree *sceneTree);
-void vulkan_scene_cache_list_destroy(vulkan_scene_cache_list *primitiveList);
+void vulkan_scene_cache_list_destroy(vulkan_scene_cache_list *cacheList);
 
-void vulkan_scene_cache_list_add_cache(vulkan_scene_cache_list *primitiveList,
+void vulkan_scene_cache_list_add_cache(vulkan_scene_cache_list *cacheList,
                                        vulkan_scene_cache *cache);
 
-void vulkan_scene_cache_list_remove_cache(vulkan_scene_cache_list *primitiveList,
+void vulkan_scene_cache_list_remove_cache(vulkan_scene_cache_list *cacheList,
                                           vulkan_scene_cache *cache);
 
-void vulkan_scene_cache_list_debug_print(vulkan_scene_cache_list *primitiveList);
+/// Sorts cache list in a way that minimizes number of created batches.
+void vulkan_scene_cache_list_sort(vulkan_scene_cache_list *cacheList);
+
+void vulkan_scene_cache_list_debug_print(vulkan_scene_cache_list *cacheList);

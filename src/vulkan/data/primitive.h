@@ -21,6 +21,7 @@ typedef struct vulkan_data_primitive {
   vulkan_data_vertex_attribute *texCoords; /// vec2
   // TODO: LOD index buffers.
   vulkan_data_vertex_attribute *indices; /// uint32_t
+  hash_t geometryHash;
 
   vulkan_data_material *material;
 

@@ -147,7 +147,7 @@ TEST scene_graph_building() {
   vulkan_device *vkd = vulkan_device_create(config, assetDb);
 
   UT_string *sceneName;
-  utstring_alloc(sceneName, "triangles");
+  utstring_alloc(sceneName, "sponza");
   vulkan_data_scene *assetDbSceneData = vulkan_data_scene_create_with_asset_db(assetDb, sceneName);
   utstring_free(sceneName);
   // vulkan_data_scene_debug_print(assetDbSceneData);
@@ -181,8 +181,8 @@ TEST scene_graph_building() {
       }                                                                                            \
       ASSERT_FALSE(sceneNode->dirty);                                                              \
     }                                                                                              \
-    /* primitive list */                                                                           \
-    vulkan_scene_cache_list *cacheList = sceneTree->primitiveList;                                 \
+    /* cache list */                                                                               \
+    vulkan_scene_cache_list *cacheList = sceneTree->cacheList;                                     \
     ASSERT(utarray_len(cacheList->caches) == primitiveNodeNum);                                    \
   } while (0)
 
@@ -228,6 +228,25 @@ TEST scene_graph_building() {
   ASSERT_GRAPH();
   ASSERT_EQ(utarray_len(firstObjectNode->childObjectNodes), 0);
 */
+
+  log_info("Test batching.");
+  vulkan_batches *batches = vulkan_batches_create(sceneGraph);
+
+  vulkan_batches_update(batches, vulkan_batch_policy_none);
+  vulkan_batches_debug_print(batches);
+  // HIRO DL_COUNT macro
+  vulkan_batches_update(batches, vulkan_batch_policy_matching_materials);
+  vulkan_batches_debug_print(batches);
+
+  vulkan_batches_update(batches, vulkan_batch_policy_matching_vertex_attributes);
+  vulkan_batches_debug_print(batches);
+
+  vulkan_batches_update(batches, vulkan_batch_policy_matching_materials |
+                                     vulkan_batch_policy_matching_vertex_attributes);
+  vulkan_batches_debug_print(batches);
+
+  vulkan_batches_destroy(batches);
+
   vulkan_scene_graph_destroy(sceneGraph);
   vulkan_data_scene_destroy(assetDbSceneData);
   vulkan_device_destroy(vkd);
