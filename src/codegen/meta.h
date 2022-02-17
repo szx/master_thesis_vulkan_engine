@@ -181,6 +181,7 @@ const char *parser_ast_node_type_debug_str(int value);
 const char *parser_error_type_debug_str(int value);
 void vulkan_attribute_type_debug_print(int flags);
 void vulkan_batch_policy_debug_print(int flags);
+void vulkan_buffer_type_debug_print(int flags);
 void vulkan_data_vertex_attribute_component_type_debug_print(int flags);
 const char *vulkan_index_type_debug_str(int value);
 const char *vulkan_render_pass_type_debug_str(int value);

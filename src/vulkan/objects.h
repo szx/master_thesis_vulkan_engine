@@ -5,8 +5,34 @@
 #include "device.h"
 #include "functions.h"
 
-// HIRO vulkan_buffer
-// HIRO vertex interleaving in vulkan_geometry_buffer
+typedef enum vulkan_buffer_type {
+  vulkan_buffer_type_geometry,
+  vulkan_buffer_type_uniform,
+  vulkan_buffer_type_count
+} vulkan_buffer_type;
+
+/// Buffer.
+/// Used to store data in memory.
+typedef struct vulkan_buffer {
+  /* CPU state */
+  const void *data; /// Block of memory on CPU.
+  size_t size;      /// Size of data in bytes.
+
+  /* GPU state */
+  vulkan_device *vkd; /// Pointer.
+  vulkan_buffer_type type;
+  VkBuffer buffer;
+  VkDeviceMemory bufferMemory;
+
+  bool resident; /// True if buffer created in GPU memory.
+  bool dirty;    /// True if CPU to GPU transfer required.
+} vulkan_buffer;
+
+vulkan_buffer *vulkan_buffer_create(vulkan_device *vkd, vulkan_buffer_type type, const void *data,
+                                    size_t size);
+void vulkan_buffer_destroy(vulkan_buffer *buffer);
+
+void vulkan_buffer_send_to_device(vulkan_buffer *buffer);
 
 /// One element of vertex stream.
 /// Assumes that all vertex attributes are interleaved.
@@ -40,9 +66,8 @@ uint32_t index_type_to_index_stride(vulkan_index_type indexType);
 vulkan_index_type index_stride_to_index_type(uint32_t indexStride);
 VkIndexType stride_to_index_format(uint32_t indexStride);
 
-// HIRO rename to objects
-// HIRO basic log-level wrappers: buffer
-// HIRO basic high-level wrappers: vertex element, vertex buffer, uniform/storage buffer for shader
+// HIRO Unified buffers
+// HIRO support multiple buffers and descriptors (seperate for each frame)
 
 // Geometry buffer.
 // Used to aggregate scene's vertex data into device local buffers.
@@ -50,39 +75,36 @@ typedef struct vulkan_geometry_buffer {
   /* CPU state */
   UT_array *data; /// uint8_t
   /* GPU state */
-  vulkan_device *vkd; /// vulkan_device pointer
-  VkBuffer buffer;
-  VkDeviceMemory bufferMemory;
+  vulkan_buffer *buffer;
 
   bool dirty; /// True if CPU to GPU transfer required.
 } vulkan_geometry_buffer;
 
+vulkan_geometry_buffer *vulkan_geometry_buffer_create(vulkan_device *vkd);
+void vulkan_geometry_buffer_destroy(vulkan_geometry_buffer *geometryBuffer);
+
+// HIRO vulkan_unified_geometry_buffer: adds UT_array to geometry buffer
+// HIRO vertex interleaving in vulkan_geometry_buffer
+
+void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
+                                           vulkan_geometry_buffer *geometryBuffer);
+
 typedef struct vulkan_uniform_buffer {
-  /* initialized by vulkan_uniform_buffer_create */
-  vulkan_device *vkd; /// vulkan_device pointer
-  VkBuffer buffer;
-  VkDeviceMemory bufferMemory;
-  VkDeviceSize bufferMemorySize;
-  /* initialized and updated by vulkan_uniform_buffer_send_to_device */
+  /* CPU state  */
   struct {
     alignas(16) mat4 viewMat;
     alignas(16) mat4 projMat;
   } data; // HIRO move UBO definitions out of vulkan_uniform_buffer
 
-  bool dirty;            /// True if uniform buffer data updated on CPU.
-} vulkan_uniform_buffer; // TODO: Manage every uniform buffers.
+  /* GPU state */
+  vulkan_buffer *buffer;
 
-vulkan_geometry_buffer *vulkan_geometry_buffer_create();
-void vulkan_geometry_buffer_destroy(vulkan_geometry_buffer *geometryBuffer);
-/// Creates device local buffer and copies geometry buffer data into it.
-void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
-                                           vulkan_geometry_buffer *geometryBuffer);
+  bool dirty; /// True if CPU to GPU transfer required.
+} vulkan_uniform_buffer;
 
-/// Creates host visible and coherent buffer.
-/// Descriptor set is created and managed by pipeline.
-/// NOTE: We do not use device local memory, because we assume that mapping host visible and
-///       coherent memory is faster than copying into device local memory using staging buffer.
 vulkan_uniform_buffer *vulkan_uniform_buffer_create(vulkan_device *vkd);
 void vulkan_uniform_buffer_destroy(vulkan_uniform_buffer *uniformBuffer);
-/// Maps and updates uniform buffer memory.
+
+// HIRO: Unified uniform buffer. (register structs?)
+
 void vulkan_uniform_buffer_send_to_device(vulkan_uniform_buffer *uniformBuffer);

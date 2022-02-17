@@ -2983,6 +2983,13 @@ void vulkan_batch_policy_debug_print(int flags) {
   if ((flags & 2) != 0) { log_debug("  vulkan_batch_policy_matching_vertex_attributes"); }
   log_debug("vulkan_batch_policy: }");
 }
+void vulkan_buffer_type_debug_print(int flags) {
+  log_debug("vulkan_buffer_type: {");
+  if ((flags & 0) != 0) { log_debug("  vulkan_buffer_type_geometry"); }
+  if ((flags & 1) != 0) { log_debug("  vulkan_buffer_type_uniform"); }
+  if ((flags & 2) != 0) { log_debug("  vulkan_buffer_type_count"); }
+  log_debug("vulkan_buffer_type: }");
+}
 void vulkan_data_vertex_attribute_component_type_debug_print(int flags) {
   log_debug("vulkan_data_vertex_attribute_component_type: {");
   if ((flags & 0) != 0) { log_debug("  vulkan_data_vertex_attribute_component_uint32_t"); }

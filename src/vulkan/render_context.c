@@ -267,7 +267,7 @@ vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_scene_ren
       pipeline->vkd, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1,
       VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, "pipeline");
   pipeline->descriptorSet = vulkan_create_descriptor_set_for_uniform_buffers(
-      pipeline->vkd, &scene->uniformBuffer->buffer, scene->uniformBuffer->bufferMemorySize, 1,
+      pipeline->vkd, &scene->uniformBuffer->buffer->buffer, scene->uniformBuffer->buffer->size, 1,
       pipeline->descriptorSetLayout, pipeline->descriptorPool, "pipeline");
 
   pipeline->renderPass = vulkan_render_pass_create(pipeline, ForwardRenderPass);
@@ -525,7 +525,7 @@ void vulkan_pipeline_record_frame_command_buffer(vulkan_scene_renderer *scene,
 void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_renderer *scene,
                                                     vulkan_render_pass *renderPass,
                                                     vulkan_swap_chain_frame *frame) {
-  assert(scene->geometryBuffer->vkd != NULL);
+  assert(scene->geometryBuffer->buffer->resident);
 
   VkRenderPassBeginInfo renderPassInfo = {0};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -584,7 +584,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_renderer *scene
     utarray_foreach_elem_deref (vulkan_data_primitive *, primitive, mesh->primitives) {
       size_t bindingCount = vulkan_shader_info_get_binding_count(&renderPass->vertShader->info);
       assert(bindingCount == 1);
-      VkBuffer vertexBuffer = scene->geometryBuffer->buffer;
+      VkBuffer vertexBuffer = scene->geometryBuffer->buffer->buffer;
       VkDeviceSize vertexBuffersOffset = 0;
       if (primitive->indices != NULL) {
         // TODO update vertex stride with dynamic constants
@@ -599,7 +599,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_renderer *scene
                              vertexBuffersOffsets);
 
       if (primitive->indices != NULL) {
-        VkBuffer indexBuffer = scene->geometryBuffer->buffer;
+        VkBuffer indexBuffer = scene->geometryBuffer->buffer->buffer;
         VkDeviceSize indexBufferOffset = 0; // HIRO replace primitive->indexBufferOffset;
         uint32_t indexCount = utarray_len(primitive->indices->data);
         uint32_t indexStride = utarray_eltsize(primitive->indices->data);

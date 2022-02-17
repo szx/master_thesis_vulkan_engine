@@ -10,7 +10,7 @@ vulkan_scene_renderer *vulkan_scene_renderer_create(data_asset_db *assetDb, vulk
   renderer->sceneGraph = vulkan_scene_graph_create(renderer->data);
   renderer->batches = vulkan_batches_create(renderer->sceneGraph);
 
-  renderer->geometryBuffer = vulkan_geometry_buffer_create();
+  renderer->geometryBuffer = vulkan_geometry_buffer_create(vkd);
   renderer->uniformBuffer = vulkan_uniform_buffer_create(vkd);
   vulkan_scene_renderer_build_geometry_buffer(renderer);
   return renderer;
