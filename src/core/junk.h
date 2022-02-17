@@ -17,12 +17,30 @@ static_assert(sizeof(char) == sizeof(uint8_t), "sizeof(char) != sizeof(uint8_t)"
 #define utarray_size(array) ((array)->icd.sz * utarray_len((array)))
 #define utarray_eltsize(array) ((array)->icd.sz)
 
-#if defined(DEBUG)
-#define debug_msg(msg) log_trace("debug_msg: %s in %s:%s:%d", msg, __func__, __FILE__, __LINE__)
-#else
-void dummy_func();
-#define debug_msg(msg) dummy_func()
-#endif
+#define utarray_foreach_elem_it(_type, _elem, _utarray)                                            \
+  UT_array *_elem##_array = _utarray;                                                              \
+  _type _elem = {0};                                                                               \
+  assert(_elem##_array->icd.sz == sizeof(*_elem));                                                 \
+  while ((_elem = utarray_next(_elem##_array, _elem)))
+
+#define utarray_foreach_elem_deref(_type, _elem, _utarray)                                         \
+  UT_array *_elem##_array = _utarray;                                                              \
+  _type *_elem##It = {0};                                                                          \
+  _type _elem = {0};                                                                               \
+  assert(_elem##_array->icd.sz == sizeof(_elem));                                                  \
+  while ((_elem##It = utarray_next(_elem##_array, _elem##It)))                                     \
+    if ((_elem = *_elem##It), true)
+
+#define dl_foreach_elem(_type, _elem, _dl)                                                         \
+  _type _elem = {0};                                                                               \
+  _type _elem##Temp = {0};                                                                         \
+  DL_FOREACH_SAFE(_dl, _elem, _elem##Temp)
+
+#define dl_count(_type, _dl, _count)                                                               \
+  size_t _count = 0;                                                                               \
+  {                                                                                                \
+    dl_foreach_elem (_type, _count##Elem, _dl) { _count++; }                                       \
+  }
 
 /// Strip left whitespaces.
 void strlstrip(char **str);
@@ -54,25 +72,6 @@ typedef XXH64_hash_t hash_t;
   _prefix[0][0], _prefix[0][1], _prefix[0][2], _prefix[0][3], _prefix[1][0], _prefix[1][1],        \
       _prefix[1][2], _prefix[1][3], _prefix[2][0], _prefix[2][1], _prefix[2][2], _prefix[2][3],    \
       _prefix[3][0], _prefix[3][1], _prefix[3][2], _prefix[3][3]
-
-#define utarray_foreach_elem_it(_type, _elem, _utarray)                                            \
-  UT_array *_elem##_array = _utarray;                                                              \
-  _type _elem = {0};                                                                               \
-  assert(_elem##_array->icd.sz == sizeof(*_elem));                                                 \
-  while ((_elem = utarray_next(_elem##_array, _elem)))
-
-#define utarray_foreach_elem_deref(_type, _elem, _utarray)                                         \
-  UT_array *_elem##_array = _utarray;                                                              \
-  _type *_elem##It = {0};                                                                          \
-  _type _elem = {0};                                                                               \
-  assert(_elem##_array->icd.sz == sizeof(_elem));                                                  \
-  while ((_elem##It = utarray_next(_elem##_array, _elem##It)))                                     \
-    if ((_elem = *_elem##It), true)
-
-#define dl_foreach_elem(_type, _elem, _dl)                                                         \
-  _type _elem = {0};                                                                               \
-  _type _elem##Temp = {0};                                                                         \
-  DL_FOREACH_SAFE(_dl, _elem, _elem##Temp)
 
 /* macro magic */
 // https://embeddedartistry.com/blog/2020/07/27/exploiting-the-preprocessor-for-fun-and-profit/

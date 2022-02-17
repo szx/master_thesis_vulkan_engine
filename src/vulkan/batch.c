@@ -29,9 +29,10 @@ bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_scene_cache *cache)
 }
 
 void vulkan_batch_debug_print(vulkan_batch *batch) {
-  log_debug("batch indexed indirect: first=%d count=%d materialHash=%zu geometryHash=%zu",
-            batch->first, batch->count, batch->primitive->material->key.value,
-            batch->primitive->geometryHash);
+  log_debug(
+      "batch indexed indirect: policy=%d, first=%d count=%d materialHash=%zu geometryHash=%zu",
+      batch->policy, batch->first, batch->count, batch->primitive->material->key.value,
+      batch->primitive->geometryHash);
 }
 
 vulkan_batches *vulkan_batches_create(vulkan_scene_graph *sceneGraph) {
@@ -90,6 +91,7 @@ void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_policy policy) 
 
 void vulkan_batches_debug_print(vulkan_batches *batches) {
   log_debug("BATCHES:");
-  // HIRO DL_COUNT macro
+  dl_count(vulkan_batch *, batches->batches, batchLen);
+  log_debug("batch count: %zu", batchLen);
   dl_foreach_elem (vulkan_batch *, batch, batches->batches) { vulkan_batch_debug_print(batch); }
 }

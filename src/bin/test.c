@@ -234,16 +234,23 @@ TEST scene_graph_building() {
 
   vulkan_batches_update(batches, vulkan_batch_policy_none);
   vulkan_batches_debug_print(batches);
-  // HIRO DL_COUNT macro
+  dl_count(vulkan_batch *, batches->batches, batchNoneLen);
+
   vulkan_batches_update(batches, vulkan_batch_policy_matching_materials);
   vulkan_batches_debug_print(batches);
+  dl_count(vulkan_batch *, batches->batches, batchMaterialsLen);
+  ASSERT(batchNoneLen <= batchMaterialsLen);
 
   vulkan_batches_update(batches, vulkan_batch_policy_matching_vertex_attributes);
   vulkan_batches_debug_print(batches);
+  dl_count(vulkan_batch *, batches->batches, batchVertexAttributesLen);
+  ASSERT(batchNoneLen <= batchVertexAttributesLen);
 
   vulkan_batches_update(batches, vulkan_batch_policy_matching_materials |
                                      vulkan_batch_policy_matching_vertex_attributes);
   vulkan_batches_debug_print(batches);
+  dl_count(vulkan_batch *, batches->batches, batchMaterialsAndVertexAttributesLen);
+  ASSERT(batchNoneLen <= batchMaterialsAndVertexAttributesLen);
 
   vulkan_batches_destroy(batches);
 
