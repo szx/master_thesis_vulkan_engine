@@ -525,7 +525,8 @@ void vulkan_pipeline_record_frame_command_buffer(vulkan_scene_renderer *scene,
 void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_renderer *scene,
                                                     vulkan_render_pass *renderPass,
                                                     vulkan_swap_chain_frame *frame) {
-  assert(scene->unifiedGeometryBuffer->buffer->resident);
+  assert(scene->unifiedGeometryBuffer->indexBuffer->resident);
+  assert(scene->unifiedGeometryBuffer->vertexBuffer->resident);
 
   VkRenderPassBeginInfo renderPassInfo = {0};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -566,7 +567,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_renderer *scene
                           renderPass->pipelineLayout, 0, descriptorSetCount, descriptorSets, 0,
                           NULL);
 
-  dl_foreach_elem (vulkan_data_object *, object, scene->data->objects) {
+  dl_foreach_elem(vulkan_data_object *, object, scene->data->objects, {
     // TODO: Check if object should be culled.
     log_debug("draw object");
     {
@@ -584,7 +585,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_renderer *scene
     utarray_foreach_elem_deref (vulkan_data_primitive *, primitive, mesh->primitives) {
       size_t bindingCount = vulkan_shader_info_get_binding_count(&renderPass->vertShader->info);
       assert(bindingCount == 1);
-      VkBuffer vertexBuffer = scene->unifiedGeometryBuffer->buffer->buffer;
+      VkBuffer vertexBuffer = scene->unifiedGeometryBuffer->vertexBuffer->buffer;
       VkDeviceSize vertexBuffersOffset = 0;
       if (primitive->indices != NULL) {
         // TODO update vertex stride with dynamic constants
@@ -599,11 +600,11 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_renderer *scene
                              vertexBuffersOffsets);
 
       if (primitive->indices != NULL) {
-        VkBuffer indexBuffer = scene->unifiedGeometryBuffer->buffer->buffer;
+        VkBuffer indexBuffer = scene->unifiedGeometryBuffer->indexBuffer->buffer;
         VkDeviceSize indexBufferOffset = 0; // HIRO replace primitive->indexBufferOffset;
         uint32_t indexCount = utarray_len(primitive->indices->data);
         uint32_t indexStride = utarray_eltsize(primitive->indices->data);
-        VkIndexType indexType = stride_to_index_format(indexStride);
+        VkIndexType indexType = VK_INDEX_TYPE_UINT32;
         vkCmdBindIndexBuffer(frame->commandBuffer, indexBuffer, indexBufferOffset, indexType);
         vkCmdDrawIndexed(frame->commandBuffer, indexCount, 1, 0, 0, 0);
       } else {
@@ -611,7 +612,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_renderer *scene
       }
       // TODO: Pipeline statistics.
     }
-  }
+  })
 
   vkCmdEndRenderPass(frame->commandBuffer);
 }

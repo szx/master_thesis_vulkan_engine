@@ -22,7 +22,8 @@ typedef struct vulkan_scene_cache {
   vulkan_data_primitive *primitive; /// Accumulated from primitive node.
 
   /* cache state accumulated from vertex stream */
-  size_t vertexStreamByteOffset;
+  size_t firstIndexOffset;
+  size_t firstVertexByteOffset;
 
   /* cache state accumulated from batches */
   size_t cacheListIdx;
@@ -37,7 +38,8 @@ void vulkan_scene_cache_destroy(vulkan_scene_cache *sceneCache);
 void vulkan_scene_cache_set_with_node(vulkan_scene_cache *sceneCache);
 void vulkan_scene_cache_accumulate(vulkan_scene_cache *sceneCache, vulkan_scene_cache *parentCache);
 
-void vulkan_scene_cache_set_vertex_stream_offset(vulkan_scene_cache *sceneCache,
-                                                 size_t vertexStreamByteOffset);
+void vulkan_scene_cache_set_vertex_stream_offsets(vulkan_scene_cache *sceneCache,
+                                                  size_t firstIndexOffset,
+                                                  size_t firstVertexByteOffset);
 
 void vulkan_scene_cache_debug_print(vulkan_scene_cache *sceneCache);

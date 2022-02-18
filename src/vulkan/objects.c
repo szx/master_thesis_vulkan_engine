@@ -32,11 +32,14 @@ void vulkan_buffer_send_to_device(vulkan_buffer *buffer) {
   VkBufferUsageFlags bufferUsageFlags = 0;
   VkMemoryPropertyFlags memoryPropertyFlags = 0;
   const char *name = "invalid buffer";
-  if (buffer->type == vulkan_buffer_type_geometry) {
-    bufferUsageFlags = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
-                       VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+  if (buffer->type == vulkan_buffer_type_geometry_index) {
+    bufferUsageFlags = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
     memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-    name = "geometry buffer";
+    name = "index geometry buffer";
+  } else if (buffer->type == vulkan_buffer_type_geometry_vertex) {
+    bufferUsageFlags = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+    memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    name = "vertex geometry buffer";
   } else if (buffer->type == vulkan_buffer_type_uniform) {
     bufferUsageFlags = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
     memoryPropertyFlags =
@@ -102,32 +105,7 @@ uint32_t vulkan_attribute_type_to_stride(vulkan_attribute_type vertexAttributes)
   return 0; // TODO: Unreachable.
 }
 
-uint32_t index_type_to_index_stride(vulkan_index_type indexType) {
-  if (indexType == vulkan_index_type_uint32) {
-    return 4;
-  }
-  panic("unsupported index type %d", indexType);
-  return 0; // TODO unreachable
-}
 
-vulkan_index_type index_stride_to_index_type(uint32_t indexStride) {
-  switch (indexStride) {
-  case 4:
-    return vulkan_index_type_uint32;
-  default:
-    return vulkan_index_type_unknown;
-  }
-}
-
-VkIndexType stride_to_index_format(uint32_t indexStride) {
-  VkIndexType indexType = VK_INDEX_TYPE_NONE_KHR;
-  if (indexStride == 2) {
-    indexType = VK_INDEX_TYPE_UINT16;
-  } else if (indexStride == 4) {
-    indexType = VK_INDEX_TYPE_UINT32;
-  }
-  return indexType;
-}
 
 vulkan_interleaved_vertex_stream_element vulkan_interleaved_vertex_stream_element_default() {
   vulkan_interleaved_vertex_stream_element element;
@@ -142,12 +120,14 @@ vulkan_interleaved_vertex_stream *
 vulkan_interleaved_vertex_stream_create(vulkan_attribute_type attributes) {
   vulkan_interleaved_vertex_stream *stream = core_alloc(sizeof(vulkan_interleaved_vertex_stream));
   stream->attributes = attributes;
-  utarray_alloc(stream->data, vulkan_attribute_type_to_stride(stream->attributes));
+  utarray_alloc(stream->indexData, sizeof(uint32_t));
+  utarray_alloc(stream->vertexData, vulkan_attribute_type_to_stride(stream->attributes));
   return stream;
 }
 
 void vulkan_interleaved_vertex_stream_destroy(vulkan_interleaved_vertex_stream *stream) {
-  utarray_free(stream->data);
+  utarray_free(stream->indexData);
+  utarray_free(stream->vertexData);
   core_free(stream);
 }
 
@@ -155,11 +135,15 @@ void vulkan_interleaved_vertex_stream_add_primitive(vulkan_interleaved_vertex_st
                                                     vulkan_scene_cache *cache) {
   // PERF: Compress stream (overlapping vertex attributes).
 
-  // HIRO: ADD INDICES TO SEPERATE BUFFER, add index offset to cache and batch draw command
-
-  vulkan_scene_cache_set_vertex_stream_offset(cache, utarray_size(stream->data));
+  size_t firstIndexOffset = utarray_len(stream->indexData);
+  size_t firstVertexByteOffset = utarray_size(stream->vertexData);
+  vulkan_scene_cache_set_vertex_stream_offsets(cache, firstIndexOffset, firstVertexByteOffset);
 
   vulkan_data_primitive *primitive = cache->primitive;
+
+  assert(primitive->indices->componentType == vulkan_data_vertex_attribute_component_uint32_t);
+  utarray_concat(stream->indexData, primitive->indices->data);
+
   for (size_t idx = 0; idx < primitive->vertexCount; idx++) {
     vulkan_interleaved_vertex_stream_element element =
         vulkan_interleaved_vertex_stream_element_default();
@@ -179,14 +163,15 @@ void vulkan_interleaved_vertex_stream_add_primitive(vulkan_interleaved_vertex_st
       vec3 *texCoord = utarray_eltptr(primitive->texCoords->data, idx);
       glm_vec2_copy(*texCoord, element.texCoord);
     }
-    utarray_push_back(stream->data, &element);
+    utarray_push_back(stream->vertexData, &element);
   }
 }
 
 void vulkan_interleaved_vertex_stream_add_stream(vulkan_interleaved_vertex_stream *stream,
                                                  vulkan_interleaved_vertex_stream *other) {
   assert(stream->attributes == other->attributes);
-  utarray_concat(stream->data, other->data);
+  utarray_concat(stream->indexData, other->indexData);
+  utarray_concat(stream->vertexData, other->vertexData);
 }
 
 vulkan_unified_geometry_buffer *vulkan_unified_geometry_buffer_create(vulkan_device *vkd) {
@@ -195,7 +180,10 @@ vulkan_unified_geometry_buffer *vulkan_unified_geometry_buffer_create(vulkan_dev
 
   geometryBuffer->interleavedVertexStream = NULL;
 
-  geometryBuffer->buffer = vulkan_buffer_create(vkd, vulkan_buffer_type_geometry, NULL, 0);
+  geometryBuffer->indexBuffer =
+      vulkan_buffer_create(vkd, vulkan_buffer_type_geometry_index, NULL, 0);
+  geometryBuffer->vertexBuffer =
+      vulkan_buffer_create(vkd, vulkan_buffer_type_geometry_vertex, NULL, 0);
 
   geometryBuffer->dirty = true;
   return geometryBuffer;
@@ -205,7 +193,8 @@ void vulkan_unified_geometry_buffer_destroy(vulkan_unified_geometry_buffer *geom
   if (geometryBuffer->interleavedVertexStream != NULL) {
     vulkan_interleaved_vertex_stream_destroy(geometryBuffer->interleavedVertexStream);
   }
-  vulkan_buffer_destroy(geometryBuffer->buffer);
+  vulkan_buffer_destroy(geometryBuffer->indexBuffer);
+  vulkan_buffer_destroy(geometryBuffer->vertexBuffer);
   core_free(geometryBuffer);
 }
 
@@ -220,18 +209,29 @@ void vulkan_unified_geometry_buffer_send_to_device(vulkan_unified_geometry_buffe
     return;
   }
 
-  geometryBuffer->buffer->data = utarray_front(geometryBuffer->interleavedVertexStream->data);
-  geometryBuffer->buffer->size = utarray_size(geometryBuffer->interleavedVertexStream->data);
-  geometryBuffer->buffer->dirty = true;
-  vulkan_buffer_send_to_device(geometryBuffer->buffer);
+  // HIRO refactor into vulkan_buffer_sent_to_device params
+  geometryBuffer->indexBuffer->data =
+      utarray_front(geometryBuffer->interleavedVertexStream->indexData);
+  geometryBuffer->indexBuffer->size =
+      utarray_size(geometryBuffer->interleavedVertexStream->indexData);
+  geometryBuffer->indexBuffer->dirty = true;
+  vulkan_buffer_send_to_device(geometryBuffer->indexBuffer);
+
+  geometryBuffer->vertexBuffer->data =
+      utarray_front(geometryBuffer->interleavedVertexStream->vertexData);
+  geometryBuffer->vertexBuffer->size =
+      utarray_size(geometryBuffer->interleavedVertexStream->vertexData);
+  geometryBuffer->vertexBuffer->dirty = true;
+  vulkan_buffer_send_to_device(geometryBuffer->vertexBuffer);
 
   geometryBuffer->dirty = false;
 }
 
 void vulkan_unified_geometry_buffer_debug_print(vulkan_unified_geometry_buffer *geometryBuffer) {
   log_debug("UNIFIED GEOMETRY BUFFER:\n");
-  assert(geometryBuffer->buffer->size > 0);
-  log_debug("size=%d\n", geometryBuffer->buffer->size);
+  assert(geometryBuffer->indexBuffer->size > 0);
+  log_debug("index buffer size=%d\n", geometryBuffer->indexBuffer->size);
+  log_debug("vertex buffer size=%d\n", geometryBuffer->vertexBuffer->size);
 }
 
 vulkan_uniform_buffer *vulkan_uniform_buffer_create(vulkan_device *vkd) {

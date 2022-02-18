@@ -41,14 +41,23 @@ TEST gltf_loading() {
     ASSERT_EQ(gltfCamera->farZ, assetDbCamera->farZ);
   }
 
-  dl_foreach_elem (vulkan_data_object *, assetDbNode, assetDbSceneData->objects) {
+#define ASSERT_VERTEX_ATTRIBUTE(_name)                                                             \
+  ASSERT_EQ(utarray_len(gltfPrimitive->_name->data), utarray_len(assetDbPrimitive->_name->data));  \
+  if (utarray_len(gltfPrimitive->_name->data) > 0)                                                 \
+    ASSERT_MEM_EQ(utarray_front(gltfPrimitive->_name->data),                                       \
+                  utarray_front(assetDbPrimitive->_name->data),                                    \
+                  utarray_size(gltfPrimitive->_name->data));
+
+  dl_foreach_elem(vulkan_data_object *, assetDbNode, assetDbSceneData->objects, {
     bool foundCorrespondingNode = false;
-    dl_foreach_elem (vulkan_data_object *, gltfNode, gltfSceneData->objects) {
-      if (gltfNode->key.value == assetDbNode->key.value) {
+    vulkan_data_object *gltfNode;
+    dl_foreach_elem(vulkan_data_object *, nodeIter, gltfSceneData->objects, {
+      if (nodeIter->key.value == assetDbNode->key.value) {
         foundCorrespondingNode = true;
+        gltfNode = nodeIter;
         break;
       }
-    }
+    })
     ASSERT_EQ(foundCorrespondingNode, true);
     ASSERT_MEM_EQ(gltfNode->transform, assetDbNode->transform, sizeof(mat4));
     ASSERT_EQ(utarray_len(gltfNode->children), utarray_len(assetDbNode->children));
@@ -58,29 +67,26 @@ TEST gltf_loading() {
            (gltfMesh->key.value == assetDbMesh->key.value));
 
     bool foundCorrespondingPrimitive = false;
-    dl_foreach_elem (vulkan_data_primitive *, gltfPrimitive, gltfSceneData->primitives) {
-      dl_foreach_elem (vulkan_data_primitive *, assetDbPrimitive, assetDbSceneData->primitives) {
-        if (gltfPrimitive->key.value == assetDbPrimitive->key.value) {
+    dl_foreach_elem(vulkan_data_primitive *, gltfPrimitive, gltfSceneData->primitives, {
+      vulkan_data_primitive *assetDbPrimitive;
+      dl_foreach_elem(vulkan_data_primitive *, primitiveIter, assetDbSceneData->primitives, {
+        if (gltfPrimitive->key.value == primitiveIter->key.value) {
           foundCorrespondingPrimitive = true;
+          assetDbPrimitive = primitiveIter;
           break;
         }
-      }
+      })
       ASSERT_EQ(foundCorrespondingPrimitive, true);
       ASSERT_EQ(gltfPrimitive->material->key.value, assetDbPrimitive->material->key.value);
       ASSERT_EQ(gltfPrimitive->topology, assetDbPrimitive->topology);
       ASSERT_EQ(gltfPrimitive->vertexCount, assetDbPrimitive->vertexCount);
-#define ASSERT_VERTEX_ATTRIBUTE(_name)                                                             \
-  ASSERT_EQ(utarray_len(gltfPrimitive->_name->data), utarray_len(assetDbPrimitive->_name->data));  \
-  if (utarray_len(gltfPrimitive->_name->data) > 0)                                                 \
-    ASSERT_MEM_EQ(utarray_front(gltfPrimitive->_name->data),                                       \
-                  utarray_front(assetDbPrimitive->_name->data),                                    \
-                  utarray_size(gltfPrimitive->_name->data));
+
       ASSERT_VERTEX_ATTRIBUTE(positions)
       ASSERT_VERTEX_ATTRIBUTE(normals)
       ASSERT_VERTEX_ATTRIBUTE(colors)
       ASSERT_VERTEX_ATTRIBUTE(texCoords)
-    }
-  }
+    })
+  })
   utstring_free(gltfPath);
   utstring_free(sceneName);
   vulkan_data_scene_destroy(assetDbSceneData);
@@ -160,7 +166,7 @@ TEST scene_graph_building() {
     vulkan_scene_tree *sceneTree = sceneGraph->sceneTree;                                          \
     ASSERT_EQ(utarray_len(sceneTree->dirtyNodes), 0);                                              \
     size_t primitiveNodeNum = 0;                                                                   \
-    dl_foreach_elem (vulkan_scene_node *, sceneNode, sceneTree->nodes) {                           \
+    dl_foreach_elem(vulkan_scene_node *, sceneNode, sceneTree->nodes, {                            \
       /*log_debug("tree node: %p", sceneNode);*/                                                   \
       ASSERT_EQ(sceneNode->containerType, vulkan_scene_node_container_type_scene_tree);            \
       ASSERT(sceneNode->type == vulkan_scene_node_entity_type_root ||                              \
@@ -179,7 +185,7 @@ TEST scene_graph_building() {
         FAILm("unknown node type");                                                                \
       }                                                                                            \
       ASSERT_FALSE(sceneNode->dirty);                                                              \
-    }                                                                                              \
+    })                                                                                             \
     /* cache list */                                                                               \
     vulkan_scene_cache_list *cacheList = sceneTree->cacheList;                                     \
     ASSERT(utarray_len(cacheList->caches) == primitiveNodeNum);                                    \
@@ -257,7 +263,8 @@ TEST scene_graph_building() {
   vulkan_scene_renderer *sceneRenderer = vulkan_scene_renderer_create(assetDb, vkd, sceneName);
   vulkan_scene_renderer_debug_print(sceneRenderer);
   // HIRO more renderer tests
-  ASSERT(sceneRenderer->unifiedGeometryBuffer->buffer->size > 0);
+  ASSERT(sceneRenderer->unifiedGeometryBuffer->indexBuffer->size > 0);
+  ASSERT(sceneRenderer->unifiedGeometryBuffer->vertexBuffer->size > 0);
   vulkan_scene_renderer_destroy(sceneRenderer);
 
   vulkan_scene_graph_destroy(sceneGraph);
@@ -277,7 +284,7 @@ int main(int argc, char *argv[]) {
   GREATEST_MAIN_BEGIN();
   platform_create();
   // RUN_SUITE(shaderc_suite);
-  // RUN_SUITE(gltf_suite);
+  RUN_SUITE(gltf_suite);
   RUN_SUITE(scene_graph_suite);
   platform_destroy();
   GREATEST_MAIN_END();

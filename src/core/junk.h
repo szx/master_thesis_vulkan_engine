@@ -31,15 +31,17 @@ static_assert(sizeof(char) == sizeof(uint8_t), "sizeof(char) != sizeof(uint8_t)"
   while ((_elem##It = utarray_next(_elem##_array, _elem##It)))                                     \
     if ((_elem = *_elem##It), true)
 
-#define dl_foreach_elem(_type, _elem, _dl)                                                         \
-  _type _elem = {0};                                                                               \
-  _type _elem##Temp = {0};                                                                         \
-  DL_FOREACH_SAFE(_dl, _elem, _elem##Temp)
+#define dl_foreach_elem(_type, _elem, _dl, _body)                                                  \
+  {                                                                                                \
+    _type _elem = {0};                                                                             \
+    _type _elem##Temp = {0};                                                                       \
+    DL_FOREACH_SAFE(_dl, _elem, _elem##Temp) _body                                                 \
+  }
 
 #define dl_count(_type, _dl, _count)                                                               \
   size_t _count = 0;                                                                               \
   {                                                                                                \
-    dl_foreach_elem (_type, _count##Elem, _dl) { _count++; }                                       \
+    dl_foreach_elem(_type, _count##Elem, _dl, { _count++; })                                       \
   }
 
 /// Strip left whitespaces.

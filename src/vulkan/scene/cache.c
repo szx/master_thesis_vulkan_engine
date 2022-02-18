@@ -9,7 +9,8 @@ vulkan_scene_cache *vulkan_scene_cache_create(vulkan_scene_node *sceneNode) {
   sceneCache->next = NULL;
 
   vulkan_scene_cache_set_with_node(sceneCache);
-  sceneCache->vertexStreamByteOffset = 0;
+  sceneCache->firstIndexOffset = 0;
+  sceneCache->firstVertexByteOffset = 0;
   sceneCache->cacheListIdx = 0;
 
   return sceneCache;
@@ -49,9 +50,11 @@ void vulkan_scene_cache_accumulate(vulkan_scene_cache *sceneCache,
   }
 }
 
-void vulkan_scene_cache_set_vertex_stream_offset(vulkan_scene_cache *sceneCache,
-                                                 size_t vertexStreamByteOffset) {
-  sceneCache->vertexStreamByteOffset = vertexStreamByteOffset;
+void vulkan_scene_cache_set_vertex_stream_offsets(vulkan_scene_cache *sceneCache,
+                                                  size_t firstIndexOffset,
+                                                  size_t firstVertexByteOffset) {
+  sceneCache->firstIndexOffset = firstIndexOffset;
+  sceneCache->firstVertexByteOffset = firstVertexByteOffset;
 }
 
 void debug_log_cache(vulkan_scene_cache *sceneCache) {
@@ -62,7 +65,8 @@ void debug_log_cache(vulkan_scene_cache *sceneCache) {
           MAT4_FORMAT_ARGS(sceneCache->transform));
   log_raw(stdout, "mesh: %p", sceneCache->mesh);
   log_raw(stdout, "primitive: %p", sceneCache->primitive);
-  log_raw(stdout, "vertexStreamByteOffset: %zu", sceneCache->vertexStreamByteOffset);
+  log_raw(stdout, "firstIndexOffset: %zu", sceneCache->firstIndexOffset);
+  log_raw(stdout, "firstVertexByteOffset: %zu", sceneCache->firstVertexByteOffset);
   log_raw(stdout, "cacheListIdx: %zu", sceneCache->cacheListIdx);
   log_raw(stdout, "\"");
 }

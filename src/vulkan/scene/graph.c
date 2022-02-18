@@ -19,7 +19,7 @@ vulkan_scene_graph *vulkan_scene_graph_create(vulkan_data_scene *data) {
 void vulkan_scene_graph_destroy(vulkan_scene_graph *sceneGraph) {
   vulkan_scene_tree_destroy(sceneGraph->sceneTree);
 
-  dl_foreach_elem (vulkan_scene_node *, node, sceneGraph->root) { vulkan_scene_node_destroy(node); }
+  dl_foreach_elem(vulkan_scene_node *, node, sceneGraph->root, { vulkan_scene_node_destroy(node); })
 
   core_free(sceneGraph);
 }
@@ -35,7 +35,7 @@ vulkan_scene_node *add_entity(vulkan_scene_graph *sceneGraph,
   bool existsSceneGraphNode = false;
 
   if (uniqueSceneGraphNode) {
-    dl_foreach_elem (vulkan_scene_node *, sceneNode, sceneGraph->root) {
+    dl_foreach_elem(vulkan_scene_node *, sceneNode, sceneGraph->root, {
       if (sceneNode->entity == entity) {
         // Return already added node.
         assert(sceneNode->type == type);
@@ -43,7 +43,7 @@ vulkan_scene_node *add_entity(vulkan_scene_graph *sceneGraph,
         existsSceneGraphNode = true;
         break;
       }
-    }
+    })
   }
 
   if (createSceneGraphNode && !existsSceneGraphNode) {

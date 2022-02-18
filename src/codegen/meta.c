@@ -2983,12 +2983,12 @@ void vulkan_batch_policy_debug_print(int flags) {
   if ((flags & 2) != 0) { log_debug("  vulkan_batch_policy_matching_vertex_attributes"); }
   log_debug("vulkan_batch_policy: }");
 }
-void vulkan_buffer_type_debug_print(int flags) {
-  log_debug("vulkan_buffer_type: {");
-  if ((flags & 0) != 0) { log_debug("  vulkan_buffer_type_geometry"); }
-  if ((flags & 1) != 0) { log_debug("  vulkan_buffer_type_uniform"); }
-  if ((flags & 2) != 0) { log_debug("  vulkan_buffer_type_count"); }
-  log_debug("vulkan_buffer_type: }");
+const char *vulkan_buffer_type_debug_str(int value) {
+  if (value == 0) { return "vulkan_buffer_type_geometry_index"; }
+  if (value == 1) { return "vulkan_buffer_type_geometry_vertex"; }
+  if (value == 2) { return "vulkan_buffer_type_uniform"; }
+  if (value == 3) { return "vulkan_buffer_type_count"; }
+  return "UNKNOWN vulkan_buffer_type";
 }
 void vulkan_data_vertex_attribute_component_type_debug_print(int flags) {
   log_debug("vulkan_data_vertex_attribute_component_type: {");
@@ -2996,11 +2996,6 @@ void vulkan_data_vertex_attribute_component_type_debug_print(int flags) {
   if ((flags & 1) != 0) { log_debug("  vulkan_data_vertex_attribute_component_vec2"); }
   if ((flags & 2) != 0) { log_debug("  vulkan_data_vertex_attribute_component_vec3"); }
   log_debug("vulkan_data_vertex_attribute_component_type: }");
-}
-const char *vulkan_index_type_debug_str(int value) {
-  if (value == 0) { return "vulkan_index_type_unknown"; }
-  if (value == 1) { return "vulkan_index_type_uint32"; }
-  return "UNKNOWN vulkan_index_type";
 }
 const char *vulkan_render_pass_type_debug_str(int value) {
   if (value == 0) { return "ForwardRenderPass"; }

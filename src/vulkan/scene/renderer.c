@@ -30,24 +30,24 @@ void vulkan_scene_renderer_build_geometry_buffer(vulkan_scene_renderer *renderer
   vulkan_batch_policy batchPolicy = vulkan_batch_policy_matching_materials;
   vulkan_batches_update(renderer->batches, batchPolicy);
 
-  /* build unified geometry buffer from cache list */
+  /* build unified geometry buffer from batches */
   vulkan_attribute_type attributes = renderer->sceneGraph->sceneTree->cacheList->attributes;
   assert(attributes != UnknownAttribute);
   vulkan_interleaved_vertex_stream *stream = vulkan_interleaved_vertex_stream_create(attributes);
   vulkan_unified_geometry_buffer_set_interleaved_vertex_stream(renderer->unifiedGeometryBuffer,
                                                                stream);
-  utarray_foreach_elem_deref (vulkan_scene_cache *, cache,
-                              renderer->sceneGraph->sceneTree->cacheList->caches) {
-    assert(cache->primitive != NULL);
-    vulkan_interleaved_vertex_stream_add_primitive(stream, cache);
-  }
+  dl_foreach_elem(vulkan_batch *, batch, renderer->batches->batches, {
+    assert(batch->firstCache->primitive != NULL);
+    vulkan_interleaved_vertex_stream_add_primitive(stream, batch->firstCache);
+  })
   vulkan_unified_geometry_buffer_send_to_device(renderer->unifiedGeometryBuffer);
 
   /* update batch draw commands with offsets to unified buffers */
-  dl_foreach_elem (vulkan_batch *, batch, renderer->batches->batches) {
+  dl_foreach_elem(vulkan_batch *, batch, renderer->batches->batches, {
     vulkan_batch_update_draw_command(batch);
+    assert(batch->drawCommand.firstIndex != INT32_MAX);
     assert(batch->drawCommand.vertexOffset != INT32_MAX);
-  }
+  })
 
   // HIRO build unified uniform buffer
 }

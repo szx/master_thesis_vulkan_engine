@@ -8,9 +8,9 @@ vulkan_batch *vulkan_batch_create(vulkan_batch_policy policy, vulkan_scene_cache
   batch->firstCache = firstCache;
 
   batch->drawCommand.instanceCount = 0;
-  batch->drawCommand.firstIndex = 0;
   vulkan_batch_update_draw_command(batch);
   batch->drawCommand.vertexOffset = INT32_MAX;
+  batch->drawCommand.firstIndex = INT32_MAX;
 
   batch->prev = NULL;
   batch->next = NULL;
@@ -42,7 +42,8 @@ void vulkan_batch_add_cache(vulkan_batch *batch, vulkan_scene_cache *cache, size
 
 void vulkan_batch_update_draw_command(vulkan_batch *batch) {
   batch->drawCommand.indexCount = utarray_len(batch->firstCache->primitive->indices->data);
-  batch->drawCommand.vertexOffset = batch->firstCache->vertexStreamByteOffset;
+  batch->drawCommand.firstIndex = batch->firstCache->firstIndexOffset;
+  batch->drawCommand.vertexOffset = batch->firstCache->firstVertexByteOffset;
   batch->drawCommand.firstInstance = batch->firstCache->cacheListIdx;
 }
 
@@ -71,7 +72,7 @@ void vulkan_batches_destroy(vulkan_batches *batches) {
 }
 
 void vulkan_batches_reset(vulkan_batches *batches) {
-  dl_foreach_elem (vulkan_batch *, batch, batches->batches) { vulkan_batch_destroy(batch); }
+  dl_foreach_elem(vulkan_batch *, batch, batches->batches, { vulkan_batch_destroy(batch); })
   batches->batches = NULL;
 }
 
@@ -115,5 +116,5 @@ void vulkan_batches_debug_print(vulkan_batches *batches) {
   log_debug("BATCHES:");
   dl_count(vulkan_batch *, batches->batches, batchLen);
   log_debug("batch count: %zu", batchLen);
-  dl_foreach_elem (vulkan_batch *, batch, batches->batches) { vulkan_batch_debug_print(batch); }
+  dl_foreach_elem(vulkan_batch *, batch, batches->batches, { vulkan_batch_debug_print(batch); })
 }

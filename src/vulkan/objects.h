@@ -8,7 +8,8 @@
 typedef struct vulkan_scene_cache vulkan_scene_cache;
 
 typedef enum vulkan_buffer_type {
-  vulkan_buffer_type_geometry,
+  vulkan_buffer_type_geometry_index,
+  vulkan_buffer_type_geometry_vertex,
   vulkan_buffer_type_uniform,
   vulkan_buffer_type_count
 } vulkan_buffer_type;
@@ -47,15 +48,6 @@ typedef enum vulkan_attribute_type {
 
 uint32_t vulkan_attribute_type_to_stride(vulkan_attribute_type vertexAttributes);
 
-typedef enum vulkan_index_type {
-  vulkan_index_type_unknown = 0,
-  vulkan_index_type_uint32 = 1
-} vulkan_index_type;
-
-uint32_t index_type_to_index_stride(vulkan_index_type indexType);
-vulkan_index_type index_stride_to_index_type(uint32_t indexStride);
-VkIndexType stride_to_index_format(uint32_t indexStride);
-
 typedef struct vulkan_interleaved_vertex_stream_element {
   vec3 position;
   vec3 normal;
@@ -69,7 +61,8 @@ vulkan_interleaved_vertex_stream_element vulkan_interleaved_vertex_stream_elemen
 /// Generated from cache list.
 typedef struct vulkan_interleaved_vertex_stream {
   vulkan_attribute_type attributes; /// Determines size of stream element.
-  UT_array *data;                   /// vulkan_interleaved_vertex_stream_element list
+  UT_array *indexData;              /// uint32_t array
+  UT_array *vertexData;             /// vulkan_interleaved_vertex_stream_element array
 } vulkan_interleaved_vertex_stream;
 
 vulkan_interleaved_vertex_stream *
@@ -90,7 +83,8 @@ typedef struct vulkan_unified_geometry_buffer {
   /* CPU state */
   vulkan_interleaved_vertex_stream *interleavedVertexStream;
   /* GPU state */
-  vulkan_buffer *buffer;
+  vulkan_buffer *indexBuffer;
+  vulkan_buffer *vertexBuffer;
 
   bool dirty; /// True if CPU to GPU transfer required.
 } vulkan_unified_geometry_buffer;
