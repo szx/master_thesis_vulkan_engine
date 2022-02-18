@@ -5,6 +5,8 @@ vulkan_scene_cache_list *vulkan_scene_cache_list_create(vulkan_scene_tree *scene
 
   cacheList->sceneTree = sceneTree;
   utarray_alloc(cacheList->caches, sizeof(vulkan_scene_node *));
+  cacheList->attributes = UnknownAttribute;
+
   cacheList->dirty = false;
 
   return cacheList;
@@ -71,11 +73,17 @@ static int cache_list_sort_func(const void *_a, const void *_b) {
   return 0;
 }
 
-void vulkan_scene_cache_list_sort(vulkan_scene_cache_list *cacheList) {
+void vulkan_scene_cache_list_sort_and_update(vulkan_scene_cache_list *cacheList) {
   if (!cacheList->dirty) {
     return;
   }
+
   utarray_sort(cacheList->caches, cache_list_sort_func);
+
+  cacheList->attributes = UnknownAttribute;
+  utarray_foreach_elem_deref (vulkan_scene_cache *, cache, cacheList->caches) {
+    cacheList->attributes |= cache->primitive->attributes;
+  }
 }
 
 void vulkan_scene_cache_list_debug_print(vulkan_scene_cache_list *cacheList) {

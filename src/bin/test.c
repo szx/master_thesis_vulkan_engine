@@ -257,6 +257,7 @@ TEST scene_graph_building() {
   vulkan_scene_renderer *sceneRenderer = vulkan_scene_renderer_create(assetDb, vkd, sceneName);
   vulkan_scene_renderer_debug_print(sceneRenderer);
   // HIRO more renderer tests
+  ASSERT(sceneRenderer->unifiedGeometryBuffer->buffer->size > 0);
   vulkan_scene_renderer_destroy(sceneRenderer);
 
   vulkan_scene_graph_destroy(sceneGraph);

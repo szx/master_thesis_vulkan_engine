@@ -26,26 +26,29 @@ void vulkan_scene_renderer_destroy(vulkan_scene_renderer *renderer) {
 }
 
 void vulkan_scene_renderer_build_geometry_buffer(vulkan_scene_renderer *renderer) {
+  /* build batches from cache list */
   vulkan_batch_policy batchPolicy = vulkan_batch_policy_matching_vertex_attributes;
+  vulkan_batches_update(renderer->batches, batchPolicy);
+  dl_foreach_elem (vulkan_batch *, batch, renderer->batches->batches) {
+    // HIRO create draw commands
+  }
 
-  /* build unified geometry buffer */
-  // HIRO build unified vertex buffer from cache list
+  vulkan_attribute_type attributes = renderer->sceneGraph->sceneTree->cacheList->attributes;
+  assert(attributes != UnknownAttribute);
+
+  /* build unified geometry buffer from cache list */
+  vulkan_interleaved_vertex_stream *stream = vulkan_interleaved_vertex_stream_create(attributes);
+  vulkan_unified_geometry_buffer_set_interleaved_vertex_stream(renderer->unifiedGeometryBuffer,
+                                                               stream);
   utarray_foreach_elem_deref (vulkan_scene_cache *, cache,
                               renderer->sceneGraph->sceneTree->cacheList->caches) {
     assert(cache->primitive != NULL);
-    vulkan_interleaved_vertex_stream *stream =
-        vulkan_interleaved_vertex_stream_create(cache->mesh->attributes);
+    vulkan_interleaved_vertex_stream_add_primitive(stream, cache);
     // vulkan_unified_buffer_element *element = vulkan_unified_buffer_element_create((void
     // **)&batch->primitive->indices->data->d, size);
     // vulkan_unified_geometry_buffer_add_element(renderer->unifiedGeometryBuffer, element);
   }
-  vulkan_unified_geometry_buffer_send_to_device(renderer->vkd, renderer->unifiedGeometryBuffer);
-
-  // HIRO build batches with draw commands
-  vulkan_batches_update(renderer->batches, batchPolicy);
-  dl_foreach_elem (vulkan_batch *, batch, renderer->batches->batches) {
-    // HIRO create vertex data, interleave
-  }
+  vulkan_unified_geometry_buffer_send_to_device(renderer->unifiedGeometryBuffer);
 
   // TODO: Overlapping index buffers and vertex streams.
   // TODO: Free node resources after building scene.
@@ -108,7 +111,7 @@ void vulkan_scene_renderer_update_data(vulkan_scene_renderer *renderer) {
 
 void vulkan_scene_renderer_send_to_device(vulkan_scene_renderer *renderer) {
   // assert(!renderer->data->dirty);
-  vulkan_unified_geometry_buffer_send_to_device(renderer->vkd, renderer->unifiedGeometryBuffer);
+  vulkan_unified_geometry_buffer_send_to_device(renderer->unifiedGeometryBuffer);
   vulkan_uniform_buffer_send_to_device(renderer->uniformBuffer);
 }
 
@@ -137,5 +140,6 @@ void vulkan_scene_renderer_debug_print(vulkan_scene_renderer *renderer) {
   vulkan_data_scene_debug_print(renderer->data);
   vulkan_scene_graph_debug_print(renderer->sceneGraph);
   vulkan_batches_debug_print(renderer->batches);
-  log_debug("unifiedGeometryBuffer: %d\n", renderer->unifiedGeometryBuffer->buffer->size);
+  vulkan_unified_geometry_buffer_debug_print(renderer->unifiedGeometryBuffer);
+  // HIRO unified uniform buffer debug print
 }

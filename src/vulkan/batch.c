@@ -5,7 +5,7 @@ vulkan_batch *vulkan_batch_create(vulkan_batch_policy policy, vulkan_scene_cache
 
   vulkan_batch *batch = core_alloc(sizeof(vulkan_batch));
   batch->policy = policy;
-  batch->primitive = firstCache->primitive;
+  batch->firstCache = firstCache;
   batch->first = 0;
   batch->count = 0;
 
@@ -22,11 +22,12 @@ void vulkan_batch_destroy(vulkan_batch *batch) {
 bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_scene_cache *cache) {
   bool match = true;
   if ((batch->policy & vulkan_batch_policy_matching_materials) != 0) {
-    match = match && vulkan_data_primitive_material_match(batch->primitive, cache->primitive);
+    match = match &&
+            vulkan_data_primitive_material_match(batch->firstCache->primitive, cache->primitive);
   }
   if ((batch->policy & vulkan_batch_policy_matching_vertex_attributes) != 0) {
-    match =
-        match && vulkan_data_primitive_vulkan_attributes_match(batch->primitive, cache->primitive);
+    match = match && vulkan_data_primitive_vulkan_attributes_match(batch->firstCache->primitive,
+                                                                   cache->primitive);
   }
   return match;
 }
@@ -34,8 +35,8 @@ bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_scene_cache *cache)
 void vulkan_batch_debug_print(vulkan_batch *batch) {
   log_debug(
       "batch indexed indirect: policy=%d, first=%d count=%d materialHash=%zu geometryHash=%zu",
-      batch->policy, batch->first, batch->count, batch->primitive->material->key.value,
-      batch->primitive->geometryHash);
+      batch->policy, batch->first, batch->count, batch->firstCache->primitive->material->key.value,
+      batch->firstCache->primitive->geometryHash);
 }
 
 vulkan_batches *vulkan_batches_create(vulkan_scene_graph *sceneGraph) {
@@ -59,7 +60,7 @@ void vulkan_batches_reset(vulkan_batches *batches) {
 
 void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_policy policy) {
 
-  vulkan_scene_cache_list_sort(batches->cacheList);
+  vulkan_scene_cache_list_sort_and_update(batches->cacheList);
 
   vulkan_batches_reset(batches);
 

@@ -11,7 +11,6 @@
 
 typedef struct vulkan_data_mesh {
   UT_array *primitives;             /// vulkan_data_primitive_index array.
-  vulkan_attribute_type attributes; /// Max set of primitive vertex attributes.
   DECL_VULKAN_ENTITY(mesh)
 } vulkan_data_mesh;
 

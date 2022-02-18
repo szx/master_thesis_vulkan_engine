@@ -19,9 +19,9 @@ typedef enum vulkan_batch_policy {
 /// Depends on order of caches in cache list.
 typedef struct vulkan_batch {
   vulkan_batch_policy policy;
-  vulkan_data_primitive *primitive; /// Geometry and material used to draw this batch.
-  uint32_t first;                   /// Index to first cache in cache list.
-  uint32_t count;                   /// Number of caches in cache list drawn by this batch.
+  vulkan_scene_cache *firstCache; /// Geometry and material used to draw this cache.
+  uint32_t first;                 /// Index to first cache in cache list.
+  uint32_t count;                 /// Number of caches in cache list drawn by this batch.
 
   // HIRO generate VkDrawIndexedIndirectCommand command;
 
