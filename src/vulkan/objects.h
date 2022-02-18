@@ -34,19 +34,6 @@ void vulkan_buffer_destroy(vulkan_buffer *buffer);
 
 void vulkan_buffer_send_to_device(vulkan_buffer *buffer);
 
-/// One element of vertex stream.
-/// Assumes that all vertex attributes are interleaved.
-/// If vertex attribute is not used, we have to do one of following:
-///     - adjust vertex binding stride and shader (if it is after all other used vertex attributes)
-///     - fill vertex attribute with default value
-typedef struct vulkan_vertex_stream_element {
-  vec3 position;
-  vec3 normal;
-  vec3 color;
-  vec2 texCoord;
-} vulkan_vertex_stream_element; // HIRO create interleaved vertex stream when building scene
-// TODO: Packing.
-
 typedef enum vulkan_attribute_type {
   UnknownAttribute = 1 << 0, // TODO naming
   PositionAttribute = 1 << 1,
@@ -61,33 +48,66 @@ typedef enum vulkan_index_type {
   vulkan_index_type_uint32 = 1
 } vulkan_index_type;
 
+typedef struct vulkan_interleaved_vertex_stream_element {
+  vec3 position;
+  vec3 normal;
+  vec3 color;
+  vec2 texCoord;
+} vulkan_interleaved_vertex_stream_element;
+
+/// Interleaved vertex stream.
+typedef struct vulkan_interleaved_vertex_stream {
+  vulkan_attribute_type attributes;
+  UT_array *data; /// vulkan_interleaved_vertex_stream_element list
+} vulkan_interleaved_vertex_stream;
+
+vulkan_interleaved_vertex_stream *
+vulkan_interleaved_vertex_stream_create(vulkan_attribute_type attributes);
+// HIRO add primitive, add stream
+void vulkan_interleaved_vertex_stream_destroy(vulkan_interleaved_vertex_stream *stream);
+
 uint32_t vertex_types_to_vertex_stride(vulkan_attribute_type vertexAttributes);
 uint32_t index_type_to_index_stride(vulkan_index_type indexType);
 vulkan_index_type index_stride_to_index_type(uint32_t indexStride);
 VkIndexType stride_to_index_format(uint32_t indexStride);
 
-// HIRO Unified buffers
+// HIRO Unified uniform buffers
 // HIRO support multiple buffers and descriptors (seperate for each frame)
 
-// Geometry buffer.
-// Used to aggregate scene's vertex data into device local buffers.
-typedef struct vulkan_geometry_buffer {
+/// Element of an unified buffer.
+/// Corresponds to one contiguous memory block in both CPU and GPU buffer.
+typedef struct vulkan_unified_buffer_element {
+  void **data; /// Pointer to pointer to memory block.
+  size_t size; /// Memory block size.
+
+  bool dirty; // True if CPU to GPU transfer needed.
+  struct vulkan_unified_buffer_element *prev, *next;
+} vulkan_unified_buffer_element;
+
+vulkan_unified_buffer_element *vulkan_unified_buffer_element_create(void **data, size_t size);
+void vulkan_unified_buffer_element_destroy(vulkan_unified_buffer_element *element);
+
+/// Unified geometry buffer.
+/// Used to aggregate scene's vertex data into one big vertex buffer.
+typedef struct vulkan_unified_geometry_buffer {
   /* CPU state */
-  UT_array *data; /// uint8_t
+  vulkan_unified_buffer_element *elements; /// List of memory blocks with vertex data.
   /* GPU state */
   vulkan_buffer *buffer;
 
   bool dirty; /// True if CPU to GPU transfer required.
-} vulkan_geometry_buffer;
+} vulkan_unified_geometry_buffer;
 
-vulkan_geometry_buffer *vulkan_geometry_buffer_create(vulkan_device *vkd);
-void vulkan_geometry_buffer_destroy(vulkan_geometry_buffer *geometryBuffer);
+vulkan_unified_geometry_buffer *vulkan_unified_geometry_buffer_create(vulkan_device *vkd);
+void vulkan_unified_geometry_buffer_destroy(vulkan_unified_geometry_buffer *geometryBuffer);
 
-// HIRO vulkan_unified_geometry_buffer: adds UT_array to geometry buffer
-// HIRO vertex interleaving in vulkan_geometry_buffer
+void vulkan_unified_geometry_buffer_add_element(vulkan_unified_geometry_buffer *geometryBuffer,
+                                                vulkan_unified_buffer_element *element);
 
-void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
-                                           vulkan_geometry_buffer *geometryBuffer);
+// HIRO vertex interleaving in scene renderer.
+
+void vulkan_unified_geometry_buffer_send_to_device(vulkan_device *vkd,
+                                                   vulkan_unified_geometry_buffer *geometryBuffer);
 
 typedef struct vulkan_uniform_buffer {
   /* CPU state  */

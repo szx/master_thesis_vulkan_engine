@@ -4,6 +4,7 @@
 void vulkan_data_mesh_init(vulkan_data_mesh *mesh, vulkan_data_scene *sceneData) {
   mesh->sceneData = sceneData;
   utarray_alloc(mesh->primitives, sizeof(vulkan_data_primitive *));
+  mesh->attributes = UnknownAttribute;
   DEF_VULKAN_ENTITY(mesh, mesh)
 }
 
@@ -43,6 +44,7 @@ void vulkan_data_mesh_deserialize(vulkan_data_mesh *mesh, data_asset_db *assetDb
     vulkan_data_primitive *primitive =
         vulkan_data_scene_get_primitive_by_key(mesh->sceneData, assetDb, primitiveKey);
     utarray_push_back(mesh->primitives, &primitive);
+    mesh->attributes |= primitive->attributes;
   }
 
   data_key_array_deinit(&primitiveHashArray);

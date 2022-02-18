@@ -18,6 +18,7 @@ typedef struct vulkan_scene_cache {
   size_t distanceFromRoot;
   bool visible;
   mat4 transform;                   /// Accumulated from object node.
+  vulkan_data_mesh *mesh;           /// Accumulated from object node.
   vulkan_data_primitive *primitive; /// Accumulated from primitive node.
 
   struct vulkan_scene_cache *prev, *next;

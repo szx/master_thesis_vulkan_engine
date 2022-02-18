@@ -6,7 +6,7 @@
 
 #include <stdlib.h>
 
-#define GLTF_NAME "sponza"
+#define GLTF_NAME "triangles"
 
 // Loading sponza.gltf.
 TEST gltf_loading() {
@@ -147,9 +147,8 @@ TEST scene_graph_building() {
   vulkan_device *vkd = vulkan_device_create(config, assetDb);
 
   UT_string *sceneName;
-  utstring_alloc(sceneName, "sponza");
+  utstring_alloc(sceneName, GLTF_NAME);
   vulkan_data_scene *assetDbSceneData = vulkan_data_scene_create_with_asset_db(assetDb, sceneName);
-  utstring_free(sceneName);
   // vulkan_data_scene_debug_print(assetDbSceneData);
 
   vulkan_scene_graph *sceneGraph = vulkan_scene_graph_create(assetDbSceneData);
@@ -254,8 +253,15 @@ TEST scene_graph_building() {
 
   vulkan_batches_destroy(batches);
 
+  log_info("Test scene renderer.");
+  vulkan_scene_renderer *sceneRenderer = vulkan_scene_renderer_create(assetDb, vkd, sceneName);
+  vulkan_scene_renderer_debug_print(sceneRenderer);
+  // HIRO more renderer tests
+  vulkan_scene_renderer_destroy(sceneRenderer);
+
   vulkan_scene_graph_destroy(sceneGraph);
   vulkan_data_scene_destroy(assetDbSceneData);
+  utstring_free(sceneName);
   vulkan_device_destroy(vkd);
   data_asset_db_destroy(assetDb);
   data_config_destroy(config);

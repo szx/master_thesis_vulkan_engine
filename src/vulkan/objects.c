@@ -80,22 +80,35 @@ void vulkan_buffer_send_to_device(vulkan_buffer *buffer) {
   buffer->dirty = false;
 }
 
+vulkan_interleaved_vertex_stream *
+vulkan_interleaved_vertex_stream_create(vulkan_attribute_type attributes) {
+  vulkan_interleaved_vertex_stream *stream = core_alloc(sizeof(vulkan_interleaved_vertex_stream));
+  stream->attributes = attributes;
+  utarray_alloc(stream->data, sizeof(uint8_t));
+  return stream;
+}
+
+void vulkan_interleaved_vertex_stream_destroy(vulkan_interleaved_vertex_stream *stream) {
+  utarray_free(stream->data);
+  core_free(stream);
+}
+
 uint32_t vertex_types_to_vertex_stride(vulkan_attribute_type vertexAttributes) {
   if ((vertexAttributes & TexCoordAttribute) != 0) {
-    return offsetof(vulkan_vertex_stream_element, texCoord) +
-           member_size(vulkan_vertex_stream_element, texCoord);
+    return offsetof(vulkan_interleaved_vertex_stream_element, texCoord) +
+           member_size(vulkan_interleaved_vertex_stream_element, texCoord);
   }
   if ((vertexAttributes & ColorAttribute) != 0) {
-    return offsetof(vulkan_vertex_stream_element, color) +
-           member_size(vulkan_vertex_stream_element, color);
+    return offsetof(vulkan_interleaved_vertex_stream_element, color) +
+           member_size(vulkan_interleaved_vertex_stream_element, color);
   }
   if ((vertexAttributes & NormalAttribute) != 0) {
-    return offsetof(vulkan_vertex_stream_element, normal) +
-           member_size(vulkan_vertex_stream_element, normal);
+    return offsetof(vulkan_interleaved_vertex_stream_element, normal) +
+           member_size(vulkan_interleaved_vertex_stream_element, normal);
   }
   if ((vertexAttributes & PositionAttribute) != 0) {
-    return offsetof(vulkan_vertex_stream_element, position) +
-           member_size(vulkan_vertex_stream_element, position);
+    return offsetof(vulkan_interleaved_vertex_stream_element, position) +
+           member_size(vulkan_interleaved_vertex_stream_element, position);
   }
   panic("unsupported vertex attribute %d", vertexAttributes);
   return 0; // TODO: Unreachable.
@@ -128,29 +141,68 @@ VkIndexType stride_to_index_format(uint32_t indexStride) {
   return indexType;
 }
 
-vulkan_geometry_buffer *vulkan_geometry_buffer_create(vulkan_device *vkd) {
-  vulkan_geometry_buffer *geometryBuffer = core_alloc(sizeof(vulkan_geometry_buffer));
+vulkan_unified_buffer_element *vulkan_unified_buffer_element_create(void **data, size_t size) {
+  vulkan_unified_buffer_element *element = core_alloc(sizeof(vulkan_unified_buffer_element));
+  element->data = data;
+  element->size = size;
+  element->dirty = true;
+  element->prev = NULL;
+  element->next = NULL;
+  return element;
+}
 
-  static const UT_icd ut_vulkan_geometry_buffer_data_icd = {sizeof(uint8_t), NULL, NULL, NULL};
-  utarray_new(geometryBuffer->data, &ut_vulkan_geometry_buffer_data_icd);
+void vulkan_unified_buffer_element_destroy(vulkan_unified_buffer_element *element) {
+  core_free(element);
+}
+
+vulkan_unified_geometry_buffer *vulkan_unified_geometry_buffer_create(vulkan_device *vkd) {
+  vulkan_unified_geometry_buffer *geometryBuffer =
+      core_alloc(sizeof(vulkan_unified_geometry_buffer));
+
+  geometryBuffer->elements = NULL;
 
   geometryBuffer->buffer = vulkan_buffer_create(vkd, vulkan_buffer_type_geometry, NULL, 0);
+
   geometryBuffer->dirty = true;
   return geometryBuffer;
 }
 
-void vulkan_geometry_buffer_destroy(vulkan_geometry_buffer *geometryBuffer) {
-  utarray_free(geometryBuffer->data);
+void vulkan_unified_geometry_buffer_destroy(vulkan_unified_geometry_buffer *geometryBuffer) {
+  dl_foreach_elem (vulkan_unified_buffer_element *, element, geometryBuffer->elements) {
+    vulkan_unified_buffer_element_destroy(element);
+  }
   vulkan_buffer_destroy(geometryBuffer->buffer);
   core_free(geometryBuffer);
 }
 
-void vulkan_geometry_buffer_send_to_device(vulkan_device *vkd,
-                                           vulkan_geometry_buffer *geometryBuffer) {
-  geometryBuffer->buffer->data = utarray_front(geometryBuffer->data);
-  geometryBuffer->buffer->size = utarray_len(geometryBuffer->data);
-  geometryBuffer->buffer->dirty = geometryBuffer->dirty;
+void vulkan_unified_geometry_buffer_add_element(vulkan_unified_geometry_buffer *geometryBuffer,
+                                                vulkan_unified_buffer_element *element) {
+  DL_APPEND(geometryBuffer->elements, element);
+  geometryBuffer->dirty = true;
+}
+
+void vulkan_unified_geometry_buffer_send_to_device(vulkan_device *vkd,
+                                                   vulkan_unified_geometry_buffer *geometryBuffer) {
+  if (!geometryBuffer->dirty) {
+    return;
+  }
+
+  // PERF: Cache vertex data array.
+  UT_array *vertexData = NULL;
+  utarray_alloc(vertexData, sizeof(uint8_t));
+  // HIRO alloc total size (track in geometryBuffer add)
+  // core_memcpy all
+  // send to device
+  dl_foreach_elem (vulkan_unified_buffer_element *, element, geometryBuffer->elements) {
+    utarray_push_back(vertexData, *(element->data));
+  }
+
+  geometryBuffer->buffer->data = utarray_front(vertexData);
+  geometryBuffer->buffer->size = utarray_size(vertexData);
+  geometryBuffer->buffer->dirty = true;
   vulkan_buffer_send_to_device(geometryBuffer->buffer);
+
+  utarray_free(vertexData);
   geometryBuffer->dirty = false;
 }
 

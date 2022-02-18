@@ -14,13 +14,11 @@ typedef struct vulkan_scene_renderer {
   vulkan_data_scene *data;
   vulkan_scene_graph *sceneGraph;
   vulkan_batches *batches;
-  // HIRO vulkan_batches *batches
-  // HIRO Use batches to fill in following buffers.
 
   /* GPU state */
   vulkan_device *vkd; /// Pointer.
   // HIRO: Refactor scene GPU state.
-  vulkan_geometry_buffer *geometryBuffer; /// Unified buffer.
+  vulkan_unified_geometry_buffer *unifiedGeometryBuffer;
   vulkan_uniform_buffer *uniformBuffer;
 } vulkan_scene_renderer;
 

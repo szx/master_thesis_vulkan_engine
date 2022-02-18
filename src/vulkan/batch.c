@@ -20,12 +20,15 @@ void vulkan_batch_destroy(vulkan_batch *batch) {
 }
 
 bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_scene_cache *cache) {
-  bool materialMatch = (batch->policy & vulkan_batch_policy_matching_materials) == 0 ||
-                       vulkan_data_primitive_material_match(batch->primitive, cache->primitive);
-  bool geometryMatch =
-      (batch->policy & vulkan_batch_policy_matching_vertex_attributes) == 0 ||
-      vulkan_data_primitive_vulkan_attributes_match(batch->primitive, cache->primitive);
-  return materialMatch && geometryMatch;
+  bool match = true;
+  if ((batch->policy & vulkan_batch_policy_matching_materials) != 0) {
+    match = match && vulkan_data_primitive_material_match(batch->primitive, cache->primitive);
+  }
+  if ((batch->policy & vulkan_batch_policy_matching_vertex_attributes) != 0) {
+    match =
+        match && vulkan_data_primitive_vulkan_attributes_match(batch->primitive, cache->primitive);
+  }
+  return match;
 }
 
 void vulkan_batch_debug_print(vulkan_batch *batch) {

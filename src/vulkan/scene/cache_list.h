@@ -12,8 +12,8 @@ typedef struct vulkan_scene_cache_list {
   vulkan_scene_tree *sceneTree; /// vulkan_scene_tree pointer.
 
   UT_array *caches; /// vulkan_scene_cache* array of primitive scene node caches.
-  bool dirty;       /// True if added or removed cache.
 
+  bool dirty;       /// True if added or removed cache.
 } vulkan_scene_cache_list;
 
 vulkan_scene_cache_list *vulkan_scene_cache_list_create(vulkan_scene_tree *sceneTree);

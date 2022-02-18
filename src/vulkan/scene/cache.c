@@ -22,8 +22,10 @@ void vulkan_scene_cache_set_with_node(vulkan_scene_cache *sceneCache) {
 
   if (sceneCache->node->type == vulkan_scene_node_entity_type_object) {
     glm_mat4_copy(sceneCache->node->object->transform, sceneCache->transform);
+    sceneCache->mesh = sceneCache->node->object->mesh;
   } else {
     glm_mat4_identity(sceneCache->transform);
+    sceneCache->mesh = NULL;
   }
 
   if (sceneCache->node->type == vulkan_scene_node_entity_type_primitive) {
@@ -40,6 +42,9 @@ void vulkan_scene_cache_accumulate(vulkan_scene_cache *sceneCache,
   sceneCache->distanceFromRoot = parentCache->distanceFromRoot + 1;
   sceneCache->visible = parentCache->visible;
   glm_mat4_mul(parentCache->transform, sceneCache->transform, sceneCache->transform);
+  if (parentCache->mesh != NULL) {
+    sceneCache->mesh = parentCache->mesh;
+  }
 }
 
 void debug_log_cache(vulkan_scene_cache *sceneCache) {
@@ -48,6 +53,7 @@ void debug_log_cache(vulkan_scene_cache *sceneCache) {
   log_raw(stdout, "visible: %d\\n", sceneCache->visible);
   log_raw(stdout, "transform: \\n" MAT4_FORMAT_STRING("\\n") "\\n",
           MAT4_FORMAT_ARGS(sceneCache->transform));
+  log_raw(stdout, "mesh: %p", sceneCache->mesh);
   log_raw(stdout, "primitive: %p", sceneCache->primitive);
   log_raw(stdout, "\"");
 }
