@@ -155,7 +155,8 @@ void vulkan_interleaved_vertex_stream_add_primitive(vulkan_interleaved_vertex_st
                                                     vulkan_scene_cache *cache) {
   // PERF: Compress stream (overlapping vertex attributes).
 
-  // HIRO add vertex attributes offset in interleaved vertex stream to cache
+  vulkan_scene_cache_set_vertex_stream_offset(cache, utarray_size(stream->data));
+
   vulkan_data_primitive *primitive = cache->primitive;
   for (size_t idx = 0; idx < primitive->vertexCount; idx++) {
     vulkan_interleaved_vertex_stream_element element =

@@ -14,12 +14,15 @@ typedef struct vulkan_scene_node vulkan_scene_node;
 typedef struct vulkan_scene_cache {
   vulkan_scene_node *node;
 
-  /* cache state */
+  /* cache state accumulated from scene tree */
   size_t distanceFromRoot;
   bool visible;
   mat4 transform;                   /// Accumulated from object node.
   vulkan_data_mesh *mesh;           /// Accumulated from object node.
   vulkan_data_primitive *primitive; /// Accumulated from primitive node.
+
+  /* cache state accumulated from scene tree */
+  size_t vertexStreamByteOffset;
 
   struct vulkan_scene_cache *prev, *next;
 } vulkan_scene_cache;
@@ -30,5 +33,8 @@ void vulkan_scene_cache_destroy(vulkan_scene_cache *sceneCache);
 /// Set cache with parent node.
 void vulkan_scene_cache_set_with_node(vulkan_scene_cache *sceneCache);
 void vulkan_scene_cache_accumulate(vulkan_scene_cache *sceneCache, vulkan_scene_cache *parentCache);
+
+void vulkan_scene_cache_set_vertex_stream_offset(vulkan_scene_cache *sceneCache,
+                                                 size_t vertexStreamByteOffset);
 
 void vulkan_scene_cache_debug_print(vulkan_scene_cache *sceneCache);
