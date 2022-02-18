@@ -9,8 +9,8 @@ vulkan_scene_cache *vulkan_scene_cache_create(vulkan_scene_node *sceneNode) {
   sceneCache->next = NULL;
 
   vulkan_scene_cache_set_with_node(sceneCache);
-
   sceneCache->vertexStreamByteOffset = 0;
+  sceneCache->cacheListIdx = 0;
 
   return sceneCache;
 }
@@ -63,6 +63,7 @@ void debug_log_cache(vulkan_scene_cache *sceneCache) {
   log_raw(stdout, "mesh: %p", sceneCache->mesh);
   log_raw(stdout, "primitive: %p", sceneCache->primitive);
   log_raw(stdout, "vertexStreamByteOffset: %zu", sceneCache->vertexStreamByteOffset);
+  log_raw(stdout, "cacheListIdx: %zu", sceneCache->cacheListIdx);
   log_raw(stdout, "\"");
 }
 

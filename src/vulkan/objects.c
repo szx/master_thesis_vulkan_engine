@@ -155,6 +155,8 @@ void vulkan_interleaved_vertex_stream_add_primitive(vulkan_interleaved_vertex_st
                                                     vulkan_scene_cache *cache) {
   // PERF: Compress stream (overlapping vertex attributes).
 
+  // HIRO: ADD INDICES TO SEPERATE BUFFER, add index offset to cache and batch draw command
+
   vulkan_scene_cache_set_vertex_stream_offset(cache, utarray_size(stream->data));
 
   vulkan_data_primitive *primitive = cache->primitive;

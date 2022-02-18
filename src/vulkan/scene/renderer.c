@@ -29,9 +29,6 @@ void vulkan_scene_renderer_build_geometry_buffer(vulkan_scene_renderer *renderer
   /* build batches from cache list */
   vulkan_batch_policy batchPolicy = vulkan_batch_policy_matching_materials;
   vulkan_batches_update(renderer->batches, batchPolicy);
-  dl_foreach_elem (vulkan_batch *, batch, renderer->batches->batches) {
-    // HIRO create draw commands
-  }
 
   /* build unified geometry buffer from cache list */
   vulkan_attribute_type attributes = renderer->sceneGraph->sceneTree->cacheList->attributes;
@@ -45,6 +42,12 @@ void vulkan_scene_renderer_build_geometry_buffer(vulkan_scene_renderer *renderer
     vulkan_interleaved_vertex_stream_add_primitive(stream, cache);
   }
   vulkan_unified_geometry_buffer_send_to_device(renderer->unifiedGeometryBuffer);
+
+  /* update batch draw commands with offsets to unified buffers */
+  dl_foreach_elem (vulkan_batch *, batch, renderer->batches->batches) {
+    vulkan_batch_update_draw_command(batch);
+    assert(batch->drawCommand.vertexOffset != INT32_MAX);
+  }
 
   // HIRO build unified uniform buffer
 }

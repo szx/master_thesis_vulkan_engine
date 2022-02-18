@@ -16,14 +16,20 @@ typedef enum vulkan_batch_policy {
 } vulkan_batch_policy;
 
 /// Draw call batch.
+/// Corresponds to one indirect draw command with instancing.
+/// Encapsulates contiguous sequence of caches in cache list.
 /// Depends on order of caches in cache list.
 typedef struct vulkan_batch {
   vulkan_batch_policy policy;
   vulkan_scene_cache *firstCache; /// Geometry and material used to draw this cache.
-  uint32_t first;                 /// Index to first cache in cache list.
-  uint32_t count;                 /// Number of caches in cache list drawn by this batch.
 
-  // HIRO generate VkDrawIndexedIndirectCommand command;
+  /// Indirect draw command.
+  /// indexCount - number of vertices to draw, calculated from first cache's primitive
+  /// instanceCount - number of instances to draw, equals count
+  /// firstIndex - base vertex within the index buffer, equals 0
+  /// vertexOffset - vertex buffer offset, equals to first cache's vertex stream offset
+  /// firstInstance - the instance ID of the first instance to draw, equals first
+  VkDrawIndexedIndirectCommand drawCommand;
 
   struct vulkan_batch *prev, *next; /// Linked list.
 } vulkan_batch;
@@ -32,6 +38,8 @@ vulkan_batch *vulkan_batch_create(vulkan_batch_policy policy, vulkan_scene_cache
 void vulkan_batch_destroy(vulkan_batch *batch);
 
 bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_scene_cache *cache);
+void vulkan_batch_add_cache(vulkan_batch *batch, vulkan_scene_cache *cache, size_t cacheListIdx);
+void vulkan_batch_update_draw_command(vulkan_batch *batch);
 
 void vulkan_batch_debug_print(vulkan_batch *batch);
 
@@ -40,6 +48,7 @@ typedef struct vulkan_batches {
   vulkan_scene_cache_list *cacheList; /// Pointer.
 
   vulkan_batch *batches; /// List of batches created from scene graph.
+  // HIRO merge batches?
 } vulkan_batches;
 
 vulkan_batches *vulkan_batches_create(vulkan_scene_graph *sceneGraph);

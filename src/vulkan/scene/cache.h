@@ -21,8 +21,11 @@ typedef struct vulkan_scene_cache {
   vulkan_data_mesh *mesh;           /// Accumulated from object node.
   vulkan_data_primitive *primitive; /// Accumulated from primitive node.
 
-  /* cache state accumulated from scene tree */
+  /* cache state accumulated from vertex stream */
   size_t vertexStreamByteOffset;
+
+  /* cache state accumulated from batches */
+  size_t cacheListIdx;
 
   struct vulkan_scene_cache *prev, *next;
 } vulkan_scene_cache;
