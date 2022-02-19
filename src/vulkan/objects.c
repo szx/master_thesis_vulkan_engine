@@ -10,8 +10,31 @@ vulkan_buffer *vulkan_buffer_create(vulkan_device *vkd, vulkan_buffer_type type,
 
   buffer->vkd = vkd;
   buffer->type = type;
+  buffer->bufferUsageFlags = 0;
+  buffer->memoryPropertyFlags = 0;
+  buffer->name = "invalid buffer";
+  if (buffer->type == vulkan_buffer_type_geometry_index) {
+    buffer->bufferUsageFlags = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+    buffer->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    buffer->name = "index geometry buffer";
+  } else if (buffer->type == vulkan_buffer_type_geometry_vertex) {
+    buffer->bufferUsageFlags = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+    buffer->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    buffer->name = "vertex geometry buffer";
+  } else if (buffer->type == vulkan_buffer_type_uniform) {
+    buffer->bufferUsageFlags = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+    buffer->memoryPropertyFlags =
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+    buffer->name = "uniform buffer";
+  } else {
+    assert(0);
+  }
+  buffer->buffer = VK_NULL_HANDLE;
+  buffer->bufferMemory = VK_NULL_HANDLE;
+
   buffer->resident = false;
   buffer->dirty = true;
+
   return buffer;
 }
 
@@ -24,39 +47,23 @@ void vulkan_buffer_destroy(vulkan_buffer *buffer) {
   core_free(buffer);
 }
 
+void vulkan_buffer_make_resident(vulkan_buffer *buffer) {
+  if (!buffer->resident) {
+    vulkan_create_buffer(buffer->vkd, buffer->size, buffer->bufferUsageFlags,
+                         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &buffer->buffer,
+                         &buffer->bufferMemory, buffer->name);
+    buffer->resident = true;
+  }
+}
+
 void vulkan_buffer_send_to_device(vulkan_buffer *buffer) {
   if (!buffer->dirty) {
     return;
   }
 
-  VkBufferUsageFlags bufferUsageFlags = 0;
-  VkMemoryPropertyFlags memoryPropertyFlags = 0;
-  const char *name = "invalid buffer";
-  if (buffer->type == vulkan_buffer_type_geometry_index) {
-    bufferUsageFlags = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
-    memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-    name = "index geometry buffer";
-  } else if (buffer->type == vulkan_buffer_type_geometry_vertex) {
-    bufferUsageFlags = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-    memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-    name = "vertex geometry buffer";
-  } else if (buffer->type == vulkan_buffer_type_uniform) {
-    bufferUsageFlags = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-    memoryPropertyFlags =
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-    name = "uniform buffer";
-  } else {
-    assert(0);
-  }
+  vulkan_buffer_make_resident(buffer);
 
-  if (!buffer->resident) {
-    vulkan_create_buffer(buffer->vkd, buffer->size, bufferUsageFlags,
-                         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &buffer->buffer,
-                         &buffer->bufferMemory, name);
-    buffer->resident = true;
-  }
-
-  bool useStagingBuffer = (memoryPropertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) == 0;
+  bool useStagingBuffer = (buffer->memoryPropertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) == 0;
   if (useStagingBuffer) {
     // TODO: Reuse staging buffer.
     // TODO: Free geometry buffer data if geometry buffer is device local.
@@ -105,8 +112,6 @@ uint32_t vulkan_attribute_type_to_stride(vulkan_attribute_type vertexAttributes)
   return 0; // TODO: Unreachable.
 }
 
-
-
 vulkan_interleaved_vertex_stream_element vulkan_interleaved_vertex_stream_element_default() {
   vulkan_interleaved_vertex_stream_element element;
   glm_vec3_zero(element.position);
@@ -136,8 +141,8 @@ void vulkan_interleaved_vertex_stream_add_primitive(vulkan_interleaved_vertex_st
   // PERF: Compress stream (overlapping vertex attributes).
 
   size_t firstIndexOffset = utarray_len(stream->indexData);
-  size_t firstVertexByteOffset = utarray_size(stream->vertexData);
-  vulkan_scene_cache_set_vertex_stream_offsets(cache, firstIndexOffset, firstVertexByteOffset);
+  size_t firstVertexOffset = utarray_len(stream->vertexData);
+  vulkan_scene_cache_set_vertex_stream_offsets(cache, firstIndexOffset, firstVertexOffset);
 
   vulkan_data_primitive *primitive = cache->primitive;
 
@@ -234,8 +239,8 @@ void vulkan_unified_geometry_buffer_debug_print(vulkan_unified_geometry_buffer *
   log_debug("vertex buffer size=%d\n", geometryBuffer->vertexBuffer->size);
 }
 
-vulkan_uniform_buffer *vulkan_uniform_buffer_create(vulkan_device *vkd) {
-  vulkan_uniform_buffer *uniformBuffer = core_alloc(sizeof(vulkan_uniform_buffer));
+vulkan_unified_uniform_buffer *vulkan_unified_uniform_buffer_create(vulkan_device *vkd) {
+  vulkan_unified_uniform_buffer *uniformBuffer = core_alloc(sizeof(vulkan_unified_uniform_buffer));
 
   glm_mat4_identity(uniformBuffer->data.viewMat);
   glm_mat4_identity(uniformBuffer->data.projMat);
@@ -247,12 +252,12 @@ vulkan_uniform_buffer *vulkan_uniform_buffer_create(vulkan_device *vkd) {
   return uniformBuffer;
 }
 
-void vulkan_uniform_buffer_destroy(vulkan_uniform_buffer *uniformBuffer) {
+void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *uniformBuffer) {
   vulkan_buffer_destroy(uniformBuffer->buffer);
   core_free(uniformBuffer);
 }
 
-void vulkan_uniform_buffer_send_to_device(vulkan_uniform_buffer *uniformBuffer) {
+void vulkan_unified_uniform_buffer_send_to_device(vulkan_unified_uniform_buffer *uniformBuffer) {
   uniformBuffer->buffer->dirty = uniformBuffer->dirty;
   vulkan_buffer_send_to_device(uniformBuffer->buffer);
   uniformBuffer->dirty = false;

@@ -258,6 +258,7 @@ VkDescriptorSet vulkan_create_descriptor_set_for_uniform_buffers(
   VkWriteDescriptorSet descriptorWrites[1] = {0};
   VkDescriptorBufferInfo bufferInfo[bufferCount];
   for (uint32_t i = 0; i < bufferCount; i++) {
+    assert(uniformBuffers[i] != VK_NULL_HANDLE);
     bufferInfo[i].buffer = uniformBuffers[i];
     bufferInfo[i].offset = 0;
     bufferInfo[i].range = bufferSize;

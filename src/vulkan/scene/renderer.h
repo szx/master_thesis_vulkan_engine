@@ -17,9 +17,8 @@ typedef struct vulkan_scene_renderer {
 
   /* GPU state */
   vulkan_device *vkd; /// Pointer.
-  // HIRO: Refactor scene GPU state.
   vulkan_unified_geometry_buffer *unifiedGeometryBuffer;
-  vulkan_uniform_buffer *uniformBuffer;
+  vulkan_unified_uniform_buffer *unifiedUniformBuffer;
 } vulkan_scene_renderer;
 
 vulkan_scene_renderer *vulkan_scene_renderer_create(data_asset_db *assetDb, vulkan_device *vkd,
@@ -32,7 +31,7 @@ void vulkan_scene_renderer_build_geometry_buffer(
 void vulkan_scene_renderer_update_data(vulkan_scene_renderer *renderer);
 void vulkan_scene_renderer_send_to_device(vulkan_scene_renderer *renderer);
 
-void vulkan_uniform_buffer_update_with_camera(vulkan_uniform_buffer *uniformBuffer,
-                                              vulkan_data_camera *camera);
+void vulkan_unified_uniform_buffer_update_with_camera(vulkan_unified_uniform_buffer *uniformBuffer,
+                                                      vulkan_data_camera *camera);
 
 void vulkan_scene_renderer_debug_print(vulkan_scene_renderer *renderer); // HIRO rewrite

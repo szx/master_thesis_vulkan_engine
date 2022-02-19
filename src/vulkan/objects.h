@@ -24,6 +24,9 @@ typedef struct vulkan_buffer {
   /* GPU state */
   vulkan_device *vkd; /// Pointer.
   vulkan_buffer_type type;
+  VkBufferUsageFlags bufferUsageFlags;
+  VkMemoryPropertyFlags memoryPropertyFlags;
+  const char *name;
   VkBuffer buffer;
   VkDeviceMemory bufferMemory;
 
@@ -35,6 +38,7 @@ vulkan_buffer *vulkan_buffer_create(vulkan_device *vkd, vulkan_buffer_type type,
                                     size_t size);
 void vulkan_buffer_destroy(vulkan_buffer *buffer);
 
+void vulkan_buffer_make_resident(vulkan_buffer *buffer);
 void vulkan_buffer_send_to_device(vulkan_buffer *buffer);
 
 typedef enum vulkan_attribute_type {
@@ -74,7 +78,6 @@ void vulkan_interleaved_vertex_stream_add_primitive(vulkan_interleaved_vertex_st
 void vulkan_interleaved_vertex_stream_add_stream(vulkan_interleaved_vertex_stream *stream,
                                                  vulkan_interleaved_vertex_stream *other);
 
-// HIRO Unified uniform buffers
 // HIRO support multiple buffers and descriptors (seperate for each frame)
 
 /// Unified geometry buffer.
@@ -99,22 +102,22 @@ void vulkan_unified_geometry_buffer_send_to_device(vulkan_unified_geometry_buffe
 
 void vulkan_unified_geometry_buffer_debug_print(vulkan_unified_geometry_buffer *geometryBuffer);
 
-typedef struct vulkan_uniform_buffer {
+typedef struct vulkan_unified_uniform_buffer {
   /* CPU state  */
   struct {
     alignas(16) mat4 viewMat;
     alignas(16) mat4 projMat;
-  } data; // HIRO move UBO definitions out of vulkan_uniform_buffer
+  } data; // HIRO move UBO definitions out of vulkan_unified_uniform_buffer
 
   /* GPU state */
   vulkan_buffer *buffer;
 
   bool dirty; /// True if CPU to GPU transfer required.
-} vulkan_uniform_buffer;
+} vulkan_unified_uniform_buffer;
 
-vulkan_uniform_buffer *vulkan_uniform_buffer_create(vulkan_device *vkd);
-void vulkan_uniform_buffer_destroy(vulkan_uniform_buffer *uniformBuffer);
+vulkan_unified_uniform_buffer *vulkan_unified_uniform_buffer_create(vulkan_device *vkd);
+void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *uniformBuffer);
 
 // HIRO: Unified uniform buffer. (register structs?)
 
-void vulkan_uniform_buffer_send_to_device(vulkan_uniform_buffer *uniformBuffer);
+void vulkan_unified_uniform_buffer_send_to_device(vulkan_unified_uniform_buffer *uniformBuffer);

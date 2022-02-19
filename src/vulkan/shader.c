@@ -191,6 +191,7 @@ vulkan_shader_info_get_binding_description(vulkan_shader_info *info) {
   }
   assert(bindingDescription.stride > 0);
   bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+  // HIRO new binding with input rate instance for instance data
   return bindingDescription;
 }
 

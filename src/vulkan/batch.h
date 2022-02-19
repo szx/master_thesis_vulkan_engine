@@ -40,6 +40,7 @@ void vulkan_batch_destroy(vulkan_batch *batch);
 bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_scene_cache *cache);
 void vulkan_batch_add_cache(vulkan_batch *batch, vulkan_scene_cache *cache, size_t cacheListIdx);
 void vulkan_batch_update_draw_command(vulkan_batch *batch);
+void vulkan_batch_emit_draw_command(vulkan_batch *batch, VkCommandBuffer commandBuffer);
 
 void vulkan_batch_debug_print(vulkan_batch *batch);
 

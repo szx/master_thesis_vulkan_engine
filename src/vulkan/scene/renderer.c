@@ -11,13 +11,13 @@ vulkan_scene_renderer *vulkan_scene_renderer_create(data_asset_db *assetDb, vulk
   renderer->batches = vulkan_batches_create(renderer->sceneGraph);
 
   renderer->unifiedGeometryBuffer = vulkan_unified_geometry_buffer_create(vkd);
-  renderer->uniformBuffer = vulkan_uniform_buffer_create(vkd);
+  renderer->unifiedUniformBuffer = vulkan_unified_uniform_buffer_create(vkd);
   vulkan_scene_renderer_build_geometry_buffer(renderer);
   return renderer;
 }
 
 void vulkan_scene_renderer_destroy(vulkan_scene_renderer *renderer) {
-  vulkan_uniform_buffer_destroy(renderer->uniformBuffer);
+  vulkan_unified_uniform_buffer_destroy(renderer->unifiedUniformBuffer);
   vulkan_unified_geometry_buffer_destroy(renderer->unifiedGeometryBuffer);
   vulkan_batches_destroy(renderer->batches);
   vulkan_scene_graph_destroy(renderer->sceneGraph);
@@ -49,25 +49,30 @@ void vulkan_scene_renderer_build_geometry_buffer(vulkan_scene_renderer *renderer
     assert(batch->drawCommand.vertexOffset != INT32_MAX);
   })
 
-  // HIRO build unified uniform buffer
+  /* build unified uniform buffer from HIRO what exactly? global shader config? */
+  vulkan_unified_uniform_buffer_send_to_device(renderer->unifiedUniformBuffer);
+
+  assert(renderer->unifiedGeometryBuffer->indexBuffer->resident);
+  assert(renderer->unifiedGeometryBuffer->vertexBuffer->resident);
+  assert(renderer->unifiedUniformBuffer->buffer->resident);
 }
 
 void vulkan_scene_renderer_update_data(vulkan_scene_renderer *renderer) {
   utarray_foreach_elem_it (vulkan_data_camera *, camera, renderer->data->cameras) {
-    vulkan_uniform_buffer_update_with_camera(renderer->uniformBuffer, camera);
+    vulkan_unified_uniform_buffer_update_with_camera(renderer->unifiedUniformBuffer, camera);
   }
 
-  // renderer->data->dirty = renderer->uniformBuffer->dirty;
+  // renderer->data->dirty = renderer->unifiedUniformBuffer->dirty;
 }
 
 void vulkan_scene_renderer_send_to_device(vulkan_scene_renderer *renderer) {
   // assert(!renderer->data->dirty);
   vulkan_unified_geometry_buffer_send_to_device(renderer->unifiedGeometryBuffer);
-  vulkan_uniform_buffer_send_to_device(renderer->uniformBuffer);
+  vulkan_unified_uniform_buffer_send_to_device(renderer->unifiedUniformBuffer);
 }
 
-void vulkan_uniform_buffer_update_with_camera(vulkan_uniform_buffer *uniformBuffer,
-                                              vulkan_data_camera *camera) {
+void vulkan_unified_uniform_buffer_update_with_camera(
+    vulkan_unified_uniform_buffer *unifiedUniformBuffer, vulkan_data_camera *camera) {
   if (!camera->dirty) {
     return;
   }
@@ -77,13 +82,13 @@ void vulkan_uniform_buffer_update_with_camera(vulkan_uniform_buffer *uniformBuff
   glm_translate_make(translationMat, negativePosition);
   mat4 rotationMat;
   glm_quat_mat4(camera->rotation, rotationMat);
-  glm_mat4_mul(rotationMat, translationMat, uniformBuffer->data.viewMat);
+  glm_mat4_mul(rotationMat, translationMat, unifiedUniformBuffer->data.viewMat);
 
   glm_perspective(camera->fovY, camera->aspectRatio, camera->nearZ, camera->farZ,
-                  uniformBuffer->data.projMat);
-  uniformBuffer->data.projMat[1][1] *= -1; // invert for Y+ pointing up
+                  unifiedUniformBuffer->data.projMat);
+  unifiedUniformBuffer->data.projMat[1][1] *= -1; // invert for Y+ pointing up
   camera->dirty = false;
-  uniformBuffer->dirty = true;
+  unifiedUniformBuffer->dirty = true;
 }
 
 void vulkan_scene_renderer_debug_print(vulkan_scene_renderer *renderer) {

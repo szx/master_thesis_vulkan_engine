@@ -43,8 +43,15 @@ void vulkan_batch_add_cache(vulkan_batch *batch, vulkan_scene_cache *cache, size
 void vulkan_batch_update_draw_command(vulkan_batch *batch) {
   batch->drawCommand.indexCount = utarray_len(batch->firstCache->primitive->indices->data);
   batch->drawCommand.firstIndex = batch->firstCache->firstIndexOffset;
-  batch->drawCommand.vertexOffset = batch->firstCache->firstVertexByteOffset;
+  batch->drawCommand.vertexOffset = batch->firstCache->firstVertexOffset;
   batch->drawCommand.firstInstance = batch->firstCache->cacheListIdx;
+}
+
+void vulkan_batch_emit_draw_command(vulkan_batch *batch, VkCommandBuffer commandBuffer) {
+  // HIRO emit indirect draw
+  VkDrawIndexedIndirectCommand drawCommand = batch->drawCommand;
+  vkCmdDrawIndexed(commandBuffer, drawCommand.indexCount, drawCommand.instanceCount,
+                   drawCommand.firstIndex, drawCommand.vertexOffset, drawCommand.firstInstance);
 }
 
 void vulkan_batch_debug_print(vulkan_batch *batch) {

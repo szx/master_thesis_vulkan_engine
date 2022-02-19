@@ -146,7 +146,7 @@ TEST shaderc_compiling() {
 
 SUITE(shaderc_suite) { RUN_TEST(shaderc_compiling); }
 
-// Building scene graph for sponza.
+// Building scene graph.
 TEST scene_graph_building() {
   data_config *config = data_config_create();
   data_asset_db *assetDb = data_asset_db_create();
@@ -284,7 +284,7 @@ int main(int argc, char *argv[]) {
   GREATEST_MAIN_BEGIN();
   platform_create();
   // RUN_SUITE(shaderc_suite);
-  RUN_SUITE(gltf_suite);
+  // RUN_SUITE(gltf_suite);
   RUN_SUITE(scene_graph_suite);
   platform_destroy();
   GREATEST_MAIN_END();

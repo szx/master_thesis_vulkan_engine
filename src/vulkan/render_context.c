@@ -257,18 +257,21 @@ void vulkan_render_pass_destroy(vulkan_render_pass *renderPass) {
 
 vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_scene_renderer *scene) {
   assert(scene != NULL);
+
   vulkan_pipeline *pipeline = core_alloc(sizeof(vulkan_pipeline));
   pipeline->vks = vks;
   pipeline->vkd = vks->vkd;
   pipeline->scene = scene;
   // TODO different numbers for different pipelines
+  // HIRO move to cache?
   pipeline->descriptorPool = vulkan_create_descriptor_pool(pipeline->vkd, 1, 1, 1, "pipeline");
   pipeline->descriptorSetLayout = vulkan_create_descriptor_set_layout(
       pipeline->vkd, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1,
       VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, "pipeline");
   pipeline->descriptorSet = vulkan_create_descriptor_set_for_uniform_buffers(
-      pipeline->vkd, &scene->uniformBuffer->buffer->buffer, scene->uniformBuffer->buffer->size, 1,
-      pipeline->descriptorSetLayout, pipeline->descriptorPool, "pipeline");
+      pipeline->vkd, &scene->unifiedUniformBuffer->buffer->buffer,
+      scene->unifiedUniformBuffer->buffer->size, 1, pipeline->descriptorSetLayout,
+      pipeline->descriptorPool, "pipeline");
 
   pipeline->renderPass = vulkan_render_pass_create(pipeline, ForwardRenderPass);
   return pipeline;
@@ -567,51 +570,45 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_renderer *scene
                           renderPass->pipelineLayout, 0, descriptorSetCount, descriptorSets, 0,
                           NULL);
 
-  dl_foreach_elem(vulkan_data_object *, object, scene->data->objects, {
+  dl_foreach_elem(vulkan_batch *, batch, scene->batches->batches, {
+    vulkan_scene_cache *firstCache = batch->firstCache;
+
     // TODO: Check if object should be culled.
-    log_debug("draw object");
-    {
-      // TODO: separate push constants to another function
-      void *pushConstantValuePtr = &object->transform;
+    // log_debug("draw object");
+    if (1) {
+      // HIRO: move transforms to instance data
+      void *pushConstantValuePtr = &firstCache->transform;
       VkShaderStageFlags pushConstantStageFlags = vulkan_shader_info_get_push_constant_stage_flags(
           renderPass->vertShader, renderPass->fragShader);
       uint32_t pushConstantOffset = 0;
-      assert(sizeof(object->transform) ==
+      assert(sizeof(firstCache->transform) ==
              renderPass->vertShader->info.pushConstantDescription->size);
       vkCmdPushConstants(frame->commandBuffer, renderPass->pipelineLayout, pushConstantStageFlags,
-                         pushConstantOffset, sizeof(object->transform), pushConstantValuePtr);
+                         pushConstantOffset, sizeof(firstCache->transform), pushConstantValuePtr);
     }
-    vulkan_data_mesh *mesh = object->mesh;
-    utarray_foreach_elem_deref (vulkan_data_primitive *, primitive, mesh->primitives) {
-      size_t bindingCount = vulkan_shader_info_get_binding_count(&renderPass->vertShader->info);
-      assert(bindingCount == 1);
-      VkBuffer vertexBuffer = scene->unifiedGeometryBuffer->vertexBuffer->buffer;
-      VkDeviceSize vertexBuffersOffset = 0;
-      if (primitive->indices != NULL) {
-        // TODO update vertex stride with dynamic constants
-        vertexBuffersOffset = 0; // HIRO replace primitive->vertexStreamOffset;
-      }
 
-      VkBuffer vertexBuffers[bindingCount];
-      VkDeviceSize vertexBuffersOffsets[bindingCount];
-      vertexBuffers[0] = vertexBuffer;
-      vertexBuffersOffsets[0] = vertexBuffersOffset;
-      vkCmdBindVertexBuffers(frame->commandBuffer, 0, bindingCount, vertexBuffers,
-                             vertexBuffersOffsets);
+    // HIRO return only vertex buffer from unified geometry buffer helper function
+    size_t bindingCount = vulkan_shader_info_get_binding_count(&renderPass->vertShader->info);
+    assert(bindingCount == 1);
+    VkBuffer vertexBuffer = scene->unifiedGeometryBuffer->vertexBuffer->buffer;
+    VkBuffer vertexBuffers[bindingCount];
+    VkDeviceSize vertexBuffersOffsets[bindingCount];
+    vertexBuffers[0] = vertexBuffer;
+    vertexBuffersOffsets[0] = 0;
+    vkCmdBindVertexBuffers(frame->commandBuffer, 0, bindingCount, vertexBuffers,
+                           vertexBuffersOffsets);
 
-      if (primitive->indices != NULL) {
-        VkBuffer indexBuffer = scene->unifiedGeometryBuffer->indexBuffer->buffer;
-        VkDeviceSize indexBufferOffset = 0; // HIRO replace primitive->indexBufferOffset;
-        uint32_t indexCount = utarray_len(primitive->indices->data);
-        uint32_t indexStride = utarray_eltsize(primitive->indices->data);
-        VkIndexType indexType = VK_INDEX_TYPE_UINT32;
-        vkCmdBindIndexBuffer(frame->commandBuffer, indexBuffer, indexBufferOffset, indexType);
-        vkCmdDrawIndexed(frame->commandBuffer, indexCount, 1, 0, 0, 0);
-      } else {
-        panic("draw without indices not supported");
-      }
-      // TODO: Pipeline statistics.
-    }
+    assert(utarray_len(firstCache->primitive->indices->data) > 0);
+    VkBuffer indexBuffer = scene->unifiedGeometryBuffer->indexBuffer->buffer;
+    VkDeviceSize indexBufferOffset = 0;
+    VkIndexType indexType = VK_INDEX_TYPE_UINT32;
+    vkCmdBindIndexBuffer(frame->commandBuffer, indexBuffer, indexBufferOffset, indexType);
+
+    // HIRO update unified uniform buffer with updated transforms.
+
+    // HIRO replace with indirect draw
+    vulkan_batch_emit_draw_command(batch, frame->commandBuffer);
+    // TODO: Pipeline statistics.
   })
 
   vkCmdEndRenderPass(frame->commandBuffer);
