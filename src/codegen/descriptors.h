@@ -2,8 +2,13 @@
 
 #pragma once
 
-typedef struct vulkan_transform_uniform_element {
+typedef struct vulkan_instance_data_uniform_buffer_element {
   alignas(16) mat4 viewMat;
   alignas(16) mat4 projMat;
-} vulkan_transform_uniform_element;
+} vulkan_instance_data_uniform_buffer_element;
 
+
+#define END_OF_VULKAN_UNIFORM_BUFFERS
+#define VULKAN_UNIFORM_BUFFERS(X, ...) \
+  X(vulkan_instance_data, __VA_ARGS__) \
+  END_OF_VULKAN_UNIFORM_BUFFERS

@@ -264,7 +264,7 @@ vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_scene_ren
   pipeline->vkd = vks->vkd;
   pipeline->scene = scene;
   // TODO different numbers for different pipelines
-  // HIRO move to cache?
+  // HIRO move to *_uniform_buffer?
   pipeline->descriptorPool = vulkan_create_descriptor_pool(pipeline->vkd, 1, 1, 1, "pipeline");
   pipeline->descriptorSetLayout = vulkan_create_descriptor_set_layout(
       pipeline->vkd, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1,

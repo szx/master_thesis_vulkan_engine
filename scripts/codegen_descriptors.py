@@ -38,15 +38,19 @@ def codegen_descriptors():
 
     # generate aligned _uniform_element
     for struct_name, struct_fields in uniform_structs.items():
-        struct_name = struct_name.partition('_struct')[0] + '_element'
+        struct_name = struct_name.partition('_struct')[0] + '_buffer_element'
         decls.append(f'typedef struct {struct_name} {{')
         for field_name, field_type in struct_fields:
             alignment = uniform_buffer_std140_alignments.get(field_type, 'unknown_alignment')
             decls.append(f'  alignas({alignment}) {field_type} {field_name};')
         decls.append(f'}} {struct_name};\n')
 
-    # generate _uniform_buffer
-    # HIRO _create, _destroy, allocate buffer, allow for array of elements.
+    # generate X-macro with uniform buffer names
+    decls.append(f'\n#define END_OF_VULKAN_UNIFORM_BUFFERS')
+    decls.append(f'#define VULKAN_UNIFORM_BUFFERS(X, ...) \\')
+    for struct_name in uniform_structs.keys():
+        struct_name = struct_name.partition('_uniform_struct')[0]
+        decls.append(f'  X({struct_name}, __VA_ARGS__) \\')
+    decls.append(f'  END_OF_VULKAN_UNIFORM_BUFFERS')
 
     output_strings(decls, get_output_path('descriptors.h'))
-    output_strings(defs, get_output_path('descriptors.c'))

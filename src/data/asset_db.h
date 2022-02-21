@@ -7,7 +7,6 @@
 typedef struct data_asset_db {
   data_db *db;     /// SQLite database file.
   UT_string *path; /// SQLite database filepath.
-  // TODO: Fetching mesh blobs to CPU.
 } data_asset_db;
 
 data_asset_db *data_asset_db_create();

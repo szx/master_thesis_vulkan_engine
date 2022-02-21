@@ -7,8 +7,8 @@
 #include "shader.h"
 
 typedef struct vulkan_unified_uniform_buffer {
-  /* CPU state  */
-  vulkan_transform_uniform_element data; // HIRO wrapped in vulkan_transform_uniform_buffer
+  /* CPU state */
+  vulkan_instance_data_uniform_buffer_data *instanceData;
   /* GPU state */
   vulkan_buffer *buffer;
 
@@ -19,9 +19,8 @@ vulkan_unified_uniform_buffer *vulkan_unified_uniform_buffer_create(vulkan_devic
 void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *uniformBuffer);
 
 /* HIRO: uniform/storage buffers for:
- * node cached transforms
  * node cached materials
-*/
+ */
 
 void vulkan_unified_uniform_buffer_send_to_device(vulkan_unified_uniform_buffer *uniformBuffer);
 

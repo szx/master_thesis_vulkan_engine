@@ -85,11 +85,15 @@ void vulkan_unified_uniform_buffer_update_with_camera(
   glm_translate_make(translationMat, negativePosition);
   mat4 rotationMat;
   glm_quat_mat4(camera->rotation, rotationMat);
-  glm_mat4_mul(rotationMat, translationMat, unifiedUniformBuffer->data.viewMat);
+  for (size_t idx = 0; idx < unifiedUniformBuffer->instanceData->count; idx++) {
+    vulkan_instance_data_uniform_buffer_element *element =
+        &unifiedUniformBuffer->instanceData->elements[idx];
+    glm_mat4_mul(rotationMat, translationMat, element->viewMat);
 
-  glm_perspective(camera->fovY, camera->aspectRatio, camera->nearZ, camera->farZ,
-                  unifiedUniformBuffer->data.projMat);
-  unifiedUniformBuffer->data.projMat[1][1] *= -1; // invert for Y+ pointing up
+    glm_perspective(camera->fovY, camera->aspectRatio, camera->nearZ, camera->farZ,
+                    element->projMat);
+    element->projMat[1][1] *= -1; // invert for Y+ pointing up
+  }
   camera->dirty = false;
   unifiedUniformBuffer->dirty = true;
 }
