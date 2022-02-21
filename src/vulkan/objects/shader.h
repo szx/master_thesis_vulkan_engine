@@ -2,6 +2,7 @@
 #pragma once
 
 #include "common.h"
+#include "descriptor.h"
 #include "vertex_stream.h"
 
 /// Describes one vertex input (or output) attribute defined in GLSL shader.

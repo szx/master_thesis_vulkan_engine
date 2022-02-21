@@ -4,6 +4,7 @@ from pathlib import Path
 import subprocess
 import shlex
 from configparser import ConfigParser, ExtendedInterpolation
+import clang.cindex
 
 script_path = Path(os.path.realpath(__file__))
 root_path = script_path.parents[1]
@@ -51,3 +52,20 @@ def parse_config():
     config.optionxform = lambda value: value
     config.read(config_path)
     return config
+
+
+def find_c_decls_in_str(string, cursor_kind):
+    unique_decls = []
+
+    def walk(node):
+        if node.kind == cursor_kind and node.spelling != '':
+            if not any([x.spelling == node.spelling for x in unique_decls]):
+                unique_decls.append(node)
+        for c in node.get_children():
+            walk(c)
+
+    index = clang.cindex.Index.create()
+    walk(index.parse("temp.c", args=['-str=c11'], unsaved_files=[('temp.c', string)]).cursor)
+
+    unique_decls.sort(key=lambda x: x.spelling)
+    return unique_decls

@@ -282,9 +282,9 @@ GREATEST_MAIN_DEFS(); // NOLINT
 int main(int argc, char *argv[]) {
   GREATEST_MAIN_BEGIN();
   platform_create();
-  // RUN_SUITE(shaderc_suite);
+  RUN_SUITE(shaderc_suite);
   // RUN_SUITE(gltf_suite);
-  RUN_SUITE(scene_graph_suite);
+  // RUN_SUITE(scene_graph_suite);
   platform_destroy();
   GREATEST_MAIN_END();
 }

@@ -8,11 +8,7 @@
 
 typedef struct vulkan_unified_uniform_buffer {
   /* CPU state  */
-  struct {
-    alignas(16) mat4 viewMat;
-    alignas(16) mat4 projMat;
-  } data; // HIRO move UBO definitions out of vulkan_unified_uniform_buffer
-
+  vulkan_transform_uniform_element data; // HIRO wrapped in vulkan_transform_uniform_buffer
   /* GPU state */
   vulkan_buffer *buffer;
 

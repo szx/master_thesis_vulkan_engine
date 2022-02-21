@@ -1,5 +1,4 @@
 from utils import *
-import clang.cindex
 from dataclasses import dataclass
 
 
