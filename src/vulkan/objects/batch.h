@@ -4,8 +4,8 @@
  */
 #pragma once
 
-#include "../core/core.h"
-#include "scene/cache_list.h"
+#include "../../core/core.h"
+#include "render_cache_list.h"
 
 typedef enum vulkan_batch_policy {
   vulkan_batch_policy_none = 0,
@@ -21,7 +21,7 @@ typedef enum vulkan_batch_policy {
 /// Depends on order of caches in cache list.
 typedef struct vulkan_batch {
   vulkan_batch_policy policy;
-  vulkan_scene_cache *firstCache; /// Geometry and material used to draw this cache.
+  vulkan_render_cache *firstCache; /// Geometry and material used to draw this cache.
 
   /// Indirect draw command.
   /// indexCount - number of vertices to draw, calculated from first cache's primitive
@@ -34,11 +34,12 @@ typedef struct vulkan_batch {
   struct vulkan_batch *prev, *next; /// Linked list.
 } vulkan_batch;
 
-vulkan_batch *vulkan_batch_create(vulkan_batch_policy policy, vulkan_scene_cache *firstCache);
+vulkan_batch *vulkan_batch_create(vulkan_batch_policy policy, vulkan_render_cache *firstCache);
 void vulkan_batch_destroy(vulkan_batch *batch);
 
-bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_scene_cache *cache);
-void vulkan_batch_add_cache(vulkan_batch *batch, vulkan_scene_cache *cache, size_t cacheListIdx);
+bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_render_cache *cache);
+void vulkan_batch_add_cache(vulkan_batch *batch, vulkan_render_cache *cache,
+                            size_t renderCacheListIdx);
 void vulkan_batch_update_draw_command(vulkan_batch *batch);
 void vulkan_batch_emit_draw_command(vulkan_batch *batch, VkCommandBuffer commandBuffer);
 
@@ -46,13 +47,13 @@ void vulkan_batch_debug_print(vulkan_batch *batch);
 
 /// Creates batches from scene graph.
 typedef struct vulkan_batches {
-  vulkan_scene_cache_list *cacheList; /// Pointer.
+  vulkan_render_cache_list *renderCacheList; /// Pointer.
 
   vulkan_batch *batches; /// List of batches created from scene graph.
   // HIRO merge batches?
 } vulkan_batches;
 
-vulkan_batches *vulkan_batches_create(vulkan_scene_graph *sceneGraph);
+vulkan_batches *vulkan_batches_create(vulkan_render_cache_list *renderCacheList);
 void vulkan_batches_destroy(vulkan_batches *batches);
 
 /// Destroy old batches.

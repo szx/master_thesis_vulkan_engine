@@ -11,7 +11,7 @@ void vulkan_data_primitive_init(vulkan_data_primitive *primitive, vulkan_data_sc
   primitive->texCoords = NULL;
   primitive->indices = NULL;
   primitive->geometryHash = 0;
-  primitive->attributes = UnknownAttribute;
+  primitive->attributes = vulkan_attribute_type_unknown;
   primitive->material = NULL;
   DEF_VULKAN_ENTITY(primitive, primitive)
 }
@@ -81,27 +81,31 @@ void vulkan_data_primitive_deserialize(vulkan_data_primitive *primitive, data_as
       data_asset_db_select_primitive_material_key(assetDb, primitive->key));
 
   primitive->topology = data_asset_db_select_primitive_topology_int(assetDb, primitive->key).value;
-  primitive->attributes = UnknownAttribute;
+  primitive->attributes = vulkan_attribute_type_unknown;
 
   primitive->positions = vulkan_data_scene_get_vertex_attribute_by_key(
       primitive->sceneData, assetDb,
       data_asset_db_select_primitive_positions_key(assetDb, primitive->key));
-  primitive->attributes |= utarray_len(primitive->positions->data) > 0 ? PositionAttribute : 0;
+  primitive->attributes |=
+      utarray_len(primitive->positions->data) > 0 ? vulkan_attribute_type_position : 0;
 
   primitive->normals = vulkan_data_scene_get_vertex_attribute_by_key(
       primitive->sceneData, assetDb,
       data_asset_db_select_primitive_normals_key(assetDb, primitive->key));
-  primitive->attributes |= utarray_len(primitive->normals->data) > 0 ? NormalAttribute : 0;
+  primitive->attributes |=
+      utarray_len(primitive->normals->data) > 0 ? vulkan_attribute_type_normal : 0;
 
   primitive->colors = vulkan_data_scene_get_vertex_attribute_by_key(
       primitive->sceneData, assetDb,
       data_asset_db_select_primitive_colors_key(assetDb, primitive->key));
-  primitive->attributes |= utarray_len(primitive->colors->data) > 0 ? ColorAttribute : 0;
+  primitive->attributes |=
+      utarray_len(primitive->colors->data) > 0 ? vulkan_attribute_type_color : 0;
 
   primitive->texCoords = vulkan_data_scene_get_vertex_attribute_by_key(
       primitive->sceneData, assetDb,
       data_asset_db_select_primitive_texCoords_key(assetDb, primitive->key));
-  primitive->attributes |= utarray_len(primitive->texCoords->data) > 0 ? TexCoordAttribute : 0;
+  primitive->attributes |=
+      utarray_len(primitive->texCoords->data) > 0 ? vulkan_attribute_type_texcoord : 0;
 
   primitive->indices = vulkan_data_scene_get_vertex_attribute_by_key(
       primitive->sceneData, assetDb,

@@ -98,21 +98,22 @@ static bool glsl_parser_callback(parser_ast_node *node, void *callbackData) {
       parser_ast_node *identifierNode = vectorNode->next;
       char *identifier = parser_ast_node_c_str(data->state, identifierNode);
 
-      vulkan_attribute_type type = UnknownAttribute;
-#define LEN(enumerator) strlen(#enumerator) - strlen(strchr(#enumerator, 'A'))
+      vulkan_attribute_type type = vulkan_attribute_type_unknown;
+      // HIRO REMOVE ALL SHADER PARSING
+#define LEN(enumerator) strlen(#enumerator) - strlen(strrchr(#enumerator, '_'))
 #define ENUMERATOR(enumerator)                                                                     \
   if (strncmp(identifier + 2, #enumerator, LEN(enumerator)) == 0 ||                                \
       strncmp(identifier + 3, #enumerator, LEN(enumerator)) == 0) {                                \
     type = enumerator;                                                                             \
   }
-      ENUMERATOR(PositionAttribute)
-      ENUMERATOR(NormalAttribute)
-      ENUMERATOR(PositionAttribute)
-      ENUMERATOR(ColorAttribute)
-      ENUMERATOR(TexCoordAttribute)
-      ENUMERATOR(TangentAttribute)
+      ENUMERATOR(vulkan_attribute_type_position)
+      ENUMERATOR(vulkan_attribute_type_normal)
+      ENUMERATOR(vulkan_attribute_type_position)
+      ENUMERATOR(vulkan_attribute_type_color)
+      ENUMERATOR(vulkan_attribute_type_texcoord)
+      ENUMERATOR(vulkan_attribute_type_tangent)
 #undef LEN
-      verify(type != UnknownAttribute);
+      verify(type != vulkan_attribute_type_unknown);
 
       if (node->type == VertexInputAttribute) {
         vulkan_vertex_attribute_description_init(
@@ -149,7 +150,7 @@ static bool glsl_parser_callback(parser_ast_node *node, void *callbackData) {
 void vulkan_shader_info_init(vulkan_shader_info *info, vulkan_shader *shader) {
   log_debug("vulkan_shader_info_init");
   parser_state state = glsl_parser_execute(utstring_body(shader->glslCode));
-  parser_debug_print(&state);
+  /// parser_debug_print(&state);
   verify(state.isValid == true);
   glsl_parser_callback_data data = {.state = &state, .pass = CountDescriptors, .info = info};
   parser_ast_node_visit(state.programNode, glsl_parser_callback, &data);

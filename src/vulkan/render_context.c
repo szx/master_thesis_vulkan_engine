@@ -6,7 +6,8 @@ void create_render_pass_info(vulkan_render_pass *renderPass) {
   if (renderPass->type == ForwardRenderPass) {
     renderPass->info.usesPushConstants = true;
     renderPass->info.usesSceneUniformBuffer = true;
-    renderPass->info.supportedVertexAttributes = PositionAttribute | NormalAttribute;
+    renderPass->info.supportedVertexAttributes =
+        vulkan_attribute_type_position | vulkan_attribute_type_normal;
   }
   // TODO: vertex input attributes of shader have to match those of scene.
 }
@@ -25,17 +26,17 @@ void vulkan_render_pass_validate(vulkan_render_pass *renderPass, vulkan_scene_re
   verify(fragShader->type == shaderc_glsl_fragment_shader);
   verify(core_array_count(fragShader->info.inputAttributeDescriptions) > 0);
   verify(core_array_count(fragShader->info.outputAttributeDescriptions) > 0);
-  if ((renderPass->info.supportedVertexAttributes & PositionAttribute) != 0) {
+  if ((renderPass->info.supportedVertexAttributes & vulkan_attribute_type_position) != 0) {
     verify(core_array_count(vertShader->info.inputAttributeDescriptions) >= 1);
     vulkan_vertex_attribute_description *description =
         &vertShader->info.inputAttributeDescriptions.ptr[0];
-    verify(description->type == PositionAttribute);
+    verify(description->type == vulkan_attribute_type_position);
   }
-  /*if ((renderPass->info.supportedVertexAttributes & NormalAttribute) != 0) {
+  /*if ((renderPass->info.supportedVertexAttributes & vulkan_attribute_type_normal) != 0) {
     verify(count_struct_array(vertShader->info.inputAttributeDescriptions) >= 2);
     vulkan_vertex_attribute_description *description =
         &vertShader->info.inputAttributeDescriptions[1];
-    verify(description->type == NormalAttribute);
+    verify(description->type == vulkan_attribute_type_normal);
   }*/
   // TODO check if vertShader and fragShader attributes match.
 }
@@ -571,7 +572,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_renderer *scene
                           NULL);
 
   dl_foreach_elem(vulkan_batch *, batch, scene->batches->batches, {
-    vulkan_scene_cache *firstCache = batch->firstCache;
+    vulkan_render_cache *firstCache = batch->firstCache;
 
     // TODO: Check if object should be culled.
     // log_debug("draw object");

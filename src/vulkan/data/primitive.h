@@ -7,6 +7,7 @@
 
 #include "../../data/data.h"
 #include "../functions.h"
+#include "../objects/vertex_stream.h"
 #include "material.h"
 #include "vertex_attribute.h"
 

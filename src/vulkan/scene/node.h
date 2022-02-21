@@ -8,7 +8,7 @@
 #pragma once
 
 #include "../data/scene.h"
-#include "cache.h"
+#include "../objects/render_cache.h"
 
 typedef struct vulkan_scene_graph vulkan_scene_graph;
 typedef struct vulkan_scene_tree vulkan_scene_tree;
@@ -45,8 +45,8 @@ typedef struct vulkan_scene_node {
     };
     struct {
       vulkan_scene_tree *sceneTree;
-      vulkan_scene_cache *cache; /// Accumulated scene node cache. Used to render primitives.
-      bool dirty;                /// True if scene node state changed and cache is out of sync.
+      vulkan_render_cache *cache; /// Accumulated scene node cache. Used to render primitives.
+      bool dirty;                 /// True if scene node state changed and cache is out of sync.
     };
   };
 

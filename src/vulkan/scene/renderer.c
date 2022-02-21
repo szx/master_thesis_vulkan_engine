@@ -7,8 +7,9 @@ vulkan_scene_renderer *vulkan_scene_renderer_create(data_asset_db *assetDb, vulk
   renderer->assetDb = assetDb;
   renderer->vkd = vkd;
   renderer->data = vulkan_data_scene_create_with_asset_db(renderer->assetDb, sceneName);
-  renderer->sceneGraph = vulkan_scene_graph_create(renderer->data);
-  renderer->batches = vulkan_batches_create(renderer->sceneGraph);
+  renderer->renderCacheList = vulkan_render_cache_list_create();
+  renderer->batches = vulkan_batches_create(renderer->renderCacheList);
+  renderer->sceneGraph = vulkan_scene_graph_create(renderer->data, renderer->renderCacheList);
 
   renderer->unifiedGeometryBuffer = vulkan_unified_geometry_buffer_create(vkd);
   renderer->unifiedUniformBuffer = vulkan_unified_uniform_buffer_create(vkd);
@@ -19,8 +20,9 @@ vulkan_scene_renderer *vulkan_scene_renderer_create(data_asset_db *assetDb, vulk
 void vulkan_scene_renderer_destroy(vulkan_scene_renderer *renderer) {
   vulkan_unified_uniform_buffer_destroy(renderer->unifiedUniformBuffer);
   vulkan_unified_geometry_buffer_destroy(renderer->unifiedGeometryBuffer);
-  vulkan_batches_destroy(renderer->batches);
   vulkan_scene_graph_destroy(renderer->sceneGraph);
+  vulkan_batches_destroy(renderer->batches);
+  vulkan_render_cache_list_destroy(renderer->renderCacheList);
   vulkan_data_scene_destroy(renderer->data);
   core_free(renderer);
 }
@@ -31,8 +33,8 @@ void vulkan_scene_renderer_build_geometry_buffer(vulkan_scene_renderer *renderer
   vulkan_batches_update(renderer->batches, batchPolicy);
 
   /* build unified geometry buffer from batches */
-  vulkan_attribute_type attributes = renderer->sceneGraph->sceneTree->cacheList->attributes;
-  assert(attributes != UnknownAttribute);
+  vulkan_attribute_type attributes = renderer->renderCacheList->attributes;
+  assert(attributes != vulkan_attribute_type_unknown);
   vulkan_interleaved_vertex_stream *stream = vulkan_interleaved_vertex_stream_create(attributes);
   vulkan_unified_geometry_buffer_set_interleaved_vertex_stream(renderer->unifiedGeometryBuffer,
                                                                stream);
@@ -59,6 +61,7 @@ void vulkan_scene_renderer_build_geometry_buffer(vulkan_scene_renderer *renderer
 
 void vulkan_scene_renderer_update_data(vulkan_scene_renderer *renderer) {
   utarray_foreach_elem_it (vulkan_data_camera *, camera, renderer->data->cameras) {
+    // HIRO update only using one camera / contain every camera in unified uniform buffer.
     vulkan_unified_uniform_buffer_update_with_camera(renderer->unifiedUniformBuffer, camera);
   }
 
@@ -92,10 +95,10 @@ void vulkan_unified_uniform_buffer_update_with_camera(
 }
 
 void vulkan_scene_renderer_debug_print(vulkan_scene_renderer *renderer) {
-  log_debug("SCENE:\n");
+  log_debug("SCENE RENDERER:\n");
   vulkan_data_scene_debug_print(renderer->data);
   vulkan_scene_graph_debug_print(renderer->sceneGraph);
   vulkan_batches_debug_print(renderer->batches);
   vulkan_unified_geometry_buffer_debug_print(renderer->unifiedGeometryBuffer);
-  // HIRO unified uniform buffer debug print
+  vulkan_unified_uniform_buffer_debug_print(renderer->unifiedUniformBuffer);
 }

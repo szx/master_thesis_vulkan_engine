@@ -4,7 +4,6 @@
 
 #include "../../core/core.h"
 #include "../../data/data.h"
-#include "../objects.h"
 
 typedef struct vulkan_data_scene vulkan_data_scene;
 typedef struct vulkan_scene_node vulkan_scene_node;

@@ -43,7 +43,7 @@ vulkan_scene_node *vulkan_scene_node_create_for_scene_tree(vulkan_scene_node_ent
 
   sceneNode->containerType = vulkan_scene_node_container_type_scene_tree;
   sceneNode->sceneTree = sceneTree;
-  sceneNode->cache = vulkan_scene_cache_create(sceneNode);
+  sceneNode->cache = vulkan_render_cache_create(sceneNode);
   sceneNode->dirty = false;
 
   return sceneNode;
@@ -53,7 +53,7 @@ void vulkan_scene_node_destroy(vulkan_scene_node *sceneNode) {
   if (sceneNode->containerType == vulkan_scene_node_container_type_scene_graph) {
     utarray_free(sceneNode->observers);
   } else if (sceneNode->containerType == vulkan_scene_node_container_type_scene_tree) {
-    vulkan_scene_cache_destroy(sceneNode->cache);
+    vulkan_render_cache_destroy(sceneNode->cache);
   } else {
     assert(0);
   }
@@ -135,7 +135,7 @@ void vulkan_scene_node_debug_print(vulkan_scene_node *sceneNode) {
     log_raw(stdout, " { rank=same; ");
     debug_log_node(sceneNode);
     log_raw(stdout, " -> ");
-    vulkan_scene_cache_debug_print(sceneNode->cache);
+    vulkan_render_cache_debug_print(sceneNode->cache);
     log_raw(stdout, " } ");
   }
 

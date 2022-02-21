@@ -2968,12 +2968,12 @@ const char *parser_error_type_debug_str(int value) {
 }
 void vulkan_attribute_type_debug_print(int flags) {
   log_debug("vulkan_attribute_type: {");
-  if ((flags & 1) != 0) { log_debug("  UnknownAttribute"); }
-  if ((flags & 2) != 0) { log_debug("  PositionAttribute"); }
-  if ((flags & 4) != 0) { log_debug("  NormalAttribute"); }
-  if ((flags & 8) != 0) { log_debug("  ColorAttribute"); }
-  if ((flags & 16) != 0) { log_debug("  TexCoordAttribute"); }
-  if ((flags & 32) != 0) { log_debug("  TangentAttribute"); }
+  if ((flags & 1) != 0) { log_debug("  vulkan_attribute_type_unknown"); }
+  if ((flags & 2) != 0) { log_debug("  vulkan_attribute_type_position"); }
+  if ((flags & 4) != 0) { log_debug("  vulkan_attribute_type_normal"); }
+  if ((flags & 8) != 0) { log_debug("  vulkan_attribute_type_color"); }
+  if ((flags & 16) != 0) { log_debug("  vulkan_attribute_type_texcoord"); }
+  if ((flags & 32) != 0) { log_debug("  vulkan_attribute_type_tangent"); }
   log_debug("vulkan_attribute_type: }");
 }
 void vulkan_batch_policy_debug_print(int flags) {

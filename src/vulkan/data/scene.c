@@ -25,20 +25,20 @@ VkPrimitiveTopology cgltf_primitive_type_vulkan_topology(cgltf_primitive_type ty
 vulkan_attribute_type cgltf_to_vulkan_attribute_type(cgltf_attribute_type type) {
   switch (type) {
   case cgltf_attribute_type_position:
-    return PositionAttribute;
+    return vulkan_attribute_type_position;
   case cgltf_attribute_type_normal:
-    return NormalAttribute;
+    return vulkan_attribute_type_normal;
   case cgltf_attribute_type_tangent:
-    return TangentAttribute;
+    return vulkan_attribute_type_tangent;
   case cgltf_attribute_type_texcoord:
-    return TexCoordAttribute;
+    return vulkan_attribute_type_texcoord;
   case cgltf_attribute_type_color:
-    return ColorAttribute;
+    return vulkan_attribute_type_color;
   case cgltf_attribute_type_joints:
   case cgltf_attribute_type_weights:
   case cgltf_attribute_type_invalid:
   default:
-    return UnknownAttribute;
+    return vulkan_attribute_type_unknown;
   }
 }
 
@@ -212,13 +212,13 @@ vulkan_data_primitive *parse_cgltf_primitive(vulkan_data_scene *sceneData,
   for (size_t attributeIdx = 0; attributeIdx < cgltfPrimitive->attributes_count; attributeIdx++) {
     cgltf_attribute *cgltfAttribute = &cgltfPrimitive->attributes[attributeIdx];
     vulkan_attribute_type type = cgltf_to_vulkan_attribute_type(cgltfAttribute->type);
-    if (type == PositionAttribute) {
+    if (type == vulkan_attribute_type_position) {
       primitive->positions = parse_cgltf_vertex_attribute(sceneData, cgltfAttribute->data);
-    } else if (type == NormalAttribute) {
+    } else if (type == vulkan_attribute_type_normal) {
       primitive->normals = parse_cgltf_vertex_attribute(sceneData, cgltfAttribute->data);
-    } else if (type == ColorAttribute) {
+    } else if (type == vulkan_attribute_type_color) {
       primitive->colors = parse_cgltf_vertex_attribute(sceneData, cgltfAttribute->data);
-    } else if (type == TexCoordAttribute) {
+    } else if (type == vulkan_attribute_type_texcoord) {
       primitive->texCoords = parse_cgltf_vertex_attribute(sceneData, cgltfAttribute->data);
     } else {
       vulkan_attribute_type_debug_print(type);
@@ -259,9 +259,30 @@ vulkan_data_mesh *parse_cgltf_mesh(vulkan_data_scene *sceneData, cgltf_mesh *cgl
 
 vulkan_data_object *parse_cgltf_node(vulkan_data_scene *sceneData, cgltf_node *cgltfNode) {
   assert(cgltfNode->extras.start_offset == 0 && cgltfNode->extras.end_offset == 0);
-  assert(cgltfNode->camera == NULL);
   assert(cgltfNode->light == NULL);
   assert(cgltfNode->weights_count == 0);
+
+  if (cgltfNode->camera != NULL) {
+    cgltf_camera *cgltfCamera = cgltfNode->camera;
+    assert(cgltfCamera->type == cgltf_camera_type_perspective);
+
+    vulkan_data_camera camera;
+    vulkan_data_camera_init(&camera, sceneData);
+    // alignment problems when using glm_vec3_copy
+    camera.position[0] = cgltfNode->translation[0];
+    camera.position[1] = cgltfNode->translation[1];
+    camera.position[2] = cgltfNode->translation[2];
+    camera.rotation[0] = cgltfNode->rotation[0];
+    camera.rotation[1] = cgltfNode->rotation[1];
+    camera.rotation[2] = cgltfNode->rotation[2];
+    camera.rotation[3] = cgltfNode->rotation[3];
+    camera.fovY = cgltfCamera->data.perspective.yfov;
+    camera.aspectRatio = cgltfCamera->data.perspective.aspect_ratio;
+    camera.nearZ = cgltfCamera->data.perspective.znear;
+    camera.farZ = cgltfCamera->data.perspective.zfar;
+    utarray_push_back(sceneData->cameras, &camera);
+  }
+
   cgltf_mesh *cgltfMesh = cgltfNode->mesh;
 
   vulkan_data_object *object = core_alloc(sizeof(vulkan_data_object));
@@ -302,12 +323,6 @@ vulkan_data_scene *parse_cgltf_scene(UT_string *name, UT_string *path) {
     vulkan_data_object *object = parse_cgltf_node(sceneData, cgltfScene->nodes[objectIdx]);
     utarray_push_back(sceneData->rootObjects, &object);
   }
-
-  // parse cameras
-  vulkan_data_camera defaultCamera;
-  vulkan_data_camera_init(&defaultCamera, sceneData);
-  utarray_push_back(sceneData->cameras, &defaultCamera);
-  // TODO: cameras from gltf file
 
   cgltf_free(cgltfData);
   return sceneData;
@@ -417,6 +432,9 @@ vulkan_data_scene *vulkan_data_scene_create(UT_string *name) {
   sceneData->objects = NULL;
 
   utarray_alloc(sceneData->cameras, sizeof(vulkan_data_camera));
+  vulkan_data_camera defaultCamera;
+  vulkan_data_camera_init(&defaultCamera, sceneData);
+  utarray_push_back(sceneData->cameras, &defaultCamera);
 
   utarray_alloc(sceneData->rootObjects, sizeof(vulkan_data_object *));
 

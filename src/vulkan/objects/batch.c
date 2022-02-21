@@ -1,6 +1,7 @@
 #include "batch.h"
+#include "../data/primitive.h"
 
-vulkan_batch *vulkan_batch_create(vulkan_batch_policy policy, vulkan_scene_cache *firstCache) {
+vulkan_batch *vulkan_batch_create(vulkan_batch_policy policy, vulkan_render_cache *firstCache) {
   assert(firstCache->primitive != NULL);
 
   vulkan_batch *batch = core_alloc(sizeof(vulkan_batch));
@@ -22,7 +23,7 @@ void vulkan_batch_destroy(vulkan_batch *batch) {
   core_free(batch);
 }
 
-bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_scene_cache *cache) {
+bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_render_cache *cache) {
   bool match = true;
   if ((batch->policy & vulkan_batch_policy_matching_materials) != 0) {
     match = match &&
@@ -35,8 +36,9 @@ bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_scene_cache *cache)
   return match;
 }
 
-void vulkan_batch_add_cache(vulkan_batch *batch, vulkan_scene_cache *cache, size_t cacheListIdx) {
-  cache->cacheListIdx = cacheListIdx;
+void vulkan_batch_add_cache(vulkan_batch *batch, vulkan_render_cache *cache,
+                            size_t renderCacheListIdx) {
+  cache->renderCacheListIdx = renderCacheListIdx;
   batch->drawCommand.instanceCount++;
 }
 
@@ -44,7 +46,7 @@ void vulkan_batch_update_draw_command(vulkan_batch *batch) {
   batch->drawCommand.indexCount = utarray_len(batch->firstCache->primitive->indices->data);
   batch->drawCommand.firstIndex = batch->firstCache->firstIndexOffset;
   batch->drawCommand.vertexOffset = batch->firstCache->firstVertexOffset;
-  batch->drawCommand.firstInstance = batch->firstCache->cacheListIdx;
+  batch->drawCommand.firstInstance = batch->firstCache->renderCacheListIdx;
 }
 
 void vulkan_batch_emit_draw_command(vulkan_batch *batch, VkCommandBuffer commandBuffer) {
@@ -64,10 +66,10 @@ void vulkan_batch_debug_print(vulkan_batch *batch) {
             batch->firstCache->primitive->geometryHash);
 }
 
-vulkan_batches *vulkan_batches_create(vulkan_scene_graph *sceneGraph) {
+vulkan_batches *vulkan_batches_create(vulkan_render_cache_list *renderCacheList) {
   vulkan_batches *batches = core_alloc(sizeof(vulkan_batches));
 
-  batches->cacheList = sceneGraph->sceneTree->cacheList;
+  batches->renderCacheList = renderCacheList;
   batches->batches = NULL;
 
   return batches;
@@ -85,15 +87,15 @@ void vulkan_batches_reset(vulkan_batches *batches) {
 
 void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_policy policy) {
   // sort cache list and update attributes
-  vulkan_scene_cache_list_sort_and_update(batches->cacheList);
+  vulkan_render_cache_list_sort_and_update(batches->renderCacheList);
 
   vulkan_batches_reset(batches);
 
-  assert(utarray_len(batches->cacheList->caches) > 0);
-  vulkan_scene_cache *lastCache = NULL;
+  assert(utarray_len(batches->renderCacheList->caches) > 0);
+  vulkan_render_cache *lastCache = NULL;
   vulkan_batch *lastBatch = NULL;
-  size_t cacheListIdx = 0;
-  utarray_foreach_elem_deref (vulkan_scene_cache *, cache, batches->cacheList->caches) {
+  size_t renderCacheListIdx = 0;
+  utarray_foreach_elem_deref (vulkan_render_cache *, cache, batches->renderCacheList->caches) {
     if (!cache->visible) {
       continue;
     }
@@ -104,16 +106,16 @@ void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_policy policy) 
 
     if (lastBatch == NULL || !vulkan_batch_matching_cache(lastBatch, cache)) {
       vulkan_batch *newBatch = vulkan_batch_create(policy, cache);
-      vulkan_batch_add_cache(newBatch, cache, cacheListIdx);
+      vulkan_batch_add_cache(newBatch, cache, renderCacheListIdx);
 
       DL_APPEND(batches->batches, newBatch);
       lastCache = cache;
       lastBatch = newBatch;
     } else {
-      vulkan_batch_add_cache(lastBatch, cache, cacheListIdx);
+      vulkan_batch_add_cache(lastBatch, cache, renderCacheListIdx);
     }
 
-    cacheListIdx++;
+    renderCacheListIdx++;
   }
   // HIRO: Consolidate smaller batches into one big batch with list of commands. (in scene render
   // context)?

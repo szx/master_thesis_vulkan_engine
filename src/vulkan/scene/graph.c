@@ -1,10 +1,11 @@
 #include "graph.h"
 #include "tree.h"
 
-vulkan_scene_graph *vulkan_scene_graph_create(vulkan_data_scene *data) {
+vulkan_scene_graph *vulkan_scene_graph_create(vulkan_data_scene *data,
+                                              vulkan_render_cache_list *renderCacheList) {
   vulkan_scene_graph *sceneGraph = core_alloc(sizeof(vulkan_scene_graph));
   sceneGraph->data = NULL;
-  sceneGraph->sceneTree = vulkan_scene_tree_create(sceneGraph);
+  sceneGraph->sceneTree = vulkan_scene_tree_create(sceneGraph, renderCacheList);
   sceneGraph->root = NULL;
   sceneGraph->nodes = NULL;
 

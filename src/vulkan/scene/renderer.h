@@ -2,18 +2,20 @@
  */
 #pragma once
 
-#include "../batch.h"
+#include "../objects/batch.h"
 #include "graph.h"
 
-#include "../objects.h"
+#include "../objects/unified_geometry_buffer.h"
+#include "../objects/unified_uniform_buffer.h"
 
 /// Creates and destroys Vulkan objects used to draw scene described by scene data entities.
 typedef struct vulkan_scene_renderer {
   /* CPU state */
   data_asset_db *assetDb; /// Pointer.
   vulkan_data_scene *data;
-  vulkan_scene_graph *sceneGraph;
+  vulkan_render_cache_list *renderCacheList;
   vulkan_batches *batches;
+  vulkan_scene_graph *sceneGraph;
 
   /* GPU state */
   vulkan_device *vkd; /// Pointer.

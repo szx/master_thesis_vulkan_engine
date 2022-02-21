@@ -1,10 +1,11 @@
 #include "tree.h"
-#include "cache_list.h"
+#include "../objects/render_cache_list.h"
 
-vulkan_scene_tree *vulkan_scene_tree_create(vulkan_scene_graph *sceneGraph) {
+vulkan_scene_tree *vulkan_scene_tree_create(vulkan_scene_graph *sceneGraph,
+                                            vulkan_render_cache_list *renderCacheList) {
   vulkan_scene_tree *sceneTree = core_alloc(sizeof(vulkan_scene_tree));
   sceneTree->graph = sceneGraph;
-  sceneTree->cacheList = vulkan_scene_cache_list_create(sceneTree);
+  sceneTree->renderCacheList = renderCacheList;
   sceneTree->root = NULL;
   sceneTree->nodes = NULL;
   utarray_alloc(sceneTree->dirtyNodes, sizeof(vulkan_scene_node *));
@@ -15,8 +16,6 @@ void vulkan_scene_tree_destroy(vulkan_scene_tree *sceneTree) {
   utarray_free(sceneTree->dirtyNodes);
 
   dl_foreach_elem(vulkan_scene_node *, node, sceneTree->nodes, { vulkan_scene_node_destroy(node); })
-
-  vulkan_scene_cache_list_destroy(sceneTree->cacheList);
 
   core_free(sceneTree);
 }
@@ -36,7 +35,7 @@ vulkan_scene_node *vulkan_scene_tree_add_node(vulkan_scene_tree *sceneTree,
 
   utarray_push_back(sceneGraphNode->observers, &sceneTreeNode);
   if (type == vulkan_scene_node_entity_type_primitive) {
-    vulkan_scene_cache_list_add_cache(sceneTree->cacheList, sceneTreeNode->cache);
+    vulkan_render_cache_list_add_cache(sceneTree->renderCacheList, sceneTreeNode->cache);
   }
 
   if (sceneTreeNode->type == vulkan_scene_node_entity_type_object) {
@@ -95,7 +94,7 @@ void validate_node(vulkan_scene_node *node) {
   assert(utarray_len(node->parentNodes) == 0 || utarray_len(node->parentNodes) == 1);
   if (utarray_len(node->parentNodes) == 1) {
     vulkan_scene_node *parent = *(vulkan_scene_node **)utarray_front(node->parentNodes);
-    vulkan_scene_cache_accumulate(node->cache, parent->cache);
+    vulkan_render_cache_accumulate(node->cache, parent->cache);
   }
 
   utarray_foreach_elem_deref (vulkan_scene_node *, childObjectNode, node->childObjectNodes) {
@@ -120,5 +119,5 @@ void vulkan_scene_tree_debug_print(vulkan_scene_tree *sceneTree) {
   log_raw(stdout, "digraph scene_tree {");
   vulkan_scene_node_debug_print(sceneTree->root);
   log_raw(stdout, "}\n");
-  vulkan_scene_cache_list_debug_print(sceneTree->cacheList);
+  vulkan_render_cache_list_debug_print(sceneTree->renderCacheList);
 }
