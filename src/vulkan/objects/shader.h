@@ -1,8 +1,8 @@
 /* GLSL shader to SPIR-V binary compiler */
 #pragma once
 
-#include "device.h"
-#include "objects/vertex_stream.h"
+#include "common.h"
+#include "vertex_stream.h"
 
 /// Describes one vertex input (or output) attribute defined in GLSL shader.
 /// Examples:

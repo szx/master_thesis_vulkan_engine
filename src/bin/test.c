@@ -1,6 +1,5 @@
 #include "../core/core.h"
 #include "../data/data.h"
-#include "../parser/glsl_parser.h"
 #include "../vulkan/vulkan.h"
 #include "greatest.h"
 

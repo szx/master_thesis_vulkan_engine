@@ -4,6 +4,7 @@
 
 #include "buffer.h"
 #include "common.h"
+#include "shader.h"
 
 typedef struct vulkan_unified_uniform_buffer {
   /* CPU state  */
@@ -21,7 +22,10 @@ typedef struct vulkan_unified_uniform_buffer {
 vulkan_unified_uniform_buffer *vulkan_unified_uniform_buffer_create(vulkan_device *vkd);
 void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *uniformBuffer);
 
-// HIRO: Unified uniform buffer. (register structs?)
+/* HIRO: uniform/storage buffers for:
+ * node cached transforms
+ * node cached materials
+*/
 
 void vulkan_unified_uniform_buffer_send_to_device(vulkan_unified_uniform_buffer *uniformBuffer);
 

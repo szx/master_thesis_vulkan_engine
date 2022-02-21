@@ -90,31 +90,6 @@ set(PIP3_EXECUTABLE "${PIP3_EXECUTABLE}/pip3")
 message(STATUS "PIP3_EXECUTABLE: ${PIP3_EXECUTABLE}")
 execute_process(COMMAND ${PIP3_EXECUTABLE} install -r ${SCRIPTS_PATH}/requirements.txt)
 
-# build packcc during configure
-if (WIN32)
-    if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
-        set(PACKCC_VERSION "mingw-gcc")
-    elseif (CMAKE_C_COMPILER_ID STREQUAL "Clang")
-        set(PACKCC_VERSION "mingw-clang")
-    elseif (CMAKE_C_COMPILER_ID STREQUAL "MSVC")
-        set(PACKCC_VERSION "msvc")
-    else ()
-        message(FATAL_ERROR "packcc: unsupported compiler")
-    endif ()
-else ()
-    if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
-        set(PACKCC_VERSION "gcc")
-    elseif (CMAKE_C_COMPILER_ID STREQUAL "Clang")
-        set(PACKCC_VERSION "clang")
-    else ()
-        message(FATAL_ERROR "packcc: unsupported compiler")
-    endif ()
-endif ()
-execute_process(COMMAND make WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/packcc/build/${PACKCC_VERSION}")
-set(PACKCC_BIN "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/packcc/build/${PACKCC_VERSION}/release/bin/packcc")
-message(STATUS "PACKCC_BIN: ${PACKCC_BIN}")
-
-
 # define source files
 file(GLOB_RECURSE C_SOURCES "src/*.c") # without bin/ and codegen/
 file(GLOB_RECURSE C_BIN_SOURCES "src/bin/*.c")
@@ -143,29 +118,6 @@ add_custom_command(
         COMMAND ${Python3_EXECUTABLE} ${SCRIPTS_PATH}/codegen.py
         COMMENT "Python codegen for headers."
         VERBATIM)
-
-# define packcc parser generation
-file(GLOB_RECURSE C_GENERATOR_PEGS "src/*.peg")
-set(C_GENERATOR_PEGS_OUTPUTS)
-foreach (PEG ${C_GENERATOR_PEGS})
-    string(REGEX REPLACE "[.]peg$" ".c" OUTPUT_SOURCE ${PEG})
-    string(REGEX REPLACE "[.]peg$" ".h" OUTPUT_HEADER ${PEG})
-    add_custom_command(
-            OUTPUT ${OUTPUT_SOURCE} ${OUTPUT_HEADER}
-            DEPENDS ${PEG}
-            COMMAND ${PACKCC_BIN} ${PEG}
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src
-            COMMENT "Generating ${PEG} outputs"
-            VERBATIM)
-    list(APPEND C_GENERATOR_PEGS_OUTPUTS ${OUTPUT_SOURCE} ${OUTPUT_HEADER})
-endforeach ()
-message(STATUS "C_GENERATOR_PEGS_OUTPUTS: ${C_GENERATOR_PEGS_OUTPUTS}")
-add_custom_target(
-        codegen_packcc
-        ALL
-        DEPENDS ${C_GENERATOR_PEGS}
-        SOURCES ${C_GENERATOR_PEGS})
-set_source_files_properties(${C_GENERATOR_PEGS_OUTPUTS} PROPERTIES GENERATED TRUE)
 
 
 # copy unprocessed assets to directory with executables
@@ -212,7 +164,6 @@ message(STATUS "C_CODEGEN_SOURCES: ${C_CODEGEN_SOURCES}")
 foreach (C_BIN_SOURCE_PATH ${C_BIN_SOURCES})
     get_filename_component(EXECUTABLE_NAME ${C_BIN_SOURCE_PATH} NAME_WE)
     add_executable(${EXECUTABLE_NAME} ${C_BIN_SOURCE_PATH})
-    add_dependencies(${EXECUTABLE_NAME} codegen_packcc)
     add_dependencies(${EXECUTABLE_NAME} copy_assets)
     if (NOT ${EXECUTABLE_NAME} STREQUAL "asset_pipeline")
         add_dependencies(${EXECUTABLE_NAME} run_asset_pipeline)
@@ -224,7 +175,7 @@ foreach (C_BIN_SOURCE_PATH ${C_BIN_SOURCES})
     endif ()
     target_precompile_headers(${EXECUTABLE_NAME} PRIVATE ${C_PRECOMPILED_HEADERS})
     target_sources(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_ADDITIONAL_SOURCES})
-    target_sources(${EXECUTABLE_NAME} PUBLIC ${C_SOURCES} ${C_HEADERS} ${C_GENERATOR_PEGS_OUTPUTS} ${C_CODEGEN_HEADERS} ${C_CODEGEN_SOURCES})
+    target_sources(${EXECUTABLE_NAME} PUBLIC ${C_SOURCES} ${C_HEADERS} ${C_CODEGEN_HEADERS} ${C_CODEGEN_SOURCES})
     target_link_directories(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_LIBRARY_PATHS})
     target_link_libraries(${EXECUTABLE_NAME} LINK_PUBLIC ${EXTERNAL_LIBRARIES})
     # add compiler options

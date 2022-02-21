@@ -1,7 +1,5 @@
 #include "shader.h"
 
-#include "../parser/glsl_parser.h"
-
 static size_t vulkanShaderCount = 0;
 static shaderc_compiler_t compiler;
 
@@ -47,109 +45,10 @@ void vulkan_push_constant_description_destroy(vulkan_push_constant_description *
   core_free(description);
 }
 
-typedef enum glsl_parser_callback_pass {
-  CountDescriptors,
-  ParseDescriptors,
-  Finished
-} glsl_parser_callback_pass;
-
-typedef struct glsl_parser_callback_data {
-  parser_state *state;
-  glsl_parser_callback_pass pass;
-  size_t inputAttributeDescriptionsSize;
-  size_t inputAttributeDescriptionsIdx;
-  size_t outputAttributeDescriptionsSize;
-  size_t outputAttributeDescriptionsIdx;
-  vulkan_shader_info *info;
-} glsl_parser_callback_data;
-
-static size_t glsl_parser_node_to_size(parser_state *state, parser_ast_node *node) {
-  if (node->type == VariableDeclaration) {
-    parser_ast_node *typeNode = node->childNodes;
-    parser_ast_node *componentNode = typeNode->childNodes;
-    size_t componentNum = parser_ast_node_convert_int(state, componentNode);
-    if (typeNode->type == VectorType) {
-      return componentNum * sizeof(float);
-    }
-    if (typeNode->type == MatrixType) {
-      return componentNum * componentNum * sizeof(float);
-    }
-  }
-  assert(0);
-  return 0;
-}
-
-static bool glsl_parser_callback(parser_ast_node *node, void *callbackData) {
-  glsl_parser_callback_data *data = callbackData;
-  if (data->pass == CountDescriptors) {
-    if (node->type == VertexInputAttribute) {
-      data->inputAttributeDescriptionsSize += 1;
-    } else if (node->type == VertexOutputAttribute) {
-      data->outputAttributeDescriptionsSize += 1;
-    }
-  } else if (data->pass == ParseDescriptors) {
-    if (node->type == VertexInputAttribute || node->type == VertexOutputAttribute) {
-      parser_ast_node *locationNode = node->childNodes;
-      size_t location = parser_ast_node_convert_int(data->state, locationNode);
-
-      parser_ast_node *vectorNode = locationNode->next;
-      size_t componentNum = parser_ast_node_convert_int(data->state, vectorNode->childNodes);
-
-      parser_ast_node *identifierNode = vectorNode->next;
-      char *identifier = parser_ast_node_c_str(data->state, identifierNode);
-
-      vulkan_attribute_type type = vulkan_attribute_type_unknown;
-      // HIRO REMOVE ALL SHADER PARSING
-#define LEN(enumerator) strlen(#enumerator) - strlen(strrchr(#enumerator, '_'))
-#define ENUMERATOR(enumerator)                                                                     \
-  if (strncmp(identifier + 2, #enumerator, LEN(enumerator)) == 0 ||                                \
-      strncmp(identifier + 3, #enumerator, LEN(enumerator)) == 0) {                                \
-    type = enumerator;                                                                             \
-  }
-      ENUMERATOR(vulkan_attribute_type_position)
-      ENUMERATOR(vulkan_attribute_type_normal)
-      ENUMERATOR(vulkan_attribute_type_position)
-      ENUMERATOR(vulkan_attribute_type_color)
-      ENUMERATOR(vulkan_attribute_type_texcoord)
-      ENUMERATOR(vulkan_attribute_type_tangent)
-#undef LEN
-      verify(type != vulkan_attribute_type_unknown);
-
-      if (node->type == VertexInputAttribute) {
-        vulkan_vertex_attribute_description_init(
-            &data->info->inputAttributeDescriptions.ptr[data->inputAttributeDescriptionsIdx],
-            location, componentNum, identifier, type);
-        data->inputAttributeDescriptionsIdx += 1;
-        verify(data->inputAttributeDescriptionsIdx <= data->inputAttributeDescriptionsSize);
-      } else if (node->type == VertexOutputAttribute) {
-        vulkan_vertex_attribute_description_init(
-            &data->info->outputAttributeDescriptions.ptr[data->outputAttributeDescriptionsIdx],
-            location, componentNum, identifier, type);
-        data->outputAttributeDescriptionsIdx += 1;
-        verify(data->outputAttributeDescriptionsIdx <= data->outputAttributeDescriptionsSize);
-      }
-      free(identifier);
-    } else if (node->type == PushConstant) {
-      char *blockName = parser_ast_node_c_str(data->state, node->childNodes);
-      char *instanceName = parser_ast_node_c_str(data->state, node->childNodes->next);
-      parser_ast_node *uniformBlockNode = node->childNodes->next->next;
-      size_t size = 0;
-      parser_ast_node *variableDeclaration;
-      LL_FOREACH(uniformBlockNode->childNodes, variableDeclaration) {
-        size += glsl_parser_node_to_size(data->state, variableDeclaration);
-      }
-      data->info->pushConstantDescription =
-          vulkan_push_constant_description_create(blockName, instanceName, size);
-      free(blockName);
-      free(instanceName);
-    }
-  }
-  return node->type == TranslationUnit;
-}
 
 void vulkan_shader_info_init(vulkan_shader_info *info, vulkan_shader *shader) {
   log_debug("vulkan_shader_info_init");
-  parser_state state = glsl_parser_execute(utstring_body(shader->glslCode));
+  /*parser_state state = glsl_parser_execute(utstring_body(shader->glslCode));
   /// parser_debug_print(&state);
   verify(state.isValid == true);
   glsl_parser_callback_data data = {.state = &state, .pass = CountDescriptors, .info = info};
@@ -160,7 +59,7 @@ void vulkan_shader_info_init(vulkan_shader_info *info, vulkan_shader *shader) {
   data.pass = ParseDescriptors;
   parser_ast_node_visit(state.programNode, glsl_parser_callback, &data);
   data.pass = Finished;
-  parser_state_free(&state);
+  parser_state_free(&state);*/
 }
 
 void vulkan_shader_info_deinit(vulkan_shader_info *info) {

@@ -3,7 +3,6 @@
 
 #include "../core/platform.h"
 #include "scene/renderer.h"
-#include "shader.h"
 #include "swap_chain.h"
 
 // TODO: More render pass types, configuration.
