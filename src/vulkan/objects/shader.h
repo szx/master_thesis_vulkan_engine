@@ -19,16 +19,14 @@ typedef struct vulkan_shader {
   vulkan_device *vkd; /// Pointer.
   vulkan_shader_type type;
   uint32_t *spvCode;
-
   UT_string *glslCode;
   size_t spvSize;
   VkShaderModule module;
-
   /* reflection */
-  // HIRO: SPIRV-Reflect
+  // HIRO: generate pipeline layout,
+  // HIRO generate descriptor set layout
 } vulkan_shader;
 
-// HIRO input should be vulkan_shader_data?
 // HIRO use in render pass
 vulkan_shader *vulkan_shader_create_with_str(vulkan_device *vkd, vulkan_shader_type type,
                                              UT_string *text);

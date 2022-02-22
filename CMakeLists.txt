@@ -5,18 +5,23 @@ project(cpptest LANGUAGES C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-# add headers and shaderc from Vulkan SDK
+# add headers, SPIRV-Reflect and shaderc from Vulkan SDK
 set(VULKAN_SDK_PATH "$ENV{VULKAN_SDK}")
 set(VULKAN_INCLUDE_PATH "${VULKAN_SDK_PATH}/include")
 set(VULKAN_LIBRARY_PATH "${VULKAN_SDK_PATH}/lib")
 set(ENV{PKG_CONFIG_PATH} "${VULKAN_LIBRARY_PATH}/pkgconfig")
 set(VULKAN_LIBRARIES "vulkan")
+message(STATUS "VULKAN_SDK_PATH: ${VULKAN_SDK_PATH}")
 find_package(PkgConfig REQUIRED)
 pkg_search_module(shaderc REQUIRED shaderc_combined)
 if (NOT shaderc_FOUND)
     message(FATAL_ERROR "shaderc not found")
 endif ()
 list(APPEND shaderc_LIBRARIES stdc++) # TODO: Why it stopped linking correctly?
+pkg_search_module(shaderc REQUIRED shaderc_combined)
+if (NOT shaderc_FOUND)
+    message(FATAL_ERROR "shaderc not found")
+endif ()
 
 # add external library glfw
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)

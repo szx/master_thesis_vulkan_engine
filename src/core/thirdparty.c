@@ -5,3 +5,8 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#include "SPIRV-Reflect/spirv_reflect.c"
+#pragma GCC diagnostic pop

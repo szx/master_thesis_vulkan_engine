@@ -16,10 +16,6 @@ shaderc_shader_kind vulkan_shader_type_shaderc_kind(vulkan_shader_type type) {
 
 vulkan_shader *vulkan_shader_create_with_str(vulkan_device *vkd, vulkan_shader_type type,
                                              UT_string *text) {
-  if (vulkanShaderCount == 0) {
-    compiler = shaderc_compiler_initialize();
-  }
-
   vulkan_shader *shader = core_alloc(sizeof(vulkan_shader));
 
   shader->vkd = vkd;
@@ -28,6 +24,10 @@ vulkan_shader *vulkan_shader_create_with_str(vulkan_device *vkd, vulkan_shader_t
   shader->type = type;
   verify(utstring_len(shader->glslCode) > 0);
 
+  /* compiling */
+  if (vulkanShaderCount == 0) {
+    compiler = shaderc_compiler_initialize();
+  }
   verify(compiler != NULL);
   vulkanShaderCount += 1;
   shaderc_compile_options_t options = shaderc_compile_options_initialize();
@@ -46,7 +46,28 @@ vulkan_shader *vulkan_shader_create_with_str(vulkan_device *vkd, vulkan_shader_t
   shader->module = vulkan_create_shader_module(shader->vkd, shader->spvCode, shader->spvSize,
                                                vulkan_shader_type_debug_str(shader->type));
 
-  // HIRO reflect
+  /* reflection */
+  SpvReflectShaderModule reflectModule;
+  verify(spvReflectCreateShaderModule(shader->spvSize, shader->spvCode, &reflectModule) ==
+         SPV_REFLECT_RESULT_SUCCESS);
+
+  // Input variables
+  uint32_t inputVariableCount = 0;
+  verify(spvReflectEnumerateInputVariables(&reflectModule, &inputVariableCount, NULL) ==
+         SPV_REFLECT_RESULT_SUCCESS);
+  // HIRO move inputVariables to vulkan_shader as UT_array.
+  SpvReflectInterfaceVariable **inputVariables = (SpvReflectInterfaceVariable **)malloc(
+      inputVariableCount * sizeof(SpvReflectInterfaceVariable *));
+  verify(spvReflectEnumerateInputVariables(&reflectModule, &inputVariableCount, inputVariables) ==
+         SPV_REFLECT_RESULT_SUCCESS);
+  for (size_t idx = 0; idx < inputVariableCount; idx++) {
+    SpvReflectInterfaceVariable *inputVariable = inputVariables[idx];
+    log_debug("inputVariable[%d]: %s %d", idx, inputVariable->name, inputVariable->location);
+  }
+  // HIRO: Output variables, descriptor bindings, descriptor sets, and push constants
+
+  spvReflectDestroyShaderModule(&reflectModule);
+
   return shader;
 }
 

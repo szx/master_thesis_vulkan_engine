@@ -3,6 +3,7 @@
 #define VK_ENABLE_BETA_EXTENSIONS
 #include "vulkan/vulkan.h"
 
+#include "SPIRV-Reflect/spirv_reflect.h"
 #include "meshoptimizer.h"
 #include "shaderc/shaderc.h"
 #include <sqlite3.h>
