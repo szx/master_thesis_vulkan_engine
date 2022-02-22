@@ -155,7 +155,8 @@ TEST scene_graph_building() {
   utstring_alloc(sceneName, GLTF_NAME);
   vulkan_data_scene *assetDbSceneData = vulkan_data_scene_create_with_asset_db(assetDb, sceneName);
   // vulkan_data_scene_debug_print(assetDbSceneData);
-  vulkan_render_cache_list *renderCacheList = vulkan_render_cache_list_create();
+  vulkan_render_cache_list *renderCacheList =
+      vulkan_render_cache_list_create(config->graphicsMaxInstanceCount);
   vulkan_scene_graph *sceneGraph = vulkan_scene_graph_create(assetDbSceneData, renderCacheList);
 
 #define ASSERT_GRAPH()                                                                             \
@@ -282,9 +283,9 @@ GREATEST_MAIN_DEFS(); // NOLINT
 int main(int argc, char *argv[]) {
   GREATEST_MAIN_BEGIN();
   platform_create();
-  RUN_SUITE(shaderc_suite);
-  // RUN_SUITE(gltf_suite);
-  // RUN_SUITE(scene_graph_suite);
+  // RUN_SUITE(shaderc_suite);
+  //  RUN_SUITE(gltf_suite);
+  RUN_SUITE(scene_graph_suite);
   platform_destroy();
   GREATEST_MAIN_END();
 }

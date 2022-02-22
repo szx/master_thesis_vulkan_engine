@@ -22,6 +22,7 @@ typedef struct vulkan_data_camera {
 
 void vulkan_data_camera_init(vulkan_data_camera *camera, vulkan_data_scene *sceneData);
 void vulkan_data_camera_deinit(vulkan_data_camera *camera);
+void vulkan_data_camera_copy(vulkan_data_camera *dst, vulkan_data_camera *src);
 
 void vulkan_data_camera_update_aspect_ratio(vulkan_data_camera *camera, float aspectRatio);
 

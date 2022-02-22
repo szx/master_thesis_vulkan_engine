@@ -1,9 +1,10 @@
 #include "render_cache_list.h"
 #include "../data/primitive.h"
 
-vulkan_render_cache_list *vulkan_render_cache_list_create() {
+vulkan_render_cache_list *vulkan_render_cache_list_create(size_t maxCount) {
   vulkan_render_cache_list *renderCacheList = core_alloc(sizeof(vulkan_render_cache_list));
 
+  renderCacheList->maxCount = maxCount;
   utarray_alloc(renderCacheList->caches, sizeof(vulkan_scene_node *));
   renderCacheList->attributes = vulkan_attribute_type_unknown;
 
@@ -19,6 +20,7 @@ void vulkan_render_cache_list_destroy(vulkan_render_cache_list *renderCacheList)
 
 void vulkan_render_cache_list_add_cache(vulkan_render_cache_list *renderCacheList,
                                         vulkan_render_cache *cache) {
+  verify(utarray_len(renderCacheList->caches) < renderCacheList->maxCount);
   utarray_push_back(renderCacheList->caches, &cache);
   renderCacheList->dirty = true;
 }

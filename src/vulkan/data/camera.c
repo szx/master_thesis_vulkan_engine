@@ -13,6 +13,16 @@ void vulkan_data_camera_init(vulkan_data_camera *camera, vulkan_data_scene *scen
 
 void vulkan_data_camera_deinit(vulkan_data_camera *camera) {}
 
+void vulkan_data_camera_copy(vulkan_data_camera *dst, vulkan_data_camera *src) {
+  glm_vec3_copy(src->position, dst->position);
+  glm_vec4_copy(src->rotation, dst->rotation);
+  dst->fovY = src->fovY;
+  dst->aspectRatio = src->aspectRatio;
+  dst->nearZ = src->nearZ;
+  dst->farZ = src->farZ;
+  dst->dirty = true;
+}
+
 void vulkan_data_camera_update_aspect_ratio(vulkan_data_camera *camera, float aspectRatio) {
   camera->aspectRatio = aspectRatio;
   camera->dirty = true;

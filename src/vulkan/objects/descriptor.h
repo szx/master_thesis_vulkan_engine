@@ -6,9 +6,13 @@
 #include "buffer.h"
 #include "common.h"
 
-typedef struct vulkan_instance_data_uniform_struct {
+typedef struct vulkan_global_uniform_struct {
   mat4 viewMat;
   mat4 projMat;
+} vulkan_global_uniform_struct;
+
+typedef struct vulkan_instance_data_uniform_struct {
+  mat4 modelMat;
 } vulkan_instance_data_uniform_struct;
 
 // *_uniform_element

@@ -430,7 +430,7 @@ void vulkan_render_context_load_scene(vulkan_render_context *rctx, UT_string *sc
 }
 
 void vulkan_render_context_update_data(vulkan_render_context *rctx) {
-  vulkan_scene_renderer_update_data(rctx->scene);
+  vulkan_scene_renderer_update(rctx->scene);
 }
 
 void vulkan_render_context_send_to_device(vulkan_render_context *rctx) {

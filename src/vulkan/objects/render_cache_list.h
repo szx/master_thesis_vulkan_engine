@@ -8,14 +8,15 @@
 #include "vertex_stream.h"
 
 typedef struct vulkan_render_cache_list {
-
+  /* render cache list */
+  size_t maxCount;                  /// Max number of render caches.
   UT_array *caches;                 /// vulkan_render_cache* array of primitive scene node caches.
   vulkan_attribute_type attributes; /// Max set of primitive vertex attributes.
 
   bool dirty; /// True if added or removed cache.
 } vulkan_render_cache_list;
 
-vulkan_render_cache_list *vulkan_render_cache_list_create();
+vulkan_render_cache_list *vulkan_render_cache_list_create(size_t maxCount);
 void vulkan_render_cache_list_destroy(vulkan_render_cache_list *renderCacheList);
 
 void vulkan_render_cache_list_add_cache(vulkan_render_cache_list *renderCacheList,

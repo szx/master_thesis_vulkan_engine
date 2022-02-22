@@ -1,15 +1,20 @@
 #include "unified_uniform_buffer.h"
+#include "../data/camera.h"
 
-vulkan_unified_uniform_buffer *vulkan_unified_uniform_buffer_create(vulkan_device *vkd) {
+vulkan_unified_uniform_buffer *
+vulkan_unified_uniform_buffer_create(vulkan_device *vkd, vulkan_render_cache_list *renderCacheList,
+                                     vulkan_data_camera *camera) {
   vulkan_unified_uniform_buffer *uniformBuffer = core_alloc(sizeof(vulkan_unified_uniform_buffer));
-  // HIRO: Determine number of instances from cache list (accumulate in it?).
-  uniformBuffer->instanceData = vulkan_instance_data_uniform_buffer_data_create(100);
-  for (size_t idx = 0; idx < uniformBuffer->instanceData->count; idx++) {
-    glm_mat4_identity(uniformBuffer->instanceData->elements[idx].viewMat);
-    glm_mat4_identity(uniformBuffer->instanceData->elements[idx].projMat);
-  }
-  // HIRO how to handle multiple _uniform_buffer_data? (alignment)
-  size_t size = vulkan_instance_data_uniform_buffer_data_get_size(uniformBuffer->instanceData);
+  uniformBuffer->renderCacheList = renderCacheList;
+  uniformBuffer->camera = camera;
+
+  uniformBuffer->instanceData =
+      vulkan_instance_data_uniform_buffer_data_create(renderCacheList->maxCount);
+  uniformBuffer->globalData = vulkan_global_uniform_buffer_data_create(1);
+
+  size_t size = vulkan_instance_data_uniform_buffer_data_get_size(uniformBuffer->instanceData) +
+                vulkan_global_uniform_buffer_data_get_size(uniformBuffer->globalData);
+  // HIRO partial update
   uniformBuffer->buffer =
       vulkan_buffer_create(vkd, vulkan_buffer_type_uniform, uniformBuffer->instanceData, size);
 
@@ -18,8 +23,40 @@ vulkan_unified_uniform_buffer *vulkan_unified_uniform_buffer_create(vulkan_devic
 }
 
 void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *uniformBuffer) {
+  vulkan_global_uniform_buffer_data_destroy(uniformBuffer->globalData);
   vulkan_instance_data_uniform_buffer_data_destroy(uniformBuffer->instanceData);
+  vulkan_unified_uniform_buffer_destroy(uniformBuffer);
   core_free(uniformBuffer);
+}
+
+void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniformBuffer) {
+  assert(utarray_len(uniformBuffer->renderCacheList->caches) > 0);
+
+  for (size_t idx = 0; idx < uniformBuffer->instanceData->count; idx++) {
+    vulkan_render_cache *cache = utarray_eltptr(uniformBuffer->renderCacheList->caches, idx);
+    glm_mat4_copy(cache->transform, uniformBuffer->instanceData->elements[idx].modelMat);
+  }
+
+  if (uniformBuffer->camera->dirty) {
+    vulkan_data_camera *camera = uniformBuffer->camera;
+
+    vec3 negativePosition;
+    mat4 translationMat;
+    glm_vec3_negate_to(camera->position, negativePosition);
+    glm_translate_make(translationMat, negativePosition);
+    mat4 rotationMat;
+    glm_quat_mat4(camera->rotation, rotationMat);
+
+    vulkan_global_uniform_buffer_element *element = &uniformBuffer->globalData->elements[0];
+    glm_mat4_mul(rotationMat, translationMat, element->viewMat);
+    glm_perspective(camera->fovY, camera->aspectRatio, camera->nearZ, camera->farZ,
+                    element->projMat);
+    element->projMat[1][1] *= -1; // invert for Y+ pointing up
+
+    camera->dirty = false;
+  }
+
+  uniformBuffer->dirty = true;
 }
 
 void vulkan_unified_uniform_buffer_send_to_device(vulkan_unified_uniform_buffer *uniformBuffer) {
@@ -33,4 +70,5 @@ void vulkan_unified_uniform_buffer_debug_print(vulkan_unified_uniform_buffer *un
   assert(uniformBuffer->buffer->size > 0);
   log_debug("uniform buffer size=%d\n", uniformBuffer->buffer->size);
   log_debug("instance data count=%d\n", uniformBuffer->instanceData->count);
+  log_debug("global data count=%d\n", uniformBuffer->globalData->count);
 }
