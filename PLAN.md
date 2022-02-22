@@ -80,18 +80,18 @@ Co należy wyprodukować:
             - [ ] Maybe: LOD generation using meshoptimizer.
     - [ ] GPU-driven rendering pipeline (14.02):
         - [x] Loading scene data from asset database.
-        - [ ] **Scene graph.**
+        - [x] **Scene graph.**
             - [x] Build scene graph from scene data.
             - [x] Build scene tree from scene graph.
-            - [ ] Build object lists from scene tree.
-            - [ ] Build draw indirect buffers from object lists (draw call batching).
+            - [x] Build object lists from scene tree.
+            - [x] Build draw indirect buffers from object lists (draw call batching).
             - [ ] Non-essential features:
                 - [ ] Detection of cycles in scene graph (currently they result in infinite loops).
                 - [ ] Exhaustive testing (currently only example glTF scene is tested).
                 - [ ] Adding and removing primitives (currently only objects are supported).
-        - [ ] Scene geometry buffer
-            - [ ] **Building scene geometry buffer**
-            - [ ] Uploading scene geometry buffer to GPU
+        - [x] Scene geometry buffer
+            - [x] **Building scene geometry buffer**
+            - [x] Uploading scene geometry buffer to GPU
             - [x] One big vertex buffer
             - [ ] One big uniform buffer with object data indexed with object ID in vertex & fragment shaders
         - [ ] Culling using compute shader
@@ -126,8 +126,8 @@ Co należy wyprodukować:
 - [ ] Spis treści:
 	- [ ] ...
 - [ ] Źródła:
-	- [ ] Sergey Kosarevsky, Viktor Latypov, "3D Graphics Rendering Cookbook: A comprehensive guide to exploring
-	  rendering algorithms in modern OpenGL and Vulkan", 1 Edycja
-	- [ ] Randima Fernando, Mark J. Kilgard, "Język Cg"
+    - [ ] Sergey Kosarevsky, Viktor Latypov, "3D Graphics Rendering Cookbook: A comprehensive guide to exploring
+      rendering algorithms in modern OpenGL and Vulkan", 1 Edycja
+    - [ ] Randima Fernando, Mark J. Kilgard, "Język Cg"
 	- [ ] The Khronos® Vulkan Working Group, "Vulkan® 1.2.203 - A Specification (with all registered Vulkan extensions)"
 - [ ] CONTINUE: extracts summary

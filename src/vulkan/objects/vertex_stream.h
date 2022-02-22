@@ -41,3 +41,10 @@ void vulkan_interleaved_vertex_stream_add_primitive(vulkan_interleaved_vertex_st
                                                     vulkan_render_cache *cache);
 void vulkan_interleaved_vertex_stream_add_stream(vulkan_interleaved_vertex_stream *stream,
                                                  vulkan_interleaved_vertex_stream *other);
+
+size_t vulkan_interleaved_vertex_stream_get_vertex_buffer_binding_count(
+    vulkan_interleaved_vertex_stream *stream);
+
+VkVertexInputBindingDescription
+vulkan_interleaved_vertex_stream_get_vertex_buffer_binding_description(
+    vulkan_interleaved_vertex_stream *stream);

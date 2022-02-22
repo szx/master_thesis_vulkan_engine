@@ -36,8 +36,6 @@ typedef struct vulkan_render_pass {
 vulkan_render_pass *vulkan_render_pass_create(vulkan_pipeline *pipeline,
                                               vulkan_render_pass_type type);
 void vulkan_render_pass_destroy(vulkan_render_pass *renderPass);
-/// Validate render pass.
-void vulkan_render_pass_validate(vulkan_render_pass *renderPass, vulkan_scene_renderer *scene);
 
 /// Describes rendering pipeline.
 typedef struct vulkan_pipeline {

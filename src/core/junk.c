@@ -28,3 +28,12 @@ void strstrip(char **str) {
   strlstrip(str);
   strrstrip(str);
 }
+
+size_t count_bits(size_t bits) {
+  // http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetKernighan
+  size_t count;
+  for (count = 0; bits; count++) {
+    bits %= bits - 1;
+  }
+  return count;
+}

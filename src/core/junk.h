@@ -55,6 +55,9 @@ void strrstrip(char **str);
 /// NOTE: Replaces right whitespaces with '\0'.
 void strstrip(char **str);
 
+/// Count bits. Useful for flags.
+size_t count_bits(size_t bits);
+
 typedef XXH64_hash_t hash_t;
 #define HASH_START(_state)                                                                         \
   XXH64_state_t *const _state = XXH64_createState();                                               \

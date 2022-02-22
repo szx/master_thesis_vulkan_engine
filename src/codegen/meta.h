@@ -184,3 +184,4 @@ void vulkan_data_vertex_attribute_component_type_debug_print(int flags);
 const char *vulkan_render_pass_type_debug_str(int value);
 void vulkan_scene_node_container_type_debug_print(int flags);
 const char *vulkan_scene_node_entity_type_debug_str(int value);
+const char *vulkan_shader_type_debug_str(int value);

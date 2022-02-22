@@ -1,5 +1,7 @@
 #include "render_context.h"
 
+// HIRO move renderpass to objects/
+
 /// Create render pass with default functionality.
 void create_render_pass_info(vulkan_render_pass *renderPass) {
   // TODO: Previous and next render pass?
@@ -12,42 +14,19 @@ void create_render_pass_info(vulkan_render_pass *renderPass) {
   // TODO: vertex input attributes of shader have to match those of scene.
 }
 
-void vulkan_render_pass_validate(vulkan_render_pass *renderPass, vulkan_scene_renderer *scene) {
-  // TODO: Previous and next render pass?
-  vulkan_render_pass_info *info = &renderPass->info;
-  vulkan_shader *vertShader = renderPass->vertShader;
-  vulkan_shader *fragShader = renderPass->fragShader;
-  verify(renderPass->info.supportedVertexAttributes > 0);
-  verify(vertShader != NULL);
-  verify(vertShader->type == shaderc_glsl_vertex_shader);
-  verify(core_array_count(vertShader->info.inputAttributeDescriptions) > 0);
-  verify(core_array_count(vertShader->info.outputAttributeDescriptions) > 0);
-  verify(fragShader != NULL);
-  verify(fragShader->type == shaderc_glsl_fragment_shader);
-  verify(core_array_count(fragShader->info.inputAttributeDescriptions) > 0);
-  verify(core_array_count(fragShader->info.outputAttributeDescriptions) > 0);
-  if ((renderPass->info.supportedVertexAttributes & vulkan_attribute_type_position) != 0) {
-    verify(core_array_count(vertShader->info.inputAttributeDescriptions) >= 1);
-    vulkan_vertex_attribute_description *description =
-        &vertShader->info.inputAttributeDescriptions.ptr[0];
-    verify(description->type == vulkan_attribute_type_position);
-  }
-  /*if ((renderPass->info.supportedVertexAttributes & vulkan_attribute_type_normal) != 0) {
-    verify(count_struct_array(vertShader->info.inputAttributeDescriptions) >= 2);
-    vulkan_vertex_attribute_description *description =
-        &vertShader->info.inputAttributeDescriptions[1];
-    verify(description->type == vulkan_attribute_type_normal);
-  }*/
-  // TODO check if vertShader and fragShader attributes match.
-}
-
 void create_shaders(vulkan_render_pass *renderPass) {
   // TODO: Different shaders for different render pass types.
   // TODO generate glsl shaders using render_pass_info.
   UT_string *vertInputPath = get_asset_file_path("shaders", "shader.vert");
   UT_string *fragInputPath = get_asset_file_path("shaders", "shader.frag");
-  renderPass->vertShader = vulkan_shader_create_with_path(renderPass->vkd, vertInputPath);
-  renderPass->fragShader = vulkan_shader_create_with_path(renderPass->vkd, fragInputPath);
+  UT_string *vertGlslSource = read_text_file(vertInputPath);
+  UT_string *fragGlslSource = read_text_file(fragInputPath);
+  renderPass->vertShader =
+      vulkan_shader_create_with_str(renderPass->vkd, vulkan_shader_type_vertex, vertGlslSource);
+  renderPass->fragShader =
+      vulkan_shader_create_with_str(renderPass->vkd, vulkan_shader_type_fragment, fragGlslSource);
+  utstring_free(vertGlslSource);
+  utstring_free(fragGlslSource);
   utstring_free(vertInputPath);
   utstring_free(fragInputPath);
 }
@@ -96,7 +75,7 @@ void create_render_pass(vulkan_render_pass *renderPass) {
 }
 
 void create_graphics_pipeline(vulkan_render_pass *renderPass) {
-  // TODO bake pipelines with different VkVertexInputAttributeDescription
+  //
   VkPipelineShaderStageCreateInfo vertShaderStageInfo = {0};
   vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
   vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
@@ -114,17 +93,17 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
   VkPipelineVertexInputStateCreateInfo vertexInputInfo = {0};
   vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
   size_t vertexBindingDescriptionsCount =
-      vulkan_shader_info_get_binding_count(&renderPass->vertShader->info);
-  VkVertexInputBindingDescription vertexInputBindingDescription =
-      vulkan_shader_info_get_binding_description(&renderPass->vertShader->info);
+      1; // vulkan_shader_info_get_binding_count(&renderPass->vertShader->info);
+  VkVertexInputBindingDescription vertexInputBindingDescription = {
+      0}; // vulkan_shader_info_get_binding_description(&renderPass->vertShader->info);
   vertexInputInfo.vertexBindingDescriptionCount = vertexBindingDescriptionsCount;
   vertexInputInfo.pVertexBindingDescriptions = &vertexInputBindingDescription;
   size_t vertexAttributeDescriptionsCount;
-  VkVertexInputAttributeDescription *vertexAttributeDescriptions =
-      vulkan_shader_info_get_attribute_descriptions(&renderPass->vertShader->info,
-                                                    &vertexAttributeDescriptionsCount);
-  vertexInputInfo.vertexAttributeDescriptionCount = vertexAttributeDescriptionsCount;
-  vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions;
+  // VkVertexInputAttributeDescription *vertexAttributeDescriptions =
+  // vulkan_shader_info_get_attribute_descriptions(&renderPass->vertShader->info,
+  //                                               &vertexAttributeDescriptionsCount);
+  // vertexInputInfo.vertexAttributeDescriptionCount = vertexAttributeDescriptionsCount;
+  // vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions;
 
   VkPipelineInputAssemblyStateCreateInfo inputAssembly = {0};
   inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -193,13 +172,13 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
     pipelineLayoutInfo.setLayoutCount = 1;
     pipelineLayoutInfo.pSetLayouts = &renderPass->pipeline->descriptorSetLayout;
   }
-  VkPushConstantRange pushConstantRange = {0};
+  /*VkPushConstantRange pushConstantRange = {0};
   if (renderPass->info.usesPushConstants) {
     pushConstantRange =
         vulkan_shader_info_get_push_constant_range(renderPass->vertShader, renderPass->fragShader);
     pipelineLayoutInfo.pushConstantRangeCount = 1;
     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
-  }
+  }*/
 
   verify(vkCreatePipelineLayout(renderPass->vkd->device, &pipelineLayoutInfo, vka,
                                 &renderPass->pipelineLayout) == VK_SUCCESS);
@@ -222,7 +201,7 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
 
   verify(vkCreateGraphicsPipelines(renderPass->vkd->device, VK_NULL_HANDLE, 1, &pipelineInfo, vka,
                                    &renderPass->graphicsPipeline) == VK_SUCCESS);
-  free(vertexAttributeDescriptions);
+  // free(vertexAttributeDescriptions);
 }
 
 vulkan_render_pass *vulkan_render_pass_create(vulkan_pipeline *pipeline,
@@ -578,6 +557,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_renderer *scene
     // log_debug("draw object");
     if (1) {
       // HIRO: move transforms to instance data
+      /*
       void *pushConstantValuePtr = &firstCache->transform;
       VkShaderStageFlags pushConstantStageFlags = vulkan_shader_info_get_push_constant_stage_flags(
           renderPass->vertShader, renderPass->fragShader);
@@ -586,10 +566,12 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_renderer *scene
              renderPass->vertShader->info.pushConstantDescription->size);
       vkCmdPushConstants(frame->commandBuffer, renderPass->pipelineLayout, pushConstantStageFlags,
                          pushConstantOffset, sizeof(firstCache->transform), pushConstantValuePtr);
+                         */
     }
 
     // HIRO return only vertex buffer from unified geometry buffer helper function
-    size_t bindingCount = vulkan_shader_info_get_binding_count(&renderPass->vertShader->info);
+    size_t bindingCount = vulkan_interleaved_vertex_stream_get_vertex_buffer_binding_count(
+        scene->unifiedGeometryBuffer->interleavedVertexStream);
     assert(bindingCount == 1);
     VkBuffer vertexBuffer = scene->unifiedGeometryBuffer->vertexBuffer->buffer;
     VkBuffer vertexBuffers[bindingCount];

@@ -90,3 +90,63 @@ void vulkan_interleaved_vertex_stream_add_stream(vulkan_interleaved_vertex_strea
   utarray_concat(stream->indexData, other->indexData);
   utarray_concat(stream->vertexData, other->vertexData);
 }
+
+size_t vulkan_interleaved_vertex_stream_get_vertex_buffer_binding_count(
+    vulkan_interleaved_vertex_stream *stream) {
+  return 1;
+}
+
+VkVertexInputBindingDescription
+vulkan_interleaved_vertex_stream_get_vertex_buffer_binding_description(
+    vulkan_interleaved_vertex_stream *stream) {
+  VkVertexInputBindingDescription bindingDescription = {0};
+  bindingDescription.binding = 0;
+  bindingDescription.stride = utarray_eltsize(stream->vertexData);
+  assert(bindingDescription.stride > 0);
+  bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+  // TODO binding with input_rate_instance for instance data? But we have instance data descriptor.
+  return bindingDescription;
+}
+
+VkVertexInputAttributeDescription *
+vulkan_interleaved_vertex_stream_get_vertex_attribute_descriptions(
+    vulkan_interleaved_vertex_stream *stream, size_t *count) {
+  assert(stream->attributes > 0);
+  size_t attributes = stream->attributes;
+  *count = count_bits(attributes);
+
+  VkVertexInputAttributeDescription *attributeDescriptions =
+      core_alloc(*count * sizeof(VkVertexInputAttributeDescription));
+
+  size_t idx = 0;
+  size_t offset = 0;
+  while (attributes > 0) {
+    vulkan_attribute_type type = vulkan_attribute_type_unknown;
+    size_t componentNum = 3;
+    if ((attributes & vulkan_attribute_type_position) == 0) {
+      type = vulkan_attribute_type_position;
+    } else if ((attributes & vulkan_attribute_type_normal) == 0) {
+      type = vulkan_attribute_type_normal;
+    } else if ((attributes & vulkan_attribute_type_color) == 0) {
+      type = vulkan_attribute_type_color;
+    } else if ((attributes & vulkan_attribute_type_texcoord) == 0) {
+      type = vulkan_attribute_type_texcoord;
+      componentNum = 2;
+    } else {
+      panic("unknown attribute");
+    }
+
+    VkFormat format = VK_FORMAT_R32_SFLOAT + 3 * (componentNum - 1);
+    attributeDescriptions[idx].binding = 0;
+    attributeDescriptions[idx].location = idx;
+    attributeDescriptions[idx].format = format;
+    attributeDescriptions[idx].offset = offset;
+    offset += componentNum * sizeof(float);
+
+    attributes &= ~type;
+    idx++;
+  }
+
+  assert(offset > 0);
+  return attributeDescriptions;
+}

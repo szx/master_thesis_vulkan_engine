@@ -105,13 +105,24 @@ TEST shaderc_compiling() {
 
   UT_string *vertInputPath = get_asset_file_path("shaders", "shader.vert");
   UT_string *fragInputPath = get_asset_file_path("shaders", "shader.frag");
-  vulkan_shader *vertShader = vulkan_shader_create_with_path(vkd, vertInputPath);
-  vulkan_shader *fragShader = vulkan_shader_create_with_path(vkd, fragInputPath);
+  UT_string *vertGlslSource = read_text_file(vertInputPath);
+  UT_string *fragGlslSource = read_text_file(fragInputPath);
+  vulkan_shader *vertShader =
+      vulkan_shader_create_with_str(vkd, vulkan_shader_type_vertex, vertGlslSource);
+  vulkan_shader *fragShader =
+      vulkan_shader_create_with_str(vkd, vulkan_shader_type_fragment, fragGlslSource);
+  utstring_free(vertGlslSource);
+  utstring_free(fragGlslSource);
   utstring_free(vertInputPath);
   utstring_free(fragInputPath);
 
-  ASSERT_EQ(vertShader->type, shaderc_glsl_vertex_shader);
-  ASSERT_EQ(fragShader->type, shaderc_glsl_fragment_shader);
+  ASSERT(vertShader->type == vulkan_shader_type_vertex);
+  ASSERT(fragShader->type == vulkan_shader_type_fragment);
+  ASSERT(vertShader->spvSize > 0);
+  ASSERT(fragShader->spvSize > 0);
+  ASSERT(vertShader->module != VK_NULL_HANDLE);
+  ASSERT(fragShader->module != VK_NULL_HANDLE);
+  /*
   log_debug("maxVertexInputAttributes=%d", vkd->limits.maxVertexInputAttributes);
   log_debug("maxVertexOutputComponents/4=%d", vkd->limits.maxVertexOutputComponents / 4);
   size_t inputAttributeCount = core_array_count(vertShader->info.inputAttributeDescriptions);
@@ -134,7 +145,7 @@ TEST shaderc_compiling() {
   ASSERT_GT(range.size, 0);
   ASSERT((range.stageFlags | VK_SHADER_STAGE_VERTEX_BIT) != 0 ||
          (range.stageFlags | VK_SHADER_STAGE_FRAGMENT_BIT) != 0);
-
+*/
   data_config_destroy(config);
   data_asset_db_destroy(assetDb);
   vulkan_shader_destroy(vertShader);
@@ -283,9 +294,9 @@ GREATEST_MAIN_DEFS(); // NOLINT
 int main(int argc, char *argv[]) {
   GREATEST_MAIN_BEGIN();
   platform_create();
-  // RUN_SUITE(shaderc_suite);
+  RUN_SUITE(shaderc_suite);
   //  RUN_SUITE(gltf_suite);
-  RUN_SUITE(scene_graph_suite);
+  // RUN_SUITE(scene_graph_suite);
   platform_destroy();
   GREATEST_MAIN_END();
 }
