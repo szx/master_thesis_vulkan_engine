@@ -271,7 +271,7 @@ vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_scene_ren
       VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, "pipeline");
   pipeline->descriptorSet = vulkan_create_descriptor_set_for_uniform_buffers(
       pipeline->vkd, &scene->unifiedUniformBuffer->buffer->buffer,
-      scene->unifiedUniformBuffer->buffer->size, 1, pipeline->descriptorSetLayout,
+      scene->unifiedUniformBuffer->buffer->totalSize, 1, pipeline->descriptorSetLayout,
       pipeline->descriptorPool, "pipeline");
 
   pipeline->renderPass = vulkan_render_pass_create(pipeline, ForwardRenderPass);

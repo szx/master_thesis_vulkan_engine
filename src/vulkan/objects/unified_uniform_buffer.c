@@ -12,13 +12,14 @@ vulkan_unified_uniform_buffer_create(vulkan_device *vkd, vulkan_render_cache_lis
       vulkan_instance_data_uniform_buffer_data_create(renderCacheList->maxCount);
   uniformBuffer->globalData = vulkan_global_uniform_buffer_data_create(1);
 
-  size_t size = vulkan_instance_data_uniform_buffer_data_get_size(uniformBuffer->instanceData) +
-                vulkan_global_uniform_buffer_data_get_size(uniformBuffer->globalData);
-  // HIRO partial update
-  uniformBuffer->buffer =
-      vulkan_buffer_create(vkd, vulkan_buffer_type_uniform, uniformBuffer->instanceData, size);
+  uniformBuffer->buffer = vulkan_buffer_create(vkd, vulkan_buffer_type_uniform);
+  vulkan_buffer_add(uniformBuffer->buffer, &uniformBuffer->instanceData->elements,
+                    vulkan_instance_data_uniform_buffer_data_get_size(uniformBuffer->instanceData));
+  vulkan_buffer_add(uniformBuffer->buffer, &uniformBuffer->globalData->elements,
+                    vulkan_global_uniform_buffer_data_get_size(uniformBuffer->globalData));
 
   uniformBuffer->dirty = true;
+
   return uniformBuffer;
 }
 
@@ -67,8 +68,8 @@ void vulkan_unified_uniform_buffer_send_to_device(vulkan_unified_uniform_buffer 
 
 void vulkan_unified_uniform_buffer_debug_print(vulkan_unified_uniform_buffer *uniformBuffer) {
   log_debug("UNIFIED UNIFORM BUFFER:\n");
-  assert(uniformBuffer->buffer->size > 0);
-  log_debug("uniform buffer size=%d\n", uniformBuffer->buffer->size);
+  assert(uniformBuffer->buffer->totalSize > 0);
+  log_debug("uniform buffer size=%d\n", uniformBuffer->buffer->totalSize);
   log_debug("instance data count=%d\n", uniformBuffer->instanceData->count);
   log_debug("global data count=%d\n", uniformBuffer->globalData->count);
 }
