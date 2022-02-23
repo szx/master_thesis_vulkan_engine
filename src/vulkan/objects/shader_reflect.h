@@ -7,7 +7,8 @@
 
 /// Describes SPIR-V shader reflection.
 typedef struct vulkan_shader_reflect {
-  UT_array *inputVariables; /// vulkan_shader_reflect_variable* list.
+  UT_array *inputVariables;  /// vulkan_shader_reflect_variable* list.
+  UT_array *outputVariables; /// vulkan_shader_reflect_variable* list.
 } vulkan_shader_reflect;
 
 vulkan_shader_reflect *vulkan_shader_reflect_create(uint32_t *spvCode, size_t spvSize);

@@ -116,36 +116,21 @@ TEST shaderc_compiling() {
   utstring_free(vertInputPath);
   utstring_free(fragInputPath);
 
+  // verify shader
   ASSERT(vertShader->type == vulkan_shader_type_vertex);
   ASSERT(fragShader->type == vulkan_shader_type_fragment);
   ASSERT(vertShader->spvSize > 0);
   ASSERT(fragShader->spvSize > 0);
   ASSERT(vertShader->module != VK_NULL_HANDLE);
   ASSERT(fragShader->module != VK_NULL_HANDLE);
-  /*
-  log_debug("maxVertexInputAttributes=%d", vkd->limits.maxVertexInputAttributes);
-  log_debug("maxVertexOutputComponents/4=%d", vkd->limits.maxVertexOutputComponents / 4);
-  size_t inputAttributeCount = core_array_count(vertShader->info.inputAttributeDescriptions);
-  size_t outputAttributeCount = core_array_count(vertShader->info.outputAttributeDescriptions);
-  ASSERT_GT(inputAttributeCount, 0);
-  ASSERT_GT(outputAttributeCount, 0);
 
-  log_debug("inputAttributeDescriptionsSize=%d", inputAttributeCount);
-  log_debug("outputAttributeDescriptionsSize=%d", outputAttributeCount);
-  verify(inputAttributeCount < vkd->limits.maxVertexInputAttributes);
-  verify(outputAttributeCount < vkd->limits.maxVertexOutputComponents / 4);
+  // verify reflection
+  ASSERT(utarray_len(vertShader->reflect->inputVariables) > 0);
+  ASSERT(utarray_len(fragShader->reflect->inputVariables) > 0);
+  ASSERT(utarray_len(vertShader->reflect->outputVariables) > 0);
+  ASSERT(utarray_len(fragShader->reflect->outputVariables) > 0);
+  // HIRO check in vertex output variables match fragment input variables
 
-  VkVertexInputBindingDescription bindingDescription =
-      vulkan_shader_info_get_binding_description(&vertShader->info);
-  size_t attributeDescriptionsCount;
-  VkVertexInputAttributeDescription *attributeDescriptions =
-      vulkan_shader_info_get_attribute_descriptions(&vertShader->info, &attributeDescriptionsCount);
-  VkPushConstantRange range = vulkan_shader_info_get_push_constant_range(vertShader, fragShader);
-  ASSERT_EQ(range.offset, 0);
-  ASSERT_GT(range.size, 0);
-  ASSERT((range.stageFlags | VK_SHADER_STAGE_VERTEX_BIT) != 0 ||
-         (range.stageFlags | VK_SHADER_STAGE_FRAGMENT_BIT) != 0);
-*/
   data_config_destroy(config);
   data_asset_db_destroy(assetDb);
   vulkan_shader_destroy(vertShader);

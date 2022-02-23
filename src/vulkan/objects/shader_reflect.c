@@ -8,7 +8,7 @@ vulkan_shader_reflect *vulkan_shader_reflect_create(uint32_t *spvCode, size_t sp
   verify(spvReflectCreateShaderModule(spvSize, spvCode, &reflectModule) ==
          SPV_REFLECT_RESULT_SUCCESS);
 
-  // Input variables
+  // input variables
   uint32_t inputVariableCount = 0;
   verify(spvReflectEnumerateInputVariables(&reflectModule, &inputVariableCount, NULL) ==
          SPV_REFLECT_RESULT_SUCCESS);
@@ -16,7 +16,6 @@ vulkan_shader_reflect *vulkan_shader_reflect_create(uint32_t *spvCode, size_t sp
       inputVariableCount * sizeof(SpvReflectInterfaceVariable *));
   verify(spvReflectEnumerateInputVariables(&reflectModule, &inputVariableCount, inputVariables) ==
          SPV_REFLECT_RESULT_SUCCESS);
-
   utarray_alloc(reflect->inputVariables, sizeof(vulkan_shader_reflect_variable *));
   utarray_resize(reflect->inputVariables, inputVariableCount);
   for (size_t idx = 0; idx < inputVariableCount; idx++) {
@@ -25,7 +24,23 @@ vulkan_shader_reflect *vulkan_shader_reflect_create(uint32_t *spvCode, size_t sp
     *variable = vulkan_shader_reflect_variable_create(spvReflect);
   }
 
-  // HIRO: Output variables, descriptor bindings, descriptor sets, and push constants
+  // output variables
+  uint32_t outputVariableCount = 0;
+  verify(spvReflectEnumerateOutputVariables(&reflectModule, &outputVariableCount, NULL) ==
+         SPV_REFLECT_RESULT_SUCCESS);
+  SpvReflectInterfaceVariable **outputVariables = (SpvReflectInterfaceVariable **)malloc(
+      outputVariableCount * sizeof(SpvReflectInterfaceVariable *));
+  verify(spvReflectEnumerateOutputVariables(&reflectModule, &outputVariableCount,
+                                            outputVariables) == SPV_REFLECT_RESULT_SUCCESS);
+  utarray_alloc(reflect->outputVariables, sizeof(vulkan_shader_reflect_variable *));
+  utarray_resize(reflect->outputVariables, outputVariableCount);
+  for (size_t idx = 0; idx < outputVariableCount; idx++) {
+    SpvReflectInterfaceVariable *spvReflect = outputVariables[idx];
+    vulkan_shader_reflect_variable **variable = utarray_eltptr(reflect->outputVariables, idx);
+    *variable = vulkan_shader_reflect_variable_create(spvReflect);
+  }
+
+  // HIRO: descriptor bindings, descriptor sets, and push constants
   spvReflectDestroyShaderModule(&reflectModule);
 
   vulkan_shader_reflect_debug_print(reflect, 0);
@@ -39,14 +54,29 @@ void vulkan_shader_reflect_destroy(vulkan_shader_reflect *reflect) {
     vulkan_shader_reflect_variable_destroy(inputVariable);
   }
 
+  utarray_foreach_elem_deref (vulkan_shader_reflect_variable *, outputVariable,
+                              reflect->outputVariables) {
+    vulkan_shader_reflect_variable_destroy(outputVariable);
+  }
+
   core_free(reflect);
 }
 
 void vulkan_shader_reflect_debug_print(vulkan_shader_reflect *reflect, int indent) {
   log_debug(INDENT_FORMAT_STRING "shader reflection:", INDENT_FORMAT_ARGS(0));
+
+  log_debug(INDENT_FORMAT_STRING "input variables count=%zu:", INDENT_FORMAT_ARGS(2),
+            utarray_len(reflect->inputVariables));
   utarray_foreach_elem_deref (vulkan_shader_reflect_variable *, inputVariable,
                               reflect->inputVariables) {
     vulkan_shader_reflect_variable_debug_print(inputVariable, 4);
+  }
+
+  log_debug(INDENT_FORMAT_STRING "output variables count=%zu:", INDENT_FORMAT_ARGS(2),
+            utarray_len(reflect->outputVariables));
+  utarray_foreach_elem_deref (vulkan_shader_reflect_variable *, outputVariable,
+                              reflect->outputVariables) {
+    vulkan_shader_reflect_variable_debug_print(outputVariable, 4);
   }
 }
 
@@ -93,14 +123,22 @@ void vulkan_shader_reflect_variable_destroy(vulkan_shader_reflect_variable *inpu
 
 void vulkan_shader_reflect_variable_debug_print(vulkan_shader_reflect_variable *inputVariable,
                                                 int indent) {
-  log_debug(INDENT_FORMAT_STRING "inputVariable:", INDENT_FORMAT_ARGS(2));
-  log_debug(INDENT_FORMAT_STRING "name: %s", INDENT_FORMAT_ARGS(4), inputVariable->name);
-  log_debug(INDENT_FORMAT_STRING "location: %d", INDENT_FORMAT_ARGS(4), inputVariable->location);
-  log_debug(INDENT_FORMAT_STRING "storageClass: %s", INDENT_FORMAT_ARGS(4),
+  log_debug(INDENT_FORMAT_STRING "variable:", INDENT_FORMAT_ARGS(0));
+  log_debug(INDENT_FORMAT_STRING "name: %s", INDENT_FORMAT_ARGS(2), inputVariable->name);
+  log_debug(INDENT_FORMAT_STRING "location: %d", INDENT_FORMAT_ARGS(2), inputVariable->location);
+  log_debug(INDENT_FORMAT_STRING "storageClass: %s", INDENT_FORMAT_ARGS(2),
             SpvStorageClass__debug_str(inputVariable->storageClass));
-  // HIRO more debug log, tests
-  log_debug(INDENT_FORMAT_STRING "format: %s", INDENT_FORMAT_ARGS(4),
+  log_debug(INDENT_FORMAT_STRING "builtin: %s", INDENT_FORMAT_ARGS(2),
+            SpvBuiltIn__debug_str(inputVariable->builtIn));
+  log_debug(INDENT_FORMAT_STRING "numeric: scalarWidth=%u componentCount=%u matrix=%ux%u",
+            INDENT_FORMAT_ARGS(2), inputVariable->numeric.scalar.width,
+            inputVariable->numeric.vector.component_count,
+            inputVariable->numeric.matrix.column_count, inputVariable->numeric.matrix.row_count);
+  log_debug(INDENT_FORMAT_STRING "array: dimsCount=%d", INDENT_FORMAT_ARGS(2),
+            inputVariable->array.dims_count);
+  log_debug(INDENT_FORMAT_STRING "format: %s", INDENT_FORMAT_ARGS(2),
             SpvReflectFormat_debug_str(inputVariable->format));
+  log_debug(INDENT_FORMAT_STRING "type: op=%s", INDENT_FORMAT_ARGS(2),
+            SpvOp__debug_str(inputVariable->typeDescription.op));
   // log_debug(INDENT_FORMAT_STRING "inputVariable:", INDENT_FORMAT_ARGS(4)),
-  // inputVariable->typeDescription.;
 }
