@@ -18,10 +18,6 @@ if (NOT shaderc_FOUND)
     message(FATAL_ERROR "shaderc not found")
 endif ()
 list(APPEND shaderc_LIBRARIES stdc++) # TODO: Why it stopped linking correctly?
-pkg_search_module(shaderc REQUIRED shaderc_combined)
-if (NOT shaderc_FOUND)
-    message(FATAL_ERROR "shaderc not found")
-endif ()
 
 # add external library glfw
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
@@ -107,7 +103,7 @@ foreach (C_CODEGEN_SOURCE_PATH ${C_CODEGEN_SOURCES})
 endforeach ()
 
 file(GLOB_RECURSE C_HEADERS "src/*.h")
-file(GLOB_RECURSE C_CODEGEN_HEADERS "src/codegen/meta.h")
+file(GLOB_RECURSE C_CODEGEN_HEADERS "src/codegen/*.h")
 foreach (C_CODEGEN_HEADER_PATH ${C_CODEGEN_HEADERS})
     list(REMOVE_ITEM C_HEADERS "${C_CODEGEN_HEADER_PATH}")
 endforeach ()
@@ -120,7 +116,7 @@ file(GLOB_RECURSE PYTHON_CODEGEN_SCRIPTS
 add_custom_command(
         OUTPUT ${C_CODEGEN_HEADERS}
         DEPENDS ${PYTHON_CODEGEN_SCRIPTS} ${C_HEADERS}
-        COMMAND ${Python3_EXECUTABLE} ${SCRIPTS_PATH}/codegen.py
+        COMMAND ${CMAKE_COMMAND} -E env "VULKAN_SDK_PATH=${VULKAN_SDK_PATH}" ${Python3_EXECUTABLE} ${SCRIPTS_PATH}/codegen.py
         COMMENT "Python codegen for headers."
         VERBATIM)
 

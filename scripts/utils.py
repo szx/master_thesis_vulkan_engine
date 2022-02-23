@@ -11,6 +11,10 @@ root_path = script_path.parents[1]
 src_path = root_path / 'src'
 config_path = root_path / 'scripts' / 'config.txt'
 
+def get_vulkan_sdk_path():
+    vulkan_sdk_path = os.environ.get('VULKAN_SDK')
+    assert (vulkan_sdk_path is not None)
+    return vulkan_sdk_path
 
 def get_header_paths():
     for dirname, dirnames, filenames in os.walk(src_path):

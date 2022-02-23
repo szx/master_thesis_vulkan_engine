@@ -32,7 +32,7 @@ void log_pretty(log_level level, const char *func, const char *file, size_t line
   if (level >= log_level_error) {
     defaultFile = stderr;
   }
-  log_raw(defaultFile, "[%s] (%s:%zu) %s: ", levelStr[level], file, line, func);
+  log_raw(defaultFile, "[%s] (%s:%zu) %s:\n", levelStr[level], file, line, func);
   log_raw_va(defaultFile, format, args);
   log_raw(defaultFile, "\n");
 

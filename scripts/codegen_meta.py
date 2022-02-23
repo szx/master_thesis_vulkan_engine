@@ -31,7 +31,7 @@ def find_enum_decls(paths):
     unique_enum_decls = []
 
     def walk(node):
-        # print(f"node: {node.displayname} {node.spelling} {node.kind}")
+        # print(f"node: {node.displayname} {node.spelling} {node.kind} {node.location}")
         if node.kind == clang.cindex.CursorKind.ENUM_DECL and node.spelling != '':
             if not any([x.name == node.spelling for x in unique_enum_decls]):
                 # print(f"found enum: {node.spelling} {node.kind}")
@@ -48,8 +48,7 @@ def find_enum_decls(paths):
 
     index = clang.cindex.Index.create()
     for path in paths:
-        # print(f"parsing enums decls in {path}")
-        walk(index.parse(path).cursor)
+        walk(index.parse(path, args=[f'-I{get_vulkan_sdk_path()}/include']).cursor)
 
     unique_enum_decls.sort(key=lambda x: x.name)
     return unique_enum_decls

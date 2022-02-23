@@ -96,7 +96,11 @@ void vulkan_shader_reflect_variable_debug_print(vulkan_shader_reflect_variable *
   log_debug(INDENT_FORMAT_STRING "inputVariable:", INDENT_FORMAT_ARGS(2));
   log_debug(INDENT_FORMAT_STRING "name: %s", INDENT_FORMAT_ARGS(4), inputVariable->name);
   log_debug(INDENT_FORMAT_STRING "location: %d", INDENT_FORMAT_ARGS(4), inputVariable->location);
+  log_debug(INDENT_FORMAT_STRING "storageClass: %s", INDENT_FORMAT_ARGS(4),
+            SpvStorageClass__debug_str(inputVariable->storageClass));
   // HIRO more debug log, tests
+  log_debug(INDENT_FORMAT_STRING "format: %s", INDENT_FORMAT_ARGS(4),
+            SpvReflectFormat_debug_str(inputVariable->format));
   // log_debug(INDENT_FORMAT_STRING "inputVariable:", INDENT_FORMAT_ARGS(4)),
   // inputVariable->typeDescription.;
 }
