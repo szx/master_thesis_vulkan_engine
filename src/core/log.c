@@ -32,7 +32,21 @@ void log_pretty(log_level level, const char *func, const char *file, size_t line
   if (level >= log_level_error) {
     defaultFile = stderr;
   }
-  log_raw(defaultFile, "[%s] (%s:%zu) %s:\n", levelStr[level], file, line, func);
+
+  static struct {
+    log_level level;
+    const char *func;
+    const char *file;
+    size_t line;
+  } last = {0};
+
+  if (level != last.level || func != last.func || file != last.file) {
+    log_raw(defaultFile, "[%s] (%s:%zu) %s:\n", levelStr[level], file, line, func);
+    last.level = level;
+    last.func = func;
+    last.file = file;
+    last.line = line;
+  }
   log_raw_va(defaultFile, format, args);
   log_raw(defaultFile, "\n");
 

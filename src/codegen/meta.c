@@ -3,10 +3,10 @@
 #include "../core/core.h"
 void SpvAccessQualifier__debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "SpvAccessQualifier_: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvAccessQualifierReadOnly", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvAccessQualifierWriteOnly", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvAccessQualifierReadWrite", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "SpvAccessQualifierMax", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvAccessQualifierReadOnly", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvAccessQualifierWriteOnly", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvAccessQualifierReadWrite", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "SpvAccessQualifierMax", INDENT_FORMAT_ARGS(2)); }
 }
 const char *SpvAddressingModel__debug_str(int value) {
   if (value == 0) { return "SpvAddressingModelLogical"; }
@@ -508,12 +508,12 @@ const char *SpvExecutionModel__debug_str(int value) {
 }
 void SpvFPFastMathModeMask__debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "SpvFPFastMathModeMask_: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFPFastMathModeMaskNone", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFPFastMathModeNotNaNMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFPFastMathModeNotInfMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFPFastMathModeNSZMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFPFastMathModeAllowRecipMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFPFastMathModeFastMask", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFPFastMathModeMaskNone", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFPFastMathModeNotNaNMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFPFastMathModeNotInfMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFPFastMathModeNSZMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFPFastMathModeAllowRecipMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFPFastMathModeFastMask", INDENT_FORMAT_ARGS(2)); }
 }
 const char *SpvFPFastMathModeShift__debug_str(int value) {
   if (value == 0) { return "SpvFPFastMathModeNotNaNShift"; }
@@ -534,11 +534,11 @@ const char *SpvFPRoundingMode__debug_str(int value) {
 }
 void SpvFragmentShadingRateMask__debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "SpvFragmentShadingRateMask_: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFragmentShadingRateMaskNone", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFragmentShadingRateVertical2PixelsMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFragmentShadingRateVertical4PixelsMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFragmentShadingRateHorizontal2PixelsMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFragmentShadingRateHorizontal4PixelsMask", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFragmentShadingRateMaskNone", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFragmentShadingRateVertical2PixelsMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFragmentShadingRateVertical4PixelsMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFragmentShadingRateHorizontal2PixelsMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFragmentShadingRateHorizontal4PixelsMask", INDENT_FORMAT_ARGS(2)); }
 }
 const char *SpvFragmentShadingRateShift__debug_str(int value) {
   if (value == 0) { return "SpvFragmentShadingRateVertical2PixelsShift"; }
@@ -550,11 +550,11 @@ const char *SpvFragmentShadingRateShift__debug_str(int value) {
 }
 void SpvFunctionControlMask__debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "SpvFunctionControlMask_: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFunctionControlMaskNone", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFunctionControlInlineMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFunctionControlDontInlineMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFunctionControlPureMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFunctionControlConstMask", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFunctionControlMaskNone", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFunctionControlInlineMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFunctionControlDontInlineMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFunctionControlPureMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFunctionControlConstMask", INDENT_FORMAT_ARGS(2)); }
 }
 const char *SpvFunctionControlShift__debug_str(int value) {
   if (value == 0) { return "SpvFunctionControlInlineShift"; }
@@ -680,25 +680,25 @@ const char *SpvImageFormat__debug_str(int value) {
 }
 void SpvImageOperandsMask__debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "SpvImageOperandsMask_: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsMaskNone", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsBiasMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsLodMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsGradMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsConstOffsetMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsOffsetMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsConstOffsetsMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsSampleMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsMinLodMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsMakeTexelAvailableMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsMakeTexelAvailableKHRMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsMakeTexelVisibleMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsMakeTexelVisibleKHRMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsNonPrivateTexelMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsNonPrivateTexelKHRMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsVolatileTexelMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsVolatileTexelKHRMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsSignExtendMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsZeroExtendMask", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsMaskNone", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsBiasMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsLodMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsGradMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsConstOffsetMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsOffsetMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsConstOffsetsMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsSampleMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsMinLodMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsMakeTexelAvailableMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsMakeTexelAvailableKHRMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsMakeTexelVisibleMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsMakeTexelVisibleKHRMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsNonPrivateTexelMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsNonPrivateTexelKHRMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsVolatileTexelMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsVolatileTexelKHRMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsSignExtendMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsZeroExtendMask", INDENT_FORMAT_ARGS(2)); }
 }
 const char *SpvImageOperandsShift__debug_str(int value) {
   if (value == 0) { return "SpvImageOperandsBiasShift"; }
@@ -724,10 +724,10 @@ const char *SpvImageOperandsShift__debug_str(int value) {
 }
 void SpvKernelEnqueueFlags__debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "SpvKernelEnqueueFlags_: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvKernelEnqueueFlagsNoWait", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvKernelEnqueueFlagsWaitKernel", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvKernelEnqueueFlagsWaitWorkGroup", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "SpvKernelEnqueueFlagsMax", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvKernelEnqueueFlagsNoWait", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvKernelEnqueueFlagsWaitKernel", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvKernelEnqueueFlagsWaitWorkGroup", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "SpvKernelEnqueueFlagsMax", INDENT_FORMAT_ARGS(2)); }
 }
 const char *SpvKernelProfilingInfoMask__debug_str(int value) {
   if (value == 0) { return "SpvKernelProfilingInfoMaskNone"; }
@@ -747,23 +747,23 @@ const char *SpvLinkageType__debug_str(int value) {
 }
 void SpvLoopControlMask__debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "SpvLoopControlMask_: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlMaskNone", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlUnrollMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlDontUnrollMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlDependencyInfiniteMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlDependencyLengthMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlMinIterationsMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlMaxIterationsMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlIterationMultipleMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlPeelCountMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlPartialCountMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlInitiationIntervalINTELMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlMaxConcurrencyINTELMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 262144) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlDependencyArrayINTELMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 524288) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlPipelineEnableINTELMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1048576) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlLoopCoalesceINTELMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlMaxInterleavingINTELMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlSpeculatedIterationsINTELMask", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlMaskNone", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlUnrollMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlDontUnrollMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlDependencyInfiniteMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlDependencyLengthMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlMinIterationsMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlMaxIterationsMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlIterationMultipleMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlPeelCountMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlPartialCountMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlInitiationIntervalINTELMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlMaxConcurrencyINTELMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 262144) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlDependencyArrayINTELMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 524288) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlPipelineEnableINTELMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1048576) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlLoopCoalesceINTELMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlMaxInterleavingINTELMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlSpeculatedIterationsINTELMask", INDENT_FORMAT_ARGS(2)); }
 }
 const char *SpvLoopControlShift__debug_str(int value) {
   if (value == 0) { return "SpvLoopControlUnrollShift"; }
@@ -787,16 +787,16 @@ const char *SpvLoopControlShift__debug_str(int value) {
 }
 void SpvMemoryAccessMask__debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessMask_: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessMaskNone", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessVolatileMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessAlignedMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessNontemporalMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessMakePointerAvailableMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessMakePointerAvailableKHRMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessMakePointerVisibleMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessMakePointerVisibleKHRMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessNonPrivatePointerMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessNonPrivatePointerKHRMask", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessMaskNone", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessVolatileMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessAlignedMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessNontemporalMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessMakePointerAvailableMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessMakePointerAvailableKHRMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessMakePointerVisibleMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessMakePointerVisibleKHRMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessNonPrivatePointerMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemoryAccessNonPrivatePointerKHRMask", INDENT_FORMAT_ARGS(2)); }
 }
 const char *SpvMemoryAccessShift__debug_str(int value) {
   if (value == 0) { return "SpvMemoryAccessVolatileShift"; }
@@ -822,24 +822,24 @@ const char *SpvMemoryModel__debug_str(int value) {
 }
 void SpvMemorySemanticsMask__debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsMask_: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsMaskNone", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsAcquireMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsReleaseMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsAcquireReleaseMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsSequentiallyConsistentMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsUniformMemoryMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsSubgroupMemoryMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsWorkgroupMemoryMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsCrossWorkgroupMemoryMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsAtomicCounterMemoryMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsImageMemoryMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsOutputMemoryMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsOutputMemoryKHRMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsMakeAvailableMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsMakeAvailableKHRMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsMakeVisibleMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsMakeVisibleKHRMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsVolatileMask", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsMaskNone", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsAcquireMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsReleaseMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsAcquireReleaseMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsSequentiallyConsistentMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsUniformMemoryMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsSubgroupMemoryMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsWorkgroupMemoryMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsCrossWorkgroupMemoryMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsAtomicCounterMemoryMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsImageMemoryMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsOutputMemoryMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsOutputMemoryKHRMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsMakeAvailableMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsMakeAvailableKHRMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsMakeVisibleMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsMakeVisibleKHRMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "SpvMemorySemanticsVolatileMask", INDENT_FORMAT_ARGS(2)); }
 }
 const char *SpvMemorySemanticsShift__debug_str(int value) {
   if (value == 1) { return "SpvMemorySemanticsAcquireShift"; }
@@ -1432,17 +1432,17 @@ const char *SpvOp__debug_str(int value) {
 }
 void SpvRayFlagsMask__debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "SpvRayFlagsMask_: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsMaskNone", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsOpaqueKHRMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsNoOpaqueKHRMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsTerminateOnFirstHitKHRMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsSkipClosestHitShaderKHRMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsCullBackFacingTrianglesKHRMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsCullFrontFacingTrianglesKHRMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsCullOpaqueKHRMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsCullNoOpaqueKHRMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsSkipTrianglesKHRMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsSkipAABBsKHRMask", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsMaskNone", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsOpaqueKHRMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsNoOpaqueKHRMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsTerminateOnFirstHitKHRMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsSkipClosestHitShaderKHRMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsCullBackFacingTrianglesKHRMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsCullFrontFacingTrianglesKHRMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsCullOpaqueKHRMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsCullNoOpaqueKHRMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsSkipTrianglesKHRMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayFlagsSkipAABBsKHRMask", INDENT_FORMAT_ARGS(2)); }
 }
 const char *SpvRayFlagsShift__debug_str(int value) {
   if (value == 0) { return "SpvRayFlagsOpaqueKHRShift"; }
@@ -1466,10 +1466,10 @@ const char *SpvRayQueryCandidateIntersectionType__debug_str(int value) {
 }
 void SpvRayQueryCommittedIntersectionType__debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "SpvRayQueryCommittedIntersectionType_: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayQueryCommittedIntersectionTypeRayQueryCommittedIntersectionNoneKHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayQueryCommittedIntersectionTypeRayQueryCommittedIntersectionTriangleKHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayQueryCommittedIntersectionTypeRayQueryCommittedIntersectionGeneratedKHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayQueryCommittedIntersectionTypeMax", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayQueryCommittedIntersectionTypeRayQueryCommittedIntersectionNoneKHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayQueryCommittedIntersectionTypeRayQueryCommittedIntersectionTriangleKHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayQueryCommittedIntersectionTypeRayQueryCommittedIntersectionGeneratedKHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "SpvRayQueryCommittedIntersectionTypeMax", INDENT_FORMAT_ARGS(2)); }
 }
 const char *SpvRayQueryIntersection__debug_str(int value) {
   if (value == 0) { return "SpvRayQueryIntersectionRayQueryCandidateIntersectionKHR"; }
@@ -1479,15 +1479,15 @@ const char *SpvRayQueryIntersection__debug_str(int value) {
 }
 void SpvReflectDecorationFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "SpvReflectDecorationFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_NONE", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_BLOCK", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_BUFFER_BLOCK", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_ROW_MAJOR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_COLUMN_MAJOR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_BUILT_IN", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_NOPERSPECTIVE", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_FLAT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_NON_WRITABLE", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_NONE", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_BLOCK", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_BUFFER_BLOCK", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_ROW_MAJOR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_COLUMN_MAJOR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_BUILT_IN", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_NOPERSPECTIVE", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_FLAT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_NON_WRITABLE", INDENT_FORMAT_ARGS(2)); }
 }
 const char *SpvReflectDescriptorType_debug_str(int value) {
   if (value == 0) { return "SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLER"; }
@@ -1547,11 +1547,11 @@ const char *SpvReflectGenerator_debug_str(int value) {
 }
 void SpvReflectResourceType_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "SpvReflectResourceType: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_RESOURCE_FLAG_UNDEFINED", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_RESOURCE_FLAG_SAMPLER", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_RESOURCE_FLAG_CBV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_RESOURCE_FLAG_SRV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_RESOURCE_FLAG_UAV", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_RESOURCE_FLAG_UNDEFINED", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_RESOURCE_FLAG_SAMPLER", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_RESOURCE_FLAG_CBV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_RESOURCE_FLAG_SRV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_RESOURCE_FLAG_UAV", INDENT_FORMAT_ARGS(2)); }
 }
 const char *SpvReflectResult_debug_str(int value) {
   if (value == 0) { return "SPV_REFLECT_RESULT_SUCCESS"; }
@@ -1579,20 +1579,20 @@ const char *SpvReflectResult_debug_str(int value) {
 }
 void SpvReflectShaderStageFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "SpvReflectShaderStageFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_VERTEX_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_TESSELLATION_CONTROL_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_TESSELLATION_EVALUATION_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_GEOMETRY_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_FRAGMENT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_COMPUTE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_TASK_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_MESH_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_RAYGEN_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_ANY_HIT_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_CLOSEST_HIT_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_MISS_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_INTERSECTION_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_CALLABLE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_VERTEX_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_TESSELLATION_CONTROL_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_TESSELLATION_EVALUATION_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_GEOMETRY_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_FRAGMENT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_COMPUTE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_TASK_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_MESH_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_RAYGEN_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_ANY_HIT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_CLOSEST_HIT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_MISS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_INTERSECTION_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_SHADER_STAGE_CALLABLE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 const char *SpvReflectTypeFlagBits_debug_str(int value) {
   if (value == 0) { return "SPV_REFLECT_TYPE_FLAG_UNDEFINED"; }
@@ -1646,9 +1646,9 @@ const char *SpvScope__debug_str(int value) {
 }
 void SpvSelectionControlMask__debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "SpvSelectionControlMask_: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvSelectionControlMaskNone", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvSelectionControlFlattenMask", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvSelectionControlDontFlattenMask", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "SpvSelectionControlMaskNone", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "SpvSelectionControlFlattenMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvSelectionControlDontFlattenMask", INDENT_FORMAT_ARGS(2)); }
 }
 const char *SpvSelectionControlShift__debug_str(int value) {
   if (value == 0) { return "SpvSelectionControlFlattenShift"; }
@@ -1700,10 +1700,10 @@ const char *SpvStorageClass__debug_str(int value) {
 }
 void StdVideoDecodeH264FieldOrderCount_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "StdVideoDecodeH264FieldOrderCount: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_TOP", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_BOTTOM", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_LIST_SIZE", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_INVALID", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_TOP", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_BOTTOM", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_LIST_SIZE", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_INVALID", INDENT_FORMAT_ARGS(2)); }
 }
 const char *StdVideoH264AspectRatioIdc_debug_str(int value) {
   if (value == 0) { return "STD_VIDEO_H264_ASPECT_RATIO_IDC_UNSPECIFIED"; }
@@ -1729,10 +1729,10 @@ const char *StdVideoH264AspectRatioIdc_debug_str(int value) {
 }
 void StdVideoH264CabacInitIdc_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "StdVideoH264CabacInitIdc: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_CABAC_INIT_IDC_0", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_CABAC_INIT_IDC_1", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_CABAC_INIT_IDC_2", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_CABAC_INIT_IDC_INVALID", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_CABAC_INIT_IDC_0", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_CABAC_INIT_IDC_1", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_CABAC_INIT_IDC_2", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_CABAC_INIT_IDC_INVALID", INDENT_FORMAT_ARGS(2)); }
 }
 const char *StdVideoH264ChromaFormatIdc_debug_str(int value) {
   if (value == 0) { return "STD_VIDEO_H264_CHROMA_FORMAT_IDC_MONOCHROME"; }
@@ -1744,10 +1744,10 @@ const char *StdVideoH264ChromaFormatIdc_debug_str(int value) {
 }
 void StdVideoH264DisableDeblockingFilterIdc_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "StdVideoH264DisableDeblockingFilterIdc: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_DISABLE_DEBLOCKING_FILTER_IDC_DISABLED", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_DISABLE_DEBLOCKING_FILTER_IDC_ENABLED", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_DISABLE_DEBLOCKING_FILTER_IDC_PARTIAL", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_DISABLE_DEBLOCKING_FILTER_IDC_INVALID", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_DISABLE_DEBLOCKING_FILTER_IDC_DISABLED", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_DISABLE_DEBLOCKING_FILTER_IDC_ENABLED", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_DISABLE_DEBLOCKING_FILTER_IDC_PARTIAL", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_DISABLE_DEBLOCKING_FILTER_IDC_INVALID", INDENT_FORMAT_ARGS(2)); }
 }
 const char *StdVideoH264Level_debug_str(int value) {
   if (value == 0) { return "STD_VIDEO_H264_LEVEL_1_0"; }
@@ -1812,10 +1812,10 @@ const char *StdVideoH264PictureType_debug_str(int value) {
 }
 void StdVideoH264PocType_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "StdVideoH264PocType: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_POC_TYPE_0", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_POC_TYPE_1", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_POC_TYPE_2", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_POC_TYPE_INVALID", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_POC_TYPE_0", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_POC_TYPE_1", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_POC_TYPE_2", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_POC_TYPE_INVALID", INDENT_FORMAT_ARGS(2)); }
 }
 const char *StdVideoH264ProfileIdc_debug_str(int value) {
   if (value == 66) { return "STD_VIDEO_H264_PROFILE_IDC_BASELINE"; }
@@ -1827,17 +1827,17 @@ const char *StdVideoH264ProfileIdc_debug_str(int value) {
 }
 void StdVideoH264SliceType_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "StdVideoH264SliceType: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_SLICE_TYPE_P", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_SLICE_TYPE_B", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_SLICE_TYPE_I", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_SLICE_TYPE_INVALID", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_SLICE_TYPE_P", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_SLICE_TYPE_B", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_SLICE_TYPE_I", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_SLICE_TYPE_INVALID", INDENT_FORMAT_ARGS(2)); }
 }
 void StdVideoH264WeightedBipredIdc_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "StdVideoH264WeightedBipredIdc: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_WEIGHTED_BIPRED_IDC_DEFAULT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_WEIGHTED_BIPRED_IDC_EXPLICIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_WEIGHTED_BIPRED_IDC_IMPLICIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_WEIGHTED_BIPRED_IDC_INVALID", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_WEIGHTED_BIPRED_IDC_DEFAULT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_WEIGHTED_BIPRED_IDC_EXPLICIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_WEIGHTED_BIPRED_IDC_IMPLICIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H264_WEIGHTED_BIPRED_IDC_INVALID", INDENT_FORMAT_ARGS(2)); }
 }
 const char *StdVideoH265ChromaFormatIdc_debug_str(int value) {
   if (value == 0) { return "STD_VIDEO_H265_CHROMA_FORMAT_IDC_MONOCHROME"; }
@@ -1883,17 +1883,17 @@ const char *StdVideoH265ProfileIdc_debug_str(int value) {
 }
 void StdVideoH265SliceType_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "StdVideoH265SliceType: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H265_SLICE_TYPE_B", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H265_SLICE_TYPE_P", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H265_SLICE_TYPE_I", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H265_SLICE_TYPE_INVALID", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H265_SLICE_TYPE_B", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H265_SLICE_TYPE_P", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H265_SLICE_TYPE_I", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "STD_VIDEO_H265_SLICE_TYPE_INVALID", INDENT_FORMAT_ARGS(2)); }
 }
 void VkAccelerationStructureBuildTypeKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkAccelerationStructureBuildTypeKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_OR_DEVICE_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_BUILD_TYPE_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_OR_DEVICE_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_BUILD_TYPE_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkAccelerationStructureCompatibilityKHR_debug_str(int value) {
   if (value == 0) { return "VK_ACCELERATION_STRUCTURE_COMPATIBILITY_COMPATIBLE_KHR"; }
@@ -1903,68 +1903,68 @@ const char *VkAccelerationStructureCompatibilityKHR_debug_str(int value) {
 }
 void VkAccelerationStructureCreateFlagBitsKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkAccelerationStructureCreateFlagBitsKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_CREATE_MOTION_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_CREATE_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_CREATE_MOTION_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_CREATE_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 void VkAccelerationStructureMemoryRequirementsTypeNV_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkAccelerationStructureMemoryRequirementsTypeNV: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_OBJECT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_BUILD_SCRATCH_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_UPDATE_SCRATCH_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_MAX_ENUM_NV", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_OBJECT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_BUILD_SCRATCH_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_UPDATE_SCRATCH_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_MAX_ENUM_NV", INDENT_FORMAT_ARGS(2)); }
 }
 void VkAccelerationStructureMotionInstanceTypeNV_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkAccelerationStructureMotionInstanceTypeNV: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_STATIC_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_MATRIX_MOTION_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_SRT_MOTION_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_MAX_ENUM_NV", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_STATIC_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_MATRIX_MOTION_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_SRT_MOTION_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_MOTION_INSTANCE_TYPE_MAX_ENUM_NV", INDENT_FORMAT_ARGS(2)); }
 }
 void VkAccelerationStructureTypeKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkAccelerationStructureTypeKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_TYPE_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCELERATION_STRUCTURE_TYPE_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 void VkAccessFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkAccessFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_INDIRECT_COMMAND_READ_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_INDEX_READ_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_UNIFORM_READ_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_INPUT_ATTACHMENT_READ_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_SHADER_READ_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_SHADER_WRITE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_COLOR_ATTACHMENT_READ_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_TRANSFER_READ_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_TRANSFER_WRITE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_HOST_READ_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_HOST_WRITE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_MEMORY_READ_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_MEMORY_WRITE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 33554432) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_TRANSFORM_FEEDBACK_WRITE_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 67108864) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 134217728) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1048576) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_CONDITIONAL_RENDERING_READ_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 524288) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_COLOR_ATTACHMENT_READ_NONCOHERENT_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16777216) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_FRAGMENT_DENSITY_MAP_READ_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8388608) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_COMMAND_PREPROCESS_READ_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 262144) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_COMMAND_PREPROCESS_WRITE_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_NONE_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8388608) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_SHADING_RATE_IMAGE_READ_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_INDIRECT_COMMAND_READ_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_INDEX_READ_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_UNIFORM_READ_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_INPUT_ATTACHMENT_READ_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_SHADER_READ_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_SHADER_WRITE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_COLOR_ATTACHMENT_READ_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_TRANSFER_READ_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_TRANSFER_WRITE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_HOST_READ_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_HOST_WRITE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_MEMORY_READ_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_MEMORY_WRITE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 33554432) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_TRANSFORM_FEEDBACK_WRITE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 67108864) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 134217728) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1048576) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_CONDITIONAL_RENDERING_READ_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 524288) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_COLOR_ATTACHMENT_READ_NONCOHERENT_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16777216) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_FRAGMENT_DENSITY_MAP_READ_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8388608) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_COMMAND_PREPROCESS_READ_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 262144) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_COMMAND_PREPROCESS_WRITE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_NONE_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8388608) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_SHADING_RATE_IMAGE_READ_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkAcquireProfilingLockFlagBitsKHR_debug_str(int value) {
   if (value == 2147483647) { return "VK_ACQUIRE_PROFILING_LOCK_FLAG_BITS_MAX_ENUM_KHR"; }
@@ -2072,10 +2072,10 @@ const char *VkBlendOp_debug_str(int value) {
 }
 void VkBlendOverlapEXT_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkBlendOverlapEXT: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BLEND_OVERLAP_UNCORRELATED_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BLEND_OVERLAP_DISJOINT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BLEND_OVERLAP_CONJOINT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BLEND_OVERLAP_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BLEND_OVERLAP_UNCORRELATED_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BLEND_OVERLAP_DISJOINT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BLEND_OVERLAP_CONJOINT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BLEND_OVERLAP_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkBorderColor_debug_str(int value) {
   if (value == 0) { return "VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK"; }
@@ -2091,56 +2091,56 @@ const char *VkBorderColor_debug_str(int value) {
 }
 void VkBufferCreateFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkBufferCreateFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_CREATE_SPARSE_BINDING_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_CREATE_SPARSE_ALIASED_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_CREATE_PROTECTED_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_CREATE_SPARSE_BINDING_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_CREATE_SPARSE_ALIASED_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_CREATE_PROTECTED_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkBufferUsageFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkBufferUsageFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_TRANSFER_SRC_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_TRANSFER_DST_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_STORAGE_BUFFER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_INDEX_BUFFER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_VERTEX_BUFFER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_VIDEO_DECODE_SRC_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_VIDEO_DECODE_DST_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_BUFFER_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_COUNTER_BUFFER_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_CONDITIONAL_RENDERING_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 524288) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1048576) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_VIDEO_ENCODE_DST_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_VIDEO_ENCODE_SRC_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_RAY_TRACING_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_TRANSFER_SRC_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_TRANSFER_DST_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_STORAGE_BUFFER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_INDEX_BUFFER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_VERTEX_BUFFER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_VIDEO_DECODE_SRC_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_VIDEO_DECODE_DST_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_BUFFER_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_COUNTER_BUFFER_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_CONDITIONAL_RENDERING_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 524288) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1048576) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_VIDEO_ENCODE_DST_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_VIDEO_ENCODE_SRC_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_RAY_TRACING_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUFFER_USAGE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkBuildAccelerationStructureFlagBitsKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkBuildAccelerationStructureFlagBitsKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_LOW_MEMORY_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_MOTION_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_LOW_MEMORY_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_LOW_MEMORY_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_MOTION_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_LOW_MEMORY_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_BUILD_ACCELERATION_STRUCTURE_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkBuildAccelerationStructureModeKHR_debug_str(int value) {
   if (value == 0) { return "VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR"; }
@@ -2150,11 +2150,11 @@ const char *VkBuildAccelerationStructureModeKHR_debug_str(int value) {
 }
 void VkChromaLocation_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkChromaLocation: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_CHROMA_LOCATION_COSITED_EVEN", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_CHROMA_LOCATION_MIDPOINT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_CHROMA_LOCATION_COSITED_EVEN_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_CHROMA_LOCATION_MIDPOINT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_CHROMA_LOCATION_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_CHROMA_LOCATION_COSITED_EVEN", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_CHROMA_LOCATION_MIDPOINT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_CHROMA_LOCATION_COSITED_EVEN_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_CHROMA_LOCATION_MIDPOINT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_CHROMA_LOCATION_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkCoarseSampleOrderTypeNV_debug_str(int value) {
   if (value == 0) { return "VK_COARSE_SAMPLE_ORDER_TYPE_DEFAULT_NV"; }
@@ -2166,11 +2166,11 @@ const char *VkCoarseSampleOrderTypeNV_debug_str(int value) {
 }
 void VkColorComponentFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkColorComponentFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COLOR_COMPONENT_R_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COLOR_COMPONENT_G_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COLOR_COMPONENT_B_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COLOR_COMPONENT_A_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COLOR_COMPONENT_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COLOR_COMPONENT_R_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COLOR_COMPONENT_G_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COLOR_COMPONENT_B_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COLOR_COMPONENT_A_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COLOR_COMPONENT_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkColorSpaceKHR_debug_str(int value) {
   if (value == 0) { return "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"; }
@@ -2207,17 +2207,17 @@ const char *VkCommandBufferResetFlagBits_debug_str(int value) {
 }
 void VkCommandBufferUsageFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkCommandBufferUsageFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMMAND_BUFFER_USAGE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMMAND_BUFFER_USAGE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkCommandPoolCreateFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkCommandPoolCreateFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMMAND_POOL_CREATE_TRANSIENT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMMAND_POOL_CREATE_PROTECTED_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMMAND_POOL_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMMAND_POOL_CREATE_TRANSIENT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMMAND_POOL_CREATE_PROTECTED_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMMAND_POOL_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkCommandPoolResetFlagBits_debug_str(int value) {
   if (value == 1) { return "VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT"; }
@@ -2264,11 +2264,11 @@ const char *VkComponentTypeNV_debug_str(int value) {
 }
 void VkCompositeAlphaFlagBitsKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkCompositeAlphaFlagBitsKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMPOSITE_ALPHA_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_COMPOSITE_ALPHA_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkConditionalRenderingFlagBitsEXT_debug_str(int value) {
   if (value == 1) { return "VK_CONDITIONAL_RENDERING_INVERTED_BIT_EXT"; }
@@ -2277,10 +2277,10 @@ const char *VkConditionalRenderingFlagBitsEXT_debug_str(int value) {
 }
 void VkConservativeRasterizationModeEXT_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkConservativeRasterizationModeEXT: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_CONSERVATIVE_RASTERIZATION_MODE_DISABLED_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_CONSERVATIVE_RASTERIZATION_MODE_OVERESTIMATE_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_CONSERVATIVE_RASTERIZATION_MODE_UNDERESTIMATE_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_CONSERVATIVE_RASTERIZATION_MODE_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_CONSERVATIVE_RASTERIZATION_MODE_DISABLED_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_CONSERVATIVE_RASTERIZATION_MODE_OVERESTIMATE_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_CONSERVATIVE_RASTERIZATION_MODE_UNDERESTIMATE_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_CONSERVATIVE_RASTERIZATION_MODE_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkCopyAccelerationStructureModeKHR_debug_str(int value) {
   if (value == 0) { return "VK_COPY_ACCELERATION_STRUCTURE_MODE_CLONE_KHR"; }
@@ -2316,12 +2316,12 @@ const char *VkCullModeFlagBits_debug_str(int value) {
 }
 void VkDebugReportFlagBitsEXT_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkDebugReportFlagBitsEXT: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_REPORT_INFORMATION_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_REPORT_WARNING_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_REPORT_ERROR_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_REPORT_DEBUG_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_REPORT_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_REPORT_INFORMATION_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_REPORT_WARNING_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_REPORT_ERROR_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_REPORT_DEBUG_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_REPORT_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkDebugReportObjectTypeEXT_debug_str(int value) {
   if (value == 0) { return "VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT"; }
@@ -2372,55 +2372,55 @@ const char *VkDebugReportObjectTypeEXT_debug_str(int value) {
 }
 void VkDebugUtilsMessageSeverityFlagBitsEXT_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkDebugUtilsMessageSeverityFlagBitsEXT: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
 }
 void VkDebugUtilsMessageTypeFlagBitsEXT_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkDebugUtilsMessageTypeFlagBitsEXT: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_UTILS_MESSAGE_TYPE_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEBUG_UTILS_MESSAGE_TYPE_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
 }
 void VkDependencyFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkDependencyFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEPENDENCY_BY_REGION_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEPENDENCY_DEVICE_GROUP_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEPENDENCY_VIEW_LOCAL_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEPENDENCY_VIEW_LOCAL_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEPENDENCY_DEVICE_GROUP_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEPENDENCY_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEPENDENCY_BY_REGION_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEPENDENCY_DEVICE_GROUP_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEPENDENCY_VIEW_LOCAL_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEPENDENCY_VIEW_LOCAL_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEPENDENCY_DEVICE_GROUP_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEPENDENCY_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkDescriptorBindingFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkDescriptorBindingFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_BINDING_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_BINDING_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkDescriptorPoolCreateFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkDescriptorPoolCreateFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_VALVE", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_POOL_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_VALVE", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_POOL_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkDescriptorSetLayoutCreateFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkDescriptorSetLayoutCreateFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_VALVE", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_SET_LAYOUT_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_VALVE", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DESCRIPTOR_SET_LAYOUT_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkDescriptorType_debug_str(int value) {
   if (value == 0) { return "VK_DESCRIPTOR_TYPE_SAMPLER"; }
@@ -2450,10 +2450,10 @@ const char *VkDescriptorUpdateTemplateType_debug_str(int value) {
 }
 void VkDeviceDiagnosticsConfigFlagBitsNV_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkDeviceDiagnosticsConfigFlagBitsNV: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_SHADER_DEBUG_INFO_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_RESOURCE_TRACKING_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_AUTOMATIC_CHECKPOINTS_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEVICE_DIAGNOSTICS_CONFIG_FLAG_BITS_MAX_ENUM_NV", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_SHADER_DEBUG_INFO_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_RESOURCE_TRACKING_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_AUTOMATIC_CHECKPOINTS_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEVICE_DIAGNOSTICS_CONFIG_FLAG_BITS_MAX_ENUM_NV", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkDeviceEventTypeEXT_debug_str(int value) {
   if (value == 0) { return "VK_DEVICE_EVENT_TYPE_DISPLAY_HOTPLUG_EXT"; }
@@ -2462,11 +2462,11 @@ const char *VkDeviceEventTypeEXT_debug_str(int value) {
 }
 void VkDeviceGroupPresentModeFlagBitsKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkDeviceGroupPresentModeFlagBitsKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEVICE_GROUP_PRESENT_MODE_REMOTE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEVICE_GROUP_PRESENT_MODE_SUM_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEVICE_GROUP_PRESENT_MODE_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEVICE_GROUP_PRESENT_MODE_REMOTE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEVICE_GROUP_PRESENT_MODE_SUM_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DEVICE_GROUP_PRESENT_MODE_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkDeviceMemoryReportEventTypeEXT_debug_str(int value) {
   if (value == 0) { return "VK_DEVICE_MEMORY_REPORT_EVENT_TYPE_ALLOCATE_EXT"; }
@@ -2495,18 +2495,18 @@ const char *VkDisplayEventTypeEXT_debug_str(int value) {
 }
 void VkDisplayPlaneAlphaFlagBitsKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkDisplayPlaneAlphaFlagBitsKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DISPLAY_PLANE_ALPHA_OPAQUE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DISPLAY_PLANE_ALPHA_GLOBAL_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_PREMULTIPLIED_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DISPLAY_PLANE_ALPHA_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DISPLAY_PLANE_ALPHA_OPAQUE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DISPLAY_PLANE_ALPHA_GLOBAL_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_PREMULTIPLIED_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DISPLAY_PLANE_ALPHA_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 void VkDisplayPowerStateEXT_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkDisplayPowerStateEXT: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DISPLAY_POWER_STATE_OFF_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DISPLAY_POWER_STATE_SUSPEND_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DISPLAY_POWER_STATE_ON_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DISPLAY_POWER_STATE_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DISPLAY_POWER_STATE_OFF_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DISPLAY_POWER_STATE_SUSPEND_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DISPLAY_POWER_STATE_ON_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_DISPLAY_POWER_STATE_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkDriverId_debug_str(int value) {
   if (value == 1) { return "VK_DRIVER_ID_AMD_PROPRIETARY"; }
@@ -2592,96 +2592,96 @@ const char *VkEventCreateFlagBits_debug_str(int value) {
 }
 void VkExternalFenceFeatureFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkExternalFenceFeatureFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_FEATURE_EXPORTABLE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_FEATURE_IMPORTABLE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_FEATURE_EXPORTABLE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_FEATURE_IMPORTABLE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_FEATURE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_FEATURE_EXPORTABLE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_FEATURE_IMPORTABLE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_FEATURE_EXPORTABLE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_FEATURE_IMPORTABLE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_FEATURE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkExternalFenceHandleTypeFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkExternalFenceHandleTypeFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_FD_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_HANDLE_TYPE_SYNC_FD_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_FD_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_HANDLE_TYPE_SYNC_FD_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_HANDLE_TYPE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_FD_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_HANDLE_TYPE_SYNC_FD_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_FD_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_HANDLE_TYPE_SYNC_FD_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_FENCE_HANDLE_TYPE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkExternalMemoryFeatureFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkExternalMemoryFeatureFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_DEDICATED_ONLY_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_EXPORTABLE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_DEDICATED_ONLY_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_EXPORTABLE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_DEDICATED_ONLY_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_EXPORTABLE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_DEDICATED_ONLY_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_EXPORTABLE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkExternalMemoryFeatureFlagBitsNV_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkExternalMemoryFeatureFlagBitsNV: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_DEDICATED_ONLY_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_EXPORTABLE_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_FLAG_BITS_MAX_ENUM_NV", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_DEDICATED_ONLY_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_EXPORTABLE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_FEATURE_FLAG_BITS_MAX_ENUM_NV", INDENT_FORMAT_ARGS(2)); }
 }
 void VkExternalMemoryHandleTypeFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkExternalMemoryHandleTypeFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_KMT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_HEAP_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_RESOURCE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_MAPPED_FOREIGN_MEMORY_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_RDMA_ADDRESS_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_KMT_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_HEAP_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_RESOURCE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_KMT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_HEAP_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_RESOURCE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_MAPPED_FOREIGN_MEMORY_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_RDMA_ADDRESS_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_KMT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_HEAP_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_RESOURCE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkExternalMemoryHandleTypeFlagBitsNV_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkExternalMemoryHandleTypeFlagBitsNV: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_KMT_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_FLAG_BITS_MAX_ENUM_NV", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_KMT_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_MEMORY_HANDLE_TYPE_FLAG_BITS_MAX_ENUM_NV", INDENT_FORMAT_ARGS(2)); }
 }
 void VkExternalSemaphoreFeatureFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkExternalSemaphoreFeatureFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_FEATURE_EXPORTABLE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_FEATURE_IMPORTABLE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_FEATURE_EXPORTABLE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_FEATURE_IMPORTABLE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_FEATURE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_FEATURE_EXPORTABLE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_FEATURE_IMPORTABLE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_FEATURE_EXPORTABLE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_FEATURE_IMPORTABLE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_FEATURE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkExternalSemaphoreHandleTypeFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkExternalSemaphoreHandleTypeFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_D3D12_FENCE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_D3D11_FENCE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_D3D12_FENCE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_D3D12_FENCE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_D3D11_FENCE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_D3D12_FENCE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkFenceCreateFlagBits_debug_str(int value) {
   if (value == 1) { return "VK_FENCE_CREATE_SIGNALED_BIT"; }
@@ -2690,9 +2690,9 @@ const char *VkFenceCreateFlagBits_debug_str(int value) {
 }
 void VkFenceImportFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkFenceImportFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FENCE_IMPORT_TEMPORARY_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FENCE_IMPORT_TEMPORARY_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FENCE_IMPORT_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FENCE_IMPORT_TEMPORARY_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FENCE_IMPORT_TEMPORARY_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FENCE_IMPORT_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkFilter_debug_str(int value) {
   if (value == 0) { return "VK_FILTER_NEAREST"; }
@@ -2989,49 +2989,49 @@ const char *VkFormat_debug_str(int value) {
 }
 void VkFormatFeatureFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkFormatFeatureFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_BLIT_SRC_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_BLIT_DST_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_TRANSFER_SRC_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_TRANSFER_DST_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 262144) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 524288) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1048576) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_DISJOINT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8388608) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 33554432) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_VIDEO_DECODE_OUTPUT_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 67108864) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_VIDEO_DECODE_DPB_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 536870912) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_ACCELERATION_STRUCTURE_VERTEX_BUFFER_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16777216) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_FRAGMENT_DENSITY_MAP_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1073741824) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 134217728) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_VIDEO_ENCODE_INPUT_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 268435456) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_VIDEO_ENCODE_DPB_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_TRANSFER_SRC_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_TRANSFER_DST_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 262144) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 524288) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1048576) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_DISJOINT_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8388608) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_BLIT_SRC_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_BLIT_DST_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_TRANSFER_SRC_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_TRANSFER_DST_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 262144) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 524288) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1048576) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_DISJOINT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8388608) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 33554432) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_VIDEO_DECODE_OUTPUT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 67108864) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_VIDEO_DECODE_DPB_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 536870912) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_ACCELERATION_STRUCTURE_VERTEX_BUFFER_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16777216) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_FRAGMENT_DENSITY_MAP_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1073741824) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 134217728) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_VIDEO_ENCODE_INPUT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 268435456) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_VIDEO_ENCODE_DPB_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_TRANSFER_SRC_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_TRANSFER_DST_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 262144) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 524288) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1048576) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_DISJOINT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8388608) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FORMAT_FEATURE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkFragmentShadingRateCombinerOpKHR_debug_str(int value) {
   if (value == 0) { return "VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR"; }
@@ -3066,9 +3066,9 @@ const char *VkFragmentShadingRateTypeNV_debug_str(int value) {
 }
 void VkFramebufferCreateFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkFramebufferCreateFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FRAMEBUFFER_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_FRAMEBUFFER_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkFrontFace_debug_str(int value) {
   if (value == 0) { return "VK_FRONT_FACE_COUNTER_CLOCKWISE"; }
@@ -3078,76 +3078,76 @@ const char *VkFrontFace_debug_str(int value) {
 }
 void VkGeometryFlagBitsKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkGeometryFlagBitsKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_OPAQUE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_OPAQUE_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_OPAQUE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_OPAQUE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 void VkGeometryInstanceFlagBitsKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkGeometryInstanceFlagBitsKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_INSTANCE_TRIANGLE_FLIP_FACING_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_INSTANCE_TRIANGLE_FRONT_COUNTERCLOCKWISE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_INSTANCE_TRIANGLE_FRONT_COUNTERCLOCKWISE_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_INSTANCE_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_INSTANCE_TRIANGLE_FLIP_FACING_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_INSTANCE_TRIANGLE_FRONT_COUNTERCLOCKWISE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_INSTANCE_TRIANGLE_CULL_DISABLE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_INSTANCE_TRIANGLE_FRONT_COUNTERCLOCKWISE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_INSTANCE_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 void VkGeometryTypeKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkGeometryTypeKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_TYPE_TRIANGLES_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_TYPE_AABBS_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_TYPE_INSTANCES_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_TYPE_TRIANGLES_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_TYPE_AABBS_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_TYPE_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_TYPE_TRIANGLES_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_TYPE_AABBS_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_TYPE_INSTANCES_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_TYPE_TRIANGLES_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_TYPE_AABBS_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GEOMETRY_TYPE_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 void VkImageAspectFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkImageAspectFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_COLOR_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_DEPTH_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_STENCIL_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_METADATA_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_PLANE_0_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_PLANE_1_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_PLANE_2_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_MEMORY_PLANE_0_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_MEMORY_PLANE_1_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_MEMORY_PLANE_2_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_MEMORY_PLANE_3_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_PLANE_0_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_PLANE_1_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_PLANE_2_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_COLOR_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_DEPTH_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_STENCIL_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_METADATA_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_PLANE_0_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_PLANE_1_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_PLANE_2_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_MEMORY_PLANE_0_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_MEMORY_PLANE_1_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_MEMORY_PLANE_2_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_MEMORY_PLANE_3_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_PLANE_0_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_PLANE_1_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_PLANE_2_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkImageCreateFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkImageCreateFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_SPARSE_BINDING_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_SPARSE_ALIASED_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_ALIAS_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_EXTENDED_USAGE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_PROTECTED_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_DISJOINT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_CORNER_SAMPLED_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_SUBSAMPLED_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_EXTENDED_USAGE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_DISJOINT_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_ALIAS_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_SPARSE_BINDING_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_SPARSE_ALIASED_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_ALIAS_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_EXTENDED_USAGE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_PROTECTED_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_DISJOINT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_CORNER_SAMPLED_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_SUBSAMPLED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_EXTENDED_USAGE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_DISJOINT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_ALIAS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkImageLayout_debug_str(int value) {
   if (value == 0) { return "VK_IMAGE_LAYOUT_UNDEFINED"; }
@@ -3196,38 +3196,38 @@ const char *VkImageTiling_debug_str(int value) {
 }
 void VkImageType_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkImageType: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_TYPE_1D", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_TYPE_2D", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_TYPE_3D", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_TYPE_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_TYPE_1D", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_TYPE_2D", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_TYPE_3D", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_TYPE_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkImageUsageFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkImageUsageFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_TRANSFER_SRC_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_TRANSFER_DST_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_SAMPLED_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_STORAGE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_VIDEO_DECODE_DST_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_VIDEO_DECODE_SRC_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_VIDEO_DECODE_DPB_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_VIDEO_ENCODE_DST_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_VIDEO_ENCODE_SRC_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_VIDEO_ENCODE_DPB_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 262144) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_INVOCATION_MASK_BIT_HUAWEI", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_TRANSFER_SRC_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_TRANSFER_DST_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_SAMPLED_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_STORAGE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_VIDEO_DECODE_DST_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_VIDEO_DECODE_SRC_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_VIDEO_DECODE_DPB_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_VIDEO_ENCODE_DST_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_VIDEO_ENCODE_SRC_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_VIDEO_ENCODE_DPB_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 262144) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_INVOCATION_MASK_BIT_HUAWEI", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_USAGE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkImageViewCreateFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkImageViewCreateFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DYNAMIC_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DEFERRED_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_VIEW_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DYNAMIC_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DEFERRED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_VIEW_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkImageViewType_debug_str(int value) {
   if (value == 0) { return "VK_IMAGE_VIEW_TYPE_1D"; }
@@ -3251,10 +3251,10 @@ const char *VkIndexType_debug_str(int value) {
 }
 void VkIndirectCommandsLayoutUsageFlagBitsNV_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkIndirectCommandsLayoutUsageFlagBitsNV: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_INDIRECT_COMMANDS_LAYOUT_USAGE_EXPLICIT_PREPROCESS_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_INDIRECT_COMMANDS_LAYOUT_USAGE_INDEXED_SEQUENCES_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_INDIRECT_COMMANDS_LAYOUT_USAGE_FLAG_BITS_MAX_ENUM_NV", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_INDIRECT_COMMANDS_LAYOUT_USAGE_EXPLICIT_PREPROCESS_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_INDIRECT_COMMANDS_LAYOUT_USAGE_INDEXED_SEQUENCES_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_INDIRECT_COMMANDS_LAYOUT_USAGE_FLAG_BITS_MAX_ENUM_NV", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkIndirectCommandsTokenTypeNV_debug_str(int value) {
   if (value == 0) { return "VK_INDIRECT_COMMANDS_TOKEN_TYPE_SHADER_GROUP_NV"; }
@@ -3308,40 +3308,40 @@ const char *VkLogicOp_debug_str(int value) {
 }
 void VkMemoryAllocateFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkMemoryAllocateFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_ALLOCATE_DEVICE_MASK_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_ALLOCATE_DEVICE_MASK_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_ALLOCATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_ALLOCATE_DEVICE_MASK_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_ALLOCATE_DEVICE_MASK_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_ALLOCATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkMemoryHeapFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkMemoryHeapFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_HEAP_DEVICE_LOCAL_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_HEAP_MULTI_INSTANCE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_HEAP_MULTI_INSTANCE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_HEAP_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_HEAP_DEVICE_LOCAL_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_HEAP_MULTI_INSTANCE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_HEAP_MULTI_INSTANCE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_HEAP_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkMemoryOverallocationBehaviorAMD_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkMemoryOverallocationBehaviorAMD: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_OVERALLOCATION_BEHAVIOR_DEFAULT_AMD", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_OVERALLOCATION_BEHAVIOR_ALLOWED_AMD", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_OVERALLOCATION_BEHAVIOR_DISALLOWED_AMD", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_OVERALLOCATION_BEHAVIOR_MAX_ENUM_AMD", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_OVERALLOCATION_BEHAVIOR_DEFAULT_AMD", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_OVERALLOCATION_BEHAVIOR_ALLOWED_AMD", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_OVERALLOCATION_BEHAVIOR_DISALLOWED_AMD", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_OVERALLOCATION_BEHAVIOR_MAX_ENUM_AMD", INDENT_FORMAT_ARGS(2)); }
 }
 void VkMemoryPropertyFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkMemoryPropertyFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_PROPERTY_HOST_COHERENT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_PROPERTY_HOST_CACHED_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_PROPERTY_PROTECTED_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_PROPERTY_RDMA_CAPABLE_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_PROPERTY_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_PROPERTY_HOST_COHERENT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_PROPERTY_HOST_CACHED_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_PROPERTY_PROTECTED_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_PROPERTY_RDMA_CAPABLE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_MEMORY_PROPERTY_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkObjectType_debug_str(int value) {
   if (value == 0) { return "VK_OBJECT_TYPE_UNKNOWN"; }
@@ -3397,15 +3397,15 @@ const char *VkObjectType_debug_str(int value) {
 }
 void VkPeerMemoryFeatureFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkPeerMemoryFeatureFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PEER_MEMORY_FEATURE_COPY_SRC_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PEER_MEMORY_FEATURE_COPY_DST_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PEER_MEMORY_FEATURE_GENERIC_SRC_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PEER_MEMORY_FEATURE_GENERIC_DST_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PEER_MEMORY_FEATURE_COPY_SRC_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PEER_MEMORY_FEATURE_COPY_DST_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PEER_MEMORY_FEATURE_GENERIC_SRC_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PEER_MEMORY_FEATURE_GENERIC_DST_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PEER_MEMORY_FEATURE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PEER_MEMORY_FEATURE_COPY_SRC_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PEER_MEMORY_FEATURE_COPY_DST_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PEER_MEMORY_FEATURE_GENERIC_SRC_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PEER_MEMORY_FEATURE_GENERIC_DST_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PEER_MEMORY_FEATURE_COPY_SRC_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PEER_MEMORY_FEATURE_COPY_DST_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PEER_MEMORY_FEATURE_GENERIC_SRC_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PEER_MEMORY_FEATURE_GENERIC_DST_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PEER_MEMORY_FEATURE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkPerformanceConfigurationTypeINTEL_debug_str(int value) {
   if (value == 0) { return "VK_PERFORMANCE_CONFIGURATION_TYPE_COMMAND_QUEUE_METRICS_DISCOVERY_ACTIVATED_INTEL"; }
@@ -3414,21 +3414,21 @@ const char *VkPerformanceConfigurationTypeINTEL_debug_str(int value) {
 }
 void VkPerformanceCounterDescriptionFlagBitsKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkPerformanceCounterDescriptionFlagBitsKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PERFORMANCE_COUNTER_DESCRIPTION_PERFORMANCE_IMPACTING_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PERFORMANCE_COUNTER_DESCRIPTION_CONCURRENTLY_IMPACTED_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PERFORMANCE_COUNTER_DESCRIPTION_PERFORMANCE_IMPACTING_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PERFORMANCE_COUNTER_DESCRIPTION_CONCURRENTLY_IMPACTED_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PERFORMANCE_COUNTER_DESCRIPTION_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PERFORMANCE_COUNTER_DESCRIPTION_PERFORMANCE_IMPACTING_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PERFORMANCE_COUNTER_DESCRIPTION_CONCURRENTLY_IMPACTED_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PERFORMANCE_COUNTER_DESCRIPTION_PERFORMANCE_IMPACTING_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PERFORMANCE_COUNTER_DESCRIPTION_CONCURRENTLY_IMPACTED_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PERFORMANCE_COUNTER_DESCRIPTION_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 void VkPerformanceCounterScopeKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkPerformanceCounterScopeKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PERFORMANCE_COUNTER_SCOPE_COMMAND_BUFFER_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PERFORMANCE_COUNTER_SCOPE_RENDER_PASS_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PERFORMANCE_COUNTER_SCOPE_COMMAND_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_SCOPE_COMMAND_BUFFER_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_SCOPE_RENDER_PASS_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_SCOPE_COMMAND_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PERFORMANCE_COUNTER_SCOPE_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PERFORMANCE_COUNTER_SCOPE_COMMAND_BUFFER_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PERFORMANCE_COUNTER_SCOPE_RENDER_PASS_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PERFORMANCE_COUNTER_SCOPE_COMMAND_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_SCOPE_COMMAND_BUFFER_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_SCOPE_RENDER_PASS_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_SCOPE_COMMAND_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PERFORMANCE_COUNTER_SCOPE_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkPerformanceCounterStorageKHR_debug_str(int value) {
   if (value == 0) { return "VK_PERFORMANCE_COUNTER_STORAGE_INT32_KHR"; }
@@ -3510,39 +3510,39 @@ const char *VkPipelineCompilerControlFlagBitsAMD_debug_str(int value) {
 }
 void VkPipelineCreateFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkPipelineCreateFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_DISABLE_OPTIMIZATION_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_DERIVATIVE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_VIEW_INDEX_FROM_DEVICE_INDEX_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_DISPATCH_BASE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_RASTERIZATION_STATE_CREATE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_RASTERIZATION_STATE_CREATE_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_MISS_SHADERS_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_INTERSECTION_SHADERS_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 524288) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_DEFER_COMPILE_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_CAPTURE_STATISTICS_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_CAPTURE_INTERNAL_REPRESENTATIONS_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 262144) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_LIBRARY_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1048576) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RAY_TRACING_ALLOW_MOTION_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_DISPATCH_BASE", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_VIEW_INDEX_FROM_DEVICE_INDEX_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_DISPATCH_BASE_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_DISABLE_OPTIMIZATION_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_DERIVATIVE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_VIEW_INDEX_FROM_DEVICE_INDEX_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_DISPATCH_BASE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_RASTERIZATION_STATE_CREATE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_RASTERIZATION_STATE_CREATE_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_MISS_SHADERS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_INTERSECTION_SHADERS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 524288) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_DEFER_COMPILE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_CAPTURE_STATISTICS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_CAPTURE_INTERNAL_REPRESENTATIONS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 262144) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_LIBRARY_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1048576) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RAY_TRACING_ALLOW_MOTION_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_DISPATCH_BASE", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_VIEW_INDEX_FROM_DEVICE_INDEX_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_DISPATCH_BASE_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkPipelineCreationFeedbackFlagBitsEXT_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkPipelineCreationFeedbackFlagBitsEXT: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATION_FEEDBACK_VALID_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATION_FEEDBACK_APPLICATION_PIPELINE_CACHE_HIT_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATION_FEEDBACK_BASE_PIPELINE_ACCELERATION_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATION_FEEDBACK_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATION_FEEDBACK_VALID_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATION_FEEDBACK_APPLICATION_PIPELINE_CACHE_HIT_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATION_FEEDBACK_BASE_PIPELINE_ACCELERATION_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATION_FEEDBACK_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkPipelineExecutableStatisticFormatKHR_debug_str(int value) {
   if (value == 0) { return "VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_BOOL32_KHR"; }
@@ -3554,51 +3554,51 @@ const char *VkPipelineExecutableStatisticFormatKHR_debug_str(int value) {
 }
 void VkPipelineShaderStageCreateFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkPipelineShaderStageCreateFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_SHADER_STAGE_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_SHADER_STAGE_CREATE_REQUIRE_FULL_SUBGROUPS_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_SHADER_STAGE_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_SHADER_STAGE_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_SHADER_STAGE_CREATE_REQUIRE_FULL_SUBGROUPS_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_SHADER_STAGE_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkPipelineStageFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkPipelineStageFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_VERTEX_INPUT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_VERTEX_SHADER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_TRANSFER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_HOST_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_ALL_COMMANDS_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16777216) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_TRANSFORM_FEEDBACK_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 262144) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_CONDITIONAL_RENDERING_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 33554432) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 524288) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_TASK_SHADER_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1048576) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_MESH_SHADER_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8388608) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_FRAGMENT_DENSITY_PROCESS_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_COMMAND_PREPROCESS_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_NONE_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_SHADING_RATE_IMAGE_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 33554432) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_VERTEX_INPUT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_VERTEX_SHADER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_TRANSFER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_HOST_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_ALL_COMMANDS_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16777216) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_TRANSFORM_FEEDBACK_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 262144) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_CONDITIONAL_RENDERING_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 33554432) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 524288) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_TASK_SHADER_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1048576) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_MESH_SHADER_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8388608) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_FRAGMENT_DENSITY_PROCESS_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_COMMAND_PREPROCESS_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_NONE_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_SHADING_RATE_IMAGE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 33554432) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkPointClippingBehavior_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkPointClippingBehavior: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_POINT_CLIPPING_BEHAVIOR_ALL_CLIP_PLANES", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_POINT_CLIPPING_BEHAVIOR_USER_CLIP_PLANES_ONLY", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_POINT_CLIPPING_BEHAVIOR_ALL_CLIP_PLANES_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_POINT_CLIPPING_BEHAVIOR_USER_CLIP_PLANES_ONLY_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_POINT_CLIPPING_BEHAVIOR_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_POINT_CLIPPING_BEHAVIOR_ALL_CLIP_PLANES", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_POINT_CLIPPING_BEHAVIOR_USER_CLIP_PLANES_ONLY", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_POINT_CLIPPING_BEHAVIOR_ALL_CLIP_PLANES_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_POINT_CLIPPING_BEHAVIOR_USER_CLIP_PLANES_ONLY_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_POINT_CLIPPING_BEHAVIOR_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkPolygonMode_debug_str(int value) {
   if (value == 0) { return "VK_POLYGON_MODE_FILL"; }
@@ -3650,18 +3650,18 @@ const char *VkQueryControlFlagBits_debug_str(int value) {
 }
 void VkQueryPipelineStatisticFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkQueryPipelineStatisticFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_VERTICES_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_PRIMITIVES_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_VERTEX_SHADER_INVOCATIONS_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_GEOMETRY_SHADER_INVOCATIONS_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_GEOMETRY_SHADER_PRIMITIVES_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_CLIPPING_INVOCATIONS_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_CLIPPING_PRIMITIVES_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_FRAGMENT_SHADER_INVOCATIONS_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_TESSELLATION_CONTROL_SHADER_PATCHES_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_TESSELLATION_EVALUATION_SHADER_INVOCATIONS_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_COMPUTE_SHADER_INVOCATIONS_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_VERTICES_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_PRIMITIVES_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_VERTEX_SHADER_INVOCATIONS_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_GEOMETRY_SHADER_INVOCATIONS_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_GEOMETRY_SHADER_PRIMITIVES_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_CLIPPING_INVOCATIONS_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_CLIPPING_PRIMITIVES_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_FRAGMENT_SHADER_INVOCATIONS_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_TESSELLATION_CONTROL_SHADER_PATCHES_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_TESSELLATION_EVALUATION_SHADER_INVOCATIONS_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_COMPUTE_SHADER_INVOCATIONS_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_PIPELINE_STATISTIC_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkQueryPoolSamplingModeINTEL_debug_str(int value) {
   if (value == 0) { return "VK_QUERY_POOL_SAMPLING_MODE_MANUAL_INTEL"; }
@@ -3670,12 +3670,12 @@ const char *VkQueryPoolSamplingModeINTEL_debug_str(int value) {
 }
 void VkQueryResultFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkQueryResultFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_RESULT_64_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_RESULT_WAIT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_RESULT_WITH_AVAILABILITY_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_RESULT_PARTIAL_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_RESULT_WITH_STATUS_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_RESULT_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_RESULT_64_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_RESULT_WAIT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_RESULT_WITH_AVAILABILITY_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_RESULT_PARTIAL_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_RESULT_WITH_STATUS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUERY_RESULT_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkQueryResultStatusKHR_debug_str(int value) {
   if (value == -1) { return "VK_QUERY_RESULT_STATUS_ERROR_KHR"; }
@@ -3701,22 +3701,22 @@ const char *VkQueryType_debug_str(int value) {
 }
 void VkQueueFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkQueueFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GRAPHICS_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_COMPUTE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_TRANSFER_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_SPARSE_BINDING_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_PROTECTED_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_VIDEO_DECODE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_VIDEO_ENCODE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GRAPHICS_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_COMPUTE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_TRANSFER_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_SPARSE_BINDING_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_PROTECTED_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_VIDEO_DECODE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_VIDEO_ENCODE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkQueueGlobalPriorityEXT_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkQueueGlobalPriorityEXT: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GLOBAL_PRIORITY_LOW_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GLOBAL_PRIORITY_MEDIUM_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GLOBAL_PRIORITY_HIGH_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GLOBAL_PRIORITY_REALTIME_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GLOBAL_PRIORITY_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GLOBAL_PRIORITY_LOW_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GLOBAL_PRIORITY_MEDIUM_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GLOBAL_PRIORITY_HIGH_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GLOBAL_PRIORITY_REALTIME_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GLOBAL_PRIORITY_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkRasterizationOrderAMD_debug_str(int value) {
   if (value == 0) { return "VK_RASTERIZATION_ORDER_STRICT_AMD"; }
@@ -3726,13 +3726,13 @@ const char *VkRasterizationOrderAMD_debug_str(int value) {
 }
 void VkRayTracingShaderGroupTypeKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkRayTracingShaderGroupTypeKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RAY_TRACING_SHADER_GROUP_TYPE_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RAY_TRACING_SHADER_GROUP_TYPE_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkRenderPassCreateFlagBits_debug_str(int value) {
   if (value == 2) { return "VK_RENDER_PASS_CREATE_TRANSFORM_BIT_QCOM"; }
@@ -3741,24 +3741,24 @@ const char *VkRenderPassCreateFlagBits_debug_str(int value) {
 }
 void VkRenderingFlagBitsKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkRenderingFlagBitsKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RENDERING_CONTENTS_SECONDARY_COMMAND_BUFFERS_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RENDERING_SUSPENDING_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RENDERING_RESUMING_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RENDERING_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RENDERING_CONTENTS_SECONDARY_COMMAND_BUFFERS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RENDERING_SUSPENDING_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RENDERING_RESUMING_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RENDERING_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 void VkResolveModeFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkResolveModeFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_NONE", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_SAMPLE_ZERO_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_AVERAGE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_MIN_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_MAX_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_NONE_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_SAMPLE_ZERO_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_AVERAGE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_MIN_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_MAX_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_NONE", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_SAMPLE_ZERO_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_AVERAGE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_MIN_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_MAX_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_NONE_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_SAMPLE_ZERO_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_AVERAGE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_MIN_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_MAX_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RESOLVE_MODE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkResult_debug_str(int value) {
   if (value == 0) { return "VK_SUCCESS"; }
@@ -3810,14 +3810,14 @@ const char *VkResult_debug_str(int value) {
 }
 void VkSampleCountFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkSampleCountFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLE_COUNT_1_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLE_COUNT_2_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLE_COUNT_4_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLE_COUNT_8_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLE_COUNT_16_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLE_COUNT_32_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLE_COUNT_64_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLE_COUNT_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLE_COUNT_1_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLE_COUNT_2_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLE_COUNT_4_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLE_COUNT_8_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLE_COUNT_16_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLE_COUNT_32_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLE_COUNT_64_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLE_COUNT_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkSamplerAddressMode_debug_str(int value) {
   if (value == 0) { return "VK_SAMPLER_ADDRESS_MODE_REPEAT"; }
@@ -3831,9 +3831,9 @@ const char *VkSamplerAddressMode_debug_str(int value) {
 }
 void VkSamplerCreateFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkSamplerCreateFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_CREATE_SUBSAMPLED_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_CREATE_SUBSAMPLED_COARSE_RECONSTRUCTION_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_CREATE_SUBSAMPLED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_CREATE_SUBSAMPLED_COARSE_RECONSTRUCTION_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkSamplerMipmapMode_debug_str(int value) {
   if (value == 0) { return "VK_SAMPLER_MIPMAP_MODE_NEAREST"; }
@@ -3843,13 +3843,13 @@ const char *VkSamplerMipmapMode_debug_str(int value) {
 }
 void VkSamplerReductionMode_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkSamplerReductionMode: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_REDUCTION_MODE_MIN", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_REDUCTION_MODE_MAX", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_REDUCTION_MODE_MIN_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_REDUCTION_MODE_MAX_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_REDUCTION_MODE_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_REDUCTION_MODE_MIN", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_REDUCTION_MODE_MAX", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_REDUCTION_MODE_MIN_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_REDUCTION_MODE_MAX_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_REDUCTION_MODE_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkSamplerYcbcrModelConversion_debug_str(int value) {
   if (value == 0) { return "VK_SAMPLER_YCBCR_MODEL_CONVERSION_RGB_IDENTITY"; }
@@ -3867,11 +3867,11 @@ const char *VkSamplerYcbcrModelConversion_debug_str(int value) {
 }
 void VkSamplerYcbcrRange_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkSamplerYcbcrRange: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_YCBCR_RANGE_ITU_FULL", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_YCBCR_RANGE_ITU_NARROW", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_YCBCR_RANGE_ITU_FULL_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_YCBCR_RANGE_ITU_NARROW_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_YCBCR_RANGE_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_YCBCR_RANGE_ITU_FULL", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_YCBCR_RANGE_ITU_NARROW", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_YCBCR_RANGE_ITU_FULL_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_YCBCR_RANGE_ITU_NARROW_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SAMPLER_YCBCR_RANGE_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkScopeNV_debug_str(int value) {
   if (value == 1) { return "VK_SCOPE_DEVICE_NV"; }
@@ -3883,23 +3883,23 @@ const char *VkScopeNV_debug_str(int value) {
 }
 void VkSemaphoreImportFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkSemaphoreImportFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_IMPORT_TEMPORARY_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_IMPORT_TEMPORARY_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_IMPORT_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_IMPORT_TEMPORARY_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_IMPORT_TEMPORARY_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_IMPORT_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkSemaphoreType_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkSemaphoreType: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_TYPE_BINARY", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_TYPE_TIMELINE", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_TYPE_BINARY_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_TYPE_TIMELINE_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_TYPE_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_TYPE_BINARY", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_TYPE_TIMELINE", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_TYPE_BINARY_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_TYPE_TIMELINE_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_TYPE_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkSemaphoreWaitFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkSemaphoreWaitFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_WAIT_ANY_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_WAIT_ANY_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_WAIT_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_WAIT_ANY_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_WAIT_ANY_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SEMAPHORE_WAIT_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkShaderCorePropertiesFlagBitsAMD_debug_str(int value) {
   if (value == 2147483647) { return "VK_SHADER_CORE_PROPERTIES_FLAG_BITS_MAX_ENUM_AMD"; }
@@ -3907,13 +3907,13 @@ const char *VkShaderCorePropertiesFlagBitsAMD_debug_str(int value) {
 }
 void VkShaderFloatControlsIndependence_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkShaderFloatControlsIndependence: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_32_BIT_ONLY", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_ALL", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_NONE", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_32_BIT_ONLY_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_ALL_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_NONE_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_32_BIT_ONLY", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_ALL", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_NONE", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_32_BIT_ONLY_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_ALL_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_NONE_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkShaderGroupShaderKHR_debug_str(int value) {
   if (value == 0) { return "VK_SHADER_GROUP_SHADER_GENERAL_KHR"; }
@@ -3925,10 +3925,10 @@ const char *VkShaderGroupShaderKHR_debug_str(int value) {
 }
 void VkShaderInfoTypeAMD_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkShaderInfoTypeAMD: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_INFO_TYPE_STATISTICS_AMD", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_INFO_TYPE_BINARY_AMD", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_INFO_TYPE_DISASSEMBLY_AMD", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_INFO_TYPE_MAX_ENUM_AMD", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_INFO_TYPE_STATISTICS_AMD", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_INFO_TYPE_BINARY_AMD", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_INFO_TYPE_DISASSEMBLY_AMD", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SHADER_INFO_TYPE_MAX_ENUM_AMD", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkShaderStageFlagBits_debug_str(int value) {
   if (value == 1) { return "VK_SHADER_STAGE_VERTEX_BIT"; }
@@ -3981,10 +3981,10 @@ const char *VkSharingMode_debug_str(int value) {
 }
 void VkSparseImageFormatFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkSparseImageFormatFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SPARSE_IMAGE_FORMAT_SINGLE_MIPTAIL_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SPARSE_IMAGE_FORMAT_ALIGNED_MIP_SIZE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SPARSE_IMAGE_FORMAT_NONSTANDARD_BLOCK_SIZE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SPARSE_IMAGE_FORMAT_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SPARSE_IMAGE_FORMAT_SINGLE_MIPTAIL_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SPARSE_IMAGE_FORMAT_ALIGNED_MIP_SIZE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SPARSE_IMAGE_FORMAT_NONSTANDARD_BLOCK_SIZE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SPARSE_IMAGE_FORMAT_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkSparseMemoryBindFlagBits_debug_str(int value) {
   if (value == 1) { return "VK_SPARSE_MEMORY_BIND_METADATA_BIT"; }
@@ -4743,16 +4743,16 @@ const char *VkStructureType_debug_str(int value) {
 }
 void VkSubgroupFeatureFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkSubgroupFeatureFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_BASIC_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_VOTE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_ARITHMETIC_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_BALLOT_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_SHUFFLE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_SHUFFLE_RELATIVE_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_CLUSTERED_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_QUAD_BIT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_PARTITIONED_BIT_NV", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_BASIC_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_VOTE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_ARITHMETIC_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_BALLOT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_SHUFFLE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_SHUFFLE_RELATIVE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_CLUSTERED_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_QUAD_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_PARTITIONED_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkSubmitFlagBitsKHR_debug_str(int value) {
   if (value == 1) { return "VK_SUBMIT_PROTECTED_BIT_KHR"; }
@@ -4767,37 +4767,37 @@ const char *VkSubpassContents_debug_str(int value) {
 }
 void VkSubpassDescriptionFlagBits_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkSubpassDescriptionFlagBits: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBPASS_DESCRIPTION_PER_VIEW_ATTRIBUTES_BIT_NVX", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBPASS_DESCRIPTION_PER_VIEW_POSITION_X_ONLY_BIT_NVX", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBPASS_DESCRIPTION_FRAGMENT_REGION_BIT_QCOM", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBPASS_DESCRIPTION_SHADER_RESOLVE_BIT_QCOM", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBPASS_DESCRIPTION_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBPASS_DESCRIPTION_PER_VIEW_ATTRIBUTES_BIT_NVX", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBPASS_DESCRIPTION_PER_VIEW_POSITION_X_ONLY_BIT_NVX", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBPASS_DESCRIPTION_FRAGMENT_REGION_BIT_QCOM", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBPASS_DESCRIPTION_SHADER_RESOLVE_BIT_QCOM", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBPASS_DESCRIPTION_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 void VkSurfaceCounterFlagBitsEXT_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkSurfaceCounterFlagBitsEXT: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_COUNTER_VBLANK_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_COUNTER_VBLANK_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_COUNTER_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_COUNTER_VBLANK_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_COUNTER_VBLANK_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_COUNTER_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
 }
 void VkSurfaceTransformFlagBitsKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkSurfaceTransformFlagBitsKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_TRANSFORM_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SURFACE_TRANSFORM_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 void VkSwapchainCreateFlagBitsKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkSwapchainCreateFlagBitsKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SWAPCHAIN_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SWAPCHAIN_CREATE_PROTECTED_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SWAPCHAIN_CREATE_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SWAPCHAIN_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SWAPCHAIN_CREATE_PROTECTED_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SWAPCHAIN_CREATE_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkSystemAllocationScope_debug_str(int value) {
   if (value == 0) { return "VK_SYSTEM_ALLOCATION_SCOPE_COMMAND"; }
@@ -4810,11 +4810,11 @@ const char *VkSystemAllocationScope_debug_str(int value) {
 }
 void VkTessellationDomainOrigin_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkTessellationDomainOrigin: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TESSELLATION_DOMAIN_ORIGIN_UPPER_LEFT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TESSELLATION_DOMAIN_ORIGIN_LOWER_LEFT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TESSELLATION_DOMAIN_ORIGIN_UPPER_LEFT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TESSELLATION_DOMAIN_ORIGIN_LOWER_LEFT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TESSELLATION_DOMAIN_ORIGIN_MAX_ENUM", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TESSELLATION_DOMAIN_ORIGIN_UPPER_LEFT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TESSELLATION_DOMAIN_ORIGIN_LOWER_LEFT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TESSELLATION_DOMAIN_ORIGIN_UPPER_LEFT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TESSELLATION_DOMAIN_ORIGIN_LOWER_LEFT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TESSELLATION_DOMAIN_ORIGIN_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkTimeDomainEXT_debug_str(int value) {
   if (value == 0) { return "VK_TIME_DOMAIN_DEVICE_EXT"; }
@@ -4826,14 +4826,14 @@ const char *VkTimeDomainEXT_debug_str(int value) {
 }
 void VkToolPurposeFlagBitsEXT_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkToolPurposeFlagBitsEXT: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_VALIDATION_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_PROFILING_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_TRACING_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_ADDITIONAL_FEATURES_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_MODIFYING_FEATURES_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_DEBUG_REPORTING_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_DEBUG_MARKERS_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_VALIDATION_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_PROFILING_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_TRACING_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_ADDITIONAL_FEATURES_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_MODIFYING_FEATURES_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_DEBUG_REPORTING_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_DEBUG_MARKERS_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkValidationCacheHeaderVersionEXT_debug_str(int value) {
   if (value == 1) { return "VK_VALIDATION_CACHE_HEADER_VERSION_ONE_EXT"; }
@@ -4885,27 +4885,27 @@ const char *VkVertexInputRate_debug_str(int value) {
 }
 void VkVideoCapabilityFlagBitsKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkVideoCapabilityFlagBitsKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CAPABILITY_PROTECTED_CONTENT_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CAPABILITY_SEPARATE_REFERENCE_IMAGES_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CAPABILITY_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CAPABILITY_PROTECTED_CONTENT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CAPABILITY_SEPARATE_REFERENCE_IMAGES_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CAPABILITY_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 void VkVideoChromaSubsamplingFlagBitsKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkVideoChromaSubsamplingFlagBitsKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CHROMA_SUBSAMPLING_INVALID_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CHROMA_SUBSAMPLING_MONOCHROME_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CHROMA_SUBSAMPLING_420_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CHROMA_SUBSAMPLING_422_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CHROMA_SUBSAMPLING_444_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CHROMA_SUBSAMPLING_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CHROMA_SUBSAMPLING_INVALID_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CHROMA_SUBSAMPLING_MONOCHROME_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CHROMA_SUBSAMPLING_420_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CHROMA_SUBSAMPLING_422_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CHROMA_SUBSAMPLING_444_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CHROMA_SUBSAMPLING_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 void VkVideoCodecOperationFlagBitsKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkVideoCodecOperationFlagBitsKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CODEC_OPERATION_INVALID_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CODEC_OPERATION_ENCODE_H264_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CODEC_OPERATION_ENCODE_H265_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CODEC_OPERATION_DECODE_H264_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CODEC_OPERATION_DECODE_H265_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CODEC_OPERATION_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CODEC_OPERATION_INVALID_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CODEC_OPERATION_ENCODE_H264_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CODEC_OPERATION_ENCODE_H265_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CODEC_OPERATION_DECODE_H264_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CODEC_OPERATION_DECODE_H265_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CODEC_OPERATION_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkVideoCodingControlFlagBitsKHR_debug_str(int value) {
   if (value == 0) { return "VK_VIDEO_CODING_CONTROL_DEFAULT_KHR"; }
@@ -4915,18 +4915,18 @@ const char *VkVideoCodingControlFlagBitsKHR_debug_str(int value) {
 }
 void VkVideoCodingQualityPresetFlagBitsKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkVideoCodingQualityPresetFlagBitsKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CODING_QUALITY_PRESET_NORMAL_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CODING_QUALITY_PRESET_POWER_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CODING_QUALITY_PRESET_QUALITY_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CODING_QUALITY_PRESET_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CODING_QUALITY_PRESET_NORMAL_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CODING_QUALITY_PRESET_POWER_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CODING_QUALITY_PRESET_QUALITY_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_CODING_QUALITY_PRESET_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 void VkVideoComponentBitDepthFlagBitsKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkVideoComponentBitDepthFlagBitsKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_COMPONENT_BIT_DEPTH_INVALID_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_COMPONENT_BIT_DEPTH_8_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_COMPONENT_BIT_DEPTH_10_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_COMPONENT_BIT_DEPTH_12_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_COMPONENT_BIT_DEPTH_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_COMPONENT_BIT_DEPTH_INVALID_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_COMPONENT_BIT_DEPTH_8_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_COMPONENT_BIT_DEPTH_10_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_COMPONENT_BIT_DEPTH_12_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_COMPONENT_BIT_DEPTH_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkVideoDecodeFlagBitsKHR_debug_str(int value) {
   if (value == 0) { return "VK_VIDEO_DECODE_DEFAULT_KHR"; }
@@ -4936,10 +4936,10 @@ const char *VkVideoDecodeFlagBitsKHR_debug_str(int value) {
 }
 void VkVideoDecodeH264PictureLayoutFlagBitsEXT_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkVideoDecodeH264PictureLayoutFlagBitsEXT: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_PROGRESSIVE_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_INTERLACED_INTERLEAVED_LINES_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_INTERLACED_SEPARATE_PLANES_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_PROGRESSIVE_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_INTERLACED_INTERLEAVED_LINES_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_INTERLACED_SEPARATE_PLANES_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkVideoEncodeFlagBitsKHR_debug_str(int value) {
   if (value == 0) { return "VK_VIDEO_ENCODE_DEFAULT_KHR"; }
@@ -4949,18 +4949,18 @@ const char *VkVideoEncodeFlagBitsKHR_debug_str(int value) {
 }
 void VkVideoEncodeH264CapabilityFlagBitsEXT_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkVideoEncodeH264CapabilityFlagBitsEXT: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_CABAC_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_CAVLC_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_WEIGHTED_BI_PRED_IMPLICIT_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_TRANSFORM_8X8_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_CHROMA_QP_OFFSET_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_SECOND_CHROMA_QP_OFFSET_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_DISABLED_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_ENABLED_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_PARTIAL_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_MULTIPLE_SLICE_PER_FRAME_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_EVENLY_DISTRIBUTED_SLICE_SIZE_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_CABAC_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_CAVLC_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_WEIGHTED_BI_PRED_IMPLICIT_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_TRANSFORM_8X8_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_CHROMA_QP_OFFSET_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_SECOND_CHROMA_QP_OFFSET_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_DISABLED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_ENABLED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_PARTIAL_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_MULTIPLE_SLICE_PER_FRAME_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_EVENLY_DISTRIBUTED_SLICE_SIZE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkVideoEncodeH264CreateFlagBitsEXT_debug_str(int value) {
   if (value == 0) { return "VK_VIDEO_ENCODE_H264_CREATE_DEFAULT_EXT"; }
@@ -4970,39 +4970,39 @@ const char *VkVideoEncodeH264CreateFlagBitsEXT_debug_str(int value) {
 }
 void VkVideoEncodeH264InputModeFlagBitsEXT_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkVideoEncodeH264InputModeFlagBitsEXT: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_INPUT_MODE_FRAME_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_INPUT_MODE_SLICE_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_INPUT_MODE_NON_VCL_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_INPUT_MODE_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_INPUT_MODE_FRAME_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_INPUT_MODE_SLICE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_INPUT_MODE_NON_VCL_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_INPUT_MODE_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
 }
 void VkVideoEncodeH264OutputModeFlagBitsEXT_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkVideoEncodeH264OutputModeFlagBitsEXT: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_OUTPUT_MODE_FRAME_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_OUTPUT_MODE_SLICE_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_OUTPUT_MODE_NON_VCL_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_OUTPUT_MODE_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_OUTPUT_MODE_FRAME_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_OUTPUT_MODE_SLICE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_OUTPUT_MODE_NON_VCL_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_OUTPUT_MODE_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
 }
 void VkVideoEncodeH265CtbSizeFlagBitsEXT_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkVideoEncodeH265CtbSizeFlagBitsEXT: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CTB_SIZE_8_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CTB_SIZE_16_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CTB_SIZE_32_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CTB_SIZE_64_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CTB_SIZE_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CTB_SIZE_8_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CTB_SIZE_16_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CTB_SIZE_32_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CTB_SIZE_64_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CTB_SIZE_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
 }
 void VkVideoEncodeH265InputModeFlagBitsEXT_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkVideoEncodeH265InputModeFlagBitsEXT: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_INPUT_MODE_FRAME_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_INPUT_MODE_SLICE_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_INPUT_MODE_NON_VCL_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_INPUT_MODE_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_INPUT_MODE_FRAME_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_INPUT_MODE_SLICE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_INPUT_MODE_NON_VCL_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_INPUT_MODE_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
 }
 void VkVideoEncodeH265OutputModeFlagBitsEXT_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkVideoEncodeH265OutputModeFlagBitsEXT: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_OUTPUT_MODE_FRAME_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_OUTPUT_MODE_SLICE_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_OUTPUT_MODE_NON_VCL_BIT_EXT", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_OUTPUT_MODE_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_OUTPUT_MODE_FRAME_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_OUTPUT_MODE_SLICE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_OUTPUT_MODE_NON_VCL_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_OUTPUT_MODE_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkVideoEncodeRateControlFlagBitsKHR_debug_str(int value) {
   if (value == 0) { return "VK_VIDEO_ENCODE_RATE_CONTROL_DEFAULT_KHR"; }
@@ -5012,10 +5012,10 @@ const char *VkVideoEncodeRateControlFlagBitsKHR_debug_str(int value) {
 }
 void VkVideoEncodeRateControlModeFlagBitsKHR_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkVideoEncodeRateControlModeFlagBitsKHR: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_RATE_CONTROL_MODE_NONE_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_RATE_CONTROL_MODE_CBR_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_RATE_CONTROL_MODE_VBR_BIT_KHR", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_RATE_CONTROL_MODE_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_RATE_CONTROL_MODE_NONE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_RATE_CONTROL_MODE_CBR_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_RATE_CONTROL_MODE_VBR_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_RATE_CONTROL_MODE_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkVideoSessionCreateFlagBitsKHR_debug_str(int value) {
   if (value == 0) { return "VK_VIDEO_SESSION_CREATE_DEFAULT_KHR"; }
@@ -5051,18 +5051,18 @@ const char *shaderc_include_type_debug_str(int value) {
 }
 void vulkan_attribute_type_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_unknown", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_position", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_normal", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_color", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_texcoord", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_tangent", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_unknown", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_position", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_normal", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_color", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_texcoord", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_tangent", INDENT_FORMAT_ARGS(2)); }
 }
 void vulkan_batch_policy_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "vulkan_batch_policy: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_batch_policy_none", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_batch_policy_matching_materials", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_batch_policy_matching_vertex_attributes", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_batch_policy_none", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_batch_policy_matching_materials", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_batch_policy_matching_vertex_attributes", INDENT_FORMAT_ARGS(2)); }
 }
 const char *vulkan_buffer_type_debug_str(int value) {
   if (value == 0) { return "vulkan_buffer_type_geometry_index"; }
@@ -5073,9 +5073,9 @@ const char *vulkan_buffer_type_debug_str(int value) {
 }
 void vulkan_data_vertex_attribute_component_type_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "vulkan_data_vertex_attribute_component_type: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_data_vertex_attribute_component_uint32_t", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_data_vertex_attribute_component_vec2", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_data_vertex_attribute_component_vec3", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_data_vertex_attribute_component_uint32_t", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_data_vertex_attribute_component_vec2", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_data_vertex_attribute_component_vec3", INDENT_FORMAT_ARGS(2)); }
 }
 const char *vulkan_render_pass_type_debug_str(int value) {
   if (value == 0) { return "ForwardRenderPass"; }
@@ -5083,9 +5083,9 @@ const char *vulkan_render_pass_type_debug_str(int value) {
 }
 void vulkan_scene_node_container_type_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "vulkan_scene_node_container_type: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_scene_node_container_type_scene_graph", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_scene_node_container_type_scene_tree", INDENT_FORMAT_ARGS(0)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_scene_node_container_type_count", INDENT_FORMAT_ARGS(0)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_scene_node_container_type_scene_graph", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_scene_node_container_type_scene_tree", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_scene_node_container_type_count", INDENT_FORMAT_ARGS(2)); }
 }
 const char *vulkan_scene_node_entity_type_debug_str(int value) {
   if (value == 0) { return "vulkan_scene_node_entity_type_root"; }

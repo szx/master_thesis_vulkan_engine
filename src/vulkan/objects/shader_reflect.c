@@ -154,7 +154,7 @@ void vulkan_shader_reflect_variable_debug_print(vulkan_shader_reflect_variable *
   log_debug(INDENT_FORMAT_STRING "location: %d", INDENT_FORMAT_ARGS(2), variable->location);
   log_debug(INDENT_FORMAT_STRING "storageClass: %s", INDENT_FORMAT_ARGS(2),
             SpvStorageClass__debug_str(variable->storageClass));
-  log_debug(INDENT_FORMAT_STRING "builtin: %s", INDENT_FORMAT_ARGS(2),
+  log_debug(INDENT_FORMAT_STRING "builtIn: %s", INDENT_FORMAT_ARGS(2),
             SpvBuiltIn__debug_str(variable->builtIn));
   log_debug(INDENT_FORMAT_STRING "numeric: scalarWidth=%u componentCount=%u matrix=%ux%u",
             INDENT_FORMAT_ARGS(2), variable->numeric.scalar.width,
@@ -262,7 +262,7 @@ void vulkan_shader_reflect_type_desc_debug_print(vulkan_shader_reflect_type_desc
   log_debug(INDENT_FORMAT_STRING "typeFlags: %s", INDENT_FORMAT_ARGS(2),
             SpvReflectTypeFlagBits_debug_str(typeDesc->typeFlags));
   log_debug(INDENT_FORMAT_STRING "decorationFlags:", INDENT_FORMAT_ARGS(2));
-  SpvReflectDecorationFlagBits_debug_print(typeDesc->decorationFlags, indent + 2);
+  SpvReflectDecorationFlagBits_debug_print(typeDesc->decorationFlags, indent + 4);
 
   log_debug(INDENT_FORMAT_STRING "numeric: scalarWidth=%u componentCount=%u matrix=%ux%u",
             INDENT_FORMAT_ARGS(2), typeDesc->numeric.scalar.width,

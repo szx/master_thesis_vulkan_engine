@@ -73,7 +73,7 @@ def enum_helpers_defs_template(e):
         s.append(f'  log_debug(INDENT_FORMAT_STRING "{e.name}: ", INDENT_FORMAT_ARGS(0));')
         for name, value in e.enumerators:
             s.append(
-                f'  if ((flags & {value}) != 0) {{ log_debug(INDENT_FORMAT_STRING "{name}", INDENT_FORMAT_ARGS(0)); }}')
+                f'  if ((flags & {value}) != 0) {{ log_debug(INDENT_FORMAT_STRING "{name}", INDENT_FORMAT_ARGS(2)); }}')
     s.append(f'}}')
     return '\n'.join(s);
 
