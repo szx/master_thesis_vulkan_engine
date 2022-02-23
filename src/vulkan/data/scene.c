@@ -221,7 +221,7 @@ vulkan_data_primitive *parse_cgltf_primitive(vulkan_data_scene *sceneData,
     } else if (type == vulkan_attribute_type_texcoord) {
       primitive->texCoords = parse_cgltf_vertex_attribute(sceneData, cgltfAttribute->data);
     } else {
-      vulkan_attribute_type_debug_print(type);
+      vulkan_attribute_type_debug_print(type, 0);
       log_warn("unsupported vertex attribute type, skipping");
     }
   }

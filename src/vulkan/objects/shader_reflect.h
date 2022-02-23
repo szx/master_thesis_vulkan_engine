@@ -17,6 +17,8 @@ void vulkan_shader_reflect_destroy(vulkan_shader_reflect *reflect);
 
 void vulkan_shader_reflect_debug_print(vulkan_shader_reflect *reflect, int indent);
 
+typedef struct vulkan_shader_reflect_type_desc vulkan_shader_reflect_type_desc;
+
 typedef struct vulkan_shader_reflect_variable {
   const char *name;
   uint32_t location;
@@ -29,7 +31,7 @@ typedef struct vulkan_shader_reflect_variable {
 
   SpvReflectFormat format;
 
-  SpvReflectTypeDescription typeDescription;
+  vulkan_shader_reflect_type_desc *typeDesc;
 } vulkan_shader_reflect_variable;
 
 vulkan_shader_reflect_variable *
@@ -50,7 +52,7 @@ typedef struct vulkan_shader_reflect_binding {
   SpvReflectResourceType resourceType;
 
   SpvReflectImageTraits image;
-  SpvReflectTypeDescription typeDescription;
+  vulkan_shader_reflect_type_desc *typeDesc;
 
   SpvReflectBindingArrayTraits array;
   uint32_t count;
@@ -61,3 +63,24 @@ vulkan_shader_reflect_binding_create(SpvReflectDescriptorBinding *reflect);
 void vulkan_shader_reflect_binding_destroy(vulkan_shader_reflect_binding *inputVariable);
 void vulkan_shader_reflect_binding_debug_print(vulkan_shader_reflect_binding *inputVariable,
                                                int indent);
+
+typedef struct vulkan_shader_reflect_type_desc {
+  SpvOp op;
+  const char *typeName;
+  const char *structMemberName;
+  SpvStorageClass storageClass;
+  SpvReflectTypeFlags typeFlags;
+  SpvReflectDecorationFlags decorationFlags;
+
+  SpvReflectNumericTraits numeric;
+  SpvReflectImageTraits image;
+  SpvReflectArrayTraits array;
+
+  UT_array *members; /// vulkan_shader_reflect_type_desc* list.
+} vulkan_shader_reflect_type_desc;
+
+vulkan_shader_reflect_type_desc *
+vulkan_shader_reflect_type_desc_create(SpvReflectTypeDescription *reflect);
+void vulkan_shader_reflect_type_desc_destroy(vulkan_shader_reflect_type_desc *typeDesc);
+void vulkan_shader_reflect_type_desc_debug_print(vulkan_shader_reflect_type_desc *typeDesc,
+                                                 int indent);

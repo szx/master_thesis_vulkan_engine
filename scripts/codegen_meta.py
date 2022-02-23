@@ -58,7 +58,7 @@ def enum_helpers_decls_template(e):
     if not e.is_flags():
         return f"const char *{e.name}_debug_str(int value);"
     else:
-        return f"void {e.name}_debug_print(int flags);"
+        return f"void {e.name}_debug_print(int flags, int indent);"
 
 
 def enum_helpers_defs_template(e):
@@ -69,11 +69,11 @@ def enum_helpers_defs_template(e):
             s.append(f'  if (value == {value}) {{ return "{name}"; }}')
         s.append(f'  return "UNKNOWN {e.name}";')
     else:
-        s.append(f'void {e.name}_debug_print(int flags) {{')
-        s.append(f'  log_debug("{e.name}: {{");')
+        s.append(f'void {e.name}_debug_print(int flags, int indent) {{')
+        s.append(f'  log_debug(INDENT_FORMAT_STRING "{e.name}: ", INDENT_FORMAT_ARGS(0));')
         for name, value in e.enumerators:
-            s.append(f'  if ((flags & {value}) != 0) {{ log_debug("  {name}"); }}')
-        s.append(f'  log_debug("{e.name}: }}");')
+            s.append(
+                f'  if ((flags & {value}) != 0) {{ log_debug(INDENT_FORMAT_STRING "{name}", INDENT_FORMAT_ARGS(0)); }}')
     s.append(f'}}')
     return '\n'.join(s);
 
@@ -83,7 +83,7 @@ def codegen_meta():
     enum_decls = find_enum_decls(header_paths)
 
     decls = []
-    defs = ['#include "../core/log.h"']
+    defs = ['#include "../core/core.h"']
     decls.extend(generate_strings(enum_decls, enum_helpers_decls_template))
     defs.extend(generate_strings(enum_decls, enum_helpers_defs_template))
 
