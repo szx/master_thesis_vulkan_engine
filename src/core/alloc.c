@@ -23,3 +23,10 @@ void *core_memdup(const void *src, size_t size) {
   memcpy(data, src, size);
   return data;
 }
+
+void *core_strdup(const char *dest) {
+  if (dest == NULL) {
+    return NULL;
+  }
+  return strdup(dest);
+}

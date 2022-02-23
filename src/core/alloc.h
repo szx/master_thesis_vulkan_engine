@@ -6,14 +6,13 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-/// Allocates size bytes of memory.
 void *core_alloc(size_t size);
 
-/// Frees allocation.
 void core_free(void *ptr);
 
-/// Copies memory.
 void *core_memcpy(void *dest, const void *src, size_t size);
+
+void *core_strdup(const char *dest);
 
 /// Returns copy of memory.
 void *core_memdup(const void *src, size_t size);

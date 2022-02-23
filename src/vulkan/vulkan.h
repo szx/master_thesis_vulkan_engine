@@ -19,6 +19,7 @@
 #include "objects/render_cache.h"
 #include "objects/render_cache_list.h"
 #include "objects/shader.h"
+#include "objects/shader_reflect.h"
 #include "objects/unified_geometry_buffer.h"
 #include "objects/unified_uniform_buffer.h"
 #include "objects/vertex_stream.h"

@@ -16,8 +16,6 @@ uint32_t find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
 
 VkFormat find_depth_format(vulkan_device *vkd) { return VK_FORMAT_R32_UINT; }
 
-
-
 #define DEBUG_NAME_FORMAT_START()                                                                  \
   va_list args;                                                                                    \
   va_start(args, debugFormat);                                                                     \
@@ -26,7 +24,7 @@ VkFormat find_depth_format(vulkan_device *vkd) { return VK_FORMAT_R32_UINT; }
   utstring_new(s);                                                                                 \
   utstring_printf_va(s, debugFormat, args);                                                        \
   va_end(args);                                                                                    \
-  debugName = strdup(utstring_body(s));                                                            \
+  debugName = core_strdup(utstring_body(s));                                                       \
   utstring_free(s);
 
 #define DEBUG_NAME_FORMAT_END() free(debugName);

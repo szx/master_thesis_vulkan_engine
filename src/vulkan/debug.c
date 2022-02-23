@@ -109,7 +109,7 @@ static void name_object(vulkan_debug *debug, VkObjectType objectType, uint64_t o
   utstring_new(s);
   utstring_printf_va(s, format, copy);
   va_end(copy);
-  const char *objectName = strdup(utstring_body(s));
+  const char *objectName = core_strdup(utstring_body(s));
   utstring_free(s);
 
   vulkan_debug_name_data *nameData;

@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "descriptor.h"
+#include "shader_reflect.h"
 #include "vertex_stream.h"
 
 typedef enum vulkan_shader_type {
@@ -11,8 +12,6 @@ typedef enum vulkan_shader_type {
   vulkan_shader_type_fragment,
   vulkan_shader_type_count,
 } vulkan_shader_type;
-
-// HIRO vulkan shader generation (use descriptor codegen)
 
 /// Describes compiled GLSL shader.
 typedef struct vulkan_shader {
@@ -23,6 +22,7 @@ typedef struct vulkan_shader {
   size_t spvSize;
   VkShaderModule module;
   /* reflection */
+  vulkan_shader_reflect *reflect;
   // HIRO: generate pipeline layout,
   // HIRO generate descriptor set layout
 } vulkan_shader;
@@ -31,3 +31,5 @@ typedef struct vulkan_shader {
 vulkan_shader *vulkan_shader_create_with_str(vulkan_device *vkd, vulkan_shader_type type,
                                              UT_string *text);
 void vulkan_shader_destroy(vulkan_shader *shader);
+
+void vulkan_shader_debug_print(vulkan_shader *shader, int indent);

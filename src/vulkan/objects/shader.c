@@ -46,28 +46,9 @@ vulkan_shader *vulkan_shader_create_with_str(vulkan_device *vkd, vulkan_shader_t
   shader->module = vulkan_create_shader_module(shader->vkd, shader->spvCode, shader->spvSize,
                                                vulkan_shader_type_debug_str(shader->type));
 
-  /* reflection */
-  SpvReflectShaderModule reflectModule;
-  verify(spvReflectCreateShaderModule(shader->spvSize, shader->spvCode, &reflectModule) ==
-         SPV_REFLECT_RESULT_SUCCESS);
+  shader->reflect = vulkan_shader_reflect_create(shader->spvCode, shader->spvSize);
 
-  // Input variables
-  uint32_t inputVariableCount = 0;
-  verify(spvReflectEnumerateInputVariables(&reflectModule, &inputVariableCount, NULL) ==
-         SPV_REFLECT_RESULT_SUCCESS);
-  // HIRO move inputVariables to vulkan_shader as UT_array.
-  SpvReflectInterfaceVariable **inputVariables = (SpvReflectInterfaceVariable **)malloc(
-      inputVariableCount * sizeof(SpvReflectInterfaceVariable *));
-  verify(spvReflectEnumerateInputVariables(&reflectModule, &inputVariableCount, inputVariables) ==
-         SPV_REFLECT_RESULT_SUCCESS);
-  for (size_t idx = 0; idx < inputVariableCount; idx++) {
-    SpvReflectInterfaceVariable *inputVariable = inputVariables[idx];
-    log_debug("inputVariable[%d]: %s %d", idx, inputVariable->name, inputVariable->location);
-  }
-  // HIRO: Output variables, descriptor bindings, descriptor sets, and push constants
-
-  spvReflectDestroyShaderModule(&reflectModule);
-
+  vulkan_shader_debug_print(shader, 0);
   return shader;
 }
 
@@ -79,5 +60,16 @@ void vulkan_shader_destroy(vulkan_shader *shader) {
   utstring_free(shader->glslCode);
   free(shader->spvCode);
   vkDestroyShaderModule(shader->vkd->device, shader->module, vka);
+
+  vulkan_shader_reflect_destroy(shader->reflect);
+
   core_free(shader);
+}
+
+void vulkan_shader_debug_print(vulkan_shader *shader, int indent) {
+  log_debug(INDENT_FORMAT_STRING "shader:", INDENT_FORMAT_ARGS(0));
+  log_debug(INDENT_FORMAT_STRING "type %s:", INDENT_FORMAT_ARGS(2),
+            vulkan_shader_type_debug_str(shader->type));
+  log_debug(INDENT_FORMAT_STRING "spvSize %zu:", INDENT_FORMAT_ARGS(2), shader->spvSize);
+  vulkan_shader_reflect_debug_print(shader->reflect, 2);
 }
