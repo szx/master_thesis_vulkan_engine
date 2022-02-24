@@ -43,6 +43,7 @@ vulkan_shader_reflect *vulkan_shader_reflect_create(uint32_t *spvCode, size_t sp
   core_free(outputVariables);
 
   // descriptor bindings
+  reflect->maxDescriptorSetNumber = 0;
   uint32_t descriptorBindingCount = 0;
   verify(spvReflectEnumerateDescriptorBindings(&reflectModule, &descriptorBindingCount, NULL) ==
          SPV_REFLECT_RESULT_SUCCESS);
@@ -56,6 +57,7 @@ vulkan_shader_reflect *vulkan_shader_reflect_create(uint32_t *spvCode, size_t sp
     SpvReflectDescriptorBinding *spvReflect = descriptorBindings[idx];
     vulkan_shader_reflect_binding **binding = utarray_eltptr(reflect->descriptorBindings, idx);
     *binding = vulkan_shader_reflect_binding_create(spvReflect);
+    reflect->maxDescriptorSetNumber = MAX(reflect->maxDescriptorSetNumber, (*binding)->setNumber);
   }
   core_free(descriptorBindings);
 
@@ -112,6 +114,8 @@ void vulkan_shader_reflect_debug_print(vulkan_shader_reflect *reflect, int inden
                               reflect->descriptorBindings) {
     vulkan_shader_reflect_binding_debug_print(binding, indent + 4);
   }
+  log_debug(INDENT_FORMAT_STRING "maxDescriptorSetNumber=%u:", INDENT_FORMAT_ARGS(2),
+            reflect->maxDescriptorSetNumber);
 }
 
 vulkan_shader_reflect_variable *
@@ -175,7 +179,7 @@ vulkan_shader_reflect_binding_create(SpvReflectDescriptorBinding *reflect) {
 
   binding->binding = reflect->binding;
   binding->inputAttachmentIndex = reflect->input_attachment_index;
-  binding->set = reflect->set;
+  binding->setNumber = reflect->set;
 
   binding->descriptorType = reflect->descriptor_type;
   binding->resourceType = reflect->resource_type;
@@ -195,13 +199,51 @@ void vulkan_shader_reflect_binding_destroy(vulkan_shader_reflect_binding *bindin
   core_free(binding);
 }
 
+VkDescriptorSetLayoutBinding
+vulkan_shader_reflect_binding_get_layout_binding(vulkan_shader_reflect_binding *binding,
+                                                 vulkan_shader *shader) {
+  VkDescriptorSetLayoutBinding layoutBinding = {0};
+  layoutBinding.binding = 0;
+  layoutBinding.descriptorCount = binding->count;
+  if (binding->descriptorType == SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLER) {
+    layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+  } else if (binding->descriptorType == SPV_REFLECT_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER) {
+    layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  } else if (binding->descriptorType == SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLED_IMAGE) {
+    layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+  } else if (binding->descriptorType == SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_IMAGE) {
+    layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+  } else if (binding->descriptorType == SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER) {
+    layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
+  } else if (binding->descriptorType == SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER) {
+    layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
+  } else if (binding->descriptorType == SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER) {
+    layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  } else if (binding->descriptorType == SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_BUFFER) {
+    layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+  } else if (binding->descriptorType == SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC) {
+    layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+  } else if (binding->descriptorType == SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC) {
+    layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
+  } else if (binding->descriptorType == SPV_REFLECT_DESCRIPTOR_TYPE_INPUT_ATTACHMENT) {
+    layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
+  } else {
+    assert(0);
+    layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_MAX_ENUM;
+  }
+  layoutBinding.pImmutableSamplers = NULL;
+  layoutBinding.stageFlags = vulkan_shader_type_to_stage_flag(shader->type);
+
+  return layoutBinding;
+}
+
 void vulkan_shader_reflect_binding_debug_print(vulkan_shader_reflect_binding *binding, int indent) {
   log_debug(INDENT_FORMAT_STRING "binding:", INDENT_FORMAT_ARGS(0));
   log_debug(INDENT_FORMAT_STRING "name: %s", INDENT_FORMAT_ARGS(2), binding->name);
   log_debug(INDENT_FORMAT_STRING "binding: %u", INDENT_FORMAT_ARGS(2), binding->binding);
   log_debug(INDENT_FORMAT_STRING "inputAttachmentIndex: %u", INDENT_FORMAT_ARGS(2),
             binding->inputAttachmentIndex);
-  log_debug(INDENT_FORMAT_STRING "set: %u", INDENT_FORMAT_ARGS(2), binding->set);
+  log_debug(INDENT_FORMAT_STRING "setNumber: %u", INDENT_FORMAT_ARGS(2), binding->setNumber);
   log_debug(INDENT_FORMAT_STRING "descriptorType: %u", INDENT_FORMAT_ARGS(2),
             binding->descriptorType);
   log_debug(INDENT_FORMAT_STRING "resourceType: %u", INDENT_FORMAT_ARGS(2), binding->resourceType);

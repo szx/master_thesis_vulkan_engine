@@ -245,9 +245,10 @@ vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_scene_ren
   // TODO different numbers for different pipelines
   // HIRO move to *_uniform_buffer?
   pipeline->descriptorPool = vulkan_create_descriptor_pool(pipeline->vkd, 1, 1, 1, "pipeline");
-  pipeline->descriptorSetLayout = vulkan_create_descriptor_set_layout(
+  /*  pipeline->descriptorSetLayout = vulkan_create_descriptor_set_layout(
       pipeline->vkd, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1,
       VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, "pipeline");
+      */
   pipeline->descriptorSet = vulkan_create_descriptor_set_for_uniform_buffers(
       pipeline->vkd, &scene->unifiedUniformBuffer->buffer->buffer,
       scene->unifiedUniformBuffer->buffer->totalSize, 1, pipeline->descriptorSetLayout,

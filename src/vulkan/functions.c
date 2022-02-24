@@ -204,22 +204,12 @@ VkDescriptorPool vulkan_create_descriptor_pool(vulkan_device *vkd, size_t totalU
 }
 
 VkDescriptorSetLayout vulkan_create_descriptor_set_layout(vulkan_device *vkd,
-                                                          VkDescriptorType descriptorType,
-                                                          uint32_t descriptorCount,
-                                                          VkShaderStageFlags stageFlags,
+                                                          VkDescriptorSetLayoutBinding *bindings,
+                                                          size_t bindingsCount,
                                                           const char *debugFormat, ...) {
-  VkDescriptorSetLayoutBinding layoutBinding = {0};
-  layoutBinding.binding = 0;
-  layoutBinding.descriptorCount = descriptorCount;
-  layoutBinding.descriptorType = descriptorType;
-  layoutBinding.pImmutableSamplers = NULL;
-  layoutBinding.stageFlags = stageFlags;
-
-  VkDescriptorSetLayoutBinding bindings[1] = {layoutBinding};
-
   VkDescriptorSetLayoutCreateInfo layoutInfo = {0};
   layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-  layoutInfo.bindingCount = 1;
+  layoutInfo.bindingCount = bindingsCount;
   layoutInfo.pBindings = bindings;
 
   VkDescriptorSetLayout descriptorSetLayout;

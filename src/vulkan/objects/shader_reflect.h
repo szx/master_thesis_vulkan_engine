@@ -3,13 +3,15 @@
 
 #include "common.h"
 #include "descriptor.h"
-#include "vertex_stream.h"
+#include "shader.h"
 
 /// Describes SPIR-V shader reflection.
 typedef struct vulkan_shader_reflect {
-  UT_array *inputVariables;     /// vulkan_shader_reflect_variable* list.
-  UT_array *outputVariables;    /// vulkan_shader_reflect_variable* list.
-  UT_array *descriptorBindings; /// vulkan_shader_reflect_binding* list.
+  UT_array *inputVariables;  ///< vulkan_shader_reflect_variable* array.
+  UT_array *outputVariables; ///< vulkan_shader_reflect_variable* array.
+
+  UT_array *descriptorBindings;    ///< vulkan_shader_reflect_binding* array.
+  uint32_t maxDescriptorSetNumber; ///< Max descriptor set number referred to by shader bindings.
 } vulkan_shader_reflect;
 
 vulkan_shader_reflect *vulkan_shader_reflect_create(uint32_t *spvCode, size_t spvSize);
@@ -46,7 +48,7 @@ typedef struct vulkan_shader_reflect_binding {
 
   uint32_t binding;
   uint32_t inputAttachmentIndex;
-  uint32_t set;
+  uint32_t setNumber;
 
   SpvReflectDescriptorType descriptorType;
   SpvReflectResourceType resourceType;
@@ -60,9 +62,13 @@ typedef struct vulkan_shader_reflect_binding {
 
 vulkan_shader_reflect_binding *
 vulkan_shader_reflect_binding_create(SpvReflectDescriptorBinding *reflect);
-void vulkan_shader_reflect_binding_destroy(vulkan_shader_reflect_binding *inputVariable);
-void vulkan_shader_reflect_binding_debug_print(vulkan_shader_reflect_binding *inputVariable,
-                                               int indent);
+void vulkan_shader_reflect_binding_destroy(vulkan_shader_reflect_binding *binding);
+
+VkDescriptorSetLayoutBinding
+vulkan_shader_reflect_binding_get_layout_binding(vulkan_shader_reflect_binding *binding,
+                                                 vulkan_shader *shader);
+
+void vulkan_shader_reflect_binding_debug_print(vulkan_shader_reflect_binding *binding, int indent);
 
 typedef struct vulkan_shader_reflect_type_desc {
   SpvOp op;

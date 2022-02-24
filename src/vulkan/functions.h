@@ -49,9 +49,8 @@ VkDescriptorPool vulkan_create_descriptor_pool(vulkan_device *vkd, size_t totalU
                                                const char *debugFormat, ...);
 
 VkDescriptorSetLayout vulkan_create_descriptor_set_layout(vulkan_device *vkd,
-                                                          VkDescriptorType descriptorType,
-                                                          uint32_t descriptorCount,
-                                                          VkShaderStageFlags stageFlags,
+                                                          VkDescriptorSetLayoutBinding *bindings,
+                                                          size_t bindingsCount,
                                                           const char *debugFormat, ...);
 
 VkDescriptorSet vulkan_create_descriptor_set_for_uniform_buffers(
