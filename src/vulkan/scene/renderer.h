@@ -2,6 +2,7 @@
  */
 #pragma once
 
+#include "../objects/pipeline.h"
 #include "../objects/render_state.h"
 #include "graph.h"
 
@@ -15,11 +16,13 @@ typedef struct vulkan_scene_renderer {
   vulkan_data_camera camera;
 
   /* GPU state */
+  vulkan_device *vkd;     ///< Pointer.
+  vulkan_swap_chain *vks; ///< Pointer.
   vulkan_render_state *renderState;
-  // HIRO vulkan_pipeline *pipeline;
+  vulkan_pipeline *pipeline;
 } vulkan_scene_renderer;
 
-vulkan_scene_renderer *vulkan_scene_renderer_create(data_asset_db *assetDb, vulkan_device *vkd,
+vulkan_scene_renderer *vulkan_scene_renderer_create(data_asset_db *assetDb, vulkan_swap_chain *vks,
                                                     UT_string *sceneName);
 void vulkan_scene_renderer_destroy(vulkan_scene_renderer *renderer);
 

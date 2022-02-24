@@ -1,6 +1,6 @@
 #include "renderer.h"
 
-vulkan_scene_renderer *vulkan_scene_renderer_create(data_asset_db *assetDb, vulkan_device *vkd,
+vulkan_scene_renderer *vulkan_scene_renderer_create(data_asset_db *assetDb, vulkan_swap_chain *vks,
                                                     UT_string *sceneName) {
   vulkan_scene_renderer *renderer = core_alloc(sizeof(vulkan_scene_renderer));
 
@@ -16,14 +16,17 @@ vulkan_scene_renderer *vulkan_scene_renderer_create(data_asset_db *assetDb, vulk
   vulkan_data_camera_copy(&renderer->camera, utarray_back(renderer->data->cameras));
   utarray_back(renderer->data->cameras);
 
+  renderer->vkd = vks->vkd;
+  renderer->vks = vks;
   renderer->renderState =
-      vulkan_render_state_create(vkd, renderer->renderCacheList, &renderer->camera);
+      vulkan_render_state_create(renderer->vkd, renderer->renderCacheList, &renderer->camera);
+  renderer->pipeline = vulkan_pipeline_create(renderer->vks, renderer->renderState);
 
   return renderer;
 }
 
 void vulkan_scene_renderer_destroy(vulkan_scene_renderer *renderer) {
-
+  vulkan_pipeline_destroy(renderer->pipeline);
   vulkan_render_state_destroy(renderer->renderState);
 
   vulkan_scene_graph_destroy(renderer->sceneGraph);
@@ -34,11 +37,12 @@ void vulkan_scene_renderer_destroy(vulkan_scene_renderer *renderer) {
 }
 
 void vulkan_scene_renderer_update(vulkan_scene_renderer *renderer) {
-  vulkan_scene_renderer_update(renderer);
+  vulkan_scene_render_state_update(renderer->renderState);
 }
 
 void vulkan_scene_renderer_send_to_device(vulkan_scene_renderer *renderer) {
-  vulkan_scene_renderer_send_to_device(renderer);
+  vulkan_render_state_send_to_device(renderer->renderState);
+  vulkan_pipeline_send_to_device(renderer->pipeline);
 }
 
 void vulkan_scene_renderer_debug_print(vulkan_scene_renderer *renderer) {
@@ -47,4 +51,5 @@ void vulkan_scene_renderer_debug_print(vulkan_scene_renderer *renderer) {
   vulkan_render_cache_list_debug_print(renderer->renderCacheList);
   vulkan_scene_graph_debug_print(renderer->sceneGraph);
   vulkan_render_state_debug_print(renderer->renderState);
+  vulkan_pipeline_debug_print(renderer->pipeline);
 }

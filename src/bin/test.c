@@ -256,12 +256,15 @@ TEST scene_graph_building() {
   vulkan_batches_destroy(batches);
 
   log_info("Test scene renderer.");
-  vulkan_scene_renderer *sceneRenderer = vulkan_scene_renderer_create(assetDb, vkd, sceneName);
+  vulkan_swap_chain *vks = vulkan_swap_chain_create(vkd);
+  vulkan_scene_renderer *sceneRenderer = vulkan_scene_renderer_create(assetDb, vks, sceneName);
   vulkan_scene_renderer_debug_print(sceneRenderer);
   // HIRO more renderer tests
   ASSERT(sceneRenderer->renderState->unifiedGeometryBuffer->indexBuffer->totalSize > 0);
   ASSERT(sceneRenderer->renderState->unifiedGeometryBuffer->vertexBuffer->totalSize > 0);
+
   vulkan_scene_renderer_destroy(sceneRenderer);
+  vulkan_swap_chain_destroy(vks);
   vulkan_render_cache_list_destroy(renderCacheList);
   vulkan_scene_graph_destroy(sceneGraph);
   vulkan_data_scene_destroy(assetDbSceneData);

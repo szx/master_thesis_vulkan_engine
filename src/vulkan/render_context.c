@@ -403,7 +403,7 @@ void vulkan_render_context_load_scene(vulkan_render_context *rctx, UT_string *sc
   if (rctx->scene != NULL) {
     vulkan_scene_renderer_destroy(rctx->scene);
   }
-  rctx->scene = vulkan_scene_renderer_create(rctx->assetDb, rctx->vkd, sceneName);
+  rctx->scene = vulkan_scene_renderer_create(rctx->assetDb, rctx->vks, sceneName);
   vulkan_scene_renderer_debug_print(rctx->scene);
   // vulkan_render_pass_validate(rctx->pipeline->renderPass,
   //                             rctx->scene); // TODO: vulkan_old_pipeline_validate().
