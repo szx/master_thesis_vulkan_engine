@@ -4,8 +4,7 @@
 #include "device.h"
 #include "functions.h"
 
-#define MAX_FRAMES_IN_FLIGHT 2
-#define MIN_DELTA_TIME (1.0 / 60.0)
+#include "constants.h"
 
 static const UT_icd ut_vk_image_icd = {sizeof(VkImage), NULL, NULL, NULL};
 static const UT_icd ut_vk_image_view_icd = {sizeof(VkImageView), NULL, NULL, NULL};

@@ -6,6 +6,7 @@ vulkan_pipeline *vulkan_pipeline_create(vulkan_device *vkd, data_asset_db *asset
                                         vulkan_unified_uniform_buffer *unifiedUniformBuffer) {
   vulkan_pipeline *pipeline = core_alloc(sizeof(vulkan_pipeline));
 
+  utarray_alloc(pipeline->shaders, sizeof(vulkan_shader *));
   // HIRO: generate shaders
 
   // HIRO: create descriptor set layouts from shader reflect
@@ -33,8 +34,9 @@ vulkan_pipeline *vulkan_pipeline_create(vulkan_device *vkd, data_asset_db *asset
 }
 
 void vulkan_pipeline_destroy(vulkan_pipeline *pipeline) {
-  vulkan_shader_destroy(pipeline->vertShader);
-  vulkan_shader_destroy(pipeline->fragShader);
+  utarray_foreach_elem_deref (vulkan_shader *, shader, pipeline->shaders) {
+    vulkan_shader_destroy(shader);
+  }
   core_free(pipeline);
 }
 
@@ -44,6 +46,7 @@ void vulkan_pipeline_send_to_device(vulkan_pipeline *pipeline) {
 
 void vulkan_pipeline_debug_print(vulkan_pipeline *pipeline) {
   log_debug("PIPELINE:\n");
-  vulkan_shader_debug_print(pipeline->vertShader, 2);
-  vulkan_shader_debug_print(pipeline->fragShader, 2);
+  utarray_foreach_elem_deref (vulkan_shader *, shader, pipeline->shaders) {
+    vulkan_shader_debug_print(shader, 2);
+  }
 }

@@ -6,8 +6,6 @@
 #include "common.h"
 #include "vertex_stream.h"
 
-// HIRO support multiple buffers and descriptors (seperate for each frame)
-
 /// Unified geometry buffer.
 /// Used to aggregate scene's vertex data into one big vertex buffer.
 typedef struct vulkan_unified_geometry_buffer {
