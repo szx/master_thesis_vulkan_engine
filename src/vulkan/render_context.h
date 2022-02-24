@@ -17,13 +17,13 @@ typedef struct vulkan_render_pass_info {
   vulkan_attribute_type supportedVertexAttributes;
 } vulkan_render_pass_info;
 
-typedef struct vulkan_pipeline vulkan_pipeline;
+typedef struct vulkan_old_pipeline vulkan_old_pipeline;
 
 /// Describes one render pass in pipeline.
 typedef struct vulkan_render_pass {
-  vulkan_device *vkd;        /// vulkan_device pointer.
-  vulkan_swap_chain *vks;    /// vulkan_swap_chain pointer.
-  vulkan_pipeline *pipeline; /// parent vulkan_pipeline pointer.
+  vulkan_device *vkd;            /// vulkan_device pointer.
+  vulkan_swap_chain *vks;        /// vulkan_swap_chain pointer.
+  vulkan_old_pipeline *pipeline; /// parent vulkan_old_pipeline pointer.
   vulkan_render_pass_type type;
   vulkan_render_pass_info info;
   VkRenderPass renderPass;
@@ -33,12 +33,12 @@ typedef struct vulkan_render_pass {
   VkPipeline graphicsPipeline;
 } vulkan_render_pass;
 
-vulkan_render_pass *vulkan_render_pass_create(vulkan_pipeline *pipeline,
+vulkan_render_pass *vulkan_render_pass_create(vulkan_old_pipeline *pipeline,
                                               vulkan_render_pass_type type);
 void vulkan_render_pass_destroy(vulkan_render_pass *renderPass);
 
 /// Describes rendering pipeline.
-typedef struct vulkan_pipeline {
+typedef struct vulkan_old_pipeline {
   vulkan_device *vkd;           /// vulkan_device pointer.
   vulkan_swap_chain *vks;       /// vulkan_swap_chain pointer.
   vulkan_scene_renderer *scene; /// parent scene pointer
@@ -51,17 +51,18 @@ typedef struct vulkan_pipeline {
   vulkan_render_pass *renderPass;
   // TODO: More render passes, configuration.
   // TODO: Descriptors, attachments. (store in vulkan_swap_chain_frame?)
-} vulkan_pipeline;
+} vulkan_old_pipeline;
 
-vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_scene_renderer *scene);
-void vulkan_pipeline_destroy(vulkan_pipeline *pipeline);
+vulkan_old_pipeline *vulkan_old_pipeline_create(vulkan_swap_chain *vks,
+                                                vulkan_scene_renderer *scene);
+void vulkan_old_pipeline_destroy(vulkan_old_pipeline *pipeline);
 
 /// Manages frame-specific resources (command buffer, framebuffer) used to
 /// render one swap chain frame.
 typedef struct vulkan_swap_chain_frame {
-  vulkan_pipeline *pipeline; /// vulkan_pipeline pointer.
-  vulkan_device *vkd;        /// vulkan_device pointer.
-  vulkan_swap_chain *vks;    /// vulkan_swap_chain pointer.
+  vulkan_old_pipeline *pipeline; /// vulkan_old_pipeline pointer.
+  vulkan_device *vkd;            /// vulkan_device pointer.
+  vulkan_swap_chain *vks;        /// vulkan_swap_chain pointer.
   VkCommandPool commandPool;
   VkCommandBuffer commandBuffer;
   VkFramebuffer framebuffer;    /// Vulkan framebuffer. Used in conjunction with
@@ -70,7 +71,7 @@ typedef struct vulkan_swap_chain_frame {
                                 /// image associated with framebuffer.
 } vulkan_swap_chain_frame;
 
-void vulkan_swap_chain_frame_init(vulkan_swap_chain_frame *frame, vulkan_pipeline *pipeline,
+void vulkan_swap_chain_frame_init(vulkan_swap_chain_frame *frame, vulkan_old_pipeline *pipeline,
                                   uint32_t swapChainImageIndex);
 void vulkan_swap_chain_frame_deinit(vulkan_swap_chain_frame *frame);
 vulkan_swap_chain_frame vulkan_swap_chain_frame_copy(vulkan_swap_chain_frame *frame);
@@ -81,7 +82,7 @@ typedef struct vulkan_render_context {
   data_asset_db *assetDb;                              // Asset database.
   vulkan_device *vkd;                                  /// Vulkan device.
   vulkan_swap_chain *vks;                              /// Vulkan swap chain.
-  vulkan_pipeline *pipeline;                           /// Rendering pipeline.
+  vulkan_old_pipeline *pipeline;                       /// Rendering pipeline.
   core_array(vulkan_swap_chain_frame) swapChainFrames; /// Swap chain frames.
   vulkan_scene_renderer *scene;                        /// Vulkan scene.
   size_t currentFrameInFlight;                         /// Current frame rendered in flight.
@@ -109,16 +110,16 @@ void vulkan_render_context_update_data(vulkan_render_context *rctx);
 void vulkan_render_context_send_to_device(vulkan_render_context *rctx);
 
 /// Acquires swap chain frame.
-/// Records frame command buffer using vulkan_pipeline_record_frame_command_buffer().
+/// Records frame command buffer using vulkan_old_pipeline_record_frame_command_buffer().
 /// Submits frame command buffer.
 void vulkan_render_context_draw_frame(vulkan_render_context *rctx);
 
 /// Records frame command buffer for scene using rendering pipeline.
 /// Calls vulkan_render_pass_record_frame_command_buffer() for each render pass in rendering
 /// pipeline.
-void vulkan_pipeline_record_frame_command_buffer(vulkan_scene_renderer *scene,
-                                                 vulkan_pipeline *pipeline,
-                                                 vulkan_swap_chain_frame *frame);
+void vulkan_old_pipeline_record_frame_command_buffer(vulkan_scene_renderer *scene,
+                                                     vulkan_old_pipeline *pipeline,
+                                                     vulkan_swap_chain_frame *frame);
 
 /// Records frame command buffer for scene using single render pass of rendering pipeline.
 void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_renderer *scene,

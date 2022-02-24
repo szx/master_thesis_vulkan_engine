@@ -2,11 +2,10 @@
 #include "../data/camera.h"
 
 vulkan_unified_uniform_buffer *
-vulkan_unified_uniform_buffer_create(vulkan_device *vkd, vulkan_render_cache_list *renderCacheList,
-                                     vulkan_data_camera *camera) {
+vulkan_unified_uniform_buffer_create(vulkan_device *vkd,
+                                     vulkan_render_cache_list *renderCacheList) {
   vulkan_unified_uniform_buffer *uniformBuffer = core_alloc(sizeof(vulkan_unified_uniform_buffer));
   uniformBuffer->renderCacheList = renderCacheList;
-  uniformBuffer->camera = camera;
 
   uniformBuffer->instanceData =
       vulkan_instance_data_uniform_buffer_data_create(renderCacheList->maxCount);
@@ -18,8 +17,6 @@ vulkan_unified_uniform_buffer_create(vulkan_device *vkd, vulkan_render_cache_lis
   vulkan_buffer_add(uniformBuffer->buffer, &uniformBuffer->globalData->elements,
                     vulkan_global_uniform_buffer_data_get_size(uniformBuffer->globalData));
 
-  uniformBuffer->dirty = true;
-
   return uniformBuffer;
 }
 
@@ -30,7 +27,8 @@ void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *unifor
   core_free(uniformBuffer);
 }
 
-void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniformBuffer) {
+void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniformBuffer,
+                                          vulkan_data_camera *camera) {
   assert(utarray_len(uniformBuffer->renderCacheList->caches) > 0);
 
   for (size_t idx = 0; idx < uniformBuffer->instanceData->count; idx++) {
@@ -38,9 +36,7 @@ void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniform
     glm_mat4_copy(cache->transform, uniformBuffer->instanceData->elements[idx].modelMat);
   }
 
-  if (uniformBuffer->camera->dirty) {
-    vulkan_data_camera *camera = uniformBuffer->camera;
-
+  if (camera->dirty) {
     vec3 negativePosition;
     mat4 translationMat;
     glm_vec3_negate_to(camera->position, negativePosition);
@@ -57,13 +53,14 @@ void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniform
     camera->dirty = false;
   }
 
-  uniformBuffer->dirty = true;
+  // TODO: Dirty only parts of unified uniform buffer.
+  uniformBuffer->buffer->dirty = true;
 }
 
 void vulkan_unified_uniform_buffer_send_to_device(vulkan_unified_uniform_buffer *uniformBuffer) {
-  uniformBuffer->buffer->dirty = uniformBuffer->dirty;
+  // TODO: Update only parts of unified uniform buffer.
+  uniformBuffer->buffer->dirty = true;
   vulkan_buffer_send_to_device(uniformBuffer->buffer);
-  uniformBuffer->dirty = false;
 }
 
 void vulkan_unified_uniform_buffer_debug_print(vulkan_unified_uniform_buffer *uniformBuffer) {

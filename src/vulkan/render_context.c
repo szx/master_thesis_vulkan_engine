@@ -204,7 +204,7 @@ void create_graphics_pipeline(vulkan_render_pass *renderPass) {
   // free(vertexAttributeDescriptions);
 }
 
-vulkan_render_pass *vulkan_render_pass_create(vulkan_pipeline *pipeline,
+vulkan_render_pass *vulkan_render_pass_create(vulkan_old_pipeline *pipeline,
                                               vulkan_render_pass_type type) {
   vulkan_render_pass *renderPass = core_alloc(sizeof(vulkan_render_pass));
   renderPass->pipeline = pipeline;
@@ -235,10 +235,11 @@ void vulkan_render_pass_destroy(vulkan_render_pass *renderPass) {
   core_free(renderPass);
 }
 
-vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_scene_renderer *scene) {
+vulkan_old_pipeline *vulkan_old_pipeline_create(vulkan_swap_chain *vks,
+                                                vulkan_scene_renderer *scene) {
   assert(scene != NULL);
 
-  vulkan_pipeline *pipeline = core_alloc(sizeof(vulkan_pipeline));
+  vulkan_old_pipeline *pipeline = core_alloc(sizeof(vulkan_old_pipeline));
   pipeline->vks = vks;
   pipeline->vkd = vks->vkd;
   pipeline->scene = scene;
@@ -250,15 +251,15 @@ vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_scene_ren
       VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, "pipeline");
       */
   pipeline->descriptorSet = vulkan_create_descriptor_set_for_uniform_buffers(
-      pipeline->vkd, &scene->unifiedUniformBuffer->buffer->buffer,
-      scene->unifiedUniformBuffer->buffer->totalSize, 1, pipeline->descriptorSetLayout,
+      pipeline->vkd, &scene->renderState->unifiedUniformBuffer->buffer->buffer,
+      scene->renderState->unifiedUniformBuffer->buffer->totalSize, 1, pipeline->descriptorSetLayout,
       pipeline->descriptorPool, "pipeline");
 
   pipeline->renderPass = vulkan_render_pass_create(pipeline, ForwardRenderPass);
   return pipeline;
 }
 
-void vulkan_pipeline_destroy(vulkan_pipeline *pipeline) {
+void vulkan_old_pipeline_destroy(vulkan_old_pipeline *pipeline) {
   vulkan_render_pass_destroy(pipeline->renderPass);
   core_free(pipeline);
 }
@@ -286,7 +287,7 @@ void create_framebuffer(vulkan_swap_chain_frame *frame) {
       frame->swapChainImageIndex);
 }
 
-void vulkan_swap_chain_frame_init(vulkan_swap_chain_frame *frame, vulkan_pipeline *pipeline,
+void vulkan_swap_chain_frame_init(vulkan_swap_chain_frame *frame, vulkan_old_pipeline *pipeline,
                                   uint32_t swapChainImageIndex) {
   frame->pipeline = pipeline;
   frame->vks = pipeline->vks;
@@ -338,7 +339,7 @@ void vulkan_render_context_init(vulkan_render_context *rctx, data_config *config
     vulkan_data_camera_update_aspect_ratio(camera, vulkan_swap_chain_get_aspect_ratio(rctx->vks));
   }
 
-  rctx->pipeline = vulkan_pipeline_create(rctx->vks, rctx->scene);
+  rctx->pipeline = vulkan_old_pipeline_create(rctx->vks, rctx->scene);
   core_array_alloc(rctx->swapChainFrames, utarray_len(rctx->vks->swapChainImageViews));
   for (uint32_t i = 0; i < core_array_count(rctx->swapChainFrames); i++) {
     vulkan_swap_chain_frame_init(&rctx->swapChainFrames.ptr[i], rctx->pipeline, i);
@@ -355,7 +356,7 @@ void vulkan_render_context_deinit(vulkan_render_context *rctx) {
     vulkan_swap_chain_frame_deinit(&rctx->swapChainFrames.ptr[i]);
   }
   core_array_dealloc(rctx->swapChainFrames);
-  vulkan_pipeline_destroy(rctx->pipeline);
+  vulkan_old_pipeline_destroy(rctx->pipeline);
   vulkan_swap_chain_destroy(rctx->vks);
   for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
     vkDestroySemaphore(rctx->vkd->device, rctx->imageAvailableSemaphores[i], vka);
@@ -382,14 +383,14 @@ void vulkan_render_context_recreate_swap_chain(vulkan_render_context *rctx) {
     vulkan_swap_chain_frame_deinit(&rctx->swapChainFrames.ptr[i]);
   }
   core_array_dealloc(rctx->swapChainFrames);
-  vulkan_pipeline_destroy(rctx->pipeline);
+  vulkan_old_pipeline_destroy(rctx->pipeline);
   vulkan_swap_chain_destroy(rctx->vks);
 
   rctx->vks = vulkan_swap_chain_create(rctx->vkd);
   utarray_foreach_elem_it (vulkan_data_camera *, camera, rctx->scene->data->cameras) {
     vulkan_data_camera_update_aspect_ratio(camera, vulkan_swap_chain_get_aspect_ratio(rctx->vks));
   }
-  rctx->pipeline = vulkan_pipeline_create(rctx->vks, rctx->scene);
+  rctx->pipeline = vulkan_old_pipeline_create(rctx->vks, rctx->scene);
   core_array_alloc(rctx->swapChainFrames, utarray_len(rctx->vks->swapChainImageViews));
   for (uint32_t i = 0; i < core_array_count(rctx->swapChainFrames); i++) {
     vulkan_swap_chain_frame_init(&rctx->swapChainFrames.ptr[i], rctx->pipeline, i);
@@ -405,7 +406,7 @@ void vulkan_render_context_load_scene(vulkan_render_context *rctx, UT_string *sc
   rctx->scene = vulkan_scene_renderer_create(rctx->assetDb, rctx->vkd, sceneName);
   vulkan_scene_renderer_debug_print(rctx->scene);
   // vulkan_render_pass_validate(rctx->pipeline->renderPass,
-  //                             rctx->scene); // TODO: vulkan_pipeline_validate().
+  //                             rctx->scene); // TODO: vulkan_old_pipeline_validate().
   //  TODO: Copy resources to GPU. (deferred? tracking)
 }
 
@@ -438,7 +439,7 @@ void vulkan_render_context_draw_frame(vulkan_render_context *rctx) {
   // (uniform buffers, push constants).
   // log_debug("imageIndex = %d", imageIndex);
   vulkan_swap_chain_frame *inFlightFrame = &rctx->swapChainFrames.ptr[imageIndex];
-  vulkan_pipeline_record_frame_command_buffer(rctx->scene, rctx->pipeline, inFlightFrame);
+  vulkan_old_pipeline_record_frame_command_buffer(rctx->scene, rctx->pipeline, inFlightFrame);
   // scene.updateScene(currentFrameInFlight);
   // scene.beginCommandBuffer(&framebuffers[imageIndex]);
   // scene.recordCommandBuffer(currentFrameInFlight, &framebuffers[imageIndex]);
@@ -493,9 +494,9 @@ void vulkan_render_context_draw_frame(vulkan_render_context *rctx) {
   rctx->currentFrameInFlight = (rctx->currentFrameInFlight + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
-void vulkan_pipeline_record_frame_command_buffer(vulkan_scene_renderer *scene,
-                                                 vulkan_pipeline *pipeline,
-                                                 vulkan_swap_chain_frame *frame) {
+void vulkan_old_pipeline_record_frame_command_buffer(vulkan_scene_renderer *scene,
+                                                     vulkan_old_pipeline *pipeline,
+                                                     vulkan_swap_chain_frame *frame) {
   VkCommandBufferBeginInfo beginInfo = {0};
   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
   verify(vkBeginCommandBuffer(frame->commandBuffer, &beginInfo) == VK_SUCCESS);
@@ -509,8 +510,8 @@ void vulkan_pipeline_record_frame_command_buffer(vulkan_scene_renderer *scene,
 void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_renderer *scene,
                                                     vulkan_render_pass *renderPass,
                                                     vulkan_swap_chain_frame *frame) {
-  assert(scene->unifiedGeometryBuffer->indexBuffer->resident);
-  assert(scene->unifiedGeometryBuffer->vertexBuffer->resident);
+  assert(scene->renderState->unifiedGeometryBuffer->indexBuffer->resident);
+  assert(scene->renderState->unifiedGeometryBuffer->vertexBuffer->resident);
 
   VkRenderPassBeginInfo renderPassInfo = {0};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -551,7 +552,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_renderer *scene
                           renderPass->pipelineLayout, 0, descriptorSetCount, descriptorSets, 0,
                           NULL);
 
-  dl_foreach_elem(vulkan_batch *, batch, scene->batches->batches, {
+  dl_foreach_elem(vulkan_batch *, batch, scene->renderState->batches->batches, {
     vulkan_render_cache *firstCache = batch->firstCache;
 
     // TODO: Check if object should be culled.
@@ -572,9 +573,9 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_renderer *scene
 
     // HIRO return only vertex buffer from unified geometry buffer helper function
     size_t bindingCount = vulkan_interleaved_vertex_stream_get_vertex_buffer_binding_count(
-        scene->unifiedGeometryBuffer->interleavedVertexStream);
+        scene->renderState->unifiedGeometryBuffer->interleavedVertexStream);
     assert(bindingCount == 1);
-    VkBuffer vertexBuffer = scene->unifiedGeometryBuffer->vertexBuffer->buffer;
+    VkBuffer vertexBuffer = scene->renderState->unifiedGeometryBuffer->vertexBuffer->buffer;
     VkBuffer vertexBuffers[bindingCount];
     VkDeviceSize vertexBuffersOffsets[bindingCount];
     vertexBuffers[0] = vertexBuffer;
@@ -583,7 +584,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_renderer *scene
                            vertexBuffersOffsets);
 
     assert(utarray_len(firstCache->primitive->indices->data) > 0);
-    VkBuffer indexBuffer = scene->unifiedGeometryBuffer->indexBuffer->buffer;
+    VkBuffer indexBuffer = scene->renderState->unifiedGeometryBuffer->indexBuffer->buffer;
     VkDeviceSize indexBufferOffset = 0;
     VkIndexType indexType = VK_INDEX_TYPE_UINT32;
     vkCmdBindIndexBuffer(frame->commandBuffer, indexBuffer, indexBufferOffset, indexType);

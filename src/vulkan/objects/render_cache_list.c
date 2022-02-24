@@ -75,7 +75,7 @@ static int cache_list_sort_func(const void *_a, const void *_b) {
   return 0;
 }
 
-void vulkan_render_cache_list_sort_and_update(vulkan_render_cache_list *renderCacheList) {
+void vulkan_render_cache_list_update(vulkan_render_cache_list *renderCacheList) {
   if (!renderCacheList->dirty) {
     return;
   }
@@ -86,6 +86,8 @@ void vulkan_render_cache_list_sort_and_update(vulkan_render_cache_list *renderCa
   utarray_foreach_elem_deref (vulkan_render_cache *, cache, renderCacheList->caches) {
     renderCacheList->attributes |= cache->primitive->attributes;
   }
+
+  renderCacheList->dirty = true;
 }
 
 void vulkan_render_cache_list_debug_print(vulkan_render_cache_list *renderCacheList) {

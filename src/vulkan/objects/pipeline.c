@@ -1,11 +1,15 @@
 #include "pipeline.h"
 
-vulkan_pipeline *vulkan_pipeline_create(vulkan_device *vkd) {
+vulkan_pipeline *vulkan_pipeline_create(vulkan_device *vkd, data_asset_db *assetDb,
+                                        vulkan_batches *batches, vulkan_data_camera *camera,
+                                        vulkan_unified_geometry_buffer *unifiedGeometryBuffer,
+                                        vulkan_unified_uniform_buffer *unifiedUniformBuffer) {
   vulkan_pipeline *pipeline = core_alloc(sizeof(vulkan_pipeline));
 
   // HIRO: generate shaders
 
   // HIRO: create descriptor set layouts from shader reflect
+  /*
   utarray_alloc(shader->descriptorSetLayouts, shader->reflect->maxDescriptorSetNumber);
   utarray_foreach_elem_deref (VkDescriptorSetLayout *, layout, shader->descriptorSetLayouts) {
     *layout = VK_NULL_HANDLE;
@@ -24,6 +28,7 @@ vulkan_pipeline *vulkan_pipeline_create(vulkan_device *vkd) {
     *descriptorSetLayout =
         vulkan_create_descriptor_set_layout(shader->vkd, &layoutBinding, 1, "shader");
   }
+   */
   return pipeline;
 }
 

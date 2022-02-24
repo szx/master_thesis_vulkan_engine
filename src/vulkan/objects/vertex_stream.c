@@ -32,12 +32,39 @@ vulkan_interleaved_vertex_stream_element vulkan_interleaved_vertex_stream_elemen
 }
 
 vulkan_interleaved_vertex_stream *
-vulkan_interleaved_vertex_stream_create(vulkan_attribute_type attributes) {
+vulkan_interleaved_vertex_stream_create(vulkan_render_cache_list *renderCacheList) {
   vulkan_interleaved_vertex_stream *stream = core_alloc(sizeof(vulkan_interleaved_vertex_stream));
-  stream->attributes = attributes;
-  utarray_alloc(stream->indexData, sizeof(uint32_t));
-  utarray_alloc(stream->vertexData, vulkan_attribute_type_to_stride(stream->attributes));
+
+  stream->renderCacheList = renderCacheList;
+  stream->indexData = NULL;
+  stream->vertexData = NULL;
+  vulkan_interleaved_vertex_stream_update(stream, true);
+
   return stream;
+}
+
+void vulkan_interleaved_vertex_stream_update(vulkan_interleaved_vertex_stream *stream, bool force) {
+  if (force || !stream->renderCacheList->dirty) {
+    return;
+  }
+
+  vulkan_render_cache_list_update(stream->renderCacheList);
+
+  assert(stream->renderCacheList->attributes > 0);
+  assert(stream->renderCacheList->dirty == false); // sorted
+
+  utarray_realloc(stream->indexData, sizeof(uint32_t));
+  utarray_realloc(stream->vertexData,
+                  vulkan_attribute_type_to_stride(stream->renderCacheList->attributes));
+
+  // add unique primitives to geometry buffer
+  vulkan_render_cache *lastRenderCache = NULL;
+  utarray_foreach_elem_deref (vulkan_render_cache *, renderCache, stream->renderCacheList->caches) {
+    vulkan_interleaved_vertex_stream_add_primitive(stream, renderCache, lastRenderCache);
+    lastRenderCache = renderCache;
+  }
+
+  stream->dirty = true;
 }
 
 void vulkan_interleaved_vertex_stream_destroy(vulkan_interleaved_vertex_stream *stream) {
@@ -47,14 +74,22 @@ void vulkan_interleaved_vertex_stream_destroy(vulkan_interleaved_vertex_stream *
 }
 
 void vulkan_interleaved_vertex_stream_add_primitive(vulkan_interleaved_vertex_stream *stream,
-                                                    vulkan_render_cache *cache) {
+                                                    vulkan_render_cache *renderCache,
+                                                    vulkan_render_cache *lastRenderCache) {
   // PERF: Compress stream (overlapping vertex attributes).
+
+  if (lastRenderCache != NULL && lastRenderCache->primitive == renderCache->primitive) {
+    size_t firstIndexOffset = lastRenderCache->firstIndexOffset;
+    size_t firstVertexOffset = lastRenderCache->firstVertexOffset;
+    vulkan_render_cache_set_vertex_stream_offsets(renderCache, firstIndexOffset, firstVertexOffset);
+    return;
+  }
 
   size_t firstIndexOffset = utarray_len(stream->indexData);
   size_t firstVertexOffset = utarray_len(stream->vertexData);
-  vulkan_render_cache_set_vertex_stream_offsets(cache, firstIndexOffset, firstVertexOffset);
+  vulkan_render_cache_set_vertex_stream_offsets(renderCache, firstIndexOffset, firstVertexOffset);
 
-  vulkan_data_primitive *primitive = cache->primitive;
+  vulkan_data_primitive *primitive = renderCache->primitive;
   vulkan_data_primitive_debug_print(primitive, 0);
 
   assert(utarray_len(primitive->indices->data) > 0);
@@ -64,31 +99,24 @@ void vulkan_interleaved_vertex_stream_add_primitive(vulkan_interleaved_vertex_st
   for (size_t idx = 0; idx < primitive->vertexCount; idx++) {
     vulkan_interleaved_vertex_stream_element element =
         vulkan_interleaved_vertex_stream_element_default();
-    if ((stream->attributes & vulkan_attribute_type_position) != 0) {
+    if ((stream->renderCacheList->attributes & vulkan_attribute_type_position) != 0) {
       vec3 *position = utarray_eltptr(primitive->positions->data, idx);
       glm_vec3_copy(*position, element.position);
     }
-    if ((stream->attributes & vulkan_attribute_type_normal) != 0) {
+    if ((stream->renderCacheList->attributes & vulkan_attribute_type_normal) != 0) {
       vec3 *normal = utarray_eltptr(primitive->normals->data, idx);
       glm_vec3_copy(*normal, element.normal);
     }
-    if ((stream->attributes & vulkan_attribute_type_color) != 0) {
+    if ((stream->renderCacheList->attributes & vulkan_attribute_type_color) != 0) {
       vec3 *color = utarray_eltptr(primitive->colors->data, idx);
       glm_vec3_copy(*color, element.color);
     }
-    if ((stream->attributes & vulkan_attribute_type_texcoord) != 0) {
+    if ((stream->renderCacheList->attributes & vulkan_attribute_type_texcoord) != 0) {
       vec3 *texCoord = utarray_eltptr(primitive->texCoords->data, idx);
       glm_vec2_copy(*texCoord, element.texCoord);
     }
     utarray_push_back(stream->vertexData, &element);
   }
-}
-
-void vulkan_interleaved_vertex_stream_add_stream(vulkan_interleaved_vertex_stream *stream,
-                                                 vulkan_interleaved_vertex_stream *other) {
-  assert(stream->attributes == other->attributes);
-  utarray_concat(stream->indexData, other->indexData);
-  utarray_concat(stream->vertexData, other->vertexData);
 }
 
 size_t vulkan_interleaved_vertex_stream_get_vertex_buffer_binding_count(
@@ -111,8 +139,8 @@ vulkan_interleaved_vertex_stream_get_vertex_buffer_binding_description(
 VkVertexInputAttributeDescription *
 vulkan_interleaved_vertex_stream_get_vertex_attribute_descriptions(
     vulkan_interleaved_vertex_stream *stream, size_t *count) {
-  assert(stream->attributes > 0);
-  size_t attributes = stream->attributes;
+  assert(stream->renderCacheList->attributes > 0);
+  size_t attributes = stream->renderCacheList->attributes;
   *count = count_bits(attributes);
 
   VkVertexInputAttributeDescription *attributeDescriptions =

@@ -5,7 +5,6 @@
 #pragma once
 
 #include "render_cache.h"
-#include "vertex_stream.h"
 
 typedef struct vulkan_render_cache_list {
   /* render cache list */
@@ -27,6 +26,6 @@ void vulkan_render_cache_list_remove_cache(vulkan_render_cache_list *renderCache
 
 /// Sorts cache list in a way that minimizes number of created batches.
 /// Updates max set of vertex attributes.
-void vulkan_render_cache_list_sort_and_update(vulkan_render_cache_list *renderCacheList);
+void vulkan_render_cache_list_update(vulkan_render_cache_list *renderCacheList);
 
 void vulkan_render_cache_list_debug_print(vulkan_render_cache_list *renderCacheList);
