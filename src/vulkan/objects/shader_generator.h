@@ -25,6 +25,10 @@ typedef struct vulkan_shader_generator {
   /// qualifier). VK_NULL_HANDLE if no shader binding for indexed set number.
   UT_array *descriptorSetLayouts;
 
+  // HIRO generate descriptor sets from shader generator layouts.
+  VkDescriptorPool descriptorPool;
+  /// One descriptor set per one descriptor set layout.
+  VkDescriptorSet descriptorSet;
 } vulkan_shader_generator;
 
 vulkan_shader_generator *vulkan_shader_generator_create(vulkan_render_state *renderState);

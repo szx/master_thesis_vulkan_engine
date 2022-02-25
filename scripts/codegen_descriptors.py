@@ -48,27 +48,24 @@ def codegen_descriptors():
     # generate GLSL strings
     for struct_name, struct_fields in uniform_structs.items():
         decls.append(
-            f'UT_string *{struct_name}_uniform_buffer_get_glsl_str(uint32_t set, uint32_t binding, uint32_t count);')
+            f'void glsl_add_{struct_name}_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);')
         defs.append(
-            f'UT_string *{struct_name}_uniform_buffer_get_glsl_str(uint32_t set, uint32_t binding, uint32_t count) {{')
-        defs.append(f'  UT_string *s;')
-        defs.append(f'  utstring_new(s);')
+            f'void glsl_add_{struct_name}_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count) {{')
         instance_name = struct_name.partition("vulkan_")[2]
         block_name = instance_name + "Block"
         defs.append(f'  utstring_printf(s, "layout(set = %u, binding = %u) uniform {block_name} {{", set, binding);')
         for field_name, field_type in struct_fields:
             defs.append(f' utstring_printf(s, "  {field_type} {field_name};");')
         defs.append(f'  utstring_printf(s, "}} {instance_name}");')
-        defs.append(f'  if (count == 1) {{utstring_printf(s, ";");}}')
-        defs.append(f'  else {{utstring_printf(s, "[%u];", count);}}')
-        defs.append(f'  return s;')
+        defs.append(f'  if (count == 1) {{utstring_printf(s, ";\\n");}}')
+        defs.append(f'  else {{utstring_printf(s, "[%u];\\n", count);}}')
         defs.append(f'}}')
 
     # generate X-macro with uniform buffer names
     decls.append(f'\n#define END_OF_VULKAN_UNIFORM_BUFFERS')
     decls.append(f'#define VULKAN_UNIFORM_BUFFERS(X, ...) \\')
     for struct_name in uniform_structs.keys():
-        struct_name = struct_name
+        struct_name = struct_name.partition("vulkan_")[2]
         decls.append(f'  X({struct_name}, __VA_ARGS__) \\')
     decls.append(f'  END_OF_VULKAN_UNIFORM_BUFFERS')
 

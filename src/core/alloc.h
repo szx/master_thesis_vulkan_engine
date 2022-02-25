@@ -32,9 +32,10 @@ void *core_memdup(const void *src, size_t size);
 #define utarray_realloc(_array, _size)                                                             \
   do {                                                                                             \
     const UT_icd icd = {_size, NULL, NULL, NULL};                                                  \
-    if (_array)                                                                                    \
-      utarray_done(_array);                                                                        \
-    utarray_init(_array, &icd);                                                                    \
+    if (_array) {                                                                                  \
+      utarray_free(_array);                                                                        \
+    }                                                                                              \
+    utarray_new(_array, &icd);                                                                     \
   } while (false)
 
 #define core_array(type)                                                                           \

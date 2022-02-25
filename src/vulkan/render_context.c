@@ -573,7 +573,7 @@ void vulkan_render_pass_record_frame_command_buffer(vulkan_scene_renderer *scene
 
     // HIRO return only vertex buffer from unified geometry buffer helper function
     size_t bindingCount = vulkan_interleaved_vertex_stream_get_vertex_buffer_binding_count(
-        scene->renderState->unifiedGeometryBuffer->interleavedVertexStream);
+        scene->renderState->unifiedGeometryBuffer->vertexStream);
     assert(bindingCount == 1);
     VkBuffer vertexBuffer = scene->renderState->unifiedGeometryBuffer->vertexBuffer->buffer;
     VkBuffer vertexBuffers[bindingCount];

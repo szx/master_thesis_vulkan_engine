@@ -8,12 +8,15 @@ vulkan_render_state *vulkan_render_state_create(vulkan_device *vkd,
 
   vulkan_render_state *renderState = core_alloc(sizeof(vulkan_render_state));
 
-  renderState->batches = vulkan_batches_create(renderCacheList);
+  renderState->renderCacheList = renderCacheList;
   renderState->camera = camera;
-  vulkan_interleaved_vertex_stream *stream =
-      vulkan_interleaved_vertex_stream_create(renderCacheList);
 
-  renderState->unifiedGeometryBuffer = vulkan_unified_geometry_buffer_create(vkd, stream);
+  renderState->batches = vulkan_batches_create(renderCacheList);
+  renderState->vertexStream = vulkan_interleaved_vertex_stream_create(renderCacheList);
+
+  renderState->vkd = vkd;
+  renderState->unifiedGeometryBuffer =
+      vulkan_unified_geometry_buffer_create(vkd, renderState->vertexStream);
   renderState->unifiedUniformBuffer = vulkan_unified_uniform_buffer_create(vkd, renderCacheList);
 
   vulkan_scene_render_state_update(renderState);
@@ -24,7 +27,7 @@ vulkan_render_state *vulkan_render_state_create(vulkan_device *vkd,
 void vulkan_scene_render_state_update(vulkan_render_state *renderState) {
 
   /* update unified geometry buffer */
-  vulkan_interleaved_vertex_stream_update(renderState->interleavedVertexStream, false);
+  vulkan_interleaved_vertex_stream_update(renderState->vertexStream, false);
 
   /* update batches */
   vulkan_batch_policy batchPolicy = vulkan_batch_policy_matching_materials;

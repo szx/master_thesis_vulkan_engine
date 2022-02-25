@@ -12,7 +12,7 @@ typedef struct vulkan_render_cache_list {
   UT_array *caches;                 /// vulkan_render_cache* array of primitive scene node caches.
   vulkan_attribute_type attributes; /// Max set of primitive vertex attributes.
 
-  bool dirty; /// True if added or removed cache.
+  bool sorted; /// Sorted if added or removed cache.
 } vulkan_render_cache_list;
 
 vulkan_render_cache_list *vulkan_render_cache_list_create(size_t maxCount);

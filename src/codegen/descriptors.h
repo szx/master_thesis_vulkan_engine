@@ -7,15 +7,15 @@ typedef struct vulkan_global_uniform_buffer_element {
   alignas(16) mat4 projMat;
 } vulkan_global_uniform_buffer_element;
 
-typedef struct vulkan_instance_data_uniform_buffer_element {
+typedef struct vulkan_instances_uniform_buffer_element {
   alignas(16) mat4 modelMat;
-} vulkan_instance_data_uniform_buffer_element;
+} vulkan_instances_uniform_buffer_element;
 
-UT_string *vulkan_global_uniform_buffer_get_glsl_str(uint32_t set, uint32_t binding, uint32_t count);
-UT_string *vulkan_instance_data_uniform_buffer_get_glsl_str(uint32_t set, uint32_t binding, uint32_t count);
+void glsl_add_vulkan_global_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);
+void glsl_add_vulkan_instances_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);
 
 #define END_OF_VULKAN_UNIFORM_BUFFERS
 #define VULKAN_UNIFORM_BUFFERS(X, ...) \
-  X(vulkan_global, __VA_ARGS__) \
-  X(vulkan_instance_data, __VA_ARGS__) \
+  X(global, __VA_ARGS__) \
+  X(instances, __VA_ARGS__) \
   END_OF_VULKAN_UNIFORM_BUFFERS

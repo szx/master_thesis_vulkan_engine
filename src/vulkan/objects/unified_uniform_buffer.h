@@ -13,7 +13,7 @@ typedef struct vulkan_unified_uniform_buffer {
   /* CPU state */
   vulkan_render_cache_list *renderCacheList; /// Pointer.
 
-  vulkan_instance_data_uniform_buffer_data *instanceData;
+  vulkan_instances_uniform_buffer_data *instancesData;
   vulkan_global_uniform_buffer_data *globalData;
 
   /* GPU state */

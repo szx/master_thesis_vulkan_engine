@@ -8,7 +8,7 @@ vulkan_render_cache_list *vulkan_render_cache_list_create(size_t maxCount) {
   utarray_alloc(renderCacheList->caches, sizeof(vulkan_scene_node *));
   renderCacheList->attributes = vulkan_attribute_type_unknown;
 
-  renderCacheList->dirty = false;
+  renderCacheList->sorted = false;
 
   return renderCacheList;
 }
@@ -22,7 +22,7 @@ void vulkan_render_cache_list_add_cache(vulkan_render_cache_list *renderCacheLis
                                         vulkan_render_cache *cache) {
   verify(utarray_len(renderCacheList->caches) < renderCacheList->maxCount);
   utarray_push_back(renderCacheList->caches, &cache);
-  renderCacheList->dirty = true;
+  renderCacheList->sorted = false;
 }
 
 void vulkan_render_cache_list_remove_cache(vulkan_render_cache_list *renderCacheList,
@@ -36,7 +36,7 @@ void vulkan_render_cache_list_remove_cache(vulkan_render_cache_list *renderCache
   }
   assert(idx < utarray_len(renderCacheList->caches));
   utarray_erase(renderCacheList->caches, idx, 1);
-  renderCacheList->dirty = true;
+  renderCacheList->sorted = false;
 }
 
 static int cache_list_sort_func(const void *_a, const void *_b) {
@@ -76,7 +76,7 @@ static int cache_list_sort_func(const void *_a, const void *_b) {
 }
 
 void vulkan_render_cache_list_update(vulkan_render_cache_list *renderCacheList) {
-  if (!renderCacheList->dirty) {
+  if (renderCacheList->sorted) {
     return;
   }
 
@@ -87,7 +87,7 @@ void vulkan_render_cache_list_update(vulkan_render_cache_list *renderCacheList) 
     renderCacheList->attributes |= cache->primitive->attributes;
   }
 
-  renderCacheList->dirty = true;
+  renderCacheList->sorted = true;
 }
 
 void vulkan_render_cache_list_debug_print(vulkan_render_cache_list *renderCacheList) {

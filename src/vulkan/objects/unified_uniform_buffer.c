@@ -7,13 +7,13 @@ vulkan_unified_uniform_buffer_create(vulkan_device *vkd,
   vulkan_unified_uniform_buffer *uniformBuffer = core_alloc(sizeof(vulkan_unified_uniform_buffer));
   uniformBuffer->renderCacheList = renderCacheList;
 
-  uniformBuffer->instanceData =
-      vulkan_instance_data_uniform_buffer_data_create(renderCacheList->maxCount);
+  uniformBuffer->instancesData =
+      vulkan_instances_uniform_buffer_data_create(renderCacheList->maxCount);
   uniformBuffer->globalData = vulkan_global_uniform_buffer_data_create(1);
 
   uniformBuffer->buffer = vulkan_buffer_create(vkd, vulkan_buffer_type_uniform);
-  vulkan_buffer_add(uniformBuffer->buffer, &uniformBuffer->instanceData->elements,
-                    vulkan_instance_data_uniform_buffer_data_get_size(uniformBuffer->instanceData));
+  vulkan_buffer_add(uniformBuffer->buffer, &uniformBuffer->instancesData->elements,
+                    vulkan_instances_uniform_buffer_data_get_size(uniformBuffer->instancesData));
   vulkan_buffer_add(uniformBuffer->buffer, &uniformBuffer->globalData->elements,
                     vulkan_global_uniform_buffer_data_get_size(uniformBuffer->globalData));
 
@@ -22,7 +22,7 @@ vulkan_unified_uniform_buffer_create(vulkan_device *vkd,
 
 void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *uniformBuffer) {
   vulkan_global_uniform_buffer_data_destroy(uniformBuffer->globalData);
-  vulkan_instance_data_uniform_buffer_data_destroy(uniformBuffer->instanceData);
+  vulkan_instances_uniform_buffer_data_destroy(uniformBuffer->instancesData);
   vulkan_unified_uniform_buffer_destroy(uniformBuffer);
   core_free(uniformBuffer);
 }
@@ -31,9 +31,12 @@ void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniform
                                           vulkan_data_camera *camera) {
   assert(utarray_len(uniformBuffer->renderCacheList->caches) > 0);
 
-  for (size_t idx = 0; idx < uniformBuffer->instanceData->count; idx++) {
-    vulkan_render_cache *cache = utarray_eltptr(uniformBuffer->renderCacheList->caches, idx);
-    glm_mat4_copy(cache->transform, uniformBuffer->instanceData->elements[idx].modelMat);
+  utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
+                              uniformBuffer->renderCacheList->caches) {
+    size_t instanceId = renderCache->renderCacheListIdx;
+    // HIRO update only for frame in flight. (size_t frameInFlight argument)
+    glm_mat4_copy(renderCache->transform,
+                  uniformBuffer->instancesData->elements[instanceId].modelMat);
   }
 
   if (camera->dirty) {
@@ -67,6 +70,6 @@ void vulkan_unified_uniform_buffer_debug_print(vulkan_unified_uniform_buffer *un
   log_debug("UNIFIED UNIFORM BUFFER:\n");
   assert(uniformBuffer->buffer->totalSize > 0);
   log_debug("uniform buffer size=%d\n", uniformBuffer->buffer->totalSize);
-  log_debug("instance data count=%d\n", uniformBuffer->instanceData->count);
+  log_debug("instance data count=%d\n", uniformBuffer->instancesData->count);
   log_debug("global data count=%d\n", uniformBuffer->globalData->count);
 }

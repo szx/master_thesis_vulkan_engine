@@ -10,7 +10,7 @@
 /// Used to aggregate scene's vertex data into one big vertex buffer.
 typedef struct vulkan_unified_geometry_buffer {
   /* CPU state */
-  vulkan_interleaved_vertex_stream *interleavedVertexStream; ///< Pointer.
+  vulkan_interleaved_vertex_stream *vertexStream; ///< Pointer.
 
   /* GPU state */
   vulkan_buffer *indexBuffer;

@@ -25,12 +25,6 @@ typedef struct vulkan_pipeline {
 
   vulkan_shader_generator *shaderGenerator;
 
-  // HIRO generate descriptor sets from shader generator layouts.
-  // HIRO move to render state? that can generate shaders easily
-  VkDescriptorPool descriptorPool;
-  /// One descriptor set per one descriptor set layout.
-  VkDescriptorSet descriptorSet;
-
   // HIRO: Generate render pass from shaders.
   VkRenderPass renderPass;
   VkPipelineLayout pipelineLayout;

@@ -5,7 +5,7 @@
 
 #include <stdlib.h>
 
-#define GLTF_NAME "sponza"
+#define GLTF_NAME "triangles"
 
 // Loading sponza.gltf.
 TEST gltf_loading() {
@@ -102,40 +102,37 @@ TEST shaderc_compiling() {
   data_config *config = data_config_create();
   data_asset_db *assetDb = data_asset_db_create();
   vulkan_device *vkd = vulkan_device_create(config, assetDb);
+  vulkan_swap_chain *vks = vulkan_swap_chain_create(vkd);
 
-  UT_string *vertInputPath = get_asset_file_path("shaders", "shader.vert");
-  UT_string *fragInputPath = get_asset_file_path("shaders", "shader.frag");
-  UT_string *vertGlslSource = read_text_file(vertInputPath);
-  UT_string *fragGlslSource = read_text_file(fragInputPath);
-  vulkan_shader *vertShader =
-      vulkan_shader_create_with_str(vkd, vulkan_shader_type_vertex, vertGlslSource);
-  vulkan_shader *fragShader =
-      vulkan_shader_create_with_str(vkd, vulkan_shader_type_fragment, fragGlslSource);
-  utstring_free(vertGlslSource);
-  utstring_free(fragGlslSource);
-  utstring_free(vertInputPath);
-  utstring_free(fragInputPath);
+  UT_string *sceneName;
+  utstring_alloc(sceneName, GLTF_NAME);
+  vulkan_scene_renderer *renderer = vulkan_scene_renderer_create(assetDb, vks, sceneName);
+  utstring_free(sceneName);
+
+  vulkan_shader *vertexShader = renderer->pipeline->shaderGenerator->vertexShader;
+  vulkan_shader *fragmentShader = renderer->pipeline->shaderGenerator->fragmentShader;
 
   // verify shader
-  ASSERT(vertShader->type == vulkan_shader_type_vertex);
-  ASSERT(fragShader->type == vulkan_shader_type_fragment);
-  ASSERT(vertShader->spvSize > 0);
-  ASSERT(fragShader->spvSize > 0);
-  ASSERT(vertShader->module != VK_NULL_HANDLE);
-  ASSERT(fragShader->module != VK_NULL_HANDLE);
+  ASSERT(vertexShader->type == vulkan_shader_type_vertex);
+  ASSERT(fragmentShader->type == vulkan_shader_type_fragment);
+  ASSERT(vertexShader->spvSize > 0);
+  ASSERT(fragmentShader->spvSize > 0);
+  ASSERT(vertexShader->module != VK_NULL_HANDLE);
+  ASSERT(fragmentShader->module != VK_NULL_HANDLE);
 
   // verify reflection
-  ASSERT(utarray_len(vertShader->reflect->inputVariables) > 0);
-  ASSERT(utarray_len(fragShader->reflect->inputVariables) > 0);
-  ASSERT(utarray_len(vertShader->reflect->outputVariables) > 0);
-  ASSERT(utarray_len(fragShader->reflect->outputVariables) > 0);
+  ASSERT(utarray_len(vertexShader->reflect->inputVariables) > 0);
+  ASSERT(utarray_len(fragmentShader->reflect->inputVariables) > 0);
+  ASSERT(utarray_len(vertexShader->reflect->outputVariables) > 0);
+  ASSERT(utarray_len(fragmentShader->reflect->outputVariables) > 0);
   // HIRO check in vertex output variables match fragment input variables
 
-  data_config_destroy(config);
-  data_asset_db_destroy(assetDb);
-  vulkan_shader_destroy(vertShader);
-  vulkan_shader_destroy(fragShader);
+  vulkan_scene_renderer_destroy(renderer);
   vulkan_device_destroy(vkd);
+  vulkan_device_destroy(vkd);
+  data_asset_db_destroy(assetDb);
+  data_config_destroy(config);
+
   PASS();
 }
 

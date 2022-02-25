@@ -88,7 +88,7 @@ void vulkan_batches_reset(vulkan_batches *batches) {
 void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_policy policy) {
   // sort cache list and update attributes
   vulkan_render_cache_list_update(batches->renderCacheList);
-  assert(batches->renderCacheList->dirty == false); // sorted
+  assert(batches->renderCacheList->sorted);
 
   vulkan_batches_reset(batches);
 

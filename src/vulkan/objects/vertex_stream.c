@@ -44,14 +44,13 @@ vulkan_interleaved_vertex_stream_create(vulkan_render_cache_list *renderCacheLis
 }
 
 void vulkan_interleaved_vertex_stream_update(vulkan_interleaved_vertex_stream *stream, bool force) {
-  if (force || !stream->renderCacheList->dirty) {
+  if (force || stream->renderCacheList->sorted) {
     return;
   }
 
   vulkan_render_cache_list_update(stream->renderCacheList);
-
   assert(stream->renderCacheList->attributes > 0);
-  assert(stream->renderCacheList->dirty == false); // sorted
+  assert(stream->renderCacheList->sorted);
 
   utarray_realloc(stream->indexData, sizeof(uint32_t));
   utarray_realloc(stream->vertexData,

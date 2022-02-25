@@ -6,7 +6,7 @@ vulkan_unified_geometry_buffer_create(vulkan_device *vkd,
   vulkan_unified_geometry_buffer *geometryBuffer =
       core_alloc(sizeof(vulkan_unified_geometry_buffer));
 
-  geometryBuffer->interleavedVertexStream = stream;
+  geometryBuffer->vertexStream = stream;
 
   geometryBuffer->indexBuffer = vulkan_buffer_create(vkd, vulkan_buffer_type_geometry_index);
   geometryBuffer->vertexBuffer = vulkan_buffer_create(vkd, vulkan_buffer_type_geometry_vertex);
@@ -15,7 +15,7 @@ vulkan_unified_geometry_buffer_create(vulkan_device *vkd,
 }
 
 void vulkan_unified_geometry_buffer_destroy(vulkan_unified_geometry_buffer *geometryBuffer) {
-  vulkan_interleaved_vertex_stream_destroy(geometryBuffer->interleavedVertexStream);
+  vulkan_interleaved_vertex_stream_destroy(geometryBuffer->vertexStream);
 
   vulkan_buffer_destroy(geometryBuffer->indexBuffer);
   vulkan_buffer_destroy(geometryBuffer->vertexBuffer);
@@ -24,20 +24,20 @@ void vulkan_unified_geometry_buffer_destroy(vulkan_unified_geometry_buffer *geom
 }
 
 void vulkan_unified_geometry_buffer_send_to_device(vulkan_unified_geometry_buffer *geometryBuffer) {
-  assert(geometryBuffer->interleavedVertexStream->dirty == false);
+  assert(geometryBuffer->vertexStream->dirty == false);
 
   if (geometryBuffer->indexBuffer->totalSize == 0) {
     vulkan_buffer_add(geometryBuffer->indexBuffer,
-                      utarray_front(geometryBuffer->interleavedVertexStream->indexData),
-                      utarray_size(geometryBuffer->interleavedVertexStream->indexData));
+                      utarray_front(geometryBuffer->vertexStream->indexData),
+                      utarray_size(geometryBuffer->vertexStream->indexData));
     geometryBuffer->indexBuffer->dirty = true;
   }
   vulkan_buffer_send_to_device(geometryBuffer->indexBuffer);
 
   if (geometryBuffer->vertexBuffer->totalSize == 0) {
     vulkan_buffer_add(geometryBuffer->vertexBuffer,
-                      utarray_front(geometryBuffer->interleavedVertexStream->vertexData),
-                      utarray_size(geometryBuffer->interleavedVertexStream->vertexData));
+                      utarray_front(geometryBuffer->vertexStream->vertexData),
+                      utarray_size(geometryBuffer->vertexStream->vertexData));
     geometryBuffer->vertexBuffer->dirty = true;
   }
 

@@ -19,16 +19,16 @@ typedef struct vulkan_render_cache {
   /* cache state accumulated from scene tree */
   size_t distanceFromRoot;
   bool visible;
-  mat4 transform;                   /// Accumulated from object node.
-  vulkan_data_mesh *mesh;           /// Accumulated from object node.
-  vulkan_data_primitive *primitive; /// Accumulated from primitive node.
+  mat4 transform;                   ///< Accumulated from object node.
+  vulkan_data_mesh *mesh;           ///< Accumulated from object node.
+  vulkan_data_primitive *primitive; ///< Accumulated from primitive node.
 
   /* cache state accumulated from vertex stream */
   size_t firstIndexOffset;
   size_t firstVertexOffset;
 
   /* cache state accumulated from batches */
-  size_t renderCacheListIdx;
+  size_t renderCacheListIdx; ///< Also instanceId.
 
   struct vulkan_render_cache *prev, *next;
 } vulkan_render_cache;
