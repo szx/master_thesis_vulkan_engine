@@ -45,7 +45,7 @@ void vulkan_scene_render_state_update(vulkan_render_state *renderState) {
 void vulkan_render_state_destroy(vulkan_render_state *renderState) {
   vulkan_batches_destroy(renderState->batches);
   vulkan_unified_geometry_buffer_destroy(renderState->unifiedGeometryBuffer);
-  vulkan_unified_geometry_buffer_destroy(renderState->unifiedGeometryBuffer);
+  vulkan_unified_uniform_buffer_destroy(renderState->unifiedUniformBuffer);
   core_free(renderState);
 }
 

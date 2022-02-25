@@ -64,7 +64,6 @@ vulkan_shader_reflect *vulkan_shader_reflect_create(uint32_t *spvCode, size_t sp
   // TODO: Reflect push constants.
   spvReflectDestroyShaderModule(&reflectModule);
 
-  vulkan_shader_reflect_debug_print(reflect, 0);
   return reflect;
 }
 

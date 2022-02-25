@@ -111,6 +111,8 @@ TEST shaderc_compiling() {
 
   vulkan_shader *vertexShader = renderer->pipeline->shaderGenerator->vertexShader;
   vulkan_shader *fragmentShader = renderer->pipeline->shaderGenerator->fragmentShader;
+  vulkan_shader_debug_print(vertexShader, 0);
+  vulkan_shader_debug_print(fragmentShader, 0);
 
   // verify shader
   ASSERT(vertexShader->type == vulkan_shader_type_vertex);
@@ -128,7 +130,7 @@ TEST shaderc_compiling() {
   // HIRO check in vertex output variables match fragment input variables
 
   vulkan_scene_renderer_destroy(renderer);
-  vulkan_device_destroy(vkd);
+  vulkan_swap_chain_destroy(vks);
   vulkan_device_destroy(vkd);
   data_asset_db_destroy(assetDb);
   data_config_destroy(config);

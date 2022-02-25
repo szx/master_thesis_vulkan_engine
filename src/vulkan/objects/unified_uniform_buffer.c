@@ -23,7 +23,7 @@ vulkan_unified_uniform_buffer_create(vulkan_device *vkd,
 void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *uniformBuffer) {
   vulkan_global_uniform_buffer_data_destroy(uniformBuffer->globalData);
   vulkan_instances_uniform_buffer_data_destroy(uniformBuffer->instancesData);
-  vulkan_unified_uniform_buffer_destroy(uniformBuffer);
+  vulkan_buffer_destroy(uniformBuffer->buffer);
   core_free(uniformBuffer);
 }
 

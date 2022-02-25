@@ -15,8 +15,6 @@ vulkan_unified_geometry_buffer_create(vulkan_device *vkd,
 }
 
 void vulkan_unified_geometry_buffer_destroy(vulkan_unified_geometry_buffer *geometryBuffer) {
-  vulkan_interleaved_vertex_stream_destroy(geometryBuffer->vertexStream);
-
   vulkan_buffer_destroy(geometryBuffer->indexBuffer);
   vulkan_buffer_destroy(geometryBuffer->vertexBuffer);
 

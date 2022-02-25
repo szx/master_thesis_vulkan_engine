@@ -82,5 +82,7 @@ void vulkan_shader_debug_print(vulkan_shader *shader, int indent) {
   log_debug(INDENT_FORMAT_STRING "type: %s", INDENT_FORMAT_ARGS(2),
             vulkan_shader_type_debug_str(shader->type));
   log_debug(INDENT_FORMAT_STRING "spvSize %zu:", INDENT_FORMAT_ARGS(2), shader->spvSize);
+  log_debug(INDENT_FORMAT_STRING "glslCode: %s", INDENT_FORMAT_ARGS(2),
+            utstring_body(shader->glslCode));
   vulkan_shader_reflect_debug_print(shader->reflect, 2);
 }

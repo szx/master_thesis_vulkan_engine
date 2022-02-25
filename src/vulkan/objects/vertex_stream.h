@@ -44,3 +44,7 @@ size_t vulkan_interleaved_vertex_stream_get_vertex_buffer_binding_count(
 VkVertexInputBindingDescription
 vulkan_interleaved_vertex_stream_get_vertex_buffer_binding_description(
     vulkan_interleaved_vertex_stream *stream);
+
+VkVertexInputAttributeDescription *
+vulkan_interleaved_vertex_stream_get_vertex_attribute_descriptions(
+    vulkan_interleaved_vertex_stream *stream, size_t *count);

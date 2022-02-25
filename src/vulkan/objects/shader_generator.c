@@ -2,7 +2,74 @@
 
 void glsl_add_header(UT_string *s) { utstring_printf(s, "%s\n", "#version 450"); }
 
-// HIRO input and output variables
+void glsl_add_vertex_shader_input_variables_defines(UT_string *s,
+                                                    vulkan_interleaved_vertex_stream *stream) {
+  assert(stream->renderCacheList->attributes > 0);
+  size_t attributes = stream->renderCacheList->attributes;
+
+  if ((attributes & vulkan_attribute_type_position) != 0) {
+    utstring_printf(s, "#define IN_POSITION\n");
+  }
+  if ((attributes & vulkan_attribute_type_normal) != 0) {
+    utstring_printf(s, "#define IN_NORMAL\n");
+  }
+  if ((attributes & vulkan_attribute_type_color) != 0) {
+    utstring_printf(s, "#define IN_COLOR\n");
+  }
+  if ((attributes & vulkan_attribute_type_texcoord) != 0) {
+    utstring_printf(s, "#define IN_TEXCOORD\n");
+  }
+}
+
+void glsl_add_defines(UT_string *s, vulkan_render_state *renderState) {
+  glsl_add_vertex_shader_input_variables_defines(s, renderState->vertexStream);
+}
+
+void glsl_add_vertex_shader_input_variables(UT_string *s,
+                                            vulkan_interleaved_vertex_stream *stream) {
+  assert(stream->renderCacheList->attributes > 0);
+  size_t attributes = stream->renderCacheList->attributes;
+
+  uint32_t location = 0;
+  if ((attributes & vulkan_attribute_type_position) != 0) {
+    utstring_printf(s, "layout(location = %u) in vec3 inPosition;\n", location);
+  }
+  location++;
+  if ((attributes & vulkan_attribute_type_normal) != 0) {
+    utstring_printf(s, "layout(location = %u) in vec3 inNormal;\n", location);
+  }
+  location++;
+  if ((attributes & vulkan_attribute_type_color) != 0) {
+    utstring_printf(s, "layout(location = %u) in vec3 inColor;\n", location);
+  }
+  location++;
+  if ((attributes & vulkan_attribute_type_texcoord) != 0) {
+    utstring_printf(s, "layout(location = %u) in vec3 inTexCoord;\n", location);
+  }
+}
+
+void glsl_add_vertex_shader_output_variables(UT_string *s) {
+  uint32_t location = 0;
+  utstring_printf(s, "layout(location = %u) out vec3 outColor;\n", location);
+  location++;
+  utstring_printf(s, "#ifdef IN_TEXCOORD\n");
+  utstring_printf(s, "layout(location = %u) out vec3 outTexCoord;\n", location);
+  utstring_printf(s, "#endif\n");
+}
+
+void glsl_add_fragment_shader_input_variables(UT_string *s) {
+  uint32_t location = 0;
+  utstring_printf(s, "layout(location = %u) in vec3 inColor;\n", location);
+  location++;
+  utstring_printf(s, "#ifdef IN_TEXCOORD\n");
+  utstring_printf(s, "layout(location = %u) in vec3 inTexCoord;\n", location);
+  utstring_printf(s, "#endif\n");
+}
+
+void glsl_add_fragment_shader_output_variables(UT_string *s) {
+  uint32_t location = 0;
+  utstring_printf(s, "layout(location = %u) out vec4 outColor;\n", location);
+}
 
 void glsl_add_uniform_buffers(UT_string *s, vulkan_unified_uniform_buffer *uniformBuffer) {
   uint32_t set = 0;
@@ -25,21 +92,30 @@ vulkan_shader_generator *vulkan_shader_generator_create(vulkan_render_state *ren
 
   utstring_new(s);
   glsl_add_header(s);
+  glsl_add_defines(s, renderState);
+  glsl_add_vertex_shader_input_variables(s, renderState->vertexStream);
+  glsl_add_vertex_shader_output_variables(s);
   glsl_add_uniform_buffers(s, renderState->unifiedUniformBuffer);
   glsl_add_entry_point_begin(s);
   // HIRO vertex shader body
   glsl_add_entry_point_end(s);
+  log_info("generated glsl code:\n%s", utstring_body(s));
   shaderGenerator->vertexShader =
       vulkan_shader_create_with_str(renderState->vkd, vulkan_shader_type_vertex, s);
 
   utstring_clear(s);
   glsl_add_header(s);
+  glsl_add_defines(s, renderState);
+  glsl_add_fragment_shader_input_variables(s);
+  glsl_add_fragment_shader_output_variables(s);
   glsl_add_uniform_buffers(s, renderState->unifiedUniformBuffer);
   glsl_add_entry_point_begin(s);
   // HIRO fragment shader body
   glsl_add_entry_point_end(s);
   shaderGenerator->fragmentShader =
       vulkan_shader_create_with_str(renderState->vkd, vulkan_shader_type_fragment, s);
+
+  utstring_free(s);
 
   // HIRO Generate descriptor set
   // vulkan_interleaved_vertex_stream_get_vertex_buffer_binding_count(renderState->vertexStream);
