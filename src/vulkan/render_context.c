@@ -17,18 +17,6 @@ void create_render_pass_info(vulkan_render_pass *renderPass) {
 void create_shaders(vulkan_render_pass *renderPass) {
   // TODO: Different shaders for different render pass types.
   // TODO generate glsl shaders using render_pass_info.
-  UT_string *vertInputPath = get_asset_file_path("shaders", "shader.vert");
-  UT_string *fragInputPath = get_asset_file_path("shaders", "shader.frag");
-  UT_string *vertGlslSource = read_text_file(vertInputPath);
-  UT_string *fragGlslSource = read_text_file(fragInputPath);
-  renderPass->vertShader =
-      vulkan_shader_create_with_str(renderPass->vkd, vulkan_shader_type_vertex, vertGlslSource);
-  renderPass->fragShader =
-      vulkan_shader_create_with_str(renderPass->vkd, vulkan_shader_type_fragment, fragGlslSource);
-  utstring_free(vertGlslSource);
-  utstring_free(fragGlslSource);
-  utstring_free(vertInputPath);
-  utstring_free(fragInputPath);
 }
 
 void create_render_pass(vulkan_render_pass *renderPass) {

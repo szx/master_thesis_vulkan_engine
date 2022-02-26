@@ -84,6 +84,22 @@ void glsl_add_entry_point_begin(UT_string *s) { utstring_printf(s, "%s\n", "void
 
 void glsl_add_entry_point_end(UT_string *s) { utstring_printf(s, "%s\n", "}"); }
 
+void glsl_add_body(UT_string *s, vulkan_shader_type type) {
+  const char *filename = "invalid shader name";
+  if (type == vulkan_shader_type_vertex) {
+    filename = "vertex.glsl";
+  } else if (type == vulkan_shader_type_fragment) {
+    filename = "fragment.glsl";
+  } else {
+    assert(0);
+  }
+  UT_string *inputPath = get_asset_file_path("shaders", filename);
+  UT_string *glslSource = read_text_file(inputPath);
+  utstring_printf(s, "// %s\n%s\n", utstring_body(inputPath), utstring_body(glslSource));
+  utstring_free(glslSource);
+  utstring_free(inputPath);
+}
+
 vulkan_shader_generator *vulkan_shader_generator_create(vulkan_render_state *renderState) {
   vulkan_shader_generator *shaderGenerator = core_alloc(sizeof(vulkan_shader_generator));
 
@@ -97,9 +113,8 @@ vulkan_shader_generator *vulkan_shader_generator_create(vulkan_render_state *ren
   glsl_add_vertex_shader_output_variables(s);
   glsl_add_uniform_buffers(s, renderState->unifiedUniformBuffer);
   glsl_add_entry_point_begin(s);
-  // HIRO vertex shader body
+  glsl_add_body(s, vulkan_shader_type_vertex);
   glsl_add_entry_point_end(s);
-  log_info("generated glsl code:\n%s", utstring_body(s));
   shaderGenerator->vertexShader =
       vulkan_shader_create_with_str(renderState->vkd, vulkan_shader_type_vertex, s);
 
@@ -110,7 +125,7 @@ vulkan_shader_generator *vulkan_shader_generator_create(vulkan_render_state *ren
   glsl_add_fragment_shader_output_variables(s);
   glsl_add_uniform_buffers(s, renderState->unifiedUniformBuffer);
   glsl_add_entry_point_begin(s);
-  // HIRO fragment shader body
+  glsl_add_body(s, vulkan_shader_type_fragment);
   glsl_add_entry_point_end(s);
   shaderGenerator->fragmentShader =
       vulkan_shader_create_with_str(renderState->vkd, vulkan_shader_type_fragment, s);
@@ -145,6 +160,8 @@ VkDescriptorSetLayoutBinding layoutBinding =
 }
 
 void vulkan_shader_generator_destroy(vulkan_shader_generator *shaderGenerator) {
+  vulkan_shader_destroy(shaderGenerator->vertexShader);
+  vulkan_shader_destroy(shaderGenerator->fragmentShader);
   core_free(shaderGenerator);
 }
 
