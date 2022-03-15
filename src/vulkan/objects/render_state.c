@@ -26,10 +26,8 @@ vulkan_render_state *vulkan_render_state_create(vulkan_device *vkd,
 
 void vulkan_scene_render_state_update(vulkan_render_state *renderState) {
 
-  /* update unified geometry buffer */
   vulkan_interleaved_vertex_stream_update(renderState->vertexStream, false);
 
-  /* update batches */
   vulkan_batch_policy batchPolicy = vulkan_batch_policy_matching_materials;
   vulkan_batches_update(renderState->batches, batchPolicy);
   dl_foreach_elem(vulkan_batch *, batch, renderState->batches->batches, {
@@ -38,14 +36,13 @@ void vulkan_scene_render_state_update(vulkan_render_state *renderState) {
     assert(batch->drawCommand.vertexOffset != INT32_MAX);
   })
 
-  /* update unified uniform buffer */
   vulkan_unified_uniform_buffer_update(renderState->unifiedUniformBuffer, renderState->camera);
 }
 
 void vulkan_render_state_destroy(vulkan_render_state *renderState) {
-  vulkan_batches_destroy(renderState->batches);
-  vulkan_unified_geometry_buffer_destroy(renderState->unifiedGeometryBuffer);
   vulkan_unified_uniform_buffer_destroy(renderState->unifiedUniformBuffer);
+  vulkan_unified_geometry_buffer_destroy(renderState->unifiedGeometryBuffer);
+  vulkan_batches_destroy(renderState->batches);
   core_free(renderState);
 }
 

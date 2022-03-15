@@ -23,15 +23,16 @@ typedef struct vulkan_render_state {
   vulkan_device *vkd; ///< Pointer.
   vulkan_unified_geometry_buffer *unifiedGeometryBuffer;
   vulkan_unified_uniform_buffer *unifiedUniformBuffer;
+
 } vulkan_render_state;
 
 vulkan_render_state *vulkan_render_state_create(vulkan_device *vkd,
                                                 vulkan_render_cache_list *renderCacheList,
                                                 vulkan_data_camera *camera);
 
-void vulkan_scene_render_state_update(vulkan_render_state *renderState);
-
 void vulkan_render_state_destroy(vulkan_render_state *renderState);
+
+void vulkan_scene_render_state_update(vulkan_render_state *renderState);
 
 void vulkan_render_state_send_to_device(vulkan_render_state *renderState);
 

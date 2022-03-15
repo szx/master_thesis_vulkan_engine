@@ -45,8 +45,6 @@ void vulkan_unified_geometry_buffer_send_to_device(vulkan_unified_geometry_buffe
 
 void vulkan_unified_geometry_buffer_debug_print(vulkan_unified_geometry_buffer *geometryBuffer) {
   log_debug("UNIFIED GEOMETRY BUFFER:\n");
-  assert(geometryBuffer->indexBuffer->totalSize > 0);
-  assert(geometryBuffer->vertexBuffer->totalSize > 0);
   log_debug("index buffer size=%d\n", geometryBuffer->indexBuffer->totalSize);
   log_debug("vertex buffer size=%d\n", geometryBuffer->vertexBuffer->totalSize);
 }

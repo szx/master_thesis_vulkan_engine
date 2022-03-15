@@ -5094,6 +5094,13 @@ const char *vulkan_scene_node_entity_type_debug_str(int value) {
   if (value == 3) { return "vulkan_scene_node_entity_type_count"; }
   return "UNKNOWN vulkan_scene_node_entity_type";
 }
+const char *vulkan_shader_reflect_binding_type_debug_str(int value) {
+  if (value == 0) { return "vulkan_shader_reflect_binding_type_unknown"; }
+  if (value == 1) { return "vulkan_shader_reflect_binding_type_global_uniform_buffer"; }
+  if (value == 2) { return "vulkan_shader_reflect_binding_type_instances_uniform_buffer"; }
+  if (value == 3) { return "vulkan_shader_reflect_binding_type_count"; }
+  return "UNKNOWN vulkan_shader_reflect_binding_type";
+}
 const char *vulkan_shader_type_debug_str(int value) {
   if (value == 0) { return "vulkan_shader_type_unknown"; }
   if (value == 1) { return "vulkan_shader_type_vertex"; }

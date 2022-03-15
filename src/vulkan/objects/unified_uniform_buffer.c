@@ -12,10 +12,17 @@ vulkan_unified_uniform_buffer_create(vulkan_device *vkd,
   uniformBuffer->globalData = vulkan_global_uniform_buffer_data_create(1);
 
   uniformBuffer->buffer = vulkan_buffer_create(vkd, vulkan_buffer_type_uniform);
-  vulkan_buffer_add(uniformBuffer->buffer, &uniformBuffer->instancesData->elements,
-                    vulkan_instances_uniform_buffer_data_get_size(uniformBuffer->instancesData));
-  vulkan_buffer_add(uniformBuffer->buffer, &uniformBuffer->globalData->elements,
-                    vulkan_global_uniform_buffer_data_get_size(uniformBuffer->globalData));
+
+  uniformBuffer->instancesData->bufferElement = vulkan_buffer_add(
+      uniformBuffer->buffer, &uniformBuffer->instancesData->elements,
+      vulkan_instances_uniform_buffer_data_get_size(uniformBuffer->instancesData));
+  uniformBuffer->globalData->bufferElement =
+      vulkan_buffer_add(uniformBuffer->buffer, &uniformBuffer->globalData->elements,
+                        vulkan_global_uniform_buffer_data_get_size(uniformBuffer->globalData));
+
+  vulkan_buffer_make_resident(uniformBuffer->buffer);
+
+  uniformBuffer->descriptors = vulkan_descriptors_create(vkd, uniformBuffer);
 
   return uniformBuffer;
 }
@@ -23,6 +30,7 @@ vulkan_unified_uniform_buffer_create(vulkan_device *vkd,
 void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *uniformBuffer) {
   vulkan_global_uniform_buffer_data_destroy(uniformBuffer->globalData);
   vulkan_instances_uniform_buffer_data_destroy(uniformBuffer->instancesData);
+  vulkan_descriptors_destroy(uniformBuffer->descriptors);
   vulkan_buffer_destroy(uniformBuffer->buffer);
   core_free(uniformBuffer);
 }
@@ -58,12 +66,16 @@ void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniform
 
   // TODO: Dirty only parts of unified uniform buffer.
   uniformBuffer->buffer->dirty = true;
+
+  vulkan_scene_descriptors_update(uniformBuffer->descriptors);
 }
 
 void vulkan_unified_uniform_buffer_send_to_device(vulkan_unified_uniform_buffer *uniformBuffer) {
   // TODO: Update only parts of unified uniform buffer.
   uniformBuffer->buffer->dirty = true;
   vulkan_buffer_send_to_device(uniformBuffer->buffer);
+
+  vulkan_descriptors_send_to_device(uniformBuffer->descriptors);
 }
 
 void vulkan_unified_uniform_buffer_debug_print(vulkan_unified_uniform_buffer *uniformBuffer) {
@@ -72,4 +84,5 @@ void vulkan_unified_uniform_buffer_debug_print(vulkan_unified_uniform_buffer *un
   log_debug("uniform buffer size=%d\n", uniformBuffer->buffer->totalSize);
   log_debug("instance data count=%d\n", uniformBuffer->instancesData->count);
   log_debug("global data count=%d\n", uniformBuffer->globalData->count);
+  vulkan_descriptors_debug_print(uniformBuffer->descriptors, 2);
 }

@@ -42,8 +42,16 @@ void vulkan_shader_reflect_variable_destroy(vulkan_shader_reflect_variable *inpu
 void vulkan_shader_reflect_variable_debug_print(vulkan_shader_reflect_variable *inputVariable,
                                                 int indent);
 
+typedef enum vulkan_shader_reflect_binding_type {
+  vulkan_shader_reflect_binding_type_unknown,
+#define enum_uniform_buffer(_name, ...) vulkan_shader_reflect_binding_type_##_name##_uniform_buffer,
+  VULKAN_UNIFORM_BUFFERS(enum_uniform_buffer, )
+#undef enum_uniform_buffer
+      vulkan_shader_reflect_binding_type_count,
+} vulkan_shader_reflect_binding_type;
+
 typedef struct vulkan_shader_reflect_binding {
-  const char *name;
+  vulkan_shader_reflect_binding_type type;
   uint32_t location;
 
   uint32_t binding;

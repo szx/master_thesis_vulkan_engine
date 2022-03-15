@@ -18,6 +18,8 @@ typedef struct vulkan_unified_uniform_buffer {
 
   /* GPU state */
   vulkan_buffer *buffer;
+  vulkan_descriptors *descriptors;
+
 } vulkan_unified_uniform_buffer;
 
 vulkan_unified_uniform_buffer *

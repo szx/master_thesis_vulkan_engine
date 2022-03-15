@@ -109,10 +109,10 @@ TEST shaderc_compiling() {
   vulkan_scene_renderer *renderer = vulkan_scene_renderer_create(assetDb, vks, sceneName);
   utstring_free(sceneName);
 
+  vulkan_scene_renderer_debug_print(renderer);
+
   vulkan_shader *vertexShader = renderer->pipeline->shaderGenerator->vertexShader;
   vulkan_shader *fragmentShader = renderer->pipeline->shaderGenerator->fragmentShader;
-  vulkan_shader_debug_print(vertexShader, 0);
-  vulkan_shader_debug_print(fragmentShader, 0);
 
   // verify shader
   ASSERT(vertexShader->type == vulkan_shader_type_vertex);

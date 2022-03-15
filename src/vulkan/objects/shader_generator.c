@@ -71,11 +71,14 @@ void glsl_add_fragment_shader_output_variables(UT_string *s) {
   utstring_printf(s, "layout(location = %u) out vec4 outColor;\n", location);
 }
 
-void glsl_add_uniform_buffers(UT_string *s, vulkan_unified_uniform_buffer *uniformBuffer) {
+void glsl_add_uniform_buffers(UT_string *s, vulkan_unified_uniform_buffer *unifiedUniformBuffer) {
+  vulkan_descriptors *descriptors = unifiedUniformBuffer->descriptors;
   uint32_t set = 0;
   uint32_t binding = 0;
 #define str_uniform_buffer(_name, ...)                                                             \
-  glsl_add_vulkan_##_name##_uniform_buffer(s, set++, binding, uniformBuffer->_name##Data->count);
+  glsl_add_vulkan_##_name##_uniform_buffer(s, descriptors->_name##DescriptorSetNum,                \
+                                           descriptors->_name##DescriptorBindingNum,               \
+                                           descriptors->unifiedUniformBuffer->_name##Data->count);
   VULKAN_UNIFORM_BUFFERS(str_uniform_buffer, )
 #undef str_uniform_buffer
 }
@@ -132,29 +135,6 @@ vulkan_shader_generator *vulkan_shader_generator_create(vulkan_render_state *ren
 
   utstring_free(s);
 
-  // HIRO Generate descriptor set
-  // vulkan_interleaved_vertex_stream_get_vertex_buffer_binding_count(renderState->vertexStream);
-
-  /*
-  utarray_alloc(shader->descriptorSetLayouts, shader->reflect->maxDescriptorSetNumber);
-  utarray_foreach_elem_deref (VkDescriptorSetLayout *, layout, shader->descriptorSetLayouts) {
-    *layout = VK_NULL_HANDLE;
-  }
-  utarray_foreach_elem_deref (vulkan_shader_reflect_binding *, binding,
-                              shader->reflect->descriptorBindings) {
-    verify(binding->binding == 0); // NOTE: Only one binding per descriptor set.
-
-  uint32_t setNumber = binding->setNumber;
-VkDescriptorSetLayout *descriptorSetLayout =
-  utarray_eltptr(shader->descriptorSetLayouts, setNumber);
-
-VkDescriptorSetLayoutBinding layoutBinding =
-  vulkan_shader_reflect_binding_get_layout_binding(binding);
-
-*descriptorSetLayout =
-  vulkan_create_descriptor_set_layout(shader->vkd, &layoutBinding, 1, "shader");
-}
-*/
   // TODO: Deferred renderer.
   return shaderGenerator;
 }

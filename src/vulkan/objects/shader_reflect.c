@@ -174,7 +174,14 @@ vulkan_shader_reflect_binding *
 vulkan_shader_reflect_binding_create(SpvReflectDescriptorBinding *reflect) {
   vulkan_shader_reflect_binding *binding = core_alloc(sizeof(vulkan_shader_reflect_binding));
 
-  binding->name = core_strdup(reflect->name);
+  binding->type = vulkan_shader_reflect_binding_type_unknown;
+#define strcmp_uniform_buffer(_name, ...)                                                          \
+  if (strcmp(reflect->name, #_name) == 0)                                                          \
+    binding->type = vulkan_shader_reflect_binding_type_##_name##_uniform_buffer;
+  VULKAN_UNIFORM_BUFFERS(strcmp_uniform_buffer, )
+#undef strcmp_uniform_buffer
+  verify(binding->type != vulkan_shader_reflect_binding_type_unknown &&
+         binding->type < vulkan_shader_reflect_binding_type_count);
 
   binding->binding = reflect->binding;
   binding->inputAttachmentIndex = reflect->input_attachment_index;
@@ -193,7 +200,6 @@ vulkan_shader_reflect_binding_create(SpvReflectDescriptorBinding *reflect) {
 }
 
 void vulkan_shader_reflect_binding_destroy(vulkan_shader_reflect_binding *binding) {
-  core_free((char *)binding->name);
   vulkan_shader_reflect_type_desc_destroy(binding->typeDesc);
   core_free(binding);
 }
@@ -238,7 +244,8 @@ vulkan_shader_reflect_binding_get_layout_binding(vulkan_shader_reflect_binding *
 
 void vulkan_shader_reflect_binding_debug_print(vulkan_shader_reflect_binding *binding, int indent) {
   log_debug(INDENT_FORMAT_STRING "binding:", INDENT_FORMAT_ARGS(0));
-  log_debug(INDENT_FORMAT_STRING "name: %s", INDENT_FORMAT_ARGS(2), binding->name);
+  log_debug(INDENT_FORMAT_STRING "type: %s", INDENT_FORMAT_ARGS(2),
+            vulkan_shader_reflect_binding_type_debug_str(binding->type));
   log_debug(INDENT_FORMAT_STRING "binding: %u", INDENT_FORMAT_ARGS(2), binding->binding);
   log_debug(INDENT_FORMAT_STRING "inputAttachmentIndex: %u", INDENT_FORMAT_ARGS(2),
             binding->inputAttachmentIndex);
