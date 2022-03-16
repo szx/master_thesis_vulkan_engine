@@ -21,9 +21,9 @@ typedef struct vulkan_render_state {
 
   /* GPU state */
   vulkan_device *vkd; ///< Pointer.
+
   vulkan_unified_geometry_buffer *unifiedGeometryBuffer;
   vulkan_unified_uniform_buffer *unifiedUniformBuffer;
-
 } vulkan_render_state;
 
 vulkan_render_state *vulkan_render_state_create(vulkan_device *vkd,

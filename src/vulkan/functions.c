@@ -69,6 +69,8 @@ VkFramebuffer vulkan_create_framebuffer(vulkan_device *vkd, VkRenderPass renderP
                                         uint32_t attachmentCount, const VkImageView *attachments,
                                         uint32_t width, uint32_t height, const char *debugFormat,
                                         ...) {
+  assert(renderPass != VK_NULL_HANDLE);
+
   VkFramebufferCreateInfo framebufferInfo = {0};
   framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
   framebufferInfo.renderPass = renderPass;

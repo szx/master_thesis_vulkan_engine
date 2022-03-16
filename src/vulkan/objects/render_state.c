@@ -16,12 +16,21 @@ vulkan_render_state *vulkan_render_state_create(vulkan_device *vkd,
 
   renderState->vkd = vkd;
   renderState->unifiedGeometryBuffer =
-      vulkan_unified_geometry_buffer_create(vkd, renderState->vertexStream);
+      vulkan_unified_geometry_buffer_create(renderState->vkd, renderState->vertexStream);
   renderState->unifiedUniformBuffer = vulkan_unified_uniform_buffer_create(vkd, renderCacheList);
 
   vulkan_scene_render_state_update(renderState);
 
   return renderState;
+}
+
+void vulkan_render_state_destroy(vulkan_render_state *renderState) {
+  vulkan_unified_uniform_buffer_destroy(renderState->unifiedUniformBuffer);
+  vulkan_unified_geometry_buffer_destroy(renderState->unifiedGeometryBuffer);
+
+  vulkan_batches_destroy(renderState->batches);
+
+  core_free(renderState);
 }
 
 void vulkan_scene_render_state_update(vulkan_render_state *renderState) {
@@ -37,13 +46,6 @@ void vulkan_scene_render_state_update(vulkan_render_state *renderState) {
   })
 
   vulkan_unified_uniform_buffer_update(renderState->unifiedUniformBuffer, renderState->camera);
-}
-
-void vulkan_render_state_destroy(vulkan_render_state *renderState) {
-  vulkan_unified_uniform_buffer_destroy(renderState->unifiedUniformBuffer);
-  vulkan_unified_geometry_buffer_destroy(renderState->unifiedGeometryBuffer);
-  vulkan_batches_destroy(renderState->batches);
-  core_free(renderState);
 }
 
 void vulkan_render_state_send_to_device(vulkan_render_state *renderState) {

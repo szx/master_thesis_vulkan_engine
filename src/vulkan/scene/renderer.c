@@ -42,7 +42,6 @@ void vulkan_scene_renderer_update(vulkan_scene_renderer *renderer) {
 
 void vulkan_scene_renderer_send_to_device(vulkan_scene_renderer *renderer) {
   vulkan_render_state_send_to_device(renderer->renderState);
-  vulkan_pipeline_send_to_device(renderer->pipeline);
 }
 
 void vulkan_scene_renderer_debug_print(vulkan_scene_renderer *renderer) {

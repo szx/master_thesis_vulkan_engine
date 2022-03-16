@@ -20,6 +20,7 @@ typedef struct vulkan_scene_renderer {
   vulkan_swap_chain *vks; ///< Pointer.
   vulkan_render_state *renderState;
   vulkan_pipeline *pipeline;
+
 } vulkan_scene_renderer;
 
 vulkan_scene_renderer *vulkan_scene_renderer_create(data_asset_db *assetDb, vulkan_swap_chain *vks,

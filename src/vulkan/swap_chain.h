@@ -6,9 +6,6 @@
 
 #include "constants.h"
 
-static const UT_icd ut_vk_image_icd = {sizeof(VkImage), NULL, NULL, NULL};
-static const UT_icd ut_vk_image_view_icd = {sizeof(VkImageView), NULL, NULL, NULL};
-
 typedef struct vulkan_swap_chain {
   vulkan_device *vkd;        /// vulkan_device pointer.
   VkSwapchainKHR swapChain;  /// Vulkan swap chain.
@@ -24,9 +21,7 @@ typedef struct vulkan_swap_chain {
   VkPresentModeKHR swapChainPresentMode; /// Presentation mode.
   VkExtent2D swapChainExtent;            /// Size of swap chain image (in pixels).
 
-  UT_array *swapChainImageViews; /// VkImageViews describing swap chain images.
-                                 /// Necessary because Vulkan API tends to refer to
-                                 /// resources via views.
+  UT_array *swapChainImageViews; ///< VkImageView array.
 } vulkan_swap_chain;
 
 vulkan_swap_chain *vulkan_swap_chain_create(vulkan_device *vkd);

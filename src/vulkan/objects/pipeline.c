@@ -3,19 +3,44 @@
 vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_render_state *renderState) {
   vulkan_pipeline *pipeline = core_alloc(sizeof(vulkan_pipeline));
 
+  pipeline->vks = vks;
+  pipeline->renderState = renderState;
+
   pipeline->shaderGenerator = vulkan_shader_generator_create(renderState);
 
-  // HIRO create descriptor sets (move to render state)?
+  // HIRO HIRO create pipeline layout (move to descriptors?)
+  // HIRO create render pass and graphics pipeline (use input desc struct?)
+  pipeline->renderPass = VK_NULL_HANDLE;
+
+  utarray_alloc(pipeline->swapChainFramebuffers, sizeof(VkFramebuffer));
+  utarray_resize(pipeline->swapChainFramebuffers, utarray_len(pipeline->vks->swapChainImageViews));
+  size_t swapChainImageIdx = 0;
+  utarray_foreach_elem_it (VkFramebuffer *, swapChainFramebuffer, pipeline->swapChainFramebuffers) {
+    *swapChainFramebuffer = vulkan_create_framebuffer(
+        renderState->vkd, pipeline->renderPass, 1,
+        utarray_eltptr(pipeline->vks->swapChainImageViews, swapChainImageIdx),
+        pipeline->vks->swapChainExtent.width, pipeline->vks->swapChainExtent.height,
+        "framebuffer #%d", swapChainImageIdx);
+    swapChainImageIdx++;
+  }
+
   return pipeline;
 }
 
 void vulkan_pipeline_destroy(vulkan_pipeline *pipeline) {
+  utarray_foreach_elem_deref (VkFramebuffer, swapChainFramebuffer,
+                              pipeline->swapChainFramebuffers) {
+    vkDestroyFramebuffer(pipeline->vks->vkd->device, swapChainFramebuffer, vka);
+  }
+  utarray_free(pipeline->swapChainFramebuffers);
+
   vulkan_shader_generator_destroy(pipeline->shaderGenerator);
   core_free(pipeline);
 }
 
-void vulkan_pipeline_send_to_device(vulkan_pipeline *pipeline) {
-  // HIRO: Update descriptor sets (move to vulkan_render_state_update?)
+void vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline, VkCommandBuffer commandBuffer,
+                                           size_t inFlightImage) {
+  // HIRO: Record command buffer.
 }
 
 void vulkan_pipeline_debug_print(vulkan_pipeline *pipeline) {
