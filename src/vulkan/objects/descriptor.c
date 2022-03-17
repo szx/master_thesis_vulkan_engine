@@ -97,6 +97,12 @@ void vulkan_descriptors_send_to_device(vulkan_descriptors *descriptors) {
   // No-op.
 }
 
+VkDescriptorSetLayout *
+vulkan_descriptors_get_descriptor_set_layouts(vulkan_descriptors *descriptors, size_t *count) {
+  *count = 1;
+  return &descriptors->descriptorSetLayout;
+}
+
 void vulkan_descriptors_debug_print(vulkan_descriptors *descriptors, int indent) {
   log_debug(INDENT_FORMAT_STRING "descriptors:", INDENT_FORMAT_ARGS(0));
 #define debug_print_uniform_buffer(_name, ...)                                                     \

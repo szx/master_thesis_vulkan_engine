@@ -73,4 +73,7 @@ void vulkan_scene_descriptors_update(vulkan_descriptors *descriptors);
 
 void vulkan_descriptors_send_to_device(vulkan_descriptors *descriptors);
 
+VkDescriptorSetLayout *
+vulkan_descriptors_get_descriptor_set_layouts(vulkan_descriptors *descriptors, size_t *count);
+
 void vulkan_descriptors_debug_print(vulkan_descriptors *descriptors, int indent);

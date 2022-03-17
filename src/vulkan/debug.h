@@ -50,6 +50,7 @@ VULKAN_DEBUG_NAME_FUNC_DECL(shader_module, VkShaderModule)
 VULKAN_DEBUG_NAME_FUNC_DECL(descriptor_pool, VkDescriptorPool)
 VULKAN_DEBUG_NAME_FUNC_DECL(descriptor_set_layout, VkDescriptorSetLayout)
 VULKAN_DEBUG_NAME_FUNC_DECL(descriptor_set, VkDescriptorSet)
+VULKAN_DEBUG_NAME_FUNC_DECL(pipeline_layout, VkPipelineLayout)
 
 #undef VULKAN_DEBUG_NAME_FUNC_DECL
 

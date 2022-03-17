@@ -58,6 +58,14 @@ VkDescriptorSet vulkan_create_descriptor_set_for_uniform_buffers(
     VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool,
     const char *debugFormat, ...);
 
+VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
+                                               VkPipelineLayoutCreateFlags flags,
+                                               const VkDescriptorSetLayout *descriptorSetLayouts,
+                                               size_t descriptorSetLayoutCount,
+                                               const VkPushConstantRange *pushConstantRanges,
+                                               size_t pushConstantRangeCount,
+                                               const char *debugFormat, ...);
+
 VkSemaphore vulkan_create_semaphore(vulkan_device *vkd, VkSemaphoreCreateFlags flags,
                                     const char *debugFormat, ...);
 

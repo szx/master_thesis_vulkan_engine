@@ -198,6 +198,7 @@ VULKAN_DEBUG_NAME_FUNC_DEF(descriptor_pool, VkDescriptorPool, VK_OBJECT_TYPE_DES
 VULKAN_DEBUG_NAME_FUNC_DEF(descriptor_set_layout, VkDescriptorSetLayout,
                            VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT)
 VULKAN_DEBUG_NAME_FUNC_DEF(descriptor_set, VkDescriptorSet, VK_OBJECT_TYPE_DESCRIPTOR_SET)
+VULKAN_DEBUG_NAME_FUNC_DEF(pipeline_layout, VkPipelineLayout, VK_OBJECT_TYPE_PIPELINE_LAYOUT)
 
 #undef VULKAN_DEBUG_NAME_FUNC_DEF
 

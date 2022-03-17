@@ -266,6 +266,31 @@ VkDescriptorSet vulkan_create_descriptor_set_for_uniform_buffers(
   return descriptorSet;
 }
 
+VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
+                                               VkPipelineLayoutCreateFlags flags,
+                                               const VkDescriptorSetLayout *descriptorSetLayouts,
+                                               size_t descriptorSetLayoutCount,
+                                               const VkPushConstantRange *pushConstantRanges,
+                                               size_t pushConstantRangeCount,
+                                               const char *debugFormat, ...) {
+  VkPipelineLayoutCreateInfo pipelineLayoutInfo = {0};
+  pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+  pipelineLayoutInfo.setLayoutCount = descriptorSetLayoutCount;
+  pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts;
+  pipelineLayoutInfo.pushConstantRangeCount = pushConstantRangeCount;
+  pipelineLayoutInfo.pPushConstantRanges = pushConstantRanges;
+
+  VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
+  verify(vkCreatePipelineLayout(vkd->device, &pipelineLayoutInfo, vka, &pipelineLayout) ==
+         VK_SUCCESS);
+
+  DEBUG_NAME_FORMAT_START()
+  vulkan_debug_name_pipeline_layout(vkd->debug, pipelineLayout, "%s - pipeline layout", debugName);
+  DEBUG_NAME_FORMAT_END();
+
+  return pipelineLayout;
+}
+
 VkSemaphore vulkan_create_semaphore(vulkan_device *vkd, VkSemaphoreCreateFlags flags,
                                     const char *debugFormat, ...) {
   VkSemaphoreCreateInfo semaphoreInfo = {0};
