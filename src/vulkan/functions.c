@@ -1,8 +1,8 @@
 #include "functions.h"
 #include "device.h"
 
-uint32_t find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
-                          VkMemoryPropertyFlags properties) {
+uint32_t vulkan_find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
+                                 VkMemoryPropertyFlags properties) {
   VkPhysicalDeviceMemoryProperties memProperties;
   vkGetPhysicalDeviceMemoryProperties(vkd->physicalDevice, &memProperties);
   for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
@@ -14,7 +14,36 @@ uint32_t find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
   return 0;
 }
 
-VkFormat find_depth_format(vulkan_device *vkd) { return VK_FORMAT_R32_UINT; }
+VkFormat vulkan_find_supported_format(vulkan_device *vkd, VkImageTiling tiling,
+                                      VkFormatFeatureFlags features, VkFormat *candidates,
+                                      size_t candidateCount) {
+  assert(candidateCount > 0);
+
+  for (size_t i = 0; i < candidateCount; i++) {
+    VkFormat format = candidates[i];
+
+    VkFormatProperties props;
+    vkGetPhysicalDeviceFormatProperties(vkd->physicalDevice, format, &props);
+
+    if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
+      return format;
+    }
+    if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
+      return format;
+    }
+  }
+
+  assert(false);
+  return VK_FORMAT_UNDEFINED;
+}
+
+VkFormat vulkan_find_depth_format(vulkan_device *vkd) {
+  VkFormat formats[] = {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT,
+                        VK_FORMAT_D24_UNORM_S8_UINT};
+  return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
+                                      VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT, formats,
+                                      array_size(formats));
+}
 
 #define DEBUG_NAME_FORMAT_START()                                                                  \
   va_list args;                                                                                    \
@@ -143,7 +172,8 @@ void vulkan_create_buffer(vulkan_device *vkd, VkDeviceSize size, VkBufferUsageFl
   VkMemoryAllocateInfo allocInfo = {0};
   allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
   allocInfo.allocationSize = memRequirements.size;
-  allocInfo.memoryTypeIndex = find_memory_type(vkd, memRequirements.memoryTypeBits, properties);
+  allocInfo.memoryTypeIndex =
+      vulkan_find_memory_type(vkd, memRequirements.memoryTypeBits, properties);
   verify(vkAllocateMemory(vkd->device, &allocInfo, vka, bufferMemory) == VK_SUCCESS);
 
   vulkan_debug_name_device_memory(vkd->debug, *bufferMemory, "%s - device memory (%zu B)",
@@ -289,6 +319,64 @@ VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
   DEBUG_NAME_FORMAT_END();
 
   return pipelineLayout;
+}
+
+VkRenderPass vulkan_create_render_pass(
+    vulkan_device *vkd, VkAttachmentDescription *colorAttachmentDescriptions,
+    size_t colorAttachmentDescriptionCount, VkAttachmentReference *colorAttachmentReferences,
+    size_t colorAttachmentReferenceCount, VkAttachmentDescription depthAttachmentDescription,
+    VkAttachmentReference depthAttachmentReference, const char *debugFormat, ...) {
+  assert(colorAttachmentDescriptionCount == colorAttachmentReferenceCount);
+
+  VkSubpassDescription subpass = {0};
+  subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+  subpass.colorAttachmentCount = colorAttachmentReferenceCount;
+  subpass.pColorAttachments = colorAttachmentReferences;
+  subpass.pDepthStencilAttachment = &depthAttachmentReference;
+  subpass.pResolveAttachments = NULL;
+
+  VkSubpassDependency dependency = {0};
+  dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+  dependency.dstSubpass = 0;
+  // https://github.com/KhronosGroup/Vulkan-Docs/wiki/Synchronization-Examples#graphics-to-graphics-dependencies
+  // dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+  // dependency.srcAccessMask = 0;
+  // dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+  // dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+  dependency.srcStageMask =
+      VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+  dependency.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+  dependency.dstStageMask =
+      VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+  dependency.dstAccessMask =
+      VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+  dependency.dependencyFlags = 0;
+
+  VkRenderPassCreateInfo renderPassInfo = {0};
+  renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+
+  size_t attachmentCount = colorAttachmentDescriptionCount + 1;
+  VkAttachmentDescription attachments[attachmentCount];
+  core_memcpy(attachments, colorAttachmentDescriptions,
+              colorAttachmentDescriptionCount * sizeof(VkAttachmentDescription));
+  attachments[attachmentCount - 1] = depthAttachmentDescription;
+
+  renderPassInfo.attachmentCount = attachmentCount;
+  renderPassInfo.pAttachments = attachments;
+
+  renderPassInfo.subpassCount = 1; // TODO: Support multiple subpasses.
+  renderPassInfo.pSubpasses = &subpass;
+  renderPassInfo.dependencyCount = 1;
+  renderPassInfo.pDependencies = &dependency;
+
+  VkRenderPass renderPass;
+  verify(vkCreateRenderPass(vkd->device, &renderPassInfo, vka, &renderPass) == VK_SUCCESS);
+
+  DEBUG_NAME_FORMAT_START()
+  vulkan_debug_name_render_pass(vkd->debug, renderPass, "%s - render pass", debugName);
+  DEBUG_NAME_FORMAT_END();
+
+  return renderPass;
 }
 
 VkSemaphore vulkan_create_semaphore(vulkan_device *vkd, VkSemaphoreCreateFlags flags,

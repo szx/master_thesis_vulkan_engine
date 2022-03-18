@@ -7,9 +7,12 @@ typedef struct vulkan_device vulkan_device;
 
 // TODO: Implement all Vulkan helper functions.
 
-uint32_t find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
-                          VkMemoryPropertyFlags properties);
-VkFormat find_depth_format(vulkan_device *vkd);
+uint32_t vulkan_find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
+                                 VkMemoryPropertyFlags properties);
+VkFormat vulkan_find_supported_format(vulkan_device *vkd, VkImageTiling tiling,
+                                      VkFormatFeatureFlags features, VkFormat *candidates,
+                                      size_t candidateCount);
+VkFormat vulkan_find_depth_format(vulkan_device *vkd);
 
 /* vulkan object creation */
 
@@ -65,6 +68,12 @@ VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
                                                const VkPushConstantRange *pushConstantRanges,
                                                size_t pushConstantRangeCount,
                                                const char *debugFormat, ...);
+
+VkRenderPass vulkan_create_render_pass(
+    vulkan_device *vkd, VkAttachmentDescription *colorAttachmentDescriptions,
+    size_t colorAttachmentDescriptionCount, VkAttachmentReference *colorAttachmentReferences,
+    size_t colorAttachmentReferenceCount, VkAttachmentDescription depthAttachmentDescription,
+    VkAttachmentReference depthAttachmentReference, const char *debugFormat, ...);
 
 VkSemaphore vulkan_create_semaphore(vulkan_device *vkd, VkSemaphoreCreateFlags flags,
                                     const char *debugFormat, ...);

@@ -18,7 +18,6 @@ typedef struct vulkan_pipeline {
 
   vulkan_shader_generator *shaderGenerator;
 
-  // HIRO HIRO: Implement:
   VkRenderPass renderPass;
   VkPipelineLayout pipelineLayout;
   VkPipeline graphicsPipeline;

@@ -3,7 +3,7 @@
 // HIRO move renderpass to objects/
 
 /// Create render pass with default functionality.
-void create_render_pass_info(vulkan_render_pass *renderPass) {
+void create_render_pass_old_info(vulkan_render_pass *renderPass) {
   // TODO: Previous and next render pass?
   if (renderPass->type == ForwardRenderPass) {
     renderPass->info.usesPushConstants = true;
@@ -19,7 +19,7 @@ void create_shaders(vulkan_render_pass *renderPass) {
   // TODO generate glsl shaders using render_pass_info.
 }
 
-void create_render_pass(vulkan_render_pass *renderPass) {
+void create_render_pass_old(vulkan_render_pass *renderPass) {
   // TODO: Separate attachments.
   // TODO: Something better than triangle.
   VkAttachmentDescription colorAttachment = {0};
@@ -199,14 +199,14 @@ vulkan_render_pass *vulkan_render_pass_create(vulkan_old_pipeline *pipeline,
   renderPass->vks = pipeline->vks;
   renderPass->vkd = pipeline->vks->vkd;
   renderPass->type = type;
-  create_render_pass_info(renderPass);
+  create_render_pass_old_info(renderPass);
   create_shaders(renderPass);
   renderPass->renderPass = VK_NULL_HANDLE;
   renderPass->pipelineLayout = VK_NULL_HANDLE;
   renderPass->graphicsPipeline = VK_NULL_HANDLE;
   // TODO init using render pass
   // TODO reinit after tuning render_pass_info
-  create_render_pass(renderPass);
+  create_render_pass_old(renderPass);
   create_graphics_pipeline(renderPass);
   return renderPass;
 }

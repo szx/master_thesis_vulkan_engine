@@ -42,6 +42,48 @@ void destroy_pipeline_layout(vulkan_pipeline *pipeline) {
   vkDestroyPipelineLayout(pipeline->vks->vkd->device, pipeline->pipelineLayout, vka);
 }
 
+void create_render_pass(vulkan_pipeline *pipeline) {
+  VkAttachmentDescription colorAttachment = {0};
+  colorAttachment.format = pipeline->vks->swapChainImageFormat;
+  colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+  colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+  colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+  colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+  colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+  colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+  colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+  VkAttachmentDescription depthAttachment = {0};
+  depthAttachment.format = vulkan_find_depth_format(pipeline->vks->vkd);
+  depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+  depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+  depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+  depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+  depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+  depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+  depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+  VkAttachmentReference colorAttachmentRef = {0};
+  colorAttachmentRef.attachment = 0;
+  colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+  VkAttachmentReference depthAttachmentRef = {0};
+  depthAttachmentRef.attachment = 1;
+  depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+  VkAttachmentDescription colorAttachmentDescriptions[] = {colorAttachment};
+  VkAttachmentReference colorAttachmentReferences[] = {colorAttachmentRef};
+
+  pipeline->renderPass = vulkan_create_render_pass(
+      pipeline->vks->vkd, colorAttachmentDescriptions, array_size(colorAttachmentDescriptions),
+      colorAttachmentReferences, array_size(colorAttachmentReferences), depthAttachment,
+      depthAttachmentRef, "pipeline");
+}
+
+void destroy_render_pass(vulkan_pipeline *pipeline) {
+  vkDestroyRenderPass(pipeline->vks->vkd->device, pipeline->renderPass, vka);
+}
+
 vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_render_state *renderState) {
   vulkan_pipeline *pipeline = core_alloc(sizeof(vulkan_pipeline));
 
@@ -50,9 +92,8 @@ vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_render_st
 
   pipeline->shaderGenerator = vulkan_shader_generator_create(renderState);
 
-  // HIRO HIRO create pipeline layout (move to descriptors?)
-  // HIRO create render pass and graphics pipeline (use input desc struct?)
-  pipeline->renderPass = VK_NULL_HANDLE;
+  create_render_pass(pipeline);
+  // HIRO HIRO graphics pipeline (use input desc struct?)
 
   create_pipeline_layout(pipeline);
   create_framebuffers(pipeline);
@@ -63,6 +104,7 @@ vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_render_st
 void vulkan_pipeline_destroy(vulkan_pipeline *pipeline) {
   destroy_framebuffers(pipeline);
   destroy_pipeline_layout(pipeline);
+  destroy_render_pass(pipeline);
   vulkan_shader_generator_destroy(pipeline->shaderGenerator);
   core_free(pipeline);
 }
