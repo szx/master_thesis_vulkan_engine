@@ -99,8 +99,14 @@ void vulkan_descriptors_send_to_device(vulkan_descriptors *descriptors) {
 
 VkDescriptorSetLayout *
 vulkan_descriptors_get_descriptor_set_layouts(vulkan_descriptors *descriptors, size_t *count) {
-  *count = 1;
-  return &descriptors->descriptorSetLayout;
+  size_t descriptorSetLayoutCount = 1;
+  *count = descriptorSetLayoutCount;
+
+  VkDescriptorSetLayout *descriptorSetLayouts =
+      core_alloc(descriptorSetLayoutCount * sizeof(VkPipelineShaderStageCreateInfo));
+  descriptorSetLayouts[0] = descriptors->descriptorSetLayout;
+
+  return descriptorSetLayouts;
 }
 
 void vulkan_descriptors_debug_print(vulkan_descriptors *descriptors, int indent) {

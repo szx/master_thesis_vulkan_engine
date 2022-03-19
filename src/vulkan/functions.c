@@ -1,5 +1,8 @@
 #include "functions.h"
+
 #include "device.h"
+#include "objects/shader_generator.h"
+#include "swap_chain.h"
 
 uint32_t vulkan_find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
                                  VkMemoryPropertyFlags properties) {
@@ -319,6 +322,143 @@ VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
   DEBUG_NAME_FORMAT_END();
 
   return pipelineLayout;
+}
+
+VkPipeline vulkan_create_graphics_pipeline(
+    vulkan_device *vkd, vulkan_shader_generator *shaderGenerator, vulkan_render_state *renderState,
+    vulkan_swap_chain *vks,
+
+    const VkDescriptorSetLayout *descriptorSetLayouts, size_t descriptorSetLayoutCount,
+    const VkPushConstantRange *pushConstantRanges, size_t pushConstantRangeCount,
+
+    VkRenderPass renderPass, VkPipelineLayout *pipelineLayout, const char *debugFormat, ...) {
+
+  // TODO: Create using description struct vulkan_pipeline_info.
+
+  /* shaders */
+  size_t shaderStageCount;
+  VkPipelineShaderStageCreateInfo *shaderStages =
+      vulkan_shader_generator_get_shader_stages(shaderGenerator, &shaderStageCount);
+
+  /* vertex input */
+  VkPipelineVertexInputStateCreateInfo vertexInputInfo = {0};
+  vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+  size_t vertexBindingDescriptionsCount =
+      vulkan_interleaved_vertex_stream_get_vertex_buffer_binding_count(renderState->vertexStream);
+  VkVertexInputBindingDescription vertexInputBindingDescription =
+      vulkan_interleaved_vertex_stream_get_vertex_buffer_binding_description(
+          renderState->vertexStream);
+  vertexInputInfo.vertexBindingDescriptionCount = vertexBindingDescriptionsCount;
+  vertexInputInfo.pVertexBindingDescriptions = &vertexInputBindingDescription;
+  size_t vertexAttributeDescriptionsCount;
+  VkVertexInputAttributeDescription *vertexAttributeDescriptions =
+      vulkan_interleaved_vertex_stream_get_vertex_attribute_descriptions(
+          renderState->vertexStream, &vertexAttributeDescriptionsCount);
+  vertexInputInfo.vertexAttributeDescriptionCount = vertexAttributeDescriptionsCount;
+  vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions;
+
+  VkPipelineInputAssemblyStateCreateInfo inputAssembly = {0};
+  inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+  inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+  inputAssembly.primitiveRestartEnable = VK_FALSE;
+
+  /* viewport */
+  VkViewport viewport = {0};
+  viewport.x = 0.0f;
+  viewport.y = 0.0f;
+  viewport.width = (float)vks->swapChainExtent.width;
+  viewport.height = (float)vks->swapChainExtent.height;
+  viewport.minDepth = 0.0f;
+  viewport.maxDepth = 1.0f;
+  VkRect2D scissor = {0};
+  scissor.offset.x = 0;
+  scissor.offset.y = 0;
+  scissor.extent = vks->swapChainExtent;
+
+  VkPipelineViewportStateCreateInfo viewportState = {0};
+  viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+  viewportState.viewportCount = 1;
+  viewportState.pViewports = &viewport;
+  viewportState.scissorCount = 1;
+  viewportState.pScissors = &scissor;
+
+  /* rasterization */
+  VkPipelineRasterizationStateCreateInfo rasterizer = {0};
+  rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+  rasterizer.depthClampEnable = VK_FALSE;
+  rasterizer.rasterizerDiscardEnable = VK_FALSE;
+  rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+  rasterizer.lineWidth = 1.0f;
+  rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+  rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+  rasterizer.depthBiasEnable = VK_FALSE;
+
+  VkPipelineMultisampleStateCreateInfo multisampling = {0};
+  multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+  multisampling.sampleShadingEnable = VK_FALSE;
+  multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
+  VkPipelineDepthStencilStateCreateInfo depthStencil = {0};
+  depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+  depthStencil.depthTestEnable = true;
+  depthStencil.depthWriteEnable = true;
+  depthStencil.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
+  depthStencil.depthBoundsTestEnable = VK_FALSE;
+  depthStencil.stencilTestEnable = VK_FALSE;
+
+  VkPipelineColorBlendAttachmentState colorBlendAttachment = {0};
+  colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+                                        VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+  colorBlendAttachment.blendEnable = VK_FALSE;
+
+  VkPipelineColorBlendStateCreateInfo colorBlending = {0};
+  colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+  colorBlending.logicOpEnable = VK_FALSE;
+  colorBlending.logicOp = VK_LOGIC_OP_COPY;
+  colorBlending.attachmentCount = 1;
+  colorBlending.pAttachments = &colorBlendAttachment;
+  colorBlending.blendConstants[0] = 0.0f;
+  colorBlending.blendConstants[1] = 0.0f;
+  colorBlending.blendConstants[2] = 0.0f;
+  colorBlending.blendConstants[3] = 0.0f;
+
+  /* dynamic state */
+  VkDynamicState dynamicStates[2] = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+  VkPipelineDynamicStateCreateInfo dynamicState = {0};
+  dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+  dynamicState.pDynamicStates = dynamicStates;
+  dynamicState.dynamicStateCount = 2;
+
+  /* pipeline layout */
+  DEBUG_NAME_FORMAT_START()
+  *pipelineLayout =
+      vulkan_create_pipeline_layout(vkd, 0, descriptorSetLayouts, descriptorSetLayoutCount,
+                                    pushConstantRanges, pushConstantRangeCount, "%s", debugName);
+
+  VkGraphicsPipelineCreateInfo pipelineInfo = {0};
+  pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+  pipelineInfo.stageCount = shaderStageCount;
+  pipelineInfo.pStages = shaderStages;
+  pipelineInfo.pVertexInputState = &vertexInputInfo;
+  pipelineInfo.pInputAssemblyState = &inputAssembly;
+  pipelineInfo.pViewportState = &viewportState;
+  pipelineInfo.pRasterizationState = &rasterizer;
+  pipelineInfo.pMultisampleState = &multisampling;
+  pipelineInfo.pDepthStencilState = &depthStencil;
+  pipelineInfo.pColorBlendState = &colorBlending;
+  pipelineInfo.pDynamicState = &dynamicState;
+  pipelineInfo.layout = *pipelineLayout;
+  pipelineInfo.renderPass = renderPass;
+  pipelineInfo.subpass = 0;
+  pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+
+  VkPipeline graphicsPipeline;
+  verify(vkCreateGraphicsPipelines(vkd->device, VK_NULL_HANDLE, 1, &pipelineInfo, vka,
+                                   &graphicsPipeline) == VK_SUCCESS);
+  vulkan_debug_name_render_pass(vkd->debug, renderPass, "%s - graphics pipeline", debugName);
+  DEBUG_NAME_FORMAT_END();
+
+  return graphicsPipeline;
 }
 
 VkRenderPass vulkan_create_render_pass(

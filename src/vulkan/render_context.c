@@ -62,7 +62,7 @@ void create_render_pass_old(vulkan_render_pass *renderPass) {
                             &renderPass->renderPass) == VK_SUCCESS);
 }
 
-void create_graphics_pipeline(vulkan_render_pass *renderPass) {
+void create_graphics_pipeline_old(vulkan_render_pass *renderPass) {
   //
   VkPipelineShaderStageCreateInfo vertShaderStageInfo = {0};
   vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -207,7 +207,7 @@ vulkan_render_pass *vulkan_render_pass_create(vulkan_old_pipeline *pipeline,
   // TODO init using render pass
   // TODO reinit after tuning render_pass_info
   create_render_pass_old(renderPass);
-  create_graphics_pipeline(renderPass);
+  create_graphics_pipeline_old(renderPass);
   return renderPass;
 }
 

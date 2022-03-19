@@ -53,12 +53,17 @@ def codegen_descriptors():
             f'void glsl_add_{struct_name}_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count) {{')
         instance_name = struct_name.partition("vulkan_")[2]
         block_name = instance_name + "Block"
-        defs.append(f'  utstring_printf(s, "layout(set = %u, binding = %u) uniform {block_name} {{", set, binding);')
+        struct_name = instance_name + "Struct"
+
+        defs.append(f'  utstring_printf(s, "struct {struct_name} {{\\n");')
         for field_name, field_type in struct_fields:
-            defs.append(f' utstring_printf(s, "  {field_type} {field_name};");')
-        defs.append(f'  utstring_printf(s, "}} {instance_name}");')
-        defs.append(f'  if (count == 1) {{utstring_printf(s, ";\\n");}}')
-        defs.append(f'  else {{utstring_printf(s, "[%u];\\n", count);}}')
+            defs.append(f' utstring_printf(s, "  {field_type} {field_name};\\n");')
+        defs.append(f'  utstring_printf(s, "}};\\n");')
+
+        defs.append(f'  utstring_printf(s, "layout(set = %u, binding = %u) uniform {block_name} {{\\n", set, binding);')
+        defs.append(f'  utstring_printf(s, "  {struct_name} {instance_name}");')
+        defs.append(f'  if (count > 1) {{utstring_printf(s, "[%u]", count);}}')
+        defs.append(f'  utstring_printf(s, ";\\n}};\\n");')
         defs.append(f'}}')
 
     # generate X-macro with uniform buffer names

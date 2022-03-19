@@ -89,7 +89,6 @@ void vulkan_interleaved_vertex_stream_add_primitive(vulkan_interleaved_vertex_st
   vulkan_render_cache_set_vertex_stream_offsets(renderCache, firstIndexOffset, firstVertexOffset);
 
   vulkan_data_primitive *primitive = renderCache->primitive;
-  vulkan_data_primitive_debug_print(primitive, 0);
 
   assert(utarray_len(primitive->indices->data) > 0);
   assert(primitive->indices->componentType == vulkan_data_vertex_attribute_component_uint32_t);
@@ -139,7 +138,7 @@ VkVertexInputAttributeDescription *
 vulkan_interleaved_vertex_stream_get_vertex_attribute_descriptions(
     vulkan_interleaved_vertex_stream *stream, size_t *count) {
   assert(stream->renderCacheList->attributes > 0);
-  size_t attributes = stream->renderCacheList->attributes;
+  vulkan_attribute_type attributes = stream->renderCacheList->attributes;
   *count = count_bits(attributes);
 
   VkVertexInputAttributeDescription *attributeDescriptions =
@@ -150,13 +149,13 @@ vulkan_interleaved_vertex_stream_get_vertex_attribute_descriptions(
   while (attributes > 0) {
     vulkan_attribute_type type = vulkan_attribute_type_unknown;
     size_t componentNum = 3;
-    if ((attributes & vulkan_attribute_type_position) == 0) {
+    if ((attributes & vulkan_attribute_type_position) != 0) {
       type = vulkan_attribute_type_position;
-    } else if ((attributes & vulkan_attribute_type_normal) == 0) {
+    } else if ((attributes & vulkan_attribute_type_normal) != 0) {
       type = vulkan_attribute_type_normal;
-    } else if ((attributes & vulkan_attribute_type_color) == 0) {
+    } else if ((attributes & vulkan_attribute_type_color) != 0) {
       type = vulkan_attribute_type_color;
-    } else if ((attributes & vulkan_attribute_type_texcoord) == 0) {
+    } else if ((attributes & vulkan_attribute_type_texcoord) != 0) {
       type = vulkan_attribute_type_texcoord;
       componentNum = 2;
     } else {

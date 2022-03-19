@@ -5051,12 +5051,12 @@ const char *shaderc_include_type_debug_str(int value) {
 }
 void vulkan_attribute_type_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_unknown", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_position", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_normal", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_color", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_texcoord", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_tangent", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_unknown", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_position", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_normal", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_color", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_texcoord", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_tangent", INDENT_FORMAT_ARGS(2)); }
 }
 void vulkan_batch_policy_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "vulkan_batch_policy: ", INDENT_FORMAT_ARGS(0));

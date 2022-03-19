@@ -4,6 +4,9 @@
 
 #include "../core/platform.h"
 typedef struct vulkan_device vulkan_device;
+typedef struct vulkan_shader_generator vulkan_shader_generator;
+typedef struct vulkan_render_state vulkan_render_state;
+typedef struct vulkan_swap_chain vulkan_swap_chain;
 
 // TODO: Implement all Vulkan helper functions.
 
@@ -69,6 +72,15 @@ VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
                                                size_t pushConstantRangeCount,
                                                const char *debugFormat, ...);
 
+VkPipeline vulkan_create_graphics_pipeline(
+    vulkan_device *vkd, vulkan_shader_generator *shaderGenerator, vulkan_render_state *renderState,
+    vulkan_swap_chain *vks,
+
+    const VkDescriptorSetLayout *descriptorSetLayouts, size_t descriptorSetLayoutCount,
+    const VkPushConstantRange *pushConstantRanges, size_t pushConstantRangeCount,
+
+    VkRenderPass renderPass, VkPipelineLayout *pipelineLayout, const char *debugFormat, ...);
+
 VkRenderPass vulkan_create_render_pass(
     vulkan_device *vkd, VkAttachmentDescription *colorAttachmentDescriptions,
     size_t colorAttachmentDescriptionCount, VkAttachmentReference *colorAttachmentReferences,
@@ -100,7 +112,3 @@ void vulkan_transition_image_layout(vulkan_device *vkd, VkImage image, VkFormat 
 // VkDescriptorSet createDescriptorSet(VkDescriptorType descriptorType,
 // std::set<std::shared_ptr<Texture>> textures, VkDescriptorSetLayout
 // descriptorSetLayout, VkDescriptorPool descriptorPool);
-// std::tuple<VkPipelineLayout, VkPipeline> createGraphicsPipeline(PipelineType
-// type, RenderPassName name, const ShaderConstants &shaderConstants,
-// VkRenderPass renderPass, size_t numOutputColorAttachments, uint32_t width,
-// uint32_t height, std::vector<VkDescriptorSetLayout> setLayouts);

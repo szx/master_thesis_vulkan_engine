@@ -22,4 +22,7 @@ typedef struct vulkan_shader_generator {
 vulkan_shader_generator *vulkan_shader_generator_create(vulkan_render_state *renderState);
 void vulkan_shader_generator_destroy(vulkan_shader_generator *shaderGenerator);
 
+VkPipelineShaderStageCreateInfo *
+vulkan_shader_generator_get_shader_stages(vulkan_shader_generator *shaderGenerator, size_t *count);
+
 void vulkan_shader_generator_debug_print(vulkan_shader_generator *shaderGenerator, int indent);
