@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "../constants.h"
 #include "../device.h"
 #include "../functions.h"
 

@@ -7,6 +7,7 @@
 #include "common.h"
 #include "render_cache_list.h"
 #include "shader.h"
+#include "sync.h"
 #include "unified_geometry_buffer.h"
 #include "unified_uniform_buffer.h"
 
@@ -24,6 +25,9 @@ typedef struct vulkan_render_state {
 
   vulkan_unified_geometry_buffer *unifiedGeometryBuffer;
   vulkan_unified_uniform_buffer *unifiedUniformBuffer;
+
+  vulkan_sync *sync;
+
 } vulkan_render_state;
 
 vulkan_render_state *vulkan_render_state_create(vulkan_device *vkd,

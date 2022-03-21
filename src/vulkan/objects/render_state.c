@@ -18,12 +18,16 @@ vulkan_render_state *vulkan_render_state_create(vulkan_device *vkd,
       vulkan_unified_geometry_buffer_create(renderState->vkd, renderState->vertexStream);
   renderState->unifiedUniformBuffer = vulkan_unified_uniform_buffer_create(vkd, renderCacheList);
 
+  renderState->sync = vulkan_sync_create(renderState->vkd);
+
   vulkan_scene_render_state_update(renderState);
 
   return renderState;
 }
 
 void vulkan_render_state_destroy(vulkan_render_state *renderState) {
+  vulkan_sync_destroy(renderState->sync);
+
   vulkan_unified_uniform_buffer_destroy(renderState->unifiedUniformBuffer);
   vulkan_unified_geometry_buffer_destroy(renderState->unifiedGeometryBuffer);
 
@@ -62,4 +66,5 @@ void vulkan_render_state_debug_print(vulkan_render_state *renderState) {
   vulkan_batches_debug_print(renderState->batches);
   vulkan_unified_geometry_buffer_debug_print(renderState->unifiedGeometryBuffer);
   vulkan_unified_uniform_buffer_debug_print(renderState->unifiedUniformBuffer);
+  vulkan_sync_debug_print(renderState->sync, 2);
 }

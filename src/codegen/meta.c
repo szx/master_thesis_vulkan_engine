@@ -5082,10 +5082,6 @@ const char *vulkan_image_type_debug_str(int value) {
   if (value == 1) { return "vulkan_image_type_count"; }
   return "UNKNOWN vulkan_image_type";
 }
-const char *vulkan_render_pass_type_debug_str(int value) {
-  if (value == 0) { return "ForwardRenderPass"; }
-  return "UNKNOWN vulkan_render_pass_type";
-}
 void vulkan_scene_node_container_type_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "vulkan_scene_node_container_type: ", INDENT_FORMAT_ARGS(0));
   if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_scene_node_container_type_scene_graph", INDENT_FORMAT_ARGS(2)); }

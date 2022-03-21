@@ -6,16 +6,18 @@ int main(int argc, char *argv[]) {
   platform_create();
   data_config *config = data_config_create();
   data_asset_db *assetDb = data_asset_db_create();
-  vulkan_render_context rctx;
-  vulkan_render_context_init(&rctx, config, assetDb, config->settingsStartScene);
-  vulkan_render_context_update_data(&rctx);
-  vulkan_render_context_send_to_device(&rctx);
+  vulkan_device *vkd = vulkan_device_create(config, assetDb);
+  vulkan_swap_chain *vks = vulkan_swap_chain_create(vkd);
+  vulkan_renderer *renderer =
+      vulkan_renderer_create(config, assetDb, vks, config->settingsStartScene);
+  vulkan_renderer_update(renderer);
+  vulkan_renderer_send_to_device(renderer);
 
-  glfwMakeContextCurrent(rctx.vkd->window);
+  glfwMakeContextCurrent(renderer->vkd->window);
 
   //  Loop until the user closes the window
   double currentTime = glfwGetTime();
-  while (glfwWindowShouldClose(rctx.vkd->window) == 0) {
+  while (glfwWindowShouldClose(renderer->vkd->window) == 0) {
     double newTime = glfwGetTime();
     double frameTime = newTime - currentTime;
     currentTime = newTime;
@@ -25,13 +27,13 @@ int main(int argc, char *argv[]) {
       frameTime -= dt;
     }
     glfwPollEvents(); // calls GLFW callbacks
-    vulkan_render_context_update_data(&rctx);
-    vulkan_render_context_send_to_device(&rctx);
-    vulkan_render_context_draw_frame(&rctx);
+    vulkan_renderer_update(renderer);
+    vulkan_renderer_send_to_device(renderer);
+    vulkan_renderer_draw_frame(renderer);
   }
-  vkDeviceWaitIdle(rctx.vkd->device);
+  vkDeviceWaitIdle(renderer->vkd->device);
 
-  vulkan_render_context_deinit(&rctx);
+  vulkan_renderer_destroy(renderer);
   data_asset_db_destroy(assetDb);
   data_config_destroy(config);
   platform_destroy();

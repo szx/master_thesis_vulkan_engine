@@ -37,8 +37,8 @@ void vulkan_pipeline_get_framebuffer_attachments(vulkan_pipeline *pipeline,
                                                  size_t swapChainImageIdx,
                                                  VkImageView *attachments);
 
-void vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline, VkCommandBuffer commandBuffer,
-                                           size_t swapChainImageIndex);
+VkCommandBuffer vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline,
+                                                      size_t swapChainImageIndex);
 
 void vulkan_pipeline_debug_print(vulkan_pipeline *pipeline);
 

@@ -106,10 +106,10 @@ TEST shaderc_compiling() {
 
   UT_string *sceneName;
   utstring_alloc(sceneName, GLTF_NAME);
-  vulkan_scene_renderer *renderer = vulkan_scene_renderer_create(assetDb, vks, sceneName);
+  vulkan_renderer *renderer = vulkan_renderer_create(config, assetDb, vks, sceneName);
   utstring_free(sceneName);
 
-  vulkan_scene_renderer_debug_print(renderer);
+  vulkan_renderer_debug_print(renderer);
 
   vulkan_shader *vertexShader = renderer->pipeline->shaderGenerator->vertexShader;
   vulkan_shader *fragmentShader = renderer->pipeline->shaderGenerator->fragmentShader;
@@ -129,7 +129,7 @@ TEST shaderc_compiling() {
   ASSERT(utarray_len(fragmentShader->reflect->outputVariables) > 0);
   // HIRO check in vertex output variables match fragment input variables
 
-  vulkan_scene_renderer_destroy(renderer);
+  vulkan_renderer_destroy(renderer);
   vulkan_swap_chain_destroy(vks);
   vulkan_device_destroy(vkd);
   data_asset_db_destroy(assetDb);
@@ -256,13 +256,13 @@ TEST scene_graph_building() {
 
   log_info("Test scene renderer.");
   vulkan_swap_chain *vks = vulkan_swap_chain_create(vkd);
-  vulkan_scene_renderer *sceneRenderer = vulkan_scene_renderer_create(assetDb, vks, sceneName);
-  vulkan_scene_renderer_debug_print(sceneRenderer);
+  vulkan_renderer *sceneRenderer = vulkan_renderer_create(config, assetDb, vks, sceneName);
+  vulkan_renderer_debug_print(sceneRenderer);
   // HIRO more renderer tests
   ASSERT(sceneRenderer->renderState->unifiedGeometryBuffer->indexBuffer->totalSize > 0);
   ASSERT(sceneRenderer->renderState->unifiedGeometryBuffer->vertexBuffer->totalSize > 0);
 
-  vulkan_scene_renderer_destroy(sceneRenderer);
+  vulkan_renderer_destroy(sceneRenderer);
   vulkan_swap_chain_destroy(vks);
   vulkan_render_cache_list_destroy(renderCacheList);
   vulkan_scene_graph_destroy(sceneGraph);
