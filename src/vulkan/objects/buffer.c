@@ -42,6 +42,7 @@ void vulkan_buffer_destroy(vulkan_buffer *buffer) {
     vkFreeMemory(buffer->vkd->device, buffer->bufferMemory, vka);
     buffer->resident = false;
   }
+  utarray_free(buffer->elements);
   core_free(buffer);
 }
 

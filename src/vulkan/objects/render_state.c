@@ -28,6 +28,7 @@ void vulkan_render_state_destroy(vulkan_render_state *renderState) {
   vulkan_unified_geometry_buffer_destroy(renderState->unifiedGeometryBuffer);
 
   vulkan_batches_destroy(renderState->batches);
+  vulkan_interleaved_vertex_stream_destroy(renderState->vertexStream);
 
   core_free(renderState);
 }

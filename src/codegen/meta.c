@@ -5077,6 +5077,11 @@ void vulkan_data_vertex_attribute_component_type_debug_print(int flags, int inde
   if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_data_vertex_attribute_component_vec2", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_data_vertex_attribute_component_vec3", INDENT_FORMAT_ARGS(2)); }
 }
+const char *vulkan_image_type_debug_str(int value) {
+  if (value == 0) { return "vulkan_image_type_depth_buffer"; }
+  if (value == 1) { return "vulkan_image_type_count"; }
+  return "UNKNOWN vulkan_image_type";
+}
 const char *vulkan_render_pass_type_debug_str(int value) {
   if (value == 0) { return "ForwardRenderPass"; }
   return "UNKNOWN vulkan_render_pass_type";

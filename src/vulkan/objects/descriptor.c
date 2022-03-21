@@ -87,6 +87,7 @@ vulkan_descriptors *vulkan_descriptors_create(vulkan_device *vkd,
 void vulkan_descriptors_destroy(vulkan_descriptors *descriptors) {
   vkDestroyDescriptorSetLayout(descriptors->vkd->device, descriptors->descriptorSetLayout, vka);
   vkDestroyDescriptorPool(descriptors->vkd->device, descriptors->descriptorPool, vka);
+  core_free(descriptors);
 }
 
 void vulkan_scene_descriptors_update(vulkan_descriptors *descriptors) {

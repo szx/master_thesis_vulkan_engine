@@ -106,7 +106,7 @@ VkFramebuffer vulkan_create_framebuffer(vulkan_device *vkd, VkRenderPass renderP
   VkFramebufferCreateInfo framebufferInfo = {0};
   framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
   framebufferInfo.renderPass = renderPass;
-  framebufferInfo.attachmentCount = 1;
+  framebufferInfo.attachmentCount = attachmentCount;
   framebufferInfo.pAttachments = attachments;
   framebufferInfo.width = width;
   framebufferInfo.height = height;
@@ -123,12 +123,61 @@ VkFramebuffer vulkan_create_framebuffer(vulkan_device *vkd, VkRenderPass renderP
   return framebuffer;
 }
 
-void vulkan_create_image(vulkan_device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
-                         uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
-                         VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,
-                         VkMemoryPropertyFlags properties, VkImage *image,
-                         VkDeviceMemory *imageMemory, const char *debugFormat, ...) {
-  assert(0);
+VkImage vulkan_create_image(vulkan_device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
+                            uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
+                            VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,
+                            const char *debugFormat, ...) {
+  VkImageCreateInfo imageInfo = {0};
+  imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+  imageInfo.flags = flags;
+  imageInfo.imageType = VK_IMAGE_TYPE_2D;
+  imageInfo.extent.width = width;
+  imageInfo.extent.height = height;
+  imageInfo.extent.depth = 1;
+  imageInfo.mipLevels = mipLevels;
+  imageInfo.arrayLayers = arrayLayers;
+  imageInfo.format = format;
+  imageInfo.tiling = tiling;
+  imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+  imageInfo.usage = usage;
+  imageInfo.samples = numSamples;
+  imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+  VkImage image;
+  verify(vkCreateImage(vkd->device, &imageInfo, vka, &image) == VK_SUCCESS);
+
+  DEBUG_NAME_FORMAT_START();
+  vulkan_debug_name_image(vkd->debug, image, "%s - image (%s, %s)", debugName,
+                          VkImageViewType_debug_str(imageInfo.imageType),
+                          VkFormat_debug_str(imageInfo.format));
+  DEBUG_NAME_FORMAT_END();
+
+  return image;
+}
+
+VkDeviceMemory vulkan_create_image_memory(vulkan_device *vkd, VkImage image,
+                                          VkMemoryPropertyFlags properties, const char *debugFormat,
+                                          ...) {
+  VkMemoryRequirements memRequirements;
+  vkGetImageMemoryRequirements(vkd->device, image, &memRequirements);
+
+  VkMemoryAllocateInfo allocInfo = {0};
+  allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+  allocInfo.allocationSize = memRequirements.size;
+  allocInfo.memoryTypeIndex =
+      vulkan_find_memory_type(vkd, memRequirements.memoryTypeBits, properties);
+
+  VkDeviceMemory imageMemory;
+  verify(vkAllocateMemory(vkd->device, &allocInfo, vka, &imageMemory) == VK_SUCCESS);
+
+  DEBUG_NAME_FORMAT_START();
+  vulkan_debug_name_device_memory(vkd->debug, imageMemory, "%s - image memory (%zu bytes)",
+                                  debugName, VkImageViewType_debug_str(allocInfo.allocationSize));
+  DEBUG_NAME_FORMAT_END();
+
+  vkBindImageMemory(vkd->device, image, imageMemory, 0);
+
+  return imageMemory;
 }
 
 VkImageView vulkan_create_image_view(vulkan_device *vkd, VkImage image, VkImageViewType type,
@@ -458,6 +507,8 @@ VkPipeline vulkan_create_graphics_pipeline(
   vulkan_debug_name_render_pass(vkd->debug, renderPass, "%s - graphics pipeline", debugName);
   DEBUG_NAME_FORMAT_END();
 
+  core_free(vertexAttributeDescriptions);
+  core_free(shaderStages);
   return graphicsPipeline;
 }
 

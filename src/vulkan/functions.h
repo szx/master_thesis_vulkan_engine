@@ -31,11 +31,14 @@ VkFramebuffer vulkan_create_framebuffer(vulkan_device *vkd, VkRenderPass renderP
                                         uint32_t width, uint32_t height, const char *debugFormat,
                                         ...);
 
-void vulkan_create_image(vulkan_device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
-                         uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
-                         VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,
-                         VkMemoryPropertyFlags properties, VkImage *image,
-                         VkDeviceMemory *imageMemory, const char *debugFormat, ...);
+VkImage vulkan_create_image(vulkan_device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
+                            uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
+                            VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,
+                            const char *debugFormat, ...);
+
+VkDeviceMemory vulkan_create_image_memory(vulkan_device *vkd, VkImage image,
+                                          VkMemoryPropertyFlags properties, const char *debugFormat,
+                                          ...);
 
 VkImageView vulkan_create_image_view(vulkan_device *vkd, VkImage image, VkImageViewType type,
                                      VkFormat format, VkImageAspectFlags aspectFlags,
