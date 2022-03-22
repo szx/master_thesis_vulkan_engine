@@ -2,11 +2,12 @@
 
 vulkan_unified_geometry_buffer *
 vulkan_unified_geometry_buffer_create(vulkan_device *vkd,
-                                      vulkan_interleaved_vertex_stream *stream) {
+                                      vulkan_render_cache_list *renderCacheList) {
   vulkan_unified_geometry_buffer *geometryBuffer =
       core_alloc(sizeof(vulkan_unified_geometry_buffer));
 
-  geometryBuffer->vertexStream = stream;
+  geometryBuffer->renderCacheList = renderCacheList;
+  geometryBuffer->vertexStream = vulkan_vertex_stream_create(geometryBuffer->renderCacheList);
 
   geometryBuffer->indexBuffer = vulkan_buffer_create(vkd, vulkan_buffer_type_geometry_index);
   geometryBuffer->vertexBuffer = vulkan_buffer_create(vkd, vulkan_buffer_type_geometry_vertex);
@@ -17,8 +18,13 @@ vulkan_unified_geometry_buffer_create(vulkan_device *vkd,
 void vulkan_unified_geometry_buffer_destroy(vulkan_unified_geometry_buffer *geometryBuffer) {
   vulkan_buffer_destroy(geometryBuffer->indexBuffer);
   vulkan_buffer_destroy(geometryBuffer->vertexBuffer);
+  vulkan_vertex_stream_destroy(geometryBuffer->vertexStream);
 
   core_free(geometryBuffer);
+}
+
+void vulkan_unified_geometry_buffer_update(vulkan_unified_geometry_buffer *geometryBuffer) {
+  vulkan_vertex_stream_update(geometryBuffer->vertexStream);
 }
 
 void vulkan_unified_geometry_buffer_send_to_device(vulkan_unified_geometry_buffer *geometryBuffer) {
@@ -49,6 +55,7 @@ void vulkan_unified_geometry_buffer_send_to_device(vulkan_unified_geometry_buffe
 
 void vulkan_unified_geometry_buffer_record_bind_command(
     vulkan_unified_geometry_buffer *geometryBuffer, VkCommandBuffer commandBuffer) {
+  assert(!geometryBuffer->vertexStream->dirty);
 
   VkBuffer vertexBuffers[] = {geometryBuffer->vertexBuffer->buffer};
   VkDeviceSize offsets[] = {0};

@@ -2,8 +2,7 @@
 
 void glsl_add_header(UT_string *s) { utstring_printf(s, "%s\n", "#version 450"); }
 
-void glsl_add_vertex_shader_input_variables_defines(UT_string *s,
-                                                    vulkan_interleaved_vertex_stream *stream) {
+void glsl_add_vertex_shader_input_variables_defines(UT_string *s, vulkan_vertex_stream *stream) {
   assert(stream->renderCacheList->attributes > 0);
   size_t attributes = stream->renderCacheList->attributes;
 
@@ -22,11 +21,11 @@ void glsl_add_vertex_shader_input_variables_defines(UT_string *s,
 }
 
 void glsl_add_defines(UT_string *s, vulkan_render_state *renderState) {
-  glsl_add_vertex_shader_input_variables_defines(s, renderState->vertexStream);
+  glsl_add_vertex_shader_input_variables_defines(s,
+                                                 renderState->unifiedGeometryBuffer->vertexStream);
 }
 
-void glsl_add_vertex_shader_input_variables(UT_string *s,
-                                            vulkan_interleaved_vertex_stream *stream) {
+void glsl_add_vertex_shader_input_variables(UT_string *s, vulkan_vertex_stream *stream) {
   assert(stream->renderCacheList->attributes > 0);
   size_t attributes = stream->renderCacheList->attributes;
 
@@ -112,7 +111,7 @@ vulkan_shader_generator *vulkan_shader_generator_create(vulkan_render_state *ren
   utstring_new(s);
   glsl_add_header(s);
   glsl_add_defines(s, renderState);
-  glsl_add_vertex_shader_input_variables(s, renderState->vertexStream);
+  glsl_add_vertex_shader_input_variables(s, renderState->unifiedGeometryBuffer->vertexStream);
   glsl_add_vertex_shader_output_variables(s);
   glsl_add_uniform_buffers(s, renderState->unifiedUniformBuffer);
   glsl_add_entry_point_begin(s);

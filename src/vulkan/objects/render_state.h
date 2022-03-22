@@ -17,7 +17,6 @@ typedef struct vulkan_render_state {
   vulkan_render_cache_list *renderCacheList; ///< Pointer.
   vulkan_data_camera *camera;                ///< Pointer.
   vulkan_batches *batches;
-  vulkan_interleaved_vertex_stream *vertexStream;
 
   /* GPU state */
   vulkan_device *vkd; ///< Pointer.
