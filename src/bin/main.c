@@ -12,6 +12,7 @@ int main(int argc, char *argv[]) {
       vulkan_renderer_create(config, assetDb, vks, config->settingsStartScene);
   vulkan_renderer_update(renderer);
   vulkan_renderer_send_to_device(renderer);
+  vulkan_renderer_debug_print(renderer);
 
   glfwMakeContextCurrent(renderer->vkd->window);
 

@@ -22,6 +22,10 @@ typedef struct vulkan_instances_uniform_struct {
 // VULKAN_UNIFORM_BUFFERS
 #include "../../codegen/descriptors.h"
 
+// VULKAN_UNIFORM_BUFFER_COUNT
+#define VULKAN_UNIFORM_BUFFER_COUNT_(_name, ...) +1
+#define VULKAN_UNIFORM_BUFFER_COUNT (0 VULKAN_UNIFORM_BUFFERS(VULKAN_UNIFORM_BUFFER_COUNT_, ))
+
 // *_uniform_buffer_data
 // NOTE: Stores MAX_FRAMES_IN_FLIGHT*count elements, element n for frame #0, n+1 for frame #1 etc.
 #define decl_uniform_buffer_data(_name, ...)                                                       \
@@ -41,6 +45,19 @@ typedef struct vulkan_instances_uniform_struct {
 VULKAN_UNIFORM_BUFFERS(decl_uniform_buffer_data, )
 #undef decl_uniform_buffer_data
 
+typedef struct vulkan_descriptors vulkan_descriptors;
+
+/// Describes one descriptor binding in descriptor set.
+typedef struct vulkan_descriptor_binding {
+  vulkan_descriptors *descriptors;
+  uint32_t bindingNumber;
+  uint32_t descriptorCount;
+  VkDescriptorType descriptorType;
+  vulkan_buffer_element *bufferElement;
+} vulkan_descriptor_binding;
+
+void vulkan_descriptor_binding_debug_print(vulkan_descriptor_binding *binding, int indent);
+
 /// Descriptors used to bind resources (uniform buffers) to shaders.
 typedef struct vulkan_descriptors {
   vulkan_device *vkd;                                  ///< Pointer.
@@ -54,11 +71,11 @@ typedef struct vulkan_descriptors {
 
   /// One giant descriptor set with one binding per resource.
   VkDescriptorSet descriptorSet;
+  uint32_t descriptorSetNumber;
 
-#define decl_uniform_buffer(_name, ...)                                                            \
-  uint32_t _name##DescriptorSetNum;                                                                \
-  uint32_t _name##DescriptorBindingNum;                                                            \
-  uint32_t _name##DescriptorCount;
+  vulkan_descriptor_binding bindings[VULKAN_UNIFORM_BUFFER_COUNT];
+
+#define decl_uniform_buffer(_name, ...) vulkan_descriptor_binding *_name##DescriptorBinding;
   VULKAN_UNIFORM_BUFFERS(decl_uniform_buffer, )
 #undef decl_uniform_buffer
 

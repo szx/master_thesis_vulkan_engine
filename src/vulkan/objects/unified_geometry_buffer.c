@@ -22,7 +22,9 @@ void vulkan_unified_geometry_buffer_destroy(vulkan_unified_geometry_buffer *geom
 }
 
 void vulkan_unified_geometry_buffer_send_to_device(vulkan_unified_geometry_buffer *geometryBuffer) {
-  assert(geometryBuffer->vertexStream->dirty == false);
+  if (!geometryBuffer->vertexStream->dirty) {
+    return;
+  }
 
   if (geometryBuffer->indexBuffer->totalSize == 0) {
     vulkan_buffer_add(geometryBuffer->indexBuffer,
@@ -41,6 +43,8 @@ void vulkan_unified_geometry_buffer_send_to_device(vulkan_unified_geometry_buffe
 
   // TODO: Allow modification of unified vertex buffer if stream is dirty.
   vulkan_buffer_send_to_device(geometryBuffer->vertexBuffer);
+
+  geometryBuffer->vertexStream->dirty = false;
 }
 
 void vulkan_unified_geometry_buffer_debug_print(vulkan_unified_geometry_buffer *geometryBuffer) {

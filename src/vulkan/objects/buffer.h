@@ -4,6 +4,8 @@
 
 #include "common.h"
 
+typedef struct vulkan_buffer vulkan_buffer;
+
 typedef enum vulkan_buffer_type {
   vulkan_buffer_type_geometry_index,
   vulkan_buffer_type_geometry_vertex,
@@ -13,21 +15,24 @@ typedef enum vulkan_buffer_type {
 
 /// One continuous memory block that makes up vulkan_buffer.
 typedef struct vulkan_buffer_element {
-  const void *data;      /// Memory block on CPU.
-  size_t size;           /// Size of memory block on CPU in bytes.
-  uint32_t bufferOffset; /// Offset in vulkan_buffer.
+  vulkan_buffer *buffer; ///< Pointer.
+  const void *data;      ///< Memory block on CPU.
+  size_t size;           ///< Size of memory block on CPU in bytes.
+  uint32_t bufferOffset; ///< Offset in vulkan_buffer.
 } vulkan_buffer_element;
+
+void vulkan_buffer_element_debug_print(vulkan_buffer_element *bufferElement, int indent);
 
 /// Buffer.
 /// Used to store data in memory.
 /// NOTE: Buffer size can't change if resident.
 typedef struct vulkan_buffer {
   /* CPU state */
-  size_t totalSize;   /// Size of buffer.
-  UT_array *elements; /// vulkan_buffer_element list.
+  size_t totalSize;   ///< Size of buffer.
+  UT_array *elements; ///< vulkan_buffer_element list.
 
   /* GPU state */
-  vulkan_device *vkd; /// Pointer.
+  vulkan_device *vkd; ///< Pointer.
   vulkan_buffer_type type;
   VkBufferUsageFlags bufferUsageFlags;
   VkMemoryPropertyFlags memoryPropertyFlags;
@@ -35,8 +40,8 @@ typedef struct vulkan_buffer {
   VkBuffer buffer;
   VkDeviceMemory bufferMemory;
 
-  bool resident; /// True if buffer created in GPU memory.
-  bool dirty;    /// True if CPU to GPU transfer required.
+  bool resident; ///< True if buffer created in GPU memory.
+  bool dirty;    ///< True if CPU to GPU transfer required.
 } vulkan_buffer;
 
 vulkan_buffer *vulkan_buffer_create(vulkan_device *vkd, vulkan_buffer_type type);

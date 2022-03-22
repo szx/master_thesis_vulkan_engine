@@ -4,6 +4,7 @@ vulkan_sync *vulkan_sync_create(vulkan_device *vkd) {
   vulkan_sync *sync = core_alloc(sizeof(vulkan_sync));
 
   sync->vkd = vkd;
+  sync->currentFrameInFlight = 0;
 
   for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
     sync->imageAvailableSemaphores[i] =

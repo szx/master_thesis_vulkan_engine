@@ -33,6 +33,19 @@
 VULKAN_UNIFORM_BUFFERS(def_uniform_buffer_data, )
 #undef def_uniform_buffer_data
 
+void vulkan_descriptor_binding_debug_print(vulkan_descriptor_binding *binding, int indent) {
+  log_debug(INDENT_FORMAT_STRING "binding:", INDENT_FORMAT_ARGS(0));
+  log_debug(INDENT_FORMAT_STRING "descriptorSetNumber=%zu", INDENT_FORMAT_ARGS(2),
+            binding->descriptors->descriptorSetNumber);
+  log_debug(INDENT_FORMAT_STRING "bindingNumber=%zu", INDENT_FORMAT_ARGS(2),
+            binding->bindingNumber);
+  log_debug(INDENT_FORMAT_STRING "descriptorCount=%zu", INDENT_FORMAT_ARGS(2),
+            binding->descriptorCount);
+  log_debug(INDENT_FORMAT_STRING "descriptorType=%s", INDENT_FORMAT_ARGS(2),
+            VkDescriptorType_debug_str(binding->descriptorType));
+  vulkan_buffer_element_debug_print(binding->bufferElement, 2);
+}
+
 vulkan_descriptors *vulkan_descriptors_create(vulkan_device *vkd,
                                               vulkan_unified_uniform_buffer *unifiedUniformBuffer) {
   vulkan_descriptors *descriptors = core_alloc(sizeof(vulkan_descriptors));
@@ -50,36 +63,30 @@ vulkan_descriptors *vulkan_descriptors_create(vulkan_device *vkd,
       descriptors->vkd, totalUniformBufferDescriptorCount, totalCombinedImageSamplerDescriptorCount,
       maxAllocatedDescriptorSetsCount, "descriptors");
 
-  size_t bindingNum = 0;
-#define binding_uniform_buffer(_name, ...)                                                         \
-  descriptors->_name##DescriptorSetNum = 0;                                                        \
-  descriptors->_name##DescriptorBindingNum = bindingNum++;                                         \
-  descriptors->_name##DescriptorCount = 1;
-  VULKAN_UNIFORM_BUFFERS(binding_uniform_buffer, )
-#undef binding_uniform_buffer
-  assert(bindingNum > 0);
+  descriptors->descriptorSetNumber = 0;
 
-  VkDescriptorSetLayoutBinding layoutBindings[bindingNum];
-  bindingNum = 0;
+  size_t bindingNum = 0;
+  vulkan_descriptor_binding *binding;
 #define binding_uniform_buffer(_name, ...)                                                         \
-  layoutBindings[bindingNum].binding = descriptors->_name##DescriptorBindingNum;                   \
-  layoutBindings[bindingNum].descriptorCount = descriptors->_name##DescriptorCount;                \
-  layoutBindings[bindingNum].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;                   \
-  layoutBindings[bindingNum].pImmutableSamplers = NULL;                                            \
-  layoutBindings[bindingNum].stageFlags =                                                          \
-      VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;                                   \
+  binding = &descriptors->bindings[bindingNum];                                                    \
+  *binding = (vulkan_descriptor_binding){.descriptors = descriptors,                               \
+                                         .bindingNumber = bindingNum,                              \
+                                         .descriptorCount = 1,                                     \
+                                         .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,      \
+                                         .bufferElement =                                          \
+                                             &unifiedUniformBuffer->_name##Data->bufferElement};   \
+  descriptors->_name##DescriptorBinding = binding;                                                 \
   bindingNum++;
   VULKAN_UNIFORM_BUFFERS(binding_uniform_buffer, )
 #undef binding_uniform_buffer
+  assert(bindingNum == array_size(descriptors->bindings));
 
   descriptors->descriptorSetLayout = vulkan_create_descriptor_set_layout(
-      descriptors->vkd, layoutBindings, bindingNum, "descriptors");
+      descriptors->vkd, descriptors->bindings, array_size(descriptors->bindings), "descriptors");
 
-  // HIRO create_descriptor_set_from_bindings
-  descriptors->descriptorSet = vulkan_create_descriptor_set_for_uniform_buffers(
-      descriptors->vkd, &descriptors->unifiedUniformBuffer->buffer->buffer,
-      descriptors->unifiedUniformBuffer->buffer->totalSize, 1, descriptors->descriptorSetLayout,
-      descriptors->descriptorPool, "descriptors");
+  descriptors->descriptorSet = vulkan_create_descriptor_set(
+      descriptors->vkd, descriptors->descriptorSetLayout, descriptors->descriptorPool,
+      descriptors->bindings, array_size(descriptors->bindings), "descriptors");
 
   return descriptors;
 }
@@ -111,11 +118,11 @@ vulkan_descriptors_get_descriptor_set_layouts(vulkan_descriptors *descriptors, s
 }
 
 void vulkan_descriptors_debug_print(vulkan_descriptors *descriptors, int indent) {
-  log_debug(INDENT_FORMAT_STRING "descriptors:", INDENT_FORMAT_ARGS(0));
+  log_debug(INDENT_FORMAT_STRING "descriptors (set=%zu):", INDENT_FORMAT_ARGS(0),
+            descriptors->descriptorSetNumber);
 #define debug_print_uniform_buffer(_name, ...)                                                     \
-  log_debug(INDENT_FORMAT_STRING "%s:\tset=%lu\tbinding=%lu\tcount=%lu", INDENT_FORMAT_ARGS(2),    \
-            #_name, descriptors->_name##DescriptorSetNum,                                          \
-            descriptors->_name##DescriptorBindingNum, descriptors->_name##DescriptorCount);
+  log_debug(INDENT_FORMAT_STRING #_name ":", INDENT_FORMAT_ARGS(2));                               \
+  vulkan_descriptor_binding_debug_print(descriptors->_name##DescriptorBinding, indent + 4);
   VULKAN_UNIFORM_BUFFERS(debug_print_uniform_buffer, )
 #undef debug_print_uniform_buffer
 }

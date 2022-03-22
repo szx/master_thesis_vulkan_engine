@@ -7,6 +7,7 @@ typedef struct vulkan_device vulkan_device;
 typedef struct vulkan_shader_generator vulkan_shader_generator;
 typedef struct vulkan_render_state vulkan_render_state;
 typedef struct vulkan_swap_chain vulkan_swap_chain;
+typedef struct vulkan_descriptor_binding vulkan_descriptor_binding;
 
 // TODO: Implement all Vulkan helper functions.
 
@@ -16,6 +17,7 @@ VkFormat vulkan_find_supported_format(vulkan_device *vkd, VkImageTiling tiling,
                                       VkFormatFeatureFlags features, VkFormat *candidates,
                                       size_t candidateCount);
 VkFormat vulkan_find_depth_format(vulkan_device *vkd);
+VkIndexType vulkan_stride_to_index_type(size_t stride);
 
 /* vulkan object creation */
 
@@ -58,14 +60,15 @@ VkDescriptorPool vulkan_create_descriptor_pool(vulkan_device *vkd, size_t totalU
                                                const char *debugFormat, ...);
 
 VkDescriptorSetLayout vulkan_create_descriptor_set_layout(vulkan_device *vkd,
-                                                          VkDescriptorSetLayoutBinding *bindings,
-                                                          size_t bindingsCount,
+                                                          vulkan_descriptor_binding *bindings,
+                                                          size_t bindingCount,
                                                           const char *debugFormat, ...);
 
-VkDescriptorSet vulkan_create_descriptor_set_for_uniform_buffers(
-    vulkan_device *vkd, VkBuffer *uniformBuffers, VkDeviceSize bufferSize, size_t bufferCount,
-    VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool,
-    const char *debugFormat, ...);
+VkDescriptorSet vulkan_create_descriptor_set(vulkan_device *vkd,
+                                             VkDescriptorSetLayout descriptorSetLayout,
+                                             VkDescriptorPool descriptorPool,
+                                             vulkan_descriptor_binding *bindings,
+                                             size_t bindingCount, const char *debugFormat, ...);
 
 VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
                                                VkPipelineLayoutCreateFlags flags,

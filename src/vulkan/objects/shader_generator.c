@@ -76,8 +76,8 @@ void glsl_add_uniform_buffers(UT_string *s, vulkan_unified_uniform_buffer *unifi
   uint32_t set = 0;
   uint32_t binding = 0;
 #define str_uniform_buffer(_name, ...)                                                             \
-  glsl_add_vulkan_##_name##_uniform_buffer(s, descriptors->_name##DescriptorSetNum,                \
-                                           descriptors->_name##DescriptorBindingNum,               \
+  glsl_add_vulkan_##_name##_uniform_buffer(s, descriptors->descriptorSetNumber,                    \
+                                           descriptors->_name##DescriptorBinding->bindingNumber,   \
                                            descriptors->unifiedUniformBuffer->_name##Data->count);
   VULKAN_UNIFORM_BUFFERS(str_uniform_buffer, )
 #undef str_uniform_buffer

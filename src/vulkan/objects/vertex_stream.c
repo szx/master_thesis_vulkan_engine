@@ -115,6 +115,8 @@ void vulkan_interleaved_vertex_stream_add_primitive(vulkan_interleaved_vertex_st
     }
     utarray_push_back(stream->vertexData, &element);
   }
+
+  stream->dirty = true;
 }
 
 size_t vulkan_interleaved_vertex_stream_get_vertex_buffer_binding_count(

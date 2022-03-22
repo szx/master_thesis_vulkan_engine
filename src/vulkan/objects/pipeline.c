@@ -121,7 +121,6 @@ void vulkan_pipeline_get_framebuffer_attachments(vulkan_pipeline *pipeline,
 
 VkCommandBuffer vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline,
                                                       size_t swapChainImageIdx) {
-  // HIRO HIRO: Record command buffer.
   vulkan_pipeline_frame_state *frameState =
       utarray_eltptr(pipeline->frameStates, swapChainImageIdx);
 
@@ -152,9 +151,11 @@ VkCommandBuffer vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline,
   VkDeviceSize offsets[] = {0};
   vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
+  size_t indexBufferStride =
+      utarray_eltsize(pipeline->renderState->unifiedGeometryBuffer->vertexStream->indexData);
   vkCmdBindIndexBuffer(commandBuffer,
                        pipeline->renderState->unifiedGeometryBuffer->indexBuffer->buffer, 0,
-                       VK_INDEX_TYPE_UINT16);
+                       vulkan_stride_to_index_type(indexBufferStride));
 
   vkCmdBindDescriptorSets(
       commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout, 0, 1,

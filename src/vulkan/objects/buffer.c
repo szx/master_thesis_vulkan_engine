@@ -1,5 +1,13 @@
 #include "buffer.h"
 
+void vulkan_buffer_element_debug_print(vulkan_buffer_element *bufferElement, int indent) {
+  log_debug(INDENT_FORMAT_STRING "buffer element of buffer '%s':", INDENT_FORMAT_ARGS(0),
+            bufferElement->buffer->name);
+  log_debug(INDENT_FORMAT_STRING "size=%zu", INDENT_FORMAT_ARGS(2), bufferElement->size);
+  log_debug(INDENT_FORMAT_STRING "bufferOffset=%zu", INDENT_FORMAT_ARGS(2),
+            bufferElement->bufferOffset);
+}
+
 vulkan_buffer *vulkan_buffer_create(vulkan_device *vkd, vulkan_buffer_type type) {
   vulkan_buffer *buffer = core_alloc(sizeof(vulkan_buffer));
 
@@ -48,7 +56,8 @@ void vulkan_buffer_destroy(vulkan_buffer *buffer) {
 
 vulkan_buffer_element vulkan_buffer_add(vulkan_buffer *buffer, const void *data, size_t size) {
   verify(!buffer->resident);
-  vulkan_buffer_element element = {.data = data, .size = size, .bufferOffset = buffer->totalSize};
+  vulkan_buffer_element element = {
+      .buffer = buffer, .data = data, .size = size, .bufferOffset = buffer->totalSize};
   buffer->totalSize += element.size;
   utarray_push_back(buffer->elements, &element);
   buffer->dirty = true;
@@ -98,7 +107,8 @@ void vulkan_buffer_send_to_device(vulkan_buffer *buffer) {
     void *data;
     vkMapMemory(buffer->vkd->device, buffer->bufferMemory, 0, buffer->totalSize, 0, &data);
     utarray_foreach_elem_deref (vulkan_buffer_element, element, buffer->elements) {
-      core_memcpy(data, element.data, element.size);
+      uint8_t *bytes = data;
+      core_memcpy(bytes + element.bufferOffset, element.data, element.size);
     }
     vkUnmapMemory(buffer->vkd->device, buffer->bufferMemory);
   }

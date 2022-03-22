@@ -1,6 +1,7 @@
 #include "functions.h"
 
 #include "device.h"
+#include "objects/buffer.h"
 #include "objects/shader_generator.h"
 #include "swap_chain.h"
 
@@ -46,6 +47,17 @@ VkFormat vulkan_find_depth_format(vulkan_device *vkd) {
   return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
                                       VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT, formats,
                                       array_size(formats));
+}
+
+VkIndexType vulkan_stride_to_index_type(size_t stride) {
+  if (stride == 2) {
+    return VK_INDEX_TYPE_UINT16;
+  }
+  if (stride == 4) {
+    return VK_INDEX_TYPE_UINT32;
+  }
+  assert(0);
+  return 0;
 }
 
 #define DEBUG_NAME_FORMAT_START()                                                                  \
@@ -288,13 +300,27 @@ VkDescriptorPool vulkan_create_descriptor_pool(vulkan_device *vkd, size_t totalU
 }
 
 VkDescriptorSetLayout vulkan_create_descriptor_set_layout(vulkan_device *vkd,
-                                                          VkDescriptorSetLayoutBinding *bindings,
-                                                          size_t bindingsCount,
+                                                          vulkan_descriptor_binding *bindings,
+                                                          size_t bindingCount,
                                                           const char *debugFormat, ...) {
+
+  VkDescriptorSetLayoutBinding layoutBindings[bindingCount];
+  for (size_t i = 0; i < bindingCount; i++) {
+    VkDescriptorSetLayoutBinding *layoutBinding = &layoutBindings[i];
+    vulkan_descriptor_binding *binding = &bindings[i];
+
+    *layoutBinding = (VkDescriptorSetLayoutBinding){.binding = binding->bindingNumber,
+                                                    .descriptorCount = binding->descriptorCount,
+                                                    .descriptorType = binding->descriptorType,
+                                                    .pImmutableSamplers = NULL,
+                                                    .stageFlags = VK_SHADER_STAGE_VERTEX_BIT |
+                                                                  VK_SHADER_STAGE_FRAGMENT_BIT};
+  }
+
   VkDescriptorSetLayoutCreateInfo layoutInfo = {0};
   layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-  layoutInfo.bindingCount = bindingsCount;
-  layoutInfo.pBindings = bindings;
+  layoutInfo.bindingCount = bindingCount;
+  layoutInfo.pBindings = layoutBindings;
 
   VkDescriptorSetLayout descriptorSetLayout;
   verify(vkCreateDescriptorSetLayout(vkd->device, &layoutInfo, vka, &descriptorSetLayout) ==
@@ -309,10 +335,13 @@ VkDescriptorSetLayout vulkan_create_descriptor_set_layout(vulkan_device *vkd,
   return descriptorSetLayout;
 }
 
-VkDescriptorSet vulkan_create_descriptor_set_for_uniform_buffers(
-    vulkan_device *vkd, VkBuffer *uniformBuffers, VkDeviceSize bufferSize, size_t bufferCount,
-    VkDescriptorSetLayout descriptorSetLayout, VkDescriptorPool descriptorPool,
-    const char *debugFormat, ...) {
+VkDescriptorSet vulkan_create_descriptor_set(vulkan_device *vkd,
+                                             VkDescriptorSetLayout descriptorSetLayout,
+                                             VkDescriptorPool descriptorPool,
+                                             vulkan_descriptor_binding *bindings,
+                                             size_t bindingCount, const char *debugFormat, ...) {
+
+  /* create descriptor set */
   VkDescriptorSetLayout layouts[1] = {descriptorSetLayout};
   VkDescriptorSetAllocateInfo allocInfo = {0};
   allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -327,23 +356,34 @@ VkDescriptorSet vulkan_create_descriptor_set_for_uniform_buffers(
   vulkan_debug_name_descriptor_set(vkd->debug, descriptorSet, "%s - descriptor set", debugName);
   DEBUG_NAME_FORMAT_END();
 
-  VkWriteDescriptorSet descriptorWrites[1] = {0};
-  VkDescriptorBufferInfo bufferInfo[bufferCount];
-  for (uint32_t i = 0; i < bufferCount; i++) {
-    assert(uniformBuffers[i] != VK_NULL_HANDLE);
-    bufferInfo[i].buffer = uniformBuffers[i];
-    bufferInfo[i].offset = 0;
-    bufferInfo[i].range = bufferSize;
-  }
-  descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-  descriptorWrites[0].dstSet = descriptorSet;
-  descriptorWrites[0].dstBinding = 0;
-  descriptorWrites[0].dstArrayElement = 0;
-  descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-  descriptorWrites[0].descriptorCount = bufferCount;
-  descriptorWrites[0].pBufferInfo = bufferInfo;
+  /* update bindings */
+  VkWriteDescriptorSet descriptorWrites[bindingCount];
+  VkDescriptorBufferInfo bufferInfos[bindingCount];
 
-  vkUpdateDescriptorSets(vkd->device, 1, descriptorWrites, 0, NULL);
+  for (size_t i = 0; i < bindingCount; i++) {
+    VkWriteDescriptorSet *descriptorWrite = &descriptorWrites[i];
+    vulkan_descriptor_binding *binding = &bindings[i];
+    assert(binding->descriptorCount == 1);
+
+    *descriptorWrite = (VkWriteDescriptorSet){.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                                              .dstSet = descriptorSet,
+                                              .dstBinding = binding->bindingNumber,
+                                              .dstArrayElement = 0,
+                                              .descriptorType = binding->descriptorType,
+                                              .descriptorCount = binding->descriptorCount};
+
+    if (descriptorWrite->descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER) {
+      assert(binding->descriptorCount == 1);
+      VkDescriptorBufferInfo *bufferInfo = &bufferInfos[i];
+      bufferInfo->buffer = binding->bufferElement->buffer->buffer;
+      bufferInfo->offset = binding->bufferElement->bufferOffset;
+      bufferInfo->range = binding->bufferElement->size;
+      descriptorWrite->pBufferInfo = bufferInfo;
+    } else {
+      assert(0);
+    }
+  }
+  vkUpdateDescriptorSets(vkd->device, array_size(descriptorWrites), descriptorWrites, 0, NULL);
 
   return descriptorSet;
 }
@@ -471,13 +511,6 @@ VkPipeline vulkan_create_graphics_pipeline(
   colorBlending.blendConstants[2] = 0.0f;
   colorBlending.blendConstants[3] = 0.0f;
 
-  /* dynamic state */
-  VkDynamicState dynamicStates[2] = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
-  VkPipelineDynamicStateCreateInfo dynamicState = {0};
-  dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-  dynamicState.pDynamicStates = dynamicStates;
-  dynamicState.dynamicStateCount = 2;
-
   /* pipeline layout */
   DEBUG_NAME_FORMAT_START()
   *pipelineLayout =
@@ -495,7 +528,6 @@ VkPipeline vulkan_create_graphics_pipeline(
   pipelineInfo.pMultisampleState = &multisampling;
   pipelineInfo.pDepthStencilState = &depthStencil;
   pipelineInfo.pColorBlendState = &colorBlending;
-  pipelineInfo.pDynamicState = &dynamicState;
   pipelineInfo.layout = *pipelineLayout;
   pipelineInfo.renderPass = renderPass;
   pipelineInfo.subpass = 0;
