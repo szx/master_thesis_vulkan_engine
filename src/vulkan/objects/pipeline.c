@@ -119,6 +119,12 @@ void vulkan_pipeline_get_framebuffer_attachments(vulkan_pipeline *pipeline,
   attachments[1] = pipeline->sharedState->depthBufferImage->imageView;
 }
 
+void vulkan_pipeline_get_framebuffer_attachment_clear_values(vulkan_pipeline *pipeline,
+                                                             VkClearValue *clearValues) {
+  clearValues[0].color = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}};
+  clearValues[1].depthStencil = (VkClearDepthStencilValue){1.0f, 0};
+}
+
 VkCommandBuffer vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline,
                                                       size_t swapChainImageIdx) {
   vulkan_pipeline_frame_state *frameState =
@@ -138,31 +144,22 @@ VkCommandBuffer vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline,
   renderPassInfo.framebuffer = frameState->swapChainFramebuffer;
   renderPassInfo.renderArea.offset = (VkOffset2D){0, 0};
   renderPassInfo.renderArea.extent = pipeline->vks->swapChainExtent;
-  VkClearValue clearValues[2] = {0}; // HIRO move to pipeline_get_clear_values
-  clearValues[0].color = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}};
-  clearValues[1].depthStencil = (VkClearDepthStencilValue){1.0f, 0};
+  size_t clearValueCount = vulkan_pipeline_get_framebuffer_attachment_count(pipeline);
+  VkClearValue clearValues[clearValueCount];
+  vulkan_pipeline_get_framebuffer_attachment_clear_values(pipeline, clearValues);
   renderPassInfo.clearValueCount = array_size(clearValues);
   renderPassInfo.pClearValues = clearValues;
   vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
   vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->graphicsPipeline);
 
-  VkBuffer vertexBuffers[] = {pipeline->renderState->unifiedGeometryBuffer->vertexBuffer->buffer};
-  VkDeviceSize offsets[] = {0};
-  vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-
-  size_t indexBufferStride =
-      utarray_eltsize(pipeline->renderState->unifiedGeometryBuffer->vertexStream->indexData);
-  vkCmdBindIndexBuffer(commandBuffer,
-                       pipeline->renderState->unifiedGeometryBuffer->indexBuffer->buffer, 0,
-                       vulkan_stride_to_index_type(indexBufferStride));
-
-  vkCmdBindDescriptorSets(
-      commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout, 0, 1,
-      &pipeline->renderState->unifiedUniformBuffer->descriptors->descriptorSet, 0, NULL);
+  vulkan_unified_geometry_buffer_record_bind_command(pipeline->renderState->unifiedGeometryBuffer,
+                                                     commandBuffer);
+  vulkan_unified_uniform_buffer_record_bind_command(pipeline->renderState->unifiedUniformBuffer,
+                                                    commandBuffer, pipeline->pipelineLayout);
 
   dl_foreach_elem(vulkan_batch *, batch, pipeline->renderState->batches->batches,
-                  { vulkan_batch_emit_draw_command(batch, commandBuffer); })
+                  { vulkan_batch_record_draw_command(batch, commandBuffer); })
 
   vkCmdEndRenderPass(commandBuffer);
 

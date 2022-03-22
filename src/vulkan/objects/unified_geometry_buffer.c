@@ -47,6 +47,19 @@ void vulkan_unified_geometry_buffer_send_to_device(vulkan_unified_geometry_buffe
   geometryBuffer->vertexStream->dirty = false;
 }
 
+void vulkan_unified_geometry_buffer_record_bind_command(
+    vulkan_unified_geometry_buffer *geometryBuffer, VkCommandBuffer commandBuffer) {
+
+  VkBuffer vertexBuffers[] = {geometryBuffer->vertexBuffer->buffer};
+  VkDeviceSize offsets[] = {0};
+  vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+
+  VkBuffer indexBuffer = geometryBuffer->indexBuffer->buffer;
+  size_t indexBufferStride = utarray_eltsize(geometryBuffer->vertexStream->indexData);
+  vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0,
+                       vulkan_stride_to_index_type(indexBufferStride));
+}
+
 void vulkan_unified_geometry_buffer_debug_print(vulkan_unified_geometry_buffer *geometryBuffer) {
   log_debug("UNIFIED GEOMETRY BUFFER:\n");
   log_debug("index buffer size=%d\n", geometryBuffer->indexBuffer->totalSize);

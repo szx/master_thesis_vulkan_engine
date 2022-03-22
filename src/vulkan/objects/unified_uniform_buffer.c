@@ -78,6 +78,13 @@ void vulkan_unified_uniform_buffer_send_to_device(vulkan_unified_uniform_buffer 
   vulkan_descriptors_send_to_device(uniformBuffer->descriptors);
 }
 
+void vulkan_unified_uniform_buffer_record_bind_command(vulkan_unified_uniform_buffer *uniformBuffer,
+                                                       VkCommandBuffer commandBuffer,
+                                                       VkPipelineLayout pipelineLayout) {
+  vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1,
+                          &uniformBuffer->descriptors->descriptorSet, 0, NULL);
+}
+
 void vulkan_unified_uniform_buffer_debug_print(vulkan_unified_uniform_buffer *uniformBuffer) {
   log_debug("UNIFIED UNIFORM BUFFER:\n");
   assert(uniformBuffer->buffer->totalSize > 0);

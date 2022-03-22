@@ -49,7 +49,7 @@ void vulkan_batch_update_draw_command(vulkan_batch *batch) {
   batch->drawCommand.firstInstance = batch->firstCache->renderCacheListIdx;
 }
 
-void vulkan_batch_emit_draw_command(vulkan_batch *batch, VkCommandBuffer commandBuffer) {
+void vulkan_batch_record_draw_command(vulkan_batch *batch, VkCommandBuffer commandBuffer) {
   // HIRO emit indirect draw
   VkDrawIndexedIndirectCommand drawCommand = batch->drawCommand;
   vkCmdDrawIndexed(commandBuffer, drawCommand.indexCount, drawCommand.instanceCount,

@@ -35,4 +35,8 @@ void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniform
 
 void vulkan_unified_uniform_buffer_send_to_device(vulkan_unified_uniform_buffer *uniformBuffer);
 
+void vulkan_unified_uniform_buffer_record_bind_command(vulkan_unified_uniform_buffer *uniformBuffer,
+                                                       VkCommandBuffer commandBuffer,
+                                                       VkPipelineLayout pipelineLayout);
+
 void vulkan_unified_uniform_buffer_debug_print(vulkan_unified_uniform_buffer *uniformBuffer);

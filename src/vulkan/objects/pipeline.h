@@ -36,6 +36,8 @@ size_t vulkan_pipeline_get_framebuffer_attachment_count(vulkan_pipeline *pipelin
 void vulkan_pipeline_get_framebuffer_attachments(vulkan_pipeline *pipeline,
                                                  size_t swapChainImageIdx,
                                                  VkImageView *attachments);
+void vulkan_pipeline_get_framebuffer_attachment_clear_values(vulkan_pipeline *pipeline,
+                                                             VkClearValue *clearValues);
 
 VkCommandBuffer vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline,
                                                       size_t swapChainImageIndex);
