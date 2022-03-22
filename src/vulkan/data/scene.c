@@ -269,13 +269,24 @@ vulkan_data_object *parse_cgltf_node(vulkan_data_scene *sceneData, cgltf_node *c
     vulkan_data_camera camera;
     vulkan_data_camera_init(&camera, sceneData);
     // alignment problems when using glm_vec3_copy
-    camera.position[0] = cgltfNode->translation[0];
-    camera.position[1] = cgltfNode->translation[1];
-    camera.position[2] = cgltfNode->translation[2];
-    camera.rotation[0] = cgltfNode->rotation[0];
-    camera.rotation[1] = cgltfNode->rotation[1];
-    camera.rotation[2] = cgltfNode->rotation[2];
-    camera.rotation[3] = cgltfNode->rotation[3];
+    if (cgltfNode->has_matrix) {
+      mat4 cameraTransform;
+      cgltf_node_transform_world(cgltfNode, (float *)cameraTransform);
+      vec4 translation;
+      mat4 rotation;
+      vec3 scale;
+      glm_decompose(cameraTransform, translation, rotation, scale);
+      glm_vec3_copy(translation, camera.position);
+      glm_mat4_quat(rotation, camera.rotation);
+    } else {
+      camera.position[0] = cgltfNode->translation[0];
+      camera.position[1] = cgltfNode->translation[1];
+      camera.position[2] = cgltfNode->translation[2];
+      camera.rotation[0] = cgltfNode->rotation[0];
+      camera.rotation[1] = cgltfNode->rotation[1];
+      camera.rotation[2] = cgltfNode->rotation[2];
+      camera.rotation[3] = cgltfNode->rotation[3];
+    }
     camera.fovY = cgltfCamera->data.perspective.yfov;
     camera.aspectRatio = cgltfCamera->data.perspective.aspect_ratio;
     camera.nearZ = cgltfCamera->data.perspective.znear;
@@ -290,7 +301,7 @@ vulkan_data_object *parse_cgltf_node(vulkan_data_scene *sceneData, cgltf_node *c
 
   object->mesh = parse_cgltf_mesh(sceneData, cgltfMesh);
   // TODO: Animation, will probably require cgltf_node_transform_local().
-  cgltf_node_transform_world(cgltfNode, (float *)object->transform);
+  cgltf_node_transform_local(cgltfNode, (float *)object->transform);
   for (size_t childIdx = 0; childIdx < cgltfNode->children_count; childIdx++) {
     vulkan_data_object *child = parse_cgltf_node(sceneData, cgltfNode->children[childIdx]);
     utarray_push_back(object->children, &child);

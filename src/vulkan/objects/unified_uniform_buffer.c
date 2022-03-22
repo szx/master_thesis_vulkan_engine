@@ -48,15 +48,18 @@ void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniform
   }
 
   if (camera->dirty) {
+    vulkan_global_uniform_buffer_element *element = &uniformBuffer->globalData->elements[0];
+
     vec3 negativePosition;
-    mat4 translationMat;
     glm_vec3_negate_to(camera->position, negativePosition);
+    /*mat4 translationMat;
     glm_translate_make(translationMat, negativePosition);
     mat4 rotationMat;
     glm_quat_mat4(camera->rotation, rotationMat);
+    glm_mat4_mul(rotationMat, translationMat, element->viewMat);*/
 
-    vulkan_global_uniform_buffer_element *element = &uniformBuffer->globalData->elements[0];
-    glm_mat4_mul(rotationMat, translationMat, element->viewMat);
+    glm_quat_look(negativePosition, camera->rotation, element->viewMat);
+
     glm_perspective(camera->fovY, camera->aspectRatio, camera->nearZ, camera->farZ,
                     element->projMat);
     element->projMat[1][1] *= -1; // invert for Y+ pointing up
