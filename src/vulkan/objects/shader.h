@@ -1,7 +1,6 @@
 /* GLSL shader to SPIR-V binary compiler */
 #pragma once
 
-#include "common.h"
 #include "descriptor.h"
 #include "vertex_stream.h"
 

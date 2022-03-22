@@ -7,7 +7,7 @@
  */
 #pragma once
 
-#include "common.h"
+#include "../common.h"
 
 typedef struct vulkan_scene_node vulkan_scene_node;
 typedef struct vulkan_data_mesh vulkan_data_mesh;

@@ -1,9 +1,9 @@
 #include "functions.h"
 
-#include "device.h"
 #include "objects/buffer.h"
+#include "objects/device.h"
 #include "objects/shader_generator.h"
-#include "swap_chain.h"
+#include "objects/swap_chain.h"
 
 uint32_t vulkan_find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
                                  VkMemoryPropertyFlags properties) {

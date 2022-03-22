@@ -1,7 +1,7 @@
 /* Vulkan API helper objects. */
 #pragma once
 
-#include "common.h"
+#include "../common.h"
 
 /// Vulkan object used to synchronize rendering frames in flight.
 typedef struct vulkan_sync {

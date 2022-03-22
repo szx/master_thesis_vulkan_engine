@@ -3,13 +3,12 @@
 #pragma once
 
 #include "../data/camera.h"
-#include "../swap_chain.h"
 #include "batch.h"
-#include "common.h"
 #include "image.h"
 #include "render_cache_list.h"
 #include "render_state.h"
 #include "shader_generator.h"
+#include "swap_chain.h"
 
 typedef struct vulkan_pipeline_frame_state vulkan_pipeline_frame_state;
 typedef struct vulkan_pipeline_shared_state vulkan_pipeline_shared_state;

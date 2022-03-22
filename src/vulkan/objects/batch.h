@@ -4,7 +4,6 @@
  */
 #pragma once
 
-#include "../../core/core.h"
 #include "render_cache_list.h"
 
 typedef enum vulkan_batch_policy {

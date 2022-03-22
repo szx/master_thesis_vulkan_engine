@@ -1,9 +1,7 @@
 /* Vulkan API device helper functions and structures */
 #pragma once
 
-#include "../core/platform.h"
-#include "../data/data.h"
-#include "debug.h"
+#include "../common.h"
 
 #define VALIDATION_LAYERS_SIZE 1
 extern const char *validationLayers[VALIDATION_LAYERS_SIZE];

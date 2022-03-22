@@ -3,7 +3,6 @@
 #pragma once
 
 #include "buffer.h"
-#include "common.h"
 #include "render_cache_list.h"
 #include "shader.h"
 

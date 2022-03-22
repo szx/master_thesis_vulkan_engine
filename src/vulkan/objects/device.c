@@ -1,5 +1,4 @@
 #include "device.h"
-#include "functions.h"
 
 const char *validationLayers[VALIDATION_LAYERS_SIZE] = {"VK_LAYER_KHRONOS_validation"};
 

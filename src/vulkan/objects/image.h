@@ -1,7 +1,7 @@
 /* Vulkan API helper objects. */
 #pragma once
 
-#include "common.h"
+#include "../common.h"
 
 typedef enum vulkan_image_type {
   vulkan_image_type_depth_buffer,

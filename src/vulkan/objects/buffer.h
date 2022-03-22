@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "common.h"
+#include "../common.h"
 
 typedef struct vulkan_buffer vulkan_buffer;
 

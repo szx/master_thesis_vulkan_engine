@@ -1,7 +1,6 @@
 /* GLSL shader generator */
 #pragma once
 
-#include "common.h"
 #include "descriptor.h"
 #include "render_state.h"
 #include "shader_reflect.h"

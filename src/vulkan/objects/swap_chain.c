@@ -139,4 +139,3 @@ void vulkan_swap_chain_destroy(vulkan_swap_chain *vks) {
 float vulkan_swap_chain_get_aspect_ratio(vulkan_swap_chain *vks) {
   return vks->swapChainExtent.width / (float)vks->swapChainExtent.height;
 }
-

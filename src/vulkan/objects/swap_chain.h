@@ -1,10 +1,8 @@
 /* Vulkan API swap chain */
 #pragma once
 
+#include "../common.h"
 #include "device.h"
-#include "functions.h"
-
-#include "constants.h"
 
 typedef struct vulkan_swap_chain {
   vulkan_device *vkd;        /// vulkan_device pointer.
@@ -27,4 +25,3 @@ typedef struct vulkan_swap_chain {
 vulkan_swap_chain *vulkan_swap_chain_create(vulkan_device *vkd);
 void vulkan_swap_chain_destroy(vulkan_swap_chain *vks);
 float vulkan_swap_chain_get_aspect_ratio(vulkan_swap_chain *vks);
-

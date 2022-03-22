@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../core/platform.h"
+#include "../core/core.h"
 typedef struct vulkan_device vulkan_device;
 typedef struct vulkan_shader_generator vulkan_shader_generator;
 typedef struct vulkan_render_state vulkan_render_state;

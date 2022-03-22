@@ -2,10 +2,7 @@
 
 #pragma once
 
-#include "../../core/thirdparty.h"
-#include "../constants.h"
 #include "buffer.h"
-#include "common.h"
 
 typedef struct vulkan_unified_uniform_buffer vulkan_unified_uniform_buffer;
 
