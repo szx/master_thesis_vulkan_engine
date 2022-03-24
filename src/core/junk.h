@@ -38,6 +38,12 @@ static_assert(sizeof(char) == sizeof(uint8_t), "sizeof(char) != sizeof(uint8_t)"
     DL_FOREACH_SAFE(_dl, _elem, _elem##Temp) _body                                                 \
   }
 
+// TODO: Replace dl_foreach_elem
+#define dl_foreach_elem_new(_type, _elem, _dl)                                                     \
+  _type _elem = {0};                                                                               \
+  _type _elem##Temp = {0};                                                                         \
+  DL_FOREACH_SAFE(_dl, _elem, _elem##Temp)
+
 #define dl_count(_type, _dl, _count)                                                               \
   size_t _count = 0;                                                                               \
   {                                                                                                \

@@ -122,7 +122,7 @@ void vulkan_pipeline_get_framebuffer_attachments(vulkan_pipeline *pipeline,
 void vulkan_pipeline_get_framebuffer_attachment_clear_values(vulkan_pipeline *pipeline,
                                                              VkClearValue *clearValues) {
   clearValues[0].color = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}};
-  clearValues[1].depthStencil = (VkClearDepthStencilValue){1.0f, 0};
+  clearValues[1].depthStencil = (VkClearDepthStencilValue){0.0f, 0};
 }
 
 VkCommandBuffer vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline,

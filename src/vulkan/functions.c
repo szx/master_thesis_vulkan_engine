@@ -491,7 +491,7 @@ VkPipeline vulkan_create_graphics_pipeline(
   depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
   depthStencil.depthTestEnable = true;
   depthStencil.depthWriteEnable = true;
-  depthStencil.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
+  depthStencil.depthCompareOp = VK_COMPARE_OP_GREATER_OR_EQUAL; // NOTE: Reverse Z.
   depthStencil.depthBoundsTestEnable = VK_FALSE;
   depthStencil.stencilTestEnable = VK_FALSE;
 

@@ -10,12 +10,12 @@ class EnumDeclaration:
 
     def is_flags(self) -> bool:
         found_flag_num = 0
-        none_value = 0x0
+        skip_values = [0, 1, 2]
         max_vulkan_enum_value = 0x7FFFFFFF
         for (name, value) in self.enumerators:
             if value == max_vulkan_enum_value:
                 continue
-            if value == none_value:
+            if value in skip_values:
                 continue
             if value & (value - 1) != 0:
                 return False

@@ -15,6 +15,7 @@
 #include "functions.h"
 #include "objects/batch.h"
 #include "objects/buffer.h"
+#include "objects/camera.h"
 #include "objects/descriptor.h"
 #include "objects/device.h"
 #include "objects/image.h"
