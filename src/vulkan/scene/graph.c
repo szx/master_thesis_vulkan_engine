@@ -20,35 +20,35 @@ vulkan_scene_graph *vulkan_scene_graph_create(vulkan_data_scene *data,
 void vulkan_scene_graph_destroy(vulkan_scene_graph *sceneGraph) {
   vulkan_scene_tree_destroy(sceneGraph->sceneTree);
 
-  dl_foreach_elem(vulkan_scene_node *, node, sceneGraph->root, { vulkan_scene_node_destroy(node); })
+  dl_foreach_elem(vulkan_scene_graph_node *, node, sceneGraph->root,
+                  { vulkan_scene_graph_node_destroy(node); })
 
   core_free(sceneGraph);
 }
 
-vulkan_scene_node *add_entity(vulkan_scene_graph *sceneGraph,
-                              vulkan_scene_node *parentSceneGraphNode,
-                              vulkan_scene_node_entity_type type, void *entity,
-                              bool createSceneGraphNode) {
+vulkan_scene_graph_node *add_entity(vulkan_scene_graph *sceneGraph,
+                                    vulkan_scene_graph_node *parentSceneGraphNode,
+                                    vulkan_data_object *object, vulkan_data_primitive *primitive,
+                                    bool createSceneGraphNode) {
   /* add scene graph node */
-  vulkan_scene_node *sceneGraphNode = NULL;
+  vulkan_scene_graph_node *sceneGraphNode = NULL;
 
   bool uniqueSceneGraphNode = true;
   bool existsSceneGraphNode = false;
 
   if (uniqueSceneGraphNode) {
-    dl_foreach_elem(vulkan_scene_node *, sceneNode, sceneGraph->root, {
-      if (sceneNode->entity == entity) {
+    dl_foreach_elem_new(vulkan_scene_graph_node *, sceneNode, sceneGraph->nodes) {
+      if (sceneNode->object == object && sceneNode->primitive == primitive) {
         // Return already added node.
-        assert(sceneNode->type == type);
         sceneGraphNode = sceneNode;
         existsSceneGraphNode = true;
         break;
       }
-    })
+    }
   }
 
   if (createSceneGraphNode && !existsSceneGraphNode) {
-    sceneGraphNode = vulkan_scene_node_create_for_scene_graph(type, entity, sceneGraph);
+    sceneGraphNode = vulkan_scene_graph_node_create(sceneGraph, object, primitive);
     DL_APPEND(sceneGraph->nodes, sceneGraphNode);
   }
   assert(sceneGraphNode != NULL);
@@ -56,37 +56,31 @@ vulkan_scene_node *add_entity(vulkan_scene_graph *sceneGraph,
   if (parentSceneGraphNode != NULL) {
     assert(sceneGraphNode != parentSceneGraphNode);
     if (createSceneGraphNode) {
-      utarray_push_back(sceneGraphNode->parentNodes, &parentSceneGraphNode);
-      if (sceneGraphNode->type == vulkan_scene_node_entity_type_object) {
-        utarray_push_back(parentSceneGraphNode->childObjectNodes, &sceneGraphNode);
-      } else if (sceneGraphNode->type == vulkan_scene_node_entity_type_primitive) {
-        utarray_push_back(parentSceneGraphNode->primitiveNodes, &sceneGraphNode);
-      } else {
-        verify(0);
-      }
+      vulkan_scene_graph_node_add_parent(sceneGraphNode, parentSceneGraphNode);
+      vulkan_scene_graph_node_add_child(parentSceneGraphNode, sceneGraphNode);
     }
   }
 
   /* add child graph nodes */
-  if (type == vulkan_scene_node_entity_type_root) {
-    vulkan_scene_node *sceneTreeNode =
-        vulkan_scene_node_create_for_scene_tree(type, entity, sceneGraph->sceneTree);
-    DL_APPEND(sceneGraph->sceneTree->nodes, sceneTreeNode);
-    utarray_push_back(sceneGraphNode->observers, &sceneTreeNode);
-  } else if (type == vulkan_scene_node_entity_type_object) {
-    vulkan_data_object *object = entity;
 
-    if (object->mesh != NULL) {
-      utarray_foreach_elem_deref (vulkan_data_primitive *, primitive, object->mesh->primitives) {
-        vulkan_scene_node *childSceneGraphNode =
-            add_entity(sceneGraph, sceneGraphNode, vulkan_scene_node_entity_type_primitive,
-                       primitive, !existsSceneGraphNode);
+  if (sceneGraphNode->parentNode == NULL) {
+    // root
+    vulkan_scene_tree_node *sceneTreeNode =
+        vulkan_scene_tree_node_create(sceneGraph->sceneTree, sceneGraphNode);
+    DL_APPEND(sceneGraph->sceneTree->nodes, sceneTreeNode);
+    vulkan_scene_graph_node_add_observer(sceneGraphNode, sceneTreeNode);
+  } else if (sceneGraphNode->object != NULL) {
+
+    if (sceneGraphNode->object->mesh != NULL) {
+      utarray_foreach_elem_deref (vulkan_data_primitive *, childPrimitive,
+                                  sceneGraphNode->object->mesh->primitives) {
+        vulkan_scene_graph_node *childSceneGraphNode =
+            add_entity(sceneGraph, sceneGraphNode, NULL, childPrimitive, !existsSceneGraphNode);
       }
     }
-    utarray_foreach_elem_deref (vulkan_data_object *, child, object->children) {
-      vulkan_scene_node *childSceneGraphNode =
-          add_entity(sceneGraph, sceneGraphNode, vulkan_scene_node_entity_type_object, child,
-                     !existsSceneGraphNode);
+    utarray_foreach_elem_deref (vulkan_data_object *, childObject, object->children) {
+      vulkan_scene_graph_node *childSceneGraphNode =
+          add_entity(sceneGraph, sceneGraphNode, childObject, NULL, !existsSceneGraphNode);
     }
   }
 
@@ -94,46 +88,22 @@ vulkan_scene_node *add_entity(vulkan_scene_graph *sceneGraph,
   return sceneGraphNode;
 }
 
-void remove_entity(vulkan_scene_graph *sceneGraph, vulkan_scene_node *sceneGraphNode) {
-  // FIXME: Simplify scene graph logic further - too many hoops to jump through right now.
+vulkan_scene_graph_node *vulkan_scene_graph_add_object(vulkan_scene_graph *sceneGraph,
+                                                       vulkan_scene_graph_node *sceneGraphNode,
+                                                       vulkan_scene_tree_node *sceneTreeNode,
+                                                       vulkan_data_object *successorObject) {
+  vulkan_scene_graph_node *childSceneGraphNode =
+      add_entity(sceneGraph, sceneGraphNode, successorObject, NULL, true);
 
-  assert(sceneGraphNode->type == vulkan_scene_node_entity_type_object);
-  vulkan_scene_node_remove_util(sceneGraphNode, sceneGraph->nodes);
-
-  // remove observers and their successors
-  utarray_foreach_elem_deref (vulkan_scene_node *, observerNode, sceneGraphNode->observers) {
-    vulkan_scene_node *sceneTreeNode = *observerNodeIt;
-    vulkan_scene_node_remove_util(sceneTreeNode, sceneGraph->sceneTree->nodes);
-    vulkan_scene_node_destroy(sceneTreeNode);
-  }
-
-  // free
-  vulkan_scene_node_destroy(sceneGraphNode);
-}
-
-vulkan_scene_node *vulkan_scene_graph_add_object(vulkan_scene_graph *sceneGraph,
-                                                 vulkan_scene_node *sceneGraphNode,
-                                                 vulkan_scene_node *sceneTreeNode,
-                                                 vulkan_data_object *successorObject) {
-  vulkan_scene_node *childSceneGraphNode = add_entity(
-      sceneGraph, sceneGraphNode, vulkan_scene_node_entity_type_object, successorObject, true);
-
-  vulkan_scene_node *childSceneTreeNode = vulkan_scene_tree_add_node(
-      sceneGraph->sceneTree, childSceneGraphNode, sceneGraphNode, sceneTreeNode,
-      vulkan_scene_node_entity_type_object, successorObject);
-
-  vulkan_scene_node_set_dirty(childSceneGraphNode);
+  vulkan_scene_tree_node *childSceneTreeNode = vulkan_scene_tree_add_node(
+      sceneGraph->sceneTree, childSceneGraphNode, sceneGraphNode, sceneTreeNode);
 
   return childSceneGraphNode;
 }
 
-void vulkan_scene_graph_remove_object(vulkan_scene_graph *sceneGraph,
-                                      vulkan_scene_node *sceneNode) {
-  remove_entity(sceneGraph, sceneNode);
-}
-
-void vulkan_scene_graph_set_dirty(vulkan_scene_graph *sceneGraph, vulkan_scene_node *sceneNode) {
-  utarray_foreach_elem_deref (vulkan_scene_node *, observerNode, sceneNode->observers) {
+void vulkan_scene_graph_set_dirty(vulkan_scene_graph *sceneGraph,
+                                  vulkan_scene_graph_node *sceneGraphNode) {
+  utarray_foreach_elem_deref (vulkan_scene_tree_node *, observerNode, sceneGraphNode->observers) {
     vulkan_scene_tree_set_dirty(sceneGraph->sceneTree, observerNode);
   }
 }
@@ -144,8 +114,9 @@ void vulkan_scene_graph_create_with_scene_data(vulkan_scene_graph *sceneGraph,
   assert(sceneGraph->root == NULL);
   assert(sceneGraph->nodes == NULL);
 
-  sceneGraph->root = add_entity(sceneGraph, NULL, vulkan_scene_node_entity_type_root, NULL, true);
-  sceneGraph->sceneTree->root = *(vulkan_scene_node **)utarray_front(sceneGraph->root->observers);
+  sceneGraph->root = add_entity(sceneGraph, NULL, NULL, NULL, true);
+  sceneGraph->sceneTree->root =
+      *(vulkan_scene_tree_node **)utarray_front(sceneGraph->root->observers);
 
   utarray_foreach_elem_deref (vulkan_data_object *, rootObject, sceneGraph->data->rootObjects) {
     vulkan_scene_graph_add_object(sceneGraph, sceneGraph->root, sceneGraph->sceneTree->root,
@@ -157,7 +128,7 @@ void vulkan_scene_graph_create_with_scene_data(vulkan_scene_graph *sceneGraph,
 
 void vulkan_scene_graph_debug_print(vulkan_scene_graph *sceneGraph) {
   log_raw(stdout, "digraph scene_graph { ");
-  vulkan_scene_node_debug_print(sceneGraph->root);
+  vulkan_scene_graph_node_debug_print(sceneGraph->root);
   log_raw(stdout, " }\n");
   vulkan_scene_tree_debug_print(sceneGraph->sceneTree);
 }

@@ -2,8 +2,9 @@
 
 #pragma once
 
-#include "../data/camera.h"
+#include "../data/object.h"
 #include "batch.h"
+#include "camera.h"
 #include "render_cache_list.h"
 #include "shader.h"
 #include "sync.h"
@@ -15,7 +16,7 @@
 typedef struct vulkan_render_state {
   /* CPU state */
   vulkan_render_cache_list *renderCacheList; ///< Pointer.
-  vulkan_data_camera *camera;                ///< Pointer.
+  vulkan_camera *camera;
   vulkan_batches *batches;
 
   /* GPU state */
@@ -29,8 +30,7 @@ typedef struct vulkan_render_state {
 } vulkan_render_state;
 
 vulkan_render_state *vulkan_render_state_create(vulkan_device *vkd,
-                                                vulkan_render_cache_list *renderCacheList,
-                                                vulkan_data_camera *camera);
+                                                vulkan_render_cache_list *renderCacheList);
 
 void vulkan_render_state_destroy(vulkan_render_state *renderState);
 

@@ -1,156 +1,147 @@
 #include "node.h"
 #include "graph.h"
 
-vulkan_scene_node *create_common(vulkan_scene_node_entity_type type, void *entity) {
-  vulkan_scene_node *sceneNode = core_alloc(sizeof(vulkan_scene_node));
+/* scene graph node */
+vulkan_scene_graph_node *vulkan_scene_graph_node_create(vulkan_scene_graph *sceneGraph,
+                                                        vulkan_data_object *object,
+                                                        vulkan_data_primitive *primitive) {
+  vulkan_scene_graph_node *sceneGraphNode = core_alloc(sizeof(vulkan_scene_graph_node));
 
-  sceneNode->type = type;
-  sceneNode->entity = entity;
-  if (sceneNode->type == vulkan_scene_node_entity_type_object) {
-    sceneNode->object = entity;
-  } else if (sceneNode->type == vulkan_scene_node_entity_type_primitive) {
-    sceneNode->primitive = entity;
-  } else if (sceneNode->type != vulkan_scene_node_entity_type_root) {
-    assert(0);
+  sceneGraphNode->sceneGraph = sceneGraph;
+  sceneGraphNode->object = object;
+  sceneGraphNode->primitive = primitive;
+
+  sceneGraphNode->parentNode = NULL;
+  utarray_alloc(sceneGraphNode->childNodes, sizeof(vulkan_scene_graph_node *));
+
+  sceneGraphNode->prev = NULL;
+  sceneGraphNode->next = NULL;
+
+  utarray_alloc(sceneGraphNode->observers, sizeof(vulkan_scene_tree_node *));
+
+  return sceneGraphNode;
+}
+
+void vulkan_scene_graph_node_destroy(vulkan_scene_graph_node *sceneGraphNode) {
+  utarray_free(sceneGraphNode->observers);
+  utarray_free(sceneGraphNode->childNodes);
+  core_free(sceneGraphNode);
+}
+
+void vulkan_scene_graph_node_add_observer(vulkan_scene_graph_node *sceneGraphNode,
+                                          vulkan_scene_tree_node *sceneTreeNode) {
+  utarray_push_back(sceneGraphNode->observers, &sceneTreeNode);
+}
+
+void vulkan_scene_graph_node_add_parent(vulkan_scene_graph_node *sceneGraphNode,
+                                        vulkan_scene_graph_node *parentNode) {
+  assert(sceneGraphNode->parentNode == NULL);
+  sceneGraphNode->parentNode = parentNode;
+}
+
+void vulkan_scene_graph_node_add_child(vulkan_scene_graph_node *sceneGraphNode,
+                                       vulkan_scene_graph_node *childNode) {
+  utarray_push_back(sceneGraphNode->childNodes, &childNode);
+}
+
+void debug_log_graph_node(vulkan_scene_graph_node *sceneGraphNode) {
+  log_raw(stdout, "\"%p\\n", sceneGraphNode);
+  if (sceneGraphNode->object != NULL) {
+    log_raw(stdout, "object: %p\\n", sceneGraphNode->object);
+    if (sceneGraphNode->object->camera != NULL) {
+      log_raw(stdout, "camera: %p\\n", sceneGraphNode->object->camera);
+    }
   }
-
-  utarray_alloc(sceneNode->parentNodes, sizeof(vulkan_scene_node *));
-  utarray_alloc(sceneNode->childObjectNodes, sizeof(vulkan_scene_node *));
-  utarray_alloc(sceneNode->primitiveNodes, sizeof(vulkan_scene_node *));
-
-  sceneNode->prev = NULL;
-  sceneNode->next = NULL;
-
-  return sceneNode;
-}
-
-vulkan_scene_node *vulkan_scene_node_create_for_scene_graph(vulkan_scene_node_entity_type type,
-                                                            void *entity,
-                                                            vulkan_scene_graph *sceneGraph) {
-  vulkan_scene_node *sceneNode = create_common(type, entity);
-
-  sceneNode->containerType = vulkan_scene_node_container_type_scene_graph;
-  sceneNode->sceneGraph = sceneGraph;
-  utarray_alloc(sceneNode->observers, sizeof(vulkan_scene_node *));
-
-  return sceneNode;
-}
-
-vulkan_scene_node *vulkan_scene_node_create_for_scene_tree(vulkan_scene_node_entity_type type,
-                                                           void *entity,
-                                                           vulkan_scene_tree *sceneTree) {
-  vulkan_scene_node *sceneNode = create_common(type, entity);
-
-  sceneNode->containerType = vulkan_scene_node_container_type_scene_tree;
-  sceneNode->sceneTree = sceneTree;
-  sceneNode->cache = vulkan_render_cache_create(sceneNode);
-  sceneNode->dirty = false;
-
-  return sceneNode;
-}
-
-void vulkan_scene_node_destroy(vulkan_scene_node *sceneNode) {
-  if (sceneNode->containerType == vulkan_scene_node_container_type_scene_graph) {
-    utarray_free(sceneNode->observers);
-  } else if (sceneNode->containerType == vulkan_scene_node_container_type_scene_tree) {
-    vulkan_render_cache_destroy(sceneNode->cache);
-  } else {
-    assert(0);
+  if (sceneGraphNode->primitive != NULL) {
+    log_raw(stdout, "vertex count: %d\\n", sceneGraphNode->primitive->vertexCount);
   }
-
-  // NOTE: Successor and observer nodes are freed by scene graph and scene tree.
-  utarray_free(sceneNode->parentNodes);
-  utarray_free(sceneNode->childObjectNodes);
-  utarray_free(sceneNode->primitiveNodes);
-  core_free(sceneNode);
-}
-
-void vulkan_scene_node_set_dirty(vulkan_scene_node *sceneNode) {
-  assert(sceneNode);
-  vulkan_scene_graph_set_dirty(sceneNode->sceneGraph, sceneNode);
-}
-
-void debug_log_node(vulkan_scene_node *sceneNode) {
-  log_raw(stdout, "\"%p\\n%s\\n", sceneNode,
-          vulkan_scene_node_entity_type_debug_str(sceneNode->type));
-  if (sceneNode->type == vulkan_scene_node_entity_type_object) {
-    log_raw(stdout, "childObjectNodes: %zu\\n", utarray_len(sceneNode->childObjectNodes));
-    log_raw(stdout, "primitiveNodes: %zu\\n", utarray_len(sceneNode->primitiveNodes));
-  } else if (sceneNode->type == vulkan_scene_node_entity_type_primitive) {
-    log_raw(stdout, "vertex count: %d\\n", sceneNode->primitive->vertexCount);
-  }
-  if (sceneNode->containerType == vulkan_scene_node_container_type_scene_graph) {
-    log_raw(stdout, "observers: %zu\\n", utarray_len(sceneNode->observers));
-  } else if (sceneNode->containerType == vulkan_scene_node_container_type_scene_tree) {
-    log_raw(stdout, "dirty: %d\\n", sceneNode->dirty);
-  } else {
-    assert(0);
-  }
+  log_raw(stdout, "childNodes: %zu\\n", utarray_len(sceneGraphNode->childNodes));
+  log_raw(stdout, "observers: %zu\\n", utarray_len(sceneGraphNode->observers));
   log_raw(stdout, "\"");
 }
 
-void vulkan_scene_node_remove_util(vulkan_scene_node *sceneNode, vulkan_scene_node *nodes) {
-  assert(sceneNode->type != vulkan_scene_node_entity_type_root);
+void vulkan_scene_graph_node_debug_print(vulkan_scene_graph_node *sceneGraphNode) {
+  debug_log_graph_node(sceneGraphNode);
+  log_raw(stdout, "; ");
 
-  // remove from list of nodes
-  bool found = false;
-  vulkan_scene_node *node, *tempNode;
-  DL_FOREACH_SAFE(nodes, node, tempNode) {
-    if (sceneNode == node) {
-      found = true;
-      DL_DELETE(nodes, sceneNode);
-      break;
-    }
-  }
-  if (!found) {
-    log_error("deleting node not in nodes");
-    return;
-  }
-
-  // remove from parents
-  utarray_foreach_elem_deref (vulkan_scene_node *, parentSceneNode, sceneNode->parentNodes) {
-    size_t idx = 0;
-    UT_array *successors = NULL;
-    if (sceneNode->type == vulkan_scene_node_entity_type_primitive) {
-      successors = parentSceneNode->primitiveNodes;
-    } else if (sceneNode->type == vulkan_scene_node_entity_type_object) {
-      successors = parentSceneNode->childObjectNodes;
-    }
-    utarray_foreach_elem_deref (vulkan_scene_node *, successor, successors) {
-      if (successor == sceneNode) {
-        break;
-      }
-      idx++;
-    }
-    assert(idx < utarray_len(successors));
-    utarray_erase(successors, idx, 1);
+  utarray_foreach_elem_deref (vulkan_scene_graph_node *, childNode, sceneGraphNode->childNodes) {
+    debug_log_graph_node(sceneGraphNode);
+    log_raw(stdout, " -> ");
+    debug_log_graph_node(childNode);
+    log_raw(stdout, "; ");
+    vulkan_scene_graph_node_debug_print(childNode);
   }
 }
 
-void vulkan_scene_node_debug_print(vulkan_scene_node *sceneNode) {
-  debug_log_node(sceneNode);
+/* scene tree node */
+
+vulkan_scene_tree_node *vulkan_scene_tree_node_create(vulkan_scene_tree *sceneTree,
+                                                      vulkan_scene_graph_node *sceneGraphNode) {
+  vulkan_scene_tree_node *sceneTreeNode = core_alloc(sizeof(vulkan_scene_tree_node));
+
+  sceneTreeNode->sceneTree = sceneTree;
+  sceneTreeNode->object = sceneGraphNode->object;
+  sceneTreeNode->primitive = sceneGraphNode->primitive;
+
+  sceneTreeNode->parentNode = NULL;
+  utarray_alloc(sceneTreeNode->childNodes, sizeof(vulkan_scene_tree_node *));
+
+  sceneTreeNode->prev = NULL;
+  sceneTreeNode->next = NULL;
+
+  sceneTreeNode->renderCache = vulkan_render_cache_create(sceneTreeNode);
+  sceneTreeNode->dirty = false;
+
+  return sceneTreeNode;
+}
+
+void vulkan_scene_tree_node_destroy(vulkan_scene_tree_node *sceneTreeNode) {
+  vulkan_render_cache_destroy(sceneTreeNode->renderCache);
+  utarray_free(sceneTreeNode->childNodes);
+  core_free(sceneTreeNode);
+}
+
+void vulkan_scene_tree_node_add_parent(vulkan_scene_tree_node *sceneTreeNode,
+                                       vulkan_scene_tree_node *parentNode) {
+  assert(sceneTreeNode->parentNode == NULL);
+  sceneTreeNode->parentNode = parentNode;
+}
+
+void vulkan_scene_tree_node_add_child(vulkan_scene_tree_node *sceneTreeNode,
+                                      vulkan_scene_tree_node *childNode) {
+  utarray_push_back(sceneTreeNode->childNodes, &childNode);
+}
+
+void debug_log_tree_node(vulkan_scene_tree_node *sceneTreeNode) {
+  log_raw(stdout, "\"%p\\n", sceneTreeNode);
+  if (sceneTreeNode->object != NULL) {
+    log_raw(stdout, "object: %p\\n", sceneTreeNode->object);
+    if (sceneTreeNode->object->camera != NULL) {
+      log_raw(stdout, "camera: %p\\n", sceneTreeNode->object->camera);
+    }
+  }
+  if (sceneTreeNode->primitive != NULL) {
+    log_raw(stdout, "vertex count: %d\\n", sceneTreeNode->primitive->vertexCount);
+  }
+  log_raw(stdout, "childNodes: %zu\\n", utarray_len(sceneTreeNode->childNodes));
+  log_raw(stdout, "\"");
+}
+
+void vulkan_scene_tree_node_debug_print(vulkan_scene_tree_node *sceneTreeNode) {
+  debug_log_tree_node(sceneTreeNode);
   log_raw(stdout, "; ");
 
-  if (sceneNode->containerType == vulkan_scene_node_container_type_scene_tree) {
-    log_raw(stdout, " { rank=same; ");
-    debug_log_node(sceneNode);
-    log_raw(stdout, " -> ");
-    vulkan_render_cache_debug_print(sceneNode->cache);
-    log_raw(stdout, " } ");
-  }
+  log_raw(stdout, " { rank=same; ");
+  debug_log_tree_node(sceneTreeNode);
+  log_raw(stdout, " -> ");
+  vulkan_render_cache_debug_print(sceneTreeNode->renderCache);
+  log_raw(stdout, " } ");
 
-  utarray_foreach_elem_deref (vulkan_scene_node *, childObjectNode, sceneNode->childObjectNodes) {
-    debug_log_node(sceneNode);
+  utarray_foreach_elem_deref (vulkan_scene_tree_node *, childNode, sceneTreeNode->childNodes) {
+    debug_log_tree_node(sceneTreeNode);
     log_raw(stdout, " -> ");
-    debug_log_node(childObjectNode);
+    debug_log_tree_node(childNode);
     log_raw(stdout, "; ");
-    vulkan_scene_node_debug_print(childObjectNode);
-  }
-  utarray_foreach_elem_deref (vulkan_scene_node *, primitiveNode, sceneNode->primitiveNodes) {
-    debug_log_node(sceneNode);
-    log_raw(stdout, " -> ");
-    debug_log_node(primitiveNode);
-    log_raw(stdout, "; ");
-    vulkan_scene_node_debug_print(primitiveNode);
+    vulkan_scene_tree_node_debug_print(childNode);
   }
 }

@@ -36,7 +36,7 @@ void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *unifor
 }
 
 void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniformBuffer,
-                                          vulkan_data_camera *camera) {
+                                          vulkan_camera *camera) {
   assert(utarray_len(uniformBuffer->renderCacheList->caches) > 0);
 
   utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
@@ -47,24 +47,10 @@ void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniform
                   uniformBuffer->instancesData->elements[instanceId].modelMat);
   }
 
-  if (camera->dirty) {
+  if (true /*cameraObject->camera->dirty*/) {
     vulkan_global_uniform_buffer_element *element = &uniformBuffer->globalData->elements[0];
-
-    vec3 negativePosition;
-    glm_vec3_negate_to(camera->position, negativePosition);
-    /*mat4 translationMat;
-    glm_translate_make(translationMat, negativePosition);
-    mat4 rotationMat;
-    glm_quat_mat4(camera->rotation, rotationMat);
-    glm_mat4_mul(rotationMat, translationMat, element->viewMat);*/
-
-    glm_quat_look(negativePosition, camera->rotation, element->viewMat);
-
-    glm_perspective(camera->fovY, camera->aspectRatio, camera->nearZ, camera->farZ,
-                    element->projMat);
-    element->projMat[1][1] *= -1; // invert for Y+ pointing up
-
-    camera->dirty = false;
+    vulkan_camera_set_view_matrix(camera, element->viewMat);
+    vulkan_camera_set_projection_matrix(camera, element->projMat);
   }
 
   // TODO: Dirty only parts of unified uniform buffer.

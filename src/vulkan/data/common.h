@@ -6,7 +6,6 @@
 #include "../../data/data.h"
 
 typedef struct vulkan_data_scene vulkan_data_scene;
-typedef struct vulkan_scene_node vulkan_scene_node;
 
 #define DECL_VULKAN_ENTITY(_name)                                                                  \
   data_key key;                                                                                    \

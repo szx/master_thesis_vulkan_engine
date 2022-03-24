@@ -20,7 +20,6 @@ typedef struct vulkan_data_scene {
   vulkan_data_vertex_attribute *vertexAttributes; /// List of all vertex attributes used by scene.
   vulkan_data_primitive *primitives;              /// List of all primitives used by scene.
   vulkan_data_object *objects;                    /// List of all objects in scene.
-  UT_array *cameras;                              /// vulkan_data_camera array, all cameras in scene
   UT_array *rootObjects; /// vulkan_data_object* array, object that are direct descendants of scene
 
   data_key key; /// Hash, used to prevent duplicates in asset database.

@@ -4,6 +4,7 @@
 void vulkan_data_object_init(vulkan_data_object *object, vulkan_data_scene *sceneData) {
   object->sceneData = sceneData;
   object->mesh = NULL;
+  object->camera = NULL;
   glm_mat4_identity(object->transform);
   utarray_alloc(object->children, sizeof(vulkan_data_object *));
 
@@ -14,6 +15,10 @@ void vulkan_data_object_deinit(vulkan_data_object *object) {
   if (object->mesh) {
     vulkan_data_mesh_deinit(object->mesh);
     core_free(object->mesh);
+  }
+  if (object->camera) {
+    vulkan_data_camera_deinit(object->camera);
+    core_free(object->camera);
   }
   utarray_free(object->children);
 }
@@ -29,6 +34,9 @@ data_key vulkan_data_object_calculate_key(vulkan_data_object *object) {
   if (object->mesh) {
     HASH_UPDATE(hashState, &object->mesh->key, sizeof(object->mesh->key))
   }
+  if (object->camera) {
+    HASH_UPDATE(hashState, &object->camera->key, sizeof(object->camera->key))
+  }
   HASH_DIGEST(hashState, value)
   HASH_END(hashState)
   return (data_key){value};
@@ -40,6 +48,11 @@ void vulkan_data_object_serialize(vulkan_data_object *object, data_asset_db *ass
   if (object->mesh) {
     vulkan_data_mesh_serialize(object->mesh, assetDb);
     data_asset_db_insert_object_mesh_key(assetDb, object->key, object->mesh->key);
+  }
+
+  if (object->camera) {
+    vulkan_data_camera_serialize(object->camera, assetDb);
+    data_asset_db_insert_object_camera_key(assetDb, object->key, object->camera->key);
   }
 
   data_mat4 transformMat;
@@ -65,13 +78,21 @@ void vulkan_data_object_deserialize(vulkan_data_object *object, data_asset_db *a
                 object->transform);
 
   data_key meshHash = data_asset_db_select_object_mesh_key(assetDb, object->key);
-
   if (meshHash.value != 0) {
     object->mesh = core_alloc(sizeof(vulkan_data_mesh));
     vulkan_data_mesh_init(object->mesh, object->sceneData);
     vulkan_data_mesh_deserialize(object->mesh, assetDb, meshHash);
   } else {
     log_debug("deserializing object without mesh");
+  }
+
+  data_key cameraHash = data_asset_db_select_object_camera_key(assetDb, object->key);
+  if (cameraHash.value != 0) {
+    object->camera = core_alloc(sizeof(vulkan_data_camera));
+    vulkan_data_camera_init(object->camera, object->sceneData);
+    vulkan_data_camera_deserialize(object->camera, assetDb, cameraHash);
+  } else {
+    log_debug("deserializing object without camera");
   }
 
   data_key_array childrenHashArray =
@@ -92,6 +113,10 @@ void vulkan_data_object_debug_print(vulkan_data_object *object, int indent) {
 
   if (object->mesh) {
     vulkan_data_mesh_debug_print(object->mesh, indent + 2);
+  }
+
+  if (object->camera) {
+    vulkan_data_camera_debug_print(object->camera, indent + 2);
   }
 
   size_t i = 0;

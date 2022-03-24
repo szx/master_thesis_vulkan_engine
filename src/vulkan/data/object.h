@@ -6,12 +6,13 @@
 #pragma once
 
 #include "../objects/vertex_stream.h"
+#include "camera.h"
 #include "common.h"
 #include "mesh.h"
 
 typedef struct vulkan_data_object {
-  vulkan_attribute_type attributes;
-  vulkan_data_mesh *mesh; /// Can be NULL if object is only transforms children.
+  vulkan_data_mesh *mesh;     /// Can be NULL if object is only transforms children.
+  vulkan_data_camera *camera; /// Can be NULL if object has no attached camera.
   mat4 transform;
   UT_array *children; /// vulkan_data_object* array
 

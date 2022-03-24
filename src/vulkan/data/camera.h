@@ -7,9 +7,6 @@
 #include "common.h"
 
 typedef struct vulkan_data_camera {
-  /* View matrix: camera position and rotation */
-  vec3 position;   /// Position in world space.
-  versor rotation; /// Rotation in world space.
   /* Projection matrix: view frustum */
   float fovY;        /// Vertical field of view.
   float aspectRatio; /// Aspect ratio.
@@ -30,3 +27,5 @@ data_key vulkan_data_camera_calculate_key(vulkan_data_camera *camera);
 void vulkan_data_camera_serialize(vulkan_data_camera *camera, data_asset_db *assetDb);
 void vulkan_data_camera_deserialize(vulkan_data_camera *camera, data_asset_db *assetDb,
                                     data_key key);
+
+void vulkan_data_camera_debug_print(vulkan_data_camera *camera, int indent);

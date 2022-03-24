@@ -2,11 +2,11 @@
 
 #pragma once
 
+#include "../data/object.h"
 #include "buffer.h"
+#include "camera.h"
 #include "render_cache_list.h"
 #include "shader.h"
-
-typedef struct vulkan_data_camera vulkan_data_camera;
 
 typedef struct vulkan_unified_uniform_buffer {
   /* CPU state */
@@ -26,7 +26,7 @@ vulkan_unified_uniform_buffer_create(vulkan_device *vkd, vulkan_render_cache_lis
 void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *uniformBuffer);
 
 void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniformBuffer,
-                                          vulkan_data_camera *camera);
+                                          vulkan_camera *camera);
 
 /* HIRO: uniform/storage buffers for:
  * node cached materials

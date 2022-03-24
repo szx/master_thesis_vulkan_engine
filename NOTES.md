@@ -9,7 +9,7 @@
     - The origin is at the top left.
     - +X points right
     - +X points left
-    - -Z points forward (reversed-Z)
+    - -Z points forward
     - [Perspective Projections](https://learnwebgl.brown37.net/08_projections/projections_perspective.html)
     - [The Indulgence of Engine Porting](http://whirlicube.com/the-indulgence-of-engine-porting.html)
 - Front faces are counterclockwise.

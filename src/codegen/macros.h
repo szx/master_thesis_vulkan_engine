@@ -4,17 +4,17 @@
 
 #define END_OF_DATA_CONFIG_SECTION
 #define DATA_CONFIG_SECTIONS(X, ...) \
-  X(controls, __VA_ARGS__) \
   X(graphics, __VA_ARGS__) \
   X(settings, __VA_ARGS__) \
+  X(controls, __VA_ARGS__) \
   END_OF_DATA_CONFIG_SECTION
 
 #define END_OF_DATA_CONFIG_INT_KEYS
 #define DATA_CONFIG_INT_KEYS(X, ...) \
-  X(controls, Enabled, 1, __VA_ARGS__) \
   X(graphics, WindowWidth, 640, __VA_ARGS__) \
   X(graphics, WindowHeight, 480, __VA_ARGS__) \
   X(graphics, MaxInstanceCount, 1000, __VA_ARGS__) \
+  X(controls, Enabled, 1, __VA_ARGS__) \
   END_OF_DATA_CONFIG_INT_KEYS
 
 #define END_OF_DATA_CONFIG_STR_KEYS
@@ -45,8 +45,8 @@
   X(vertexAttribute, key, key, valuesint, int_array, valuesvec2, vec2_array, valuesvec3, vec3_array, __VA_ARGS__) \
   X(primitive, key, key, material, key, topology, int, indices, key, positions, key, normals, key, colors, key, texcoords, key, __VA_ARGS__) \
   X(mesh, key, key, primitives, key_array, __VA_ARGS__) \
-  X(object, key, key, transform, mat4, mesh, key, children, key_array, __VA_ARGS__) \
-  X(camera, key, key, position, vec3, rotation, vec4, fovy, float, aspectratio, float, nearz, float, farz, float, __VA_ARGS__) \
+  X(object, key, key, transform, mat4, mesh, key, camera, key, children, key_array, __VA_ARGS__) \
+  X(camera, key, key, fovy, float, aspectratio, float, nearz, float, farz, float, __VA_ARGS__) \
   X(scene, key, key, name, text, objects, key_array, cameras, key_array, __VA_ARGS__) \
   END_OF_DATA_ASSET_DB_TABLES
 
@@ -89,10 +89,9 @@
   X(object, key, key, __VA_ARGS__) \
   X(object, transform, mat4, __VA_ARGS__) \
   X(object, mesh, key, __VA_ARGS__) \
+  X(object, camera, key, __VA_ARGS__) \
   X(object, children, key_array, __VA_ARGS__) \
   X(camera, key, key, __VA_ARGS__) \
-  X(camera, position, vec3, __VA_ARGS__) \
-  X(camera, rotation, vec4, __VA_ARGS__) \
   X(camera, fovY, float, __VA_ARGS__) \
   X(camera, aspectRatio, float, __VA_ARGS__) \
   X(camera, nearZ, float, __VA_ARGS__) \

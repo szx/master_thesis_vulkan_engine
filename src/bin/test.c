@@ -5,7 +5,7 @@
 
 #include <stdlib.h>
 
-#define GLTF_NAME "triangles"
+#define GLTF_NAME "cameras"
 
 // Loading sponza.gltf.
 TEST gltf_loading() {
@@ -21,24 +21,6 @@ TEST gltf_loading() {
 
   ASSERT_STR_EQ(utstring_body(gltfSceneData->name), utstring_body(assetDbSceneData->name));
   ASSERT_EQ(gltfSceneData->key.value, assetDbSceneData->key.value);
-  ASSERT_EQ(utarray_len(gltfSceneData->cameras), utarray_len(assetDbSceneData->cameras));
-
-  utarray_foreach_elem_it (vulkan_data_camera *, assetDbCamera, assetDbSceneData->cameras) {
-    bool foundCorrespondingCamera = false;
-    utarray_foreach_elem_it (vulkan_data_camera *, gltfCamera, gltfSceneData->cameras) {
-      if (gltfCamera->key.value == assetDbCamera->key.value) {
-        foundCorrespondingCamera = true;
-        break;
-      }
-    }
-    ASSERT_EQ(foundCorrespondingCamera, true);
-    ASSERT_MEM_EQ(gltfCamera->position, assetDbCamera->position, sizeof(vec3));
-    ASSERT_MEM_EQ(gltfCamera->rotation, assetDbCamera->rotation, sizeof(versor));
-    ASSERT_EQ(gltfCamera->fovY, assetDbCamera->fovY);
-    ASSERT_EQ(gltfCamera->aspectRatio, assetDbCamera->aspectRatio);
-    ASSERT_EQ(gltfCamera->nearZ, assetDbCamera->nearZ);
-    ASSERT_EQ(gltfCamera->farZ, assetDbCamera->farZ);
-  }
 
 #define ASSERT_VERTEX_ATTRIBUTE(_name)                                                             \
   ASSERT_EQ(utarray_len(gltfPrimitive->_name->data), utarray_len(assetDbPrimitive->_name->data));  \
@@ -64,6 +46,10 @@ TEST gltf_loading() {
     vulkan_data_mesh *assetDbMesh = assetDbNode->mesh;
     ASSERT((gltfMesh == NULL && assetDbMesh == NULL) ||
            (gltfMesh->key.value == assetDbMesh->key.value));
+    vulkan_data_camera *gltfCamera = gltfNode->camera;
+    vulkan_data_camera *assetDbCamera = assetDbNode->camera;
+    ASSERT((gltfCamera == NULL && assetDbCamera == NULL) ||
+           (gltfCamera->key.value == assetDbCamera->key.value));
 
     bool foundCorrespondingPrimitive = false;
     dl_foreach_elem(vulkan_data_primitive *, gltfPrimitive, gltfSceneData->primitives, {
@@ -140,6 +126,28 @@ TEST shaderc_compiling() {
 
 SUITE(shaderc_suite) { RUN_TEST(shaderc_compiling); }
 
+void assert_graph(vulkan_scene_graph *sceneGraph) {
+
+  vulkan_scene_graph_debug_print(sceneGraph); /* scene tree */
+  vulkan_scene_tree *sceneTree = sceneGraph->sceneTree;
+  assert(utarray_len(sceneTree->dirtyNodes) == 0);
+  size_t primitiveNodeNum = 0;
+  dl_foreach_elem_new(vulkan_scene_tree_node *, sceneNode,
+                      sceneTree->nodes) { /*log_debug("tree node: %p", sceneNode);*/
+    if (sceneNode->object != NULL) {
+      assert(utarray_len(sceneNode->childNodes) > 0 || sceneNode->object->camera != NULL);
+    }
+    if (sceneNode->primitive != NULL) {
+      assert(utarray_len(sceneNode->childNodes) == 0);
+      primitiveNodeNum++;
+    }
+    assert(!sceneNode->dirty);
+  }
+  /* cache list */
+  vulkan_render_cache_list *renderCacheList = sceneTree->renderCacheList;
+  assert(utarray_len(renderCacheList->caches) == primitiveNodeNum);
+}
+
 // Building scene graph.
 TEST scene_graph_building() {
   data_config *config = data_config_create();
@@ -154,58 +162,22 @@ TEST scene_graph_building() {
       vulkan_render_cache_list_create(config->graphicsMaxInstanceCount);
   vulkan_scene_graph *sceneGraph = vulkan_scene_graph_create(assetDbSceneData, renderCacheList);
 
-#define ASSERT_GRAPH()                                                                             \
-  do {                                                                                             \
-    vulkan_scene_graph_debug_print(sceneGraph);                                                    \
-    /* scene tree */                                                                               \
-    vulkan_scene_tree *sceneTree = sceneGraph->sceneTree;                                          \
-    ASSERT_EQ(utarray_len(sceneTree->dirtyNodes), 0);                                              \
-    size_t primitiveNodeNum = 0;                                                                   \
-    dl_foreach_elem(vulkan_scene_node *, sceneNode, sceneTree->nodes, {                            \
-      /*log_debug("tree node: %p", sceneNode);*/                                                   \
-      ASSERT_EQ(sceneNode->containerType, vulkan_scene_node_container_type_scene_tree);            \
-      ASSERT(sceneNode->type == vulkan_scene_node_entity_type_root ||                              \
-             utarray_len(sceneNode->parentNodes) > 0);                                             \
-      if (sceneNode->type == vulkan_scene_node_entity_type_root) {                                 \
-        ASSERT_GT(utarray_len(sceneNode->childObjectNodes), 0);                                    \
-        ASSERT_EQ(utarray_len(sceneNode->primitiveNodes), 0);                                      \
-      } else if (sceneNode->type == vulkan_scene_node_entity_type_object) {                        \
-        ASSERT(utarray_len(sceneNode->primitiveNodes) > 0 ||                                       \
-               utarray_len(sceneNode->childObjectNodes) > 0);                                      \
-      } else if (sceneNode->type == vulkan_scene_node_entity_type_primitive) {                     \
-        ASSERT_EQ(utarray_len(sceneNode->childObjectNodes), 0);                                    \
-        ASSERT_EQ(utarray_len(sceneNode->primitiveNodes), 0);                                      \
-        primitiveNodeNum++;                                                                        \
-      } else {                                                                                     \
-        FAILm("unknown node type");                                                                \
-      }                                                                                            \
-      ASSERT_FALSE(sceneNode->dirty);                                                              \
-    })                                                                                             \
-    /* cache list */                                                                               \
-    vulkan_render_cache_list *renderCacheList = sceneTree->renderCacheList;                        \
-    ASSERT(utarray_len(renderCacheList->caches) == primitiveNodeNum);                              \
-  } while (0)
-
-  ASSERT_GRAPH();
-
   log_info("Verify cache accumulation.");
-  vulkan_scene_node *firstObjectNode =
-      *(vulkan_scene_node **)utarray_front(sceneGraph->root->childObjectNodes);
-  ASSERT_NEQ(firstObjectNode, NULL);
-  ASSERT_EQ(firstObjectNode->type, vulkan_scene_node_entity_type_object);
+  vulkan_scene_graph_node *firstObjectNode =
+      *(vulkan_scene_graph_node **)utarray_front(sceneGraph->root->childNodes);
+  assert(firstObjectNode != NULL);
+  assert(firstObjectNode->object != NULL);
   firstObjectNode->object->transform[0][0] = 2;
-  vulkan_scene_node_set_dirty(firstObjectNode);
+  vulkan_scene_graph_set_dirty(sceneGraph, firstObjectNode);
   vulkan_scene_tree_validate(sceneGraph->sceneTree);
-  ASSERT_GRAPH();
+  assert_graph(sceneGraph);
 
-  vulkan_scene_node *sceneTreeNode =
-      *(vulkan_scene_node **)utarray_front(firstObjectNode->observers);
+  vulkan_scene_tree_node *sceneTreeNode =
+      *(vulkan_scene_tree_node **)utarray_front(firstObjectNode->observers);
   while (sceneTreeNode != NULL) {
-    ASSERT_EQ(sceneTreeNode->cache->transform[0][0], 2);
-    if (utarray_len(sceneTreeNode->childObjectNodes) > 0) {
-      sceneTreeNode = *(vulkan_scene_node **)utarray_front(sceneTreeNode->childObjectNodes);
-    } else if (utarray_len(sceneTreeNode->primitiveNodes) > 0) {
-      sceneTreeNode = *(vulkan_scene_node **)utarray_front(sceneTreeNode->primitiveNodes);
+    ASSERT_EQ(sceneTreeNode->renderCache->transform[0][0], 2);
+    if (utarray_len(sceneTreeNode->childNodes) > 0) {
+      sceneTreeNode = *(vulkan_scene_tree_node **)utarray_front(sceneTreeNode->childNodes);
     } else {
       sceneTreeNode = NULL;
     }
@@ -221,17 +193,18 @@ TEST scene_graph_building() {
   vulkan_scene_graph_add_object(sceneGraph, firstObjectNode, secondObject);
   vulkan_scene_tree_debug_print(sceneGraph->sceneTree);
   vulkan_scene_tree_validate(sceneGraph->sceneTree);
-  ASSERT_GRAPH();
+  assert_graph(sceneGraph);
   ASSERT_EQ(utarray_len(firstObjectNode->childObjectNodes), 2);
   vulkan_scene_graph_remove_object(sceneGraph, firstAddedNode);
   vulkan_scene_graph_debug_print(sceneGraph);
-  ASSERT_GRAPH();
+  assert_graph(sceneGraph);
   ASSERT_EQ(utarray_len(firstObjectNode->childObjectNodes), 0);
 */
 
   log_info("Test batching.");
   vulkan_batches *batches = vulkan_batches_create(renderCacheList);
 
+  renderCacheList->dirty = false;
   vulkan_batches_update(batches, vulkan_batch_policy_none);
   vulkan_batches_debug_print(batches);
   dl_count(vulkan_batch *, batches->batches, batchNoneLen);
@@ -256,13 +229,15 @@ TEST scene_graph_building() {
 
   log_info("Test scene renderer.");
   vulkan_swap_chain *vks = vulkan_swap_chain_create(vkd);
-  vulkan_renderer *sceneRenderer = vulkan_renderer_create(config, assetDb, vks, sceneName);
-  vulkan_renderer_debug_print(sceneRenderer);
+  vulkan_renderer *renderer = vulkan_renderer_create(config, assetDb, vks, sceneName);
+  vulkan_renderer_update(renderer);
+  vulkan_renderer_send_to_device(renderer);
+  vulkan_renderer_debug_print(renderer);
   // HIRO more renderer tests
-  ASSERT(sceneRenderer->renderState->unifiedGeometryBuffer->indexBuffer->totalSize > 0);
-  ASSERT(sceneRenderer->renderState->unifiedGeometryBuffer->vertexBuffer->totalSize > 0);
+  ASSERT(renderer->renderState->unifiedGeometryBuffer->indexBuffer->totalSize > 0);
+  ASSERT(renderer->renderState->unifiedGeometryBuffer->vertexBuffer->totalSize > 0);
 
-  vulkan_renderer_destroy(sceneRenderer);
+  vulkan_renderer_destroy(renderer);
   vulkan_swap_chain_destroy(vks);
   vulkan_render_cache_list_destroy(renderCacheList);
   vulkan_scene_graph_destroy(sceneGraph);
@@ -281,9 +256,9 @@ GREATEST_MAIN_DEFS(); // NOLINT
 int main(int argc, char *argv[]) {
   GREATEST_MAIN_BEGIN();
   platform_create();
-  RUN_SUITE(shaderc_suite);
-  //  RUN_SUITE(gltf_suite);
-  // RUN_SUITE(scene_graph_suite);
+  // RUN_SUITE(shaderc_suite);
+  // RUN_SUITE(gltf_suite);
+  RUN_SUITE(scene_graph_suite);
   platform_destroy();
   GREATEST_MAIN_END();
 }

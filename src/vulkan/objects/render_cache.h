@@ -8,19 +8,21 @@
 #pragma once
 
 #include "../common.h"
+#include "../data/camera.h"
 
-typedef struct vulkan_scene_node vulkan_scene_node;
+typedef struct vulkan_scene_tree_node vulkan_scene_tree_node;
 typedef struct vulkan_data_mesh vulkan_data_mesh;
 typedef struct vulkan_data_primitive vulkan_data_primitive;
 
 typedef struct vulkan_render_cache {
-  vulkan_scene_node *node;
+  vulkan_scene_tree_node *node;
 
   /* cache state accumulated from scene tree */
   size_t distanceFromRoot;
   bool visible;
   mat4 transform;                   ///< Accumulated from object node.
   vulkan_data_mesh *mesh;           ///< Accumulated from object node.
+  vulkan_data_camera camera;        ///< Accumulated from object node.
   vulkan_data_primitive *primitive; ///< Accumulated from primitive node.
 
   /* cache state accumulated from vertex stream */
@@ -33,7 +35,7 @@ typedef struct vulkan_render_cache {
   struct vulkan_render_cache *prev, *next;
 } vulkan_render_cache;
 
-vulkan_render_cache *vulkan_render_cache_create(vulkan_scene_node *sceneNode);
+vulkan_render_cache *vulkan_render_cache_create(vulkan_scene_tree_node *sceneTreeNode);
 void vulkan_render_cache_destroy(vulkan_render_cache *renderCache);
 
 /// Set cache with parent node.

@@ -257,49 +257,38 @@ vulkan_data_mesh *parse_cgltf_mesh(vulkan_data_scene *sceneData, cgltf_mesh *cgl
   return mesh;
 }
 
+vulkan_data_camera *parse_cgltf_camera(vulkan_data_scene *sceneData, cgltf_camera *cgltfCamera) {
+  if (cgltfCamera == NULL) {
+    return NULL;
+  }
+
+  vulkan_data_camera *camera = core_alloc(sizeof(vulkan_data_camera));
+  vulkan_data_camera_init(camera, sceneData);
+
+  // TODO: Support for orthographic projection.
+  camera->fovY = cgltfCamera->data.perspective.yfov;
+  camera->aspectRatio = cgltfCamera->data.perspective.aspect_ratio;
+  camera->nearZ = cgltfCamera->data.perspective.znear;
+  camera->farZ = cgltfCamera->data.perspective.zfar;
+  camera->key = vulkan_data_camera_calculate_key(camera);
+
+  return camera;
+}
+
 vulkan_data_object *parse_cgltf_node(vulkan_data_scene *sceneData, cgltf_node *cgltfNode) {
   assert(cgltfNode->extras.start_offset == 0 && cgltfNode->extras.end_offset == 0);
   assert(cgltfNode->light == NULL);
   assert(cgltfNode->weights_count == 0);
 
-  if (cgltfNode->camera != NULL) {
-    cgltf_camera *cgltfCamera = cgltfNode->camera;
-    assert(cgltfCamera->type == cgltf_camera_type_perspective);
-
-    vulkan_data_camera camera;
-    vulkan_data_camera_init(&camera, sceneData);
-    // alignment problems when using glm_vec3_copy
-    if (cgltfNode->has_matrix) {
-      mat4 cameraTransform;
-      cgltf_node_transform_world(cgltfNode, (float *)cameraTransform);
-      vec4 translation;
-      mat4 rotation;
-      vec3 scale;
-      glm_decompose(cameraTransform, translation, rotation, scale);
-      glm_vec3_copy(translation, camera.position);
-      glm_mat4_quat(rotation, camera.rotation);
-    } else {
-      camera.position[0] = cgltfNode->translation[0];
-      camera.position[1] = cgltfNode->translation[1];
-      camera.position[2] = cgltfNode->translation[2];
-      camera.rotation[0] = cgltfNode->rotation[0];
-      camera.rotation[1] = cgltfNode->rotation[1];
-      camera.rotation[2] = cgltfNode->rotation[2];
-      camera.rotation[3] = cgltfNode->rotation[3];
-    }
-    camera.fovY = cgltfCamera->data.perspective.yfov;
-    camera.aspectRatio = cgltfCamera->data.perspective.aspect_ratio;
-    camera.nearZ = cgltfCamera->data.perspective.znear;
-    camera.farZ = cgltfCamera->data.perspective.zfar;
-    utarray_push_back(sceneData->cameras, &camera);
-  }
-
   cgltf_mesh *cgltfMesh = cgltfNode->mesh;
+  cgltf_camera *cgltfCamera = cgltfNode->camera;
 
   vulkan_data_object *object = core_alloc(sizeof(vulkan_data_object));
   vulkan_data_object_init(object, sceneData);
 
   object->mesh = parse_cgltf_mesh(sceneData, cgltfMesh);
+  object->camera = parse_cgltf_camera(sceneData, cgltfCamera);
+
   // TODO: Animation, will probably require cgltf_node_transform_local().
   cgltf_node_transform_local(cgltfNode, (float *)object->transform);
   for (size_t childIdx = 0; childIdx < cgltfNode->children_count; childIdx++) {
@@ -352,16 +341,6 @@ data_key vulkan_data_scene_calculate_key(vulkan_data_scene *sceneData) {
 
 void vulkan_data_scene_serialize(vulkan_data_scene *sceneData, data_asset_db *assetDb) {
   // vulkan_data_scene_debug_print(sceneData);
-  UT_array *cameraKeys = NULL;
-  utarray_alloc(cameraKeys, sizeof(data_key));
-  utarray_foreach_elem_it (vulkan_data_camera *, camera, sceneData->cameras) {
-    vulkan_data_camera_serialize(camera, assetDb);
-    utarray_push_back(cameraKeys, &camera->key);
-  }
-  data_asset_db_insert_scene_cameras_key_array(assetDb, sceneData->key,
-                                               data_key_array_temp(cameraKeys));
-  utarray_free(cameraKeys);
-
   UT_array *objectKeys = NULL;
   utarray_alloc(objectKeys, sizeof(data_key));
   utarray_foreach_elem_deref (vulkan_data_object *, rootObject, sceneData->rootObjects) {
@@ -378,18 +357,8 @@ void vulkan_data_scene_deserialize(vulkan_data_scene *sceneData, data_asset_db *
                                    data_key key) {
   sceneData->key = key;
 
-  data_key_array cameraKeyArray =
-      data_asset_db_select_scene_cameras_key_array(assetDb, sceneData->key);
   data_key_array objectKeyArray =
       data_asset_db_select_scene_objects_key_array(assetDb, sceneData->key);
-
-  utarray_foreach_elem_deref (data_key, cameraKey, cameraKeyArray.values) {
-    vulkan_data_camera camera;
-    vulkan_data_camera_init(&camera, sceneData);
-    vulkan_data_camera_deserialize(&camera, assetDb, cameraKey);
-    utarray_push_back(sceneData->cameras, &camera);
-  }
-  data_key_array_deinit(&cameraKeyArray);
 
   utarray_foreach_elem_deref (data_key, objectKey, objectKeyArray.values) {
     /* object data */
@@ -442,11 +411,6 @@ vulkan_data_scene *vulkan_data_scene_create(UT_string *name) {
 
   sceneData->objects = NULL;
 
-  utarray_alloc(sceneData->cameras, sizeof(vulkan_data_camera));
-  vulkan_data_camera defaultCamera;
-  vulkan_data_camera_init(&defaultCamera, sceneData);
-  utarray_push_back(sceneData->cameras, &defaultCamera);
-
   utarray_alloc(sceneData->rootObjects, sizeof(vulkan_data_object *));
 
   sceneData->key = vulkan_data_scene_calculate_key(sceneData);
@@ -491,11 +455,6 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
     vulkan_data_object_deinit(object);
     core_free(object);
   })
-
-  utarray_foreach_elem_it (vulkan_data_camera *, camera, sceneData->cameras) {
-    vulkan_data_camera_deinit(camera);
-  }
-  utarray_free(sceneData->cameras);
 
   utarray_free(sceneData->rootObjects);
 

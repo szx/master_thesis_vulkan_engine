@@ -14,7 +14,6 @@ typedef struct vulkan_renderer {
   vulkan_data_scene *data;
   vulkan_render_cache_list *renderCacheList;
   vulkan_scene_graph *sceneGraph;
-  vulkan_data_camera camera;
 
   /* GPU state */
   vulkan_device *vkd;     ///< Pointer.

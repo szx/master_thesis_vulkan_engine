@@ -12,14 +12,10 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
       vulkan_render_cache_list_create(renderer->config->graphicsMaxInstanceCount);
 
   renderer->sceneGraph = vulkan_scene_graph_create(renderer->data, renderer->renderCacheList);
-  vulkan_data_camera_init(&renderer->camera, renderer->data);
-  vulkan_data_camera_copy(&renderer->camera, utarray_back(renderer->data->cameras));
-  utarray_back(renderer->data->cameras);
 
   renderer->vkd = vks->vkd;
   renderer->vks = vks;
-  renderer->renderState =
-      vulkan_render_state_create(renderer->vkd, renderer->renderCacheList, &renderer->camera);
+  renderer->renderState = vulkan_render_state_create(renderer->vkd, renderer->renderCacheList);
   renderer->pipeline = vulkan_pipeline_create(renderer->vks, renderer->renderState);
 
   return renderer;

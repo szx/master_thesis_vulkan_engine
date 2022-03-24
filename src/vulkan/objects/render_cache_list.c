@@ -5,7 +5,7 @@ vulkan_render_cache_list *vulkan_render_cache_list_create(size_t maxCount) {
   vulkan_render_cache_list *renderCacheList = core_alloc(sizeof(vulkan_render_cache_list));
 
   renderCacheList->maxCount = maxCount;
-  utarray_alloc(renderCacheList->caches, sizeof(vulkan_scene_node *));
+  utarray_alloc(renderCacheList->caches, sizeof(vulkan_render_cache *));
   renderCacheList->attributes = vulkan_attribute_type_unknown;
 
   renderCacheList->dirty = true;

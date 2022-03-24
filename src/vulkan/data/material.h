@@ -7,8 +7,6 @@
 #include "common.h"
 #include "texture.h"
 
-typedef struct vulkan_scene_node vulkan_scene_node;
-
 typedef struct vulkan_data_material {
   vec4 baseColorFactor;         /// sRGBA
   float metallicFactor;
