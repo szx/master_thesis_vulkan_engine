@@ -11,7 +11,6 @@ vulkan_scene_graph_node *vulkan_scene_graph_node_create(vulkan_scene_graph *scen
   sceneGraphNode->object = object;
   sceneGraphNode->primitive = primitive;
 
-  sceneGraphNode->parentNode = NULL;
   utarray_alloc(sceneGraphNode->childNodes, sizeof(vulkan_scene_graph_node *));
 
   sceneGraphNode->prev = NULL;
@@ -31,12 +30,6 @@ void vulkan_scene_graph_node_destroy(vulkan_scene_graph_node *sceneGraphNode) {
 void vulkan_scene_graph_node_add_observer(vulkan_scene_graph_node *sceneGraphNode,
                                           vulkan_scene_tree_node *sceneTreeNode) {
   utarray_push_back(sceneGraphNode->observers, &sceneTreeNode);
-}
-
-void vulkan_scene_graph_node_add_parent(vulkan_scene_graph_node *sceneGraphNode,
-                                        vulkan_scene_graph_node *parentNode) {
-  assert(sceneGraphNode->parentNode == NULL);
-  sceneGraphNode->parentNode = parentNode;
 }
 
 void vulkan_scene_graph_node_add_child(vulkan_scene_graph_node *sceneGraphNode,

@@ -23,7 +23,6 @@ typedef struct vulkan_scene_graph_node {
   vulkan_data_object *object;       ///< Pointer.
   vulkan_data_primitive *primitive; ///< Pointer.
 
-  struct vulkan_scene_graph_node *parentNode;
   UT_array *childNodes; ///< vulkan_scene_graph_node* list
 
   struct vulkan_scene_graph_node *prev, *next; ///< List of all nodes in scene graph.
@@ -39,9 +38,6 @@ void vulkan_scene_graph_node_destroy(vulkan_scene_graph_node *sceneGraphNode);
 
 void vulkan_scene_graph_node_add_observer(vulkan_scene_graph_node *sceneGraphNode,
                                           vulkan_scene_tree_node *sceneTreeNode);
-
-void vulkan_scene_graph_node_add_parent(vulkan_scene_graph_node *sceneGraphNode,
-                                        vulkan_scene_graph_node *parentNode);
 
 void vulkan_scene_graph_node_add_child(vulkan_scene_graph_node *sceneGraphNode,
                                        vulkan_scene_graph_node *childNode);

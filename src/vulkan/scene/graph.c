@@ -14,6 +14,9 @@ vulkan_scene_graph *vulkan_scene_graph_create(vulkan_data_scene *data,
   vulkan_scene_graph_set_dirty(sceneGraph, sceneGraph->root);
   vulkan_scene_tree_validate(sceneGraph->sceneTree);
 
+  vulkan_render_cache_list_add_camera_render_cache(sceneGraph->sceneTree->renderCacheList,
+                                                   sceneGraph->sceneTree->root->renderCache);
+
   return sceneGraph;
 }
 
@@ -56,14 +59,13 @@ vulkan_scene_graph_node *add_entity(vulkan_scene_graph *sceneGraph,
   if (parentSceneGraphNode != NULL) {
     assert(sceneGraphNode != parentSceneGraphNode);
     if (createSceneGraphNode) {
-      vulkan_scene_graph_node_add_parent(sceneGraphNode, parentSceneGraphNode);
       vulkan_scene_graph_node_add_child(parentSceneGraphNode, sceneGraphNode);
     }
   }
 
   /* add child graph nodes */
 
-  if (sceneGraphNode->parentNode == NULL) {
+  if (parentSceneGraphNode == NULL) {
     // root
     vulkan_scene_tree_node *sceneTreeNode =
         vulkan_scene_tree_node_create(sceneGraph->sceneTree, sceneGraphNode);

@@ -5,7 +5,7 @@
 
 #include <stdlib.h>
 
-#define GLTF_NAME "cameras"
+#define GLTF_NAME "triangles"
 
 // Loading sponza.gltf.
 TEST gltf_loading() {
