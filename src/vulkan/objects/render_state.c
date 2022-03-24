@@ -2,7 +2,8 @@
 
 vulkan_render_state *vulkan_render_state_create(vulkan_device *vkd,
                                                 vulkan_render_cache_list *renderCacheList) {
-  assert(utarray_len(renderCacheList->caches) > 0);
+  assert(utarray_len(renderCacheList->primitiveRenderCaches) > 0);
+  assert(utarray_len(renderCacheList->cameraRenderCaches) > 0);
 
   vulkan_render_state *renderState = core_alloc(sizeof(vulkan_render_state));
 

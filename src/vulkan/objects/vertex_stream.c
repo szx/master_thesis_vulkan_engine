@@ -60,7 +60,8 @@ void vulkan_vertex_stream_update(vulkan_vertex_stream *stream) {
 
   // add unique primitives to geometry buffer
   vulkan_render_cache *lastRenderCache = NULL;
-  utarray_foreach_elem_deref (vulkan_render_cache *, renderCache, stream->renderCacheList->caches) {
+  utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
+                              stream->renderCacheList->primitiveRenderCaches) {
     vulkan_vertex_stream_add_primitive(stream, renderCache, lastRenderCache);
     lastRenderCache = renderCache;
   }

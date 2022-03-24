@@ -145,7 +145,7 @@ void assert_graph(vulkan_scene_graph *sceneGraph) {
   }
   /* cache list */
   vulkan_render_cache_list *renderCacheList = sceneTree->renderCacheList;
-  assert(utarray_len(renderCacheList->caches) == primitiveNodeNum);
+  assert(utarray_len(renderCacheList->primitiveRenderCaches) == primitiveNodeNum);
 }
 
 // Building scene graph.

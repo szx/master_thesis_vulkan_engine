@@ -8,7 +8,7 @@ vulkan_unified_uniform_buffer_create(vulkan_device *vkd,
   uniformBuffer->renderCacheList = renderCacheList;
 
   uniformBuffer->instancesData =
-      vulkan_instances_uniform_buffer_data_create(renderCacheList->maxCount);
+      vulkan_instances_uniform_buffer_data_create(renderCacheList->maxPrimitiveRenderCacheCount);
   uniformBuffer->globalData = vulkan_global_uniform_buffer_data_create(1);
 
   uniformBuffer->buffer = vulkan_buffer_create(vkd, vulkan_buffer_type_uniform);
@@ -37,10 +37,11 @@ void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *unifor
 
 void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniformBuffer,
                                           vulkan_camera *camera) {
-  assert(utarray_len(uniformBuffer->renderCacheList->caches) > 0);
+  assert(utarray_len(uniformBuffer->renderCacheList->primitiveRenderCaches) > 0);
+  assert(utarray_len(uniformBuffer->renderCacheList->cameraRenderCaches) > 0);
 
   utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
-                              uniformBuffer->renderCacheList->caches) {
+                              uniformBuffer->renderCacheList->primitiveRenderCaches) {
     size_t instanceId = renderCache->renderCacheListIdx;
     // HIRO update only for frame in flight. (size_t frameInFlight argument)
     glm_mat4_copy(renderCache->transform,

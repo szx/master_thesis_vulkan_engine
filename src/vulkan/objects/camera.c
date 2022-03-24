@@ -7,8 +7,9 @@ vulkan_camera *vulkan_camera_create(vulkan_render_cache_list *renderCacheList) {
   camera->renderCacheList = renderCacheList;
 
   camera->cameraIdx = 0;
-  assert(utarray_len(camera->renderCacheList->caches) > 0);
-  camera->renderCache = *(vulkan_render_cache **)utarray_front(camera->renderCacheList->caches);
+  assert(utarray_len(camera->renderCacheList->cameraRenderCaches) > 0);
+  camera->renderCache =
+      *(vulkan_render_cache **)utarray_front(camera->renderCacheList->cameraRenderCaches);
 
   return camera;
 }

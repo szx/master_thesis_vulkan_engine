@@ -92,11 +92,12 @@ void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_policy policy) 
 
   vulkan_batches_reset(batches);
 
-  assert(utarray_len(batches->renderCacheList->caches) > 0);
+  assert(utarray_len(batches->renderCacheList->primitiveRenderCaches) > 0);
   vulkan_render_cache *lastCache = NULL;
   vulkan_batch *lastBatch = NULL;
   size_t renderCacheListIdx = 0;
-  utarray_foreach_elem_deref (vulkan_render_cache *, cache, batches->renderCacheList->caches) {
+  utarray_foreach_elem_deref (vulkan_render_cache *, cache,
+                              batches->renderCacheList->primitiveRenderCaches) {
     if (!cache->visible) {
       continue;
     }

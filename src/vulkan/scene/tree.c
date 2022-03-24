@@ -32,8 +32,14 @@ vulkan_scene_tree_node *vulkan_scene_tree_add_node(vulkan_scene_tree *sceneTree,
   vulkan_scene_tree_node_add_parent(sceneTreeNode, parentSceneTreeNode);
 
   vulkan_scene_graph_node_add_observer(sceneGraphNode, sceneTreeNode);
+
   if (sceneTreeNode->primitive != NULL) {
-    vulkan_render_cache_list_add_cache(sceneTree->renderCacheList, sceneTreeNode->renderCache);
+    vulkan_render_cache_list_add_primitive_render_cache(sceneTree->renderCacheList,
+                                                        sceneTreeNode->renderCache);
+  }
+  if (sceneTreeNode->object != NULL && sceneTreeNode->object->camera != NULL) {
+    vulkan_render_cache_list_add_camera_render_cache(sceneTree->renderCacheList,
+                                                     sceneTreeNode->renderCache);
   }
 
   vulkan_scene_tree_node_add_child(parentSceneTreeNode, sceneTreeNode);
