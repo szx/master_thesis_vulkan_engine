@@ -1,15 +1,19 @@
 ### World space and clip space
 
-- Use left-handed world coordinates:
+- Use right-handed model-space:
+    - glTF format uses right-handed coordinate system
+- Use left-handed world-space:
     - +X points right
     - +Y points up
-    - +Z points forward (which is what makes it left-handed)
+    - +Z points forward (greater Z means greater distance from camera)
     - [Left- vs. Right-handed coordinate systems](https://www.evl.uic.edu/ralph/508S98/coordinates.html)
-- Use clip space with reversed-Z:
+    - Model-space handedness is changed using appropriate root transform matrix.
+- Use right-handed clip-space with reversed-Z:
+    - Y coordinates are flipped by projection matrix.
     - The origin is at the top left.
     - +X points right
     - +X points left
-    - -Z points forward
+    - +Z points forward
     - [Perspective Projections](https://learnwebgl.brown37.net/08_projections/projections_perspective.html)
     - [The Indulgence of Engine Porting](http://whirlicube.com/the-indulgence-of-engine-porting.html)
 - Front faces are counterclockwise.

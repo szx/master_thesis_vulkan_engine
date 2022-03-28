@@ -30,6 +30,8 @@ void vulkan_render_cache_set_with_node(vulkan_render_cache *renderCache) {
     renderCache->mesh = renderCache->node->object->mesh;
     if (renderCache->node->object->camera) {
       vulkan_data_camera_copy(&renderCache->camera, renderCache->node->object->camera);
+    } else {
+      vulkan_data_camera_init(&renderCache->camera, NULL);
     }
   } else {
     glm_mat4_identity(renderCache->transform);

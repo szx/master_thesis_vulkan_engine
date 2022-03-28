@@ -9,7 +9,6 @@ typedef struct vulkan_camera {
   vulkan_render_cache_list *renderCacheList; ///< Pointer.
 
   size_t cameraIdx;
-  // HIRO HIRO can't use render cache, store all cameras in render_cache_list seperate list
   vulkan_render_cache *renderCache; ///< Pointer.
 
 } vulkan_camera;

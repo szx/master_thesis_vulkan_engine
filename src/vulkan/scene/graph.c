@@ -116,13 +116,17 @@ void vulkan_scene_graph_create_with_scene_data(vulkan_scene_graph *sceneGraph,
   assert(sceneGraph->root == NULL);
   assert(sceneGraph->nodes == NULL);
 
-  sceneGraph->root = add_entity(sceneGraph, NULL, NULL, NULL, true);
+  vulkan_data_object *rootObject = core_alloc(sizeof(vulkan_data_object));
+  vulkan_data_object_init(rootObject, sceneGraph->data);
+  glm_mat4_identity(rootObject->transform);
+  rootObject->transform[2][2] = -1.0f; /// Change right-handed into left-handed.
+  sceneGraph->root = add_entity(sceneGraph, NULL, rootObject, NULL, true);
   sceneGraph->sceneTree->root =
       *(vulkan_scene_tree_node **)utarray_front(sceneGraph->root->observers);
 
-  utarray_foreach_elem_deref (vulkan_data_object *, rootObject, sceneGraph->data->rootObjects) {
+  utarray_foreach_elem_deref (vulkan_data_object *, rootChild, sceneGraph->data->rootObjects) {
     vulkan_scene_graph_add_object(sceneGraph, sceneGraph->root, sceneGraph->sceneTree->root,
-                                  rootObject);
+                                  rootChild);
   }
 
   assert(sceneGraph->root);

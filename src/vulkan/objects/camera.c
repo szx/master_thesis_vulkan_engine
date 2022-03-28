@@ -6,10 +6,11 @@ vulkan_camera *vulkan_camera_create(vulkan_render_cache_list *renderCacheList) {
 
   camera->renderCacheList = renderCacheList;
 
+  // HIRO HIRO orthographic cameras + selection via camera idx (camera 1 preferred)
   camera->cameraIdx = 0;
   assert(utarray_len(camera->renderCacheList->cameraRenderCaches) > 0);
   camera->renderCache =
-      *(vulkan_render_cache **)utarray_front(camera->renderCacheList->cameraRenderCaches);
+      *(vulkan_render_cache **)utarray_eltptr(camera->renderCacheList->cameraRenderCaches, 0);
 
   return camera;
 }
@@ -17,56 +18,28 @@ vulkan_camera *vulkan_camera_create(vulkan_render_cache_list *renderCacheList) {
 void vulkan_camera_destroy(vulkan_camera *camera) { core_free(camera); }
 
 void vulkan_camera_set_view_matrix(vulkan_camera *camera, mat4 viewMatrix) {
-
-  /*
-  vec3 negativePosition;
-  glm_vec3_negate_to(camera->position, negativePosition);
-  mat4 translationMat;
-  glm_translate_make(translationMat, negativePosition);
-  mat4 rotationMat;
-  glm_quat_mat4(camera->rotation, rotationMat);
-  glm_mat4_mul(rotationMat, translationMat, element->viewMat);
-  */
-  // vec3 position;
-  // glm_vec3_copy(camera->sceneNode->, position);
-  //  position[2] = -position[2];
-  //  glm_quat_look(position, camera->rotation, element->viewMat);
+  // View matrix is inversed model matrix.
   glm_mat4_inv(camera->renderCache->transform, viewMatrix);
 }
 
-/// Calculates perspective matrix for left handed world/view to space right-handed vulkan clip
-/// space.
+/// Calculates perspective matrix for left handed world/view-space to left-handed flipped Vulkan
+/// clip space.
 void get_perspective_matrix(float fovy, float aspect, float nearZ, float farZ, mat4 dest) {
-
   glm_mat4_zero(dest);
-  /*
-  // https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#finite-perspective-projection
-  float f, fn;
-  f = 1.0f / tanf(fovy * 0.5f);
-  float x = f / aspect;
-  float y = f;
-  float A = (f + nearZ) / (nearZ - f);
-  float B = (2 * f * nearZ) / (nearZ - f);
 
-  dest[0][0] = x;
-  dest[1][1] = y;
-  dest[2][2] = A;
-  dest[2][3] = B;
-  dest[3][2] = -1.0f;
-  */
-
-  float f, fn;
+  // https://vincent-p.github.io/posts/vulkan_perspective_matrix/
+  float f;
   f = 1.0f / tanf(fovy * 0.5f);
   float x = f / aspect;
   float y = -f;
-  float A = nearZ / (f - nearZ);
-  float B = f * A;
+  float A = nearZ / (farZ - nearZ);
+  float B = (nearZ * farZ) / (farZ - nearZ);
 
   dest[0][0] = x;
   dest[1][1] = y;
   dest[2][2] = A;
-  dest[2][3] = B;
-  dest[3][2] = -1.0f;
+  dest[2][3] = -1.0f;
+  dest[3][2] = B;
 }
 
 void vulkan_camera_set_projection_matrix(vulkan_camera *camera, mat4 projectionMatrix) {
