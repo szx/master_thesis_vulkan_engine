@@ -8,7 +8,6 @@ vulkan_render_cache_list *vulkan_render_cache_list_create(size_t maxPrimitiveRen
   utarray_alloc(renderCacheList->primitiveRenderCaches, sizeof(vulkan_render_cache *));
   renderCacheList->attributes = vulkan_attribute_type_unknown;
 
-  renderCacheList->cameraRenderCacheCount = 0;
   utarray_alloc(renderCacheList->cameraRenderCaches, sizeof(vulkan_render_cache *));
 
   renderCacheList->dirty = true;
@@ -51,7 +50,6 @@ void vulkan_render_cache_list_remove_primitive_render_cache(
 void vulkan_render_cache_list_add_camera_render_cache(vulkan_render_cache_list *renderCacheList,
                                                       vulkan_render_cache *cameraRenderCache) {
   utarray_push_back(renderCacheList->cameraRenderCaches, &cameraRenderCache);
-  renderCacheList->cameraRenderCacheCount++;
 }
 
 static int cache_list_sort_func(const void *_a, const void *_b) {

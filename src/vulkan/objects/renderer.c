@@ -147,6 +147,7 @@ void vulkan_renderer_run_main_loop(vulkan_renderer *renderer,
     while (frameTime > 0.0) {
       double dt = MIN(frameTime, MIN_DELTA_TIME);
       updateFunc(renderer, dt);
+      vulkan_input_clear_released_keys(&renderer->vkd->input);
       frameTime -= dt;
     }
     glfwPollEvents(); // calls GLFW callbacks

@@ -36,6 +36,7 @@ vulkan_device *vulkan_device_create(data_config *config, data_asset_db *assetDb)
   pick_physical_device(vkd);
   create_logical_device(vkd);
   create_one_shot_command_pool(vkd);
+  vkd->input = (vulkan_input){0};
   return vkd;
 }
 
@@ -69,48 +70,25 @@ void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, in
     return; // Ignore GLFW_REPEAT.
   }
   vulkan_device *vkd = glfwGetWindowUserPointer(window);
-  if (key == GLFW_KEY_W) {
-    vkd->keyboard.w = action != GLFW_RELEASE;
+#define input_key(_name, _glfwKey, ...)                                                            \
+  if (key == _glfwKey) {                                                                           \
+    vkd->input.keyboard.press._name = action == GLFW_PRESS;                                        \
+    vkd->input.keyboard.release._name = action == GLFW_RELEASE;                                    \
   }
-  if (key == GLFW_KEY_A) {
-    vkd->keyboard.a = action != GLFW_RELEASE;
-  }
-  if (key == GLFW_KEY_S) {
-    vkd->keyboard.s = action != GLFW_RELEASE;
-  }
-  if (key == GLFW_KEY_D) {
-    vkd->keyboard.d = action != GLFW_RELEASE;
-  }
-  if (key == GLFW_KEY_Q) {
-    vkd->keyboard.q = action != GLFW_RELEASE;
-  }
-  if (key == GLFW_KEY_1) {
-    vkd->keyboard.num1 = action != GLFW_RELEASE;
-  }
-  if (key == GLFW_KEY_2) {
-    vkd->keyboard.num2 = action != GLFW_RELEASE;
-  }
-  if (key == GLFW_KEY_3) {
-    vkd->keyboard.num3 = action != GLFW_RELEASE;
-  }
-  if (key == GLFW_KEY_4) {
-    vkd->keyboard.num4 = action != GLFW_RELEASE;
-  }
-  if (key == GLFW_KEY_ESCAPE) {
-    vkd->keyboard.esc = action != GLFW_RELEASE;
-  }
+  VULKAN_INPUT_KEYS(input_key, )
+#undef input_key
 }
 
 void glfw_mouse_callback(GLFWwindow *window, double xPos, double yPos) {
   vulkan_device *vkd = glfwGetWindowUserPointer(window);
   static bool skip = true; // TODO: True if first callback after leaving/recreating window.
   if (skip) {
-    vkd->mouse.xLastPos = xPos;
-    vkd->mouse.yLastPos = yPos;
+    vkd->input.mouse.xLastPos = xPos;
+    vkd->input.mouse.yLastPos = yPos;
     skip = false;
   }
-  vkd->mouse.xPos = xPos;
-  vkd->mouse.yPos = yPos;
+  vkd->input.mouse.xPos = xPos;
+  vkd->input.mouse.yPos = yPos;
 }
 
 void create_window(vulkan_device *vkd, data_config *config, data_asset_db *assetDb) {

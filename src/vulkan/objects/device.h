@@ -6,6 +6,7 @@
 #include "../constants.h"
 #include "../debug.h"
 #include "../functions.h"
+#include "input.h"
 
 #define VALIDATION_LAYERS_SIZE 1
 extern const char *validationLayers[VALIDATION_LAYERS_SIZE];
@@ -58,32 +59,20 @@ typedef struct vulkan_limits {
 } vulkan_limits;
 
 typedef struct vulkan_device {
-  GLFWwindow *window;                   /// GLFW window
-  VkInstance instance;                  /// Vulkan instance.
-  VkSurfaceKHR surface;                 /// Vulkan window surface.
-  vulkan_debug *debug;                  /// Vulkan debug utils.
-  VkPhysicalDevice physicalDevice;      /// Physical device.
-  VkDevice device;                      /// Vulkan logical device.
-  VkQueue graphicsQueue;                /// Graphical queue handle.
-  VkQueue presentQueue;                 /// Present queue handle.
-  vulkan_swap_chain_info swapChainInfo; /// Swap chain support details.
-  vulkan_limits limits;                 /// Physical device limits.
-  bool framebufferResized;              /// True if GLFW framebuffer resize callback was
-                                        /// triggered.
-  VkCommandPool oneShotCommandPool;     /// Command pool used for one-shot copy and
-                                        /// image transition commands.
-  struct {
-    bool w, a, s, d;
-    bool q;
-    bool num1, num2, num3, num4;
-    bool esc;
-  } keyboard; /// GLFW keyboard input.
-
-  struct {
-    float sensitivity;
-    double xPos, yPos;
-    double xLastPos, yLastPos;
-  } mouse; /// GLFW mouse input.
+  GLFWwindow *window;                   ///< GLFW window
+  VkInstance instance;                  ///< Vulkan instance.
+  VkSurfaceKHR surface;                 ///< Vulkan window surface.
+  vulkan_debug *debug;                  ///< Vulkan debug utils.
+  VkPhysicalDevice physicalDevice;      ///< Physical device.
+  VkDevice device;                      ///< Vulkan logical device.
+  VkQueue graphicsQueue;                ///< Graphical queue handle.
+  VkQueue presentQueue;                 ///< Present queue handle.
+  vulkan_swap_chain_info swapChainInfo; ///< Swap chain support details.
+  vulkan_limits limits;                 ///< Physical device limits.
+  bool framebufferResized;              ///< True if GLFW framebuffer resize callback was triggered.
+  VkCommandPool
+      oneShotCommandPool; ///< Command pool used for one-shot copy and image transition commands.
+  vulkan_input input;     ///< GLFW keyboard and mouse input.
 } vulkan_device;
 
 vulkan_device *vulkan_device_create(data_config *config, data_asset_db *assetDb);

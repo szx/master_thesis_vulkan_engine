@@ -6,16 +6,23 @@ vulkan_camera *vulkan_camera_create(vulkan_render_cache_list *renderCacheList) {
 
   camera->renderCacheList = renderCacheList;
 
-  // HIRO HIRO selection via camera idx (camera 1 preferred)
-  camera->cameraIdx = 1;
-  assert(utarray_len(camera->renderCacheList->cameraRenderCaches) > 0);
-  camera->renderCache = *(vulkan_render_cache **)utarray_eltptr(
-      camera->renderCacheList->cameraRenderCaches, camera->cameraIdx);
+  camera->cameraIdx = 0;
+  vulkan_camera_select(camera, camera->cameraIdx);
 
   return camera;
 }
 
 void vulkan_camera_destroy(vulkan_camera *camera) { core_free(camera); }
+
+void vulkan_camera_select(vulkan_camera *camera, size_t cameraIdx) {
+  camera->cameraIdx = cameraIdx % utarray_len(camera->renderCacheList->cameraRenderCaches);
+  log_debug("selecting camera %zu", camera->cameraIdx);
+
+  assert(utarray_len(camera->renderCacheList->cameraRenderCaches) > 0);
+  assert(camera->cameraIdx < utarray_len(camera->renderCacheList->cameraRenderCaches));
+  camera->renderCache = *(vulkan_render_cache **)utarray_eltptr(
+      camera->renderCacheList->cameraRenderCaches, camera->cameraIdx);
+}
 
 void vulkan_camera_set_view_matrix(vulkan_camera *camera, mat4 viewMatrix) {
   // View matrix is inversed model matrix.

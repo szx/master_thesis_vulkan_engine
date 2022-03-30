@@ -3,12 +3,22 @@
 #include "../vulkan/vulkan.h"
 
 void update_func(vulkan_renderer *renderer, double dt) {
-  log_info("dt: %f", dt);
-  if (renderer->vkd->keyboard.esc) {
+  vulkan_device *vkd = renderer->vkd;
+  vulkan_render_state *renderState = renderer->renderState;
+  if (renderer->vkd->input.keyboard.release.esc) {
     // TODO: Move to vulkan_renderer_quit.
     glfwSetWindowShouldClose(renderer->vkd->window, true);
   }
-  // HIRO HIRO camera selection
+  if (renderer->vkd->input.keyboard.release.leftBracket) {
+    size_t cameraIdx = renderState->camera->cameraIdx - 1;
+    if (renderState->camera->cameraIdx == 0) {
+      cameraIdx = utarray_len(renderState->camera->renderCacheList->cameraRenderCaches) - 1;
+    }
+    vulkan_camera_select(renderState->camera, cameraIdx);
+  }
+  if (renderer->vkd->input.keyboard.release.rightBracket) {
+    vulkan_camera_select(renderState->camera, renderState->camera->cameraIdx + 1);
+  }
 }
 
 int main(int argc, char *argv[]) {

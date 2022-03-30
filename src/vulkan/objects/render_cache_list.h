@@ -13,7 +13,6 @@ typedef struct vulkan_render_cache_list {
   vulkan_attribute_type attributes; ///< Max set of primitive vertex attributes.
 
   /* camera render caches */
-  size_t cameraRenderCacheCount; ///< Number of camera render caches.
   UT_array *cameraRenderCaches;  ///< vulkan_render_cache* array of camera scene node caches.
 
   bool dirty; ///< True if added or removed cache and not sorted.

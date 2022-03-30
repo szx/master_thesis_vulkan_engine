@@ -16,6 +16,8 @@ typedef struct vulkan_camera {
 vulkan_camera *vulkan_camera_create(vulkan_render_cache_list *renderCacheList);
 void vulkan_camera_destroy(vulkan_camera *camera);
 
+void vulkan_camera_select(vulkan_camera *camera, size_t cameraIdx);
+
 void vulkan_camera_set_view_matrix(vulkan_camera *camera, mat4 viewMatrix);
 void vulkan_camera_set_projection_matrix(vulkan_camera *camera, mat4 projectionMatrix);
 
