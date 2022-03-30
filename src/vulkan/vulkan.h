@@ -26,7 +26,7 @@
 #include "objects/render_state.h"
 #include "objects/renderer.h"
 #include "objects/shader.h"
-#include "objects/shader_generator.h"
+#include "objects/shader_program.h"
 #include "objects/shader_reflect.h"
 #include "objects/swap_chain.h"
 #include "objects/sync.h"

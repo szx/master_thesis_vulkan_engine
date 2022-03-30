@@ -69,7 +69,7 @@ void create_graphics_pipeline(vulkan_pipeline *pipeline) {
   const VkPushConstantRange *pushConstantRanges = NULL;
 
   pipeline->graphicsPipeline = vulkan_create_graphics_pipeline(
-      pipeline->vks->vkd, pipeline->shaderGenerator, pipeline->renderState, pipeline->vks,
+      pipeline->vks->vkd, pipeline->shaderProgram, pipeline->renderState, pipeline->vks,
       descriptorSetLayouts, descriptorSetLayoutCount, pushConstantRanges, pushConstantRangeCount,
       pipeline->renderPass, &pipeline->pipelineLayout, "pipeline");
 
@@ -97,7 +97,7 @@ void vulkan_pipeline_init(vulkan_pipeline *pipeline, vulkan_swap_chain *vks,
   pipeline->vks = vks;
   pipeline->renderState = renderState;
 
-  pipeline->shaderGenerator = vulkan_shader_generator_create(renderState);
+  pipeline->shaderProgram = vulkan_shader_program_create(renderState);
   create_render_pass(pipeline);
   create_graphics_pipeline(pipeline);
 
@@ -110,7 +110,7 @@ void vulkan_pipeline_deinit(vulkan_pipeline *pipeline) {
   vulkan_pipeline_shared_state_destroy(pipeline->sharedState);
   destroy_graphics_pipeline(pipeline);
   destroy_render_pass(pipeline);
-  vulkan_shader_generator_destroy(pipeline->shaderGenerator);
+  vulkan_shader_program_destroy(pipeline->shaderProgram);
 }
 
 size_t vulkan_pipeline_get_framebuffer_attachment_count(vulkan_pipeline *pipeline) {
@@ -177,7 +177,7 @@ VkCommandBuffer vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline,
 
 void vulkan_pipeline_debug_print(vulkan_pipeline *pipeline) {
   log_debug("pipeline:\n");
-  vulkan_shader_generator_debug_print(pipeline->shaderGenerator, 2);
+  vulkan_shader_program_debug_print(pipeline->shaderProgram, 2);
   utarray_foreach_elem_it (vulkan_pipeline_frame_state *, frameState, pipeline->frameStates) {
     vulkan_pipeline_frame_state_debug_print(frameState, 2);
   }

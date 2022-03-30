@@ -1,4 +1,79 @@
-#include "shader_generator.h"
+#include "shader_program.h"
+
+vulkan_shader_program *vulkan_shader_program_create(vulkan_render_state *renderState) {
+  vulkan_shader_program *shaderProgram = core_alloc(sizeof(vulkan_shader_program));
+
+  // Generate shaders.
+  UT_string *s;
+
+  utstring_new(s);
+  glsl_add_header(s);
+  glsl_add_defines(s, renderState);
+  glsl_add_vertex_shader_input_variables(s, renderState->unifiedGeometryBuffer->vertexStream);
+  glsl_add_vertex_shader_output_variables(s);
+  glsl_add_uniform_buffers(s, renderState->unifiedUniformBuffer);
+  glsl_add_entry_point_begin(s);
+  glsl_add_body(s, vulkan_shader_type_vertex);
+  glsl_add_entry_point_end(s);
+  shaderProgram->vertexShader =
+      vulkan_shader_create_with_str(renderState->vkd, vulkan_shader_type_vertex, s);
+
+  utstring_clear(s);
+  glsl_add_header(s);
+  glsl_add_defines(s, renderState);
+  glsl_add_fragment_shader_input_variables(s);
+  glsl_add_fragment_shader_output_variables(s);
+  glsl_add_uniform_buffers(s, renderState->unifiedUniformBuffer);
+  glsl_add_entry_point_begin(s);
+  glsl_add_body(s, vulkan_shader_type_fragment);
+  glsl_add_entry_point_end(s);
+  shaderProgram->fragmentShader =
+      vulkan_shader_create_with_str(renderState->vkd, vulkan_shader_type_fragment, s);
+
+  utstring_free(s);
+
+  // TODO: Deferred renderer.
+  return shaderProgram;
+}
+
+void vulkan_shader_program_destroy(vulkan_shader_program *shaderProgram) {
+  vulkan_shader_destroy(shaderProgram->vertexShader);
+  vulkan_shader_destroy(shaderProgram->fragmentShader);
+  core_free(shaderProgram);
+}
+
+VkPipelineShaderStageCreateInfo *
+vulkan_shader_program_get_shader_stages(vulkan_shader_program *shaderProgram, size_t *count) {
+  size_t shaderStageCount = 2;
+  *count = shaderStageCount;
+
+  VkPipelineShaderStageCreateInfo *shaderStages =
+      core_alloc(shaderStageCount * sizeof(VkPipelineShaderStageCreateInfo));
+
+  VkPipelineShaderStageCreateInfo vertexShaderStageInfo = {0};
+  vertexShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+  vertexShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+  vertexShaderStageInfo.module = shaderProgram->vertexShader->module;
+  vertexShaderStageInfo.pName = "main";
+  shaderStages[0] = vertexShaderStageInfo;
+
+  VkPipelineShaderStageCreateInfo fragmentShaderStageInfo = {0};
+  fragmentShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+  fragmentShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+  fragmentShaderStageInfo.module = shaderProgram->fragmentShader->module;
+  fragmentShaderStageInfo.pName = "main";
+  shaderStages[1] = fragmentShaderStageInfo;
+
+  return shaderStages;
+}
+
+void vulkan_shader_program_debug_print(vulkan_shader_program *shaderProgram, int indent) {
+  log_debug(INDENT_FORMAT_STRING "shader generator:", INDENT_FORMAT_ARGS(0));
+  vulkan_shader_debug_print(shaderProgram->vertexShader, indent + 2);
+  vulkan_shader_debug_print(shaderProgram->fragmentShader, indent + 2);
+}
+
+/* GLSL shader source code generation */
 
 void glsl_add_header(UT_string *s) { utstring_printf(s, "%s\n", "#version 450"); }
 
@@ -100,77 +175,4 @@ void glsl_add_body(UT_string *s, vulkan_shader_type type) {
   utstring_printf(s, "// %s\n%s\n", utstring_body(inputPath), utstring_body(glslSource));
   utstring_free(glslSource);
   utstring_free(inputPath);
-}
-
-vulkan_shader_generator *vulkan_shader_generator_create(vulkan_render_state *renderState) {
-  vulkan_shader_generator *shaderGenerator = core_alloc(sizeof(vulkan_shader_generator));
-
-  // Generate shaders.
-  UT_string *s;
-
-  utstring_new(s);
-  glsl_add_header(s);
-  glsl_add_defines(s, renderState);
-  glsl_add_vertex_shader_input_variables(s, renderState->unifiedGeometryBuffer->vertexStream);
-  glsl_add_vertex_shader_output_variables(s);
-  glsl_add_uniform_buffers(s, renderState->unifiedUniformBuffer);
-  glsl_add_entry_point_begin(s);
-  glsl_add_body(s, vulkan_shader_type_vertex);
-  glsl_add_entry_point_end(s);
-  shaderGenerator->vertexShader =
-      vulkan_shader_create_with_str(renderState->vkd, vulkan_shader_type_vertex, s);
-
-  utstring_clear(s);
-  glsl_add_header(s);
-  glsl_add_defines(s, renderState);
-  glsl_add_fragment_shader_input_variables(s);
-  glsl_add_fragment_shader_output_variables(s);
-  glsl_add_uniform_buffers(s, renderState->unifiedUniformBuffer);
-  glsl_add_entry_point_begin(s);
-  glsl_add_body(s, vulkan_shader_type_fragment);
-  glsl_add_entry_point_end(s);
-  shaderGenerator->fragmentShader =
-      vulkan_shader_create_with_str(renderState->vkd, vulkan_shader_type_fragment, s);
-
-  utstring_free(s);
-
-  // TODO: Deferred renderer.
-  return shaderGenerator;
-}
-
-void vulkan_shader_generator_destroy(vulkan_shader_generator *shaderGenerator) {
-  vulkan_shader_destroy(shaderGenerator->vertexShader);
-  vulkan_shader_destroy(shaderGenerator->fragmentShader);
-  core_free(shaderGenerator);
-}
-
-VkPipelineShaderStageCreateInfo *
-vulkan_shader_generator_get_shader_stages(vulkan_shader_generator *shaderGenerator, size_t *count) {
-  size_t shaderStageCount = 2;
-  *count = shaderStageCount;
-
-  VkPipelineShaderStageCreateInfo *shaderStages =
-      core_alloc(shaderStageCount * sizeof(VkPipelineShaderStageCreateInfo));
-
-  VkPipelineShaderStageCreateInfo vertexShaderStageInfo = {0};
-  vertexShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-  vertexShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-  vertexShaderStageInfo.module = shaderGenerator->vertexShader->module;
-  vertexShaderStageInfo.pName = "main";
-  shaderStages[0] = vertexShaderStageInfo;
-
-  VkPipelineShaderStageCreateInfo fragmentShaderStageInfo = {0};
-  fragmentShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-  fragmentShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-  fragmentShaderStageInfo.module = shaderGenerator->fragmentShader->module;
-  fragmentShaderStageInfo.pName = "main";
-  shaderStages[1] = fragmentShaderStageInfo;
-
-  return shaderStages;
-}
-
-void vulkan_shader_generator_debug_print(vulkan_shader_generator *shaderGenerator, int indent) {
-  log_debug(INDENT_FORMAT_STRING "shader generator:", INDENT_FORMAT_ARGS(0));
-  vulkan_shader_debug_print(shaderGenerator->vertexShader, indent + 2);
-  vulkan_shader_debug_print(shaderGenerator->fragmentShader, indent + 2);
 }

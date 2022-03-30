@@ -2,7 +2,7 @@
 
 #include "objects/buffer.h"
 #include "objects/device.h"
-#include "objects/shader_generator.h"
+#include "objects/shader_program.h"
 #include "objects/swap_chain.h"
 
 uint32_t vulkan_find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
@@ -414,7 +414,7 @@ VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
 }
 
 VkPipeline vulkan_create_graphics_pipeline(
-    vulkan_device *vkd, vulkan_shader_generator *shaderGenerator, vulkan_render_state *renderState,
+    vulkan_device *vkd, vulkan_shader_program *shaderProgram, vulkan_render_state *renderState,
     vulkan_swap_chain *vks,
 
     const VkDescriptorSetLayout *descriptorSetLayouts, size_t descriptorSetLayoutCount,
@@ -427,7 +427,7 @@ VkPipeline vulkan_create_graphics_pipeline(
   /* shaders */
   size_t shaderStageCount;
   VkPipelineShaderStageCreateInfo *shaderStages =
-      vulkan_shader_generator_get_shader_stages(shaderGenerator, &shaderStageCount);
+      vulkan_shader_program_get_shader_stages(shaderProgram, &shaderStageCount);
 
   /* vertex input */
   VkPipelineVertexInputStateCreateInfo vertexInputInfo = {0};

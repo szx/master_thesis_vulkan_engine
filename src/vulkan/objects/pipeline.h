@@ -7,7 +7,7 @@
 #include "image.h"
 #include "render_cache_list.h"
 #include "render_state.h"
-#include "shader_generator.h"
+#include "shader_program.h"
 #include "swap_chain.h"
 
 typedef struct vulkan_pipeline_frame_state vulkan_pipeline_frame_state;
@@ -19,7 +19,7 @@ typedef struct vulkan_pipeline {
   vulkan_swap_chain *vks;           ///< Pointer.
   vulkan_render_state *renderState; ///< Pointer.
 
-  vulkan_shader_generator *shaderGenerator;
+  vulkan_shader_program *shaderProgram;
   VkRenderPass renderPass;
   VkPipelineLayout pipelineLayout;
   VkPipeline graphicsPipeline;

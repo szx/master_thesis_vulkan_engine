@@ -97,8 +97,8 @@ TEST shaderc_compiling() {
 
   vulkan_renderer_debug_print(renderer);
 
-  vulkan_shader *vertexShader = renderer->pipeline->shaderGenerator->vertexShader;
-  vulkan_shader *fragmentShader = renderer->pipeline->shaderGenerator->fragmentShader;
+  vulkan_shader *vertexShader = renderer->pipeline->shaderProgram->vertexShader;
+  vulkan_shader *fragmentShader = renderer->pipeline->shaderProgram->fragmentShader;
 
   // verify shader
   ASSERT(vertexShader->type == vulkan_shader_type_vertex);

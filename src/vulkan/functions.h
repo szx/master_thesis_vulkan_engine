@@ -4,7 +4,7 @@
 
 #include "../core/core.h"
 typedef struct vulkan_device vulkan_device;
-typedef struct vulkan_shader_generator vulkan_shader_generator;
+typedef struct vulkan_shader_program vulkan_shader_program;
 typedef struct vulkan_render_state vulkan_render_state;
 typedef struct vulkan_swap_chain vulkan_swap_chain;
 typedef struct vulkan_descriptor_binding vulkan_descriptor_binding;
@@ -79,7 +79,7 @@ VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
                                                const char *debugFormat, ...);
 
 VkPipeline vulkan_create_graphics_pipeline(
-    vulkan_device *vkd, vulkan_shader_generator *shaderGenerator, vulkan_render_state *renderState,
+    vulkan_device *vkd, vulkan_shader_program *shaderProgram, vulkan_render_state *renderState,
     vulkan_swap_chain *vks,
 
     const VkDescriptorSetLayout *descriptorSetLayouts, size_t descriptorSetLayoutCount,
