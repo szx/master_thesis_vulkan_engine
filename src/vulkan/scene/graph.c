@@ -21,6 +21,11 @@ vulkan_scene_graph *vulkan_scene_graph_create(vulkan_data_scene *data,
 }
 
 void vulkan_scene_graph_destroy(vulkan_scene_graph *sceneGraph) {
+  if (sceneGraph->root->object != NULL) {
+    vulkan_data_object_deinit(sceneGraph->root->object);
+    core_free(sceneGraph->root->object);
+  }
+
   vulkan_scene_tree_destroy(sceneGraph->sceneTree);
 
   dl_foreach_elem(vulkan_scene_graph_node *, node, sceneGraph->root,

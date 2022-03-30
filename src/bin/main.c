@@ -35,6 +35,8 @@ int main(int argc, char *argv[]) {
   vkDeviceWaitIdle(renderer->vkd->device);
 
   vulkan_renderer_destroy(renderer);
+  vulkan_swap_chain_destroy(vks);
+  vulkan_device_destroy(vkd);
   data_asset_db_destroy(assetDb);
   data_config_destroy(config);
   platform_destroy();

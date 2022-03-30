@@ -33,6 +33,8 @@ void vulkan_render_state_destroy(vulkan_render_state *renderState) {
 
   vulkan_batches_destroy(renderState->batches);
 
+  vulkan_camera_destroy(renderState->camera);
+
   core_free(renderState);
 }
 
