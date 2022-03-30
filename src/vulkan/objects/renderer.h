@@ -34,4 +34,7 @@ void vulkan_renderer_send_to_device(vulkan_renderer *renderer);
 
 void vulkan_renderer_draw_frame(vulkan_renderer *renderer);
 
+void vulkan_renderer_run_main_loop(vulkan_renderer *renderer,
+                                   void (*updateFunc)(vulkan_renderer *renderer, double dt));
+
 void vulkan_renderer_debug_print(vulkan_renderer *renderer);

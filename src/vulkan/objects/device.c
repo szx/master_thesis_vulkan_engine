@@ -64,9 +64,54 @@ void glfw_framebuffer_resize_callback(GLFWwindow *window, int width, int height)
   vkd->framebufferResized = true;
 }
 
-void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {}
+void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+  if (!(action == GLFW_PRESS || action == GLFW_RELEASE)) {
+    return; // Ignore GLFW_REPEAT.
+  }
+  vulkan_device *vkd = glfwGetWindowUserPointer(window);
+  if (key == GLFW_KEY_W) {
+    vkd->keyboard.w = action != GLFW_RELEASE;
+  }
+  if (key == GLFW_KEY_A) {
+    vkd->keyboard.a = action != GLFW_RELEASE;
+  }
+  if (key == GLFW_KEY_S) {
+    vkd->keyboard.s = action != GLFW_RELEASE;
+  }
+  if (key == GLFW_KEY_D) {
+    vkd->keyboard.d = action != GLFW_RELEASE;
+  }
+  if (key == GLFW_KEY_Q) {
+    vkd->keyboard.q = action != GLFW_RELEASE;
+  }
+  if (key == GLFW_KEY_1) {
+    vkd->keyboard.num1 = action != GLFW_RELEASE;
+  }
+  if (key == GLFW_KEY_2) {
+    vkd->keyboard.num2 = action != GLFW_RELEASE;
+  }
+  if (key == GLFW_KEY_3) {
+    vkd->keyboard.num3 = action != GLFW_RELEASE;
+  }
+  if (key == GLFW_KEY_4) {
+    vkd->keyboard.num4 = action != GLFW_RELEASE;
+  }
+  if (key == GLFW_KEY_ESCAPE) {
+    vkd->keyboard.esc = action != GLFW_RELEASE;
+  }
+}
 
-void glfw_mouse_callback(GLFWwindow *window, double xPos, double yPos) {}
+void glfw_mouse_callback(GLFWwindow *window, double xPos, double yPos) {
+  vulkan_device *vkd = glfwGetWindowUserPointer(window);
+  static bool skip = true; // TODO: True if first callback after leaving/recreating window.
+  if (skip) {
+    vkd->mouse.xLastPos = xPos;
+    vkd->mouse.yLastPos = yPos;
+    skip = false;
+  }
+  vkd->mouse.xPos = xPos;
+  vkd->mouse.yPos = yPos;
+}
 
 void create_window(vulkan_device *vkd, data_config *config, data_asset_db *assetDb) {
   log_info("create_window");

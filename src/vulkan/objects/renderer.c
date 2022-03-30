@@ -70,7 +70,6 @@ void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
       VK_NULL_HANDLE, &imageIndex);
 
   if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-    assert(0);
     vulkan_renderer_recreate_swap_chain(renderer);
     return;
   }
@@ -79,7 +78,7 @@ void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
   // Pre-submit CPU work:
   // We have acquired index of next in-flight image, we can now update frame-specific resources
   // (uniform buffers, push constants).
-  log_debug("imageIndex = %d", imageIndex);
+  // log_debug("imageIndex = %d", imageIndex);
   VkCommandBuffer commandBuffer =
       vulkan_pipeline_record_command_buffer(renderer->pipeline, imageIndex);
 
@@ -134,6 +133,28 @@ void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
     verify(result == VK_SUCCESS);
   }
   vulkan_sync_advance_to_next_frame(renderer->renderState->sync);
+}
+
+void vulkan_renderer_run_main_loop(vulkan_renderer *renderer,
+                                   void (*updateFunc)(vulkan_renderer *renderer, double dt)) {
+  glfwMakeContextCurrent(renderer->vkd->window);
+
+  double currentTime = glfwGetTime();
+  while (glfwWindowShouldClose(renderer->vkd->window) == 0) {
+    double newTime = glfwGetTime();
+    double frameTime = newTime - currentTime;
+    currentTime = newTime;
+    while (frameTime > 0.0) {
+      double dt = MIN(frameTime, MIN_DELTA_TIME);
+      updateFunc(renderer, dt);
+      frameTime -= dt;
+    }
+    glfwPollEvents(); // calls GLFW callbacks
+    vulkan_renderer_update(renderer);
+    vulkan_renderer_send_to_device(renderer);
+    vulkan_renderer_draw_frame(renderer);
+  }
+  vkDeviceWaitIdle(renderer->vkd->device);
 }
 
 void vulkan_renderer_debug_print(vulkan_renderer *renderer) {

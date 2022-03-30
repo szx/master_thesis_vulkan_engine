@@ -1,7 +1,11 @@
 /* Vulkan API device helper functions and structures */
 #pragma once
 
-#include "../common.h"
+#include "../../core/core.h"
+#include "../../data/data.h"
+#include "../constants.h"
+#include "../debug.h"
+#include "../functions.h"
 
 #define VALIDATION_LAYERS_SIZE 1
 extern const char *validationLayers[VALIDATION_LAYERS_SIZE];
@@ -73,7 +77,7 @@ typedef struct vulkan_device {
     bool q;
     bool num1, num2, num3, num4;
     bool esc;
-  } input; /// GLFW keyboard input.
+  } keyboard; /// GLFW keyboard input.
 
   struct {
     float sensitivity;
