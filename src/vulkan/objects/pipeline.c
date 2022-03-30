@@ -83,7 +83,17 @@ void destroy_graphics_pipeline(vulkan_pipeline *pipeline) {
 
 vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_render_state *renderState) {
   vulkan_pipeline *pipeline = core_alloc(sizeof(vulkan_pipeline));
+  vulkan_pipeline_init(pipeline, vks, renderState);
+  return pipeline;
+}
 
+void vulkan_pipeline_destroy(vulkan_pipeline *pipeline) {
+  vulkan_pipeline_deinit(pipeline);
+  core_free(pipeline);
+}
+
+void vulkan_pipeline_init(vulkan_pipeline *pipeline, vulkan_swap_chain *vks,
+                          vulkan_render_state *renderState) {
   pipeline->vks = vks;
   pipeline->renderState = renderState;
 
@@ -93,17 +103,14 @@ vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_render_st
 
   pipeline->sharedState = vulkan_pipeline_shared_state_create(pipeline);
   create_frame_states(pipeline);
-
-  return pipeline;
 }
 
-void vulkan_pipeline_destroy(vulkan_pipeline *pipeline) {
+void vulkan_pipeline_deinit(vulkan_pipeline *pipeline) {
   destroy_frame_states(pipeline);
   vulkan_pipeline_shared_state_destroy(pipeline->sharedState);
   destroy_graphics_pipeline(pipeline);
   destroy_render_pass(pipeline);
   vulkan_shader_generator_destroy(pipeline->shaderGenerator);
-  core_free(pipeline);
 }
 
 size_t vulkan_pipeline_get_framebuffer_attachment_count(vulkan_pipeline *pipeline) {

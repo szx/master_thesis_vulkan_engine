@@ -114,6 +114,16 @@ void create_swap_chain_image_views(vulkan_swap_chain *vks) {
 
 vulkan_swap_chain *vulkan_swap_chain_create(vulkan_device *vkd) {
   vulkan_swap_chain *vks = core_alloc(sizeof(vulkan_swap_chain));
+  vulkan_swap_chain_init(vks, vkd);
+  return vks;
+}
+
+void vulkan_swap_chain_destroy(vulkan_swap_chain *vks) {
+  vulkan_swap_chain_deinit(vks);
+  core_free(vks);
+}
+
+void vulkan_swap_chain_init(vulkan_swap_chain *vks, vulkan_device *vkd) {
   vks->vkd = vkd;
   vks->swapChain = VK_NULL_HANDLE;
   utarray_alloc(vks->swapChainImages, sizeof(VkImageView));
@@ -121,10 +131,9 @@ vulkan_swap_chain *vulkan_swap_chain_create(vulkan_device *vkd) {
   create_swap_chain(vks);
   get_swap_chain_images(vks);
   create_swap_chain_image_views(vks);
-  return vks;
 }
 
-void vulkan_swap_chain_destroy(vulkan_swap_chain *vks) {
+void vulkan_swap_chain_deinit(vulkan_swap_chain *vks) {
   utarray_foreach_elem_deref (VkImageView, swapChainImageView, vks->swapChainImageViews) {
     vkDestroyImageView(vks->vkd->device, swapChainImageView, vka);
   }
@@ -133,7 +142,6 @@ void vulkan_swap_chain_destroy(vulkan_swap_chain *vks) {
 
   vkDestroySwapchainKHR(vks->vkd->device, vks->swapChain, vka);
   vks->swapChain = VK_NULL_HANDLE;
-  core_free(vks);
 }
 
 float vulkan_swap_chain_get_aspect_ratio(vulkan_swap_chain *vks) {

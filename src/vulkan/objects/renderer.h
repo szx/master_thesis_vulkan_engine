@@ -26,6 +26,8 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
                                         vulkan_swap_chain *vks, UT_string *sceneName);
 void vulkan_renderer_destroy(vulkan_renderer *renderer);
 
+void vulkan_renderer_recreate_swap_chain(vulkan_renderer *renderer);
+
 void vulkan_renderer_update(vulkan_renderer *renderer);
 
 void vulkan_renderer_send_to_device(vulkan_renderer *renderer);

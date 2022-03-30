@@ -32,6 +32,25 @@ void vulkan_renderer_destroy(vulkan_renderer *renderer) {
   core_free(renderer);
 }
 
+void vulkan_renderer_recreate_swap_chain(vulkan_renderer *renderer) {
+  int width = 0, height = 0;
+  glfwGetFramebufferSize(renderer->vkd->window, &width, &height);
+  while (width == 0 || height == 0) {
+    glfwGetFramebufferSize(renderer->vkd->window, &width, &height);
+    glfwWaitEvents();
+  }
+
+  vkDeviceWaitIdle(renderer->vkd->device);
+
+  vulkan_pipeline_deinit(renderer->pipeline);
+
+  vulkan_swap_chain_deinit(renderer->vks);
+
+  vulkan_swap_chain_init(renderer->vks, renderer->vkd);
+
+  vulkan_pipeline_init(renderer->pipeline, renderer->vks, renderer->renderState);
+}
+
 void vulkan_renderer_update(vulkan_renderer *renderer) {
   vulkan_scene_render_state_update(renderer->renderState);
 }
@@ -52,7 +71,7 @@ void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
 
   if (result == VK_ERROR_OUT_OF_DATE_KHR) {
     assert(0);
-    // vulkan_render_context_recreate_swap_chain(renderer);
+    vulkan_renderer_recreate_swap_chain(renderer);
     return;
   }
   verify(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR);
@@ -110,8 +129,7 @@ void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
   if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
       renderer->vkd->framebufferResized) {
     renderer->vkd->framebufferResized = false;
-    assert(0);
-    // vulkan_render_context_recreate_swap_chain(renderer);
+    vulkan_renderer_recreate_swap_chain(renderer);
   } else {
     verify(result == VK_SUCCESS);
   }

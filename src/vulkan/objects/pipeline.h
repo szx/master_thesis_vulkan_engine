@@ -31,6 +31,10 @@ typedef struct vulkan_pipeline {
 vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_render_state *renderState);
 void vulkan_pipeline_destroy(vulkan_pipeline *pipeline);
 
+void vulkan_pipeline_init(vulkan_pipeline *pipeline, vulkan_swap_chain *vks,
+                          vulkan_render_state *renderState);
+void vulkan_pipeline_deinit(vulkan_pipeline *pipeline);
+
 size_t vulkan_pipeline_get_framebuffer_attachment_count(vulkan_pipeline *pipeline);
 void vulkan_pipeline_get_framebuffer_attachments(vulkan_pipeline *pipeline,
                                                  size_t swapChainImageIdx,
