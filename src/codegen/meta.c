@@ -5071,6 +5071,12 @@ const char *vulkan_buffer_type_debug_str(int value) {
   if (value == 3) { return "vulkan_buffer_type_count"; }
   return "UNKNOWN vulkan_buffer_type";
 }
+const char *vulkan_camera_type_debug_str(int value) {
+  if (value == 0) { return "vulkan_camera_type_orthographic"; }
+  if (value == 1) { return "vulkan_camera_type_perspective"; }
+  if (value == 2) { return "vulkan_camera_type_count"; }
+  return "UNKNOWN vulkan_camera_type";
+}
 const char *vulkan_data_vertex_attribute_component_type_debug_str(int value) {
   if (value == 0) { return "vulkan_data_vertex_attribute_component_uint32_t"; }
   if (value == 1) { return "vulkan_data_vertex_attribute_component_vec2"; }

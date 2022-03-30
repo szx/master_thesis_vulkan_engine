@@ -46,7 +46,7 @@
   X(primitive, key, key, material, key, topology, int, indices, key, positions, key, normals, key, colors, key, texcoords, key, __VA_ARGS__) \
   X(mesh, key, key, primitives, key_array, __VA_ARGS__) \
   X(object, key, key, transform, mat4, mesh, key, camera, key, children, key_array, __VA_ARGS__) \
-  X(camera, key, key, fovy, float, aspectratio, float, nearz, float, farz, float, __VA_ARGS__) \
+  X(camera, key, key, type, int, fovy, float, aspectratio, float, nearz, float, farz, float, __VA_ARGS__) \
   X(scene, key, key, name, text, objects, key_array, cameras, key_array, __VA_ARGS__) \
   END_OF_DATA_ASSET_DB_TABLES
 
@@ -92,6 +92,7 @@
   X(object, camera, key, __VA_ARGS__) \
   X(object, children, key_array, __VA_ARGS__) \
   X(camera, key, key, __VA_ARGS__) \
+  X(camera, type, int, __VA_ARGS__) \
   X(camera, fovY, float, __VA_ARGS__) \
   X(camera, aspectRatio, float, __VA_ARGS__) \
   X(camera, nearZ, float, __VA_ARGS__) \

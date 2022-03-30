@@ -265,11 +265,22 @@ vulkan_data_camera *parse_cgltf_camera(vulkan_data_scene *sceneData, cgltf_camer
   vulkan_data_camera *camera = core_alloc(sizeof(vulkan_data_camera));
   vulkan_data_camera_init(camera, sceneData);
 
-  // TODO: Support for orthographic projection.
-  camera->fovY = cgltfCamera->data.perspective.yfov;
-  camera->aspectRatio = cgltfCamera->data.perspective.aspect_ratio;
-  camera->nearZ = cgltfCamera->data.perspective.znear;
-  camera->farZ = cgltfCamera->data.perspective.zfar;
+  if (cgltfCamera->type == cgltf_camera_type_perspective) {
+    camera->type = vulkan_camera_type_perspective;
+    camera->fovY = cgltfCamera->data.perspective.yfov;
+    camera->aspectRatio = cgltfCamera->data.perspective.aspect_ratio;
+    camera->nearZ = cgltfCamera->data.perspective.znear;
+    camera->farZ = cgltfCamera->data.perspective.zfar;
+  } else if (cgltfCamera->type == cgltf_camera_type_orthographic) {
+    camera->type = vulkan_camera_type_orthographic;
+    camera->magX = cgltfCamera->data.orthographic.xmag;
+    camera->magY = cgltfCamera->data.orthographic.ymag;
+    camera->nearZ = cgltfCamera->data.orthographic.znear;
+    camera->farZ = cgltfCamera->data.orthographic.zfar;
+  } else {
+    assert(0);
+  }
+
   camera->key = vulkan_data_camera_calculate_key(camera);
 
   return camera;

@@ -6,22 +6,32 @@
 
 #include "common.h"
 
-typedef struct vulkan_data_camera {
-  /* Projection matrix: view frustum */
-  float fovY;        /// Vertical field of view.
-  float aspectRatio; /// Aspect ratio.
-  float nearZ;       /// Min depth range: distance from near clipping plane (along +Z axis!)
-  float farZ;        /// Max depth range: distance from far clipping plane (along +Z axis!)
+typedef enum vulkan_camera_type {
+  vulkan_camera_type_orthographic,
+  vulkan_camera_type_perspective,
+  vulkan_camera_type_count
+} vulkan_camera_type;
 
-  bool dirty;    /// True if camera state updated.
+typedef struct vulkan_data_camera {
+  vulkan_camera_type type;
+  union {
+    float fovY; ///< Vertical field of view.
+    float magX; ///< Horizontal magnification of view.
+  };
+  union {
+    float aspectRatio; ///< Aspect ratio.
+    float magY;        ///< Vertical magnification of view.
+  };
+  float nearZ; ///< Min depth range: distance from near clipping plane (along +Z axis!)
+  float farZ;  ///< Max depth range: distance from far clipping plane (along +Z axis!)
+
+  bool dirty; ///< True if camera state updated.
   DECL_VULKAN_ENTITY(camera)
 } vulkan_data_camera;
 
 void vulkan_data_camera_init(vulkan_data_camera *camera, vulkan_data_scene *sceneData);
 void vulkan_data_camera_deinit(vulkan_data_camera *camera);
 void vulkan_data_camera_copy(vulkan_data_camera *dst, vulkan_data_camera *src);
-
-void vulkan_data_camera_update_aspect_ratio(vulkan_data_camera *camera, float aspectRatio);
 
 data_key vulkan_data_camera_calculate_key(vulkan_data_camera *camera);
 void vulkan_data_camera_serialize(vulkan_data_camera *camera, data_asset_db *assetDb);

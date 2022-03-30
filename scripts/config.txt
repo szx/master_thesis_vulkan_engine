@@ -21,5 +21,5 @@ vertexAttribute = "key KEY, valuesInt INT_ARRAY, valuesVec2 VEC2_ARRAY, valuesVe
 primitive = "key KEY, material KEY, topology INT, indices KEY, positions KEY, normals KEY, colors KEY, texCoords KEY"
 mesh = "key KEY, primitives KEY_ARRAY"
 object = "key KEY, transform MAT4, mesh KEY, camera KEY, children KEY_ARRAY"
-camera = "key KEY, fovY FLOAT, aspectRatio FLOAT, nearZ FLOAT, farZ FLOAT"
+camera = "key KEY, type INT, fovY FLOAT, aspectRatio FLOAT, nearZ FLOAT, farZ FLOAT"
 scene = "key KEY, name TEXT, objects KEY_ARRAY, cameras KEY_ARRAY"
