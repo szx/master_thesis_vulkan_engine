@@ -258,6 +258,8 @@ bool check_device_extension_support(vulkan_device *vkd, VkPhysicalDevice physica
 }
 
 bool physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevice, size_t *rank) {
+  log_info("physical device info:");
+
   VkPhysicalDeviceProperties deviceProperties;
   vkGetPhysicalDeviceProperties(physicalDevice, &deviceProperties);
   log_info("deviceId = %X", deviceProperties.deviceID);
@@ -299,7 +301,7 @@ bool physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevic
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};
   VkPhysicalDeviceVulkan11Features features11 = {
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES};
-  VkPhysicalDeviceVulkan11Features features12 = {
+  VkPhysicalDeviceVulkan12Features features12 = {
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES};
   VkPhysicalDeviceRobustness2FeaturesEXT featuresRobustness2 = {
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT};
@@ -314,9 +316,13 @@ bool physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevic
   log_info("shaderSampledImageArrayDynamicIndexing = %d",
            features10.shaderSampledImageArrayDynamicIndexing);
   log_info("nullDescriptor = %d", featuresRobustness2.nullDescriptor);
-  bool featuresSupported =
-      features10.samplerAnisotropy && features10.shaderUniformBufferArrayDynamicIndexing &&
-      features10.shaderSampledImageArrayDynamicIndexing && featuresRobustness2.nullDescriptor;
+  log_info("descriptorIndexing = %d", features12.descriptorIndexing);
+  log_info("shaderSampledImageArrayNonUniformIndexing = %d",
+           features12.shaderSampledImageArrayNonUniformIndexing);
+  bool featuresSupported = features10.samplerAnisotropy &&
+                           features10.shaderUniformBufferArrayDynamicIndexing &&
+                           features10.shaderSampledImageArrayDynamicIndexing &&
+                           featuresRobustness2.nullDescriptor && features12.descriptorIndexing;
 
   return queueFamiliesComplete && extensionsSupported && swapChainAdequate && goodVulkanVersion &&
          featuresSupported;
@@ -363,7 +369,11 @@ void pick_physical_device(vulkan_device *vkd) {
   utarray_free(infos);
   free(devices);
   verify(vkd->physicalDevice != VK_NULL_HANDLE);
-  log_info("device found");
+
+  VkPhysicalDeviceProperties deviceProperties;
+  vkGetPhysicalDeviceProperties(vkd->physicalDevice, &deviceProperties);
+  log_info("device found: deviceId = %X, deviceName = %s", deviceProperties.deviceID,
+           deviceProperties.deviceName);
 
   vkd->limits = find_limits(vkd, vkd->physicalDevice);
 }
@@ -401,9 +411,16 @@ vulkan_queue_families find_queue_families(vulkan_device *vkd, VkPhysicalDevice p
 }
 
 vulkan_limits find_limits(vulkan_device *vkd, VkPhysicalDevice physicalDevice) {
+  VkPhysicalDeviceDescriptorIndexingProperties descriptorIndexingProperties = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES};
+  VkPhysicalDeviceProperties2 deviceProperties2 = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2,
+      .pNext = &descriptorIndexingProperties};
+  vkGetPhysicalDeviceProperties2(physicalDevice, &deviceProperties2);
+  VkPhysicalDeviceProperties deviceProperties = deviceProperties2.properties;
+
   vulkan_limits limits;
-  VkPhysicalDeviceProperties deviceProperties;
-  vkGetPhysicalDeviceProperties(physicalDevice, &deviceProperties);
+
   limits.maxImageDimension2D = deviceProperties.limits.maxImageDimension2D;
   limits.maxUniformBufferRange = deviceProperties.limits.maxUniformBufferRange;
   limits.maxStorageBufferRange = deviceProperties.limits.maxStorageBufferRange;
@@ -420,6 +437,10 @@ vulkan_limits find_limits(vulkan_device *vkd, VkPhysicalDevice physicalDevice) {
   limits.maxVertexOutputComponents = deviceProperties.limits.maxVertexOutputComponents;
   limits.maxVertexInputBindings = deviceProperties.limits.maxVertexInputBindings;
   limits.maxVertexInputBindingStride = deviceProperties.limits.maxVertexInputBindingStride;
+
+  limits.maxUpdateAfterBindDescriptorsInAllPools =
+      descriptorIndexingProperties.maxUpdateAfterBindDescriptorsInAllPools;
+
   return limits;
 }
 
