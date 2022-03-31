@@ -23,7 +23,9 @@ typedef struct vulkan_render_state {
 
   vulkan_unified_geometry_buffer *unifiedGeometryBuffer;
   vulkan_unified_uniform_buffer *unifiedUniformBuffer;
+  // HIRO HIRO textures array
 
+  vulkan_descriptors *descriptors;
   vulkan_sync *sync;
 
 } vulkan_render_state;

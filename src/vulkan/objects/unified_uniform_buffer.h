@@ -17,7 +17,6 @@ typedef struct vulkan_unified_uniform_buffer {
 
   /* GPU state */
   vulkan_buffer *buffer;
-  vulkan_descriptors *descriptors;
 
 } vulkan_unified_uniform_buffer;
 
@@ -28,14 +27,6 @@ void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *unifor
 void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniformBuffer,
                                           vulkan_camera *camera);
 
-/* HIRO: uniform/storage buffers for:
- * node cached materials
- */
-
 void vulkan_unified_uniform_buffer_send_to_device(vulkan_unified_uniform_buffer *uniformBuffer);
-
-void vulkan_unified_uniform_buffer_record_bind_command(vulkan_unified_uniform_buffer *uniformBuffer,
-                                                       VkCommandBuffer commandBuffer,
-                                                       VkPipelineLayout pipelineLayout);
 
 void vulkan_unified_uniform_buffer_debug_print(vulkan_unified_uniform_buffer *uniformBuffer);

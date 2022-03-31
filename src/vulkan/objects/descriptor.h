@@ -59,6 +59,7 @@ void vulkan_descriptor_binding_debug_print(vulkan_descriptor_binding *binding, i
 typedef struct vulkan_descriptors {
   vulkan_device *vkd;                                  ///< Pointer.
   vulkan_unified_uniform_buffer *unifiedUniformBuffer; ///< Pointer.
+  // HIRO HIRO create image samplers from texture array, add pointer here
 
   /// Descriptor pool used to allocate descriptors used by shaders.
   VkDescriptorPool descriptorPool;
@@ -83,10 +84,13 @@ vulkan_descriptors *vulkan_descriptors_create(vulkan_device *vkd,
 
 void vulkan_descriptors_destroy(vulkan_descriptors *descriptors);
 
-void vulkan_scene_descriptors_update(vulkan_descriptors *descriptors);
+void vulkan_descriptors_update(vulkan_descriptors *descriptors);
 
 void vulkan_descriptors_send_to_device(vulkan_descriptors *descriptors);
 
+void vulkan_descriptors_record_bind_command(vulkan_descriptors *descriptors,
+                                            VkCommandBuffer commandBuffer,
+                                            VkPipelineLayout pipelineLayout);
 VkDescriptorSetLayout *
 vulkan_descriptors_get_descriptor_set_layouts(vulkan_descriptors *descriptors, size_t *count);
 

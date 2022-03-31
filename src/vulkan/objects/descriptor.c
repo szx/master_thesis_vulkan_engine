@@ -97,12 +97,19 @@ void vulkan_descriptors_destroy(vulkan_descriptors *descriptors) {
   core_free(descriptors);
 }
 
-void vulkan_scene_descriptors_update(vulkan_descriptors *descriptors) {
+void vulkan_descriptors_update(vulkan_descriptors *descriptors) {
   // No-op.
 }
 
 void vulkan_descriptors_send_to_device(vulkan_descriptors *descriptors) {
   // No-op.
+}
+
+void vulkan_descriptors_record_bind_command(vulkan_descriptors *descriptors,
+                                            VkCommandBuffer commandBuffer,
+                                            VkPipelineLayout pipelineLayout) {
+  vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1,
+                          &descriptors->descriptorSet, 0, NULL);
 }
 
 VkDescriptorSetLayout *

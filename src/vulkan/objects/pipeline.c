@@ -62,7 +62,7 @@ void destroy_render_pass(vulkan_pipeline *pipeline) {
 void create_graphics_pipeline(vulkan_pipeline *pipeline) {
   size_t descriptorSetLayoutCount = 0;
   VkDescriptorSetLayout *descriptorSetLayouts = vulkan_descriptors_get_descriptor_set_layouts(
-      pipeline->renderState->unifiedUniformBuffer->descriptors, &descriptorSetLayoutCount);
+      pipeline->renderState->descriptors, &descriptorSetLayoutCount);
   assert(descriptorSetLayoutCount > 0);
 
   size_t pushConstantRangeCount = 0;
@@ -162,8 +162,8 @@ VkCommandBuffer vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline,
 
   vulkan_unified_geometry_buffer_record_bind_command(pipeline->renderState->unifiedGeometryBuffer,
                                                      commandBuffer);
-  vulkan_unified_uniform_buffer_record_bind_command(pipeline->renderState->unifiedUniformBuffer,
-                                                    commandBuffer, pipeline->pipelineLayout);
+  vulkan_descriptors_record_bind_command(pipeline->renderState->descriptors, commandBuffer,
+                                         pipeline->pipelineLayout);
 
   dl_foreach_elem(vulkan_batch *, batch, pipeline->renderState->batches->batches,
                   { vulkan_batch_record_draw_command(batch, commandBuffer); })

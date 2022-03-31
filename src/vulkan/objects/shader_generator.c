@@ -82,8 +82,7 @@ void glsl_add_fragment_shader_output_variables(UT_string *s) {
   utstring_printf(s, "layout(location = %u) out vec4 outColor;\n", location);
 }
 
-void glsl_add_uniform_buffers(UT_string *s, vulkan_unified_uniform_buffer *unifiedUniformBuffer) {
-  vulkan_descriptors *descriptors = unifiedUniformBuffer->descriptors;
+void glsl_add_descriptors(UT_string *s, vulkan_descriptors *descriptors) {
   uint32_t set = 0;
   uint32_t binding = 0;
 #define str_uniform_buffer(_name, ...)                                                             \
@@ -132,8 +131,7 @@ vulkan_shader *vulkan_shader_generator_get_shader(vulkan_shader_generator *shade
 
   glsl_add_header(shaderGenerator->sourceCode);
   glsl_add_defines(shaderGenerator->sourceCode, shaderGenerator->renderState);
-  glsl_add_uniform_buffers(shaderGenerator->sourceCode,
-                           shaderGenerator->renderState->unifiedUniformBuffer);
+  glsl_add_descriptors(shaderGenerator->sourceCode, shaderGenerator->renderState->descriptors);
 
   vulkan_shader_type shaderType = vulkan_shader_generator_output_type_to_shader_type(type);
   if (shaderType == vulkan_shader_type_vertex) {
