@@ -6,7 +6,6 @@
 #include "batch.h"
 #include "camera.h"
 #include "render_cache_list.h"
-#include "shader.h"
 #include "sync.h"
 #include "unified_geometry_buffer.h"
 #include "unified_uniform_buffer.h"
