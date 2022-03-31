@@ -7,6 +7,7 @@
 #include "camera.h"
 #include "render_cache_list.h"
 #include "sync.h"
+#include "textures.h"
 #include "unified_geometry_buffer.h"
 #include "unified_uniform_buffer.h"
 
@@ -23,7 +24,7 @@ typedef struct vulkan_render_state {
 
   vulkan_unified_geometry_buffer *unifiedGeometryBuffer;
   vulkan_unified_uniform_buffer *unifiedUniformBuffer;
-  // HIRO HIRO textures array
+  vulkan_textures *textures;
 
   vulkan_descriptors *descriptors;
   vulkan_sync *sync;

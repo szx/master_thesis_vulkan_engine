@@ -5,6 +5,7 @@
 #include "buffer.h"
 
 typedef struct vulkan_unified_uniform_buffer vulkan_unified_uniform_buffer;
+typedef struct vulkan_textures vulkan_textures;
 
 typedef struct vulkan_global_uniform_struct {
   mat4 viewMat;
@@ -59,7 +60,7 @@ void vulkan_descriptor_binding_debug_print(vulkan_descriptor_binding *binding, i
 typedef struct vulkan_descriptors {
   vulkan_device *vkd;                                  ///< Pointer.
   vulkan_unified_uniform_buffer *unifiedUniformBuffer; ///< Pointer.
-  // HIRO HIRO create image samplers from texture array, add pointer here
+  vulkan_textures *textures;                           ///< Pointer.
 
   /// Descriptor pool used to allocate descriptors used by shaders.
   VkDescriptorPool descriptorPool;
@@ -80,7 +81,8 @@ typedef struct vulkan_descriptors {
 } vulkan_descriptors;
 
 vulkan_descriptors *vulkan_descriptors_create(vulkan_device *vkd,
-                                              vulkan_unified_uniform_buffer *unifiedUniformBuffer);
+                                              vulkan_unified_uniform_buffer *unifiedUniformBuffer,
+                                              vulkan_textures *textures);
 
 void vulkan_descriptors_destroy(vulkan_descriptors *descriptors);
 

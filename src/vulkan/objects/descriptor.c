@@ -1,6 +1,7 @@
 #include "descriptor.h"
 
 #include "../constants.h"
+#include "textures.h"
 #include "unified_uniform_buffer.h"
 
 #define def_uniform_buffer_data(_name, ...)                                                        \
@@ -47,11 +48,13 @@ void vulkan_descriptor_binding_debug_print(vulkan_descriptor_binding *binding, i
 }
 
 vulkan_descriptors *vulkan_descriptors_create(vulkan_device *vkd,
-                                              vulkan_unified_uniform_buffer *unifiedUniformBuffer) {
+                                              vulkan_unified_uniform_buffer *unifiedUniformBuffer,
+                                              vulkan_textures *textures) {
   vulkan_descriptors *descriptors = core_alloc(sizeof(vulkan_descriptors));
 
   descriptors->vkd = vkd;
   descriptors->unifiedUniformBuffer = unifiedUniformBuffer;
+  descriptors->textures = textures;
 
   size_t totalUniformBufferDescriptorCount = 0;
 #define binding_uniform_buffer(_name, ...) totalUniformBufferDescriptorCount++;
@@ -87,6 +90,8 @@ vulkan_descriptors *vulkan_descriptors_create(vulkan_device *vkd,
   descriptors->descriptorSet = vulkan_create_descriptor_set(
       descriptors->vkd, descriptors->descriptorSetLayout, descriptors->descriptorPool,
       descriptors->bindings, array_size(descriptors->bindings), "descriptors");
+
+  // HIRO HIRO create descriptor set for array of textures
 
   return descriptors;
 }

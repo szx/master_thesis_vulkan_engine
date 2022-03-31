@@ -8,7 +8,7 @@
 #include "texture.h"
 
 typedef struct vulkan_data_material {
-  vec4 baseColorFactor;         /// sRGBA
+  vec4 baseColorFactor; ///< sRGBA
   float metallicFactor;
   float roughnessFactor;
   vulkan_data_texture *baseColorTexture;

@@ -17,8 +17,10 @@ vulkan_render_state *vulkan_render_state_create(vulkan_device *vkd,
       vulkan_unified_geometry_buffer_create(renderState->vkd, renderState->renderCacheList);
   renderState->unifiedUniformBuffer =
       vulkan_unified_uniform_buffer_create(vkd, renderState->renderCacheList);
+  renderState->textures = vulkan_textures_create(vkd, renderState->renderCacheList);
 
-  renderState->descriptors = vulkan_descriptors_create(vkd, renderState->unifiedUniformBuffer);
+  renderState->descriptors =
+      vulkan_descriptors_create(vkd, renderState->unifiedUniformBuffer, renderState->textures);
 
   renderState->sync = vulkan_sync_create(renderState->vkd);
 
@@ -32,6 +34,7 @@ void vulkan_render_state_destroy(vulkan_render_state *renderState) {
 
   vulkan_descriptors_destroy(renderState->descriptors);
 
+  vulkan_textures_destroy(renderState->textures);
   vulkan_unified_uniform_buffer_destroy(renderState->unifiedUniformBuffer);
   vulkan_unified_geometry_buffer_destroy(renderState->unifiedGeometryBuffer);
 
@@ -54,6 +57,7 @@ void vulkan_scene_render_state_update(vulkan_render_state *renderState) {
 
   vulkan_unified_geometry_buffer_update(renderState->unifiedGeometryBuffer);
   vulkan_unified_uniform_buffer_update(renderState->unifiedUniformBuffer, renderState->camera);
+  vulkan_textures_update(renderState->textures);
 
   vulkan_descriptors_update(renderState->descriptors);
 }
@@ -61,6 +65,7 @@ void vulkan_scene_render_state_update(vulkan_render_state *renderState) {
 void vulkan_render_state_send_to_device(vulkan_render_state *renderState) {
   vulkan_unified_geometry_buffer_send_to_device(renderState->unifiedGeometryBuffer);
   vulkan_unified_uniform_buffer_send_to_device(renderState->unifiedUniformBuffer);
+  vulkan_textures_send_to_device(renderState->textures);
 
   vulkan_descriptors_send_to_device(renderState->descriptors);
 
@@ -70,10 +75,11 @@ void vulkan_render_state_send_to_device(vulkan_render_state *renderState) {
 }
 
 void vulkan_render_state_debug_print(vulkan_render_state *renderState) {
-  log_debug("RENDER STATE:\n");
+  log_debug("render state:\n");
   vulkan_batches_debug_print(renderState->batches);
   vulkan_unified_geometry_buffer_debug_print(renderState->unifiedGeometryBuffer);
   vulkan_unified_uniform_buffer_debug_print(renderState->unifiedUniformBuffer);
+  vulkan_textures_debug_print(renderState->textures);
   vulkan_descriptors_debug_print(renderState->descriptors, 2);
   vulkan_sync_debug_print(renderState->sync, 2);
 }
