@@ -1,5 +1,7 @@
 /* Vulkan scene cache list.
- * Tracks primitive scene nodes that are leaves of scene tree.
+ * Tracks scene tree nodes that are:
+ *  - primitives (leaves of scene tree),
+ *  - cameras,
  * Used to build draw call batches.
  */
 #pragma once

@@ -10,7 +10,7 @@
 
 /// Hash table for textures and their associated images and samplers.
 typedef struct vulkan_textures_element {
-  vulkan_data_texture *texture; ///< Pointer.
+  vulkan_data_texture *texture; ///< Pointer. Key.
   vulkan_image *image;          ///< GPU image.
   // HIRO HIRO sampler
   uint32_t textureIdx; ///< Index in array of textures bound by descriptor set.
@@ -23,7 +23,8 @@ void vulkan_textures_element_destroy(vulkan_textures_element *element);
 
 typedef struct vulkan_textures {
   /* CPU state */
-  vulkan_render_cache_list *renderCacheList; /// Pointer.
+  vulkan_device *vkd;                        ///< Pointer.
+  vulkan_render_cache_list *renderCacheList; ///< Pointer.
 
   /* GPU state */
   vulkan_textures_element *elements;
@@ -37,5 +38,7 @@ void vulkan_textures_destroy(vulkan_textures *textures);
 void vulkan_textures_update(vulkan_textures *textures);
 
 void vulkan_textures_send_to_device(vulkan_textures *textures);
+
+void vulkan_textures_add_texture(vulkan_textures *textures, vulkan_data_texture *texture);
 
 void vulkan_textures_debug_print(vulkan_textures *textures);
