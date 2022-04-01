@@ -5,7 +5,7 @@
 
 typedef enum vulkan_image_type {
   vulkan_image_type_depth_buffer,
-  vulkan_image_type_material_r8g8b8a8,
+  vulkan_image_type_material,
   vulkan_image_type_count
 } vulkan_image_type;
 
@@ -37,7 +37,7 @@ typedef struct vulkan_image {
 } vulkan_image;
 
 vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, uint32_t width,
-                                  uint32_t height);
+                                  uint32_t height, VkFormat preferredFormat);
 void vulkan_image_destroy(vulkan_image *image);
 
 void vulkan_image_make_resident(vulkan_image *image);

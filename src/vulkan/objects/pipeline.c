@@ -238,7 +238,7 @@ vulkan_pipeline_shared_state *vulkan_pipeline_shared_state_create(vulkan_pipelin
   vulkan_swap_chain *vks = sharedState->pipeline->vks;
   sharedState->depthBufferImage =
       vulkan_image_create(vks->vkd, vulkan_image_type_depth_buffer, vks->swapChainExtent.width,
-                          vks->swapChainExtent.height);
+                          vks->swapChainExtent.height, VK_FORMAT_UNDEFINED);
 
   return sharedState;
 }

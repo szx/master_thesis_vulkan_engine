@@ -1,7 +1,7 @@
 #include "image.h"
 
 vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, uint32_t width,
-                                  uint32_t height) {
+                                  uint32_t height, VkFormat preferredFormat) {
   vulkan_image *image = core_alloc(sizeof(vulkan_image));
 
   image->vkd = vkd;
@@ -19,6 +19,15 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->name = "depth buffer image";
+  } else if (image->type == vulkan_image_type_material) {
+    image->mipLevelCount = 1;
+    image->format = preferredFormat;
+    image->tiling = VK_IMAGE_TILING_OPTIMAL;
+    image->createFlags = 0;
+    image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+    image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    image->name = "material image";
   } else {
     assert(0);
   }

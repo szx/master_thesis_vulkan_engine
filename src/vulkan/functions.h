@@ -8,6 +8,7 @@ typedef struct vulkan_shader_program vulkan_shader_program;
 typedef struct vulkan_render_state vulkan_render_state;
 typedef struct vulkan_swap_chain vulkan_swap_chain;
 typedef struct vulkan_descriptor_binding vulkan_descriptor_binding;
+typedef struct vulkan_data_texture vulkan_data_texture;
 
 // TODO: Implement all Vulkan helper functions.
 
@@ -17,6 +18,7 @@ VkFormat vulkan_find_supported_format(vulkan_device *vkd, VkImageTiling tiling,
                                       VkFormatFeatureFlags features, VkFormat *candidates,
                                       size_t candidateCount);
 VkFormat vulkan_find_depth_format(vulkan_device *vkd);
+VkFormat vulkan_find_texture_format(vulkan_device *vkd, vulkan_data_texture *texture);
 VkIndexType vulkan_stride_to_index_type(size_t stride);
 
 /* vulkan object creation */

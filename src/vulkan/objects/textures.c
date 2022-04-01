@@ -6,10 +6,9 @@ vulkan_textures_element *vulkan_textures_element_create(vulkan_data_texture *tex
   vulkan_textures_element *element = core_alloc(sizeof(vulkan_textures_element));
 
   element->texture = texture;
-  // HIRO HIRO format
-  element->image =
-      vulkan_image_create(vkd, vulkan_image_type_material_r8g8b8a8, element->texture->image->width,
-                          element->texture->image->height);
+  element->image = vulkan_image_create(
+      vkd, vulkan_image_type_material, element->texture->image->width,
+      element->texture->image->height, vulkan_find_texture_format(vkd, texture));
   // HIRO HIRO sampler
   element->textureIdx = 0;
 

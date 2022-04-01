@@ -1,5 +1,6 @@
 #include "functions.h"
 
+#include "data/texture.h"
 #include "objects/buffer.h"
 #include "objects/device.h"
 #include "objects/shader_program.h"
@@ -37,7 +38,11 @@ VkFormat vulkan_find_supported_format(vulkan_device *vkd, VkImageTiling tiling,
     }
   }
 
-  assert(false);
+  for (size_t i = 0; i < candidateCount; i++) {
+    VkFormat format = candidates[i];
+    log_error("unsupported format %s", VkFormat_debug_str(format));
+  }
+  panic("unsupported format");
   return VK_FORMAT_UNDEFINED;
 }
 
@@ -47,6 +52,38 @@ VkFormat vulkan_find_depth_format(vulkan_device *vkd) {
   return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
                                       VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT, formats,
                                       array_size(formats));
+}
+
+VkFormat vulkan_find_texture_format(vulkan_device *vkd, vulkan_data_texture *texture) {
+  size_t channels = texture->image->channels;
+  assert(channels > 0 && channels <= 4);
+  // NOTE: We assume that all textures are in sRGB color space.
+  if (channels == 1) {
+    VkFormat formats[] = {VK_FORMAT_R8G8_SRGB};
+    return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
+                                        VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
+                                        array_size(formats));
+  }
+  if (channels == 2) {
+    VkFormat formats[] = {VK_FORMAT_R8G8_SRGB, VK_FORMAT_R8G8B8A8_SRGB};
+    return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
+                                        VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
+                                        array_size(formats));
+  }
+  if (channels == 3) {
+    VkFormat formats[] = {VK_FORMAT_R8G8B8_SRGB, VK_FORMAT_R8G8B8A8_SRGB};
+    return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
+                                        VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
+                                        array_size(formats));
+  }
+  if (channels == 4) {
+    VkFormat formats[] = {VK_FORMAT_R8G8B8A8_SRGB};
+    return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
+                                        VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
+                                        array_size(formats));
+  }
+  assert(0);
+  return VK_FORMAT_UNDEFINED;
 }
 
 VkIndexType vulkan_stride_to_index_type(size_t stride) {
@@ -184,7 +221,7 @@ VkDeviceMemory vulkan_create_image_memory(vulkan_device *vkd, VkImage image,
 
   DEBUG_NAME_FORMAT_START();
   vulkan_debug_name_device_memory(vkd->debug, imageMemory, "%s - image memory (%zu bytes)",
-                                  debugName, VkImageViewType_debug_str(allocInfo.allocationSize));
+                                  debugName, allocInfo.allocationSize);
   DEBUG_NAME_FORMAT_END();
 
   vkBindImageMemory(vkd->device, image, imageMemory, 0);
