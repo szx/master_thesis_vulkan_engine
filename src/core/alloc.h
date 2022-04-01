@@ -12,6 +12,8 @@ void core_free(void *ptr);
 
 void *core_memcpy(void *dest, const void *src, size_t size);
 
+void *core_memset(void *dest, int value, size_t size);
+
 void *core_strdup(const char *dest);
 
 /// Returns copy of memory.

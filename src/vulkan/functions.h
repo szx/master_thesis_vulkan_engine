@@ -19,6 +19,7 @@ VkFormat vulkan_find_supported_format(vulkan_device *vkd, VkImageTiling tiling,
                                       size_t candidateCount);
 VkFormat vulkan_find_depth_format(vulkan_device *vkd);
 VkFormat vulkan_find_texture_format(vulkan_device *vkd, vulkan_data_texture *texture);
+size_t vulkan_format_size(VkFormat format);
 VkIndexType vulkan_stride_to_index_type(size_t stride);
 
 /* vulkan object creation */
@@ -111,8 +112,9 @@ void vulkan_copy_buffer_to_buffer(vulkan_device *vkd, VkBuffer srcBuffer, VkBuff
 void vulkan_copy_buffer_to_image(vulkan_device *vkd, VkBuffer buffer, VkImage image, uint32_t width,
                                  uint32_t height, uint32_t baseArrayLayer);
 
-void vulkan_generate_mipmaps(vulkan_device *vkd, VkImage image, VkFormat imageFormat,
-                             int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
+void vulkan_generate_mipmaps(vulkan_device *vkd, VkImage image, VkFormat format, uint32_t width,
+                             uint32_t height, uint32_t mipLevelCount);
+
 void vulkan_transition_image_layout(vulkan_device *vkd, VkImage image, VkFormat format,
                                     VkImageLayout oldLayout, VkImageLayout newLayout,
                                     uint32_t mipLevels, uint32_t arrayLayers);

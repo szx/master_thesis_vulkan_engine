@@ -18,6 +18,13 @@ void *core_memcpy(void *dest, const void *src, size_t size) {
   return memcpy(dest, src, size);
 }
 
+void *core_memset(void *dest, int value, size_t size) {
+  if (dest == NULL || size == 0) {
+    return dest;
+  }
+  return memset(dest, value, size);
+}
+
 void *core_memdup(const void *src, size_t size) {
   void *data = core_alloc(size);
   memcpy(data, src, size);

@@ -2,6 +2,7 @@
 #pragma once
 
 #include "../common.h"
+#include "../data/texture.h"
 
 typedef enum vulkan_image_type {
   vulkan_image_type_depth_buffer,
@@ -32,8 +33,9 @@ typedef struct vulkan_image {
   VkDeviceMemory imageMemory;
   VkImageView imageView;
 
-  bool resident; ///< True if image created in GPU memory.
-  bool dirty;    ///< True if CPU to GPU transfer required.
+  bool resident;                ///< True if image created in GPU memory.
+  bool dirty;                   ///< True if CPU to GPU transfer required.
+  vulkan_data_texture *texture; ///< Pointer to texture used to update image.
 } vulkan_image;
 
 vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, uint32_t width,
@@ -41,6 +43,9 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
 void vulkan_image_destroy(vulkan_image *image);
 
 void vulkan_image_make_resident(vulkan_image *image);
+
+void vulkan_image_update(vulkan_image *image, vulkan_data_texture *texture);
+
 void vulkan_image_send_to_device(vulkan_image *image);
 
 void vulkan_image_debug_print(vulkan_image *image, int indent);

@@ -53,7 +53,7 @@ vulkan_data_image *parse_cgltf_image(vulkan_data_scene *sceneData, cgltf_image *
   append_to_path(imagePath, cgltfImage->uri);
   log_debug("%s", utstring_body(imagePath));
   int w, h, c;
-  stbi_uc *pixels = stbi_load(utstring_body(imagePath), &w, &h, &c, STBI_rgb_alpha);
+  stbi_uc *pixels = stbi_load(utstring_body(imagePath), &w, &h, &c, STBI_default);
   utstring_free(imagePath);
   image->width = w;
   image->height = h;
