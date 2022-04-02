@@ -272,6 +272,38 @@ VkImageView vulkan_create_image_view(vulkan_device *vkd, VkImage image, VkImageV
   return imageView;
 }
 
+VkSampler vulkan_create_sampler(vulkan_device *vkd, uint32_t mipLevelCount, const char *debugFormat,
+                                ...) {
+  // TODO: Share sampler with same parameters.
+  VkSamplerCreateInfo samplerInfo = {0};
+  samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+  samplerInfo.magFilter = VK_FILTER_LINEAR;
+  samplerInfo.minFilter = VK_FILTER_LINEAR;
+  samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+  samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+  samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+  samplerInfo.anisotropyEnable = VK_TRUE;
+  samplerInfo.maxAnisotropy = 16.0f;
+  samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+  samplerInfo.unnormalizedCoordinates = VK_FALSE;
+  samplerInfo.compareEnable = VK_FALSE;
+  samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+  samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+  samplerInfo.minLod = 0.0f;
+  samplerInfo.maxLod = (float)(mipLevelCount);
+  samplerInfo.mipLodBias = 0.0f;
+
+  VkSampler sampler;
+  verify(vkCreateSampler(vkd->device, &samplerInfo, vka, &sampler) == VK_SUCCESS);
+
+  DEBUG_NAME_FORMAT_START();
+  vulkan_debug_name_sampler(vkd->debug, sampler, "%s - sampler (maxLod = %f)", debugName,
+                            samplerInfo.maxLod);
+  DEBUG_NAME_FORMAT_END();
+
+  return sampler;
+}
+
 void vulkan_create_buffer(vulkan_device *vkd, VkDeviceSize size, VkBufferUsageFlags usage,
                           VkMemoryPropertyFlags properties, VkBuffer *buffer,
                           VkDeviceMemory *bufferMemory, const char *debugFormat, ...) {

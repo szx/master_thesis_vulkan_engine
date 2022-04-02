@@ -50,6 +50,9 @@ VkImageView vulkan_create_image_view(vulkan_device *vkd, VkImage image, VkImageV
                                      uint32_t mipLevels, uint32_t arrayLayers,
                                      const char *debugFormat, ...);
 
+VkSampler vulkan_create_sampler(vulkan_device *vkd, uint32_t mipLevelCount, const char *debugFormat,
+                                ...);
+
 void vulkan_create_buffer(vulkan_device *vkd, VkDeviceSize size, VkBufferUsageFlags usage,
                           VkMemoryPropertyFlags properties, VkBuffer *buffer,
                           VkDeviceMemory *bufferMemory, const char *debugFormat, ...);

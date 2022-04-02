@@ -10,13 +10,15 @@ vulkan_textures_element *vulkan_textures_element_create(vulkan_data_texture *tex
       vkd, vulkan_image_type_material, element->texture->image->width,
       element->texture->image->height, vulkan_find_texture_format(vkd, texture));
   vulkan_image_update(element->image, element->texture);
-  // HIRO HIRO sampler
+
+  element->sampler = vulkan_create_sampler(vkd, element->image->mipLevelCount, "texture");
   element->textureIdx = 0;
 
   return element;
 }
 
 void vulkan_textures_element_destroy(vulkan_textures_element *element) {
+  vkDestroySampler(element->image->vkd->device, element->sampler, vka);
   vulkan_image_destroy(element->image);
   core_free(element);
 }

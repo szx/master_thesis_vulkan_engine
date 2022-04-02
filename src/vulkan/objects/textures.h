@@ -11,9 +11,9 @@
 /// Hash table for textures and their associated images and samplers.
 typedef struct vulkan_textures_element {
   vulkan_data_texture *texture; ///< Pointer. Key.
-  vulkan_image *image;          ///< GPU image.
-  // HIRO HIRO sampler
-  uint32_t textureIdx; ///< Index in array of textures bound by descriptor set.
+  vulkan_image *image;          ///< GPU image
+  VkSampler sampler;            ///< Sampler used to read images.
+  uint32_t textureIdx;          ///< Index in array of textures bound by descriptor set.
   UT_hash_handle hh;
 } vulkan_textures_element;
 

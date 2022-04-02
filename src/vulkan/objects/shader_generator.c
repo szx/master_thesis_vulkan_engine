@@ -91,6 +91,7 @@ void glsl_add_descriptors(UT_string *s, vulkan_descriptors *descriptors) {
                                            descriptors->unifiedUniformBuffer->_name##Data->count);
   VULKAN_UNIFORM_BUFFERS(str_uniform_buffer, )
 #undef str_uniform_buffer
+  // HIRO HIRO glsl_add_vulkan_textures
 }
 
 void glsl_add_entry_point_begin(UT_string *s) { utstring_printf(s, "%s\n", "void main() {\n"); }
