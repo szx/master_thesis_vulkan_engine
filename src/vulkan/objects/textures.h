@@ -42,3 +42,5 @@ void vulkan_textures_send_to_device(vulkan_textures *textures);
 void vulkan_textures_add_texture(vulkan_textures *textures, vulkan_data_texture *texture);
 
 void vulkan_textures_debug_print(vulkan_textures *textures);
+
+void glsl_add_textures(UT_string *s, uint32_t set, uint32_t binding, vulkan_textures *textures);

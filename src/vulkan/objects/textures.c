@@ -12,7 +12,8 @@ vulkan_textures_element *vulkan_textures_element_create(vulkan_data_texture *tex
   vulkan_image_update(element->image, element->texture);
 
   element->sampler = vulkan_create_sampler(vkd, element->image->mipLevelCount, "texture");
-  element->textureIdx = 0;
+  static uint32_t textureIdx = 0;
+  element->textureIdx = textureIdx++;
 
   return element;
 }
@@ -81,4 +82,9 @@ void vulkan_textures_add_texture(vulkan_textures *textures, vulkan_data_texture 
 void vulkan_textures_debug_print(vulkan_textures *textures) {
   log_debug("textures:\n");
   log_debug("count=%zu\n", HASH_CNT(hh, textures->elements));
+}
+
+void glsl_add_textures(UT_string *s, uint32_t set, uint32_t binding, vulkan_textures *textures) {
+  utstring_printf(s, "layout(set = %u, binding = %u) uniform sampler2D textures[];\n", set,
+                  binding);
 }

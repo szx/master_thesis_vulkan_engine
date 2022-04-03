@@ -353,20 +353,28 @@ VkShaderModule vulkan_create_shader_module(vulkan_device *vkd, const uint32_t *c
 VkDescriptorPool vulkan_create_descriptor_pool(vulkan_device *vkd, size_t totalUniformBufferCount,
                                                size_t totalCombinedImageSamplerCount,
                                                size_t maxAllocatedDescriptorSetsCount,
-                                               const char *debugFormat, ...) {
+                                               bool bindless, const char *debugFormat, ...) {
   VkDescriptorPoolSize poolSizes[2] = {0};
   poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
   poolSizes[0].descriptorCount = totalUniformBufferCount;
   poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
   poolSizes[1].descriptorCount = totalCombinedImageSamplerCount;
 
-  verify(poolSizes[0].descriptorCount <= vkd->limits.maxPerStageDescriptorUniformBuffers);
-  verify(poolSizes[1].descriptorCount <= vkd->limits.maxPerStageDescriptorSampledImages);
-  verify((poolSizes[0].descriptorCount + poolSizes[1].descriptorCount) <=
-         vkd->limits.maxPerStageResources);
+  if (!bindless) {
+    verify(poolSizes[0].descriptorCount <= vkd->limits.maxPerStageDescriptorUniformBuffers);
+    verify(poolSizes[1].descriptorCount <= vkd->limits.maxPerStageDescriptorSampledImages);
+    verify((poolSizes[0].descriptorCount + poolSizes[1].descriptorCount) <=
+           vkd->limits.maxPerStageResources);
+  } else {
+    verify(poolSizes[0].descriptorCount <= vkd->limits.maxPerStageBindlessDescriptorUniformBuffers);
+    verify(poolSizes[1].descriptorCount <= vkd->limits.maxPerStageBindlessDescriptorSampledImages);
+    verify((poolSizes[0].descriptorCount + poolSizes[1].descriptorCount) <=
+           vkd->limits.maxPerStageBindlessResources);
+  }
 
   VkDescriptorPoolCreateInfo poolInfo = {0};
   poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+  poolInfo.flags = bindless ? VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT_EXT : 0;
   poolInfo.poolSizeCount = 2;
   poolInfo.pPoolSizes = poolSizes;
   poolInfo.maxSets = maxAllocatedDescriptorSetsCount;
@@ -387,7 +395,7 @@ VkDescriptorPool vulkan_create_descriptor_pool(vulkan_device *vkd, size_t totalU
 
 VkDescriptorSetLayout vulkan_create_descriptor_set_layout(vulkan_device *vkd,
                                                           vulkan_descriptor_binding *bindings,
-                                                          size_t bindingCount,
+                                                          size_t bindingCount, bool bindless,
                                                           const char *debugFormat, ...) {
 
   VkDescriptorSetLayoutBinding layoutBindings[bindingCount];
@@ -407,6 +415,22 @@ VkDescriptorSetLayout vulkan_create_descriptor_set_layout(vulkan_device *vkd,
   layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
   layoutInfo.bindingCount = bindingCount;
   layoutInfo.pBindings = layoutBindings;
+  VkDescriptorSetLayoutBindingFlagsCreateInfo layoutBindingFlagsInfo = {
+      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO};
+  VkDescriptorBindingFlags layoutBindingFlags[layoutInfo.bindingCount];
+  if (bindless) {
+    layoutInfo.flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT;
+    for (size_t i = 0; i < array_size(layoutBindingFlags); i++) {
+      VkDescriptorBindingFlags bindingFlags = VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT;
+      layoutBindingFlags[i] = bindingFlags;
+    }
+    layoutBindingFlags[array_size(layoutBindingFlags) - 1] |=
+        VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT |
+        VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT;
+    layoutBindingFlagsInfo.bindingCount = layoutInfo.bindingCount;
+    layoutBindingFlagsInfo.pBindingFlags = layoutBindingFlags;
+    layoutInfo.pNext = &layoutBindingFlagsInfo;
+  }
 
   VkDescriptorSetLayout descriptorSetLayout;
   verify(vkCreateDescriptorSetLayout(vkd->device, &layoutInfo, vka, &descriptorSetLayout) ==
@@ -421,19 +445,26 @@ VkDescriptorSetLayout vulkan_create_descriptor_set_layout(vulkan_device *vkd,
   return descriptorSetLayout;
 }
 
-VkDescriptorSet vulkan_create_descriptor_set(vulkan_device *vkd,
-                                             VkDescriptorSetLayout descriptorSetLayout,
-                                             VkDescriptorPool descriptorPool,
-                                             vulkan_descriptor_binding *bindings,
-                                             size_t bindingCount, const char *debugFormat, ...) {
+VkDescriptorSet
+vulkan_create_descriptor_set(vulkan_device *vkd, VkDescriptorSetLayout descriptorSetLayout,
+                             VkDescriptorPool descriptorPool, vulkan_descriptor_binding *bindings,
+                             size_t bindingCount, bool bindless, const char *debugFormat, ...) {
 
-  /* create descriptor set */
   VkDescriptorSetLayout layouts[1] = {descriptorSetLayout};
   VkDescriptorSetAllocateInfo allocInfo = {0};
   allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
   allocInfo.descriptorPool = descriptorPool;
   allocInfo.descriptorSetCount = 1;
   allocInfo.pSetLayouts = layouts;
+  VkDescriptorSetVariableDescriptorCountAllocateInfo variableDescriptorCountAllocateInfo = {
+      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO};
+  uint32_t maxBindlessDescriptors = vkd->limits.maxPerStageBindlessDescriptorSampledImages;
+  if (bindless) {
+    variableDescriptorCountAllocateInfo.descriptorSetCount = 1;
+    // NOTE: Assumed that variable-sized descriptor binds images.
+    variableDescriptorCountAllocateInfo.pDescriptorCounts = &maxBindlessDescriptors;
+    allocInfo.pNext = &variableDescriptorCountAllocateInfo;
+  }
 
   VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
   verify(vkAllocateDescriptorSets(vkd->device, &allocInfo, &descriptorSet) == VK_SUCCESS);
@@ -442,14 +473,19 @@ VkDescriptorSet vulkan_create_descriptor_set(vulkan_device *vkd,
   vulkan_debug_name_descriptor_set(vkd->debug, descriptorSet, "%s - descriptor set", debugName);
   DEBUG_NAME_FORMAT_END();
 
-  /* update bindings */
+  vulkan_update_descriptor_set(vkd, descriptorSet, bindings, bindingCount);
+
+  return descriptorSet;
+}
+
+void vulkan_update_descriptor_set(vulkan_device *vkd, VkDescriptorSet descriptorSet,
+                                  vulkan_descriptor_binding *bindings, size_t bindingCount) {
   VkWriteDescriptorSet descriptorWrites[bindingCount];
   VkDescriptorBufferInfo bufferInfos[bindingCount];
-
-  for (size_t i = 0; i < bindingCount; i++) {
+  size_t i = 0;
+  while (i < bindingCount) {
     VkWriteDescriptorSet *descriptorWrite = &descriptorWrites[i];
     vulkan_descriptor_binding *binding = &bindings[i];
-    assert(binding->descriptorCount == 1);
 
     *descriptorWrite = (VkWriteDescriptorSet){.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
                                               .dstSet = descriptorSet,
@@ -466,12 +502,44 @@ VkDescriptorSet vulkan_create_descriptor_set(vulkan_device *vkd,
       bufferInfo->range = binding->bufferElement->size;
       descriptorWrite->pBufferInfo = bufferInfo;
     } else {
+      break;
+    }
+    i++;
+  }
+  if (i > 0) {
+    vkUpdateDescriptorSets(vkd->device, i, descriptorWrites, 0, NULL);
+  }
+
+  vulkan_descriptor_binding *variableBinding = &bindings[i];
+  vulkan_textures *textures = variableBinding->textures;
+  uint32_t variableDescriptorWriteCount = HASH_COUNT(textures->elements);
+  VkWriteDescriptorSet variableDescriptorWrites[variableDescriptorWriteCount];
+  VkDescriptorImageInfo variableImageInfos[variableDescriptorWriteCount];
+  size_t variableDescriptorWriteIdx = 0;
+  vulkan_textures_element *texturesElement;
+  for (texturesElement = textures->elements; texturesElement != NULL;
+       texturesElement = texturesElement->hh.next) {
+    VkWriteDescriptorSet *descriptorWrite = &variableDescriptorWrites[variableDescriptorWriteIdx];
+
+    *descriptorWrite = (VkWriteDescriptorSet){.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                                              .dstSet = descriptorSet,
+                                              .dstBinding = variableBinding->bindingNumber,
+                                              .dstArrayElement = texturesElement->textureIdx,
+                                              .descriptorType = variableBinding->descriptorType,
+                                              .descriptorCount = 1};
+    if (descriptorWrite->descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER) {
+      VkDescriptorImageInfo *imageInfo = &variableImageInfos[variableDescriptorWriteIdx];
+      imageInfo->sampler = texturesElement->sampler;
+      imageInfo->imageView = texturesElement->image->imageView;
+      imageInfo->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+      descriptorWrite->pImageInfo = imageInfo;
+    } else {
       assert(0);
     }
+    variableDescriptorWriteIdx++;
   }
-  vkUpdateDescriptorSets(vkd->device, array_size(descriptorWrites), descriptorWrites, 0, NULL);
-
-  return descriptorSet;
+  vkUpdateDescriptorSets(vkd->device, variableDescriptorWriteCount, variableDescriptorWrites, 0,
+                         NULL);
 }
 
 VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,

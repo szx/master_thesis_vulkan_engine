@@ -319,10 +319,14 @@ bool physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevic
   log_info("descriptorIndexing = %d", features12.descriptorIndexing);
   log_info("shaderSampledImageArrayNonUniformIndexing = %d",
            features12.shaderSampledImageArrayNonUniformIndexing);
-  bool featuresSupported = features10.samplerAnisotropy &&
-                           features10.shaderUniformBufferArrayDynamicIndexing &&
-                           features10.shaderSampledImageArrayDynamicIndexing &&
-                           featuresRobustness2.nullDescriptor && features12.descriptorIndexing;
+  log_info("descriptorBindingVariableDescriptorCount = %d",
+           features12.descriptorBindingVariableDescriptorCount);
+  log_info("descriptorBindingPartiallyBound = %d", features12.descriptorBindingPartiallyBound);
+  bool featuresSupported =
+      features10.samplerAnisotropy && features10.shaderUniformBufferArrayDynamicIndexing &&
+      features10.shaderSampledImageArrayDynamicIndexing && featuresRobustness2.nullDescriptor &&
+      features12.descriptorIndexing && features12.descriptorBindingVariableDescriptorCount &&
+      features12.descriptorBindingPartiallyBound;
 
   return queueFamiliesComplete && extensionsSupported && swapChainAdequate && goodVulkanVersion &&
          featuresSupported;
@@ -424,22 +428,29 @@ vulkan_limits find_limits(vulkan_device *vkd, VkPhysicalDevice physicalDevice) {
   limits.maxImageDimension2D = deviceProperties.limits.maxImageDimension2D;
   limits.maxUniformBufferRange = deviceProperties.limits.maxUniformBufferRange;
   limits.maxStorageBufferRange = deviceProperties.limits.maxStorageBufferRange;
-  limits.maxPushConstantsSize = deviceProperties.limits.maxPushConstantsSize;
+
   limits.maxPerStageDescriptorUniformBuffers =
       deviceProperties.limits.maxPerStageDescriptorUniformBuffers;
+  limits.maxPerStageBindlessDescriptorUniformBuffers =
+      descriptorIndexingProperties.maxDescriptorSetUpdateAfterBindUniformBuffers;
   limits.maxPerStageDescriptorStorageBuffers =
       deviceProperties.limits.maxPerStageDescriptorStorageBuffers;
+  limits.maxPerStageBindlessDescriptorStorageBuffers =
+      descriptorIndexingProperties.maxDescriptorSetUpdateAfterBindStorageBuffers;
   limits.maxPerStageDescriptorSampledImages =
       deviceProperties.limits.maxPerStageDescriptorSampledImages;
+  limits.maxPerStageBindlessDescriptorSampledImages =
+      descriptorIndexingProperties.maxDescriptorSetUpdateAfterBindSampledImages;
+
   limits.maxPerStageResources = deviceProperties.limits.maxPerStageResources;
+  limits.maxPerStageBindlessResources =
+      descriptorIndexingProperties.maxPerStageUpdateAfterBindResources;
+
   limits.maxBoundDescriptorSets = deviceProperties.limits.maxBoundDescriptorSets;
   limits.maxVertexInputAttributes = deviceProperties.limits.maxVertexInputAttributes;
   limits.maxVertexOutputComponents = deviceProperties.limits.maxVertexOutputComponents;
   limits.maxVertexInputBindings = deviceProperties.limits.maxVertexInputBindings;
   limits.maxVertexInputBindingStride = deviceProperties.limits.maxVertexInputBindingStride;
-
-  limits.maxUpdateAfterBindDescriptorsInAllPools =
-      descriptorIndexingProperties.maxUpdateAfterBindDescriptorsInAllPools;
 
   return limits;
 }
@@ -478,16 +489,29 @@ void create_logical_device(vulkan_device *vkd) {
     queueCreateInfos[0].pQueuePriorities = &queuePriority;
   }
 
-  VkPhysicalDeviceFeatures deviceFeatures = {0};
-  deviceFeatures.samplerAnisotropy = VK_TRUE;
-  deviceFeatures.shaderUniformBufferArrayDynamicIndexing = VK_TRUE;
-  deviceFeatures.shaderSampledImageArrayDynamicIndexing = VK_TRUE;
+  VkPhysicalDeviceFeatures deviceFeatures = {
+      .samplerAnisotropy = VK_TRUE,
+      .shaderUniformBufferArrayDynamicIndexing = VK_TRUE,
+      .shaderSampledImageArrayDynamicIndexing = VK_TRUE,
+  };
+  VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexingFeatures = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
+      .shaderSampledImageArrayNonUniformIndexing = VK_TRUE,
+      .descriptorBindingUniformBufferUpdateAfterBind = VK_TRUE,
+      .descriptorBindingSampledImageUpdateAfterBind = VK_TRUE,
+      .descriptorBindingVariableDescriptorCount = VK_TRUE,
+      .descriptorBindingPartiallyBound = VK_TRUE,
+  };
+  VkPhysicalDeviceFeatures2 deviceFeatures2 = {.sType =
+                                                   VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+                                               .features = deviceFeatures,
+                                               .pNext = &descriptorIndexingFeatures};
 
   VkDeviceCreateInfo createInfo = {0};
   createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
   createInfo.queueCreateInfoCount = numQueues;
   createInfo.pQueueCreateInfos = queueCreateInfos;
-  createInfo.pEnabledFeatures = &deviceFeatures;
+  createInfo.pNext = &deviceFeatures2; // createInfo.pEnabledFeatures = NULL;
   createInfo.enabledExtensionCount = DEVICE_EXTENSIONS_SIZE;
   createInfo.ppEnabledExtensionNames = deviceExtensions;
 

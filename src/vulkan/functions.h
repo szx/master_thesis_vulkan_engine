@@ -63,18 +63,20 @@ VkShaderModule vulkan_create_shader_module(vulkan_device *vkd, const uint32_t *c
 VkDescriptorPool vulkan_create_descriptor_pool(vulkan_device *vkd, size_t totalUniformBufferCount,
                                                size_t totalCombinedImageSamplerCount,
                                                size_t maxAllocatedDescriptorSetsCount,
-                                               const char *debugFormat, ...);
+                                               bool bindless, const char *debugFormat, ...);
 
 VkDescriptorSetLayout vulkan_create_descriptor_set_layout(vulkan_device *vkd,
                                                           vulkan_descriptor_binding *bindings,
-                                                          size_t bindingCount,
+                                                          size_t bindingCount, bool bindless,
                                                           const char *debugFormat, ...);
 
-VkDescriptorSet vulkan_create_descriptor_set(vulkan_device *vkd,
-                                             VkDescriptorSetLayout descriptorSetLayout,
-                                             VkDescriptorPool descriptorPool,
-                                             vulkan_descriptor_binding *bindings,
-                                             size_t bindingCount, const char *debugFormat, ...);
+VkDescriptorSet
+vulkan_create_descriptor_set(vulkan_device *vkd, VkDescriptorSetLayout descriptorSetLayout,
+                             VkDescriptorPool descriptorPool, vulkan_descriptor_binding *bindings,
+                             size_t bindingCount, bool bindless, const char *debugFormat, ...);
+
+void vulkan_update_descriptor_set(vulkan_device *vkd, VkDescriptorSet descriptorSet,
+                                  vulkan_descriptor_binding *bindings, size_t bindingCount);
 
 VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
                                                VkPipelineLayoutCreateFlags flags,

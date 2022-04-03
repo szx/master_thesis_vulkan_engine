@@ -46,7 +46,8 @@ typedef enum vulkan_shader_reflect_binding_type {
 #define enum_uniform_buffer(_name, ...) vulkan_shader_reflect_binding_type_##_name##_uniform_buffer,
   VULKAN_UNIFORM_BUFFERS(enum_uniform_buffer, )
 #undef enum_uniform_buffer
-      vulkan_shader_reflect_binding_type_count,
+      vulkan_shader_reflect_binding_type_textures,
+  vulkan_shader_reflect_binding_type_count,
 } vulkan_shader_reflect_binding_type;
 
 typedef struct vulkan_shader_reflect_binding {

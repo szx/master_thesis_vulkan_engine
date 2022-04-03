@@ -146,26 +146,37 @@ vulkan_vertex_stream_get_vertex_attribute_descriptions(vulkan_vertex_stream *str
 
   VkVertexInputAttributeDescription *attributeDescriptions =
       core_alloc(*count * sizeof(VkVertexInputAttributeDescription));
+  VkFormat format;
 
   size_t idx = 0;
-  size_t offset = 0;
   while (attributes > 0) {
     vulkan_attribute_type type = vulkan_attribute_type_unknown;
+    size_t offset = 0;
     size_t componentNum = 3;
     if ((attributes & vulkan_attribute_type_position) != 0) {
       type = vulkan_attribute_type_position;
-    } else if ((attributes & vulkan_attribute_type_normal) != 0) {
+      goto end;
+    }
+    offset += componentNum * sizeof(float);
+    if ((attributes & vulkan_attribute_type_normal) != 0) {
       type = vulkan_attribute_type_normal;
-    } else if ((attributes & vulkan_attribute_type_color) != 0) {
+      goto end;
+    }
+    offset += componentNum * sizeof(float);
+    if ((attributes & vulkan_attribute_type_color) != 0) {
       type = vulkan_attribute_type_color;
-    } else if ((attributes & vulkan_attribute_type_texcoord) != 0) {
+      goto end;
+    }
+    offset += componentNum * sizeof(float);
+    if ((attributes & vulkan_attribute_type_texcoord) != 0) {
       type = vulkan_attribute_type_texcoord;
       componentNum = 2;
     } else {
       panic("unknown attribute");
     }
 
-    VkFormat format = VK_FORMAT_R32_SFLOAT + 3 * (componentNum - 1);
+  end:
+    format = VK_FORMAT_R32_SFLOAT + 3 * (componentNum - 1);
     attributeDescriptions[idx].binding = 0;
     attributeDescriptions[idx].location = idx;
     attributeDescriptions[idx].format = format;
@@ -176,6 +187,5 @@ vulkan_vertex_stream_get_vertex_attribute_descriptions(vulkan_vertex_stream *str
     idx++;
   }
 
-  assert(offset > 0);
   return attributeDescriptions;
 }

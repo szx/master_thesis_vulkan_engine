@@ -41,25 +41,22 @@ typedef struct vulkan_limits {
   uint32_t maxImageDimension2D;
   uint32_t maxUniformBufferRange;
   uint32_t maxStorageBufferRange;
-  uint32_t maxPushConstantsSize;
+
   uint32_t maxPerStageDescriptorUniformBuffers;
+  uint32_t maxPerStageBindlessDescriptorUniformBuffers;
   uint32_t maxPerStageDescriptorStorageBuffers;
+  uint32_t maxPerStageBindlessDescriptorStorageBuffers;
   uint32_t maxPerStageDescriptorSampledImages;
+  uint32_t maxPerStageBindlessDescriptorSampledImages;
+
   uint32_t maxPerStageResources;
+  uint32_t maxPerStageBindlessResources;
+
   uint32_t maxBoundDescriptorSets;
   uint32_t maxVertexInputAttributes;
   uint32_t maxVertexOutputComponents;
   uint32_t maxVertexInputBindings;
   uint32_t maxVertexInputBindingStride;
-
-  /* descriptor indexing */
-  uint32_t maxUpdateAfterBindDescriptorsInAllPools;
-
-  /* render context limits */
-  // TODO: Rethink.
-  uint32_t maxSceneNodes; /// Max scene nodes per scene.
-  uint32_t maxTextures;   /// Max number of textures per scene.
-  uint32_t maxLights;     /// Max number of lights per scene.
 } vulkan_limits;
 
 typedef struct vulkan_device {

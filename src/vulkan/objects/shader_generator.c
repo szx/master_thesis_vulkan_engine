@@ -19,16 +19,16 @@ void glsl_add_vertex_shader_input_variables_defines(UT_string *s, vulkan_vertex_
   size_t attributes = stream->renderCacheList->attributes;
 
   if ((attributes & vulkan_attribute_type_position) != 0) {
-    utstring_printf(s, "#define IN_POSITION\n");
+    utstring_printf(s, "#define IN_POSITION 1\n");
   }
   if ((attributes & vulkan_attribute_type_normal) != 0) {
-    utstring_printf(s, "#define IN_NORMAL\n");
+    utstring_printf(s, "#define IN_NORMAL 1\n");
   }
   if ((attributes & vulkan_attribute_type_color) != 0) {
-    utstring_printf(s, "#define IN_COLOR\n");
+    utstring_printf(s, "#define IN_COLOR 1\n");
   }
   if ((attributes & vulkan_attribute_type_texcoord) != 0) {
-    utstring_printf(s, "#define IN_TEXCOORD\n");
+    utstring_printf(s, "#define IN_TEXCOORD 1\n");
   }
 }
 
@@ -44,18 +44,18 @@ void glsl_add_vertex_shader_input_variables(UT_string *s, vulkan_vertex_stream *
   uint32_t location = 0;
   if ((attributes & vulkan_attribute_type_position) != 0) {
     utstring_printf(s, "layout(location = %u) in vec3 inPosition;\n", location);
+    location++;
   }
-  location++;
   if ((attributes & vulkan_attribute_type_normal) != 0) {
     utstring_printf(s, "layout(location = %u) in vec3 inNormal;\n", location);
+    location++;
   }
-  location++;
   if ((attributes & vulkan_attribute_type_color) != 0) {
     utstring_printf(s, "layout(location = %u) in vec3 inColor;\n", location);
+    location++;
   }
-  location++;
   if ((attributes & vulkan_attribute_type_texcoord) != 0) {
-    utstring_printf(s, "layout(location = %u) in vec3 inTexCoord;\n", location);
+    utstring_printf(s, "layout(location = %u) in vec2 inTexCoord;\n", location);
   }
 }
 
@@ -64,7 +64,7 @@ void glsl_add_vertex_shader_output_variables(UT_string *s) {
   utstring_printf(s, "layout(location = %u) out vec3 outColor;\n", location);
   location++;
   utstring_printf(s, "#ifdef IN_TEXCOORD\n");
-  utstring_printf(s, "layout(location = %u) out vec3 outTexCoord;\n", location);
+  utstring_printf(s, "layout(location = %u) out vec2 outTexCoord;\n", location);
   utstring_printf(s, "#endif\n");
 }
 
@@ -73,7 +73,7 @@ void glsl_add_fragment_shader_input_variables(UT_string *s) {
   utstring_printf(s, "layout(location = %u) in vec3 inColor;\n", location);
   location++;
   utstring_printf(s, "#ifdef IN_TEXCOORD\n");
-  utstring_printf(s, "layout(location = %u) in vec3 inTexCoord;\n", location);
+  utstring_printf(s, "layout(location = %u) in vec2 inTexCoord;\n", location);
   utstring_printf(s, "#endif\n");
 }
 
@@ -83,15 +83,16 @@ void glsl_add_fragment_shader_output_variables(UT_string *s) {
 }
 
 void glsl_add_descriptors(UT_string *s, vulkan_descriptors *descriptors) {
-  uint32_t set = 0;
-  uint32_t binding = 0;
 #define str_uniform_buffer(_name, ...)                                                             \
-  glsl_add_vulkan_##_name##_uniform_buffer(s, descriptors->descriptorSetNumber,                    \
-                                           descriptors->_name##DescriptorBinding->bindingNumber,   \
-                                           descriptors->unifiedUniformBuffer->_name##Data->count);
+  glsl_add_vulkan_##_name##_uniform_buffer(                                                        \
+      s, descriptors->descriptorSetNumber,                                                         \
+      descriptors->_name##UniformBufferBinding->bindingNumber,                                     \
+      descriptors->unifiedUniformBuffer->_name##Data->count);
   VULKAN_UNIFORM_BUFFERS(str_uniform_buffer, )
 #undef str_uniform_buffer
-  // HIRO HIRO glsl_add_vulkan_textures
+
+  glsl_add_textures(s, descriptors->descriptorSetNumber, descriptors->texturesBinding.bindingNumber,
+                    descriptors->texturesBinding.textures);
 }
 
 void glsl_add_entry_point_begin(UT_string *s) { utstring_printf(s, "%s\n", "void main() {\n"); }

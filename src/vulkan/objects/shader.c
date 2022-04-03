@@ -49,6 +49,7 @@ vulkan_shader *vulkan_shader_create_with_str(vulkan_device *vkd, vulkan_shader_t
       vulkan_shader_type_shaderc_kind(shader->type), "shader", "main", NULL);
   shaderc_compile_options_release(options);
   if (shaderc_result_get_num_errors(result)) {
+    log_debug("%s", utstring_body(shader->glslCode));
     panic("compilation error: %s\n", shaderc_result_get_error_message(result));
   }
   shader->spvSize = shaderc_result_get_length(result);
@@ -59,6 +60,8 @@ vulkan_shader *vulkan_shader_create_with_str(vulkan_device *vkd, vulkan_shader_t
                                                vulkan_shader_type_debug_str(shader->type));
 
   shader->reflect = vulkan_shader_reflect_create(shader->spvCode, shader->spvSize);
+
+  vulkan_shader_debug_print(shader, 0);
 
   return shader;
 }

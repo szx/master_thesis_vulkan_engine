@@ -60,38 +60,54 @@ vulkan_descriptors *vulkan_descriptors_create(vulkan_device *vkd,
 #define binding_uniform_buffer(_name, ...) totalUniformBufferDescriptorCount++;
   VULKAN_UNIFORM_BUFFERS(binding_uniform_buffer, )
 #undef binding_uniform_buffer
-  size_t totalCombinedImageSamplerDescriptorCount = 1; // TODO: Textures.
-  size_t maxAllocatedDescriptorSetsCount = 1;          // One large descriptor set
+  size_t totalCombinedImageSamplerDescriptorCount =
+      descriptors->vkd->limits.maxPerStageBindlessDescriptorSampledImages;
   descriptors->descriptorPool = vulkan_create_descriptor_pool(
       descriptors->vkd, totalUniformBufferDescriptorCount, totalCombinedImageSamplerDescriptorCount,
-      maxAllocatedDescriptorSetsCount, "descriptors");
+      1, true, "descriptors");
 
   descriptors->descriptorSetNumber = 0;
 
   size_t bindingNum = 0;
   vulkan_descriptor_binding *binding;
+  // add uniform buffer bindings
 #define binding_uniform_buffer(_name, ...)                                                         \
-  binding = &descriptors->bindings[bindingNum];                                                    \
+  binding = &descriptors->uniformBufferBindings[bindingNum];                                       \
   *binding = (vulkan_descriptor_binding){.descriptors = descriptors,                               \
-                                         .bindingNumber = bindingNum,                              \
+                                         .bindingNumber = bindingNum++,                            \
                                          .descriptorCount = 1,                                     \
                                          .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,      \
                                          .bufferElement =                                          \
                                              &unifiedUniformBuffer->_name##Data->bufferElement};   \
-  descriptors->_name##DescriptorBinding = binding;                                                 \
-  bindingNum++;
+  descriptors->_name##UniformBufferBinding = binding;
   VULKAN_UNIFORM_BUFFERS(binding_uniform_buffer, )
 #undef binding_uniform_buffer
-  assert(bindingNum == array_size(descriptors->bindings));
+  assert(bindingNum == array_size(descriptors->uniformBufferBindings));
+  // add array of textures binding
+
+  binding = &descriptors->texturesBinding;
+  *binding = (vulkan_descriptor_binding){
+      .descriptors = descriptors,
+      .bindingNumber = bindingNum++,
+      .descriptorCount = descriptors->vkd->limits
+                             .maxPerStageBindlessDescriptorSampledImages, // variable binding count
+      .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+      .textures = descriptors->textures};
+
+  // create descriptors
+  size_t bindingCount = bindingNum;
+  vulkan_descriptor_binding bindings[bindingCount];
+  bindingNum = array_size(descriptors->uniformBufferBindings);
+  core_memcpy(bindings, descriptors->uniformBufferBindings,
+              bindingNum * sizeof(vulkan_descriptor_binding));
+  bindings[bindingNum++] = descriptors->texturesBinding;
 
   descriptors->descriptorSetLayout = vulkan_create_descriptor_set_layout(
-      descriptors->vkd, descriptors->bindings, array_size(descriptors->bindings), "descriptors");
+      descriptors->vkd, bindings, array_size(bindings), true, "descriptors");
 
   descriptors->descriptorSet = vulkan_create_descriptor_set(
-      descriptors->vkd, descriptors->descriptorSetLayout, descriptors->descriptorPool,
-      descriptors->bindings, array_size(descriptors->bindings), "descriptors");
-
-  // HIRO HIRO create descriptor set for array of textures
+      descriptors->vkd, descriptors->descriptorSetLayout, descriptors->descriptorPool, bindings,
+      array_size(bindings), true, "descriptors");
 
   return descriptors;
 }
@@ -107,7 +123,8 @@ void vulkan_descriptors_update(vulkan_descriptors *descriptors) {
 }
 
 void vulkan_descriptors_send_to_device(vulkan_descriptors *descriptors) {
-  // No-op.
+  vulkan_update_descriptor_set(descriptors->vkd, descriptors->descriptorSet,
+                               &descriptors->texturesBinding, 1);
 }
 
 void vulkan_descriptors_record_bind_command(vulkan_descriptors *descriptors,
@@ -132,9 +149,12 @@ vulkan_descriptors_get_descriptor_set_layouts(vulkan_descriptors *descriptors, s
 void vulkan_descriptors_debug_print(vulkan_descriptors *descriptors, int indent) {
   log_debug(INDENT_FORMAT_STRING "descriptors (set=%zu):", INDENT_FORMAT_ARGS(0),
             descriptors->descriptorSetNumber);
+
 #define debug_print_uniform_buffer(_name, ...)                                                     \
   log_debug(INDENT_FORMAT_STRING #_name ":", INDENT_FORMAT_ARGS(2));                               \
-  vulkan_descriptor_binding_debug_print(descriptors->_name##DescriptorBinding, indent + 4);
+  vulkan_descriptor_binding_debug_print(descriptors->_name##UniformBufferBinding, indent + 4);
   VULKAN_UNIFORM_BUFFERS(debug_print_uniform_buffer, )
 #undef debug_print_uniform_buffer
+
+  vulkan_descriptor_binding_debug_print(&descriptors->texturesBinding, indent + 4);
 }

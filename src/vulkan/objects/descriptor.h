@@ -51,18 +51,24 @@ typedef struct vulkan_descriptor_binding {
   uint32_t bindingNumber;
   uint32_t descriptorCount;
   VkDescriptorType descriptorType;
-  vulkan_buffer_element *bufferElement;
+  union {
+    vulkan_buffer_element *bufferElement;
+    vulkan_textures *textures;
+  };
 } vulkan_descriptor_binding;
 
 void vulkan_descriptor_binding_debug_print(vulkan_descriptor_binding *binding, int indent);
 
-/// Descriptors used to bind resources (uniform buffers) to shaders.
+/// Descriptors used to bind resources (uniform buffers and textures) to shaders.
+/// Uniform buffers use classic slot-based binding model.
+/// Textures use bindless model.
 typedef struct vulkan_descriptors {
   vulkan_device *vkd;                                  ///< Pointer.
   vulkan_unified_uniform_buffer *unifiedUniformBuffer; ///< Pointer.
   vulkan_textures *textures;                           ///< Pointer.
 
-  /// Descriptor pool used to allocate descriptors used by shaders.
+  /* uniform buffers */
+  /// Descriptor pool used to allocate descriptors for resources used by shaders.
   VkDescriptorPool descriptorPool;
 
   /// One giant descriptor set layout per one shader binding (layout qualifier).
@@ -72,9 +78,11 @@ typedef struct vulkan_descriptors {
   VkDescriptorSet descriptorSet;
   uint32_t descriptorSetNumber;
 
-  vulkan_descriptor_binding bindings[VULKAN_UNIFORM_BUFFER_COUNT];
+  vulkan_descriptor_binding uniformBufferBindings[VULKAN_UNIFORM_BUFFER_COUNT];
+  vulkan_descriptor_binding texturesBinding;
 
-#define decl_uniform_buffer(_name, ...) vulkan_descriptor_binding *_name##DescriptorBinding;
+  /// Pointers to named uniform buffer binding.
+#define decl_uniform_buffer(_name, ...) vulkan_descriptor_binding *_name##UniformBufferBinding;
   VULKAN_UNIFORM_BUFFERS(decl_uniform_buffer, )
 #undef decl_uniform_buffer
 
