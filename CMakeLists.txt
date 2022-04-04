@@ -124,8 +124,12 @@ add_custom_command(
 # copy unprocessed assets to directory with executables
 file(GLOB_RECURSE C_PRECOMPILED_HEADERS "src/core/thirdparty.h")
 file(GLOB ASSETS_FILES_DIR "assets")
-file(GLOB_RECURSE ASSETS_FILES "assets/*.*")
-add_custom_target(copy_assets ALL DEPENDS ${ASSETS_FILES})
+file(GLOB_RECURSE ASSETS_SHADER_FILES "${ASSETS_FILES_DIR}/*.glsl")
+file(GLOB_RECURSE ASSETS_GLTF_FILES "${ASSETS_FILES_DIR}/*.*")
+foreach (ASSETS_SHADER_FILE ${ASSETS_SHADER_FILES})
+    list(REMOVE_ITEM ASSETS_GLTF_FILES "${ASSETS_SHADER_FILE}")
+endforeach ()
+add_custom_target(copy_assets ALL DEPENDS ${ASSETS_GLTF_FILES} ${ASSETS_SHADER_FILES})
 add_custom_command(
         TARGET copy_assets PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${ASSETS_FILES_DIR} ${CMAKE_CURRENT_BINARY_DIR}/assets
@@ -136,7 +140,7 @@ file(GLOB_RECURSE C_BIN_ASSET_PIPELINE_SOURCE "src/bin/asset_pipeline.c")
 file(GLOB_RECURSE PYTHON_ASSET_SCRIPTS "${SCRIPTS_PATH}/asset_*.py")
 add_custom_command(
         OUTPUT asset_pipeline.stamp
-        DEPENDS ${ASSETS_FILES} ${C_BIN_ASSET_PIPELINE_SOURCE} ${PYTHON_ASSET_SCRIPTS}
+        DEPENDS ${ASSETS_GLTF_FILES} ${C_BIN_ASSET_PIPELINE_SOURCE} ${PYTHON_ASSET_SCRIPTS}
         COMMAND ${Python3_EXECUTABLE} ${SCRIPTS_PATH}/asset_pipeline.py ${CMAKE_CURRENT_BINARY_DIR}
         COMMAND ${CMAKE_COMMAND} -E touch asset_pipeline.stamp
         COMMENT "Run asset pipeline.")
@@ -156,6 +160,8 @@ set(HARDENING_FLAGS "-fstack-protector-all")
 # define executables
 message(STATUS "PYTHON_CODEGEN_SCRIPTS: ${PYTHON_CODEGEN_SCRIPTS}")
 message(STATUS "PYTHON_ASSET_SCRIPTS: ${PYTHON_ASSET_SCRIPTS}")
+message(STATUS "ASSETS_SHADER_FILES: ${ASSETS_SHADER_FILES}")
+message(STATUS "ASSETS_GLTF_FILES: ${ASSETS_GLTF_FILES}")
 message(STATUS "C_HEADERS: ${C_HEADERS}")
 message(STATUS "C_CODEGEN_HEADERS: ${C_CODEGEN_HEADERS}")
 message(STATUS "C_SOURCES: ${C_SOURCES}")
