@@ -37,8 +37,7 @@ vulkan_batch *vulkan_batch_create(vulkan_batch_policy policy, vulkan_render_cach
 void vulkan_batch_destroy(vulkan_batch *batch);
 
 bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_render_cache *cache);
-void vulkan_batch_add_cache(vulkan_batch *batch, vulkan_render_cache *cache,
-                            size_t renderCacheListIdx);
+void vulkan_batch_add_cache(vulkan_batch *batch, vulkan_render_cache *cache, size_t instanceId);
 void vulkan_batch_update_draw_command(vulkan_batch *batch);
 void vulkan_batch_record_draw_command(vulkan_batch *batch, VkCommandBuffer commandBuffer);
 

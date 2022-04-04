@@ -10,8 +10,6 @@ typedef struct vulkan_swap_chain vulkan_swap_chain;
 typedef struct vulkan_descriptor_binding vulkan_descriptor_binding;
 typedef struct vulkan_data_texture vulkan_data_texture;
 
-// TODO: Implement all Vulkan helper functions.
-
 uint32_t vulkan_find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
                                  VkMemoryPropertyFlags properties);
 VkFormat vulkan_find_supported_format(vulkan_device *vkd, VkImageTiling tiling,
@@ -123,7 +121,3 @@ void vulkan_generate_mipmaps(vulkan_device *vkd, VkImage image, VkFormat format,
 void vulkan_transition_image_layout(vulkan_device *vkd, VkImage image, VkFormat format,
                                     VkImageLayout oldLayout, VkImageLayout newLayout,
                                     uint32_t mipLevels, uint32_t arrayLayers);
-
-// VkDescriptorSet createDescriptorSet(VkDescriptorType descriptorType,
-// std::set<std::shared_ptr<Texture>> textures, VkDescriptorSetLayout
-// descriptorSetLayout, VkDescriptorPool descriptorPool);

@@ -7,14 +7,13 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
   renderer->config = config;
   renderer->assetDb = assetDb;
   renderer->data = vulkan_data_scene_create_with_asset_db(renderer->assetDb, sceneName);
+  renderer->vkd = vks->vkd;
+  renderer->vks = vks;
 
-  renderer->renderCacheList =
-      vulkan_render_cache_list_create(renderer->config->graphicsMaxInstanceCount);
+  renderer->renderCacheList = vulkan_render_cache_list_create(MAX_INSTANCE_COUNT);
 
   renderer->sceneGraph = vulkan_scene_graph_create(renderer->data, renderer->renderCacheList);
 
-  renderer->vkd = vks->vkd;
-  renderer->vks = vks;
   renderer->renderState = vulkan_render_state_create(renderer->vkd, renderer->renderCacheList);
   renderer->pipeline = vulkan_pipeline_create(renderer->vks, renderer->renderState);
 

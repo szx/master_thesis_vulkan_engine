@@ -36,9 +36,8 @@ bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_render_cache *cache
   return match;
 }
 
-void vulkan_batch_add_cache(vulkan_batch *batch, vulkan_render_cache *cache,
-                            size_t renderCacheListIdx) {
-  cache->renderCacheListIdx = renderCacheListIdx;
+void vulkan_batch_add_cache(vulkan_batch *batch, vulkan_render_cache *cache, size_t instanceId) {
+  cache->instanceId = instanceId;
   batch->drawCommand.instanceCount++;
 }
 
@@ -46,7 +45,7 @@ void vulkan_batch_update_draw_command(vulkan_batch *batch) {
   batch->drawCommand.indexCount = utarray_len(batch->firstCache->primitive->indices->data);
   batch->drawCommand.firstIndex = batch->firstCache->firstIndexOffset;
   batch->drawCommand.vertexOffset = batch->firstCache->firstVertexOffset;
-  batch->drawCommand.firstInstance = batch->firstCache->renderCacheListIdx;
+  batch->drawCommand.firstInstance = batch->firstCache->instanceId;
 }
 
 void vulkan_batch_record_draw_command(vulkan_batch *batch, VkCommandBuffer commandBuffer) {
@@ -95,7 +94,7 @@ void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_policy policy) 
   assert(utarray_len(batches->renderCacheList->primitiveRenderCaches) > 0);
   vulkan_render_cache *lastCache = NULL;
   vulkan_batch *lastBatch = NULL;
-  size_t renderCacheListIdx = 0;
+  size_t instanceId = 0;
   utarray_foreach_elem_deref (vulkan_render_cache *, cache,
                               batches->renderCacheList->primitiveRenderCaches) {
     if (!cache->visible) {
@@ -108,16 +107,16 @@ void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_policy policy) 
 
     if (lastBatch == NULL || !vulkan_batch_matching_cache(lastBatch, cache)) {
       vulkan_batch *newBatch = vulkan_batch_create(policy, cache);
-      vulkan_batch_add_cache(newBatch, cache, renderCacheListIdx);
+      vulkan_batch_add_cache(newBatch, cache, instanceId);
 
       DL_APPEND(batches->batches, newBatch);
       lastCache = cache;
       lastBatch = newBatch;
     } else {
-      vulkan_batch_add_cache(lastBatch, cache, renderCacheListIdx);
+      vulkan_batch_add_cache(lastBatch, cache, instanceId);
     }
 
-    renderCacheListIdx++;
+    instanceId++;
   }
   // HIRO: Consolidate smaller batches into one big batch with list of commands. (in scene render
   // context)?

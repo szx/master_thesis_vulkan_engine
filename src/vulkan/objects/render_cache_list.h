@@ -20,7 +20,7 @@ typedef struct vulkan_render_cache_list {
   bool dirty; ///< True if added or removed cache and not sorted.
 } vulkan_render_cache_list;
 
-vulkan_render_cache_list *vulkan_render_cache_list_create(size_t maxPrimitiveRenderCacheCount);
+vulkan_render_cache_list *vulkan_render_cache_list_create(size_t maxInstanceCount);
 void vulkan_render_cache_list_destroy(vulkan_render_cache_list *renderCacheList);
 
 void vulkan_render_cache_list_add_primitive_render_cache(vulkan_render_cache_list *renderCacheList,

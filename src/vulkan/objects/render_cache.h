@@ -30,7 +30,8 @@ typedef struct vulkan_render_cache {
   size_t firstVertexOffset;
 
   /* cache state accumulated from batches */
-  size_t renderCacheListIdx; ///< Also instanceId.
+  size_t instanceId; ///< Index in render cache list, equals gl_InstanceIndex in shader thanks to
+                     ///< draw call batching.
 
   struct vulkan_render_cache *prev, *next;
 } vulkan_render_cache;
