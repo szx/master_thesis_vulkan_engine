@@ -12,7 +12,10 @@ void vulkan_shader_generator_deinit(vulkan_shader_generator *shaderGenerator) {
 
 /* GLSL helper functions */
 
-void glsl_add_header(UT_string *s) { utstring_printf(s, "%s\n", "#version 450"); }
+void glsl_add_header(UT_string *s) {
+  utstring_printf(s, "%s\n", "#version 450");
+  utstring_printf(s, "%s\n", "#extension GL_EXT_nonuniform_qualifier : enable");
+}
 
 void glsl_add_vertex_shader_input_variables_defines(UT_string *s, vulkan_vertex_stream *stream) {
   assert(stream->renderCacheList->attributes > 0);
@@ -61,6 +64,8 @@ void glsl_add_vertex_shader_input_variables(UT_string *s, vulkan_vertex_stream *
 
 void glsl_add_vertex_shader_output_variables(UT_string *s) {
   uint32_t location = 0;
+  utstring_printf(s, "layout(location = %u) out flat uint outInstanceId;\n", location);
+  location++;
   utstring_printf(s, "layout(location = %u) out vec3 outColor;\n", location);
   location++;
   utstring_printf(s, "#ifdef IN_TEXCOORD\n");
@@ -70,6 +75,8 @@ void glsl_add_vertex_shader_output_variables(UT_string *s) {
 
 void glsl_add_fragment_shader_input_variables(UT_string *s) {
   uint32_t location = 0;
+  utstring_printf(s, "layout(location = %u) in flat uint inInstanceId;\n", location);
+  location++;
   utstring_printf(s, "layout(location = %u) in vec3 inColor;\n", location);
   location++;
   utstring_printf(s, "#ifdef IN_TEXCOORD\n");

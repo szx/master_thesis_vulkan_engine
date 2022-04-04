@@ -4,9 +4,9 @@ used by unified uniform buffer and shader descriptors.
 """
 from utils import *
 
-supported_field_type = ['float', 'vec2', 'vec3', 'vec4', 'mat4']
+supported_field_type = ['float', 'uint', 'vec2', 'vec3', 'vec4', 'mat4']
 # alignments taken from https://www.khronos.org/registry/OpenGL/extensions/ARB/ARB_uniform_buffer_object.txt
-uniform_buffer_std140_alignments = {'float': 4, 'vec2': 8, 'vec3': 16, 'vec4': 16, 'mat4': 16}
+uniform_buffer_std140_alignments = {'float': 4, 'uint': 4, 'vec2': 8, 'vec3': 16, 'vec4': 16, 'mat4': 16}
 
 
 def get_descriptor_h_str():

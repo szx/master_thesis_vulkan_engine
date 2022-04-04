@@ -9,6 +9,7 @@ typedef struct vulkan_global_uniform_buffer_element {
 
 typedef struct vulkan_instances_uniform_buffer_element {
   alignas(16) mat4 modelMat;
+  alignas(4) uint materialId;
 } vulkan_instances_uniform_buffer_element;
 
 void glsl_add_vulkan_global_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);

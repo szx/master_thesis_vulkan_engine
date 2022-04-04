@@ -40,9 +40,13 @@ void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniform
   utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
                               uniformBuffer->renderCacheList->primitiveRenderCaches) {
     size_t instanceId = renderCache->renderCacheListIdx;
+    vulkan_instances_uniform_buffer_element *element =
+        &uniformBuffer->instancesData->elements[instanceId];
     // HIRO update only for frame in flight. (size_t frameInFlight argument)
-    glm_mat4_copy(renderCache->transform,
-                  uniformBuffer->instancesData->elements[instanceId].modelMat);
+    glm_mat4_copy(renderCache->transform, element->modelMat);
+    size_t materialId = renderCache->renderCacheListIdx;
+    element->materialId = materialId; // HIRO HIRO material id ubo.
+    // HIRO HIRO material id in render cache
   }
 
   if (true /*cameraObject->camera->dirty*/) {

@@ -181,7 +181,6 @@ vulkan_vertex_stream_get_vertex_attribute_descriptions(vulkan_vertex_stream *str
     attributeDescriptions[idx].location = idx;
     attributeDescriptions[idx].format = format;
     attributeDescriptions[idx].offset = offset;
-    offset += componentNum * sizeof(float);
 
     attributes &= ~type;
     idx++;

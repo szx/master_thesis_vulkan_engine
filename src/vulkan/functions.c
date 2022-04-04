@@ -512,6 +512,7 @@ void vulkan_update_descriptor_set(vulkan_device *vkd, VkDescriptorSet descriptor
 
   vulkan_descriptor_binding *variableBinding = &bindings[i];
   vulkan_textures *textures = variableBinding->textures;
+  // HIRO HIRO refactor descriptor update
   uint32_t variableDescriptorWriteCount = HASH_COUNT(textures->elements);
   VkWriteDescriptorSet variableDescriptorWrites[variableDescriptorWriteCount];
   VkDescriptorImageInfo variableImageInfos[variableDescriptorWriteCount];

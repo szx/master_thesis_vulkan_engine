@@ -16,6 +16,7 @@ void glsl_add_vulkan_global_uniform_buffer(UT_string *s, uint32_t set, uint32_t 
 void glsl_add_vulkan_instances_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count) {
   utstring_printf(s, "struct instancesStruct {\n");
  utstring_printf(s, "  mat4 modelMat;\n");
+ utstring_printf(s, "  uint materialId;\n");
   utstring_printf(s, "};\n");
   utstring_printf(s, "layout(set = %u, binding = %u) uniform instancesBlock {\n", set, binding);
   utstring_printf(s, "  instancesStruct instances");

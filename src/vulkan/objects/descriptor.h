@@ -7,6 +7,8 @@
 typedef struct vulkan_unified_uniform_buffer vulkan_unified_uniform_buffer;
 typedef struct vulkan_textures vulkan_textures;
 
+typedef uint32_t uint;
+
 typedef struct vulkan_global_uniform_struct {
   mat4 viewMat;
   mat4 projMat;
@@ -14,6 +16,7 @@ typedef struct vulkan_global_uniform_struct {
 
 typedef struct vulkan_instances_uniform_struct {
   mat4 modelMat;
+  uint materialId;
 } vulkan_instances_uniform_struct;
 
 // *_uniform_element
