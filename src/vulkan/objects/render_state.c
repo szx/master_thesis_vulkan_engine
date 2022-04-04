@@ -56,7 +56,8 @@ void vulkan_scene_render_state_update(vulkan_render_state *renderState) {
   })
 
   vulkan_unified_geometry_buffer_update(renderState->unifiedGeometryBuffer);
-  vulkan_unified_uniform_buffer_update(renderState->unifiedUniformBuffer, renderState->camera);
+  vulkan_unified_uniform_buffer_update(renderState->unifiedUniformBuffer, renderState->sync,
+                                       renderState->camera);
   vulkan_textures_update(renderState->textures);
 
   vulkan_descriptors_update(renderState->descriptors);

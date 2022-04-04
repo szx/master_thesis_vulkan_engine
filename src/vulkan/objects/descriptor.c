@@ -27,7 +27,7 @@
   }                                                                                                \
   vulkan_##_name##_uniform_buffer_element *vulkan_##_name##_uniform_buffer_data_get_element(       \
       vulkan_##_name##_uniform_buffer_data *uniformBuffer, size_t frame, size_t index) {           \
-    assert(frame < MAX_FRAMES_IN_FLIGHT);                                                          \
+    assert(frame < FRAMES_IN_FLIGHT);                                                              \
     assert(frame *index < uniformBuffer->count);                                                   \
     return &uniformBuffer->elements[index];                                                        \
   }
@@ -89,8 +89,10 @@ vulkan_descriptors *vulkan_descriptors_create(vulkan_device *vkd,
   *binding = (vulkan_descriptor_binding){
       .descriptors = descriptors,
       .bindingNumber = bindingNum++,
-      .descriptorCount = descriptors->vkd->limits
-                             .maxPerStageBindlessDescriptorSampledImages, // variable binding count
+      .descriptorCount =
+          descriptors->vkd->limits
+              .maxPerStageBindlessDescriptorSampledImages, // variable binding description count
+                                                           // upper bound
       .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
       .textures = descriptors->textures};
 

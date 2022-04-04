@@ -7,17 +7,17 @@
 typedef struct vulkan_sync {
   vulkan_device *vkd; ///< Pointer.
 
-  /// Current frame rendered in flight (0..MAX_FRAMES_IN_FLIGHT).
+  /// Current frame rendered in flight (0..FRAMES_IN_FLIGHT).
   size_t currentFrameInFlight;
 
   /// Semaphore signaling that frame has been acquired from swap chain and is ready for rendering.
-  VkSemaphore imageAvailableSemaphores[MAX_FRAMES_IN_FLIGHT];
+  VkSemaphore imageAvailableSemaphores[FRAMES_IN_FLIGHT];
 
   /// Semaphore signaling that rendering frame is finished and it can be presented.
-  VkSemaphore renderFinishedSemaphores[MAX_FRAMES_IN_FLIGHT];
+  VkSemaphore renderFinishedSemaphores[FRAMES_IN_FLIGHT];
 
   /// Fence that is signaled after submitted command buffer have completed rendering frame.
-  VkFence inFlightFences[MAX_FRAMES_IN_FLIGHT];
+  VkFence inFlightFences[FRAMES_IN_FLIGHT];
 
 } vulkan_sync;
 

@@ -17,6 +17,14 @@ void glsl_add_header(UT_string *s) {
   utstring_printf(s, "%s\n", "#extension GL_EXT_nonuniform_qualifier : enable");
 }
 
+void glsl_add_common_source(UT_string *s) {
+  UT_string *commonPath = get_asset_file_path("shaders", "common.glsl");
+  UT_string *commonGlslSource = read_text_file(commonPath);
+  utstring_printf(s, "%s\n", utstring_body(commonGlslSource));
+  utstring_free(commonGlslSource);
+  utstring_free(commonPath);
+}
+
 void glsl_add_vertex_shader_input_variables_defines(UT_string *s, vulkan_vertex_stream *stream) {
   assert(stream->renderCacheList->attributes > 0);
   size_t attributes = stream->renderCacheList->attributes;
@@ -35,9 +43,22 @@ void glsl_add_vertex_shader_input_variables_defines(UT_string *s, vulkan_vertex_
   }
 }
 
-void glsl_add_defines(UT_string *s, vulkan_render_state *renderState) {
+void glsl_add_shader_type_defines(UT_string *s, vulkan_shader_type shaderType) {
+  if (shaderType == vulkan_shader_type_vertex) {
+    utstring_printf(s, "#define SHADER_VERTEX 1\n");
+  } else if (shaderType == vulkan_shader_type_fragment) {
+    utstring_printf(s, "#define SHADER_FRAGMENT 1\n");
+  } else {
+    assert(0);
+  }
+}
+
+void glsl_add_defines(UT_string *s, vulkan_shader_type shaderType,
+                      vulkan_render_state *renderState) {
   glsl_add_vertex_shader_input_variables_defines(s,
                                                  renderState->unifiedGeometryBuffer->vertexStream);
+  glsl_add_shader_type_defines(s, shaderType);
+  utstring_printf(s, "#define FRAMES_IN_FLIGHT %d\n", FRAMES_IN_FLIGHT);
 }
 
 void glsl_add_vertex_shader_input_variables(UT_string *s, vulkan_vertex_stream *stream) {
@@ -141,12 +162,12 @@ vulkan_shader_generator_output_type_to_shader_type(vulkan_shader_generator_outpu
 vulkan_shader *vulkan_shader_generator_get_shader(vulkan_shader_generator *shaderGenerator,
                                                   vulkan_shader_generator_output_type type) {
   utstring_clear(shaderGenerator->sourceCode);
+  vulkan_shader_type shaderType = vulkan_shader_generator_output_type_to_shader_type(type);
 
   glsl_add_header(shaderGenerator->sourceCode);
-  glsl_add_defines(shaderGenerator->sourceCode, shaderGenerator->renderState);
+  glsl_add_defines(shaderGenerator->sourceCode, shaderType, shaderGenerator->renderState);
   glsl_add_descriptors(shaderGenerator->sourceCode, shaderGenerator->renderState->descriptors);
 
-  vulkan_shader_type shaderType = vulkan_shader_generator_output_type_to_shader_type(type);
   if (shaderType == vulkan_shader_type_vertex) {
     glsl_add_vertex_shader_input_variables(
         shaderGenerator->sourceCode,
@@ -159,6 +180,8 @@ vulkan_shader *vulkan_shader_generator_get_shader(vulkan_shader_generator *shade
     assert(0);
     return NULL;
   }
+
+  glsl_add_common_source(shaderGenerator->sourceCode);
 
   glsl_add_entry_point_begin(shaderGenerator->sourceCode);
   glsl_add_body(shaderGenerator->sourceCode, type);

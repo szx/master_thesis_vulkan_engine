@@ -7,6 +7,7 @@
 #include "camera.h"
 #include "render_cache_list.h"
 #include "shader.h"
+#include "sync.h"
 
 typedef struct vulkan_unified_uniform_buffer {
   /* CPU state */
@@ -25,7 +26,7 @@ vulkan_unified_uniform_buffer_create(vulkan_device *vkd, vulkan_render_cache_lis
 void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *uniformBuffer);
 
 void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniformBuffer,
-                                          vulkan_camera *camera);
+                                          vulkan_sync *sync, vulkan_camera *camera);
 
 void vulkan_unified_uniform_buffer_send_to_device(vulkan_unified_uniform_buffer *uniformBuffer);
 

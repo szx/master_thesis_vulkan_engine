@@ -7,9 +7,8 @@ vulkan_unified_uniform_buffer_create(vulkan_device *vkd,
   vulkan_unified_uniform_buffer *uniformBuffer = core_alloc(sizeof(vulkan_unified_uniform_buffer));
   uniformBuffer->renderCacheList = renderCacheList;
 
-  // HIRO HIRO access pattern for currentInFlightFrame, also use _uniform_buffer_data_get_element
   uniformBuffer->instancesData = vulkan_instances_uniform_buffer_data_create(
-      renderCacheList->maxPrimitiveRenderCacheCount * 2);
+      renderCacheList->maxPrimitiveRenderCacheCount * FRAMES_IN_FLIGHT);
   uniformBuffer->globalData = vulkan_global_uniform_buffer_data_create(1);
 
   uniformBuffer->buffer = vulkan_buffer_create(vkd, vulkan_buffer_type_uniform);
@@ -34,16 +33,15 @@ void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *unifor
 }
 
 void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniformBuffer,
-                                          vulkan_camera *camera) {
+                                          vulkan_sync *sync, vulkan_camera *camera) {
   assert(utarray_len(uniformBuffer->renderCacheList->primitiveRenderCaches) > 0);
   assert(utarray_len(uniformBuffer->renderCacheList->cameraRenderCaches) > 0);
 
   utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
                               uniformBuffer->renderCacheList->primitiveRenderCaches) {
-    size_t instanceId = renderCache->instanceId;
+    size_t instanceId = FRAMES_IN_FLIGHT * renderCache->instanceId + sync->currentFrameInFlight;
     vulkan_instances_uniform_buffer_element *element =
         &uniformBuffer->instancesData->elements[instanceId];
-    // HIRO update only for frame in flight. (size_t frameInFlight argument)
     glm_mat4_copy(renderCache->transform, element->modelMat);
     size_t materialId = renderCache->instanceId;
     element->materialId = materialId; // HIRO HIRO material id ubo.

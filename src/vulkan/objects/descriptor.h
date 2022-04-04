@@ -32,7 +32,7 @@ typedef struct vulkan_instances_uniform_struct {
 #define VULKAN_UNIFORM_BUFFER_COUNT (0 VULKAN_UNIFORM_BUFFERS(VULKAN_UNIFORM_BUFFER_COUNT_, ))
 
 // *_uniform_buffer_data
-// NOTE: Stores MAX_FRAMES_IN_FLIGHT*count elements, element n for frame #0, n+1 for frame #1 etc.
+// NOTE: Stores FRAMES_IN_FLIGHT*count elements, element n for frame #0, n+1 for frame #1 etc.
 #define decl_uniform_buffer_data(_name, ...)                                                       \
   typedef struct vulkan_##_name##_uniform_buffer_data {                                            \
     vulkan_buffer_element bufferElement;                                                           \

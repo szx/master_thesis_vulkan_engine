@@ -6,7 +6,7 @@ vulkan_sync *vulkan_sync_create(vulkan_device *vkd) {
   sync->vkd = vkd;
   sync->currentFrameInFlight = 0;
 
-  for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+  for (size_t i = 0; i < FRAMES_IN_FLIGHT; i++) {
     sync->imageAvailableSemaphores[i] =
         vulkan_create_semaphore(sync->vkd, 0, "frame #%zu available for rendering", i);
     sync->renderFinishedSemaphores[i] =
@@ -19,7 +19,7 @@ vulkan_sync *vulkan_sync_create(vulkan_device *vkd) {
 }
 
 void vulkan_sync_destroy(vulkan_sync *sync) {
-  for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+  for (size_t i = 0; i < FRAMES_IN_FLIGHT; i++) {
     vkDestroySemaphore(sync->vkd->device, sync->imageAvailableSemaphores[i], vka);
     vkDestroySemaphore(sync->vkd->device, sync->renderFinishedSemaphores[i], vka);
     vkDestroyFence(sync->vkd->device, sync->inFlightFences[i], vka);
@@ -38,7 +38,7 @@ void vulkan_sync_reset_current_frame_fence(vulkan_sync *sync) {
 }
 
 void vulkan_sync_advance_to_next_frame(vulkan_sync *sync) {
-  sync->currentFrameInFlight = (sync->currentFrameInFlight + 1) % MAX_FRAMES_IN_FLIGHT;
+  sync->currentFrameInFlight = (sync->currentFrameInFlight + 1) % FRAMES_IN_FLIGHT;
 }
 
 void vulkan_sync_debug_print(vulkan_sync *sync, int indent) {
