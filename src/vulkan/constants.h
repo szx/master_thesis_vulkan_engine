@@ -3,5 +3,5 @@
 #pragma once
 
 #define MAX_FRAMES_IN_FLIGHT 2
-#define MAX_INSTANCE_COUNT 1024 * 1024
+#define MAX_INSTANCE_COUNT 1024 * 128
 #define MIN_DELTA_TIME (1.0 / 60.0)

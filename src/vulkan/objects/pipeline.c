@@ -65,8 +65,11 @@ void create_graphics_pipeline(vulkan_pipeline *pipeline) {
       pipeline->renderState->descriptors, &descriptorSetLayoutCount);
   assert(descriptorSetLayoutCount > 0);
 
-  size_t pushConstantRangeCount = 0;
-  const VkPushConstantRange *pushConstantRanges = NULL;
+  size_t pushConstantRangeCount = 1;
+  VkPushConstantRange pushConstantRanges[pushConstantRangeCount];
+  pushConstantRanges[0] = (VkPushConstantRange){.stageFlags = VK_SHADER_STAGE_ALL,
+                                                .offset = 0,
+                                                .size = sizeof(vulkan_draw_push_constant_element)};
 
   pipeline->graphicsPipeline = vulkan_create_graphics_pipeline(
       pipeline->vks->vkd, pipeline->shaderProgram, pipeline->renderState, pipeline->vks,
@@ -136,6 +139,7 @@ VkCommandBuffer vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline,
                                                       size_t swapChainImageIdx) {
   vulkan_pipeline_frame_state *frameState =
       utarray_eltptr(pipeline->frameStates, swapChainImageIdx);
+  size_t currentFrameInFlight = pipeline->renderState->sync->currentFrameInFlight;
 
   VkCommandBuffer commandBuffer = frameState->commandBuffer;
   vkResetCommandBuffer(commandBuffer, 0);
@@ -164,6 +168,10 @@ VkCommandBuffer vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline,
                                                      commandBuffer);
   vulkan_descriptors_record_bind_command(pipeline->renderState->descriptors, commandBuffer,
                                          pipeline->pipelineLayout);
+  vulkan_draw_push_constant_element drawPushConstant = {.currentFrameInFlight =
+                                                            currentFrameInFlight};
+  vkCmdPushConstants(commandBuffer, pipeline->pipelineLayout, VK_SHADER_STAGE_ALL, 0,
+                     sizeof(drawPushConstant), &drawPushConstant);
 
   dl_foreach_elem(vulkan_batch *, batch, pipeline->renderState->batches->batches,
                   { vulkan_batch_record_draw_command(batch, commandBuffer); })

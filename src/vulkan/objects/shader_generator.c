@@ -90,6 +90,10 @@ void glsl_add_fragment_shader_output_variables(UT_string *s) {
 }
 
 void glsl_add_descriptors(UT_string *s, vulkan_descriptors *descriptors) {
+#define str_push_constant(_name, ...) glsl_add_vulkan_##_name##_push_constant(s);
+  VULKAN_PUSH_CONSTANTS(str_push_constant, )
+#undef str_push_constant
+
 #define str_uniform_buffer(_name, ...)                                                             \
   glsl_add_vulkan_##_name##_uniform_buffer(                                                        \
       s, descriptors->descriptorSetNumber,                                                         \

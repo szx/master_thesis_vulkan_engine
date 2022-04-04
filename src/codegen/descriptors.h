@@ -2,6 +2,10 @@
 
 #pragma once
 
+typedef struct vulkan_draw_push_constant_element {
+  alignas(4) uint currentFrameInFlight;
+} vulkan_draw_push_constant_element;
+
 typedef struct vulkan_global_uniform_buffer_element {
   alignas(16) mat4 viewMat;
   alignas(16) mat4 projMat;
@@ -12,8 +16,14 @@ typedef struct vulkan_instances_uniform_buffer_element {
   alignas(4) uint materialId;
 } vulkan_instances_uniform_buffer_element;
 
+void glsl_add_vulkan_draw_push_constant(UT_string *s);
 void glsl_add_vulkan_global_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);
 void glsl_add_vulkan_instances_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);
+
+#define END_OF_VULKAN_PUSH_CONSTANTS
+#define VULKAN_PUSH_CONSTANTS(X, ...) \
+  X(draw, __VA_ARGS__) \
+  END_OF_VULKAN_PUSH_CONSTANTS
 
 #define END_OF_VULKAN_UNIFORM_BUFFERS
 #define VULKAN_UNIFORM_BUFFERS(X, ...) \

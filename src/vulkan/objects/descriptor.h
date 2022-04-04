@@ -9,6 +9,10 @@ typedef struct vulkan_textures vulkan_textures;
 
 typedef uint32_t uint;
 
+typedef struct vulkan_draw_push_constant_struct {
+  uint currentFrameInFlight;
+} vulkan_draw_push_constant_struct;
+
 typedef struct vulkan_global_uniform_struct {
   mat4 viewMat;
   mat4 projMat;

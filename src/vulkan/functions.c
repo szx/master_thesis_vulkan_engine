@@ -501,6 +501,7 @@ void vulkan_update_descriptor_set(vulkan_device *vkd, VkDescriptorSet descriptor
       bufferInfo->buffer = binding->bufferElement->buffer->buffer;
       bufferInfo->offset = binding->bufferElement->bufferOffset;
       bufferInfo->range = binding->bufferElement->size;
+      assert(bufferInfo->range <= vkd->limits.maxUniformBufferRange);
       descriptorWrite->pBufferInfo = bufferInfo;
 
       unifiedBufferWrites++;
@@ -579,8 +580,6 @@ VkPipeline vulkan_create_graphics_pipeline(
     const VkPushConstantRange *pushConstantRanges, size_t pushConstantRangeCount,
 
     VkRenderPass renderPass, VkPipelineLayout *pipelineLayout, const char *debugFormat, ...) {
-
-  // TODO: Create using description struct vulkan_pipeline_info.
 
   /* shaders */
   size_t shaderStageCount;
