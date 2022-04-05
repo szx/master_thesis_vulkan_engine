@@ -515,34 +515,34 @@ void vulkan_update_descriptor_set(vulkan_device *vkd, VkDescriptorSet descriptor
     vulkan_descriptor_binding *binding = &bindings[i];
     if (binding->descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER) {
       vulkan_textures *textures = binding->textures;
-      uint32_t texturesElementCount = HASH_COUNT(textures->elements);
-      if (texturesElementCount == 0) {
+      uint32_t textureElementCount = HASH_COUNT(textures->textureElements);
+      if (textureElementCount == 0) {
         continue;
       }
-      VkWriteDescriptorSet texturesDescriptorWrites[texturesElementCount];
-      VkDescriptorImageInfo imageInfos[texturesElementCount];
+      VkWriteDescriptorSet texturesDescriptorWrites[textureElementCount];
+      VkDescriptorImageInfo imageInfos[textureElementCount];
       size_t texturesDescriptorWriteIdx = 0;
-      for (vulkan_textures_element *texturesElement = textures->elements; texturesElement != NULL;
-           texturesElement = texturesElement->hh.next) {
+      for (vulkan_textures_texture_element *textureElement = textures->textureElements;
+           textureElement != NULL; textureElement = textureElement->hh.next) {
         VkWriteDescriptorSet *descriptorWrite =
             &texturesDescriptorWrites[texturesDescriptorWriteIdx];
 
         *descriptorWrite = (VkWriteDescriptorSet){.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
                                                   .dstSet = descriptorSet,
                                                   .dstBinding = binding->bindingNumber,
-                                                  .dstArrayElement = texturesElement->textureIdx,
+                                                  .dstArrayElement = textureElement->textureIdx,
                                                   .descriptorType = binding->descriptorType,
                                                   .descriptorCount = 1};
 
         VkDescriptorImageInfo *imageInfo = &imageInfos[texturesDescriptorWriteIdx];
-        imageInfo->sampler = texturesElement->sampler;
-        imageInfo->imageView = texturesElement->image->imageView;
+        imageInfo->sampler = textureElement->sampler;
+        imageInfo->imageView = textureElement->image->imageView;
         imageInfo->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         descriptorWrite->pImageInfo = imageInfo;
 
         texturesDescriptorWriteIdx++;
       }
-      vkUpdateDescriptorSets(vkd->device, texturesElementCount, texturesDescriptorWrites, 0, NULL);
+      vkUpdateDescriptorSets(vkd->device, textureElementCount, texturesDescriptorWrites, 0, NULL);
     }
   }
 }

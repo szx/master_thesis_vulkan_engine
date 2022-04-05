@@ -23,8 +23,8 @@ typedef struct vulkan_render_state {
   vulkan_device *vkd; ///< Pointer.
 
   vulkan_unified_geometry_buffer *unifiedGeometryBuffer;
-  vulkan_unified_uniform_buffer *unifiedUniformBuffer;
   vulkan_textures *textures;
+  vulkan_unified_uniform_buffer *unifiedUniformBuffer;
 
   vulkan_descriptors *descriptors;
   vulkan_sync *sync;

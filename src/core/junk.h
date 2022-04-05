@@ -111,6 +111,13 @@ typedef XXH64_hash_t hash_t;
     MACRO_DECL_AS_FOR_NEW(j)                                                                       \
   MACRO_DECL_AS_FOR(j, _type _elem = *_elem##It)
 
+#define uthash_foreach_elem_it(_type, _elem, _uthash)                                              \
+  MACRO_DECL_AS_FOR_NEW(i)                                                                         \
+  MACRO_DECL_AS_FOR(i, _type _elem##_hash = _uthash)                                               \
+  MACRO_DECL_AS_FOR(i, _type _elem = {0})                                                          \
+  MACRO_DECL_AS_FOR(i, _type _elem##_temp = {0})                                                   \
+  HASH_ITER(hh, _elem##_hash, _elem, _elem##_temp)
+
 #define dl_foreach_elem(_type, _elem, _dl, _body)                                                  \
   {                                                                                                \
     _type _elem = {0};                                                                             \

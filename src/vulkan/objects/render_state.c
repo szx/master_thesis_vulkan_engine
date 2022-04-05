@@ -15,9 +15,9 @@ vulkan_render_state *vulkan_render_state_create(vulkan_device *vkd,
   renderState->vkd = vkd;
   renderState->unifiedGeometryBuffer =
       vulkan_unified_geometry_buffer_create(renderState->vkd, renderState->renderCacheList);
+  renderState->textures = vulkan_textures_create(vkd, renderState->renderCacheList);
   renderState->unifiedUniformBuffer =
       vulkan_unified_uniform_buffer_create(vkd, renderState->renderCacheList);
-  renderState->textures = vulkan_textures_create(vkd, renderState->renderCacheList);
 
   renderState->descriptors =
       vulkan_descriptors_create(vkd, renderState->unifiedUniformBuffer, renderState->textures);
@@ -34,8 +34,8 @@ void vulkan_render_state_destroy(vulkan_render_state *renderState) {
 
   vulkan_descriptors_destroy(renderState->descriptors);
 
-  vulkan_textures_destroy(renderState->textures);
   vulkan_unified_uniform_buffer_destroy(renderState->unifiedUniformBuffer);
+  vulkan_textures_destroy(renderState->textures);
   vulkan_unified_geometry_buffer_destroy(renderState->unifiedGeometryBuffer);
 
   vulkan_batches_destroy(renderState->batches);
@@ -56,17 +56,17 @@ void vulkan_scene_render_state_update(vulkan_render_state *renderState) {
   })
 
   vulkan_unified_geometry_buffer_update(renderState->unifiedGeometryBuffer);
+  vulkan_textures_update(renderState->textures);
   vulkan_unified_uniform_buffer_update(renderState->unifiedUniformBuffer, renderState->sync,
                                        renderState->camera);
-  vulkan_textures_update(renderState->textures);
 
   vulkan_descriptors_update(renderState->descriptors);
 }
 
 void vulkan_render_state_send_to_device(vulkan_render_state *renderState) {
   vulkan_unified_geometry_buffer_send_to_device(renderState->unifiedGeometryBuffer);
-  vulkan_unified_uniform_buffer_send_to_device(renderState->unifiedUniformBuffer);
   vulkan_textures_send_to_device(renderState->textures);
+  vulkan_unified_uniform_buffer_send_to_device(renderState->unifiedUniformBuffer);
 
   vulkan_descriptors_send_to_device(renderState->descriptors);
 

@@ -1,6 +1,7 @@
 #include "unified_uniform_buffer.h"
 #include "../data/camera.h"
 #include "../data/primitive.h"
+#include "textures.h"
 
 vulkan_unified_uniform_buffer *
 vulkan_unified_uniform_buffer_create(vulkan_device *vkd,
@@ -53,18 +54,21 @@ void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniform
   // materials
   utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
                               uniformBuffer->renderCacheList->primitiveRenderCaches) {
-    size_t materialId = renderCache->materialId;
+    vulkan_textures_material_element *materialElement = renderCache->materialElement;
+    assert(materialElement != NULL);
+    size_t materialId = materialElement->materialIdx;
+    // PERF: Update material only once (either keep track here or just iterate on
+    // textures->materialElements).
     log_debug("updating material %zu", materialId);
     vulkan_materials_uniform_buffer_element *element =
         &uniformBuffer->materialsData->elements[materialId];
-    vulkan_data_material *material = renderCache->primitive->material;
-    element->baseColorTextureId =
-        0; // HIRO HIRO get from textures using vulkan_data_texture* pointer
-    glm_vec4_copy(material->baseColorFactor, element->baseColorFactor);
+
+    element->baseColorTextureId = materialElement->baseColorTextureElement->textureIdx;
+    glm_vec4_copy(materialElement->material->baseColorFactor, element->baseColorFactor);
     element->metallicRoughnessTextureId =
-        0; // HIRO HIRO get from textures using vulkan_data_texture* pointer
-    element->metallicFactor = material->metallicFactor;
-    element->roughnessFactor = material->roughnessFactor;
+        materialElement->metallicRoughnessTextureElement->textureIdx;
+    element->metallicFactor = materialElement->material->metallicFactor;
+    element->roughnessFactor = materialElement->material->roughnessFactor;
   }
 
   // instances
@@ -76,7 +80,7 @@ void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniform
 
     glm_mat4_copy(renderCache->transform, element->modelMat);
 
-    size_t materialId = renderCache->materialId;
+    size_t materialId = renderCache->materialElement->materialIdx;
     element->materialId = materialId;
   }
 

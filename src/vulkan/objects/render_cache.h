@@ -13,6 +13,7 @@
 typedef struct vulkan_scene_tree_node vulkan_scene_tree_node;
 typedef struct vulkan_data_mesh vulkan_data_mesh;
 typedef struct vulkan_data_primitive vulkan_data_primitive;
+typedef struct vulkan_textures_material_element vulkan_textures_material_element;
 
 typedef struct vulkan_render_cache {
   vulkan_scene_tree_node *node;
@@ -32,7 +33,10 @@ typedef struct vulkan_render_cache {
   /* cache state accumulated during draw call batching. */
   size_t instanceId; ///< Index in render cache list, equals gl_InstanceIndex in shader thanks to
                      ///< draw call batching.
-  size_t materialId;
+
+  /* cache state accumulated from textures */
+  vulkan_textures_material_element
+      *materialElement; ///< Contains index of material in materials array in textures.
 
   struct vulkan_render_cache *prev, *next;
 } vulkan_render_cache;

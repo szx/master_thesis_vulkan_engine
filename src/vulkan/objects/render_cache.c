@@ -3,6 +3,7 @@
 #include "../data/mesh.h"
 #include "../data/primitive.h"
 #include "../scene/node.h"
+#include "textures.h"
 
 vulkan_render_cache *vulkan_render_cache_create(vulkan_scene_tree_node *sceneTreeNode) {
   vulkan_render_cache *renderCache = core_alloc(sizeof(vulkan_render_cache));
@@ -16,7 +17,8 @@ vulkan_render_cache *vulkan_render_cache_create(vulkan_scene_tree_node *sceneTre
   renderCache->firstVertexOffset = 0;
 
   renderCache->instanceId = 0;
-  renderCache->materialId = 0;
+
+  renderCache->materialElement = 0;
 
   return renderCache;
 }
@@ -81,7 +83,9 @@ void debug_log_cache(vulkan_render_cache *renderCache) {
   log_raw(stdout, "firstIndexOffset: %zu\\n", renderCache->firstIndexOffset);
   log_raw(stdout, "firstVertexOffset: %zu\\n", renderCache->firstVertexOffset);
   log_raw(stdout, "instanceId: %zu", renderCache->instanceId);
-  log_raw(stdout, "materialId: %zu", renderCache->materialId);
+  if (renderCache->materialElement != NULL) {
+    log_raw(stdout, "materialId: %zu", renderCache->materialElement->materialIdx);
+  }
   log_raw(stdout, "\"");
 }
 
