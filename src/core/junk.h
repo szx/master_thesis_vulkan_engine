@@ -104,35 +104,26 @@ typedef XXH64_hash_t hash_t;
   while ((_elem = utarray_next(_elem##_array, _elem)))
 
 #define utarray_foreach_elem_deref(_type, _elem, _utarray)                                         \
-  MACRO_DECL_AS_FOR_NEW(i)                                                                         \
-  MACRO_DECL_AS_FOR(i, UT_array *_elem##_array = _utarray)                                         \
-  MACRO_DECL_AS_FOR(i, _type *_elem##It = {0})                                                     \
+  MACRO_DECL_AS_FOR_NEW(_elem##i)                                                                  \
+  MACRO_DECL_AS_FOR(_elem##i, UT_array *_elem##_array = _utarray)                                  \
+  MACRO_DECL_AS_FOR(_elem##i, _type *_elem##It = {0})                                              \
   while ((_elem##It = utarray_next(_elem##_array, _elem##It)))                                     \
-    MACRO_DECL_AS_FOR_NEW(j)                                                                       \
-  MACRO_DECL_AS_FOR(j, _type _elem = *_elem##It)
+    MACRO_DECL_AS_FOR_NEW(_elem##j)                                                                \
+  MACRO_DECL_AS_FOR(_elem##j, _type _elem = *_elem##It)
 
 #define uthash_foreach_elem_it(_type, _elem, _uthash)                                              \
-  MACRO_DECL_AS_FOR_NEW(i)                                                                         \
-  MACRO_DECL_AS_FOR(i, _type _elem##_hash = _uthash)                                               \
-  MACRO_DECL_AS_FOR(i, _type _elem = {0})                                                          \
-  MACRO_DECL_AS_FOR(i, _type _elem##_temp = {0})                                                   \
+  MACRO_DECL_AS_FOR_NEW(_elem##i)                                                                  \
+  MACRO_DECL_AS_FOR(_elem##i, _type _elem##_hash = _uthash)                                        \
+  MACRO_DECL_AS_FOR(_elem##i, _type _elem = {0})                                                   \
+  MACRO_DECL_AS_FOR(_elem##i, _type _elem##_temp = {0})                                            \
   HASH_ITER(hh, _elem##_hash, _elem, _elem##_temp)
 
-#define dl_foreach_elem(_type, _elem, _dl, _body)                                                  \
-  {                                                                                                \
-    _type _elem = {0};                                                                             \
-    _type _elem##Temp = {0};                                                                       \
-    DL_FOREACH_SAFE(_dl, _elem, _elem##Temp) _body                                                 \
-  }
-
-// TODO: Replace dl_foreach_elem
-#define dl_foreach_elem_new(_type, _elem, _dl)                                                     \
-  _type _elem = {0};                                                                               \
-  _type _elem##Temp = {0};                                                                         \
+#define dl_foreach_elem(_type, _elem, _dl)                                                         \
+  MACRO_DECL_AS_FOR_NEW(_elem##i)                                                                  \
+  MACRO_DECL_AS_FOR(_elem##i, _type _elem = {0})                                                   \
+  MACRO_DECL_AS_FOR(_elem##i, _type _elem##Temp = {0})                                             \
   DL_FOREACH_SAFE(_dl, _elem, _elem##Temp)
 
 #define dl_count(_type, _dl, _count)                                                               \
   size_t _count = 0;                                                                               \
-  {                                                                                                \
-    dl_foreach_elem(_type, _count##Elem, _dl, { _count++; })                                       \
-  }
+  dl_foreach_elem(_type, _count##Elem, _dl) { _count++; }

@@ -162,7 +162,6 @@ StatementAttributeLikeMacros:
 StatementMacros:
   - Q_UNUSED
   - QT_REQUIRE_VERSION
-  - dl_foreach_elem
 TabWidth:        8
 UseCRLF:         false
 UseTab:          Never

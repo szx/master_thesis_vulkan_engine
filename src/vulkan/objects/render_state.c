@@ -49,11 +49,11 @@ void vulkan_scene_render_state_update(vulkan_render_state *renderState) {
 
   vulkan_batch_policy batchPolicy = vulkan_batch_policy_matching_materials;
   vulkan_batches_update(renderState->batches, batchPolicy);
-  dl_foreach_elem(vulkan_batch *, batch, renderState->batches->batches, {
+  dl_foreach_elem(vulkan_batch *, batch, renderState->batches->batches) {
     vulkan_batch_update_draw_command(batch);
     assert(batch->drawCommand.firstIndex != INT32_MAX);
     assert(batch->drawCommand.vertexOffset != INT32_MAX);
-  })
+  }
 
   vulkan_unified_geometry_buffer_update(renderState->unifiedGeometryBuffer);
   vulkan_textures_update(renderState->textures);

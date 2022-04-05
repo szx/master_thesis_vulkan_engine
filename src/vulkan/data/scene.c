@@ -432,40 +432,40 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
   utstring_free(sceneData->name);
   utstring_free(sceneData->path);
 
-  dl_foreach_elem(vulkan_data_image *, image, sceneData->images, {
+  dl_foreach_elem(vulkan_data_image *, image, sceneData->images) {
     vulkan_data_image_deinit(image);
     core_free(image);
-  })
+  }
 
-  dl_foreach_elem(vulkan_data_sampler *, sampler, sceneData->samplers, {
+  dl_foreach_elem(vulkan_data_sampler *, sampler, sceneData->samplers) {
     vulkan_data_sampler_deinit(sampler);
     core_free(sampler);
-  })
+  }
 
-  dl_foreach_elem(vulkan_data_texture *, texture, sceneData->textures, {
+  dl_foreach_elem(vulkan_data_texture *, texture, sceneData->textures) {
     vulkan_data_texture_deinit(texture);
     core_free(texture);
-  })
+  }
 
-  dl_foreach_elem(vulkan_data_material *, material, sceneData->materials, {
+  dl_foreach_elem(vulkan_data_material *, material, sceneData->materials) {
     vulkan_data_material_deinit(material);
     core_free(material);
-  })
+  }
 
-  dl_foreach_elem(vulkan_data_vertex_attribute *, vertexAttribute, sceneData->vertexAttributes, {
+  dl_foreach_elem(vulkan_data_vertex_attribute *, vertexAttribute, sceneData->vertexAttributes) {
     vulkan_data_vertex_attribute_deinit(vertexAttribute);
     core_free(vertexAttribute);
-  })
+  }
 
-  dl_foreach_elem(vulkan_data_primitive *, primitive, sceneData->primitives, {
+  dl_foreach_elem(vulkan_data_primitive *, primitive, sceneData->primitives) {
     vulkan_data_primitive_deinit(primitive);
     core_free(primitive);
-  })
+  }
 
-  dl_foreach_elem(vulkan_data_object *, object, sceneData->objects, {
+  dl_foreach_elem(vulkan_data_object *, object, sceneData->objects) {
     vulkan_data_object_deinit(object);
     core_free(object);
-  })
+  }
 
   utarray_free(sceneData->rootObjects);
 
@@ -476,12 +476,12 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
   vulkan_data_##_type *vulkan_data_scene_get_##_type##_by_key(                                     \
       vulkan_data_scene *sceneData, data_asset_db *assetDb, data_key key) {                        \
     vulkan_data_##_type *entity = NULL;                                                            \
-    dl_foreach_elem(vulkan_data_##_type *, existingEntity, sceneData->_var, {                      \
+    dl_foreach_elem(vulkan_data_##_type *, existingEntity, sceneData->_var) {                      \
       if (existingEntity->key.value == key.value) {                                                \
         entity = existingEntity;                                                                   \
         break;                                                                                     \
       }                                                                                            \
-    })                                                                                             \
+    }                                                                                              \
     if (entity == NULL && assetDb != NULL) {                                                       \
       vulkan_data_##_type *newObject = core_alloc(sizeof(vulkan_data_##_type));                    \
       vulkan_data_##_type##_init(newObject, sceneData);                                            \

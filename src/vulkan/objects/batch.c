@@ -80,7 +80,7 @@ void vulkan_batches_destroy(vulkan_batches *batches) {
 }
 
 void vulkan_batches_reset(vulkan_batches *batches) {
-  dl_foreach_elem(vulkan_batch *, batch, batches->batches, { vulkan_batch_destroy(batch); })
+  dl_foreach_elem(vulkan_batch *, batch, batches->batches) { vulkan_batch_destroy(batch); }
   batches->batches = NULL;
 }
 
@@ -126,5 +126,5 @@ void vulkan_batches_debug_print(vulkan_batches *batches) {
   log_debug("BATCHES:");
   dl_count(vulkan_batch *, batches->batches, batchLen);
   log_debug("batch count: %zu", batchLen);
-  dl_foreach_elem(vulkan_batch *, batch, batches->batches, { vulkan_batch_debug_print(batch); })
+  dl_foreach_elem(vulkan_batch *, batch, batches->batches) { vulkan_batch_debug_print(batch); }
 }

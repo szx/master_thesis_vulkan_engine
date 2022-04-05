@@ -15,8 +15,9 @@ vulkan_scene_tree *vulkan_scene_tree_create(vulkan_scene_graph *sceneGraph,
 void vulkan_scene_tree_destroy(vulkan_scene_tree *sceneTree) {
   utarray_free(sceneTree->dirtyNodes);
 
-  dl_foreach_elem(vulkan_scene_tree_node *, node, sceneTree->nodes,
-                  { vulkan_scene_tree_node_destroy(node); })
+  dl_foreach_elem(vulkan_scene_tree_node *, node, sceneTree->nodes) {
+    vulkan_scene_tree_node_destroy(node);
+  }
 
   core_free(sceneTree);
 }

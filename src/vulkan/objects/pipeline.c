@@ -173,8 +173,9 @@ VkCommandBuffer vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline,
   vkCmdPushConstants(commandBuffer, pipeline->pipelineLayout, VK_SHADER_STAGE_ALL, 0,
                      sizeof(drawPushConstant), &drawPushConstant);
 
-  dl_foreach_elem(vulkan_batch *, batch, pipeline->renderState->batches->batches,
-                  { vulkan_batch_record_draw_command(batch, commandBuffer); })
+  dl_foreach_elem(vulkan_batch *, batch, pipeline->renderState->batches->batches) {
+    vulkan_batch_record_draw_command(batch, commandBuffer);
+  }
 
   vkCmdEndRenderPass(commandBuffer);
 

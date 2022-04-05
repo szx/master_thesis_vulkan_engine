@@ -28,8 +28,9 @@ void vulkan_scene_graph_destroy(vulkan_scene_graph *sceneGraph) {
 
   vulkan_scene_tree_destroy(sceneGraph->sceneTree);
 
-  dl_foreach_elem(vulkan_scene_graph_node *, node, sceneGraph->root,
-                  { vulkan_scene_graph_node_destroy(node); })
+  dl_foreach_elem(vulkan_scene_graph_node *, node, sceneGraph->root) {
+    vulkan_scene_graph_node_destroy(node);
+  }
 
   core_free(sceneGraph);
 }
@@ -45,7 +46,7 @@ vulkan_scene_graph_node *add_entity(vulkan_scene_graph *sceneGraph,
   bool existsSceneGraphNode = false;
 
   if (uniqueSceneGraphNode) {
-    dl_foreach_elem_new(vulkan_scene_graph_node *, sceneNode, sceneGraph->nodes) {
+    dl_foreach_elem(vulkan_scene_graph_node *, sceneNode, sceneGraph->nodes) {
       if (sceneNode->object == object && sceneNode->primitive == primitive) {
         // Return already added node.
         sceneGraphNode = sceneNode;

@@ -29,16 +29,16 @@ TEST gltf_loading() {
                   utarray_front(assetDbPrimitive->_name->data),                                    \
                   utarray_size(gltfPrimitive->_name->data));
 
-  dl_foreach_elem(vulkan_data_object *, assetDbNode, assetDbSceneData->objects, {
+  dl_foreach_elem(vulkan_data_object *, assetDbNode, assetDbSceneData->objects) {
     bool foundCorrespondingNode = false;
     vulkan_data_object *gltfNode;
-    dl_foreach_elem(vulkan_data_object *, nodeIter, gltfSceneData->objects, {
+    dl_foreach_elem(vulkan_data_object *, nodeIter, gltfSceneData->objects) {
       if (nodeIter->key.value == assetDbNode->key.value) {
         foundCorrespondingNode = true;
         gltfNode = nodeIter;
         break;
       }
-    })
+    }
     ASSERT_EQ(foundCorrespondingNode, true);
     ASSERT_MEM_EQ(gltfNode->transform, assetDbNode->transform, sizeof(mat4));
     ASSERT_EQ(utarray_len(gltfNode->children), utarray_len(assetDbNode->children));
@@ -52,15 +52,15 @@ TEST gltf_loading() {
            (gltfCamera->key.value == assetDbCamera->key.value));
 
     bool foundCorrespondingPrimitive = false;
-    dl_foreach_elem(vulkan_data_primitive *, gltfPrimitive, gltfSceneData->primitives, {
+    dl_foreach_elem(vulkan_data_primitive *, gltfPrimitive, gltfSceneData->primitives) {
       vulkan_data_primitive *assetDbPrimitive;
-      dl_foreach_elem(vulkan_data_primitive *, primitiveIter, assetDbSceneData->primitives, {
+      dl_foreach_elem(vulkan_data_primitive *, primitiveIter, assetDbSceneData->primitives) {
         if (gltfPrimitive->key.value == primitiveIter->key.value) {
           foundCorrespondingPrimitive = true;
           assetDbPrimitive = primitiveIter;
           break;
         }
-      })
+      }
       ASSERT_EQ(foundCorrespondingPrimitive, true);
       ASSERT_EQ(gltfPrimitive->material->key.value, assetDbPrimitive->material->key.value);
       ASSERT_EQ(gltfPrimitive->topology, assetDbPrimitive->topology);
@@ -70,8 +70,8 @@ TEST gltf_loading() {
       ASSERT_VERTEX_ATTRIBUTE(normals)
       ASSERT_VERTEX_ATTRIBUTE(colors)
       ASSERT_VERTEX_ATTRIBUTE(texCoords)
-    })
-  })
+    }
+  }
   utstring_free(gltfPath);
   utstring_free(sceneName);
   vulkan_data_scene_destroy(assetDbSceneData);
@@ -132,8 +132,8 @@ void assert_graph(vulkan_scene_graph *sceneGraph) {
   vulkan_scene_tree *sceneTree = sceneGraph->sceneTree;
   assert(utarray_len(sceneTree->dirtyNodes) == 0);
   size_t primitiveNodeNum = 0;
-  dl_foreach_elem_new(vulkan_scene_tree_node *, sceneNode,
-                      sceneTree->nodes) { /*log_debug("tree node: %p", sceneNode);*/
+  dl_foreach_elem(vulkan_scene_tree_node *, sceneNode,
+                  sceneTree->nodes) { /*log_debug("tree node: %p", sceneNode);*/
     if (sceneNode->object != NULL) {
       assert(utarray_len(sceneNode->childNodes) > 0 || sceneNode->object->camera != NULL);
     }
