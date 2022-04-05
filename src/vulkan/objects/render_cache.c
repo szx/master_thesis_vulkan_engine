@@ -14,7 +14,9 @@ vulkan_render_cache *vulkan_render_cache_create(vulkan_scene_tree_node *sceneTre
   vulkan_render_cache_set_with_node(renderCache);
   renderCache->firstIndexOffset = 0;
   renderCache->firstVertexOffset = 0;
+
   renderCache->instanceId = 0;
+  renderCache->materialId = 0;
 
   return renderCache;
 }
@@ -79,6 +81,7 @@ void debug_log_cache(vulkan_render_cache *renderCache) {
   log_raw(stdout, "firstIndexOffset: %zu\\n", renderCache->firstIndexOffset);
   log_raw(stdout, "firstVertexOffset: %zu\\n", renderCache->firstVertexOffset);
   log_raw(stdout, "instanceId: %zu", renderCache->instanceId);
+  log_raw(stdout, "materialId: %zu", renderCache->materialId);
   log_raw(stdout, "\"");
 }
 

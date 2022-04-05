@@ -28,3 +28,16 @@ void glsl_add_vulkan_instances_uniform_buffer(UT_string *s, uint32_t set, uint32
   if (count > 1) {utstring_printf(s, "[%u]", count);}
   utstring_printf(s, ";\n};\n");
 }
+void glsl_add_vulkan_materials_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count) {
+  utstring_printf(s, "struct materialsStruct {\n");
+ utstring_printf(s, "  uint baseColorTextureId;\n");
+ utstring_printf(s, "  vec4 baseColorFactor;\n");
+ utstring_printf(s, "  uint metallicRoughnessTextureId;\n");
+ utstring_printf(s, "  float metallicFactor;\n");
+ utstring_printf(s, "  float roughnessFactor;\n");
+  utstring_printf(s, "};\n");
+  utstring_printf(s, "layout(set = %u, binding = %u) uniform materialsBlock {\n", set, binding);
+  utstring_printf(s, "  materialsStruct materials");
+  if (count > 1) {utstring_printf(s, "[%u]", count);}
+  utstring_printf(s, ";\n};\n");
+}

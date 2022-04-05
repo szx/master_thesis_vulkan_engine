@@ -16,9 +16,18 @@ typedef struct vulkan_instances_uniform_buffer_element {
   alignas(4) uint materialId;
 } vulkan_instances_uniform_buffer_element;
 
+typedef struct vulkan_materials_uniform_buffer_element {
+  alignas(4) uint baseColorTextureId;
+  alignas(16) vec4 baseColorFactor;
+  alignas(4) uint metallicRoughnessTextureId;
+  alignas(4) float metallicFactor;
+  alignas(4) float roughnessFactor;
+} vulkan_materials_uniform_buffer_element;
+
 void glsl_add_vulkan_draw_push_constant(UT_string *s);
 void glsl_add_vulkan_global_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);
 void glsl_add_vulkan_instances_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);
+void glsl_add_vulkan_materials_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);
 
 #define END_OF_VULKAN_PUSH_CONSTANTS
 #define VULKAN_PUSH_CONSTANTS(X, ...) \
@@ -29,4 +38,5 @@ void glsl_add_vulkan_instances_uniform_buffer(UT_string *s, uint32_t set, uint32
 #define VULKAN_UNIFORM_BUFFERS(X, ...) \
   X(global, __VA_ARGS__) \
   X(instances, __VA_ARGS__) \
+  X(materials, __VA_ARGS__) \
   END_OF_VULKAN_UNIFORM_BUFFERS

@@ -11,45 +11,6 @@
 
 static_assert(sizeof(char) == sizeof(uint8_t), "sizeof(char) != sizeof(uint8_t)");
 
-#define is_aligned(ptr, bytes) (((uintptr_t)(const void *)(ptr)) % (bytes) == 0)
-#define member_size(type, member) sizeof(((type *)0)->member)
-#define array_size(array) (sizeof(array) / sizeof((array)[0]))
-#define utarray_size(array) ((array)->icd.sz * utarray_len((array)))
-#define utarray_eltsize(array) ((array)->icd.sz)
-
-#define utarray_foreach_elem_it(_type, _elem, _utarray)                                            \
-  UT_array *_elem##_array = _utarray;                                                              \
-  _type _elem = {0};                                                                               \
-  assert(_elem##_array->icd.sz == sizeof(*_elem));                                                 \
-  while ((_elem = utarray_next(_elem##_array, _elem)))
-
-#define utarray_foreach_elem_deref(_type, _elem, _utarray)                                         \
-  UT_array *_elem##_array = _utarray;                                                              \
-  _type *_elem##It = {0};                                                                          \
-  _type _elem = {0};                                                                               \
-  assert(_elem##_array->icd.sz == sizeof(_elem));                                                  \
-  while ((_elem##It = utarray_next(_elem##_array, _elem##It)))                                     \
-    if ((_elem = *_elem##It), true)
-
-#define dl_foreach_elem(_type, _elem, _dl, _body)                                                  \
-  {                                                                                                \
-    _type _elem = {0};                                                                             \
-    _type _elem##Temp = {0};                                                                       \
-    DL_FOREACH_SAFE(_dl, _elem, _elem##Temp) _body                                                 \
-  }
-
-// TODO: Replace dl_foreach_elem
-#define dl_foreach_elem_new(_type, _elem, _dl)                                                     \
-  _type _elem = {0};                                                                               \
-  _type _elem##Temp = {0};                                                                         \
-  DL_FOREACH_SAFE(_dl, _elem, _elem##Temp)
-
-#define dl_count(_type, _dl, _count)                                                               \
-  size_t _count = 0;                                                                               \
-  {                                                                                                \
-    dl_foreach_elem(_type, _count##Elem, _dl, { _count++; })                                       \
-  }
-
 /// Strip left whitespaces.
 void strlstrip(char **str);
 
@@ -95,6 +56,9 @@ typedef XXH64_hash_t hash_t;
 #define MACRO_EXPAND(...) __VA_ARGS__
 #define MACRO_DEFER(id) id MACRO_EMPTY()
 
+#define MACRO_DECL_AS_FOR_NEW(_name) for (int _name = 0; _name == 0; _name++)
+#define MACRO_DECL_AS_FOR(_name, _decl) for (_decl; _name == 0; _name++)
+
 // Returns number of variadic arguments.
 // FIXME: Expands to 1 for 0 arguments.
 #define MACRO_NARGS(...) MACRO_NARGS_(__VA_ARGS__, MACRO_NARGS_RSEQ_N())
@@ -126,3 +90,42 @@ typedef XXH64_hash_t hash_t;
 #define MACRO_FOREACH_14(_macro, _elem, ...) _macro(13, _elem) MACRO_FOREACH_13(_macro, __VA_ARGS__)
 #define MACRO_FOREACH_15(_macro, _elem, ...) _macro(14, _elem) MACRO_FOREACH_14(_macro, __VA_ARGS__)
 #define MACRO_FOREACH_16(_macro, _elem, ...) _macro(15, _elem) MACRO_FOREACH_15(_macro, __VA_ARGS__)
+
+#define is_aligned(ptr, bytes) (((uintptr_t)(const void *)(ptr)) % (bytes) == 0)
+#define member_size(type, member) sizeof(((type *)0)->member)
+#define array_size(array) (sizeof(array) / sizeof((array)[0]))
+#define utarray_size(array) ((array)->icd.sz * utarray_len((array)))
+#define utarray_eltsize(array) ((array)->icd.sz)
+
+#define utarray_foreach_elem_it(_type, _elem, _utarray)                                            \
+  MACRO_DECL_AS_FOR_NEW(i)                                                                         \
+  MACRO_DECL_AS_FOR(i, UT_array *_elem##_array = _utarray)                                         \
+  MACRO_DECL_AS_FOR(i, _type _elem = {0})                                                          \
+  while ((_elem = utarray_next(_elem##_array, _elem)))
+
+#define utarray_foreach_elem_deref(_type, _elem, _utarray)                                         \
+  MACRO_DECL_AS_FOR_NEW(i)                                                                         \
+  MACRO_DECL_AS_FOR(i, UT_array *_elem##_array = _utarray)                                         \
+  MACRO_DECL_AS_FOR(i, _type *_elem##It = {0})                                                     \
+  while ((_elem##It = utarray_next(_elem##_array, _elem##It)))                                     \
+    MACRO_DECL_AS_FOR_NEW(j)                                                                       \
+  MACRO_DECL_AS_FOR(j, _type _elem = *_elem##It)
+
+#define dl_foreach_elem(_type, _elem, _dl, _body)                                                  \
+  {                                                                                                \
+    _type _elem = {0};                                                                             \
+    _type _elem##Temp = {0};                                                                       \
+    DL_FOREACH_SAFE(_dl, _elem, _elem##Temp) _body                                                 \
+  }
+
+// TODO: Replace dl_foreach_elem
+#define dl_foreach_elem_new(_type, _elem, _dl)                                                     \
+  _type _elem = {0};                                                                               \
+  _type _elem##Temp = {0};                                                                         \
+  DL_FOREACH_SAFE(_dl, _elem, _elem##Temp)
+
+#define dl_count(_type, _dl, _count)                                                               \
+  size_t _count = 0;                                                                               \
+  {                                                                                                \
+    dl_foreach_elem(_type, _count##Elem, _dl, { _count++; })                                       \
+  }

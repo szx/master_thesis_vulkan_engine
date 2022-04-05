@@ -37,6 +37,7 @@ bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_render_cache *cache
 }
 
 void vulkan_batch_add_cache(vulkan_batch *batch, vulkan_render_cache *cache, size_t instanceId) {
+  // HIRO HIRO update materialId here
   cache->instanceId = instanceId;
   batch->drawCommand.instanceCount++;
 }

@@ -18,6 +18,14 @@ typedef struct vulkan_global_uniform_struct {
   mat4 projMat;
 } vulkan_global_uniform_struct;
 
+typedef struct vulkan_materials_uniform_struct {
+  uint baseColorTextureId;
+  vec4 baseColorFactor;
+  uint metallicRoughnessTextureId;
+  float metallicFactor;
+  float roughnessFactor;
+} vulkan_materials_uniform_struct;
+
 typedef struct vulkan_instances_uniform_struct {
   mat4 modelMat;
   uint materialId;
