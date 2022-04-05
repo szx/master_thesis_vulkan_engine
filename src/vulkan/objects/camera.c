@@ -22,11 +22,15 @@ void vulkan_camera_select(vulkan_camera *camera, size_t cameraIdx) {
   assert(camera->cameraIdx < utarray_len(camera->renderCacheList->cameraRenderCaches));
   camera->renderCache = *(vulkan_render_cache **)utarray_eltptr(
       camera->renderCacheList->cameraRenderCaches, camera->cameraIdx);
+
+  glm_mat4_identity(camera->userTransform);
 }
 
 void vulkan_camera_set_view_matrix(vulkan_camera *camera, mat4 viewMatrix) {
   // View matrix is inversed model matrix.
-  glm_mat4_inv(camera->renderCache->transform, viewMatrix);
+  mat4 transform;
+  glm_mat4_mul(camera->userTransform, camera->renderCache->transform, transform);
+  glm_mat4_inv(transform, viewMatrix);
 }
 
 /// Calculates perspective projection matrix for left handed world/view-space to right-handed

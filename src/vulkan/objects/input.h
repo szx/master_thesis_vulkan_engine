@@ -9,6 +9,7 @@
   X(s, GLFW_KEY_S, __VA_ARGS__)                                                                    \
   X(d, GLFW_KEY_D, __VA_ARGS__)                                                                    \
   X(q, GLFW_KEY_Q, __VA_ARGS__)                                                                    \
+  X(e, GLFW_KEY_E, __VA_ARGS__)                                                                    \
   X(num1, GLFW_KEY_W, __VA_ARGS__)                                                                 \
   X(num2, GLFW_KEY_W, __VA_ARGS__)                                                                 \
   X(num3, GLFW_KEY_W, __VA_ARGS__)                                                                 \

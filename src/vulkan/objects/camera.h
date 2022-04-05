@@ -11,6 +11,8 @@ typedef struct vulkan_camera {
   size_t cameraIdx;
   vulkan_render_cache *renderCache; ///< Pointer.
 
+  mat4 userTransform;
+
 } vulkan_camera;
 
 vulkan_camera *vulkan_camera_create(vulkan_render_cache_list *renderCacheList);

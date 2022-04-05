@@ -9,6 +9,7 @@ void update_func(vulkan_renderer *renderer, double dt) {
     // TODO: Move to vulkan_renderer_quit.
     glfwSetWindowShouldClose(renderer->vkd->window, true);
   }
+
   if (renderer->vkd->input.keyboard.release.leftBracket) {
     size_t cameraIdx = renderState->camera->cameraIdx - 1;
     if (renderState->camera->cameraIdx == 0) {
@@ -18,6 +19,25 @@ void update_func(vulkan_renderer *renderer, double dt) {
   }
   if (renderer->vkd->input.keyboard.release.rightBracket) {
     vulkan_camera_select(renderState->camera, renderState->camera->cameraIdx + 1);
+  }
+
+  if (renderer->vkd->input.keyboard.press.w) {
+    glm_translate_z(renderState->camera->userTransform, 1.0f * dt);
+  }
+  if (renderer->vkd->input.keyboard.press.s) {
+    glm_translate_z(renderState->camera->userTransform, -1.0f * dt);
+  }
+  if (renderer->vkd->input.keyboard.press.d) {
+    glm_translate_x(renderState->camera->userTransform, 1.0f * dt);
+  }
+  if (renderer->vkd->input.keyboard.press.a) {
+    glm_translate_x(renderState->camera->userTransform, -1.0f * dt);
+  }
+  if (renderer->vkd->input.keyboard.press.q) {
+    glm_translate_y(renderState->camera->userTransform, 1.0f * dt);
+  }
+  if (renderer->vkd->input.keyboard.press.e) {
+    glm_translate_y(renderState->camera->userTransform, -1.0f * dt);
   }
 }
 
