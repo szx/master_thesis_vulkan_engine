@@ -10,6 +10,7 @@ typedef enum vulkan_buffer_type {
   vulkan_buffer_type_geometry_index,
   vulkan_buffer_type_geometry_vertex,
   vulkan_buffer_type_uniform,
+  vulkan_buffer_type_indirect_draw,
   vulkan_buffer_type_count
 } vulkan_buffer_type;
 
@@ -21,6 +22,7 @@ typedef struct vulkan_buffer_element {
   uint32_t bufferOffset; ///< Offset in vulkan_buffer.
 } vulkan_buffer_element;
 
+void vulkan_buffer_element_update(vulkan_buffer_element *bufferElement);
 void vulkan_buffer_element_debug_print(vulkan_buffer_element *bufferElement, int indent);
 
 /// Buffer.

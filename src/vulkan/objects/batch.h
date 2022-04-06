@@ -4,6 +4,7 @@
  */
 #pragma once
 
+#include "buffer.h"
 #include "render_cache_list.h"
 
 typedef enum vulkan_batch_policy {
@@ -39,27 +40,33 @@ void vulkan_batch_destroy(vulkan_batch *batch);
 bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_render_cache *cache);
 void vulkan_batch_add_cache(vulkan_batch *batch, vulkan_render_cache *cache, size_t instanceId);
 void vulkan_batch_update_draw_command(vulkan_batch *batch);
-void vulkan_batch_record_draw_command(vulkan_batch *batch, VkCommandBuffer commandBuffer);
 
 void vulkan_batch_debug_print(vulkan_batch *batch);
 
 /// Creates batches from scene graph.
 typedef struct vulkan_batches {
-  vulkan_render_cache_list *renderCacheList; /// Pointer.
+  vulkan_render_cache_list *renderCacheList; ///< Pointer.
+  vulkan_device *vkd;                        ///< Pointer.
 
-  vulkan_batch *batches; /// List of batches created from scene graph.
-  // HIRO merge batches?
+  /// List of batches created from scene graph.
+  vulkan_batch *batches;
+
+  /// Indirect draw buffer.
+  vulkan_buffer *indirectDrawBuffer;
+  vulkan_buffer_element indirectDrawBufferElement;
+
 } vulkan_batches;
 
-vulkan_batches *vulkan_batches_create(vulkan_render_cache_list *renderCacheList);
+vulkan_batches *vulkan_batches_create(vulkan_render_cache_list *renderCacheList,
+                                      vulkan_device *vkd);
 void vulkan_batches_destroy(vulkan_batches *batches);
 
-/// Destroy old batches.
 void vulkan_batches_reset(vulkan_batches *batches);
 
-/// Create and destroy batches using scene graph.
 void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_policy policy);
 
-// HIRO: Generate Vulkan draw commands.
+void vulkan_batches_send_to_device(vulkan_batches *batches);
+
+void vulkan_batches_record_draw_command(vulkan_batches *batches, VkCommandBuffer commandBuffer);
 
 void vulkan_batches_debug_print(vulkan_batches *batches);

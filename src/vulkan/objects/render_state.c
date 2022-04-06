@@ -10,9 +10,10 @@ vulkan_render_state *vulkan_render_state_create(vulkan_device *vkd,
   renderState->renderCacheList = renderCacheList;
   renderState->camera = vulkan_camera_create(renderState->renderCacheList);
 
-  renderState->batches = vulkan_batches_create(renderCacheList);
-
   renderState->vkd = vkd;
+
+  renderState->batches = vulkan_batches_create(renderCacheList, vkd);
+
   renderState->unifiedGeometryBuffer =
       vulkan_unified_geometry_buffer_create(renderState->vkd, renderState->renderCacheList);
   renderState->textures = vulkan_textures_create(vkd, renderState->renderCacheList);
@@ -64,6 +65,8 @@ void vulkan_scene_render_state_update(vulkan_render_state *renderState) {
 }
 
 void vulkan_render_state_send_to_device(vulkan_render_state *renderState) {
+  vulkan_batches_send_to_device(renderState->batches);
+
   vulkan_unified_geometry_buffer_send_to_device(renderState->unifiedGeometryBuffer);
   vulkan_textures_send_to_device(renderState->textures);
   vulkan_unified_uniform_buffer_send_to_device(renderState->unifiedUniformBuffer);

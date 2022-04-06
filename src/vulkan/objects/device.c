@@ -322,11 +322,12 @@ bool physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevic
   log_info("descriptorBindingVariableDescriptorCount = %d",
            features12.descriptorBindingVariableDescriptorCount);
   log_info("descriptorBindingPartiallyBound = %d", features12.descriptorBindingPartiallyBound);
+  log_info("multiDrawIndirect = %d", features10.multiDrawIndirect);
   bool featuresSupported =
       features10.samplerAnisotropy && features10.shaderUniformBufferArrayDynamicIndexing &&
       features10.shaderSampledImageArrayDynamicIndexing && featuresRobustness2.nullDescriptor &&
       features12.descriptorIndexing && features12.descriptorBindingVariableDescriptorCount &&
-      features12.descriptorBindingPartiallyBound;
+      features12.descriptorBindingPartiallyBound && features10.multiDrawIndirect;
 
   return queueFamiliesComplete && extensionsSupported && swapChainAdequate && goodVulkanVersion &&
          featuresSupported;
@@ -452,6 +453,10 @@ vulkan_limits find_limits(vulkan_device *vkd, VkPhysicalDevice physicalDevice) {
   limits.maxVertexInputBindings = deviceProperties.limits.maxVertexInputBindings;
   limits.maxVertexInputBindingStride = deviceProperties.limits.maxVertexInputBindingStride;
 
+  limits.maxDrawIndirectCount = deviceProperties.limits.maxDrawIndirectCount;
+  limits.maxDrawIndirectCommands =
+      MIN(limits.maxDrawIndirectCount, MAX_INDIRECT_DRAW_COMMAND_COUNT);
+
   return limits;
 }
 
@@ -493,6 +498,7 @@ void create_logical_device(vulkan_device *vkd) {
       .samplerAnisotropy = VK_TRUE,
       .shaderUniformBufferArrayDynamicIndexing = VK_TRUE,
       .shaderSampledImageArrayDynamicIndexing = VK_TRUE,
+      .multiDrawIndirect = VK_TRUE,
   };
   VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexingFeatures = {
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,

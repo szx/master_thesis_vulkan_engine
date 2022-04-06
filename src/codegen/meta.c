@@ -5068,7 +5068,8 @@ const char *vulkan_buffer_type_debug_str(int value) {
   if (value == 0) { return "vulkan_buffer_type_geometry_index"; }
   if (value == 1) { return "vulkan_buffer_type_geometry_vertex"; }
   if (value == 2) { return "vulkan_buffer_type_uniform"; }
-  if (value == 3) { return "vulkan_buffer_type_count"; }
+  if (value == 3) { return "vulkan_buffer_type_indirect_draw"; }
+  if (value == 4) { return "vulkan_buffer_type_count"; }
   return "UNKNOWN vulkan_buffer_type";
 }
 const char *vulkan_camera_type_debug_str(int value) {

@@ -93,7 +93,7 @@ UT_string *get_executable_dir_file_path(const char *dirName, const char *fileNam
   return path;
 }
 
-UT_string *get_asset_file_path(const char *dirName, const char *fileName) { // HIRO remove
+UT_string *get_asset_file_path(const char *dirName, const char *fileName) {
   UT_string *path = get_executable_dir_file_path("assets", dirName);
   append_to_path(path, fileName);
   return path;

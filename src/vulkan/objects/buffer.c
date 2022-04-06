@@ -1,5 +1,23 @@
 #include "buffer.h"
 
+void vulkan_buffer_element_update(vulkan_buffer_element *bufferElement) {
+  if (bufferElement->data == NULL) {
+    log_warn("attempted to update buffer with NULL pointer");
+    return;
+  }
+
+  bool useStagingBuffer =
+      (bufferElement->buffer->memoryPropertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) == 0;
+  assert(!useStagingBuffer);
+
+  vulkan_buffer *buffer = bufferElement->buffer;
+  void *data;
+  vkMapMemory(buffer->vkd->device, buffer->bufferMemory, bufferElement->bufferOffset,
+              bufferElement->size, 0, &data);
+  core_memcpy(data, bufferElement->data, bufferElement->size);
+  vkUnmapMemory(buffer->vkd->device, buffer->bufferMemory);
+}
+
 void vulkan_buffer_element_debug_print(vulkan_buffer_element *bufferElement, int indent) {
   log_debug(INDENT_FORMAT_STRING "buffer element of buffer '%s':", INDENT_FORMAT_ARGS(0),
             bufferElement->buffer->name);
@@ -32,6 +50,13 @@ vulkan_buffer *vulkan_buffer_create(vulkan_device *vkd, vulkan_buffer_type type)
     buffer->memoryPropertyFlags =
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
     buffer->name = "uniform buffer";
+  } else if (buffer->type == vulkan_buffer_type_indirect_draw) {
+    buffer->bufferUsageFlags = VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                               VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
+                               VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT;
+    buffer->memoryPropertyFlags =
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+    buffer->name = "draw indirect buffer";
   } else {
     assert(0);
   }

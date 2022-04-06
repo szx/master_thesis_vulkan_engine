@@ -57,6 +57,9 @@ typedef struct vulkan_limits {
   uint32_t maxVertexOutputComponents;
   uint32_t maxVertexInputBindings;
   uint32_t maxVertexInputBindingStride;
+
+  size_t maxDrawIndirectCount;
+  size_t maxDrawIndirectCommands;
 } vulkan_limits;
 
 typedef struct vulkan_device {

@@ -201,7 +201,7 @@ TEST scene_graph_building() {
 */
 
   log_info("Test batching.");
-  vulkan_batches *batches = vulkan_batches_create(renderCacheList);
+  vulkan_batches *batches = vulkan_batches_create(renderCacheList, vkd);
 
   renderCacheList->dirty = false;
   vulkan_batches_update(batches, vulkan_batch_policy_none);

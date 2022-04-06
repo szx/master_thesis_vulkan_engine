@@ -48,13 +48,6 @@ void vulkan_batch_update_draw_command(vulkan_batch *batch) {
   batch->drawCommand.firstInstance = batch->firstCache->instanceId;
 }
 
-void vulkan_batch_record_draw_command(vulkan_batch *batch, VkCommandBuffer commandBuffer) {
-  // HIRO emit indirect draw
-  VkDrawIndexedIndirectCommand drawCommand = batch->drawCommand;
-  vkCmdDrawIndexed(commandBuffer, drawCommand.indexCount, drawCommand.instanceCount,
-                   drawCommand.firstIndex, drawCommand.vertexOffset, drawCommand.firstInstance);
-}
-
 void vulkan_batch_debug_print(vulkan_batch *batch) {
   log_debug("batch indexed indirect: policy=%d, indexCount=%d firstIndex=%d vertexOffset=%d "
             "firstInstance=%d instanceCount=%d materialHash=%zu "
@@ -65,16 +58,23 @@ void vulkan_batch_debug_print(vulkan_batch *batch) {
             batch->firstCache->primitive->geometryHash);
 }
 
-vulkan_batches *vulkan_batches_create(vulkan_render_cache_list *renderCacheList) {
+vulkan_batches *vulkan_batches_create(vulkan_render_cache_list *renderCacheList,
+                                      vulkan_device *vkd) {
   vulkan_batches *batches = core_alloc(sizeof(vulkan_batches));
 
   batches->renderCacheList = renderCacheList;
+  batches->vkd = vkd;
   batches->batches = NULL;
-
+  batches->indirectDrawBuffer =
+      vulkan_buffer_create(batches->vkd, vulkan_buffer_type_indirect_draw);
+  batches->indirectDrawBufferElement = vulkan_buffer_add(
+      batches->indirectDrawBuffer, NULL,
+      sizeof(VkDrawIndexedIndirectCommand) * batches->vkd->limits.maxDrawIndirectCommands);
   return batches;
 }
 
 void vulkan_batches_destroy(vulkan_batches *batches) {
+  vulkan_buffer_destroy(batches->indirectDrawBuffer);
   vulkan_batches_reset(batches);
   core_free(batches);
 }
@@ -118,8 +118,31 @@ void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_policy policy) 
 
     instanceId++;
   }
-  // HIRO: Consolidate smaller batches into one big batch with list of commands. (in scene render
-  // context)?
+}
+
+void vulkan_batches_send_to_device(vulkan_batches *batches) {
+  vulkan_buffer_send_to_device(batches->indirectDrawBuffer);
+}
+
+void vulkan_batches_record_draw_command(vulkan_batches *batches, VkCommandBuffer commandBuffer) {
+  dl_count(vulkan_batch *, batches->batches, drawCommandCount);
+  verify(drawCommandCount <= batches->vkd->limits.maxDrawIndirectCommands);
+  if (drawCommandCount == 0) {
+    return;
+  }
+  VkDrawIndexedIndirectCommand drawCommands[drawCommandCount];
+  size_t drawCommandIdx = 0;
+  dl_foreach_elem(vulkan_batch *, batch, batches->batches) {
+    drawCommands[drawCommandIdx++] = batch->drawCommand;
+  }
+
+  batches->indirectDrawBufferElement.data = drawCommands;
+  batches->indirectDrawBufferElement.size = sizeof(drawCommands);
+  vulkan_buffer_element_update(&batches->indirectDrawBufferElement);
+
+  size_t drawCommandStride = sizeof(drawCommands[0]);
+  vkCmdDrawIndexedIndirect(commandBuffer, batches->indirectDrawBuffer->buffer, 0, drawCommandCount,
+                           drawCommandStride);
 }
 
 void vulkan_batches_debug_print(vulkan_batches *batches) {
