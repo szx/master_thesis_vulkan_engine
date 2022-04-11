@@ -17,6 +17,9 @@ vulkan_lights *vulkan_lights_create(vulkan_render_cache_list *renderCacheList) {
 void vulkan_lights_destroy(vulkan_lights *lights) { core_free(lights); }
 
 void vulkan_lights_add(vulkan_lights *lights, vec3 position, vec3 color, float radius) {
+  log_debug("adding light %zu at %f,%f,%f", utarray_len(lights->lights) + 1, position[0],
+            position[1], position[2]);
+
   vulkan_light_helper_element element = {.radius = radius};
   glm_vec3_copy(position, element.position);
   glm_vec3_copy(color, element.color);
