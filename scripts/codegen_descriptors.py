@@ -20,8 +20,9 @@ def get_descriptor_h_str():
 
 def codegen_descriptors():
     push_constant_structs = {}
-    uniform_structs = {}
-    decls = ['#pragma once', '']
+    uniform_buffer_structs = {}
+    helper_structs = {}
+    decls = ['#pragma once', '#include "../vulkan/constants.h"', '']
     defs = ['#include "descriptors.h"', '#include "../core/core.h"', '']
 
     # parse C structs ending with _struct
@@ -35,18 +36,39 @@ def codegen_descriptors():
                 field_type = struct_field.type.spelling
                 struct_fields.append((field_name, field_type))
             push_constant_structs[struct_name] = struct_fields
-        if struct_decl.spelling.endswith('_uniform_struct'):
-            struct_name = struct_decl.spelling.partition('_uniform_struct')[0]
+        if struct_decl.spelling.endswith('_uniform_buffer_struct'):
+            struct_name = struct_decl.spelling.partition('_uniform_buffer_struct')[0]
+            struct_fields = []
+            for struct_field in struct_decl.get_children():
+                field_name = struct_field.spelling
+                field_type = struct_field.type.spelling
+                field_comment = ''
+                if struct_field.brief_comment:
+                    field_comment = struct_field.brief_comment
+                struct_fields.append((field_name, field_type, field_comment))
+            uniform_buffer_structs[struct_name] = struct_fields
+        if struct_decl.spelling.endswith('_helper_struct'):
+            struct_name = struct_decl.spelling.partition('_helper_struct')[0]
             struct_fields = []
             for struct_field in struct_decl.get_children():
                 field_name = struct_field.spelling
                 field_type = struct_field.type.spelling
                 struct_fields.append((field_name, field_type))
-            uniform_structs[struct_name] = struct_fields
-    print(f'uniform_structs: {uniform_structs}')
+            helper_structs[struct_name] = struct_fields
+    print(f'uniform_buffer_structs: {uniform_buffer_structs}')
     print(f'push_constant_structs: {push_constant_structs}')
+    print(f'helper_structs: {helper_structs}')
 
-    # generate aligned _uniform_element
+    # generate aligned _helper_element
+    for struct_name, struct_fields in helper_structs.items():
+        struct_name = struct_name + '_helper_element'
+        decls.append(f'typedef struct {struct_name} {{')
+        for field_name, field_type in struct_fields:
+            alignment = uniform_buffer_std140_alignments.get(field_type, 'unknown_alignment')
+            decls.append(f'  alignas({alignment}) {field_type} {field_name};')
+        decls.append(f'}} {struct_name};\n')
+
+    # generate aligned _push_constant_element
     for struct_name, struct_fields in push_constant_structs.items():
         struct_name = struct_name + '_push_constant_element'
         decls.append(f'typedef struct {struct_name} {{')
@@ -55,13 +77,16 @@ def codegen_descriptors():
             decls.append(f'  alignas({alignment}) {field_type} {field_name};')
         decls.append(f'}} {struct_name};\n')
 
-    # generate aligned _uniform_element
-    for struct_name, struct_fields in uniform_structs.items():
+    # generate aligned _uniform_buffer_element
+    for struct_name, struct_fields in uniform_buffer_structs.items():
         struct_name = struct_name + '_uniform_buffer_element'
         decls.append(f'typedef struct {struct_name} {{')
-        for field_name, field_type in struct_fields:
-            alignment = uniform_buffer_std140_alignments.get(field_type, 'unknown_alignment')
-            decls.append(f'  alignas({alignment}) {field_type} {field_name};')
+        for field_name, field_type, field_comment in struct_fields:
+            if field_type.endswith("_struct"):
+                decls.append(f'  {field_type.replace("_struct", "_element")} {field_name} {field_comment};')
+            else:
+                alignment = uniform_buffer_std140_alignments.get(field_type, 'unknown_alignment')
+                decls.append(f'  alignas({alignment}) {field_type} {field_name};')
         decls.append(f'}} {struct_name};\n')
 
     # generate GLSL strings for push constants
@@ -80,7 +105,7 @@ def codegen_descriptors():
         defs.append(f'}}')
 
     # generate GLSL strings for uniform buffers
-    for struct_name, struct_fields in uniform_structs.items():
+    for struct_name, struct_fields in uniform_buffer_structs.items():
         decls.append(
             f'void glsl_add_{struct_name}_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);')
         defs.append(
@@ -90,14 +115,27 @@ def codegen_descriptors():
         struct_name = instance_name + "Struct"
 
         defs.append(f'  utstring_printf(s, "struct {struct_name} {{\\n");')
-        for field_name, field_type in struct_fields:
-            defs.append(f' utstring_printf(s, "  {field_type} {field_name};\\n");')
+        for field_name, field_type, field_comment in struct_fields:
+            defs.append(f' utstring_printf(s, "  {field_type} {field_name} {field_comment};\\n");')
         defs.append(f'  utstring_printf(s, "}};\\n");')
 
         defs.append(f'  utstring_printf(s, "layout(set = %u, binding = %u) uniform {block_name} {{\\n", set, binding);')
         defs.append(f'  utstring_printf(s, "  {struct_name} {instance_name}");')
         defs.append(f'  if (count > 1) {{utstring_printf(s, "[%u]", count);}}')
         defs.append(f'  utstring_printf(s, ";\\n}};\\n");')
+        defs.append(f'}}')
+
+    # generate GLSL strings for helper structs
+    for struct_name, struct_fields in helper_structs.items():
+        decls.append(
+            f'void glsl_add_{struct_name}_helper_struct(UT_string *s);')
+        defs.append(
+            f'void glsl_add_{struct_name}_helper_struct(UT_string *s) {{')
+
+        defs.append(f'  utstring_printf(s, "struct {struct_name}_helper_struct {{\\n");')
+        for field_name, field_type in struct_fields:
+            defs.append(f' utstring_printf(s, "  {field_type} {field_name};\\n");')
+        defs.append(f'  utstring_printf(s, "}};\\n");')
         defs.append(f'}}')
 
     # generate X-macro with push constant names
@@ -111,10 +149,18 @@ def codegen_descriptors():
     # generate X-macro with uniform buffer names
     decls.append(f'\n#define END_OF_VULKAN_UNIFORM_BUFFERS')
     decls.append(f'#define VULKAN_UNIFORM_BUFFERS(X, ...) \\')
-    for struct_name in uniform_structs.keys():
+    for struct_name in uniform_buffer_structs.keys():
         struct_name = struct_name.partition("vulkan_")[2]
         decls.append(f'  X({struct_name}, __VA_ARGS__) \\')
     decls.append(f'  END_OF_VULKAN_UNIFORM_BUFFERS')
+
+    # generate X-macro with helper struct names
+    decls.append(f'\n#define END_OF_VULKAN_HELPER_STRUCTS')
+    decls.append(f'#define VULKAN_HELPER_STRUCTS(X, ...) \\')
+    for struct_name in helper_structs.keys():
+        struct_name = struct_name.partition("vulkan_")[2]
+        decls.append(f'  X({struct_name}, __VA_ARGS__) \\')
+    decls.append(f'  END_OF_VULKAN_HELPER_STRUCTS')
 
     output_strings(decls, get_output_path('descriptors.h'))
     output_strings(defs, get_output_path('descriptors.c'))

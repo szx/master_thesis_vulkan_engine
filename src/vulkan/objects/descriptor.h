@@ -13,23 +13,30 @@ typedef struct vulkan_draw_push_constant_struct {
   uint currentFrameInFlight;
 } vulkan_draw_push_constant_struct;
 
-typedef struct vulkan_global_uniform_struct {
+typedef struct vulkan_light_helper_struct {
+  vec3 position;
+  vec3 color;
+  float radius;
+} vulkan_light_helper_struct;
+
+typedef struct vulkan_global_uniform_buffer_struct {
   mat4 viewMat;
   mat4 projMat;
-} vulkan_global_uniform_struct;
+  vulkan_light_helper_struct lights; ///< [MAX_LIGHT_COUNT]
+} vulkan_global_uniform_buffer_struct;
 
-typedef struct vulkan_materials_uniform_struct {
+typedef struct vulkan_materials_uniform_buffer_struct {
   uint baseColorTextureId;
   vec4 baseColorFactor;
   uint metallicRoughnessTextureId;
   float metallicFactor;
   float roughnessFactor;
-} vulkan_materials_uniform_struct;
+} vulkan_materials_uniform_buffer_struct;
 
-typedef struct vulkan_instances_uniform_struct {
+typedef struct vulkan_instances_uniform_buffer_struct {
   mat4 modelMat;
   uint materialId;
-} vulkan_instances_uniform_struct;
+} vulkan_instances_uniform_buffer_struct;
 
 // *_uniform_element
 // VULKAN_UNIFORM_BUFFERS

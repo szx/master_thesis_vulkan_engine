@@ -49,6 +49,7 @@ void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniform
     vulkan_global_uniform_buffer_element *element = &uniformBuffer->globalData->elements[0];
     vulkan_camera_set_view_matrix(camera, element->viewMat);
     vulkan_camera_set_projection_matrix(camera, element->projMat);
+    element->lights[0].position[0] = 1.0f; // HIRO HIRO set lights
   }
 
   // materials
