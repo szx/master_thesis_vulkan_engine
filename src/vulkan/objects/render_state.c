@@ -9,6 +9,7 @@ vulkan_render_state *vulkan_render_state_create(vulkan_device *vkd,
 
   renderState->renderCacheList = renderCacheList;
   renderState->camera = vulkan_camera_create(renderState->renderCacheList);
+  renderState->lights = vulkan_lights_create(renderState->renderCacheList);
 
   renderState->vkd = vkd;
 
@@ -40,7 +41,7 @@ void vulkan_render_state_destroy(vulkan_render_state *renderState) {
   vulkan_unified_geometry_buffer_destroy(renderState->unifiedGeometryBuffer);
 
   vulkan_batches_destroy(renderState->batches);
-
+  vulkan_lights_destroy(renderState->lights);
   vulkan_camera_destroy(renderState->camera);
 
   core_free(renderState);
@@ -59,7 +60,7 @@ void vulkan_scene_render_state_update(vulkan_render_state *renderState) {
   vulkan_unified_geometry_buffer_update(renderState->unifiedGeometryBuffer);
   vulkan_textures_update(renderState->textures);
   vulkan_unified_uniform_buffer_update(renderState->unifiedUniformBuffer, renderState->sync,
-                                       renderState->camera);
+                                       renderState->camera, renderState->lights);
 
   vulkan_descriptors_update(renderState->descriptors);
 }
@@ -81,6 +82,8 @@ void vulkan_render_state_send_to_device(vulkan_render_state *renderState) {
 void vulkan_render_state_debug_print(vulkan_render_state *renderState) {
   log_debug("render state:\n");
   vulkan_batches_debug_print(renderState->batches);
+  vulkan_camera_debug_print(renderState->camera, 2);
+  vulkan_lights_debug_print(renderState->lights, 2);
   vulkan_unified_geometry_buffer_debug_print(renderState->unifiedGeometryBuffer);
   vulkan_unified_uniform_buffer_debug_print(renderState->unifiedUniformBuffer);
   vulkan_textures_debug_print(renderState->textures);

@@ -322,6 +322,7 @@ bool physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevic
   log_info("descriptorBindingVariableDescriptorCount = %d",
            features12.descriptorBindingVariableDescriptorCount);
   log_info("descriptorBindingPartiallyBound = %d", features12.descriptorBindingPartiallyBound);
+  log_info("runtimeDescriptorArray = %d", features12.runtimeDescriptorArray);
   log_info("multiDrawIndirect = %d", features10.multiDrawIndirect);
   bool featuresSupported =
       features10.samplerAnisotropy && features10.shaderUniformBufferArrayDynamicIndexing &&
@@ -429,6 +430,7 @@ vulkan_limits find_limits(vulkan_device *vkd, VkPhysicalDevice physicalDevice) {
   limits.maxImageDimension2D = deviceProperties.limits.maxImageDimension2D;
   limits.maxUniformBufferRange = deviceProperties.limits.maxUniformBufferRange;
   limits.maxStorageBufferRange = deviceProperties.limits.maxStorageBufferRange;
+  limits.minUniformBufferOffsetAlignment = deviceProperties.limits.minUniformBufferOffsetAlignment;
 
   limits.maxPerStageDescriptorUniformBuffers =
       deviceProperties.limits.maxPerStageDescriptorUniformBuffers;
@@ -507,6 +509,7 @@ void create_logical_device(vulkan_device *vkd) {
       .descriptorBindingSampledImageUpdateAfterBind = VK_TRUE,
       .descriptorBindingVariableDescriptorCount = VK_TRUE,
       .descriptorBindingPartiallyBound = VK_TRUE,
+      .runtimeDescriptorArray = VK_TRUE,
   };
   VkPhysicalDeviceFeatures2 deviceFeatures2 = {.sType =
                                                    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,

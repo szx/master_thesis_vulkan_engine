@@ -40,16 +40,17 @@ void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *unifor
 }
 
 void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniformBuffer,
-                                          vulkan_sync *sync, vulkan_camera *camera) {
+                                          vulkan_sync *sync, vulkan_camera *camera,
+                                          vulkan_lights *lights) {
   assert(utarray_len(uniformBuffer->renderCacheList->primitiveRenderCaches) > 0);
   assert(utarray_len(uniformBuffer->renderCacheList->cameraRenderCaches) > 0);
 
   // global
-  if (true /*cameraObject->camera->dirty*/) {
+  if (true /*TODO: update only if camera and lights are dirty*/) {
     vulkan_global_uniform_buffer_element *element = &uniformBuffer->globalData->elements[0];
     vulkan_camera_set_view_matrix(camera, element->viewMat);
     vulkan_camera_set_projection_matrix(camera, element->projMat);
-    element->lights[0].position[0] = 1.0f; // HIRO HIRO set lights
+    vulkan_lights_set_light_elements(lights, &element->lightCount, element->lights);
   }
 
   // materials

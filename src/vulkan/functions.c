@@ -500,6 +500,7 @@ void vulkan_update_descriptor_set(vulkan_device *vkd, VkDescriptorSet descriptor
       VkDescriptorBufferInfo *bufferInfo = &bufferInfos[unifiedBufferWrites];
       bufferInfo->buffer = binding->bufferElement->buffer->buffer;
       bufferInfo->offset = binding->bufferElement->bufferOffset;
+      assert(bufferInfo->offset % vkd->limits.minUniformBufferOffsetAlignment == 0);
       bufferInfo->range = binding->bufferElement->size;
       assert(bufferInfo->range <= vkd->limits.maxUniformBufferRange);
       descriptorWrite->pBufferInfo = bufferInfo;

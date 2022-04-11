@@ -84,9 +84,15 @@ vulkan_buffer_element vulkan_buffer_add(vulkan_buffer *buffer, const void *data,
   vulkan_buffer_element element = {
       .buffer = buffer, .data = data, .size = size, .bufferOffset = buffer->totalSize};
   buffer->totalSize += element.size;
+  if (buffer->type == vulkan_buffer_type_uniform) {
+    // Round buffer size to minimum alignment required by vkUpdateDescriptorSets().
+    // It makes so next buffer offset has correct alignment.
+    buffer->totalSize += buffer->vkd->limits.minUniformBufferOffsetAlignment -
+                         (buffer->totalSize % buffer->vkd->limits.minUniformBufferOffsetAlignment);
+  }
   utarray_push_back(buffer->elements, &element);
   buffer->dirty = true;
-  // FIXME: Possible alignment/granularity problems for buffer elements?
+  // FIXME: More possible alignment/granularity problems for buffer elements?
   return element;
 }
 

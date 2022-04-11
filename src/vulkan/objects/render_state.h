@@ -5,6 +5,7 @@
 #include "../data/object.h"
 #include "batch.h"
 #include "camera.h"
+#include "lights.h"
 #include "render_cache_list.h"
 #include "sync.h"
 #include "textures.h"
@@ -17,6 +18,7 @@ typedef struct vulkan_render_state {
   /* CPU state */
   vulkan_render_cache_list *renderCacheList; ///< Pointer.
   vulkan_camera *camera;
+  vulkan_lights *lights;
   vulkan_batches *batches;
 
   /* GPU state */

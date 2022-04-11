@@ -41,6 +41,7 @@ typedef struct vulkan_limits {
   uint32_t maxImageDimension2D;
   uint32_t maxUniformBufferRange;
   uint32_t maxStorageBufferRange;
+  uint32_t minUniformBufferOffsetAlignment;
 
   uint32_t maxPerStageDescriptorUniformBuffers;
   uint32_t maxPerStageBindlessDescriptorUniformBuffers;

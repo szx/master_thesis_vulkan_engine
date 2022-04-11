@@ -12,6 +12,7 @@ void glsl_add_vulkan_global_uniform_buffer(UT_string *s, uint32_t set, uint32_t 
   utstring_printf(s, "struct globalStruct {\n");
  utstring_printf(s, "  mat4 viewMat ;\n");
  utstring_printf(s, "  mat4 projMat ;\n");
+ utstring_printf(s, "  uint lightCount ;\n");
  utstring_printf(s, "  vulkan_light_helper_struct lights [MAX_LIGHT_COUNT];\n");
   utstring_printf(s, "};\n");
   utstring_printf(s, "layout(set = %u, binding = %u) uniform globalBlock {\n", set, binding);
