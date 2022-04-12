@@ -22,16 +22,14 @@ void update_func(vulkan_renderer *renderer, double dt) {
   }
 
   if (renderer->vkd->input.keyboard.release.l) {
-    vec3 position = GLM_VEC3_ONE_INIT;
+    vulkan_light_helper_element *defaultLight =
+        vulkan_lights_get_point_light_element(renderState->lights, 0);
     // TODO: Refactor getting camera position out of camera view matrix.
     mat4 viewMat;
     vulkan_camera_set_view_matrix(renderState->camera, viewMat);
     mat4 viewMatInv;
     glm_mat4_inv(viewMat, viewMatInv);
-    glm_vec3_copy(viewMatInv[3], position);
-    vec3 color = GLM_VEC3_ONE_INIT;
-    float radius = 10.0f;
-    vulkan_lights_add(renderState->lights, position, color, radius);
+    glm_vec3_copy(viewMatInv[3], defaultLight->position);
   }
 
   if (renderer->vkd->input.keyboard.press.w) {
