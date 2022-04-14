@@ -12,7 +12,7 @@ void vulkan_data_image_init(vulkan_data_image *image, vulkan_data_scene *sceneDa
   utarray_alloc(image->data, sizeof(uint8_t));
   utarray_resize(image->data, image->channels);
   for (size_t i = 0; i < utarray_len(image->data); i++) {
-    *(uint8_t *)utarray_eltptr(image->data, i) = 123;
+    *(uint8_t *)utarray_eltptr(image->data, i) = 255;
   }
 
   DEF_VULKAN_ENTITY(image, image)

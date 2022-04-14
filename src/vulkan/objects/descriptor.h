@@ -23,8 +23,8 @@ typedef struct vulkan_global_uniform_buffer_struct {
   mat4 viewMat;
   mat4 projMat;
 
-  uint lightCount;
-  vulkan_light_helper_struct lights; ///< [MAX_LIGHT_COUNT]
+  uint pointLightCount;
+  vulkan_light_helper_struct pointLights; ///< [MAX_LIGHT_COUNT]
 } vulkan_global_uniform_buffer_struct;
 
 typedef struct vulkan_materials_uniform_buffer_struct {

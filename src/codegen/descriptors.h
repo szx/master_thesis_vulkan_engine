@@ -16,8 +16,8 @@ typedef struct vulkan_draw_push_constant_element {
 typedef struct vulkan_global_uniform_buffer_element {
   alignas(16) mat4 viewMat;
   alignas(16) mat4 projMat;
-  alignas(4) uint lightCount;
-  vulkan_light_helper_element lights [MAX_LIGHT_COUNT];
+  alignas(4) uint pointLightCount;
+  vulkan_light_helper_element pointLights [MAX_LIGHT_COUNT];
 } vulkan_global_uniform_buffer_element;
 
 typedef struct vulkan_instances_uniform_buffer_element {

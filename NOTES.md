@@ -1,3 +1,23 @@
+### Materials and lighting model
+
+- Metallic-roughness material model:
+    - Defined by glTF
+    - Parameters:
+        - base color
+            - glTF spec: "The base color has two different interpretations depending on the value of metalness. When the
+              material is a metal, the base color is the specific measured reflectance value at normal incidence (F0).
+              For a non-metal the base color represents the reflected diffuse color of the material. In this model it is
+              not possible to specify a F0 value for non-metals, and a linear value of 4% (0.04) is used."
+        - metalness
+        - roughness
+    - Each parameter can be passed via texture
+        - gltf spec: "If a texture is not given, all respective texture components within this material model MUST be
+          assumed to have a value of 1.0. If both factors and textures are present, the factor value acts as a linear
+          multiplier for the corresponding texture values."
+- BRDF of metallic-roughness material:
+  // HIRO HIRO read research papers
+-
+
 ### World space and clip space
 
 - Use right-handed model-space:

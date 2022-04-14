@@ -36,9 +36,9 @@ void vulkan_lights_add_point_light(vulkan_lights *lights, vec3 position, vec3 co
   verify(utarray_len(lights->pointLightElements) <= MAX_LIGHT_COUNT);
 }
 
-void vulkan_lights_set_point_light_elements(vulkan_lights *lights, uint32_t *lightCount,
+void vulkan_lights_set_point_light_elements(vulkan_lights *lights, uint32_t *pointLightCount,
                                             vulkan_light_helper_element *pointLightElements) {
-  *lightCount = utarray_len(lights->pointLightElements);
+  *pointLightCount = utarray_len(lights->pointLightElements);
   core_memcpy(pointLightElements, utarray_front(lights->pointLightElements),
               utarray_size(lights->pointLightElements));
 }

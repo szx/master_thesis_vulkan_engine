@@ -113,7 +113,7 @@ TEST shaderc_compiling() {
   ASSERT(utarray_len(fragmentShader->reflect->inputVariables) > 0);
   ASSERT(utarray_len(vertexShader->reflect->outputVariables) > 0);
   ASSERT(utarray_len(fragmentShader->reflect->outputVariables) > 0);
-  // HIRO check in vertex output variables match fragment input variables
+  // TODO: check in vertex output variables match fragment input variables
 
   vulkan_renderer_destroy(renderer);
   vulkan_swap_chain_destroy(vks);
@@ -232,7 +232,7 @@ TEST scene_graph_building() {
   vulkan_renderer_update(renderer);
   vulkan_renderer_send_to_device(renderer);
   vulkan_renderer_debug_print(renderer);
-  // HIRO more renderer tests
+  // TODO: more renderer tests
   ASSERT(renderer->renderState->unifiedGeometryBuffer->indexBuffer->totalSize > 0);
   ASSERT(renderer->renderState->unifiedGeometryBuffer->vertexBuffer->totalSize > 0);
 

@@ -73,6 +73,7 @@ void get_orthographic_matrix(float r, float t, float nearZ, float farZ, mat4 des
 
 void vulkan_camera_set_projection_matrix(vulkan_camera *camera, mat4 projectionMatrix) {
   vulkan_data_camera *cameraData = &camera->renderCache->camera;
+  // HIRO HIRO create user camera from scene extents
   if (cameraData->type == vulkan_camera_type_perspective) {
     get_perspective_matrix(cameraData->fovY, cameraData->aspectRatio, cameraData->nearZ,
                            cameraData->farZ, projectionMatrix);

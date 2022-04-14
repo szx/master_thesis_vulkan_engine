@@ -21,7 +21,7 @@ vulkan_light_helper_element *vulkan_lights_get_point_light_element(vulkan_lights
 
 void vulkan_lights_add_point_light(vulkan_lights *lights, vec3 position, vec3 color, float radius);
 
-void vulkan_lights_set_point_light_elements(vulkan_lights *lights, uint32_t *lightCount,
+void vulkan_lights_set_point_light_elements(vulkan_lights *lights, uint32_t *pointLightCount,
                                             vulkan_light_helper_element *pointLightElements);
 
 void vulkan_lights_debug_print(vulkan_lights *lights, int indent);
