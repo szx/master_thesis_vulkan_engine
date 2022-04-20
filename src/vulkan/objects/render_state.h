@@ -15,6 +15,9 @@
 /// Render state,
 /// Contains all CPU and GPU state shared by all pipelines.
 typedef struct vulkan_render_state {
+  vulkan_device *vkd;     ///< Pointer.
+  vulkan_swap_chain *vks; ///< Pointer.
+
   /* CPU state */
   vulkan_render_cache_list *renderCacheList; ///< Pointer.
   vulkan_camera *camera;
@@ -22,8 +25,6 @@ typedef struct vulkan_render_state {
   vulkan_batches *batches;
 
   /* GPU state */
-  vulkan_device *vkd; ///< Pointer.
-
   vulkan_unified_geometry_buffer *unifiedGeometryBuffer;
   vulkan_textures *textures;
   vulkan_unified_uniform_buffer *unifiedUniformBuffer;
@@ -33,7 +34,7 @@ typedef struct vulkan_render_state {
 
 } vulkan_render_state;
 
-vulkan_render_state *vulkan_render_state_create(vulkan_device *vkd,
+vulkan_render_state *vulkan_render_state_create(vulkan_swap_chain *vks,
                                                 vulkan_render_cache_list *renderCacheList);
 
 void vulkan_render_state_destroy(vulkan_render_state *renderState);

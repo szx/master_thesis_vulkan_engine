@@ -15,12 +15,12 @@ typedef enum vulkan_camera_type {
 typedef struct vulkan_data_camera {
   vulkan_camera_type type;
   union {
-    float fovY; ///< Vertical field of view.
-    float magX; ///< Horizontal magnification of view.
+    float fovY;        ///< Vertical field of view (radians).
+    float aspectRatio; ///< Aspect ratio.
   };
   union {
-    float aspectRatio; ///< Aspect ratio.
-    float magY;        ///< Vertical magnification of view.
+    float magX; ///< Horizontal magnification of view.
+    float magY; ///< Vertical magnification of view.
   };
   float nearZ; ///< Min depth range: distance from near clipping plane (along +Z axis!)
   float farZ;  ///< Max depth range: distance from far clipping plane (along +Z axis!)

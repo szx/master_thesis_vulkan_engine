@@ -7,6 +7,7 @@ vulkan_render_cache_list *vulkan_render_cache_list_create(size_t maxInstanceCoun
   renderCacheList->maxPrimitiveRenderCacheCount = maxInstanceCount;
   utarray_alloc(renderCacheList->primitiveRenderCaches, sizeof(vulkan_render_cache *));
   renderCacheList->attributes = vulkan_attribute_type_unknown;
+  renderCacheList->aabb = vulkan_aabb_default();
 
   utarray_alloc(renderCacheList->cameraRenderCaches, sizeof(vulkan_render_cache *));
 
@@ -44,6 +45,7 @@ void vulkan_render_cache_list_remove_primitive_render_cache(
   }
   assert(idx < utarray_len(renderCacheList->primitiveRenderCaches));
   utarray_erase(renderCacheList->primitiveRenderCaches, idx, 1);
+  // TODO: Remove AABB.
   renderCacheList->dirty = true;
 }
 
@@ -97,9 +99,11 @@ void vulkan_render_cache_list_update(vulkan_render_cache_list *renderCacheList) 
   utarray_sort(renderCacheList->primitiveRenderCaches, cache_list_sort_func);
 
   renderCacheList->attributes = vulkan_attribute_type_unknown;
+  renderCacheList->aabb = vulkan_aabb_default();
   utarray_foreach_elem_deref (vulkan_render_cache *, cache,
                               renderCacheList->primitiveRenderCaches) {
     renderCacheList->attributes |= cache->primitive->attributes;
+    vulkan_aabb_add_aabb(&renderCacheList->aabb, &cache->aabb);
   }
 
   renderCacheList->dirty = true;
@@ -119,4 +123,6 @@ void vulkan_render_cache_list_debug_print(vulkan_render_cache_list *renderCacheL
     vulkan_render_cache_debug_print(cameraRenderCache);
   }
   log_raw(stdout, "}\n");
+
+  vulkan_aabb_debug_print(&renderCacheList->aabb, 2);
 }

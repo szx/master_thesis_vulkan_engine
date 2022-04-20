@@ -25,6 +25,7 @@ typedef struct vulkan_render_cache {
   vulkan_data_mesh *mesh;           ///< Accumulated from object node.
   vulkan_data_camera camera;        ///< Accumulated from object node.
   vulkan_data_primitive *primitive; ///< Accumulated from primitive node.
+  vulkan_aabb aabb;                 ///< Accumulated from primitive node.
 
   /* cache state accumulated from vertex stream */
   size_t firstIndexOffset;
@@ -45,7 +46,7 @@ vulkan_render_cache *vulkan_render_cache_create(vulkan_scene_tree_node *sceneTre
 void vulkan_render_cache_destroy(vulkan_render_cache *renderCache);
 
 /// Set cache with parent node.
-void vulkan_render_cache_set_with_node(vulkan_render_cache *renderCache);
+void vulkan_render_cache_reset(vulkan_render_cache *renderCache);
 void vulkan_render_cache_accumulate(vulkan_render_cache *renderCache,
                                     vulkan_render_cache *parentCache);
 

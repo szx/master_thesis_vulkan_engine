@@ -27,7 +27,8 @@
     - +Y points up
     - +Z points forward (greater Z means greater distance from camera)
     - [Left- vs. Right-handed coordinate systems](https://www.evl.uic.edu/ralph/508S98/coordinates.html)
-    - Model-space handedness is changed using appropriate root transform matrix.
+    - Model-space handedness is changed using transform matrix.
+    - Default camera looks at +Z.
 - Use right-handed clip-space with reversed-Z:
     - Y coordinates are flipped by projection matrix.
     - The origin is at the top left.

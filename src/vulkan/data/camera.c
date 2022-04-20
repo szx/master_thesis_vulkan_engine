@@ -2,7 +2,7 @@
 
 void vulkan_data_camera_init(vulkan_data_camera *camera, vulkan_data_scene *sceneData) {
   camera->type = vulkan_camera_type_perspective;
-  camera->fovY = 90.0f;
+  camera->fovY = glm_rad(45.0f);
   camera->aspectRatio = 1.0f;
   camera->nearZ = 0.1f;
   camera->farZ = 256.0f;

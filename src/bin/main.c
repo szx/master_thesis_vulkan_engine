@@ -33,22 +33,22 @@ void update_func(vulkan_renderer *renderer, double dt) {
   }
 
   if (renderer->vkd->input.keyboard.press.w) {
-    glm_translate_z(renderState->camera->userTransform, 1.0f * dt);
+    glm_translate_z(renderState->camera->userTransform, renderState->camera->speed * dt);
   }
   if (renderer->vkd->input.keyboard.press.s) {
-    glm_translate_z(renderState->camera->userTransform, -1.0f * dt);
+    glm_translate_z(renderState->camera->userTransform, -renderState->camera->speed * dt);
   }
   if (renderer->vkd->input.keyboard.press.d) {
-    glm_translate_x(renderState->camera->userTransform, 1.0f * dt);
+    glm_translate_x(renderState->camera->userTransform, renderState->camera->speed * dt);
   }
   if (renderer->vkd->input.keyboard.press.a) {
-    glm_translate_x(renderState->camera->userTransform, -1.0f * dt);
+    glm_translate_x(renderState->camera->userTransform, -renderState->camera->speed * dt);
   }
   if (renderer->vkd->input.keyboard.press.q) {
-    glm_translate_y(renderState->camera->userTransform, 1.0f * dt);
+    glm_translate_y(renderState->camera->userTransform, renderState->camera->speed * dt);
   }
   if (renderer->vkd->input.keyboard.press.e) {
-    glm_translate_y(renderState->camera->userTransform, -1.0f * dt);
+    glm_translate_y(renderState->camera->userTransform, -renderState->camera->speed * dt);
   }
 }
 

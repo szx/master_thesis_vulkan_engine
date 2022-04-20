@@ -42,5 +42,6 @@ bool vulkan_data_primitive_vulkan_attributes_match(vulkan_data_primitive *primit
                                                    vulkan_data_primitive *other);
 bool vulkan_data_primitive_material_match(vulkan_data_primitive *primitive,
                                           vulkan_data_primitive *other);
+vulkan_aabb vulkan_data_primitive_calculate_aabb(vulkan_data_primitive *primitive);
 
 void vulkan_data_primitive_debug_print(vulkan_data_primitive *primitive, int indent);

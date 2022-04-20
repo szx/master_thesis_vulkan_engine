@@ -13,9 +13,10 @@ typedef struct vulkan_render_cache_list {
   size_t maxPrimitiveRenderCacheCount; ///< Max number of render caches.
   UT_array *primitiveRenderCaches;  ///< vulkan_render_cache* array of primitive scene node caches.
   vulkan_attribute_type attributes; ///< Max set of primitive vertex attributes.
+  vulkan_aabb aabb; ///< World-space AABB derived from primitive's transform and model-space AABB.
 
   /* camera render caches */
-  UT_array *cameraRenderCaches;  ///< vulkan_render_cache* array of camera scene node caches.
+  UT_array *cameraRenderCaches; ///< vulkan_render_cache* array of camera scene node caches.
 
   bool dirty; ///< True if added or removed cache and not sorted.
 } vulkan_render_cache_list;

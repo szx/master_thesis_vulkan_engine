@@ -146,6 +146,16 @@ bool vulkan_data_primitive_material_match(vulkan_data_primitive *primitive,
   return primitive->material == other->material;
 }
 
+vulkan_aabb vulkan_data_primitive_calculate_aabb(vulkan_data_primitive *primitive) {
+  vulkan_aabb aabb;
+  glm_vec4_fill(aabb.min, FLT_MAX); // FLT_MIN is minimum number > 0
+  glm_vec4_fill(aabb.max, -FLT_MAX);
+  utarray_foreach_elem_it (vec3 *, position, primitive->positions->data) {
+    vulkan_aabb_add_vec3(&aabb, *position);
+  }
+  return aabb;
+}
+
 void vulkan_data_primitive_debug_print(vulkan_data_primitive *primitive, int indent) {
   log_debug(INDENT_FORMAT_STRING "primitive: %s\n", INDENT_FORMAT_ARGS(0),
             VkPrimitiveTopology_debug_str(primitive->topology));

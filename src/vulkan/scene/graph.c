@@ -14,9 +14,6 @@ vulkan_scene_graph *vulkan_scene_graph_create(vulkan_data_scene *data,
   vulkan_scene_graph_set_dirty(sceneGraph, sceneGraph->root);
   vulkan_scene_tree_validate(sceneGraph->sceneTree);
 
-  vulkan_render_cache_list_add_camera_render_cache(sceneGraph->sceneTree->renderCacheList,
-                                                   sceneGraph->sceneTree->root->renderCache);
-
   return sceneGraph;
 }
 
@@ -125,7 +122,8 @@ void vulkan_scene_graph_create_with_scene_data(vulkan_scene_graph *sceneGraph,
   vulkan_data_object *rootObject = core_alloc(sizeof(vulkan_data_object));
   vulkan_data_object_init(rootObject, sceneGraph->data);
   glm_mat4_identity(rootObject->transform);
-  rootObject->transform[2][2] = -1.0f; /// Change right-handed into left-handed.
+  // NOTE: Change right-handed model-space into left-handed world-space.
+  rootObject->transform[2][2] = -1.0f;
   sceneGraph->root = add_entity(sceneGraph, NULL, rootObject, NULL, true);
   sceneGraph->sceneTree->root =
       *(vulkan_scene_tree_node **)utarray_front(sceneGraph->root->observers);

@@ -17,3 +17,14 @@ typedef enum vulkan_attribute_type {
   vulkan_attribute_type_texcoord = 1 << 3,
   vulkan_attribute_type_tangent = 1 << 4,
 } vulkan_attribute_type;
+
+/// Axis-aligned bounding box.
+typedef struct vulkan_aabb {
+  vec4 min;
+  vec4 max;
+} vulkan_aabb;
+
+vulkan_aabb vulkan_aabb_default();
+void vulkan_aabb_add_vec3(vulkan_aabb *aabb, vec3 other);
+void vulkan_aabb_add_aabb(vulkan_aabb *aabb, vulkan_aabb *other);
+void vulkan_aabb_debug_print(vulkan_aabb *aabb, int indent);

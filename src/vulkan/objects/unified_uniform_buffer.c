@@ -61,7 +61,7 @@ void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniform
     size_t materialId = materialElement->materialIdx;
     // PERF: Update material only once (either keep track here or just iterate on
     // textures->materialElements).
-    log_debug("updating material %zu", materialId);
+    // log_debug("updating material %zu", materialId);
     vulkan_materials_uniform_buffer_element *element =
         &uniformBuffer->materialsData->elements[materialId];
 

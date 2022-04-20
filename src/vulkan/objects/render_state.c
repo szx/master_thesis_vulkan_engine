@@ -1,28 +1,29 @@
 #include "render_state.h"
 
-vulkan_render_state *vulkan_render_state_create(vulkan_device *vkd,
+vulkan_render_state *vulkan_render_state_create(vulkan_swap_chain *vks,
                                                 vulkan_render_cache_list *renderCacheList) {
   assert(utarray_len(renderCacheList->primitiveRenderCaches) > 0);
-  assert(utarray_len(renderCacheList->cameraRenderCaches) > 0);
 
   vulkan_render_state *renderState = core_alloc(sizeof(vulkan_render_state));
 
+  renderState->vks = vks;
+  renderState->vkd = renderState->vks->vkd;
+
   renderState->renderCacheList = renderCacheList;
-  renderState->camera = vulkan_camera_create(renderState->renderCacheList);
+  vulkan_render_cache_list_update(renderState->renderCacheList);
+  renderState->camera = vulkan_camera_create(renderState->renderCacheList, renderState->vks);
   renderState->lights = vulkan_lights_create(renderState->renderCacheList);
 
-  renderState->vkd = vkd;
-
-  renderState->batches = vulkan_batches_create(renderCacheList, vkd);
+  renderState->batches = vulkan_batches_create(renderCacheList, renderState->vkd);
 
   renderState->unifiedGeometryBuffer =
       vulkan_unified_geometry_buffer_create(renderState->vkd, renderState->renderCacheList);
-  renderState->textures = vulkan_textures_create(vkd, renderState->renderCacheList);
+  renderState->textures = vulkan_textures_create(renderState->vkd, renderState->renderCacheList);
   renderState->unifiedUniformBuffer =
-      vulkan_unified_uniform_buffer_create(vkd, renderState->renderCacheList);
+      vulkan_unified_uniform_buffer_create(renderState->vkd, renderState->renderCacheList);
 
-  renderState->descriptors =
-      vulkan_descriptors_create(vkd, renderState->unifiedUniformBuffer, renderState->textures);
+  renderState->descriptors = vulkan_descriptors_create(
+      renderState->vkd, renderState->unifiedUniformBuffer, renderState->textures);
 
   renderState->sync = vulkan_sync_create(renderState->vkd);
 
