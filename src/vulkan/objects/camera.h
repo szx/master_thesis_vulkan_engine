@@ -29,5 +29,6 @@ void vulkan_camera_select(vulkan_camera *camera, size_t cameraIdx);
 
 void vulkan_camera_set_view_matrix(vulkan_camera *camera, mat4 viewMatrix);
 void vulkan_camera_set_projection_matrix(vulkan_camera *camera, mat4 projectionMatrix);
+void vulkan_camera_set_position(vulkan_camera *camera, vec3 position);
 
 void vulkan_camera_debug_print(vulkan_camera *camera, int indent);

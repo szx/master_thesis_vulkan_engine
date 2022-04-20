@@ -3,6 +3,8 @@
 #include "../vulkan/vulkan.h"
 
 void update_func(vulkan_renderer *renderer, double dt) {
+  static bool firstFrame = true;
+
   vulkan_device *vkd = renderer->vkd;
   vulkan_render_state *renderState = renderer->renderState;
   if (renderer->vkd->input.keyboard.release.esc) {
@@ -21,15 +23,10 @@ void update_func(vulkan_renderer *renderer, double dt) {
     vulkan_camera_select(renderState->camera, renderState->camera->cameraIdx + 1);
   }
 
-  if (renderer->vkd->input.keyboard.release.l) {
+  if (firstFrame || renderer->vkd->input.keyboard.release.l) {
     vulkan_light_helper_element *defaultLight =
         vulkan_lights_get_point_light_element(renderState->lights, 0);
-    // TODO: Refactor getting camera position out of camera view matrix.
-    mat4 viewMat;
-    vulkan_camera_set_view_matrix(renderState->camera, viewMat);
-    mat4 viewMatInv;
-    glm_mat4_inv(viewMat, viewMatInv);
-    glm_vec3_copy(viewMatInv[3], defaultLight->position);
+    vulkan_camera_set_position(renderState->camera, defaultLight->position);
   }
 
   if (renderer->vkd->input.keyboard.press.w) {
@@ -49,6 +46,10 @@ void update_func(vulkan_renderer *renderer, double dt) {
   }
   if (renderer->vkd->input.keyboard.press.e) {
     glm_translate_y(renderState->camera->userTransform, -renderState->camera->speed * dt);
+  }
+
+  if (firstFrame) {
+    firstFrame = false;
   }
 }
 

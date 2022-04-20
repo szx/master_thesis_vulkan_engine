@@ -6,7 +6,7 @@ assetConfigFilepath =${assetsDirname}/config.ini
 [ASSET.CONFIG]
 graphics.WindowWidth = 640
 graphics.WindowHeight = 480
-graphics.WindowTitle = "cpptest"
+graphics.WindowTitle = "metalroughspheresnotextures"
 controls.Enabled = 1
 settings.StartScene = "duck"
 

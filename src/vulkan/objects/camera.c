@@ -36,10 +36,9 @@ void vulkan_camera_reset(vulkan_camera *camera) {
         MIN(defaultNearZ, camera->defaultCameraRenderCache->camera.nearZ);
   }
 
-  camera->speed = 1.0f;
   vec3 extentAbs;
   glm_vec3_abs(extent, extentAbs);
-  camera->speed = fmaxf(glm_vec3_max(extentAbs), camera->speed);
+  camera->speed = glm_vec3_min(extentAbs);
 
   // NOTE: Default camera looks at 0,0,0 from 0,0,-max(extent).
   // TODO: Default camera look at center.
@@ -124,6 +123,14 @@ void vulkan_camera_set_projection_matrix(vulkan_camera *camera, mat4 projectionM
     get_orthographic_matrix(cameraData->magX, cameraData->magY, cameraData->nearZ, cameraData->farZ,
                             projectionMatrix);
   }
+}
+
+void vulkan_camera_set_position(vulkan_camera *camera, vec3 position) {
+  mat4 viewMat;
+  vulkan_camera_set_view_matrix(camera, viewMat);
+  mat4 viewMatInv;
+  glm_mat4_inv(viewMat, viewMatInv);
+  glm_vec3_copy(viewMatInv[3], position);
 }
 
 void vulkan_camera_debug_print(vulkan_camera *camera, int indent) {
