@@ -19,8 +19,18 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->name = "depth buffer image";
-  } else if (image->type == vulkan_image_type_material) {
+  } else if (image->type == vulkan_image_type_material_base_color) {
     image->mipLevelCount = 1 + (uint32_t)floor(log2((double)MAX(image->width, image->height)));
+    image->format = preferredFormat;
+    image->tiling = VK_IMAGE_TILING_OPTIMAL;
+    image->createFlags = 0;
+    image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                        VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+    image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+    image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    image->name = "material image";
+  } else if (image->type == vulkan_image_type_material_parameters) {
+    image->mipLevelCount = 1;
     image->format = preferredFormat;
     image->tiling = VK_IMAGE_TILING_OPTIMAL;
     image->createFlags = 0;

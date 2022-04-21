@@ -6,9 +6,17 @@ vulkan_textures_texture_element_create(vulkan_data_texture *texture, vulkan_devi
   vulkan_textures_texture_element *element = core_alloc(sizeof(vulkan_textures_texture_element));
 
   element->texture = texture;
-  element->image = vulkan_image_create(
-      vkd, vulkan_image_type_material, element->texture->image->width,
-      element->texture->image->height, vulkan_find_texture_format(vkd, texture));
+  vulkan_image_type type = vulkan_image_type_material_base_color;
+  if (element->texture->image->type == vulkan_data_image_type_material_base_color) {
+    type = vulkan_image_type_material_base_color;
+  } else if (element->texture->image->type == vulkan_data_image_type_material_parameters) {
+    type = vulkan_image_type_material_parameters;
+  } else {
+    assert(0);
+  }
+  element->image = vulkan_image_create(vkd, type, element->texture->image->width,
+                                       element->texture->image->height,
+                                       vulkan_find_texture_format(vkd, texture));
   vulkan_image_update(element->image, element->texture);
 
   element->sampler = vulkan_create_sampler(vkd, element->image->mipLevelCount, "texture");

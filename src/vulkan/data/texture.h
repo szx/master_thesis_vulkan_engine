@@ -8,8 +8,15 @@
 
 /* image */
 
+typedef enum vulkan_data_image_type {
+  vulkan_data_image_type_material_base_color,
+  vulkan_data_image_type_material_parameters,
+  vulkan_data_image_type_count
+} vulkan_data_image_type;
+
 typedef struct vulkan_data_image {
   uint32_t width, height, depth, channels;
+  vulkan_data_image_type type;
   UT_array *data; // uint8_t array
 
   DECL_VULKAN_ENTITY(image)

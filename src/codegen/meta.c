@@ -5077,6 +5077,12 @@ const char *vulkan_camera_type_debug_str(int value) {
   if (value == 2) { return "vulkan_camera_type_count"; }
   return "UNKNOWN vulkan_camera_type";
 }
+const char *vulkan_data_image_type_debug_str(int value) {
+  if (value == 0) { return "vulkan_data_image_type_material_base_color"; }
+  if (value == 1) { return "vulkan_data_image_type_material_parameters"; }
+  if (value == 2) { return "vulkan_data_image_type_count"; }
+  return "UNKNOWN vulkan_data_image_type";
+}
 const char *vulkan_data_vertex_attribute_component_type_debug_str(int value) {
   if (value == 0) { return "vulkan_data_vertex_attribute_component_uint32_t"; }
   if (value == 1) { return "vulkan_data_vertex_attribute_component_vec2"; }
@@ -5085,8 +5091,9 @@ const char *vulkan_data_vertex_attribute_component_type_debug_str(int value) {
 }
 const char *vulkan_image_type_debug_str(int value) {
   if (value == 0) { return "vulkan_image_type_depth_buffer"; }
-  if (value == 1) { return "vulkan_image_type_material"; }
-  if (value == 2) { return "vulkan_image_type_count"; }
+  if (value == 1) { return "vulkan_image_type_material_base_color"; }
+  if (value == 2) { return "vulkan_image_type_material_parameters"; }
+  if (value == 3) { return "vulkan_image_type_count"; }
   return "UNKNOWN vulkan_image_type";
 }
 const char *vulkan_shader_generator_output_type_debug_str(int value) {

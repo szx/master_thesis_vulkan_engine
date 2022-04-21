@@ -6,7 +6,8 @@
 
 typedef enum vulkan_image_type {
   vulkan_image_type_depth_buffer,
-  vulkan_image_type_material,
+  vulkan_image_type_material_base_color,
+  vulkan_image_type_material_parameters,
   vulkan_image_type_count
 } vulkan_image_type;
 

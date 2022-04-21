@@ -42,7 +42,8 @@ vulkan_attribute_type cgltf_to_vulkan_attribute_type(cgltf_attribute_type type) 
   }
 }
 
-vulkan_data_image *parse_cgltf_image(vulkan_data_scene *sceneData, cgltf_image *cgltfImage) {
+vulkan_data_image *parse_cgltf_image(vulkan_data_scene *sceneData, cgltf_image *cgltfImage,
+                                     vulkan_data_image_type type) {
   if (cgltfImage == NULL) {
     return sceneData->images;
   }
@@ -59,6 +60,7 @@ vulkan_data_image *parse_cgltf_image(vulkan_data_scene *sceneData, cgltf_image *
   image->height = h;
   image->depth = 1;
   image->channels = c;
+  image->type = type;
   size_t imageSize = image->width * image->height * image->depth * image->channels;
   utarray_resize(image->data, imageSize);
   core_memcpy(utarray_front(image->data), pixels, imageSize);
@@ -90,15 +92,15 @@ vulkan_data_sampler *parse_cgltf_sampler(vulkan_data_scene *sceneData,
   return vulkan_data_scene_add_sampler(sceneData, sampler);
 }
 
-vulkan_data_texture *parse_cgltf_texture(vulkan_data_scene *sceneData,
-                                         cgltf_texture *cgltfTexture) {
+vulkan_data_texture *parse_cgltf_texture(vulkan_data_scene *sceneData, cgltf_texture *cgltfTexture,
+                                         vulkan_data_image_type type) {
   if (cgltfTexture == NULL) {
     return sceneData->textures;
   }
   vulkan_data_texture *texture = core_alloc(sizeof(vulkan_data_texture));
   vulkan_data_texture_init(texture, sceneData);
 
-  texture->image = parse_cgltf_image(sceneData, cgltfTexture->image);
+  texture->image = parse_cgltf_image(sceneData, cgltfTexture->image, type);
   texture->sampler = parse_cgltf_sampler(sceneData, cgltfTexture->sampler);
 
   return vulkan_data_scene_add_texture(sceneData, texture);
@@ -131,9 +133,11 @@ vulkan_data_material *parse_cgltf_material(vulkan_data_scene *sceneData,
     material->roughnessFactor = cgltfMaterial->pbr_metallic_roughness.roughness_factor;
 
     material->baseColorTexture = parse_cgltf_texture(
-        sceneData, cgltfMaterial->pbr_metallic_roughness.base_color_texture.texture);
+        sceneData, cgltfMaterial->pbr_metallic_roughness.base_color_texture.texture,
+        vulkan_data_image_type_material_base_color);
     material->metallicRoughnessTexture = parse_cgltf_texture(
-        sceneData, cgltfMaterial->pbr_metallic_roughness.metallic_roughness_texture.texture);
+        sceneData, cgltfMaterial->pbr_metallic_roughness.metallic_roughness_texture.texture,
+        vulkan_data_image_type_material_parameters);
   }
 
   return vulkan_data_scene_add_material(sceneData, material);

@@ -3,6 +3,7 @@
 #include "data/texture.h"
 #include "objects/buffer.h"
 #include "objects/device.h"
+#include "objects/image.h"
 #include "objects/shader_program.h"
 #include "objects/swap_chain.h"
 
@@ -57,27 +58,33 @@ VkFormat vulkan_find_depth_format(vulkan_device *vkd) {
 VkFormat vulkan_find_texture_format(vulkan_device *vkd, vulkan_data_texture *texture) {
   size_t channels = texture->image->channels;
   assert(channels > 0 && channels <= 4);
-  // NOTE: We assume that all textures are in sRGB color space.
+  bool sRGB = texture->image->type == vulkan_data_image_type_material_base_color;
+
+  VkFormat r8 = sRGB ? VK_FORMAT_R8_SRGB : VK_FORMAT_R8_UNORM;
+  VkFormat r8g8 = sRGB ? VK_FORMAT_R8G8_SRGB : VK_FORMAT_R8G8_UNORM;
+  VkFormat r8g8b8 = sRGB ? VK_FORMAT_R8G8B8_SRGB : VK_FORMAT_R8G8B8_UNORM;
+  VkFormat r8g8b8a8 = sRGB ? VK_FORMAT_R8G8B8A8_SRGB : VK_FORMAT_R8G8B8A8_UNORM;
+
   if (channels == 1) {
-    VkFormat formats[] = {VK_FORMAT_R8G8_SRGB};
+    VkFormat formats[] = {r8, r8g8, r8g8b8, r8g8b8a8};
     return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
                                         VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
                                         array_size(formats));
   }
   if (channels == 2) {
-    VkFormat formats[] = {VK_FORMAT_R8G8_SRGB, VK_FORMAT_R8G8B8A8_SRGB};
+    VkFormat formats[] = {r8g8, r8g8b8, r8g8b8a8};
     return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
                                         VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
                                         array_size(formats));
   }
   if (channels == 3) {
-    VkFormat formats[] = {VK_FORMAT_R8G8B8_SRGB, VK_FORMAT_R8G8B8A8_SRGB};
+    VkFormat formats[] = {r8g8b8, r8g8b8a8};
     return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
                                         VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
                                         array_size(formats));
   }
   if (channels == 4) {
-    VkFormat formats[] = {VK_FORMAT_R8G8B8A8_SRGB};
+    VkFormat formats[] = {r8g8b8a8};
     return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
                                         VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
                                         array_size(formats));
@@ -87,16 +94,16 @@ VkFormat vulkan_find_texture_format(vulkan_device *vkd, vulkan_data_texture *tex
 }
 
 size_t vulkan_format_size(VkFormat format) {
-  if (format == VK_FORMAT_R8_SRGB) {
+  if (format == VK_FORMAT_R8_SRGB || format == VK_FORMAT_R8_UNORM) {
     return 1;
   }
-  if (format == VK_FORMAT_R8G8_SRGB) {
+  if (format == VK_FORMAT_R8G8_SRGB || format == VK_FORMAT_R8G8_UNORM) {
     return 2;
   }
-  if (format == VK_FORMAT_R8G8B8_SRGB) {
+  if (format == VK_FORMAT_R8G8B8_SRGB || format == VK_FORMAT_R8G8B8_UNORM) {
     return 3;
   }
-  if (format == VK_FORMAT_R8G8B8A8_SRGB) {
+  if (format == VK_FORMAT_R8G8B8A8_SRGB || format == VK_FORMAT_R8G8B8A8_UNORM) {
     return 4;
   }
   assert(0);

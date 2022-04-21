@@ -9,6 +9,8 @@ void vulkan_data_image_init(vulkan_data_image *image, vulkan_data_scene *sceneDa
   image->height = 1;
   image->depth = 1;
   image->channels = 4;
+  image->type = vulkan_data_image_type_material_base_color;
+
   utarray_alloc(image->data, sizeof(uint8_t));
   utarray_resize(image->data, image->channels);
   for (size_t i = 0; i < utarray_len(image->data); i++) {
@@ -27,6 +29,7 @@ data_key vulkan_data_image_calculate_key(vulkan_data_image *image) {
   HASH_UPDATE(hashState, &image->height, sizeof(image->height));
   HASH_UPDATE(hashState, &image->depth, sizeof(image->depth));
   HASH_UPDATE(hashState, &image->channels, sizeof(image->channels));
+  HASH_UPDATE(hashState, &image->type, sizeof(image->type));
   HASH_UPDATE(hashState, utarray_front(image->data), utarray_size(image->data))
   HASH_DIGEST(hashState, value)
   HASH_END(hashState)
@@ -39,6 +42,7 @@ void vulkan_data_image_serialize(vulkan_data_image *image, data_asset_db *assetD
   data_asset_db_insert_image_height_int(assetDb, image->key, data_int_temp(image->height));
   data_asset_db_insert_image_depth_int(assetDb, image->key, data_int_temp(image->depth));
   data_asset_db_insert_image_channels_int(assetDb, image->key, data_int_temp(image->channels));
+  data_asset_db_insert_image_type_int(assetDb, image->key, data_int_temp(image->type));
   data_asset_db_insert_image_data_byte_array(assetDb, image->key,
                                              data_byte_array_temp(image->data));
 }
@@ -49,6 +53,7 @@ void vulkan_data_image_deserialize(vulkan_data_image *image, data_asset_db *asse
   image->height = data_asset_db_select_image_height_int(assetDb, image->key).value;
   image->depth = data_asset_db_select_image_depth_int(assetDb, image->key).value;
   image->channels = data_asset_db_select_image_channels_int(assetDb, image->key).value;
+  image->type = data_asset_db_select_image_type_int(assetDb, image->key).value;
   data_byte_array data = data_asset_db_select_image_data_byte_array(assetDb, image->key);
   utarray_resize(image->data, utarray_len(data.values));
   core_memcpy(image->data->d, data.values->d, utarray_size(image->data));
@@ -62,6 +67,7 @@ void vulkan_data_image_debug_print(vulkan_data_image *image) {
   log_debug("  height=%zu", image->height);
   log_debug("  depth=%zu", image->depth);
   log_debug("  channels=%zu", image->channels);
+  log_debug("  type=%s", vulkan_data_image_type_debug_str(image->type));
   log_debug("  data=%zu bytes", utarray_len(image->data));
 }
 
