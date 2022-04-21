@@ -1,13 +1,15 @@
 #include "device.h"
 
-const char *validationLayers[VALIDATION_LAYERS_SIZE] = {"VK_LAYER_KHRONOS_validation"};
+const char *validationLayers[] = {"VK_LAYER_KHRONOS_validation"};
 
-const char *instanceExtensions[INSTANCE_EXTENSIONS_SIZE] = {
-    VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME};
+const char *instanceExtensions[] = {VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME};
 
-const char *deviceExtensions[DEVICE_EXTENSIONS_SIZE] = {
+const char *deviceExtensions[] = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-    VK_EXT_ROBUSTNESS_2_EXTENSION_NAME // nullDescriptor
+    VK_EXT_ROBUSTNESS_2_EXTENSION_NAME, // nullDescriptor
+#if defined(DEBUG)
+    VK_KHR_SHADER_NON_SEMANTIC_INFO_EXTENSION_NAME, // NOTE: Required by debugPrintf.
+#endif
 };
 
 const VkAllocationCallbacks *vka = NULL;
@@ -123,7 +125,7 @@ bool check_validation_layer_support(vulkan_device *vkd) {
       (VkLayerProperties *)malloc(layerCount * sizeof(VkLayerProperties));
   vkEnumerateInstanceLayerProperties(&layerCount, availableLayers);
 
-  for (size_t i = 0; i < VALIDATION_LAYERS_SIZE; i++) {
+  for (size_t i = 0; i < array_size(validationLayers); i++) {
     const char *layerName = validationLayers[i];
     bool layerFound = false;
     for (size_t j = 0; j < layerCount; j++) {
@@ -163,7 +165,7 @@ void create_instance(vulkan_device *vkd, data_config *config, data_asset_db *ass
   uint32_t glfwInstanceExtensionCount = 0;
   const char **glfwInstanceExtensions;
   glfwInstanceExtensions = glfwGetRequiredInstanceExtensions(&glfwInstanceExtensionCount);
-  uint32_t instanceExtensionCount = glfwInstanceExtensionCount + INSTANCE_EXTENSIONS_SIZE;
+  uint32_t instanceExtensionCount = glfwInstanceExtensionCount + array_size(instanceExtensions);
   if (validation_layers_enabled()) {
     instanceExtensionCount += 1;
   }
@@ -171,7 +173,7 @@ void create_instance(vulkan_device *vkd, data_config *config, data_asset_db *ass
   for (uint32_t i = 0; i < glfwInstanceExtensionCount; i++) {
     mergedInstanceExtensions[i] = glfwInstanceExtensions[i];
   }
-  for (uint32_t i = 0; i < INSTANCE_EXTENSIONS_SIZE; i++) {
+  for (uint32_t i = 0; i < array_size(instanceExtensions); i++) {
     mergedInstanceExtensions[glfwInstanceExtensionCount + i] = instanceExtensions[i];
   }
   if (validation_layers_enabled()) {
@@ -182,7 +184,7 @@ void create_instance(vulkan_device *vkd, data_config *config, data_asset_db *ass
 
   VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {0};
   if (validation_layers_enabled()) {
-    createInfo.enabledLayerCount = VALIDATION_LAYERS_SIZE;
+    createInfo.enabledLayerCount = array_size(validationLayers);
     createInfo.ppEnabledLayerNames = validationLayers;
     debugCreateInfo = vulkan_debug_messenger_create_info(vulkan_debug_callback_for_instance);
     createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
@@ -235,7 +237,7 @@ bool check_device_extension_support(vulkan_device *vkd, VkPhysicalDevice physica
   vkEnumerateDeviceExtensionProperties(physicalDevice, NULL, &extensionCount, availableExtensions);
 
   bool missingExtension = false;
-  for (size_t i = 0; i < DEVICE_EXTENSIONS_SIZE; i++) {
+  for (size_t i = 0; i < array_size(deviceExtensions); i++) {
     const char *extensionName = deviceExtensions[i];
     missingExtension = true;
     for (size_t j = 0; j < extensionCount; j++) {
@@ -521,11 +523,11 @@ void create_logical_device(vulkan_device *vkd) {
   createInfo.queueCreateInfoCount = numQueues;
   createInfo.pQueueCreateInfos = queueCreateInfos;
   createInfo.pNext = &deviceFeatures2; // createInfo.pEnabledFeatures = NULL;
-  createInfo.enabledExtensionCount = DEVICE_EXTENSIONS_SIZE;
+  createInfo.enabledExtensionCount = array_size(deviceExtensions);
   createInfo.ppEnabledExtensionNames = deviceExtensions;
 
   if (validation_layers_enabled()) {
-    createInfo.enabledLayerCount = VALIDATION_LAYERS_SIZE;
+    createInfo.enabledLayerCount = array_size(validationLayers);
     createInfo.ppEnabledLayerNames = validationLayers;
   } else {
     createInfo.enabledLayerCount = 0;

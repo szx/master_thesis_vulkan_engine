@@ -3,9 +3,10 @@
 
 void vulkan_data_material_init(vulkan_data_material *material, vulkan_data_scene *sceneData) {
   material->sceneData = sceneData;
+  // NOTE: Default material parameter values as defined by glTF spec.
   glm_vec4_copy((vec4){1.0f, 1.0f, 1.0f, 1.0f}, material->baseColorFactor);
-  material->metallicFactor = 0.5f;
-  material->roughnessFactor = 0.1f;
+  material->metallicFactor = 1.0f;
+  material->roughnessFactor = 1.0f;
   material->baseColorTexture = NULL;
   material->metallicRoughnessTexture = NULL;
 

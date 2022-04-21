@@ -386,17 +386,17 @@ vulkan_data_scene *vulkan_data_scene_create(UT_string *name) {
 
   utstring_new(sceneData->path);
 
-  sceneData->images = NULL;
+  sceneData->images = NULL; // NOTE: We use default image.
   vulkan_data_image *defaultImage = core_alloc(sizeof(vulkan_data_image));
   vulkan_data_image_init(defaultImage, sceneData);
   DL_APPEND(sceneData->images, defaultImage);
 
-  sceneData->samplers = NULL;
+  sceneData->samplers = NULL; // NOTE: We use default sampler.
   vulkan_data_sampler *defaultSampler = core_alloc(sizeof(vulkan_data_sampler));
   vulkan_data_sampler_init(defaultSampler, sceneData);
   DL_APPEND(sceneData->samplers, defaultSampler);
 
-  sceneData->textures = NULL;
+  sceneData->textures = NULL; // NOTE: We use default texture.
   vulkan_data_texture *defaultTexture = core_alloc(sizeof(vulkan_data_texture));
   vulkan_data_texture_init(defaultTexture, sceneData);
   defaultTexture->image = defaultImage;
@@ -404,7 +404,7 @@ vulkan_data_scene *vulkan_data_scene_create(UT_string *name) {
   defaultTexture->key = vulkan_data_texture_calculate_key(defaultTexture);
   DL_APPEND(sceneData->textures, defaultTexture);
 
-  sceneData->materials = NULL;
+  sceneData->materials = NULL; // NOTE: We use default material.
   vulkan_data_material *defaultMaterial = core_alloc(sizeof(vulkan_data_material));
   vulkan_data_material_init(defaultMaterial, sceneData);
   defaultMaterial->baseColorTexture = defaultTexture;
@@ -412,7 +412,7 @@ vulkan_data_scene *vulkan_data_scene_create(UT_string *name) {
   defaultMaterial->key = vulkan_data_material_calculate_key(defaultMaterial);
   DL_APPEND(sceneData->materials, defaultMaterial);
 
-  sceneData->vertexAttributes = NULL;
+  sceneData->vertexAttributes = NULL; // NOTE: We use default vertex attribute.
   vulkan_data_vertex_attribute *defaultVertexAttribute =
       core_alloc(sizeof(vulkan_data_vertex_attribute));
   vulkan_data_vertex_attribute_init(defaultVertexAttribute, sceneData);

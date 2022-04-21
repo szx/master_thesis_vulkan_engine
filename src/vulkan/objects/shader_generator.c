@@ -13,10 +13,11 @@ void vulkan_shader_generator_deinit(vulkan_shader_generator *shaderGenerator) {
 /* GLSL helper functions */
 
 void glsl_add_header(UT_string *s) {
-  utstring_printf(s, "%s\n", "#version 450");
-  utstring_printf(s, "%s\n", "#extension GL_EXT_nonuniform_qualifier : enable");
+  utstring_printf(s, "#version 450\n");
+  utstring_printf(s, "#extension GL_EXT_nonuniform_qualifier : enable\n");
 #if defined(DEBUG)
-  utstring_printf(s, "%s\n", "#extension GL_EXT_debug_printf : enable");
+  utstring_printf(s, "#extension GL_EXT_debug_printf : enable\n");
+  utstring_printf(s, "#define DEBUG_PRINTF 1\n");
 #endif
 }
 
