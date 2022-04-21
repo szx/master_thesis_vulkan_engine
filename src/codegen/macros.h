@@ -13,6 +13,7 @@
 #define DATA_CONFIG_INT_KEYS(X, ...) \
   X(graphics, WindowWidth, 640, __VA_ARGS__) \
   X(graphics, WindowHeight, 480, __VA_ARGS__) \
+  X(graphics, EnabledInstancing, 1, __VA_ARGS__) \
   X(controls, Enabled, 1, __VA_ARGS__) \
   END_OF_DATA_CONFIG_INT_KEYS
 

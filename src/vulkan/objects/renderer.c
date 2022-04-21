@@ -14,7 +14,8 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
 
   renderer->sceneGraph = vulkan_scene_graph_create(renderer->data, renderer->renderCacheList);
 
-  renderer->renderState = vulkan_render_state_create(renderer->vks, renderer->renderCacheList);
+  renderer->renderState =
+      vulkan_render_state_create(renderer->vks, renderer->renderCacheList, renderer->config);
   renderer->pipeline = vulkan_pipeline_create(renderer->vks, renderer->renderState);
 
   return renderer;

@@ -7,6 +7,7 @@ assetConfigFilepath =${assetsDirname}/config.ini
 graphics.WindowWidth = 640
 graphics.WindowHeight = 480
 graphics.WindowTitle = "cpptest"
+graphics.EnabledInstancing = 1
 controls.Enabled = 1
 settings.StartScene = "metalroughspheresnotextures"
 

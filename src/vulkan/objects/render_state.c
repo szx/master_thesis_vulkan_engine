@@ -1,7 +1,8 @@
 #include "render_state.h"
 
 vulkan_render_state *vulkan_render_state_create(vulkan_swap_chain *vks,
-                                                vulkan_render_cache_list *renderCacheList) {
+                                                vulkan_render_cache_list *renderCacheList,
+                                                data_config *config) {
   assert(utarray_len(renderCacheList->primitiveRenderCaches) > 0);
 
   vulkan_render_state *renderState = core_alloc(sizeof(vulkan_render_state));
@@ -10,6 +11,8 @@ vulkan_render_state *vulkan_render_state_create(vulkan_swap_chain *vks,
   renderState->vkd = renderState->vks->vkd;
 
   renderState->renderCacheList = renderCacheList;
+  renderState->config = config;
+
   vulkan_render_cache_list_update(renderState->renderCacheList);
   renderState->camera = vulkan_camera_create(renderState->renderCacheList, renderState->vks);
   renderState->lights = vulkan_lights_create(renderState->renderCacheList);
@@ -49,9 +52,10 @@ void vulkan_render_state_destroy(vulkan_render_state *renderState) {
 }
 
 void vulkan_scene_render_state_update(vulkan_render_state *renderState) {
-
   vulkan_batch_instancing_policy batchPolicy =
-      vulkan_batch_instancing_policy_matching_vertex_attributes; // TODO: Config.
+      renderState->config->graphicsEnabledInstancing
+          ? vulkan_batch_instancing_policy_matching_vertex_attributes
+          : vulkan_batch_instancing_policy_no_instancing;
   vulkan_batches_update(renderState->batches, batchPolicy);
   dl_foreach_elem(vulkan_batch *, batch, renderState->batches->batches) {
     vulkan_batch_update_draw_command(batch);

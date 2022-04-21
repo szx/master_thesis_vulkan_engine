@@ -20,6 +20,8 @@ typedef struct vulkan_render_state {
 
   /* CPU state */
   vulkan_render_cache_list *renderCacheList; ///< Pointer.
+  data_config *config;                       ///< Pointer.
+
   vulkan_camera *camera;
   vulkan_lights *lights;
   vulkan_batches *batches;
@@ -35,7 +37,8 @@ typedef struct vulkan_render_state {
 } vulkan_render_state;
 
 vulkan_render_state *vulkan_render_state_create(vulkan_swap_chain *vks,
-                                                vulkan_render_cache_list *renderCacheList);
+                                                vulkan_render_cache_list *renderCacheList,
+                                                data_config *config);
 
 void vulkan_render_state_destroy(vulkan_render_state *renderState);
 
