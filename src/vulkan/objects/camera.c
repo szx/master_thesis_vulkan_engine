@@ -40,10 +40,9 @@ void vulkan_camera_reset(vulkan_camera *camera) {
   glm_vec3_abs(extent, extentAbs);
   camera->speed = glm_vec3_min(extentAbs);
 
-  // NOTE: Default camera looks at 0,0,0 from 0,0,-max(extent).
-  // TODO: Default camera look at center.
-  float distanceZ = glm_vec3_max(extentAbs) * -1.0f;
-  glm_translate_z(camera->defaultCameraRenderCache->transform, distanceZ);
+  // NOTE: Default camera looks at center.x,center.y,center.z from center.x,center.y,-max(extent).
+  vec3 distance = {center[0], center[1], -glm_vec3_max(extentAbs)};
+  glm_translate(camera->defaultCameraRenderCache->transform, distance);
 
   // NOTE: Change right-handed model-space into left-handed world-space (camera render cache are
   // already flipped thanks to root transform).
