@@ -38,7 +38,16 @@ void vulkan_camera_reset(vulkan_camera *camera) {
 
   vec3 extentAbs;
   glm_vec3_abs(extent, extentAbs);
-  camera->speed = glm_vec3_min(extentAbs);
+  camera->speed = 1.0f;
+  if (extentAbs[0] > 0) {
+    camera->speed = fminf(extentAbs[0], camera->speed);
+  }
+  if (extentAbs[1] > 0) {
+    camera->speed = fminf(extentAbs[1], camera->speed);
+  }
+  if (extentAbs[2] > 0) {
+    camera->speed = fminf(extentAbs[2], camera->speed);
+  }
 
   // NOTE: Default camera looks at center.x,center.y,center.z from center.x,center.y,-max(extent).
   vec3 distance = {center[0], center[1], -glm_vec3_max(extentAbs)};
