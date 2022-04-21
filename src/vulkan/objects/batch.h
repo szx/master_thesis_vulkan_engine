@@ -7,20 +7,20 @@
 #include "buffer.h"
 #include "render_cache_list.h"
 
-typedef enum vulkan_batch_policy {
-  vulkan_batch_policy_none = 0,
-  /// Caches in batch have to have same materials.
-  vulkan_batch_policy_matching_materials = (1 << 0),
-  /// Caches in batch have to have same vertex attributes.
-  vulkan_batch_policy_matching_vertex_attributes = (1 << 1),
-} vulkan_batch_policy;
+typedef enum vulkan_batch_instancing_policy {
+  /// No instancing - one render cache always results in one draw command with instanceCount == 1.
+  vulkan_batch_instancing_policy_no_instancing,
+  /// Instancing - render caches with same vertex attributes result in one draw command with
+  /// instanceCount > 1.
+  vulkan_batch_instancing_policy_matching_vertex_attributes,
+} vulkan_batch_instancing_policy;
 
 /// Draw call batch.
 /// Corresponds to one indirect draw command with instancing.
 /// Encapsulates contiguous sequence of caches in cache list.
 /// Depends on order of caches in cache list.
 typedef struct vulkan_batch {
-  vulkan_batch_policy policy;
+  vulkan_batch_instancing_policy policy;
   vulkan_render_cache *firstCache; /// Geometry and material used to draw this cache.
 
   /// Indirect draw command.
@@ -34,7 +34,8 @@ typedef struct vulkan_batch {
   struct vulkan_batch *prev, *next; /// Linked list.
 } vulkan_batch;
 
-vulkan_batch *vulkan_batch_create(vulkan_batch_policy policy, vulkan_render_cache *firstCache);
+vulkan_batch *vulkan_batch_create(vulkan_batch_instancing_policy policy,
+                                  vulkan_render_cache *firstCache);
 void vulkan_batch_destroy(vulkan_batch *batch);
 
 bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_render_cache *cache);
@@ -63,7 +64,7 @@ void vulkan_batches_destroy(vulkan_batches *batches);
 
 void vulkan_batches_reset(vulkan_batches *batches);
 
-void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_policy policy);
+void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_instancing_policy policy);
 
 void vulkan_batches_send_to_device(vulkan_batches *batches);
 

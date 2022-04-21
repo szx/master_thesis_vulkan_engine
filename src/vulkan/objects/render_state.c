@@ -50,7 +50,8 @@ void vulkan_render_state_destroy(vulkan_render_state *renderState) {
 
 void vulkan_scene_render_state_update(vulkan_render_state *renderState) {
 
-  vulkan_batch_policy batchPolicy = vulkan_batch_policy_matching_materials;
+  vulkan_batch_instancing_policy batchPolicy =
+      vulkan_batch_instancing_policy_matching_vertex_attributes; // TODO: Config.
   vulkan_batches_update(renderState->batches, batchPolicy);
   dl_foreach_elem(vulkan_batch *, batch, renderState->batches->batches) {
     vulkan_batch_update_draw_command(batch);

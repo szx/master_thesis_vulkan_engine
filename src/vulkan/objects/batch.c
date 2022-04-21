@@ -1,7 +1,8 @@
 #include "batch.h"
 #include "../data/primitive.h"
 
-vulkan_batch *vulkan_batch_create(vulkan_batch_policy policy, vulkan_render_cache *firstCache) {
+vulkan_batch *vulkan_batch_create(vulkan_batch_instancing_policy policy,
+                                  vulkan_render_cache *firstCache) {
   assert(firstCache->primitive != NULL);
 
   vulkan_batch *batch = core_alloc(sizeof(vulkan_batch));
@@ -24,16 +25,11 @@ void vulkan_batch_destroy(vulkan_batch *batch) {
 }
 
 bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_render_cache *cache) {
-  bool match = true;
-  if ((batch->policy & vulkan_batch_policy_matching_materials) != 0) {
-    match = match &&
-            vulkan_data_primitive_material_match(batch->firstCache->primitive, cache->primitive);
+  if (batch->policy == vulkan_batch_instancing_policy_matching_vertex_attributes) {
+    return vulkan_data_primitive_vulkan_attributes_match(batch->firstCache->primitive,
+                                                         cache->primitive);
   }
-  if ((batch->policy & vulkan_batch_policy_matching_vertex_attributes) != 0) {
-    match = match && vulkan_data_primitive_vulkan_attributes_match(batch->firstCache->primitive,
-                                                                   cache->primitive);
-  }
-  return match;
+  return false;
 }
 
 void vulkan_batch_add_cache(vulkan_batch *batch, vulkan_render_cache *cache, size_t instanceId) {
@@ -84,7 +80,7 @@ void vulkan_batches_reset(vulkan_batches *batches) {
   batches->batches = NULL;
 }
 
-void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_policy policy) {
+void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_instancing_policy policy) {
   // sort cache list and update attributes
   vulkan_render_cache_list_update(batches->renderCacheList);
   assert(!batches->renderCacheList->dirty);

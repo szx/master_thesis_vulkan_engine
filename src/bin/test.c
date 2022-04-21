@@ -204,25 +204,14 @@ TEST scene_graph_building() {
   vulkan_batches *batches = vulkan_batches_create(renderCacheList, vkd);
 
   renderCacheList->dirty = false;
-  vulkan_batches_update(batches, vulkan_batch_policy_none);
+  vulkan_batches_update(batches, vulkan_batch_instancing_policy_no_instancing);
   vulkan_batches_debug_print(batches);
-  dl_count(vulkan_batch *, batches->batches, batchNoneLen);
+  dl_count(vulkan_batch *, batches->batches, batchNoInstancingLen);
 
-  vulkan_batches_update(batches, vulkan_batch_policy_matching_materials);
-  vulkan_batches_debug_print(batches);
-  dl_count(vulkan_batch *, batches->batches, batchMaterialsLen);
-  ASSERT(batchNoneLen <= batchMaterialsLen);
-
-  vulkan_batches_update(batches, vulkan_batch_policy_matching_vertex_attributes);
+  vulkan_batches_update(batches, vulkan_batch_instancing_policy_matching_vertex_attributes);
   vulkan_batches_debug_print(batches);
   dl_count(vulkan_batch *, batches->batches, batchVertexAttributesLen);
-  ASSERT(batchNoneLen <= batchVertexAttributesLen);
-
-  vulkan_batches_update(batches, vulkan_batch_policy_matching_materials |
-                                     vulkan_batch_policy_matching_vertex_attributes);
-  vulkan_batches_debug_print(batches);
-  dl_count(vulkan_batch *, batches->batches, batchMaterialsAndVertexAttributesLen);
-  ASSERT(batchNoneLen <= batchMaterialsAndVertexAttributesLen);
+  ASSERT(batchVertexAttributesLen <= batchNoInstancingLen);
 
   vulkan_batches_destroy(batches);
 
@@ -255,8 +244,8 @@ GREATEST_MAIN_DEFS(); // NOLINT
 int main(int argc, char *argv[]) {
   GREATEST_MAIN_BEGIN();
   platform_create();
-  // RUN_SUITE(shaderc_suite);
-  // RUN_SUITE(gltf_suite);
+  RUN_SUITE(shaderc_suite);
+  RUN_SUITE(gltf_suite);
   RUN_SUITE(scene_graph_suite);
   platform_destroy();
   GREATEST_MAIN_END();

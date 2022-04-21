@@ -6,9 +6,9 @@ assetConfigFilepath =${assetsDirname}/config.ini
 [ASSET.CONFIG]
 graphics.WindowWidth = 640
 graphics.WindowHeight = 480
-graphics.WindowTitle = "metalroughspheresnotextures"
+graphics.WindowTitle = "cpptest"
 controls.Enabled = 1
-settings.StartScene = "duck"
+settings.StartScene = "metalroughspheresnotextures"
 
 [ASSET.DB]
 types = "BYTE:uint8_t, INT:uint32_t, FLOAT:float, VEC2:vec2, VEC3:vec3, VEC4:vec4, MAT4:mat4, TEXT:UT_string *, KEY:hash_t"

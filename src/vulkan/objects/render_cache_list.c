@@ -57,6 +57,7 @@ void vulkan_render_cache_list_add_camera_render_cache(vulkan_render_cache_list *
 static int cache_list_sort_func(const void *_a, const void *_b) {
   const vulkan_render_cache *a = *(const vulkan_render_cache **)_a;
   const vulkan_render_cache *b = *(const vulkan_render_cache **)_b;
+
   // sort by visibility
   if (a->visible && !b->visible) {
     return -1;
@@ -70,14 +71,6 @@ static int cache_list_sort_func(const void *_a, const void *_b) {
 
   if (a->primitive == b->primitive) {
     return 0; // Same geometry and material, ideal for batching.
-  }
-
-  // sort by material
-  if (a->primitive->material->key.value < b->primitive->material->key.value) {
-    return -1;
-  }
-  if (a->primitive->material->key.value > b->primitive->material->key.value) {
-    return 1;
   }
 
   // sort by geometry
