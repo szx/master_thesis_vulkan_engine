@@ -124,11 +124,10 @@ add_custom_command(
 # copy unprocessed assets to directory with executables
 file(GLOB_RECURSE C_PRECOMPILED_HEADERS "src/core/thirdparty.h")
 file(GLOB ASSETS_FILES_DIR "assets")
-file(GLOB_RECURSE ASSETS_SHADER_FILES "${ASSETS_FILES_DIR}/*.glsl")
-file(GLOB_RECURSE ASSETS_GLTF_FILES "${ASSETS_FILES_DIR}/*.*")
-foreach (ASSETS_SHADER_FILE ${ASSETS_SHADER_FILES})
-    list(REMOVE_ITEM ASSETS_GLTF_FILES "${ASSETS_SHADER_FILE}")
-endforeach ()
+file(GLOB ASSETS_SHADER_DIR "${ASSETS_FILES_DIR}/shaders")
+file(GLOB ASSETS_GLTF_DIR "${ASSETS_FILES_DIR}/gltf")
+file(GLOB_RECURSE ASSETS_SHADER_FILES "${ASSETS_SHADER_DIR}/*.glsl")
+file(GLOB_RECURSE ASSETS_GLTF_FILES "${ASSETS_GLTF_DIR}/*.*")
 add_custom_target(copy_assets ALL DEPENDS ${ASSETS_GLTF_FILES} ${ASSETS_SHADER_FILES})
 add_custom_command(
         TARGET copy_assets PRE_BUILD
