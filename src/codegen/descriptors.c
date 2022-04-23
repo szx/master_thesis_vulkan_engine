@@ -12,8 +12,10 @@ void glsl_add_vulkan_global_uniform_buffer(UT_string *s, uint32_t set, uint32_t 
   utstring_printf(s, "struct globalStruct {\n");
  utstring_printf(s, "  mat4 viewMat ;\n");
  utstring_printf(s, "  mat4 projMat ;\n");
+ utstring_printf(s, "  uint directionalLightCount ;\n");
+ utstring_printf(s, "  vulkan_directional_light_helper_struct directionalLights [MAX_DIRECTIONAL_LIGHT_COUNT];\n");
  utstring_printf(s, "  uint pointLightCount ;\n");
- utstring_printf(s, "  vulkan_light_helper_struct pointLights [MAX_LIGHT_COUNT];\n");
+ utstring_printf(s, "  vulkan_point_light_helper_struct pointLights [MAX_POINT_LIGHT_COUNT];\n");
   utstring_printf(s, "};\n");
   utstring_printf(s, "layout(set = %u, binding = %u) uniform globalBlock {\n", set, binding);
   utstring_printf(s, "  globalStruct global");
@@ -43,8 +45,14 @@ void glsl_add_vulkan_materials_uniform_buffer(UT_string *s, uint32_t set, uint32
   if (count > 1) {utstring_printf(s, "[%u]", count);}
   utstring_printf(s, ";\n};\n");
 }
-void glsl_add_vulkan_light_helper_struct(UT_string *s) {
-  utstring_printf(s, "struct vulkan_light_helper_struct {\n");
+void glsl_add_vulkan_directional_light_helper_struct(UT_string *s) {
+  utstring_printf(s, "struct vulkan_directional_light_helper_struct {\n");
+ utstring_printf(s, "  vec3 direction;\n");
+ utstring_printf(s, "  vec3 color;\n");
+  utstring_printf(s, "};\n");
+}
+void glsl_add_vulkan_point_light_helper_struct(UT_string *s) {
+  utstring_printf(s, "struct vulkan_point_light_helper_struct {\n");
  utstring_printf(s, "  vec3 position;\n");
  utstring_printf(s, "  vec3 color;\n");
  utstring_printf(s, "  float radius;\n");

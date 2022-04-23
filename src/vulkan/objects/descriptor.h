@@ -13,18 +13,25 @@ typedef struct vulkan_draw_push_constant_struct {
   uint currentFrameInFlight;
 } vulkan_draw_push_constant_struct;
 
-typedef struct vulkan_light_helper_struct {
+typedef struct vulkan_directional_light_helper_struct {
+  vec3 direction;
+  vec3 color;
+} vulkan_directional_light_helper_struct;
+
+typedef struct vulkan_point_light_helper_struct {
   vec3 position;
   vec3 color;
   float radius;
-} vulkan_light_helper_struct;
+} vulkan_point_light_helper_struct;
 
 typedef struct vulkan_global_uniform_buffer_struct {
   mat4 viewMat;
   mat4 projMat;
 
+  uint directionalLightCount;
+  vulkan_directional_light_helper_struct directionalLights; ///< [MAX_DIRECTIONAL_LIGHT_COUNT]
   uint pointLightCount;
-  vulkan_light_helper_struct pointLights; ///< [MAX_LIGHT_COUNT]
+  vulkan_point_light_helper_struct pointLights; ///< [MAX_POINT_LIGHT_COUNT]
 } vulkan_global_uniform_buffer_struct;
 
 typedef struct vulkan_materials_uniform_buffer_struct {

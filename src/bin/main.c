@@ -23,9 +23,15 @@ void update_func(vulkan_renderer *renderer, double dt) {
     vulkan_camera_select(renderState->camera, renderState->camera->cameraIdx + 1);
   }
 
-  if (firstFrame || renderer->vkd->input.keyboard.release.l) {
-    vulkan_light_helper_element *defaultLight =
+  if (firstFrame) {
+    vulkan_directional_light_helper_element *defaultLight =
+        vulkan_lights_get_directional_light_element(renderState->lights, 0);
+    assert(defaultLight != NULL);
+  }
+  if (renderer->vkd->input.keyboard.release.l) {
+    vulkan_point_light_helper_element *defaultLight =
         vulkan_lights_get_point_light_element(renderState->lights, 0);
+    assert(defaultLight != NULL);
     vulkan_camera_set_position(renderState->camera, defaultLight->position);
   }
 

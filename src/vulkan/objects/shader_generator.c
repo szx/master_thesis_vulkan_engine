@@ -62,8 +62,9 @@ void glsl_add_defines(UT_string *s, vulkan_shader_type shaderType,
   glsl_add_vertex_shader_input_variables_defines(s,
                                                  renderState->unifiedGeometryBuffer->vertexStream);
   glsl_add_shader_type_defines(s, shaderType);
-  utstring_printf(s, "#define FRAMES_IN_FLIGHT %d\n", FRAMES_IN_FLIGHT);
-  utstring_printf(s, "#define MAX_LIGHT_COUNT %d\n", MAX_LIGHT_COUNT);
+#define x(_name, ...) utstring_printf(s, "#define " #_name " %d\n", _name);
+  VULKAN_SHADER_CONSTANTS(x, )
+#undef x
 }
 
 void glsl_add_vertex_shader_input_variables(UT_string *s, vulkan_vertex_stream *stream) {

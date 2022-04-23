@@ -52,29 +52,41 @@ pbr.alphaRoughness = perceptualRoughness * perceptualRoughness;
 pbr.f0 = vec3(0.04);
 pbr.f90 = vec3(1.0);
 
-// HIRO HIRO incorrect shines, check glTF spec implementation
-
+// HIRO HIRO incorrect/small shines, check glTF spec implementation
+// HIRO three gltf viewer uses ambient light + directional light (0.5, 0, 0.866)
 vec3 lighting = vec3(0.0);
+
+// HIRO HIRO control lights using GUI
+// HIRO ambient light
+
+// directional lights
+for (int i = 0; i < min(global.directionalLightCount, MAX_DIRECTIONAL_LIGHT_COUNT); i++) {
+  vec3 lightDirection = global.directionalLights[i].direction;
+  vec3 lightColor = global.directionalLights[i].color;
+
+  vec3 l = normalize(-lightDirection); // normalized direction into light source
+  fillPBRInputWithL(pbr, l);
+
+  // Radiance is irradiance from a single direction.
+  // HIRO irradiance vs radiance explanation
+  vec3 irradiance = lightColor * pbr.NoL; // irradiance for directional light
+  vec3 color = irradiance * BRDF(pbr);
+
+  lighting += color;
+
+#if DEBUG_PRINTF == 1
+debugPrintfEXT("irradiance=%v3f\ncolor=%v3f", irradiance, color);
+#endif
+}
+
 // point lights
-for (int i = 0; i < min(global.pointLightCount, MAX_LIGHT_COUNT); i++) {
+for (int i = 0; i < min(global.pointLightCount, MAX_POINT_LIGHT_COUNT); i++) {
   vec3 lightPosition = global.pointLights[i].position;
   vec3 lightColor = global.pointLights[i].color;
   float lightRadius = global.pointLights[i].radius;
 
   vec3 l = normalize(lightPosition - inWorldPosition); // normalized direction into light source
-
-  // Half unit vector between incident light and surface normal.
-  // According to microfacet theory only the microfates  with normal oriented
-  // exactly in such a way that incoming ray from light direction l is bounced
-  // into view direction v will reflect visible light - all other microfacets
-  // reflect incoming light into direction that is not v and will not contribute
-  // to the BRDF.
-  vec3 h = normalize(l + v);
-  pbr.h = h;
-  pbr.NoH = saturate(dot(n, h));
-  pbr.VoH = saturate(dot(v, h));
-  pbr.NoL = saturate(dot(n, l));
-  pbr.LoH = saturate(dot(l, h));
+  fillPBRInputWithL(pbr, l);
 
   // Radiance is irradiance from a single direction.
   // HIRO irradiance vs radiance explanation

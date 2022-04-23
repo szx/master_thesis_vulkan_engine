@@ -3,11 +3,16 @@
 #pragma once
 #include "../vulkan/constants.h"
 
-typedef struct vulkan_light_helper_element {
+typedef struct vulkan_directional_light_helper_element {
+  alignas(16) vec3 direction;
+  alignas(16) vec3 color;
+} vulkan_directional_light_helper_element;
+
+typedef struct vulkan_point_light_helper_element {
   alignas(16) vec3 position;
   alignas(16) vec3 color;
   alignas(4) float radius;
-} vulkan_light_helper_element;
+} vulkan_point_light_helper_element;
 
 typedef struct vulkan_draw_push_constant_element {
   alignas(4) uint currentFrameInFlight;
@@ -16,8 +21,10 @@ typedef struct vulkan_draw_push_constant_element {
 typedef struct vulkan_global_uniform_buffer_element {
   alignas(16) mat4 viewMat;
   alignas(16) mat4 projMat;
+  alignas(4) uint directionalLightCount;
+  vulkan_directional_light_helper_element directionalLights [MAX_DIRECTIONAL_LIGHT_COUNT];
   alignas(4) uint pointLightCount;
-  vulkan_light_helper_element pointLights [MAX_LIGHT_COUNT];
+  vulkan_point_light_helper_element pointLights [MAX_POINT_LIGHT_COUNT];
 } vulkan_global_uniform_buffer_element;
 
 typedef struct vulkan_instances_uniform_buffer_element {
@@ -37,7 +44,8 @@ void glsl_add_vulkan_draw_push_constant(UT_string *s);
 void glsl_add_vulkan_global_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);
 void glsl_add_vulkan_instances_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);
 void glsl_add_vulkan_materials_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);
-void glsl_add_vulkan_light_helper_struct(UT_string *s);
+void glsl_add_vulkan_directional_light_helper_struct(UT_string *s);
+void glsl_add_vulkan_point_light_helper_struct(UT_string *s);
 
 #define END_OF_VULKAN_PUSH_CONSTANTS
 #define VULKAN_PUSH_CONSTANTS(X, ...) \
@@ -53,5 +61,6 @@ void glsl_add_vulkan_light_helper_struct(UT_string *s);
 
 #define END_OF_VULKAN_HELPER_STRUCTS
 #define VULKAN_HELPER_STRUCTS(X, ...) \
-  X(light, __VA_ARGS__) \
+  X(directional_light, __VA_ARGS__) \
+  X(point_light, __VA_ARGS__) \
   END_OF_VULKAN_HELPER_STRUCTS

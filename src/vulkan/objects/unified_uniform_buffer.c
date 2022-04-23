@@ -50,6 +50,8 @@ void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniform
     vulkan_global_uniform_buffer_element *element = &uniformBuffer->globalData->elements[0];
     vulkan_camera_set_view_matrix(camera, element->viewMat);
     vulkan_camera_set_projection_matrix(camera, element->projMat);
+    vulkan_lights_set_directional_light_elements(lights, &element->directionalLightCount,
+                                                 element->directionalLights);
     vulkan_lights_set_point_light_elements(lights, &element->pointLightCount, element->pointLights);
   }
 

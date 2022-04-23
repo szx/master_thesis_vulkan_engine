@@ -57,9 +57,24 @@ struct PBRInput {
   vec3 f90; // reflectance color at grazing angle (1.0)
 };
 
+void fillPBRInputWithL(inout PBRInput pbr, vec3 l) {
+  pbr.l = l;
+  // Half unit vector between incident light and surface normal.
+  // According to microfacet theory only the microfacets  with normal oriented
+  // exactly in such a way that incoming ray from light direction l is bounced
+  // into view direction v will reflect visible light - all other microfacets
+  // reflect incoming light into direction that is not v and will not contribute
+  // to the BRDF.
+  pbr.h = normalize(pbr.l + pbr.v);
+  pbr.NoH = saturate(dot(pbr.n, pbr.h));
+  pbr.VoH = saturate(dot(pbr.v, pbr.h));
+  pbr.NoL = saturate(dot(pbr.n, pbr.l));
+  pbr.LoH = saturate(dot(pbr.l, pbr.h));
+}
+
 vec3 SpecularBRDFComponent(PBRInput pbr) {
   float D = D_GGX(pbr.NoH, pbr.alphaRoughness);
-// HIRO HIRO F0      = mix(F0, albedo, metallic);
+// HIRO HIRO F0 (specularColor?)     = mix(F0, albedo, metallic);
   vec3 F = F_Schlick(pbr.LoH, pbr.f0);
   float V = V_SmithGGXCorrelated(pbr.NoV, pbr.NoL, pbr.perceptualRoughness);
 
