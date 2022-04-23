@@ -26,8 +26,3 @@ outWorldNormal = normalMatrix * inNormal;
 #ifdef IN_TEXCOORD
 outTexCoord = inTexCoord;
 #endif
-
-
-#if DEBUG_PRINTF == 1
-debugPrintfEXT("instanceId=%u", instanceId);
-#endif

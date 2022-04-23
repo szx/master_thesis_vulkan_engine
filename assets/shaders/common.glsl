@@ -12,6 +12,12 @@ uint getInstanceId() {
 #define EPSILON 1e-5
 #define saturate(x) clamp(x, 0.0, 1.0)
 
+#if DEBUG_PRINTF == 1
+#define assert(cond) if (!(cond)) debugPrintfEXT("assert failed at line %d", __LINE__);
+#else
+#define assert(cond)
+#endif
+
 #if SHADER_FRAGMENT == 1
 // PBR: https://google.github.io/filament/Filament.html
 
@@ -21,15 +27,15 @@ float D_GGX(float NoH, float a) {
     return a2 / (PI * f * f);
 }
 
-vec3 F_Schlick(float u, vec3 f0) {
-    return f0 + (vec3(1.0) - f0) * pow(1.0 - u, 5.0);
+vec3 F_Schlick(float u, vec3 f0, vec3 f90) {
+    return f0 + (f90 - f0) * pow(1.0 - u, 5.0);
 }
 
 float V_SmithGGXCorrelated(float NoV, float NoL, float a) {
     float a2 = a * a;
     float GGXL = NoV * sqrt((-NoL * a2 + NoL) * NoL + a2);
     float GGXV = NoL * sqrt((-NoV * a2 + NoV) * NoV + a2);
-    return 0.5 / (GGXV + GGXL);
+    return 0.5 / max(GGXV + GGXL, EPSILON); // Prevent divide by zero when NoV is 0
 }
 
 float Fd_Lambert() {
@@ -75,7 +81,7 @@ void fillPBRInputWithL(inout PBRInput pbr, vec3 l) {
 vec3 SpecularBRDFComponent(PBRInput pbr) {
   float D = D_GGX(pbr.NoH, pbr.alphaRoughness);
 // HIRO HIRO F0 (specularColor?)     = mix(F0, albedo, metallic);
-  vec3 F = F_Schlick(pbr.LoH, pbr.f0);
+  vec3 F = F_Schlick(pbr.LoH, pbr.f0, pbr.f90);
   float V = V_SmithGGXCorrelated(pbr.NoV, pbr.NoL, pbr.perceptualRoughness);
 
   return (D * V) * F;
@@ -89,6 +95,8 @@ vec3 DiffuseBRDFComponent(PBRInput pbr) {
 vec3 BRDF(PBRInput pbr) {
   vec3 specularBrdf = SpecularBRDFComponent(pbr);
   vec3 diffuseBrdf = DiffuseBRDFComponent(pbr);
+  assert(!any(isnan(specularBrdf)));
+  assert(!any(isnan(diffuseBrdf)));
   return specularBrdf + diffuseBrdf;
 }
 

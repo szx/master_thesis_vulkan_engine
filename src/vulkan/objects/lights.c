@@ -21,7 +21,7 @@ vulkan_directional_light_helper_element *
 vulkan_lights_get_directional_light_element(vulkan_lights *lights, size_t lightIdx) {
   if (utarray_len(lights->directionalLightElements) == 0) {
     // NOTE: Default directional light.
-    vec3 direction = {0.0, 0, 1};
+    vec3 direction = {0.0, 0.0, 1.0};
     vec3 color = GLM_VEC3_ONE_INIT;
     vulkan_lights_add_directional_light(lights, direction, color);
     return vulkan_lights_get_directional_light_element(lights, lightIdx);

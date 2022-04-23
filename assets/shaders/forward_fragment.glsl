@@ -13,6 +13,12 @@ vec3 n = normalize(inWorldNormal); // normalized world normal
 vec3 n = vec3(0, 0, -1); // global normal
 #endif
 
+/*
+//TODO: double-sided material
+ if (dot(n, v) < 0.0)
+    n = -n;
+*/
+
 #if IN_COLOR == 1
 vec4 baseColorLinearMultiplier = vec4(inColor, 1.0);
 #else
@@ -53,7 +59,7 @@ pbr.f0 = vec3(0.04);
 pbr.f90 = vec3(1.0);
 
 // HIRO HIRO incorrect/small shines, check glTF spec implementation
-// HIRO three gltf viewer uses ambient light + directional light (0.5, 0, 0.866)
+// HIRO HIRO comments about lighting
 vec3 lighting = vec3(0.0);
 
 // HIRO HIRO control lights using GUI
@@ -72,11 +78,8 @@ for (int i = 0; i < min(global.directionalLightCount, MAX_DIRECTIONAL_LIGHT_COUN
   vec3 irradiance = lightColor * pbr.NoL; // irradiance for directional light
   vec3 color = irradiance * BRDF(pbr);
 
+  assert(!any(isnan(color)));
   lighting += color;
-
-#if DEBUG_PRINTF == 1
-debugPrintfEXT("irradiance=%v3f\ncolor=%v3f", irradiance, color);
-#endif
 }
 
 // point lights
@@ -94,17 +97,9 @@ for (int i = 0; i < min(global.pointLightCount, MAX_POINT_LIGHT_COUNT); i++) {
   vec3 irradiance = lightColor * pbr.NoL; // irradiance for point light
   vec3 color = irradiance * BRDF(pbr);
 
+  assert(!any(isnan(color)));
   lighting += color;
-
-#if DEBUG_PRINTF == 1
-debugPrintfEXT("irradiance=%v3f\ncolor=%v3f", irradiance, color);
-#endif
 }
 
 // HIRO linear to srgb?
 outColor = vec4(lighting, 1.0);
-
-#if DEBUG_PRINTF == 1
-debugPrintfEXT("instanceId=%u", instanceId);
-debugPrintfEXT("materialId=%u (baseColorFactor=%v4f, metallicFactor=%f, roughnessFactor=%f)", materialId, baseColorFactor, metallicFactor, roughnessFactor);
-#endif
