@@ -38,7 +38,7 @@ vulkan_device *vulkan_device_create(data_config *config, data_asset_db *assetDb)
   pick_physical_device(vkd);
   create_logical_device(vkd);
   create_one_shot_command_pool(vkd);
-  vkd->input = (vulkan_input){0};
+  vkd->input = vulkan_input_default();
   return vkd;
 }
 
@@ -81,16 +81,16 @@ void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, in
 #undef input_key
 }
 
-void glfw_mouse_callback(GLFWwindow *window, double xPos, double yPos) {
+void glfw_mouse_callback(GLFWwindow *window, double x, double y) {
   vulkan_device *vkd = glfwGetWindowUserPointer(window);
   static bool skip = true; // TODO: True if first callback after leaving/recreating window.
   if (skip) {
-    vkd->input.mouse.xLastPos = xPos;
-    vkd->input.mouse.yLastPos = yPos;
+    vkd->input.mouse.lastX = x;
+    vkd->input.mouse.lastY = y;
     skip = false;
   }
-  vkd->input.mouse.xPos = xPos;
-  vkd->input.mouse.yPos = yPos;
+  vkd->input.mouse.x = x;
+  vkd->input.mouse.y = y;
 }
 
 void create_window(vulkan_device *vkd, data_config *config, data_asset_db *assetDb) {
@@ -106,8 +106,8 @@ void create_window(vulkan_device *vkd, data_config *config, data_asset_db *asset
   glfwSetFramebufferSizeCallback(vkd->window, glfw_framebuffer_resize_callback);
   glfwSetKeyCallback(vkd->window, glfw_key_callback);
   glfwSetCursorPosCallback(vkd->window, glfw_mouse_callback);
+  glfwSetInputMode(vkd->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   vkd->framebufferResized = false;
-  // glfwSetInputMode(vkd->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 bool validation_layers_enabled() {

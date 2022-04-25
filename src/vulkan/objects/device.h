@@ -78,7 +78,7 @@ void vulkan_device_destroy(vulkan_device *vkd);
 
 void glfw_framebuffer_resize_callback(GLFWwindow *window, int width, int height);
 void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
-void glfw_mouse_callback(GLFWwindow *window, double xPos, double yPos);
+void glfw_mouse_callback(GLFWwindow *window, double x, double y);
 
 void create_window(vulkan_device *vkd, data_config *config, data_asset_db *assetDb);
 

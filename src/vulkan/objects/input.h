@@ -18,6 +18,7 @@
   X(esc, GLFW_KEY_ESCAPE, __VA_ARGS__)                                                             \
   X(leftBracket, GLFW_KEY_LEFT_BRACKET, __VA_ARGS__)                                               \
   X(rightBracket, GLFW_KEY_RIGHT_BRACKET, __VA_ARGS__)                                             \
+  X(leftShift, GLFW_KEY_LEFT_SHIFT, __VA_ARGS__)                                                   \
   END_OF_VULKAN_INPUT_KEYS
 
 typedef struct vulkan_input {
@@ -36,9 +37,11 @@ typedef struct vulkan_input {
 
   struct {
     float sensitivity;
-    double xPos, yPos;
-    double xLastPos, yLastPos;
+    double x, y;
+    double lastX, lastY;
   } mouse; ///< GLFW mouse input.
 } vulkan_input;
+
+vulkan_input vulkan_input_default();
 
 void vulkan_input_clear_released_keys(vulkan_input *input);
