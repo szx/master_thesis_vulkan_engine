@@ -74,8 +74,6 @@ void vulkan_scene_render_state_update(vulkan_render_state *renderState) {
 }
 
 void vulkan_render_state_send_to_device(vulkan_render_state *renderState) {
-  vulkan_batches_send_to_device(renderState->batches);
-
   vulkan_unified_geometry_buffer_send_to_device(renderState->unifiedGeometryBuffer);
   vulkan_textures_send_to_device(renderState->textures);
   vulkan_unified_uniform_buffer_send_to_device(renderState->unifiedUniformBuffer);

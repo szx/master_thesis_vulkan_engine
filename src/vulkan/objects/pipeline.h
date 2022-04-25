@@ -42,6 +42,7 @@ void vulkan_pipeline_get_framebuffer_attachments(vulkan_pipeline *pipeline,
 void vulkan_pipeline_get_framebuffer_attachment_clear_values(vulkan_pipeline *pipeline,
                                                              VkClearValue *clearValues);
 
+void vulkan_pipeline_send_to_device(vulkan_pipeline *pipeline, size_t swapChainImageIdx);
 VkCommandBuffer vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline,
                                                       size_t swapChainImageIndex);
 
@@ -57,11 +58,17 @@ typedef struct vulkan_pipeline_frame_state {
 
   VkCommandPool commandPool;
   VkCommandBuffer commandBuffer;
+
+  /// Indirect draw buffer.
+  vulkan_buffer *indirectDrawBuffer;
+  vulkan_buffer_element indirectDrawBufferElement;
 } vulkan_pipeline_frame_state;
 
 void vulkan_pipeline_frame_state_init(vulkan_pipeline_frame_state *frameState,
                                       vulkan_pipeline *pipeline, uint32_t swapChainImageIdx);
 void vulkan_pipeline_frame_state_deinit(vulkan_pipeline_frame_state *frameState);
+
+void vulkan_pipeline_frame_state_send_to_device(vulkan_pipeline_frame_state *frameState);
 
 void vulkan_pipeline_frame_state_debug_print(vulkan_pipeline_frame_state *frameState, int indent);
 
@@ -70,6 +77,8 @@ void vulkan_pipeline_frame_state_debug_print(vulkan_pipeline_frame_state *frameS
 typedef struct vulkan_pipeline_shared_state {
   vulkan_pipeline *pipeline; ///< Pointer.
 
+  /// Depth buffer image.
+  /// We can share it between pipelines, because it is synchronized using pipeline barriers.
   vulkan_image *depthBufferImage;
 } vulkan_pipeline_shared_state;
 

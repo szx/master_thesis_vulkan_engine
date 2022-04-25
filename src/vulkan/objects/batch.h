@@ -44,17 +44,14 @@ void vulkan_batch_update_draw_command(vulkan_batch *batch);
 
 void vulkan_batch_debug_print(vulkan_batch *batch);
 
-/// Creates batches from scene graph.
+/// Creates batches from render cache list.
+/// Used to record draw commands.
 typedef struct vulkan_batches {
   vulkan_render_cache_list *renderCacheList; ///< Pointer.
   vulkan_device *vkd;                        ///< Pointer.
 
   /// List of batches created from scene graph.
   vulkan_batch *batches;
-
-  /// Indirect draw buffer.
-  vulkan_buffer *indirectDrawBuffer;
-  vulkan_buffer_element indirectDrawBufferElement;
 
 } vulkan_batches;
 
@@ -66,8 +63,7 @@ void vulkan_batches_reset(vulkan_batches *batches);
 
 void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_instancing_policy policy);
 
-void vulkan_batches_send_to_device(vulkan_batches *batches);
-
-void vulkan_batches_record_draw_command(vulkan_batches *batches, VkCommandBuffer commandBuffer);
+void vulkan_batches_record_draw_command(vulkan_batches *batches, VkCommandBuffer commandBuffer,
+                                        vulkan_buffer_element indirectDrawBufferElement);
 
 void vulkan_batches_debug_print(vulkan_batches *batches);

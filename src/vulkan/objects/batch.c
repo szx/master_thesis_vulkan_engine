@@ -61,16 +61,11 @@ vulkan_batches *vulkan_batches_create(vulkan_render_cache_list *renderCacheList,
   batches->renderCacheList = renderCacheList;
   batches->vkd = vkd;
   batches->batches = NULL;
-  batches->indirectDrawBuffer =
-      vulkan_buffer_create(batches->vkd, vulkan_buffer_type_indirect_draw);
-  batches->indirectDrawBufferElement = vulkan_buffer_add(
-      batches->indirectDrawBuffer, NULL,
-      sizeof(VkDrawIndexedIndirectCommand) * batches->vkd->limits.maxDrawIndirectCommands);
+
   return batches;
 }
 
 void vulkan_batches_destroy(vulkan_batches *batches) {
-  vulkan_buffer_destroy(batches->indirectDrawBuffer);
   vulkan_batches_reset(batches);
   core_free(batches);
 }
@@ -116,11 +111,8 @@ void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_instancing_poli
   }
 }
 
-void vulkan_batches_send_to_device(vulkan_batches *batches) {
-  vulkan_buffer_send_to_device(batches->indirectDrawBuffer);
-}
-
-void vulkan_batches_record_draw_command(vulkan_batches *batches, VkCommandBuffer commandBuffer) {
+void vulkan_batches_record_draw_command(vulkan_batches *batches, VkCommandBuffer commandBuffer,
+                                        vulkan_buffer_element indirectDrawBufferElement) {
   dl_count(vulkan_batch *, batches->batches, drawCommandCount);
   verify(drawCommandCount <= batches->vkd->limits.maxDrawIndirectCommands);
   if (drawCommandCount == 0) {
@@ -132,13 +124,13 @@ void vulkan_batches_record_draw_command(vulkan_batches *batches, VkCommandBuffer
     drawCommands[drawCommandIdx++] = batch->drawCommand;
   }
 
-  batches->indirectDrawBufferElement.data = drawCommands;
-  batches->indirectDrawBufferElement.size = sizeof(drawCommands);
-  vulkan_buffer_element_update(&batches->indirectDrawBufferElement);
+  indirectDrawBufferElement.data = drawCommands;
+  indirectDrawBufferElement.size = sizeof(drawCommands);
+  vulkan_buffer_element_update(&indirectDrawBufferElement);
 
   size_t drawCommandStride = sizeof(drawCommands[0]);
-  vkCmdDrawIndexedIndirect(commandBuffer, batches->indirectDrawBuffer->buffer, 0, drawCommandCount,
-                           drawCommandStride);
+  vkCmdDrawIndexedIndirect(commandBuffer, indirectDrawBufferElement.buffer->buffer, 0,
+                           drawCommandCount, drawCommandStride);
 }
 
 void vulkan_batches_debug_print(vulkan_batches *batches) {

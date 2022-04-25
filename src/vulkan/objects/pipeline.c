@@ -135,6 +135,13 @@ void vulkan_pipeline_get_framebuffer_attachment_clear_values(vulkan_pipeline *pi
   clearValues[1].depthStencil = (VkClearDepthStencilValue){0.0f, 0};
 }
 
+void vulkan_pipeline_send_to_device(vulkan_pipeline *pipeline, size_t swapChainImageIdx) {
+  vulkan_pipeline_frame_state *frameState =
+      utarray_eltptr(pipeline->frameStates, swapChainImageIdx);
+
+  vulkan_pipeline_frame_state_send_to_device(frameState);
+}
+
 VkCommandBuffer vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline,
                                                       size_t swapChainImageIdx) {
   vulkan_pipeline_frame_state *frameState =
@@ -173,7 +180,8 @@ VkCommandBuffer vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline,
   vkCmdPushConstants(commandBuffer, pipeline->pipelineLayout, VK_SHADER_STAGE_ALL, 0,
                      sizeof(drawPushConstant), &drawPushConstant);
 
-  vulkan_batches_record_draw_command(pipeline->renderState->batches, commandBuffer);
+  vulkan_batches_record_draw_command(pipeline->renderState->batches, commandBuffer,
+                                     frameState->indirectDrawBufferElement);
 
   vkCmdEndRenderPass(commandBuffer);
 
@@ -222,14 +230,26 @@ void vulkan_pipeline_frame_state_init(vulkan_pipeline_frame_state *frameState,
   frameState->commandBuffer =
       vulkan_create_command_buffer(frameState->pipeline->vks->vkd, frameState->commandPool,
                                    "frame state #%d", frameState->swapChainImageIdx);
+
+  frameState->indirectDrawBuffer =
+      vulkan_buffer_create(frameState->pipeline->vks->vkd, vulkan_buffer_type_indirect_draw);
+  frameState->indirectDrawBufferElement =
+      vulkan_buffer_add(frameState->indirectDrawBuffer, NULL,
+                        sizeof(VkDrawIndexedIndirectCommand) *
+                            frameState->pipeline->vks->vkd->limits.maxDrawIndirectCommands);
 }
 
 void vulkan_pipeline_frame_state_deinit(vulkan_pipeline_frame_state *frameState) {
+  vulkan_buffer_destroy(frameState->indirectDrawBuffer);
   vkFreeCommandBuffers(frameState->pipeline->vks->vkd->device, frameState->commandPool, 1,
                        &frameState->commandBuffer);
   vkDestroyCommandPool(frameState->pipeline->vks->vkd->device, frameState->commandPool, vka);
   vkDestroyFramebuffer(frameState->pipeline->vks->vkd->device, frameState->swapChainFramebuffer,
                        vka);
+}
+
+void vulkan_pipeline_frame_state_send_to_device(vulkan_pipeline_frame_state *frameState) {
+  vulkan_buffer_send_to_device(frameState->indirectDrawBuffer);
 }
 
 void vulkan_pipeline_frame_state_debug_print(vulkan_pipeline_frame_state *frameState, int indent) {

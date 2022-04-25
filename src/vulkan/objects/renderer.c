@@ -78,7 +78,9 @@ void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
   // Pre-submit CPU work:
   // We have acquired index of next in-flight image, we can now update frame-specific resources
   // (uniform buffers, push constants).
-  // log_debug("imageIndex = %d", imageIndex);
+  vulkan_pipeline_send_to_device(renderer->pipeline, imageIndex);
+
+  // Record command buffer:
   VkCommandBuffer commandBuffer =
       vulkan_pipeline_record_command_buffer(renderer->pipeline, imageIndex);
 
