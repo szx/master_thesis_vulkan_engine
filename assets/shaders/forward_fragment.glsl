@@ -40,6 +40,8 @@ vec4 baseColor = baseColorTexture * baseColorFactor * baseColorLinearMultiplier;
 float metallic = metallicTexture * metallicFactor;
 float perceptualRoughness = roughnessTexture * roughnessFactor;
 
+vec3 fresnel0 = vec3(0.04);
+
 /* fill in PBR info */
 PBRInput pbr;
 pbr.n = n;
@@ -55,7 +57,7 @@ pbr.n = n;
 pbr.metallic = metallic;
 pbr.perceptualRoughness = perceptualRoughness;
 pbr.alphaRoughness = perceptualRoughness * perceptualRoughness;
-pbr.f0 = vec3(0.04);
+pbr.f0 = mix(fresnel0, pbr.baseColor.xyz, pbr.metallic); // HIRO comment
 pbr.f90 = vec3(1.0);
 
 // HIRO HIRO incorrect/small shines, check glTF spec implementation

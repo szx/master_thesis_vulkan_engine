@@ -81,7 +81,7 @@ void fillPBRInputWithL(inout PBRInput pbr, vec3 l) {
 vec3 SpecularBRDFComponent(PBRInput pbr) {
   float D = D_GGX(pbr.NoH, pbr.alphaRoughness);
 // HIRO HIRO F0 (specularColor?)     = mix(F0, albedo, metallic);
-  vec3 F = F_Schlick(pbr.LoH, pbr.f0, pbr.f90);
+  vec3 F = F_Schlick(pbr.VoH, pbr.f0, pbr.f90);
   float V = V_SmithGGXCorrelated(pbr.NoV, pbr.NoL, pbr.perceptualRoughness);
 
   return (D * V) * F;
