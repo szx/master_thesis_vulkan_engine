@@ -44,6 +44,18 @@ void vulkan_batch_update_draw_command(vulkan_batch *batch);
 
 void vulkan_batch_debug_print(vulkan_batch *batch);
 
+/// Buffers used by recorded indirect draw commands.
+typedef struct vulkan_batches_data {
+  vulkan_buffer *indirectDrawBuffer;
+  vulkan_buffer_element indirectDrawBufferElement;
+} vulkan_batches_data;
+
+void vulkan_batches_data_init(vulkan_batches_data *batchesData, vulkan_device *vkd);
+
+void vulkan_batches_data_deinit(vulkan_batches_data *batchesData);
+
+void vulkan_batches_data_send_to_device(vulkan_batches_data *batchesData);
+
 /// Creates batches from render cache list.
 /// Used to record draw commands.
 typedef struct vulkan_batches {
@@ -64,6 +76,6 @@ void vulkan_batches_reset(vulkan_batches *batches);
 void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_instancing_policy policy);
 
 void vulkan_batches_record_draw_command(vulkan_batches *batches, VkCommandBuffer commandBuffer,
-                                        vulkan_buffer_element indirectDrawBufferElement);
+                                        vulkan_batches_data *batchesData);
 
 void vulkan_batches_debug_print(vulkan_batches *batches);

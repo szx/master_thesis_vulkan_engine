@@ -181,7 +181,7 @@ VkCommandBuffer vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline,
                      sizeof(drawPushConstant), &drawPushConstant);
 
   vulkan_batches_record_draw_command(pipeline->renderState->batches, commandBuffer,
-                                     frameState->indirectDrawBufferElement);
+                                     &frameState->batchesData);
 
   vkCmdEndRenderPass(commandBuffer);
 
@@ -231,16 +231,11 @@ void vulkan_pipeline_frame_state_init(vulkan_pipeline_frame_state *frameState,
       vulkan_create_command_buffer(frameState->pipeline->vks->vkd, frameState->commandPool,
                                    "frame state #%d", frameState->swapChainImageIdx);
 
-  frameState->indirectDrawBuffer =
-      vulkan_buffer_create(frameState->pipeline->vks->vkd, vulkan_buffer_type_indirect_draw);
-  frameState->indirectDrawBufferElement =
-      vulkan_buffer_add(frameState->indirectDrawBuffer, NULL,
-                        sizeof(VkDrawIndexedIndirectCommand) *
-                            frameState->pipeline->vks->vkd->limits.maxDrawIndirectCommands);
+  vulkan_batches_data_init(&frameState->batchesData, frameState->pipeline->vks->vkd);
 }
 
 void vulkan_pipeline_frame_state_deinit(vulkan_pipeline_frame_state *frameState) {
-  vulkan_buffer_destroy(frameState->indirectDrawBuffer);
+  vulkan_batches_data_deinit(&frameState->batchesData);
   vkFreeCommandBuffers(frameState->pipeline->vks->vkd->device, frameState->commandPool, 1,
                        &frameState->commandBuffer);
   vkDestroyCommandPool(frameState->pipeline->vks->vkd->device, frameState->commandPool, vka);
@@ -249,7 +244,7 @@ void vulkan_pipeline_frame_state_deinit(vulkan_pipeline_frame_state *frameState)
 }
 
 void vulkan_pipeline_frame_state_send_to_device(vulkan_pipeline_frame_state *frameState) {
-  vulkan_buffer_send_to_device(frameState->indirectDrawBuffer);
+  vulkan_batches_data_send_to_device(&frameState->batchesData);
 }
 
 void vulkan_pipeline_frame_state_debug_print(vulkan_pipeline_frame_state *frameState, int indent) {

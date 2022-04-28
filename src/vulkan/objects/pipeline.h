@@ -59,9 +59,7 @@ typedef struct vulkan_pipeline_frame_state {
   VkCommandPool commandPool;
   VkCommandBuffer commandBuffer;
 
-  /// Indirect draw buffer.
-  vulkan_buffer *indirectDrawBuffer;
-  vulkan_buffer_element indirectDrawBufferElement;
+  vulkan_batches_data batchesData;
 } vulkan_pipeline_frame_state;
 
 void vulkan_pipeline_frame_state_init(vulkan_pipeline_frame_state *frameState,
