@@ -16,13 +16,26 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
 
   renderer->renderState =
       vulkan_render_state_create(renderer->vks, renderer->renderCacheList, renderer->config);
-  renderer->pipeline = vulkan_pipeline_create(renderer->vks, renderer->renderState);
+
+  // HIRO each pipeline starts its own render pass (or continues if same render pass + framebuffer)
+  utarray_alloc(renderer->pipelines, sizeof(vulkan_pipeline *));
+
+  // HIRO different vulkan_pipeline (enum? function pointers?) from vulkan_renderer_create_info?
+  vulkan_pipeline *forwardPipeline = vulkan_pipeline_create(renderer->vks, renderer->renderState);
+  // HIRO GUI pipeline
+  // HIRO plane pipeline
+  // HIRO screen-space postprocessing effects pipeline
+  utarray_push_back(renderer->pipelines, &forwardPipeline);
 
   return renderer;
 }
 
 void vulkan_renderer_destroy(vulkan_renderer *renderer) {
-  vulkan_pipeline_destroy(renderer->pipeline);
+  utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
+    vulkan_pipeline_destroy(pipeline);
+  }
+  utarray_free(renderer->pipelines);
+
   vulkan_render_state_destroy(renderer->renderState);
 
   vulkan_scene_graph_destroy(renderer->sceneGraph);
@@ -42,13 +55,17 @@ void vulkan_renderer_recreate_swap_chain(vulkan_renderer *renderer) {
 
   vkDeviceWaitIdle(renderer->vkd->device);
 
-  vulkan_pipeline_deinit(renderer->pipeline);
+  utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
+    vulkan_pipeline_deinit(pipeline);
+  }
 
   vulkan_swap_chain_deinit(renderer->vks);
 
   vulkan_swap_chain_init(renderer->vks, renderer->vkd);
 
-  vulkan_pipeline_init(renderer->pipeline, renderer->vks, renderer->renderState);
+  utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
+    vulkan_pipeline_init(pipeline, renderer->vks, renderer->renderState);
+  }
 }
 
 void vulkan_renderer_update(vulkan_renderer *renderer) {
@@ -62,12 +79,12 @@ void vulkan_renderer_send_to_device(vulkan_renderer *renderer) {
 void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
   vulkan_sync_wait_for_current_frame_fence(renderer->renderState->sync);
 
-  uint32_t imageIndex;
+  uint32_t swapChainImageIdx;
   VkResult result = vkAcquireNextImageKHR(
       renderer->vkd->device, renderer->vks->swapChain, UINT64_MAX,
       renderer->renderState->sync
           ->imageAvailableSemaphores[renderer->renderState->sync->currentFrameInFlight],
-      VK_NULL_HANDLE, &imageIndex);
+      VK_NULL_HANDLE, &swapChainImageIdx);
 
   if (result == VK_ERROR_OUT_OF_DATE_KHR) {
     vulkan_renderer_recreate_swap_chain(renderer);
@@ -75,22 +92,36 @@ void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
   }
   verify(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR);
 
-  // Pre-submit CPU work:
-  // We have acquired index of next in-flight image, we can now update frame-specific resources
-  // (uniform buffers, push constants).
-  vulkan_pipeline_send_to_device(renderer->pipeline, imageIndex);
+  /* Pre-submit CPU work:
+   * We have acquired index of next in-flight image, we can now update
+   * frame-specific resources (uniform buffers, push constants). */
+  utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
+    vulkan_pipeline_send_to_device(pipeline, swapChainImageIdx);
+  }
 
-  // Record command buffer:
+  /* record command buffer */
   VkCommandBuffer commandBuffer =
-      vulkan_pipeline_record_command_buffer(renderer->pipeline, imageIndex);
+      vulkan_sync_get_current_frame_command_buffer(renderer->renderState->sync);
+  vkResetCommandBuffer(commandBuffer, 0);
+
+  VkCommandBufferBeginInfo beginInfo = {0};
+  beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+  verify(vkBeginCommandBuffer(commandBuffer, &beginInfo) == VK_SUCCESS);
+
+  utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
+    vulkan_pipeline_record_render_pass(pipeline, commandBuffer, swapChainImageIdx);
+  }
 
   // scene.updateScene(currentFrameInFlight);
-  // scene.beginCommandBuffer(&framebuffers[imageIndex]);
-  // scene.recordCommandBuffer(currentFrameInFlight, &framebuffers[imageIndex]);
+  // scene.beginCommandBuffer(&framebuffers[swapChainImageIdx]);
+  // scene.recordCommandBuffer(currentFrameInFlight, &framebuffers[swapChainImageIdx]);
   // gui.updateGUI(&scene);
-  // gui.recordCommandBuffer(&framebuffers[imageIndex]);
-  // scene.endCommandBuffer(&framebuffers[imageIndex]);
+  // gui.recordCommandBuffer(&framebuffers[swapChainImageIdx]);
+  // scene.endCommandBuffer(&framebuffers[swapChainImageIdx]);
 
+  verify(vkEndCommandBuffer(commandBuffer) == VK_SUCCESS);
+
+  /* submit command buffer */
   vulkan_sync_reset_current_frame_fence(renderer->renderState->sync);
 
   VkSubmitInfo submitInfo = {0};
@@ -124,7 +155,7 @@ void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
   VkSwapchainKHR swapChains[] = {renderer->vks->swapChain};
   presentInfo.swapchainCount = 1;
   presentInfo.pSwapchains = swapChains;
-  presentInfo.pImageIndices = &imageIndex;
+  presentInfo.pImageIndices = &swapChainImageIdx;
   result = vkQueuePresentKHR(renderer->vkd->presentQueue, &presentInfo);
 
   if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
@@ -166,5 +197,7 @@ void vulkan_renderer_debug_print(vulkan_renderer *renderer) {
   vulkan_render_cache_list_debug_print(renderer->renderCacheList);
   vulkan_scene_graph_debug_print(renderer->sceneGraph);
   vulkan_render_state_debug_print(renderer->renderState);
-  vulkan_pipeline_debug_print(renderer->pipeline);
+  utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
+    vulkan_pipeline_debug_print(pipeline);
+  }
 }

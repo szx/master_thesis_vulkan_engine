@@ -7,6 +7,7 @@
 #include "render_state.h"
 
 /// Creates and destroys Vulkan objects used to draw scene described by scene graph.
+/// Maintains chaining of different pipelines.
 typedef struct vulkan_renderer {
   /* CPU state */
   data_config *config;    ///< Pointer.
@@ -19,7 +20,7 @@ typedef struct vulkan_renderer {
   vulkan_device *vkd;     ///< Pointer.
   vulkan_swap_chain *vks; ///< Pointer.
   vulkan_render_state *renderState;
-  vulkan_pipeline *pipeline;
+  UT_array *pipelines; ///< vulkan_pipeline* array
 } vulkan_renderer;
 
 vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *assetDb,

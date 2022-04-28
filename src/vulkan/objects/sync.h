@@ -3,7 +3,7 @@
 
 #include "../common.h"
 
-/// Vulkan object used to synchronize rendering frames in flight.
+/// Vulkan objects used by pipelines to render frames in flight.
 typedef struct vulkan_sync {
   vulkan_device *vkd; ///< Pointer.
 
@@ -19,6 +19,11 @@ typedef struct vulkan_sync {
   /// Fence that is signaled after submitted command buffer have completed rendering frame.
   VkFence inFlightFences[FRAMES_IN_FLIGHT];
 
+  /// Command pool used to record command buffers.
+  VkCommandPool commandPools[FRAMES_IN_FLIGHT];
+
+  /// Command buffers.
+  VkCommandBuffer commandBuffers[FRAMES_IN_FLIGHT];
 } vulkan_sync;
 
 vulkan_sync *vulkan_sync_create(vulkan_device *vkd);
@@ -29,5 +34,7 @@ void vulkan_sync_wait_for_current_frame_fence(vulkan_sync *sync);
 void vulkan_sync_reset_current_frame_fence(vulkan_sync *sync);
 
 void vulkan_sync_advance_to_next_frame(vulkan_sync *sync);
+
+VkCommandBuffer vulkan_sync_get_current_frame_command_buffer(vulkan_sync *sync);
 
 void vulkan_sync_debug_print(vulkan_sync *sync, int indent);

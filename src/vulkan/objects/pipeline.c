@@ -142,20 +142,14 @@ void vulkan_pipeline_send_to_device(vulkan_pipeline *pipeline, size_t swapChainI
   vulkan_pipeline_frame_state_send_to_device(frameState);
 }
 
-VkCommandBuffer vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline,
-                                                      size_t swapChainImageIdx) {
+void vulkan_pipeline_record_render_pass(vulkan_pipeline *pipeline, VkCommandBuffer commandBuffer,
+                                        size_t swapChainImageIdx) {
   vulkan_pipeline_frame_state *frameState =
       utarray_eltptr(pipeline->frameStates, swapChainImageIdx);
   size_t currentFrameInFlight = pipeline->renderState->sync->currentFrameInFlight;
 
-  VkCommandBuffer commandBuffer = frameState->commandBuffer;
-  vkResetCommandBuffer(commandBuffer, 0);
-
-  /* record command buffer */
-  VkCommandBufferBeginInfo beginInfo = {0};
-  beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-  verify(vkBeginCommandBuffer(commandBuffer, &beginInfo) == VK_SUCCESS);
-
+  /* record new render pass into command buffer */
+  // HIRO HIRO pass render pass and framebuffer as argument, allocate if NULL
   VkRenderPassBeginInfo renderPassInfo = {0};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
   renderPassInfo.renderPass = pipeline->renderPass;
@@ -184,10 +178,6 @@ VkCommandBuffer vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline,
                                      &frameState->batchesData);
 
   vkCmdEndRenderPass(commandBuffer);
-
-  verify(vkEndCommandBuffer(commandBuffer) == VK_SUCCESS);
-
-  return commandBuffer;
 }
 
 void vulkan_pipeline_debug_print(vulkan_pipeline *pipeline) {
@@ -203,42 +193,25 @@ void vulkan_pipeline_frame_state_init(vulkan_pipeline_frame_state *frameState,
                                       vulkan_pipeline *pipeline, uint32_t swapChainImageIdx) {
   frameState->pipeline = pipeline;
 
-  frameState->swapChainImageIdx = swapChainImageIdx;
-
   size_t framebufferAttachmentCount =
       vulkan_pipeline_get_framebuffer_attachment_count(frameState->pipeline);
   assert(framebufferAttachmentCount > 0);
   VkImageView framebufferAttachments[framebufferAttachmentCount];
-  vulkan_pipeline_get_framebuffer_attachments(frameState->pipeline, frameState->swapChainImageIdx,
+  vulkan_pipeline_get_framebuffer_attachments(frameState->pipeline, swapChainImageIdx,
                                               framebufferAttachments);
 
+  // HIRO HIRO move swapchain framebuffer out to renderer, allow vulkan_image and create framebuffer
   frameState->swapChainFramebuffer = vulkan_create_framebuffer(
       frameState->pipeline->vks->vkd, frameState->pipeline->renderPass, framebufferAttachmentCount,
       framebufferAttachments, frameState->pipeline->vks->swapChainExtent.width,
-      frameState->pipeline->vks->swapChainExtent.height, "frame state #%d",
-      frameState->swapChainImageIdx);
-
-  vulkan_queue_families queueFamilies = find_queue_families(
-      frameState->pipeline->vks->vkd, frameState->pipeline->vks->vkd->physicalDevice);
-  frameState->commandPool = vulkan_create_command_pool(
-      frameState->pipeline->vks->vkd, queueFamilies.graphicsFamily,
-      VK_COMMAND_POOL_CREATE_TRANSIENT_BIT |
-          VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, // command buffer is short-lived,
-                                                           // rerecorded every frame
-      "frame state #%d", frameState->swapChainImageIdx);
-
-  frameState->commandBuffer =
-      vulkan_create_command_buffer(frameState->pipeline->vks->vkd, frameState->commandPool,
-                                   "frame state #%d", frameState->swapChainImageIdx);
+      frameState->pipeline->vks->swapChainExtent.height, "frame state #%d", swapChainImageIdx);
 
   vulkan_batches_data_init(&frameState->batchesData, frameState->pipeline->vks->vkd);
 }
 
 void vulkan_pipeline_frame_state_deinit(vulkan_pipeline_frame_state *frameState) {
   vulkan_batches_data_deinit(&frameState->batchesData);
-  vkFreeCommandBuffers(frameState->pipeline->vks->vkd->device, frameState->commandPool, 1,
-                       &frameState->commandBuffer);
-  vkDestroyCommandPool(frameState->pipeline->vks->vkd->device, frameState->commandPool, vka);
+
   vkDestroyFramebuffer(frameState->pipeline->vks->vkd->device, frameState->swapChainFramebuffer,
                        vka);
 }
@@ -248,8 +221,7 @@ void vulkan_pipeline_frame_state_send_to_device(vulkan_pipeline_frame_state *fra
 }
 
 void vulkan_pipeline_frame_state_debug_print(vulkan_pipeline_frame_state *frameState, int indent) {
-  log_debug(INDENT_FORMAT_STRING "frame state #%d:", INDENT_FORMAT_ARGS(0),
-            frameState->swapChainImageIdx);
+  log_debug(INDENT_FORMAT_STRING "frame state", INDENT_FORMAT_ARGS(0));
 }
 
 vulkan_pipeline_shared_state *vulkan_pipeline_shared_state_create(vulkan_pipeline *pipeline) {

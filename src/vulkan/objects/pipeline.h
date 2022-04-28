@@ -43,8 +43,8 @@ void vulkan_pipeline_get_framebuffer_attachment_clear_values(vulkan_pipeline *pi
                                                              VkClearValue *clearValues);
 
 void vulkan_pipeline_send_to_device(vulkan_pipeline *pipeline, size_t swapChainImageIdx);
-VkCommandBuffer vulkan_pipeline_record_command_buffer(vulkan_pipeline *pipeline,
-                                                      size_t swapChainImageIndex);
+void vulkan_pipeline_record_render_pass(vulkan_pipeline *pipeline, VkCommandBuffer commandBuffer,
+                                        size_t swapChainImageIdx);
 
 void vulkan_pipeline_debug_print(vulkan_pipeline *pipeline);
 
@@ -54,10 +54,6 @@ typedef struct vulkan_pipeline_frame_state {
   vulkan_pipeline *pipeline; ///< Pointer.
 
   VkFramebuffer swapChainFramebuffer;
-  uint32_t swapChainImageIdx; ///< Index in vks->swapChainImages associated with framebuffer.
-
-  VkCommandPool commandPool;
-  VkCommandBuffer commandBuffer;
 
   vulkan_batches_data batchesData;
 } vulkan_pipeline_frame_state;
