@@ -13,7 +13,7 @@
 #include "unified_uniform_buffer.h"
 
 /// Render state,
-/// Contains all CPU and GPU state shared by all pipelines.
+/// Contains all CPU and GPU state that is independent of pipelines.
 typedef struct vulkan_render_state {
   vulkan_device *vkd;     ///< Pointer.
   vulkan_swap_chain *vks; ///< Pointer.

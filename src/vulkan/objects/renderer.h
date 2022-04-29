@@ -20,6 +20,7 @@ typedef struct vulkan_renderer {
   vulkan_device *vkd;     ///< Pointer.
   vulkan_swap_chain *vks; ///< Pointer.
   vulkan_render_state *renderState;
+  vulkan_pipeline_shared_state *pipelineSharedState;
   UT_array *pipelines; ///< vulkan_pipeline* array
 } vulkan_renderer;
 

@@ -17,11 +17,14 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
   renderer->renderState =
       vulkan_render_state_create(renderer->vks, renderer->renderCacheList, renderer->config);
 
+  renderer->pipelineSharedState = vulkan_pipeline_shared_state_create(renderer->vks);
+
   // HIRO each pipeline starts its own render pass (or continues if same render pass + framebuffer)
   utarray_alloc(renderer->pipelines, sizeof(vulkan_pipeline *));
 
   // HIRO different vulkan_pipeline (enum? function pointers?) from vulkan_renderer_create_info?
-  vulkan_pipeline *forwardPipeline = vulkan_pipeline_create(renderer->vks, renderer->renderState);
+  vulkan_pipeline *forwardPipeline =
+      vulkan_pipeline_create(renderer->vks, renderer->renderState, renderer->pipelineSharedState);
   // HIRO GUI pipeline
   // HIRO plane pipeline
   // HIRO screen-space postprocessing effects pipeline
@@ -35,6 +38,8 @@ void vulkan_renderer_destroy(vulkan_renderer *renderer) {
     vulkan_pipeline_destroy(pipeline);
   }
   utarray_free(renderer->pipelines);
+
+  vulkan_pipeline_shared_state_destroy(renderer->pipelineSharedState);
 
   vulkan_render_state_destroy(renderer->renderState);
 
@@ -59,12 +64,17 @@ void vulkan_renderer_recreate_swap_chain(vulkan_renderer *renderer) {
     vulkan_pipeline_deinit(pipeline);
   }
 
+  vulkan_pipeline_shared_state_deinit(renderer->pipelineSharedState);
+
   vulkan_swap_chain_deinit(renderer->vks);
 
   vulkan_swap_chain_init(renderer->vks, renderer->vkd);
 
+  vulkan_pipeline_shared_state_init(renderer->pipelineSharedState, renderer->vks);
+
   utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
-    vulkan_pipeline_init(pipeline, renderer->vks, renderer->renderState);
+    vulkan_pipeline_init(pipeline, renderer->vks, renderer->renderState,
+                         renderer->pipelineSharedState);
   }
 }
 

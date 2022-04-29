@@ -84,9 +84,10 @@ void destroy_graphics_pipeline(vulkan_pipeline *pipeline) {
   vkDestroyPipeline(pipeline->vks->vkd->device, pipeline->graphicsPipeline, vka);
 }
 
-vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_render_state *renderState) {
+vulkan_pipeline *vulkan_pipeline_create(vulkan_swap_chain *vks, vulkan_render_state *renderState,
+                                        vulkan_pipeline_shared_state *pipelineSharedState) {
   vulkan_pipeline *pipeline = core_alloc(sizeof(vulkan_pipeline));
-  vulkan_pipeline_init(pipeline, vks, renderState);
+  vulkan_pipeline_init(pipeline, vks, renderState, pipelineSharedState);
   return pipeline;
 }
 
@@ -96,21 +97,21 @@ void vulkan_pipeline_destroy(vulkan_pipeline *pipeline) {
 }
 
 void vulkan_pipeline_init(vulkan_pipeline *pipeline, vulkan_swap_chain *vks,
-                          vulkan_render_state *renderState) {
+                          vulkan_render_state *renderState,
+                          vulkan_pipeline_shared_state *pipelineSharedState) {
   pipeline->vks = vks;
   pipeline->renderState = renderState;
+  pipeline->pipelineSharedState = pipelineSharedState;
 
   pipeline->shaderProgram = vulkan_shader_program_create(renderState);
   create_render_pass(pipeline);
   create_graphics_pipeline(pipeline);
 
-  pipeline->sharedState = vulkan_pipeline_shared_state_create(pipeline);
   create_frame_states(pipeline);
 }
 
 void vulkan_pipeline_deinit(vulkan_pipeline *pipeline) {
   destroy_frame_states(pipeline);
-  vulkan_pipeline_shared_state_destroy(pipeline->sharedState);
   destroy_graphics_pipeline(pipeline);
   destroy_render_pass(pipeline);
   vulkan_shader_program_destroy(pipeline->shaderProgram);
@@ -126,7 +127,7 @@ void vulkan_pipeline_get_framebuffer_attachments(vulkan_pipeline *pipeline,
                                                  VkImageView *attachments) {
   attachments[0] =
       *(VkImageView *)utarray_eltptr(pipeline->vks->swapChainImageViews, swapChainImageIdx);
-  attachments[1] = pipeline->sharedState->depthBufferImage->imageView;
+  attachments[1] = pipeline->pipelineSharedState->depthBufferImage->imageView;
 }
 
 void vulkan_pipeline_get_framebuffer_attachment_clear_values(vulkan_pipeline *pipeline,
@@ -153,7 +154,7 @@ void vulkan_pipeline_record_render_pass(vulkan_pipeline *pipeline, VkCommandBuff
   VkRenderPassBeginInfo renderPassInfo = {0};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
   renderPassInfo.renderPass = pipeline->renderPass;
-  renderPassInfo.framebuffer = frameState->swapChainFramebuffer;
+  renderPassInfo.framebuffer = frameState->framebuffer;
   renderPassInfo.renderArea.offset = (VkOffset2D){0, 0};
   renderPassInfo.renderArea.extent = pipeline->vks->swapChainExtent;
   size_t clearValueCount = vulkan_pipeline_get_framebuffer_attachment_count(pipeline);
@@ -186,64 +187,5 @@ void vulkan_pipeline_debug_print(vulkan_pipeline *pipeline) {
   utarray_foreach_elem_it (vulkan_pipeline_frame_state *, frameState, pipeline->frameStates) {
     vulkan_pipeline_frame_state_debug_print(frameState, 2);
   }
-  vulkan_pipeline_shared_state_debug_print(pipeline->sharedState, 2);
-}
-
-void vulkan_pipeline_frame_state_init(vulkan_pipeline_frame_state *frameState,
-                                      vulkan_pipeline *pipeline, uint32_t swapChainImageIdx) {
-  frameState->pipeline = pipeline;
-
-  size_t framebufferAttachmentCount =
-      vulkan_pipeline_get_framebuffer_attachment_count(frameState->pipeline);
-  assert(framebufferAttachmentCount > 0);
-  VkImageView framebufferAttachments[framebufferAttachmentCount];
-  vulkan_pipeline_get_framebuffer_attachments(frameState->pipeline, swapChainImageIdx,
-                                              framebufferAttachments);
-
-  // HIRO HIRO move swapchain framebuffer out to renderer, allow vulkan_image and create framebuffer
-  frameState->swapChainFramebuffer = vulkan_create_framebuffer(
-      frameState->pipeline->vks->vkd, frameState->pipeline->renderPass, framebufferAttachmentCount,
-      framebufferAttachments, frameState->pipeline->vks->swapChainExtent.width,
-      frameState->pipeline->vks->swapChainExtent.height, "frame state #%d", swapChainImageIdx);
-
-  vulkan_batches_data_init(&frameState->batchesData, frameState->pipeline->vks->vkd);
-}
-
-void vulkan_pipeline_frame_state_deinit(vulkan_pipeline_frame_state *frameState) {
-  vulkan_batches_data_deinit(&frameState->batchesData);
-
-  vkDestroyFramebuffer(frameState->pipeline->vks->vkd->device, frameState->swapChainFramebuffer,
-                       vka);
-}
-
-void vulkan_pipeline_frame_state_send_to_device(vulkan_pipeline_frame_state *frameState) {
-  vulkan_batches_data_send_to_device(&frameState->batchesData);
-}
-
-void vulkan_pipeline_frame_state_debug_print(vulkan_pipeline_frame_state *frameState, int indent) {
-  log_debug(INDENT_FORMAT_STRING "frame state", INDENT_FORMAT_ARGS(0));
-}
-
-vulkan_pipeline_shared_state *vulkan_pipeline_shared_state_create(vulkan_pipeline *pipeline) {
-  vulkan_pipeline_shared_state *sharedState = core_alloc(sizeof(vulkan_pipeline_shared_state));
-
-  sharedState->pipeline = pipeline;
-
-  vulkan_swap_chain *vks = sharedState->pipeline->vks;
-  sharedState->depthBufferImage =
-      vulkan_image_create(vks->vkd, vulkan_image_type_depth_buffer, vks->swapChainExtent.width,
-                          vks->swapChainExtent.height, VK_FORMAT_UNDEFINED);
-
-  return sharedState;
-}
-
-void vulkan_pipeline_shared_state_destroy(vulkan_pipeline_shared_state *sharedState) {
-  vulkan_image_destroy(sharedState->depthBufferImage);
-  core_free(sharedState);
-}
-
-void vulkan_pipeline_shared_state_debug_print(vulkan_pipeline_shared_state *sharedState,
-                                              int indent) {
-  log_debug(INDENT_FORMAT_STRING "shared state:", INDENT_FORMAT_ARGS(0));
-  vulkan_image_debug_print(sharedState->depthBufferImage, indent + 2);
+  vulkan_pipeline_shared_state_debug_print(pipeline->pipelineSharedState, 2);
 }
