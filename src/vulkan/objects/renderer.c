@@ -23,12 +23,19 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
   utarray_alloc(renderer->pipelines, sizeof(vulkan_pipeline *));
 
   // HIRO different vulkan_pipeline (enum? function pointers?) from vulkan_renderer_create_info?
+
+  vulkan_pipeline *skyboxPipeline =
+      vulkan_pipeline_create(vulkan_pipeline_type_skybox, renderer->vks, renderer->renderState,
+                             renderer->pipelineSharedState);
+  utarray_push_back(renderer->pipelines, &skyboxPipeline);
+
   vulkan_pipeline *forwardPipeline =
-      vulkan_pipeline_create(renderer->vks, renderer->renderState, renderer->pipelineSharedState);
-  // HIRO GUI pipeline
-  // HIRO plane pipeline
-  // HIRO screen-space postprocessing effects pipeline
+      vulkan_pipeline_create(vulkan_pipeline_type_forward, renderer->vks, renderer->renderState,
+                             renderer->pipelineSharedState);
   utarray_push_back(renderer->pipelines, &forwardPipeline);
+
+  // HIRO GUI pipeline
+  // HIRO screen-space postprocessing effects pipeline
 
   return renderer;
 }
@@ -73,7 +80,7 @@ void vulkan_renderer_recreate_swap_chain(vulkan_renderer *renderer) {
   vulkan_pipeline_shared_state_init(renderer->pipelineSharedState, renderer->vks);
 
   utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
-    vulkan_pipeline_init(pipeline, renderer->vks, renderer->renderState,
+    vulkan_pipeline_init(pipeline, pipeline->type, renderer->vks, renderer->renderState,
                          renderer->pipelineSharedState);
   }
 }
