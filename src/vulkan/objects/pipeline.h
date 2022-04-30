@@ -5,17 +5,12 @@
 #include "../data/camera.h"
 #include "batch.h"
 #include "image.h"
+#include "pipeline_impl.h"
 #include "pipeline_state.h"
 #include "render_cache_list.h"
 #include "render_state.h"
 #include "shader_program.h"
 #include "swap_chain.h"
-
-typedef enum vulkan_pipeline_type {
-  vulkan_pipeline_type_forward,
-  vulkan_pipeline_type_skybox,
-  vulkan_pipeline_type_count
-} vulkan_pipeline_type;
 
 /// Used to record command to command buffer.
 /// Can be chained with other pipelines.
@@ -44,10 +39,13 @@ void vulkan_pipeline_init(vulkan_pipeline *pipeline, vulkan_pipeline_type type,
                           vulkan_pipeline_shared_state *pipelineSharedState);
 void vulkan_pipeline_deinit(vulkan_pipeline *pipeline);
 
-size_t vulkan_pipeline_get_framebuffer_attachment_count(vulkan_pipeline *pipeline);
-void vulkan_pipeline_get_framebuffer_attachments(vulkan_pipeline *pipeline,
-                                                 size_t swapChainImageIdx,
-                                                 VkImageView *attachments);
+void vulkan_pipeline_get_framebuffer_attachment_count(vulkan_pipeline *pipeline,
+                                                      uint32_t *attachmentCount,
+                                                      uint32_t *colorAttachmentCount,
+                                                      bool *useDepthAttachment);
+void vulkan_pipeline_get_framebuffer_attachment_image_views(vulkan_pipeline *pipeline,
+                                                            size_t swapChainImageIdx,
+                                                            VkImageView *attachments);
 void vulkan_pipeline_get_framebuffer_attachment_clear_values(vulkan_pipeline *pipeline,
                                                              VkClearValue *clearValues);
 

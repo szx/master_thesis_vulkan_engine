@@ -96,8 +96,8 @@ VkPipeline vulkan_create_graphics_pipeline(
 VkRenderPass vulkan_create_render_pass(
     vulkan_device *vkd, VkAttachmentDescription *colorAttachmentDescriptions,
     size_t colorAttachmentDescriptionCount, VkAttachmentReference *colorAttachmentReferences,
-    size_t colorAttachmentReferenceCount, VkAttachmentDescription depthAttachmentDescription,
-    VkAttachmentReference depthAttachmentReference, const char *debugFormat, ...);
+    size_t colorAttachmentReferenceCount, VkAttachmentDescription *depthAttachmentDescription,
+    VkAttachmentReference *depthAttachmentReference, const char *debugFormat, ...);
 
 VkSemaphore vulkan_create_semaphore(vulkan_device *vkd, VkSemaphoreCreateFlags flags,
                                     const char *debugFormat, ...);

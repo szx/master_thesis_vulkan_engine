@@ -712,15 +712,16 @@ VkPipeline vulkan_create_graphics_pipeline(
 VkRenderPass vulkan_create_render_pass(
     vulkan_device *vkd, VkAttachmentDescription *colorAttachmentDescriptions,
     size_t colorAttachmentDescriptionCount, VkAttachmentReference *colorAttachmentReferences,
-    size_t colorAttachmentReferenceCount, VkAttachmentDescription depthAttachmentDescription,
-    VkAttachmentReference depthAttachmentReference, const char *debugFormat, ...) {
+    size_t colorAttachmentReferenceCount, VkAttachmentDescription *depthAttachmentDescription,
+    VkAttachmentReference *depthAttachmentReference, const char *debugFormat, ...) {
   assert(colorAttachmentDescriptionCount == colorAttachmentReferenceCount);
+  size_t depthAttachmentDescriptionCount = depthAttachmentDescription != NULL ? 1 : 0;
 
   VkSubpassDescription subpass = {0};
   subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
   subpass.colorAttachmentCount = colorAttachmentReferenceCount;
   subpass.pColorAttachments = colorAttachmentReferences;
-  subpass.pDepthStencilAttachment = &depthAttachmentReference;
+  subpass.pDepthStencilAttachment = depthAttachmentReference;
   subpass.pResolveAttachments = NULL;
 
   VkSubpassDependency dependency = {0};
@@ -743,11 +744,13 @@ VkRenderPass vulkan_create_render_pass(
   VkRenderPassCreateInfo renderPassInfo = {0};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 
-  size_t attachmentCount = colorAttachmentDescriptionCount + 1;
+  size_t attachmentCount = colorAttachmentDescriptionCount + depthAttachmentDescriptionCount;
   VkAttachmentDescription attachments[attachmentCount];
   core_memcpy(attachments, colorAttachmentDescriptions,
               colorAttachmentDescriptionCount * sizeof(VkAttachmentDescription));
-  attachments[attachmentCount - 1] = depthAttachmentDescription;
+  if (depthAttachmentDescriptionCount > 0) {
+    attachments[attachmentCount - 1] = *depthAttachmentDescription;
+  }
 
   renderPassInfo.attachmentCount = attachmentCount;
   renderPassInfo.pAttachments = attachments;
