@@ -15,7 +15,7 @@ void create_render_pass(vulkan_pipeline *pipeline) {
   VkAttachmentDescription depthAttachmentDescription;
   VkAttachmentReference depthAttachmentReference;
   vulkan_pipeline_info_get_render_pass_create_info(
-      pipelineInfo, pipeline->vks->swapChainImageFormat,
+      pipelineInfo, pipeline->prev, pipeline->next, pipeline->vks->swapChainImageFormat,
       vulkan_find_depth_format(pipeline->vks->vkd), &onscreenColorAttachmentDescription,
       &onscreenColorAttachmentReference, offscreenColorAttachmentDescriptions,
       offscreenColorAttachmentReferences, &depthAttachmentDescription, &depthAttachmentReference);
@@ -49,11 +49,11 @@ void create_graphics_pipeline(vulkan_pipeline *pipeline) {
   core_free(descriptorSetLayouts);
 }
 
-vulkan_pipeline *vulkan_pipeline_create(vulkan_pipeline_type type, vulkan_swap_chain *vks,
-                                        vulkan_render_state *renderState,
-                                        vulkan_pipeline_shared_state *pipelineSharedState) {
+vulkan_pipeline *vulkan_pipeline_create_start(vulkan_pipeline_type type, vulkan_swap_chain *vks,
+                                              vulkan_render_state *renderState,
+                                              vulkan_pipeline_shared_state *pipelineSharedState) {
   vulkan_pipeline *pipeline = core_alloc(sizeof(vulkan_pipeline));
-  vulkan_pipeline_init(pipeline, type, vks, renderState, pipelineSharedState);
+  vulkan_pipeline_init_start(pipeline, type, vks, renderState, pipelineSharedState);
   return pipeline;
 }
 
@@ -62,15 +62,22 @@ void vulkan_pipeline_destroy(vulkan_pipeline *pipeline) {
   core_free(pipeline);
 }
 
-void vulkan_pipeline_init(vulkan_pipeline *pipeline, vulkan_pipeline_type type,
-                          vulkan_swap_chain *vks, vulkan_render_state *renderState,
-                          vulkan_pipeline_shared_state *pipelineSharedState) {
+void vulkan_pipeline_init_start(vulkan_pipeline *pipeline, vulkan_pipeline_type type,
+                                vulkan_swap_chain *vks, vulkan_render_state *renderState,
+                                vulkan_pipeline_shared_state *pipelineSharedState) {
   pipeline->vks = vks;
   pipeline->renderState = renderState;
   pipeline->pipelineSharedState = pipelineSharedState;
 
   pipeline->type = type;
   pipeline->shaderProgram = vulkan_shader_program_create(renderState, pipeline->type);
+}
+
+void vulkan_pipeline_init_finish(vulkan_pipeline *pipeline, vulkan_pipeline *prev,
+                                 vulkan_pipeline *next) {
+  pipeline->prev = prev;
+  pipeline->next = next;
+
   create_render_pass(pipeline);
   create_graphics_pipeline(pipeline);
 
@@ -115,7 +122,7 @@ void vulkan_pipeline_send_to_device(vulkan_pipeline *pipeline, size_t swapChainI
 
 void vulkan_pipeline_record_render_pass(vulkan_pipeline *pipeline, VkCommandBuffer commandBuffer,
                                         size_t swapChainImageIdx) {
-  // TODO: Replace swapChainImageIdx with currentFrameIdx.
+  // HIRO Replace swapChainImageIdx with currentFrameIdx.
 #define x(_name, ...)                                                                              \
   if (pipeline->type == vulkan_pipeline_type_##_name) {                                            \
     vulkan_pipeline_impl_##_name##_record_render_pass(pipeline, commandBuffer, swapChainImageIdx); \

@@ -42,8 +42,9 @@ void vulkan_pipeline_info_get_framebuffer_attachment_clear_values(vulkan_pipelin
 }
 
 void vulkan_pipeline_info_get_render_pass_create_info(
-    vulkan_pipeline_info pipelineInfo, VkFormat swapChainImageFormat,
-    VkFormat depthBufferImageFormat, VkAttachmentDescription *onscreenColorAttachmentDescription,
+    vulkan_pipeline_info pipelineInfo, vulkan_pipeline *prev, vulkan_pipeline *next,
+    VkFormat swapChainImageFormat, VkFormat depthBufferImageFormat,
+    VkAttachmentDescription *onscreenColorAttachmentDescription,
     VkAttachmentReference *onscreenColorAttachmentReference,
     VkAttachmentDescription *offscreenColorAttachmentDescriptions,
     VkAttachmentReference *offscreenColorAttachmentReferences,
@@ -79,7 +80,7 @@ void vulkan_pipeline_info_get_render_pass_create_info(
         .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED, // HIRO HIRO or color optimal
         .finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
     };
-    *onscreenColorAttachmentReference = (VkAttachmentReference){
+    offscreenColorAttachmentReferences[i] = (VkAttachmentReference){
         .attachment = idx++,
         .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
     };

@@ -45,8 +45,9 @@ void vulkan_pipeline_info_get_framebuffer_attachment_clear_values(vulkan_pipelin
                                                                   VkClearValue *clearValues);
 
 void vulkan_pipeline_info_get_render_pass_create_info(
-    vulkan_pipeline_info pipelineInfo, VkFormat swapChainImageFormat,
-    VkFormat depthBufferImageFormat, VkAttachmentDescription *onscreenColorAttachmentDescription,
+    vulkan_pipeline_info pipelineInfo, vulkan_pipeline *prev, vulkan_pipeline *next,
+    VkFormat swapChainImageFormat, VkFormat depthBufferImageFormat,
+    VkAttachmentDescription *onscreenColorAttachmentDescription,
     VkAttachmentReference *onscreenColorAttachmentReference,
     VkAttachmentDescription *offscreenColorAttachmentDescriptions,
     VkAttachmentReference *offscreenColorAttachmentReferences,

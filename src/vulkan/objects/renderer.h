@@ -25,7 +25,8 @@ typedef struct vulkan_renderer {
 } vulkan_renderer;
 
 vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *assetDb,
-                                        vulkan_swap_chain *vks, UT_string *sceneName);
+                                        vulkan_swap_chain *vks, UT_string *sceneName,
+                                        vulkan_pipeline_type *pipelines, size_t pipelineCount);
 void vulkan_renderer_destroy(vulkan_renderer *renderer);
 
 void vulkan_renderer_recreate_swap_chain(vulkan_renderer *renderer);

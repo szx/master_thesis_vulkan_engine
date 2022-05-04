@@ -1,7 +1,8 @@
 #include "renderer.h"
 
 vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *assetDb,
-                                        vulkan_swap_chain *vks, UT_string *sceneName) {
+                                        vulkan_swap_chain *vks, UT_string *sceneName,
+                                        vulkan_pipeline_type *pipelines, size_t pipelineCount) {
   vulkan_renderer *renderer = core_alloc(sizeof(vulkan_renderer));
 
   renderer->config = config;
@@ -19,24 +20,29 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
 
   renderer->pipelineSharedState = vulkan_pipeline_shared_state_create(renderer->vks);
 
-  // HIRO each pipeline starts its own render pass (or continues if same render pass + framebuffer)
   utarray_alloc(renderer->pipelines, sizeof(vulkan_pipeline *));
 
-  // HIRO different vulkan_pipeline (enum? function pointers?) from vulkan_renderer_create_info?
-
-  vulkan_pipeline *skyboxPipeline =
-      vulkan_pipeline_create(vulkan_pipeline_type_skybox, renderer->vks, renderer->renderState,
-                             renderer->pipelineSharedState);
-  utarray_push_back(renderer->pipelines, &skyboxPipeline);
-
-  vulkan_pipeline *forwardPipeline =
-      vulkan_pipeline_create(vulkan_pipeline_type_forward, renderer->vks, renderer->renderState,
-                             renderer->pipelineSharedState);
-  utarray_push_back(renderer->pipelines, &forwardPipeline);
-
+  for (size_t i = 0; i < pipelineCount; i++) {
+    vulkan_pipeline_type type = pipelines[i];
+    vulkan_pipeline *pipeline = vulkan_pipeline_create_start(
+        type, renderer->vks, renderer->renderState, renderer->pipelineSharedState);
+    utarray_push_back(renderer->pipelines, &pipeline);
+  }
   // HIRO GUI pipeline
   // HIRO screen-space postprocessing effects pipeline
 
+  for (size_t i = 0; i < utarray_len(renderer->pipelines); i++) {
+    vulkan_pipeline *pipeline = *(vulkan_pipeline **)utarray_eltptr(renderer->pipelines, i);
+    vulkan_pipeline *prevPipeline = NULL;
+    if (i > 0) {
+      prevPipeline = *(vulkan_pipeline **)utarray_eltptr(renderer->pipelines, i - 1);
+    }
+    vulkan_pipeline *nextPipeline = NULL;
+    if (i + 1 < utarray_len(renderer->pipelines)) {
+      nextPipeline = *(vulkan_pipeline **)utarray_eltptr(renderer->pipelines, i + 1);
+    }
+    vulkan_pipeline_init_finish(pipeline, prevPipeline, nextPipeline);
+  }
   return renderer;
 }
 
@@ -80,8 +86,9 @@ void vulkan_renderer_recreate_swap_chain(vulkan_renderer *renderer) {
   vulkan_pipeline_shared_state_init(renderer->pipelineSharedState, renderer->vks);
 
   utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
-    vulkan_pipeline_init(pipeline, pipeline->type, renderer->vks, renderer->renderState,
-                         renderer->pipelineSharedState);
+    vulkan_pipeline_init_start(pipeline, pipeline->type, renderer->vks, renderer->renderState,
+                               renderer->pipelineSharedState);
+    vulkan_pipeline_init_finish(pipeline, pipeline->prev, pipeline->next);
   }
 }
 
