@@ -5,14 +5,16 @@ void vulkan_pipeline_frame_state_init(vulkan_pipeline_frame_state *frameState,
                                       vulkan_pipeline *pipeline, uint32_t swapChainImageIdx) {
   frameState->pipeline = pipeline;
 
-  /// HIRO offscreen framebuffer
-  uint32_t framebufferAttachmentCount;
-  vulkan_pipeline_get_framebuffer_attachment_count(
-      frameState->pipeline, &framebufferAttachmentCount, &(uint32_t){0}, &(bool){0});
+  /// HIRO offscreen image views instead of NULL (offscreen images stored in frame state)
+  vulkan_pipeline_info pipelineInfo = vulkan_pipeline_get_pipeline_info(frameState->pipeline);
+  uint32_t framebufferAttachmentCount =
+      vulkan_pipeline_info_get_framebuffer_attachment_count(pipelineInfo);
   assert(framebufferAttachmentCount > 0);
   VkImageView framebufferAttachments[framebufferAttachmentCount];
-  vulkan_pipeline_get_framebuffer_attachment_image_views(frameState->pipeline, swapChainImageIdx,
-                                                         framebufferAttachments);
+  vulkan_pipeline_info_get_framebuffer_attachment_image_views(
+      pipelineInfo,
+      *(VkImageView *)utarray_eltptr(pipeline->vks->swapChainImageViews, swapChainImageIdx), NULL,
+      pipeline->pipelineSharedState->depthBufferImage->imageView, framebufferAttachments);
 
   frameState->framebuffer = vulkan_create_framebuffer(
       frameState->pipeline->vks->vkd, frameState->pipeline->renderPass, framebufferAttachmentCount,

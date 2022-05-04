@@ -19,7 +19,7 @@ typedef struct vulkan_pipeline {
   vulkan_pipeline_shared_state *pipelineSharedState; ///< Pointer.
 
   vulkan_pipeline_type type;
-  // HIRO prev, next
+  // HIRO HIRO prev, next
   vulkan_shader_program *shaderProgram;
   VkRenderPass renderPass;
   VkPipelineLayout pipelineLayout;
@@ -38,15 +38,7 @@ void vulkan_pipeline_init(vulkan_pipeline *pipeline, vulkan_pipeline_type type,
                           vulkan_pipeline_shared_state *pipelineSharedState);
 void vulkan_pipeline_deinit(vulkan_pipeline *pipeline);
 
-void vulkan_pipeline_get_framebuffer_attachment_count(vulkan_pipeline *pipeline,
-                                                      uint32_t *attachmentCount,
-                                                      uint32_t *colorAttachmentCount,
-                                                      bool *useDepthAttachment);
-void vulkan_pipeline_get_framebuffer_attachment_image_views(vulkan_pipeline *pipeline,
-                                                            size_t swapChainImageIdx,
-                                                            VkImageView *attachments);
-void vulkan_pipeline_get_framebuffer_attachment_clear_values(vulkan_pipeline *pipeline,
-                                                             VkClearValue *clearValues);
+vulkan_pipeline_info vulkan_pipeline_get_pipeline_info(vulkan_pipeline *pipeline);
 
 void vulkan_pipeline_send_to_device(vulkan_pipeline *pipeline, size_t swapChainImageIdx);
 void vulkan_pipeline_record_render_pass(vulkan_pipeline *pipeline, VkCommandBuffer commandBuffer,

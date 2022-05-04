@@ -1,89 +1,137 @@
 #include "pipeline_impl.h"
 #include "pipeline.h"
 
-/* forward */
-
-void vulkan_pipeline_impl_forward_get_framebuffer_attachment_count(vulkan_pipeline *pipeline,
-                                                                   uint32_t *colorAttachmentCount,
-                                                                   bool *useDepthAttachment) {
-  *colorAttachmentCount = 1 /* swap chain image */;
-  *useDepthAttachment = true;
+uint32_t vulkan_pipeline_info_get_framebuffer_attachment_count(vulkan_pipeline_info pipelineInfo) {
+  uint32_t count = (pipelineInfo.useOnscreenColorAttachment ? 1 : 0) +
+                   pipelineInfo.offscreenColorAttachmentCount +
+                   (pipelineInfo.useDepthAttachment ? 1 : 0);
+  assert(count > 0);
+  return count;
 }
 
-void vulkan_pipeline_impl_forward_get_framebuffer_attachment_image_views(vulkan_pipeline *pipeline,
-                                                                         size_t swapChainImageIdx,
-                                                                         VkImageView *attachments) {
-  attachments[0] =
-      *(VkImageView *)utarray_eltptr(pipeline->vks->swapChainImageViews, swapChainImageIdx);
-  attachments[1] = pipeline->pipelineSharedState->depthBufferImage->imageView;
+void vulkan_pipeline_info_get_framebuffer_attachment_image_views(
+    vulkan_pipeline_info pipelineInfo, VkImageView swapChainImageView,
+    VkImageView *offscreenImageViews, VkImageView depthBufferImageView,
+    VkImageView *framebufferAttachments) {
+  size_t idx = 0;
+  if (pipelineInfo.useOnscreenColorAttachment) {
+    assert(swapChainImageView != VK_NULL_HANDLE);
+    framebufferAttachments[idx++] = swapChainImageView;
+  }
+  for (size_t i = 0; i < pipelineInfo.offscreenColorAttachmentCount; i++) {
+    framebufferAttachments[idx++] = offscreenImageViews[i];
+  }
+  if (pipelineInfo.useDepthAttachment) {
+    assert(depthBufferImageView != VK_NULL_HANDLE);
+    framebufferAttachments[idx++] = depthBufferImageView;
+  }
 }
 
-void vulkan_pipeline_impl_forward_get_framebuffer_attachment_clear_values(
-    vulkan_pipeline *pipeline, VkClearValue *clearValues) {
-  clearValues[0].color = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}};
-  clearValues[1].depthStencil = (VkClearDepthStencilValue){0.0f, 0};
+void vulkan_pipeline_info_get_framebuffer_attachment_clear_values(vulkan_pipeline_info pipelineInfo,
+                                                                  VkClearValue *clearValues) {
+  size_t idx = 0;
+  if (pipelineInfo.useOnscreenColorAttachment) {
+    clearValues[idx++].color = pipelineInfo.onscreenClearValue;
+  }
+  for (size_t i = 0; i < pipelineInfo.offscreenColorAttachmentCount; i++) {
+    clearValues[idx++].color = pipelineInfo.offscreenClearValue;
+  }
+  if (pipelineInfo.useDepthAttachment) {
+    clearValues[idx++].depthStencil = pipelineInfo.depthClearValue;
+  }
 }
 
-void vulkan_pipeline_impl_forward_get_render_pass_create_info(
-    vulkan_pipeline *pipeline, VkAttachmentDescription *colorAttachmentDescriptions,
-    VkAttachmentReference *colorAttachmentReferences,
+void vulkan_pipeline_info_get_render_pass_create_info(
+    vulkan_pipeline_info pipelineInfo, VkFormat swapChainImageFormat,
+    VkFormat depthBufferImageFormat, VkAttachmentDescription *onscreenColorAttachmentDescription,
+    VkAttachmentReference *onscreenColorAttachmentReference,
+    VkAttachmentDescription *offscreenColorAttachmentDescriptions,
+    VkAttachmentReference *offscreenColorAttachmentReferences,
     VkAttachmentDescription *depthAttachmentDescription,
     VkAttachmentReference *depthAttachmentReference) {
-  VkAttachmentDescription colorAttachment = {0};
-  colorAttachment.format = pipeline->vks->swapChainImageFormat;
-  colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-  colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-  colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-  colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-  colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-  colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-  colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-  // HIRO HIRO chaining of layout with prev pipeline (in vulkan_pipeline.c?)
+  // HIRO HIRO chaining of final layout with prev pipeline (in vulkan_pipeline.c?)
+  size_t idx = 0;
+  if (pipelineInfo.useOnscreenColorAttachment) {
+    *onscreenColorAttachmentDescription = (VkAttachmentDescription){
+        .format = swapChainImageFormat,
+        .samples = VK_SAMPLE_COUNT_1_BIT,
+        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+    };
+    *onscreenColorAttachmentReference = (VkAttachmentReference){
+        .attachment = idx++,
+        .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+    };
+  }
 
-  VkAttachmentDescription depthAttachment = {0};
-  depthAttachment.format = vulkan_find_depth_format(pipeline->vks->vkd);
-  depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-  depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-  depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-  depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-  depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-  depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-  depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+  for (size_t i = 0; i < pipelineInfo.offscreenColorAttachmentCount; i++) {
+    offscreenColorAttachmentDescriptions[i] = (VkAttachmentDescription){
+        .format = swapChainImageFormat,
+        .samples = VK_SAMPLE_COUNT_1_BIT,
+        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR, // HIRO HIRO or load
+        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED, // HIRO HIRO or color optimal
+        .finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+    };
+    *onscreenColorAttachmentReference = (VkAttachmentReference){
+        .attachment = idx++,
+        .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+    };
+  }
 
-  VkAttachmentReference colorAttachmentRef = {0};
-  colorAttachmentRef.attachment = 0;
-  colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+  if (pipelineInfo.useDepthAttachment) {
+    *depthAttachmentDescription = (VkAttachmentDescription){
+        .format = depthBufferImageFormat,
+        .samples = VK_SAMPLE_COUNT_1_BIT,
+        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+        .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        .finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+    };
+    *depthAttachmentReference = (VkAttachmentReference){
+        .attachment = idx++,
+        .layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+    };
+  }
+}
 
-  VkAttachmentReference depthAttachmentRef = {0};
-  depthAttachmentRef.attachment = 1;
-  depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+/* forward */
 
-  colorAttachmentDescriptions[0] = colorAttachment;
-  colorAttachmentReferences[0] = colorAttachmentRef;
-  *depthAttachmentDescription = depthAttachment;
-  *depthAttachmentReference = depthAttachmentRef;
+vulkan_pipeline_info vulkan_pipeline_impl_forward_get_pipeline_info(vulkan_pipeline *pipeline) {
+  return (vulkan_pipeline_info){.useOnscreenColorAttachment = true,
+                                .onscreenClearValue = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}},
+                                .offscreenColorAttachmentCount = 0,
+                                .useDepthAttachment = true,
+                                .depthClearValue = (VkClearDepthStencilValue){0.0f, 0}};
 }
 
 void vulkan_pipeline_impl_forward_record_render_pass(vulkan_pipeline *pipeline,
                                                      VkCommandBuffer commandBuffer,
                                                      size_t swapChainImageIdx) {
+  vulkan_pipeline_info pipelineInfo = vulkan_pipeline_get_pipeline_info(pipeline);
   vulkan_pipeline_frame_state *frameState =
       utarray_eltptr(pipeline->frameStates, swapChainImageIdx);
   size_t currentFrameInFlight = pipeline->renderState->sync->currentFrameInFlight;
 
   /* record new render pass into command buffer */
-  // HIRO HIRO pass render pass and framebuffer as argument, allocate if NULL
+  // HIRO pass render pass and framebuffer as argument, allocate if NULL
   VkRenderPassBeginInfo renderPassInfo = {0};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
   renderPassInfo.renderPass = pipeline->renderPass;
   renderPassInfo.framebuffer = frameState->framebuffer;
   renderPassInfo.renderArea.offset = (VkOffset2D){0, 0};
   renderPassInfo.renderArea.extent = pipeline->vks->swapChainExtent;
-  uint32_t clearValueCount;
-  vulkan_pipeline_get_framebuffer_attachment_count(pipeline, &clearValueCount, &(uint32_t){0},
-                                                   &(bool){0});
+  uint32_t clearValueCount = vulkan_pipeline_info_get_framebuffer_attachment_count(pipelineInfo);
   VkClearValue clearValues[clearValueCount];
-  vulkan_pipeline_get_framebuffer_attachment_clear_values(pipeline, clearValues);
+  vulkan_pipeline_info_get_framebuffer_attachment_clear_values(pipelineInfo, clearValues);
   renderPassInfo.clearValueCount = array_size(clearValues);
   renderPassInfo.pClearValues = clearValues;
   vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
@@ -109,68 +157,32 @@ void vulkan_pipeline_impl_forward_record_render_pass(vulkan_pipeline *pipeline,
 
 // TODO: Implement skybox pipeline.
 
-void vulkan_pipeline_impl_skybox_get_framebuffer_attachment_count(vulkan_pipeline *pipeline,
-                                                                  uint32_t *colorAttachmentCount,
-                                                                  bool *useDepthAttachment) {
-  *colorAttachmentCount = 1 /* swap chain image */;
-  *useDepthAttachment = false;
-}
-
-void vulkan_pipeline_impl_skybox_get_framebuffer_attachment_image_views(vulkan_pipeline *pipeline,
-                                                                        size_t swapChainImageIdx,
-                                                                        VkImageView *attachments) {
-  attachments[0] =
-      *(VkImageView *)utarray_eltptr(pipeline->vks->swapChainImageViews, swapChainImageIdx);
-}
-
-void vulkan_pipeline_impl_skybox_get_framebuffer_attachment_clear_values(
-    vulkan_pipeline *pipeline, VkClearValue *clearValues) {
-  clearValues[0].color = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}};
-}
-
-void vulkan_pipeline_impl_skybox_get_render_pass_create_info(
-    vulkan_pipeline *pipeline, VkAttachmentDescription *colorAttachmentDescriptions,
-    VkAttachmentReference *colorAttachmentReferences,
-    VkAttachmentDescription *depthAttachmentDescription,
-    VkAttachmentReference *depthAttachmentReference) {
-  VkAttachmentDescription colorAttachment = {0};
-  colorAttachment.format = pipeline->vks->swapChainImageFormat;
-  colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-  colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-  colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-  colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-  colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-  colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-  colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-  VkAttachmentReference colorAttachmentRef = {0};
-  colorAttachmentRef.attachment = 0;
-  colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-  colorAttachmentDescriptions[0] = colorAttachment;
-  colorAttachmentReferences[0] = colorAttachmentRef;
+vulkan_pipeline_info vulkan_pipeline_impl_skybox_get_pipeline_info(vulkan_pipeline *pipeline) {
+  return (vulkan_pipeline_info){.useOnscreenColorAttachment = true,
+                                .onscreenClearValue = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}},
+                                .offscreenColorAttachmentCount = 0,
+                                .useDepthAttachment = false};
 }
 
 void vulkan_pipeline_impl_skybox_record_render_pass(vulkan_pipeline *pipeline,
                                                     VkCommandBuffer commandBuffer,
                                                     size_t swapChainImageIdx) {
+  vulkan_pipeline_info pipelineInfo = vulkan_pipeline_get_pipeline_info(pipeline);
   vulkan_pipeline_frame_state *frameState =
       utarray_eltptr(pipeline->frameStates, swapChainImageIdx);
   size_t currentFrameInFlight = pipeline->renderState->sync->currentFrameInFlight;
 
   /* record new render pass into command buffer */
-  // HIRO HIRO implement skybox
+  // HIRO implement skybox
   VkRenderPassBeginInfo renderPassInfo = {0};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
   renderPassInfo.renderPass = pipeline->renderPass;
   renderPassInfo.framebuffer = frameState->framebuffer;
   renderPassInfo.renderArea.offset = (VkOffset2D){0, 0};
   renderPassInfo.renderArea.extent = pipeline->vks->swapChainExtent;
-  uint32_t clearValueCount;
-  vulkan_pipeline_get_framebuffer_attachment_count(pipeline, &clearValueCount, &(uint32_t){0},
-                                                   &(bool){0});
+  uint32_t clearValueCount = vulkan_pipeline_info_get_framebuffer_attachment_count(pipelineInfo);
   VkClearValue clearValues[clearValueCount];
-  vulkan_pipeline_get_framebuffer_attachment_clear_values(pipeline, clearValues);
+  vulkan_pipeline_info_get_framebuffer_attachment_clear_values(pipelineInfo, clearValues);
   renderPassInfo.clearValueCount = array_size(clearValues);
   renderPassInfo.pClearValues = clearValues;
   vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);

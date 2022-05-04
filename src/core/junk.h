@@ -94,6 +94,7 @@ typedef XXH64_hash_t hash_t;
 #define is_aligned(ptr, bytes) (((uintptr_t)(const void *)(ptr)) % (bytes) == 0)
 #define member_size(type, member) sizeof(((type *)0)->member)
 #define array_size(array) (sizeof(array) / sizeof((array)[0]))
+#define VLA(_count) ((_count) > 0 ? (_count) : 1)
 #define utarray_size(array) ((array)->icd.sz * utarray_len((array)))
 #define utarray_eltsize(array) ((array)->icd.sz)
 

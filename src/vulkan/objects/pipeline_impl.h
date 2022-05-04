@@ -23,23 +23,41 @@ typedef enum vulkan_pipeline_type {
       vulkan_pipeline_type_count
 } vulkan_pipeline_type;
 
+typedef struct vulkan_pipeline_info {
+  bool useOnscreenColorAttachment;
+  VkClearColorValue onscreenClearValue;
+
+  uint32_t offscreenColorAttachmentCount;
+  VkClearColorValue offscreenClearValue;
+
+  bool useDepthAttachment;
+  VkClearDepthStencilValue depthClearValue;
+} vulkan_pipeline_info;
+
+uint32_t vulkan_pipeline_info_get_framebuffer_attachment_count(vulkan_pipeline_info pipelineInfo);
+
+void vulkan_pipeline_info_get_framebuffer_attachment_image_views(
+    vulkan_pipeline_info pipelineInfo, VkImageView swapChainImageView,
+    VkImageView *offscreenImageViews, VkImageView depthBufferImageView,
+    VkImageView *framebufferAttachments);
+
+void vulkan_pipeline_info_get_framebuffer_attachment_clear_values(vulkan_pipeline_info pipelineInfo,
+                                                                  VkClearValue *clearValues);
+
+void vulkan_pipeline_info_get_render_pass_create_info(
+    vulkan_pipeline_info pipelineInfo, VkFormat swapChainImageFormat,
+    VkFormat depthBufferImageFormat, VkAttachmentDescription *onscreenColorAttachmentDescription,
+    VkAttachmentReference *onscreenColorAttachmentReference,
+    VkAttachmentDescription *offscreenColorAttachmentDescriptions,
+    VkAttachmentReference *offscreenColorAttachmentReferences,
+    VkAttachmentDescription *depthAttachmentDescription,
+    VkAttachmentReference *depthAttachmentReference);
+
 typedef struct vulkan_pipeline vulkan_pipeline;
 
 #define VULKAN_PIPELINE_FUNCTIONS_DECLS(_name)                                                     \
-  void vulkan_pipeline_impl_##_name##_get_framebuffer_attachment_count(                            \
-      vulkan_pipeline *pipeline, uint32_t *colorAttachmentCount, bool *useDepthAttachment);        \
-                                                                                                   \
-  void vulkan_pipeline_impl_##_name##_get_framebuffer_attachment_image_views(                      \
-      vulkan_pipeline *pipeline, size_t swapChainImageIdx, VkImageView *attachments);              \
-                                                                                                   \
-  void vulkan_pipeline_impl_##_name##_get_framebuffer_attachment_clear_values(                     \
-      vulkan_pipeline *pipeline, VkClearValue *clearValues);                                       \
-                                                                                                   \
-  void vulkan_pipeline_impl_##_name##_get_render_pass_create_info(                                 \
-      vulkan_pipeline *pipeline, VkAttachmentDescription *colorAttachmentDescriptions,             \
-      VkAttachmentReference *colorAttachmentReferences,                                            \
-      VkAttachmentDescription *depthAttachmentDescription,                                         \
-      VkAttachmentReference *depthAttachmentReference);                                            \
+  vulkan_pipeline_info vulkan_pipeline_impl_##_name##_get_pipeline_info(                           \
+      vulkan_pipeline *pipeline);                                                                  \
                                                                                                    \
   void vulkan_pipeline_impl_##_name##_record_render_pass(                                          \
       vulkan_pipeline *pipeline, VkCommandBuffer commandBuffer, size_t swapChainImageIdx);

@@ -1,29 +1,30 @@
 #include "pipeline.h"
 
 void create_render_pass(vulkan_pipeline *pipeline) {
-  uint32_t colorAttachmentCount;
-  bool useDepthAttachment;
-  vulkan_pipeline_get_framebuffer_attachment_count(pipeline, &(uint32_t){0}, &colorAttachmentCount,
-                                                   &useDepthAttachment);
-  assert(colorAttachmentCount > 0);
+  vulkan_pipeline_info pipelineInfo = vulkan_pipeline_get_pipeline_info(pipeline);
+  bool useOnscreenColorAttachment = pipelineInfo.useOnscreenColorAttachment;
+  uint32_t offscreenColorAttachmentCount = pipelineInfo.offscreenColorAttachmentCount;
+  bool useDepthAttachment = pipelineInfo.useDepthAttachment;
 
-  VkAttachmentDescription colorAttachmentDescriptions[colorAttachmentCount];
-  VkAttachmentReference colorAttachmentReferences[colorAttachmentCount];
+  assert(useOnscreenColorAttachment || offscreenColorAttachmentCount > 0);
+
+  VkAttachmentDescription onscreenColorAttachmentDescription;
+  VkAttachmentReference onscreenColorAttachmentReference;
+  VkAttachmentDescription offscreenColorAttachmentDescriptions[VLA(offscreenColorAttachmentCount)];
+  VkAttachmentReference offscreenColorAttachmentReferences[VLA(offscreenColorAttachmentCount)];
   VkAttachmentDescription depthAttachmentDescription;
   VkAttachmentReference depthAttachmentReference;
-
-#define x(_name, ...)                                                                              \
-  if (pipeline->type == vulkan_pipeline_type_##_name) {                                            \
-    vulkan_pipeline_impl_##_name##_get_render_pass_create_info(                                    \
-        pipeline, colorAttachmentDescriptions, colorAttachmentReferences,                          \
-        &depthAttachmentDescription, &depthAttachmentReference);                                   \
-  }
-  VULKAN_PIPELINE_TYPES(x, )
-#undef x
+  vulkan_pipeline_info_get_render_pass_create_info(
+      pipelineInfo, pipeline->vks->swapChainImageFormat,
+      vulkan_find_depth_format(pipeline->vks->vkd), &onscreenColorAttachmentDescription,
+      &onscreenColorAttachmentReference, offscreenColorAttachmentDescriptions,
+      offscreenColorAttachmentReferences, &depthAttachmentDescription, &depthAttachmentReference);
 
   pipeline->renderPass = vulkan_create_render_pass(
-      pipeline->vks->vkd, colorAttachmentDescriptions, array_size(colorAttachmentDescriptions),
-      colorAttachmentReferences, array_size(colorAttachmentReferences),
+      pipeline->vks->vkd, (useOnscreenColorAttachment ? &onscreenColorAttachmentDescription : NULL),
+      (useOnscreenColorAttachment ? &onscreenColorAttachmentReference : NULL),
+      offscreenColorAttachmentDescriptions, offscreenColorAttachmentCount,
+      offscreenColorAttachmentReferences, offscreenColorAttachmentCount,
       (useDepthAttachment ? &depthAttachmentDescription : NULL),
       (useDepthAttachment ? &depthAttachmentReference : NULL), "pipeline");
 }
@@ -94,40 +95,15 @@ void vulkan_pipeline_deinit(vulkan_pipeline *pipeline) {
   vulkan_shader_program_destroy(pipeline->shaderProgram);
 }
 
-void vulkan_pipeline_get_framebuffer_attachment_count(vulkan_pipeline *pipeline,
-                                                      uint32_t *attachmentCount,
-                                                      uint32_t *colorAttachmentCount,
-                                                      bool *useDepthAttachment) {
+vulkan_pipeline_info vulkan_pipeline_get_pipeline_info(vulkan_pipeline *pipeline) {
 #define x(_name, ...)                                                                              \
   if (pipeline->type == vulkan_pipeline_type_##_name) {                                            \
-    vulkan_pipeline_impl_##_name##_get_framebuffer_attachment_count(                               \
-        pipeline, colorAttachmentCount, useDepthAttachment);                                       \
+    return vulkan_pipeline_impl_##_name##_get_pipeline_info(pipeline);                             \
   }
   VULKAN_PIPELINE_TYPES(x, )
 #undef x
-  *attachmentCount = *colorAttachmentCount + (*useDepthAttachment ? 1 : 0);
-}
-
-void vulkan_pipeline_get_framebuffer_attachment_image_views(vulkan_pipeline *pipeline,
-                                                            size_t swapChainImageIdx,
-                                                            VkImageView *attachments) {
-#define x(_name, ...)                                                                              \
-  if (pipeline->type == vulkan_pipeline_type_##_name) {                                            \
-    vulkan_pipeline_impl_##_name##_get_framebuffer_attachment_image_views(                         \
-        pipeline, swapChainImageIdx, attachments);                                                 \
-  }
-  VULKAN_PIPELINE_TYPES(x, )
-#undef x
-}
-
-void vulkan_pipeline_get_framebuffer_attachment_clear_values(vulkan_pipeline *pipeline,
-                                                             VkClearValue *clearValues) {
-#define x(_name, ...)                                                                              \
-  if (pipeline->type == vulkan_pipeline_type_##_name) {                                            \
-    vulkan_pipeline_impl_##_name##_get_framebuffer_attachment_clear_values(pipeline, clearValues); \
-  }
-  VULKAN_PIPELINE_TYPES(x, )
-#undef x
+  assert(0);
+  return (vulkan_pipeline_info){0};
 }
 
 void vulkan_pipeline_send_to_device(vulkan_pipeline *pipeline, size_t swapChainImageIdx) {

@@ -710,12 +710,41 @@ VkPipeline vulkan_create_graphics_pipeline(
 }
 
 VkRenderPass vulkan_create_render_pass(
-    vulkan_device *vkd, VkAttachmentDescription *colorAttachmentDescriptions,
-    size_t colorAttachmentDescriptionCount, VkAttachmentReference *colorAttachmentReferences,
-    size_t colorAttachmentReferenceCount, VkAttachmentDescription *depthAttachmentDescription,
+    vulkan_device *vkd, VkAttachmentDescription *onscreenColorAttachmentDescription,
+    VkAttachmentReference *onscreenColorAttachmentReference,
+    VkAttachmentDescription *offscreenColorAttachmentDescriptions,
+    size_t offscreenAttachmentDescriptionCount,
+    VkAttachmentReference *offscreenColorAttachmentReferences,
+    size_t offscreenAttachmentReferenceCount, VkAttachmentDescription *depthAttachmentDescription,
     VkAttachmentReference *depthAttachmentReference, const char *debugFormat, ...) {
-  assert(colorAttachmentDescriptionCount == colorAttachmentReferenceCount);
-  size_t depthAttachmentDescriptionCount = depthAttachmentDescription != NULL ? 1 : 0;
+  assert(offscreenAttachmentDescriptionCount == offscreenAttachmentReferenceCount);
+  size_t onscreenColorAttachmentCount = (onscreenColorAttachmentReference != NULL ? 1 : 0);
+  size_t depthAttachmentDescriptionCount = (depthAttachmentDescription != NULL ? 1 : 0);
+
+  size_t attachmentDescriptionCount = onscreenColorAttachmentCount +
+                                      offscreenAttachmentDescriptionCount +
+                                      depthAttachmentDescriptionCount;
+  VkAttachmentDescription attachmentDescriptions[attachmentDescriptionCount];
+  size_t idx = 0;
+  if (onscreenColorAttachmentCount > 0) {
+    attachmentDescriptions[idx++] = *onscreenColorAttachmentDescription;
+  }
+  core_memcpy(attachmentDescriptions + idx, offscreenColorAttachmentDescriptions,
+              offscreenAttachmentDescriptionCount * sizeof(VkAttachmentDescription));
+  idx += offscreenAttachmentReferenceCount;
+  if (depthAttachmentDescriptionCount > 0) {
+    attachmentDescriptions[idx++] = *depthAttachmentDescription;
+  }
+
+  size_t colorAttachmentReferenceCount =
+      onscreenColorAttachmentCount + offscreenAttachmentReferenceCount;
+  VkAttachmentReference colorAttachmentReferences[attachmentDescriptionCount];
+  idx = 0;
+  if (onscreenColorAttachmentCount > 0) {
+    colorAttachmentReferences[idx++] = *onscreenColorAttachmentReference;
+  }
+  core_memcpy(colorAttachmentReferences + idx, offscreenColorAttachmentReferences,
+              offscreenAttachmentReferenceCount * sizeof(VkAttachmentReference));
 
   VkSubpassDescription subpass = {0};
   subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
@@ -743,17 +772,8 @@ VkRenderPass vulkan_create_render_pass(
 
   VkRenderPassCreateInfo renderPassInfo = {0};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-
-  size_t attachmentCount = colorAttachmentDescriptionCount + depthAttachmentDescriptionCount;
-  VkAttachmentDescription attachments[attachmentCount];
-  core_memcpy(attachments, colorAttachmentDescriptions,
-              colorAttachmentDescriptionCount * sizeof(VkAttachmentDescription));
-  if (depthAttachmentDescriptionCount > 0) {
-    attachments[attachmentCount - 1] = *depthAttachmentDescription;
-  }
-
-  renderPassInfo.attachmentCount = attachmentCount;
-  renderPassInfo.pAttachments = attachments;
+  renderPassInfo.attachmentCount = attachmentDescriptionCount;
+  renderPassInfo.pAttachments = attachmentDescriptions;
 
   renderPassInfo.subpassCount = 1; // TODO: Support multiple subpasses.
   renderPassInfo.pSubpasses = &subpass;
