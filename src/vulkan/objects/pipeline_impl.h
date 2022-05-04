@@ -8,7 +8,6 @@
 #include "pipeline_state.h"
 #include "render_cache_list.h"
 #include "render_state.h"
-#include "shader_program.h"
 #include "swap_chain.h"
 
 #define END_OF_VULKAN_PIPELINE_TYPES

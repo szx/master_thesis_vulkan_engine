@@ -2,6 +2,7 @@
 #pragma once
 
 #include "descriptor.h"
+#include "pipeline_impl.h"
 #include "render_state.h"
 #include "shader_reflect.h"
 
@@ -16,11 +17,6 @@ void vulkan_shader_generator_init(vulkan_shader_generator *shaderGenerator,
                                   vulkan_render_state *renderState);
 void vulkan_shader_generator_deinit(vulkan_shader_generator *shaderGenerator);
 
-typedef enum vulkan_shader_generator_output_type {
-  vulkan_shader_generator_output_type_forward_vertex,
-  vulkan_shader_generator_output_type_forward_fragment,
-  vulkan_shader_generator_output_type_count
-} vulkan_shader_generator_output_type;
-
 vulkan_shader *vulkan_shader_generator_get_shader(vulkan_shader_generator *shaderGenerator,
-                                                  vulkan_shader_generator_output_type type);
+                                                  vulkan_pipeline_type pipelineType,
+                                                  vulkan_shader_type shaderType);

@@ -5,7 +5,6 @@
 #include "../data/camera.h"
 #include "batch.h"
 #include "image.h"
-#include "pipeline_impl.h"
 #include "pipeline_state.h"
 #include "render_cache_list.h"
 #include "render_state.h"

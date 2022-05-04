@@ -69,8 +69,7 @@ void vulkan_pipeline_init(vulkan_pipeline *pipeline, vulkan_pipeline_type type,
   pipeline->pipelineSharedState = pipelineSharedState;
 
   pipeline->type = type;
-  // HIRO HIRO type (different shader program)
-  pipeline->shaderProgram = vulkan_shader_program_create(renderState);
+  pipeline->shaderProgram = vulkan_shader_program_create(renderState, pipeline->type);
   create_render_pass(pipeline);
   create_graphics_pipeline(pipeline);
 

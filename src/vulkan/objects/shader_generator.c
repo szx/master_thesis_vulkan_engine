@@ -154,38 +154,34 @@ void glsl_add_entry_point_begin(UT_string *s) { utstring_printf(s, "%s\n", "void
 
 void glsl_add_entry_point_end(UT_string *s) { utstring_printf(s, "%s\n", "}"); }
 
-void glsl_add_body(UT_string *s, vulkan_shader_generator_output_type type) {
-  const char *filename = "invalid shader name";
-  if (type == vulkan_shader_generator_output_type_forward_vertex) {
-    filename = "forward_vertex.glsl";
-  } else if (type == vulkan_shader_generator_output_type_forward_fragment) {
-    filename = "forward_fragment.glsl";
-  } else {
-    assert(0);
+void glsl_add_body(UT_string *s, vulkan_pipeline_type pipelineType, vulkan_shader_type shaderType) {
+  const char *filename = NULL;
+#define x(_name, ...)                                                                              \
+  if (pipelineType == vulkan_pipeline_type_##_name) {                                              \
+    if (shaderType == vulkan_shader_type_vertex) {                                                 \
+      filename = #_name "_vertex.glsl";                                                            \
+    } else if (shaderType == vulkan_shader_type_fragment) {                                        \
+      filename = #_name "_fragment.glsl";                                                          \
+    } else {                                                                                       \
+      assert(0);                                                                                   \
+    }                                                                                              \
   }
+  VULKAN_PIPELINE_TYPES(x, )
+#undef x
+  assert(filename != NULL);
+
   UT_string *inputPath = get_asset_file_path("shaders", filename);
   UT_string *glslSource = read_text_file(inputPath);
+  verify(utstring_len(glslSource) > 0);
   utstring_printf(s, "// %s\n%s\n", utstring_body(inputPath), utstring_body(glslSource));
   utstring_free(glslSource);
   utstring_free(inputPath);
 }
 
-vulkan_shader_type
-vulkan_shader_generator_output_type_to_shader_type(vulkan_shader_generator_output_type type) {
-  if (type == vulkan_shader_generator_output_type_forward_vertex) {
-    return vulkan_shader_type_vertex;
-  }
-  if (type == vulkan_shader_generator_output_type_forward_fragment) {
-    return vulkan_shader_type_fragment;
-  }
-  assert(0);
-  return 0;
-}
-
 vulkan_shader *vulkan_shader_generator_get_shader(vulkan_shader_generator *shaderGenerator,
-                                                  vulkan_shader_generator_output_type type) {
+                                                  vulkan_pipeline_type pipelineType,
+                                                  vulkan_shader_type shaderType) {
   utstring_clear(shaderGenerator->sourceCode);
-  vulkan_shader_type shaderType = vulkan_shader_generator_output_type_to_shader_type(type);
 
   glsl_add_header(shaderGenerator->sourceCode);
   glsl_add_defines(shaderGenerator->sourceCode, shaderType, shaderGenerator->renderState);
@@ -207,7 +203,7 @@ vulkan_shader *vulkan_shader_generator_get_shader(vulkan_shader_generator *shade
   glsl_add_common_source(shaderGenerator->sourceCode);
 
   glsl_add_entry_point_begin(shaderGenerator->sourceCode);
-  glsl_add_body(shaderGenerator->sourceCode, type);
+  glsl_add_body(shaderGenerator->sourceCode, pipelineType, shaderType);
   glsl_add_entry_point_end(shaderGenerator->sourceCode);
 
   return vulkan_shader_create_with_str(shaderGenerator->renderState->vkd, shaderType,

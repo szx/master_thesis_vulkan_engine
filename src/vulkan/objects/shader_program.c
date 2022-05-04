@@ -1,15 +1,15 @@
 #include "shader_program.h"
 
-vulkan_shader_program *vulkan_shader_program_create(vulkan_render_state *renderState) {
+vulkan_shader_program *vulkan_shader_program_create(vulkan_render_state *renderState,
+                                                    vulkan_pipeline_type type) {
   vulkan_shader_program *shaderProgram = core_alloc(sizeof(vulkan_shader_program));
 
   vulkan_shader_generator_init(&shaderProgram->shaderGenerator, renderState);
 
-  // TODO: Deferred renderer.
-  shaderProgram->vertexShader = vulkan_shader_generator_get_shader(
-      &shaderProgram->shaderGenerator, vulkan_shader_generator_output_type_forward_vertex);
+  shaderProgram->vertexShader = vulkan_shader_generator_get_shader(&shaderProgram->shaderGenerator,
+                                                                   type, vulkan_shader_type_vertex);
   shaderProgram->fragmentShader = vulkan_shader_generator_get_shader(
-      &shaderProgram->shaderGenerator, vulkan_shader_generator_output_type_forward_fragment);
+      &shaderProgram->shaderGenerator, type, vulkan_shader_type_fragment);
 
   return shaderProgram;
 }
