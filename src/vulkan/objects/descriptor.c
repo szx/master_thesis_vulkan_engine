@@ -6,13 +6,14 @@
 
 #define def_uniform_buffer_data(_name, ...)                                                        \
   vulkan_##_name##_uniform_buffer_data *vulkan_##_name##_uniform_buffer_data_create(               \
-      uint32_t count) {                                                                            \
+      uint32_t count, uint32_t frames) {                                                           \
     vulkan_##_name##_uniform_buffer_data *uniformBuffer =                                          \
         core_alloc(sizeof(vulkan_##_name##_uniform_buffer_data) +                                  \
-                   count * sizeof(vulkan_##_name##_uniform_buffer_element));                       \
+                   count * frames * sizeof(vulkan_##_name##_uniform_buffer_element));              \
     uniformBuffer->bufferElement = (vulkan_buffer_element){0};                                     \
     uniformBuffer->count = count;                                                                  \
-    for (size_t idx = 0; idx < count; idx++) {                                                     \
+    uniformBuffer->frames = frames;                                                                \
+    for (size_t idx = 0; idx < count * frames; idx++) {                                            \
       uniformBuffer->elements[idx] = (vulkan_##_name##_uniform_buffer_element){0};                 \
     }                                                                                              \
     return uniformBuffer;                                                                          \
@@ -21,15 +22,22 @@
       vulkan_##_name##_uniform_buffer_data *uniformBuffer) {                                       \
     core_free(uniformBuffer);                                                                      \
   }                                                                                                \
+  size_t vulkan_##_name##_uniform_buffer_data_get_count(                                           \
+      vulkan_##_name##_uniform_buffer_data *uniformBuffer) {                                       \
+    return uniformBuffer->count * uniformBuffer->frames;                                           \
+  }                                                                                                \
   size_t vulkan_##_name##_uniform_buffer_data_get_size(                                            \
       vulkan_##_name##_uniform_buffer_data *uniformBuffer) {                                       \
-    return uniformBuffer->count * sizeof(vulkan_##_name##_uniform_buffer_element);                 \
+    return vulkan_##_name##_uniform_buffer_data_get_count(uniformBuffer) *                         \
+           sizeof(vulkan_##_name##_uniform_buffer_element);                                        \
   }                                                                                                \
   vulkan_##_name##_uniform_buffer_element *vulkan_##_name##_uniform_buffer_data_get_element(       \
-      vulkan_##_name##_uniform_buffer_data *uniformBuffer, size_t frame, size_t index) {           \
-    assert(frame < FRAMES_IN_FLIGHT);                                                              \
-    assert(frame *index < uniformBuffer->count);                                                   \
-    return &uniformBuffer->elements[index];                                                        \
+      vulkan_##_name##_uniform_buffer_data *uniformBuffer, size_t index,                           \
+      size_t currentFrameInFlight) {                                                               \
+    assert(currentFrameInFlight < FRAMES_IN_FLIGHT);                                               \
+    assert(index < uniformBuffer->count);                                                          \
+    size_t idx = FRAMES_IN_FLIGHT * index + currentFrameInFlight;                                  \
+    return &uniformBuffer->elements[idx];                                                          \
   }
 VULKAN_UNIFORM_BUFFERS(def_uniform_buffer_data, )
 #undef def_uniform_buffer_data

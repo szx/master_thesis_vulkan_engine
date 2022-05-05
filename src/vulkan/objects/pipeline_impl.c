@@ -50,18 +50,67 @@ void vulkan_pipeline_info_get_render_pass_create_info(
     VkAttachmentReference *offscreenColorAttachmentReferences,
     VkAttachmentDescription *depthAttachmentDescription,
     VkAttachmentReference *depthAttachmentReference) {
-  // HIRO HIRO chaining of final layout with prev pipeline (in vulkan_pipeline.c?)
+
+  /* analyze pipeline chain */
+  bool isFirstPipeline = (prev == NULL);
+  bool isLastPipeline = (next == NULL);
+  size_t prevOnscreenColorAttachmentCount = 0;
+  size_t nextOnscreenColorAttachmentCount = 0;
+  vulkan_pipeline *it = prev;
+  while (it != NULL) {
+    vulkan_pipeline_info info = vulkan_pipeline_get_pipeline_info(it);
+    if (info.useOnscreenColorAttachment) {
+      prevOnscreenColorAttachmentCount++;
+    }
+    it = it->prev;
+  }
+  it = next;
+  while (it != NULL) {
+    vulkan_pipeline_info info = vulkan_pipeline_get_pipeline_info(it);
+    if (info.useOnscreenColorAttachment) {
+      nextOnscreenColorAttachmentCount++;
+    }
+    it = it->next;
+  }
+  bool isFirstOnscreenPipeline =
+      pipelineInfo.useOnscreenColorAttachment && prevOnscreenColorAttachmentCount == 0;
+  bool isLastOnscreenPipeline =
+      pipelineInfo.useOnscreenColorAttachment && nextOnscreenColorAttachmentCount == 0;
+
+  /* prepare attachment info */
   size_t idx = 0;
   if (pipelineInfo.useOnscreenColorAttachment) {
+
+    VkAttachmentLoadOp loadOp;
+    if (isFirstOnscreenPipeline) {
+      loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    } else {
+      loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+    }
+
+    VkImageLayout initialLayout;
+    if (isFirstOnscreenPipeline) {
+      initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    } else {
+      initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    }
+
+    VkImageLayout finalLayout;
+    if (isLastOnscreenPipeline) {
+      finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    } else {
+      finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    }
+
     *onscreenColorAttachmentDescription = (VkAttachmentDescription){
         .format = swapChainImageFormat,
         .samples = VK_SAMPLE_COUNT_1_BIT,
-        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+        .loadOp = loadOp,
         .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
         .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
         .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-        .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+        .initialLayout = initialLayout,
+        .finalLayout = finalLayout,
     };
     *onscreenColorAttachmentReference = (VkAttachmentReference){
         .attachment = idx++,
@@ -118,16 +167,18 @@ void vulkan_pipeline_impl_forward_record_render_pass(vulkan_pipeline *pipeline,
                                                      VkCommandBuffer commandBuffer,
                                                      size_t swapChainImageIdx) {
   vulkan_pipeline_info pipelineInfo = vulkan_pipeline_get_pipeline_info(pipeline);
-  vulkan_pipeline_frame_state *frameState =
-      utarray_eltptr(pipeline->frameStates, swapChainImageIdx);
+  vulkan_pipeline_framebuffer_state *framebufferState =
+      utarray_eltptr(pipeline->framebufferStates, swapChainImageIdx);
   size_t currentFrameInFlight = pipeline->renderState->sync->currentFrameInFlight;
+  vulkan_pipeline_frame_state *frameState =
+      utarray_eltptr(pipeline->frameStates, currentFrameInFlight);
 
   /* record new render pass into command buffer */
   // HIRO pass render pass and framebuffer as argument, allocate if NULL
   VkRenderPassBeginInfo renderPassInfo = {0};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
   renderPassInfo.renderPass = pipeline->renderPass;
-  renderPassInfo.framebuffer = frameState->framebuffer;
+  renderPassInfo.framebuffer = framebufferState->framebuffer;
   renderPassInfo.renderArea.offset = (VkOffset2D){0, 0};
   renderPassInfo.renderArea.extent = pipeline->vks->swapChainExtent;
   uint32_t clearValueCount = vulkan_pipeline_info_get_framebuffer_attachment_count(pipelineInfo);
@@ -169,16 +220,18 @@ void vulkan_pipeline_impl_skybox_record_render_pass(vulkan_pipeline *pipeline,
                                                     VkCommandBuffer commandBuffer,
                                                     size_t swapChainImageIdx) {
   vulkan_pipeline_info pipelineInfo = vulkan_pipeline_get_pipeline_info(pipeline);
-  vulkan_pipeline_frame_state *frameState =
-      utarray_eltptr(pipeline->frameStates, swapChainImageIdx);
+  vulkan_pipeline_framebuffer_state *framebufferState =
+      utarray_eltptr(pipeline->framebufferStates, swapChainImageIdx);
   size_t currentFrameInFlight = pipeline->renderState->sync->currentFrameInFlight;
+  vulkan_pipeline_frame_state *frameState =
+      utarray_eltptr(pipeline->frameStates, currentFrameInFlight);
 
   /* record new render pass into command buffer */
   // HIRO implement skybox
   VkRenderPassBeginInfo renderPassInfo = {0};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
   renderPassInfo.renderPass = pipeline->renderPass;
-  renderPassInfo.framebuffer = frameState->framebuffer;
+  renderPassInfo.framebuffer = framebufferState->framebuffer;
   renderPassInfo.renderArea.offset = (VkOffset2D){0, 0};
   renderPassInfo.renderArea.extent = pipeline->vks->swapChainExtent;
   uint32_t clearValueCount = vulkan_pipeline_info_get_framebuffer_attachment_count(pipelineInfo);

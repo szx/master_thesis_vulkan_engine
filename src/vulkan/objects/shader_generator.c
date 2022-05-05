@@ -142,7 +142,8 @@ void glsl_add_descriptors(UT_string *s, vulkan_descriptors *descriptors) {
   glsl_add_vulkan_##_name##_uniform_buffer(                                                        \
       s, descriptors->descriptorSetNumber,                                                         \
       descriptors->_name##UniformBufferBinding->bindingNumber,                                     \
-      descriptors->unifiedUniformBuffer->_name##Data->count);
+      vulkan_##_name##_uniform_buffer_data_get_count(                                              \
+          descriptors->unifiedUniformBuffer->_name##Data));
   VULKAN_UNIFORM_BUFFERS(str_uniform_buffer, )
 #undef str_uniform_buffer
 

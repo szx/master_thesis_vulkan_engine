@@ -60,17 +60,21 @@ typedef struct vulkan_instances_uniform_buffer_struct {
 #define decl_uniform_buffer_data(_name, ...)                                                       \
   typedef struct vulkan_##_name##_uniform_buffer_data {                                            \
     vulkan_buffer_element bufferElement;                                                           \
+    uint32_t frames;                                                                               \
     uint32_t count;                                                                                \
     vulkan_##_name##_uniform_buffer_element elements[];                                            \
   } vulkan_##_name##_uniform_buffer_data;                                                          \
   vulkan_##_name##_uniform_buffer_data *vulkan_##_name##_uniform_buffer_data_create(               \
-      uint32_t count);                                                                             \
+      uint32_t count, uint32_t frames);                                                            \
   void vulkan_##_name##_uniform_buffer_data_destroy(                                               \
+      vulkan_##_name##_uniform_buffer_data *uniformBuffer);                                        \
+  size_t vulkan_##_name##_uniform_buffer_data_get_count(                                           \
       vulkan_##_name##_uniform_buffer_data *uniformBuffer);                                        \
   size_t vulkan_##_name##_uniform_buffer_data_get_size(                                            \
       vulkan_##_name##_uniform_buffer_data *uniformBuffer);                                        \
   vulkan_##_name##_uniform_buffer_element *vulkan_##_name##_uniform_buffer_data_get_element(       \
-      vulkan_##_name##_uniform_buffer_data *uniformBuffer, size_t frame, size_t index);
+      vulkan_##_name##_uniform_buffer_data *uniformBuffer, size_t index,                           \
+      size_t currentFrameInFlight);
 VULKAN_UNIFORM_BUFFERS(decl_uniform_buffer_data, )
 #undef decl_uniform_buffer_data
 

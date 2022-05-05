@@ -1,11 +1,12 @@
+uint globalIdx = getGlobalIdx();
 uint instanceId = getInstanceId();
+uint materialId = getMaterialId(instanceId);
 
-uint materialId = instances[instanceId].materialId;
 vec4 baseColorFactor = materials[materialId].baseColorFactor;
 float metallicFactor = materials[materialId].metallicFactor;
 float roughnessFactor = materials[materialId].roughnessFactor;
 
-vec3 cameraPosition = (inverse(global.viewMat) * vec4(0, 0, 0, 1)).xyz; // PERF: Move to global.
+vec3 cameraPosition = (inverse(global[globalIdx].viewMat) * vec4(0, 0, 0, 1)).xyz; // PERF: Move to global[globalIdx].
 vec3 v = normalize(cameraPosition - inWorldPosition);
 #if IN_NORMAL == 1
 vec3 n = normalize(inWorldNormal); // normalized world normal
@@ -68,9 +69,9 @@ vec3 lighting = vec3(0.0);
 // HIRO ambient light
 
 // directional lights
-for (int i = 0; i < min(global.directionalLightCount, MAX_DIRECTIONAL_LIGHT_COUNT); i++) {
-  vec3 lightDirection = global.directionalLights[i].direction;
-  vec3 lightColor = global.directionalLights[i].color;
+for (int i = 0; i < min(global[globalIdx].directionalLightCount, MAX_DIRECTIONAL_LIGHT_COUNT); i++) {
+  vec3 lightDirection = global[globalIdx].directionalLights[i].direction;
+  vec3 lightColor = global[globalIdx].directionalLights[i].color;
 
   vec3 l = normalize(-lightDirection); // normalized direction into light source
   fillPBRInputWithL(pbr, l);
@@ -85,10 +86,10 @@ for (int i = 0; i < min(global.directionalLightCount, MAX_DIRECTIONAL_LIGHT_COUN
 }
 
 // point lights
-for (int i = 0; i < min(global.pointLightCount, MAX_POINT_LIGHT_COUNT); i++) {
-  vec3 lightPosition = global.pointLights[i].position;
-  vec3 lightColor = global.pointLights[i].color;
-  float lightRadius = global.pointLights[i].radius;
+for (int i = 0; i < min(global[globalIdx].pointLightCount, MAX_POINT_LIGHT_COUNT); i++) {
+  vec3 lightPosition = global[globalIdx].pointLights[i].position;
+  vec3 lightColor = global[globalIdx].pointLights[i].color;
+  float lightRadius = global[globalIdx].pointLights[i].radius;
 
   vec3 l = normalize(lightPosition - inWorldPosition); // normalized direction into light source
   fillPBRInputWithL(pbr, l);

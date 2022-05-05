@@ -9,21 +9,31 @@
 
 typedef struct vulkan_pipeline vulkan_pipeline;
 
-/// Manages frame-specific resources (command buffer, framebuffer) used by pipeline to render one
-/// one swap chain frame.
-typedef struct vulkan_pipeline_frame_state {
+/// Manages framebuffer used by pipeline's render pass.
+typedef struct vulkan_pipeline_framebuffer_state {
   vulkan_pipeline *pipeline; ///< Pointer.
 
-  /// Framebuffer used to write into swap chain (onscreen rendering) or into images
-  /// (offscreen rendering).
+  /// Framebuffer used to write into swap chain (onscreen rendering) into images (offscreen
+  /// rendering).
   VkFramebuffer framebuffer;
+
+} vulkan_pipeline_framebuffer_state;
+
+void vulkan_pipeline_framebuffer_state_init(vulkan_pipeline_framebuffer_state *framebufferState,
+                                            vulkan_pipeline *pipeline, uint32_t swapChainImageIdx);
+void vulkan_pipeline_framebuffer_state_deinit(vulkan_pipeline_framebuffer_state *framebufferState);
+
+/// Manages frame-specific resources (indirect buffer) used by pipeline to render on
+/// frame.
+typedef struct vulkan_pipeline_frame_state {
+  vulkan_pipeline *pipeline; ///< Pointer.
 
   // HIRO HIRO differs between pipelines, just use void* ?
   vulkan_batches_data batchesData;
 } vulkan_pipeline_frame_state;
 
 void vulkan_pipeline_frame_state_init(vulkan_pipeline_frame_state *frameState,
-                                      vulkan_pipeline *pipeline, uint32_t swapChainImageIdx);
+                                      vulkan_pipeline *pipeline);
 void vulkan_pipeline_frame_state_deinit(vulkan_pipeline_frame_state *frameState);
 
 void vulkan_pipeline_frame_state_send_to_device(vulkan_pipeline_frame_state *frameState);

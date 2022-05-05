@@ -2,11 +2,14 @@
 
 const char *validationLayers[] = {"VK_LAYER_KHRONOS_validation"};
 
+VkValidationFeatureEnableEXT enabledValidationFeatures[] = {
+    VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT,
+};
+
 const char *instanceExtensions[] = {VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME};
 
 const char *deviceExtensions[] = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-    VK_EXT_ROBUSTNESS_2_EXTENSION_NAME, // nullDescriptor
 #if defined(DEBUG)
     VK_KHR_SHADER_NON_SEMANTIC_INFO_EXTENSION_NAME, // NOTE: Required by debugPrintf.
 #endif
@@ -137,6 +140,7 @@ bool check_validation_layer_support(vulkan_device *vkd) {
       }
     }
     if (!layerFound) {
+      log_debug("validation layer %s not available!", layerName);
       free(availableLayers);
       return false;
     }
@@ -183,10 +187,17 @@ void create_instance(vulkan_device *vkd, data_config *config, data_asset_db *ass
   createInfo.ppEnabledExtensionNames = mergedInstanceExtensions;
 
   VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {0};
+  VkValidationFeaturesEXT validationFeatures = {0};
   if (validation_layers_enabled()) {
     createInfo.enabledLayerCount = array_size(validationLayers);
     createInfo.ppEnabledLayerNames = validationLayers;
     debugCreateInfo = vulkan_debug_messenger_create_info(vulkan_debug_callback_for_instance);
+    validationFeatures = (VkValidationFeaturesEXT){
+        .sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT,
+        .enabledValidationFeatureCount = array_size(enabledValidationFeatures),
+        .pEnabledValidationFeatures = enabledValidationFeatures,
+    };
+    debugCreateInfo.pNext = &validationFeatures;
     createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
   } else {
     createInfo.enabledLayerCount = 0;
@@ -250,7 +261,6 @@ bool check_device_extension_support(vulkan_device *vkd, VkPhysicalDevice physica
       }
     }
     if (missingExtension) {
-      log_error("unsupported extension: %s", extensionName);
       break;
     }
   }
@@ -326,11 +336,13 @@ bool physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevic
   log_info("descriptorBindingPartiallyBound = %d", features12.descriptorBindingPartiallyBound);
   log_info("runtimeDescriptorArray = %d", features12.runtimeDescriptorArray);
   log_info("multiDrawIndirect = %d", features10.multiDrawIndirect);
+  log_info("drawIndirectFirstInstance = %d", features10.drawIndirectFirstInstance);
   bool featuresSupported =
       features10.samplerAnisotropy && features10.shaderUniformBufferArrayDynamicIndexing &&
       features10.shaderSampledImageArrayDynamicIndexing && featuresRobustness2.nullDescriptor &&
       features12.descriptorIndexing && features12.descriptorBindingVariableDescriptorCount &&
-      features12.descriptorBindingPartiallyBound && features10.multiDrawIndirect;
+      features12.descriptorBindingPartiallyBound && features10.multiDrawIndirect &&
+      features10.drawIndirectFirstInstance;
 
   return queueFamiliesComplete && extensionsSupported && swapChainAdequate && goodVulkanVersion &&
          featuresSupported;
@@ -503,6 +515,7 @@ void create_logical_device(vulkan_device *vkd) {
       .shaderUniformBufferArrayDynamicIndexing = VK_TRUE,
       .shaderSampledImageArrayDynamicIndexing = VK_TRUE,
       .multiDrawIndirect = VK_TRUE,
+      .drawIndirectFirstInstance = VK_TRUE,
   };
   VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexingFeatures = {
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,

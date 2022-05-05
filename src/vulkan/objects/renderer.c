@@ -41,7 +41,11 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
     if (i + 1 < utarray_len(renderer->pipelines)) {
       nextPipeline = *(vulkan_pipeline **)utarray_eltptr(renderer->pipelines, i + 1);
     }
-    vulkan_pipeline_init_finish(pipeline, prevPipeline, nextPipeline);
+    vulkan_pipeline_init_prev_next(pipeline, prevPipeline, nextPipeline);
+  }
+
+  utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
+    vulkan_pipeline_init_finish(pipeline);
   }
   return renderer;
 }
@@ -88,7 +92,8 @@ void vulkan_renderer_recreate_swap_chain(vulkan_renderer *renderer) {
   utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
     vulkan_pipeline_init_start(pipeline, pipeline->type, renderer->vks, renderer->renderState,
                                renderer->pipelineSharedState);
-    vulkan_pipeline_init_finish(pipeline, pipeline->prev, pipeline->next);
+    vulkan_pipeline_init_prev_next(pipeline, pipeline->prev, pipeline->next);
+    vulkan_pipeline_init_finish(pipeline);
   }
 }
 
@@ -98,11 +103,17 @@ void vulkan_renderer_update(vulkan_renderer *renderer) {
 
 void vulkan_renderer_send_to_device(vulkan_renderer *renderer) {
   vulkan_render_state_send_to_device(renderer->renderState);
+  utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
+    vulkan_pipeline_send_to_device(pipeline);
+  }
 }
 
 void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
+  /* proceed to next frame */
+  vulkan_sync_advance_to_next_frame(renderer->renderState->sync);
   vulkan_sync_wait_for_current_frame_fence(renderer->renderState->sync);
 
+  /* acquire swap chain image */
   uint32_t swapChainImageIdx;
   VkResult result = vkAcquireNextImageKHR(
       renderer->vkd->device, renderer->vks->swapChain, UINT64_MAX,
@@ -119,9 +130,8 @@ void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
   /* Pre-submit CPU work:
    * We have acquired index of next in-flight image, we can now update
    * frame-specific resources (uniform buffers, push constants). */
-  utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
-    vulkan_pipeline_send_to_device(pipeline, swapChainImageIdx);
-  }
+  vulkan_renderer_update(renderer);
+  vulkan_renderer_send_to_device(renderer);
 
   /* record command buffer */
   VkCommandBuffer commandBuffer =
@@ -154,7 +164,7 @@ void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
       renderer->renderState->sync
           ->imageAvailableSemaphores[renderer->renderState->sync->currentFrameInFlight]};
   // https://github.com/KhronosGroup/Vulkan-Docs/wiki/Synchronization-Examples#graphics-to-graphics-dependencies
-  // VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+  // VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
   VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT};
   submitInfo.waitSemaphoreCount = 1;
   submitInfo.pWaitSemaphores = waitSemaphores;
@@ -189,7 +199,6 @@ void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
   } else {
     verify(result == VK_SUCCESS);
   }
-  vulkan_sync_advance_to_next_frame(renderer->renderState->sync);
 }
 
 void vulkan_renderer_run_main_loop(vulkan_renderer *renderer,
@@ -208,8 +217,6 @@ void vulkan_renderer_run_main_loop(vulkan_renderer *renderer,
       frameTime -= dt;
     }
     glfwPollEvents(); // calls GLFW callbacks
-    vulkan_renderer_update(renderer);
-    vulkan_renderer_send_to_device(renderer);
     vulkan_renderer_draw_frame(renderer);
   }
   vkDeviceWaitIdle(renderer->vkd->device);

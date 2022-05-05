@@ -1,8 +1,9 @@
+uint globalIdx = getGlobalIdx();
 uint instanceId = getInstanceId();
 outInstanceId = instanceId;
 
 outWorldPosition = mat3(instances[instanceId].modelMat) * inPosition;
-gl_Position = global.projMat * global.viewMat * instances[instanceId].modelMat * vec4(inPosition, 1.0);// position in clip space
+gl_Position = global[globalIdx].projMat * global[globalIdx].viewMat * instances[instanceId].modelMat * vec4(inPosition, 1.0);// position in clip space
 
 #ifdef IN_COLOR
 outColor = inColor;

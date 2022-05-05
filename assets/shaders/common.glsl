@@ -1,3 +1,8 @@
+
+uint getGlobalIdx() {
+  return draw.currentFrameInFlight;
+}
+
 uint getInstanceId() {
     #if SHADER_VERTEX == 1
     uint idx = gl_InstanceIndex;
@@ -7,6 +12,12 @@ uint getInstanceId() {
     return idx;// already calculated in vertex shader
     #endif
 }
+
+uint getMaterialId(uint instanceId) {
+  uint idx = instances[instanceId].materialId;
+  return FRAMES_IN_FLIGHT*idx + draw.currentFrameInFlight;
+}
+
 
 #define PI 3.14159265359
 #define EPSILON 1e-5

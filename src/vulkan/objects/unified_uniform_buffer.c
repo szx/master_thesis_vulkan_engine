@@ -9,10 +9,11 @@ vulkan_unified_uniform_buffer_create(vulkan_device *vkd,
   vulkan_unified_uniform_buffer *uniformBuffer = core_alloc(sizeof(vulkan_unified_uniform_buffer));
   uniformBuffer->renderCacheList = renderCacheList;
 
-  uniformBuffer->globalData = vulkan_global_uniform_buffer_data_create(1);
-  uniformBuffer->materialsData = vulkan_materials_uniform_buffer_data_create(MAX_MATERIAL_COUNT);
+  uniformBuffer->globalData = vulkan_global_uniform_buffer_data_create(1, FRAMES_IN_FLIGHT);
+  uniformBuffer->materialsData =
+      vulkan_materials_uniform_buffer_data_create(MAX_MATERIAL_COUNT, FRAMES_IN_FLIGHT);
   uniformBuffer->instancesData = vulkan_instances_uniform_buffer_data_create(
-      renderCacheList->maxPrimitiveRenderCacheCount * FRAMES_IN_FLIGHT);
+      renderCacheList->maxPrimitiveRenderCacheCount, FRAMES_IN_FLIGHT);
 
   uniformBuffer->buffer = vulkan_buffer_create(vkd, vulkan_buffer_type_uniform);
 
@@ -47,7 +48,8 @@ void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniform
 
   // global
   if (true /*TODO: update only if camera and lights are dirty*/) {
-    vulkan_global_uniform_buffer_element *element = &uniformBuffer->globalData->elements[0];
+    vulkan_global_uniform_buffer_element *element = vulkan_global_uniform_buffer_data_get_element(
+        uniformBuffer->globalData, 0, sync->currentFrameInFlight);
     vulkan_camera_set_view_matrix(camera, element->viewMat);
     vulkan_camera_set_projection_matrix(camera, element->projMat);
     vulkan_lights_set_directional_light_elements(lights, &element->directionalLightCount,
@@ -63,9 +65,9 @@ void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniform
     size_t materialId = materialElement->materialIdx;
     // PERF: Update material only once (either keep track here or just iterate on
     // textures->materialElements).
-    // log_debug("updating material %zu", materialId);
     vulkan_materials_uniform_buffer_element *element =
-        &uniformBuffer->materialsData->elements[materialId];
+        vulkan_materials_uniform_buffer_data_get_element(uniformBuffer->materialsData, materialId,
+                                                         sync->currentFrameInFlight);
 
     element->baseColorTextureId = materialElement->baseColorTextureElement->textureIdx;
     glm_vec4_copy(materialElement->material->baseColorFactor, element->baseColorFactor);
@@ -78,9 +80,10 @@ void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniform
   // instances
   utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
                               uniformBuffer->renderCacheList->primitiveRenderCaches) {
-    size_t instanceId = FRAMES_IN_FLIGHT * renderCache->instanceId + sync->currentFrameInFlight;
+    size_t instanceId = renderCache->instanceId;
     vulkan_instances_uniform_buffer_element *element =
-        &uniformBuffer->instancesData->elements[instanceId];
+        vulkan_instances_uniform_buffer_data_get_element(uniformBuffer->instancesData, instanceId,
+                                                         sync->currentFrameInFlight);
 
     glm_mat4_copy(renderCache->transform, element->modelMat);
 
@@ -102,7 +105,10 @@ void vulkan_unified_uniform_buffer_debug_print(vulkan_unified_uniform_buffer *un
   log_debug("UNIFIED UNIFORM BUFFER:\n");
   assert(uniformBuffer->buffer->totalSize > 0);
   log_debug("uniform buffer size=%d\n", uniformBuffer->buffer->totalSize);
-  log_debug("global data count=%d\n", uniformBuffer->globalData->count);
-  log_debug("materials data count=%d\n", uniformBuffer->materialsData->count);
-  log_debug("instances data count=%d\n", uniformBuffer->instancesData->count);
+  log_debug("global data count=%d\n",
+            vulkan_global_uniform_buffer_data_get_count(uniformBuffer->globalData));
+  log_debug("materials data count=%d\n",
+            vulkan_materials_uniform_buffer_data_get_count(uniformBuffer->materialsData));
+  log_debug("instances data count=%d\n",
+            vulkan_instances_uniform_buffer_data_get_count(uniformBuffer->instancesData));
 }

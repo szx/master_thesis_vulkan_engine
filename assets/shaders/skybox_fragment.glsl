@@ -1,11 +1,12 @@
+uint globalIdx = getGlobalIdx();
 uint instanceId = getInstanceId();
+uint materialId = getMaterialId(instanceId);
 
-uint materialId = instances[instanceId].materialId;
 vec4 baseColorFactor = materials[materialId].baseColorFactor;
 float metallicFactor = materials[materialId].metallicFactor;
 float roughnessFactor = materials[materialId].roughnessFactor;
 
-vec3 cameraPosition = (inverse(global.viewMat) * vec4(0, 0, 0, 1)).xyz; // PERF: Move to global.
+vec3 cameraPosition = (inverse(global[globalIdx].viewMat) * vec4(0, 0, 0, 1)).xyz; // PERF: Move to global[globalIdx].
 vec3 v = normalize(cameraPosition - inWorldPosition);
 #if IN_NORMAL == 1
 vec3 n = normalize(inWorldNormal); // normalized world normal

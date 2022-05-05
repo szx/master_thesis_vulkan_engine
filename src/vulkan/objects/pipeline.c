@@ -73,24 +73,40 @@ void vulkan_pipeline_init_start(vulkan_pipeline *pipeline, vulkan_pipeline_type 
   pipeline->shaderProgram = vulkan_shader_program_create(renderState, pipeline->type);
 }
 
-void vulkan_pipeline_init_finish(vulkan_pipeline *pipeline, vulkan_pipeline *prev,
-                                 vulkan_pipeline *next) {
+void vulkan_pipeline_init_prev_next(vulkan_pipeline *pipeline, vulkan_pipeline *prev,
+                                    vulkan_pipeline *next) {
   pipeline->prev = prev;
   pipeline->next = next;
+}
+
+void vulkan_pipeline_init_finish(vulkan_pipeline *pipeline) {
 
   create_render_pass(pipeline);
   create_graphics_pipeline(pipeline);
 
-  utarray_alloc(pipeline->frameStates, sizeof(vulkan_pipeline_frame_state));
-  utarray_resize(pipeline->frameStates, utarray_len(pipeline->vks->swapChainImageViews));
+  utarray_alloc(pipeline->framebufferStates, sizeof(vulkan_pipeline_frame_state));
+  utarray_resize(pipeline->framebufferStates, utarray_len(pipeline->vks->swapChainImageViews));
   size_t swapChainImageIdx = 0;
-  utarray_foreach_elem_it (vulkan_pipeline_frame_state *, frameState, pipeline->frameStates) {
-    vulkan_pipeline_frame_state_init(frameState, pipeline, swapChainImageIdx);
+  utarray_foreach_elem_it (vulkan_pipeline_framebuffer_state *, framebufferStates,
+                           pipeline->framebufferStates) {
+    vulkan_pipeline_framebuffer_state_init(framebufferStates, pipeline, swapChainImageIdx);
     swapChainImageIdx++;
+  }
+
+  utarray_alloc(pipeline->frameStates, sizeof(vulkan_pipeline_frame_state));
+  utarray_resize(pipeline->frameStates, FRAMES_IN_FLIGHT);
+  utarray_foreach_elem_it (vulkan_pipeline_frame_state *, frameState, pipeline->frameStates) {
+    vulkan_pipeline_frame_state_init(frameState, pipeline);
   }
 }
 
 void vulkan_pipeline_deinit(vulkan_pipeline *pipeline) {
+  utarray_foreach_elem_it (vulkan_pipeline_framebuffer_state *, framebufferStates,
+                           pipeline->framebufferStates) {
+    vulkan_pipeline_framebuffer_state_deinit(framebufferStates);
+  }
+  utarray_free(pipeline->framebufferStates);
+
   utarray_foreach_elem_it (vulkan_pipeline_frame_state *, frameState, pipeline->frameStates) {
     vulkan_pipeline_frame_state_deinit(frameState);
   }
@@ -113,16 +129,15 @@ vulkan_pipeline_info vulkan_pipeline_get_pipeline_info(vulkan_pipeline *pipeline
   return (vulkan_pipeline_info){0};
 }
 
-void vulkan_pipeline_send_to_device(vulkan_pipeline *pipeline, size_t swapChainImageIdx) {
+void vulkan_pipeline_send_to_device(vulkan_pipeline *pipeline) {
   vulkan_pipeline_frame_state *frameState =
-      utarray_eltptr(pipeline->frameStates, swapChainImageIdx);
+      utarray_eltptr(pipeline->frameStates, pipeline->renderState->sync->currentFrameInFlight);
 
   vulkan_pipeline_frame_state_send_to_device(frameState);
 }
 
 void vulkan_pipeline_record_render_pass(vulkan_pipeline *pipeline, VkCommandBuffer commandBuffer,
                                         size_t swapChainImageIdx) {
-  // HIRO Replace swapChainImageIdx with currentFrameIdx.
 #define x(_name, ...)                                                                              \
   if (pipeline->type == vulkan_pipeline_type_##_name) {                                            \
     vulkan_pipeline_impl_##_name##_record_render_pass(pipeline, commandBuffer, swapChainImageIdx); \
