@@ -9,7 +9,7 @@ graphics.WindowHeight = 480
 graphics.WindowTitle = "cpptest"
 graphics.EnabledInstancing = 1
 controls.Enabled = 1
-settings.StartScene = "metalroughspheresnotextures"
+settings.StartScene = "MetalRoughSpheresNoTextures"
 
 [ASSET.DB]
 types = "BYTE:uint8_t, INT:uint32_t, FLOAT:float, VEC2:vec2, VEC3:vec3, VEC4:vec4, MAT4:mat4, TEXT:UT_string *, KEY:hash_t"
@@ -24,3 +24,7 @@ object = "key KEY, transform MAT4, mesh KEY, camera KEY, children KEY_ARRAY"
 camera = "key KEY, type INT, fovY FLOAT, aspectRatio FLOAT, nearZ FLOAT, farZ FLOAT"
 skybox = "key KEY, cubemapTexture KEY"
 scene = "key KEY, name TEXT, objects KEY_ARRAY, cameras KEY_ARRAY, skybox KEY"
+
+[SCENE.CONFIG]
+skybox.Name = "skybox1"
+skybox.AmbientIntensity = 0

@@ -55,7 +55,7 @@ void vulkan_scene_render_state_update(vulkan_render_state *renderState) {
   vulkan_camera_update(renderState->camera);
 
   vulkan_batch_instancing_policy batchPolicy =
-      renderState->config->graphicsEnabledInstancing
+      renderState->config->asset.graphicsEnabledInstancing
           ? vulkan_batch_instancing_policy_matching_vertex_attributes
           : vulkan_batch_instancing_policy_no_instancing;
   vulkan_batches_update(renderState->batches, batchPolicy);

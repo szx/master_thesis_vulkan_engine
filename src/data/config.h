@@ -7,22 +7,36 @@
 #include "../codegen/macros.h"
 #include "../core/platform.h"
 
+typedef enum data_config_type {
+#define x(_macro, _name, ...) data_config_type_##_name,
+  DATA_CONFIG_SCHEMA(x, )
+#undef x
+      data_config_type_count,
+} data_config_type;
+
 /// Key-value config.
 /// It corresponds to multiple sections of INI file.
 /// FIXME: Implementation is case sensitive.
 typedef struct data_config {
-  UT_string *path; /// INI config filepath.
-  /* state */
+  UT_string *path; ///< INI config filepath.
+  data_config_type type;
+
 #define decl_int(_section, _key, ...) int _section##_key;
 #define decl_str(_section, _key, ...) UT_string *_section##_key;
-  DATA_CONFIG_INT_KEYS(decl_int, decl_empty, )
-  DATA_CONFIG_STR_KEYS(decl_str, decl_empty, )
+#define x(_macro, _name, ...)                                                                      \
+  struct {                                                                                         \
+    DATA_##_macro##_CONFIG_INT_KEYS(decl_int, decl_empty, ) DATA_##_macro                          \
+        ##_CONFIG_STR_KEYS(decl_str, decl_empty, )                                                 \
+  } _name;
+  DATA_CONFIG_SCHEMA(x, )
+#undef x
 #undef decl_int
 #undef decl_str
+
   bool dirty; // True if config is updated.
 } data_config;
 
-data_config *data_config_create();
+data_config *data_config_create(UT_string *path, data_config_type type);
 void data_config_destroy(data_config *config);
 /// Reads config state from disk and tries to parse.
 void data_config_load(data_config *config);

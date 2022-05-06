@@ -41,8 +41,8 @@ void parse_arguments(int argc, char *argv[], asset_pipeline_input **assetInput) 
   }
 }
 
-void write_default_config() {
-  data_config *config = data_config_create();
+void write_default_asset_config() {
+  data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_asset);
   data_config_set_default_values(config);
   data_config_save(config);
   data_config_destroy(config);
@@ -52,10 +52,24 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
   log_info("processing gltf '%s' in '%s'", utstring_body(assetInput->sourceAssetName),
            utstring_body(assetInput->sourceAssetPath));
 
-  vulkan_data_scene *sceneData = vulkan_data_scene_create_with_gltf_file(
-      assetInput->sourceAssetName, assetInput->sourceAssetPath);
+  UT_string *gltfPath;
+  utstring_alloc(gltfPath, utstring_body(assetInput->sourceAssetPath));
+  utstring_printf(gltfPath, "/%s.gltf", utstring_body(assetInput->sourceAssetName));
+  UT_string *configPath;
+  utstring_alloc(configPath, utstring_body(assetInput->sourceAssetPath));
+  utstring_printf(configPath, "/%s.ini", utstring_body(assetInput->sourceAssetName));
+
+  data_config *config = data_config_create(configPath, data_config_type_scene);
+
+  // HIRO HIRO HIRO pass config vulkan_data_scene_create_with_gltf_file
+  vulkan_data_scene *sceneData =
+      vulkan_data_scene_create_with_gltf_file(assetInput->sourceAssetName, gltfPath);
   vulkan_data_scene_serialize(sceneData, assetDb);
   vulkan_data_scene_destroy(sceneData);
+
+  utstring_free(gltfPath);
+  utstring_free(configPath);
+  data_config_destroy(config);
 }
 
 void write_cubemap_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetInput) {
@@ -124,7 +138,7 @@ int main(int argc, char *argv[]) {
   log_info("source asset type: '%s'", utstring_body(input->sourceAssetType));
   if (strcmp("empty_config", utstring_body(input->sourceAssetType)) == 0) {
     log_info("write default config");
-    write_default_config();
+    write_default_asset_config();
   } else if (strcmp("empty_assets", utstring_body(input->sourceAssetType)) == 0) {
     log_info("save empty asset database");
     data_asset_db *assetDb = data_asset_db_create();

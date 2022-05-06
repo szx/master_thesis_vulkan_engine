@@ -1,12 +1,16 @@
 #include "config.h"
 
-data_config *data_config_create() {
+data_config *data_config_create(UT_string *path, data_config_type type) {
   data_config *config = core_alloc(sizeof(data_config));
-  config->path = globals.assetConfigFilepath;
-#define alloc_int(_section, _key, ...) config->_section##_key = 0;
-#define alloc_str(_section, _key, ...) utstring_new(config->_section##_key);
-  DATA_CONFIG_INT_KEYS(alloc_int, )
-  DATA_CONFIG_STR_KEYS(alloc_str, )
+  config->path = path;
+  config->type = type;
+#define alloc_int(_section, _key, _, _name) config->_name._section##_key = 0;
+#define alloc_str(_section, _key, _, _name) utstring_new(config->_name._section##_key);
+#define x(_macro, _name, ...)                                                                      \
+  DATA_##_macro##_CONFIG_INT_KEYS(alloc_int, _name)                                                \
+      DATA_##_macro##_CONFIG_STR_KEYS(alloc_str, _name)
+  DATA_CONFIG_SCHEMA(x, )
+#undef x
 #undef alloc_int
 #undef alloc_str
   config->dirty = false;
@@ -15,8 +19,10 @@ data_config *data_config_create() {
 }
 
 void data_config_destroy(data_config *config) {
-#define free_str(_section, _key, ...) utstring_free(config->_section##_key);
-  DATA_CONFIG_STR_KEYS(free_str, )
+#define free_str(_section, _key, _, _name) utstring_free(config->_name._section##_key);
+#define x(_macro, _name, ...) DATA_##_macro##_CONFIG_STR_KEYS(free_str, _name)
+  DATA_CONFIG_SCHEMA(x, )
+#undef x
 #undef free_str
   core_free(config);
 }
@@ -86,14 +92,18 @@ void data_config_parse(data_config *config, UT_string *configStr) {
     strstrip(&value);
 
     // set config key with value
-#define parse_int(_section, _key, ...)                                                             \
+#define parse_int(_section, _key, _, _name)                                                        \
   if (strcmp(#_section, section) == 0 && strcmp(#_key, key) == 0)                                  \
     data_config_set_int(config, #_section, #_key, atoi(value));
-#define parse_str(_section, _key, ...)                                                             \
+#define parse_str(_section, _key, _, _name)                                                        \
   if (strcmp(#_section, section) == 0 && strcmp(#_key, key) == 0)                                  \
     data_config_set_str(config, #_section, #_key, value);
-    DATA_CONFIG_INT_KEYS(parse_int, )
-    DATA_CONFIG_STR_KEYS(parse_str, )
+#define x(_macro, _name, ...)                                                                      \
+  if (config->type == data_config_type_##_name) {                                                  \
+    DATA_##_macro##_CONFIG_INT_KEYS(parse_int, ) DATA_##_macro##_CONFIG_STR_KEYS(parse_str, )      \
+  }
+    DATA_CONFIG_SCHEMA(x, )
+#undef x
 #undef parse_str
 #undef parse_int
 
@@ -109,24 +119,39 @@ UT_string *data_config_get_config_str(data_config *config) {
 
 #define section_num(_section, ...) +1
 #define section_str(_section, ...) #_section,
-  static const char *configSections[0 DATA_CONFIG_SECTIONS(section_num, )] = {
-      DATA_CONFIG_SECTIONS(section_str, )};
+  size_t configSectionCount = 0;
+  const char **configSections = NULL;
+#define x(_macro, _name, ...)                                                                      \
+  static const size_t _name##ConfigSectionCount =                                                  \
+      0 DATA_##_macro##_CONFIG_SECTIONS(section_num, );                                            \
+  static const char *_name##ConfigSections[] = {DATA_##_macro##_CONFIG_SECTIONS(section_str, )};   \
+  if (config->type == data_config_type_##_name) {                                                  \
+    configSectionCount = _name##ConfigSectionCount;                                                \
+    configSections = _name##ConfigSections;                                                        \
+  }
+  DATA_CONFIG_SCHEMA(x, )
+#undef x
 #undef section_str
 #undef section_num
 
-  for (size_t i = 0; i < array_size(configSections); i++) {
+  for (size_t i = 0; i < configSectionCount; i++) {
     const char *section = configSections[i];
     utstring_printf(s, "[%s]\n", section);
-#define save_int(_section, _key, ...)                                                              \
+#define save_int(_section, _key, _, _name)                                                         \
   if (strcmp(#_section, section) == 0) {                                                           \
-    utstring_printf(s, "  %s = %d \n", #_key, config->_section##_key);                             \
+    utstring_printf(s, "  %s = %d \n", #_key, config->_name._section##_key);                       \
   }
-#define save_str(_section, _key, ...)                                                              \
+#define save_str(_section, _key, _, _name)                                                         \
   if (strcmp(#_section, section) == 0) {                                                           \
-    utstring_printf(s, "  %s = %s\n", #_key, utstring_body(config->_section##_key));               \
+    utstring_printf(s, "  %s = %s\n", #_key, utstring_body(config->_name._section##_key));         \
   }
-    DATA_CONFIG_INT_KEYS(save_int, )
-    DATA_CONFIG_STR_KEYS(save_str, )
+#define x(_macro, _name, ...)                                                                      \
+  if (config->type == data_config_type_##_name) {                                                  \
+    DATA_##_macro##_CONFIG_INT_KEYS(save_int, _name)                                               \
+        DATA_##_macro##_CONFIG_STR_KEYS(save_str, _name)                                           \
+  }
+    DATA_CONFIG_SCHEMA(x, )
+#undef x
 #undef save_str
 #undef save_int
     utstring_printf(s, "\n");
@@ -135,59 +160,84 @@ UT_string *data_config_get_config_str(data_config *config) {
 }
 
 void data_config_set_int(data_config *config, const char *section, const char *key, int value) {
-#define parse_int(_section, _key, ...)                                                             \
+#define parse_int(_section, _key, _, _name)                                                        \
   if (strcmp(#_section, section) == 0 && strcmp(#_key, key) == 0) {                                \
-    config->_section##_key = value;                                                                \
+    config->_name._section##_key = value;                                                          \
     return;                                                                                        \
   }
-  DATA_CONFIG_INT_KEYS(parse_int, )
+#define x(_macro, _name, ...)                                                                      \
+  if (config->type == data_config_type_##_name) {                                                  \
+    DATA_##_macro##_CONFIG_INT_KEYS(parse_int, _name)                                              \
+  }
+  DATA_CONFIG_SCHEMA(x, )
+#undef x
 #undef parse_int
   log_warn("tried to set value '%d' for int config key '%s", value, key);
 }
 
 void data_config_set_str(data_config *config, const char *section, const char *key,
                          const char *value) {
-#define parse_str(_section, _key, ...)                                                             \
+#define parse_str(_section, _key, _, _name)                                                        \
   if (strcmp(#_section, section) == 0 && strcmp(#_key, key) == 0) {                                \
-    utstring_clear(config->_section##_key);                                                        \
-    utstring_printf(config->_section##_key, "%s", value);                                          \
+    utstring_clear(config->_name._section##_key);                                                  \
+    utstring_printf(config->_name._section##_key, "%s", value);                                    \
     return;                                                                                        \
   }
-  DATA_CONFIG_STR_KEYS(parse_str, )
+#define x(_macro, _name, ...)                                                                      \
+  if (config->type == data_config_type_##_name) {                                                  \
+    DATA_##_macro##_CONFIG_STR_KEYS(parse_str, _name)                                              \
+  }
+  DATA_CONFIG_SCHEMA(x, )
+#undef x
 #undef parse_str
   log_error("tried to set value '%s' for string config key '%s' '%s'", value, section, key);
 }
 
 void data_config_set_default_int(data_config *config, const char *section, const char *key) {
-#define parse_int(_section, _key, _default, ...)                                                   \
+#define parse_int(_section, _key, _default, _name)                                                 \
   if (strcmp(#_section, section) == 0 && strcmp(#_key, key) == 0) {                                \
-    config->_section##_key = _default;                                                             \
+    config->_name._section##_key = _default;                                                       \
     return;                                                                                        \
   }
-  DATA_CONFIG_INT_KEYS(parse_int, )
+#define x(_macro, _name, ...)                                                                      \
+  if (config->type == data_config_type_##_name) {                                                  \
+    DATA_##_macro##_CONFIG_INT_KEYS(parse_int, _name)                                              \
+  }
+  DATA_CONFIG_SCHEMA(x, )
+#undef x
 #undef parse_int
   log_warn("tried to set default value for int config key '%s", key);
 }
 void data_config_set_default_str(data_config *config, const char *section, const char *key) {
-#define parse_str(_section, _key, _default, ...)                                                   \
+#define parse_str(_section, _key, _default, _name)                                                 \
   if (strcmp(#_section, section) == 0 && strcmp(#_key, key) == 0) {                                \
-    utstring_clear(config->_section##_key);                                                        \
-    utstring_printf(config->_section##_key, "%s", _default);                                       \
+    utstring_clear(config->_name._section##_key);                                                  \
+    utstring_printf(config->_name._section##_key, "%s", _default);                                 \
     return;                                                                                        \
   }
-  DATA_CONFIG_STR_KEYS(parse_str, )
+#define x(_macro, _name, ...)                                                                      \
+  if (config->type == data_config_type_##_name) {                                                  \
+    DATA_##_macro##_CONFIG_STR_KEYS(parse_str, _name)                                              \
+  }
+  DATA_CONFIG_SCHEMA(x, )
+#undef x
 #undef parse_str
   log_error("tried to set default value for string config key '%s' '%s'", section, key);
 }
 
 void data_config_set_default_values(data_config *config) {
-#define set_int(_section, _key, _default, ...) config->_section##_key = _default;
-  DATA_CONFIG_INT_KEYS(set_int, )
+#define set_int(_section, _key, _default, _name) config->_name._section##_key = _default;
+#define set_str(_section, _key, _default, _name)                                                   \
+  utstring_clear(config->_name._section##_key);                                                    \
+  utstring_printf(config->_name._section##_key, "%s", _default);
+#define x(_macro, _name, ...)                                                                      \
+  if (config->type == data_config_type_##_name) {                                                  \
+    DATA_##_macro##_CONFIG_INT_KEYS(set_int, _name)                                                \
+        DATA_##_macro##_CONFIG_STR_KEYS(set_str, _name)                                            \
+  }
+  DATA_CONFIG_SCHEMA(x, )
+#undef x
 #undef set_int
-#define set_str(_section, _key, _default, ...)                                                     \
-  utstring_clear(config->_section##_key);                                                          \
-  utstring_printf(config->_section##_key, "%s", _default);
-  DATA_CONFIG_STR_KEYS(set_str, )
 #undef set_str
   config->dirty = true;
 }

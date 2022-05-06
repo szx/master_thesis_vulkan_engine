@@ -40,29 +40,39 @@ def codegen_macros(config: ConfigParser):
     defs = ['#include "macros.h"', '#include "../core/platform.h"']
 
     # config.h
-    config_ini = get_config(config, 'ASSET.CONFIG', split_keys=True)
+    def parse_ini_config(name):
+        config_ini = get_config(config, name, split_keys=True)
+        macro_name = name.partition('.')[0].upper()
 
-    decls.append(f'\n#define END_OF_DATA_CONFIG_SECTION')
-    decls.append(f'#define DATA_CONFIG_SECTIONS(X, ...) \\')
-    for section in config_ini.keys():
-        decls.append(f'  X({section}, __VA_ARGS__) \\')
-    decls.append(f'  END_OF_DATA_CONFIG_SECTION')
+        decls.append(f'\n#define END_OF_DATA_{macro_name}_CONFIG_SECTION')
+        decls.append(f'#define DATA_{macro_name}_CONFIG_SECTIONS(X, ...) \\')
+        for section in config_ini.keys():
+            decls.append(f'  X({section}, __VA_ARGS__) \\')
+        decls.append(f'  END_OF_DATA_{macro_name}_CONFIG_SECTION')
 
-    decls.append(f'\n#define END_OF_DATA_CONFIG_INT_KEYS')
-    decls.append(f'#define DATA_CONFIG_INT_KEYS(X, ...) \\')
-    for section, items in config_ini.items():
-        for key, value in items.items():
-            if isinstance(value, int):
-                decls.append(f'  X({section}, {key}, {value}, __VA_ARGS__) \\')
-    decls.append(f'  END_OF_DATA_CONFIG_INT_KEYS')
+        decls.append(f'\n#define END_OF_DATA_{macro_name}_CONFIG_INT_KEYS')
+        decls.append(f'#define DATA_{macro_name}_CONFIG_INT_KEYS(X, ...) \\')
+        for section, items in config_ini.items():
+            for key, value in items.items():
+                if isinstance(value, int):
+                    decls.append(f'  X({section}, {key}, {value}, __VA_ARGS__) \\')
+        decls.append(f'  END_OF_DATA_{macro_name}_CONFIG_INT_KEYS')
 
-    decls.append(f'\n#define END_OF_DATA_CONFIG_STR_KEYS')
-    decls.append(f'#define DATA_CONFIG_STR_KEYS(X, ...) \\')
-    for section, items in config_ini.items():
-        for key, value in items.items():
-            if isinstance(value, str):
-                decls.append(f'  X({section}, {key}, "{value}", __VA_ARGS__) \\')
-    decls.append(f'  END_OF_DATA_CONFIG_STR_KEYS')
+        decls.append(f'\n#define END_OF_DATA_{macro_name}_CONFIG_STR_KEYS')
+        decls.append(f'#define DATA_{macro_name}_CONFIG_STR_KEYS(X, ...) \\')
+        for section, items in config_ini.items():
+            for key, value in items.items():
+                if isinstance(value, str):
+                    decls.append(f'  X({section}, {key}, "{value}", __VA_ARGS__) \\')
+        decls.append(f'  END_OF_DATA_{macro_name}_CONFIG_STR_KEYS')
+
+    parse_ini_config('ASSET.CONFIG')
+    parse_ini_config('SCENE.CONFIG')
+    decls.append(f'\n#define END_OF_DATA_CONFIG_SCHEMA')
+    decls.append(f'#define DATA_CONFIG_SCHEMA(X, ...) \\')
+    decls.append(f'  X(ASSET, asset, __VA_ARGS__) \\')
+    decls.append(f'  X(SCENE, scene, __VA_ARGS__) \\')
+    decls.append(f'  END_OF_DATA_CONFIG_SCHEMA')
 
     # asset_db.h
     asset_db_ini = get_config(config, 'ASSET.DB')

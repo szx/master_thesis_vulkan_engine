@@ -10,7 +10,7 @@
 // Loading sponza.gltf.
 TEST gltf_loading() {
   // TODO: Loading extra files (images).
-  data_config *config = data_config_create();
+  data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_asset);
   data_asset_db *assetDb = data_asset_db_create();
   vulkan_device *vkd = vulkan_device_create(config, assetDb);
   UT_string *sceneName;
@@ -85,7 +85,7 @@ TEST gltf_loading() {
 SUITE(gltf_suite) { RUN_TEST(gltf_loading); }
 
 TEST shaderc_compiling() {
-  data_config *config = data_config_create();
+  data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_asset);
   data_asset_db *assetDb = data_asset_db_create();
   vulkan_device *vkd = vulkan_device_create(config, assetDb);
   vulkan_swap_chain *vks = vulkan_swap_chain_create(vkd);
@@ -150,7 +150,7 @@ void assert_graph(vulkan_scene_graph *sceneGraph) {
 
 // Building scene graph.
 TEST scene_graph_building() {
-  data_config *config = data_config_create();
+  data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_asset);
   data_asset_db *assetDb = data_asset_db_create();
   vulkan_device *vkd = vulkan_device_create(config, assetDb);
 

@@ -2,26 +2,47 @@
 
 #pragma once
 
-#define END_OF_DATA_CONFIG_SECTION
-#define DATA_CONFIG_SECTIONS(X, ...) \
-  X(settings, __VA_ARGS__) \
-  X(graphics, __VA_ARGS__) \
+#define END_OF_DATA_ASSET_CONFIG_SECTION
+#define DATA_ASSET_CONFIG_SECTIONS(X, ...) \
   X(controls, __VA_ARGS__) \
-  END_OF_DATA_CONFIG_SECTION
+  X(graphics, __VA_ARGS__) \
+  X(settings, __VA_ARGS__) \
+  END_OF_DATA_ASSET_CONFIG_SECTION
 
-#define END_OF_DATA_CONFIG_INT_KEYS
-#define DATA_CONFIG_INT_KEYS(X, ...) \
+#define END_OF_DATA_ASSET_CONFIG_INT_KEYS
+#define DATA_ASSET_CONFIG_INT_KEYS(X, ...) \
+  X(controls, Enabled, 1, __VA_ARGS__) \
   X(graphics, WindowWidth, 640, __VA_ARGS__) \
   X(graphics, WindowHeight, 480, __VA_ARGS__) \
   X(graphics, EnabledInstancing, 1, __VA_ARGS__) \
-  X(controls, Enabled, 1, __VA_ARGS__) \
-  END_OF_DATA_CONFIG_INT_KEYS
+  END_OF_DATA_ASSET_CONFIG_INT_KEYS
 
-#define END_OF_DATA_CONFIG_STR_KEYS
-#define DATA_CONFIG_STR_KEYS(X, ...) \
-  X(settings, StartScene, "metalroughspheresnotextures", __VA_ARGS__) \
+#define END_OF_DATA_ASSET_CONFIG_STR_KEYS
+#define DATA_ASSET_CONFIG_STR_KEYS(X, ...) \
   X(graphics, WindowTitle, "cpptest", __VA_ARGS__) \
-  END_OF_DATA_CONFIG_STR_KEYS
+  X(settings, StartScene, "MetalRoughSpheresNoTextures", __VA_ARGS__) \
+  END_OF_DATA_ASSET_CONFIG_STR_KEYS
+
+#define END_OF_DATA_SCENE_CONFIG_SECTION
+#define DATA_SCENE_CONFIG_SECTIONS(X, ...) \
+  X(skybox, __VA_ARGS__) \
+  END_OF_DATA_SCENE_CONFIG_SECTION
+
+#define END_OF_DATA_SCENE_CONFIG_INT_KEYS
+#define DATA_SCENE_CONFIG_INT_KEYS(X, ...) \
+  X(skybox, AmbientIntensity, 0, __VA_ARGS__) \
+  END_OF_DATA_SCENE_CONFIG_INT_KEYS
+
+#define END_OF_DATA_SCENE_CONFIG_STR_KEYS
+#define DATA_SCENE_CONFIG_STR_KEYS(X, ...) \
+  X(skybox, Name, "skybox1", __VA_ARGS__) \
+  END_OF_DATA_SCENE_CONFIG_STR_KEYS
+
+#define END_OF_DATA_CONFIG_SCHEMA
+#define DATA_CONFIG_SCHEMA(X, ...) \
+  X(ASSET, asset, __VA_ARGS__) \
+  X(SCENE, scene, __VA_ARGS__) \
+  END_OF_DATA_CONFIG_SCHEMA
 
 #define END_OF_DATA_DB_TYPES
 #define DATA_DB_TYPES(X, ...) \

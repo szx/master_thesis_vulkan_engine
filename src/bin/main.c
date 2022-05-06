@@ -79,13 +79,13 @@ void update_func(vulkan_renderer *renderer, double dt) {
 
 int main(int argc, char *argv[]) {
   platform_create();
-  data_config *config = data_config_create();
+  data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_asset);
   data_asset_db *assetDb = data_asset_db_create();
   vulkan_device *vkd = vulkan_device_create(config, assetDb);
   vulkan_swap_chain *vks = vulkan_swap_chain_create(vkd);
   vulkan_pipeline_type pipelines[] = {vulkan_pipeline_type_skybox, vulkan_pipeline_type_forward};
   vulkan_renderer *renderer = vulkan_renderer_create(
-      config, assetDb, vks, config->settingsStartScene, pipelines, array_size(pipelines));
+      config, assetDb, vks, config->asset.settingsStartScene, pipelines, array_size(pipelines));
 
   vulkan_renderer_run_main_loop(renderer, update_func);
 

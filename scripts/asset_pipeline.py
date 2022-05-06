@@ -24,13 +24,12 @@ def get_cubemap_files(assets_path):
 
 
 def get_gltf_files(assets_path):
-    gltf_names, gltf_paths = [], []
+    gltfs = []
     for gltf_path in assets_path.glob('**/*.gltf'):
-        gltf_name = gltf_path.stem.lower()
-        assert (gltf_name not in gltf_names)  # Forbid two glTF files with same name.
-        gltf_paths.append(gltf_path)
-        gltf_names.append(gltf_name)
-    return gltf_names, gltf_paths
+        name = gltf_path.stem
+        path = gltf_path.parent
+        gltfs.append((name, path))
+    return gltfs
 
 
 def main(bin_path):
@@ -39,8 +38,8 @@ def main(bin_path):
 
     cubemaps = get_cubemap_files(assets_path)
     print(cubemaps)
-    gltf_names, gltf_paths = get_gltf_files(assets_path)
-    print(assets_path, gltf_names, gltf_paths)
+    gltfs = get_gltf_files(assets_path)
+    print(assets_path, gltfs)
     asset_pipeline_bin_path = bin_path / "asset_pipeline"
 
     run_asset_pipeline(asset_pipeline_bin_path, "empty_config", '')
@@ -49,9 +48,8 @@ def main(bin_path):
     for name, path, ext in cubemaps:
         run_asset_pipeline(asset_pipeline_bin_path, "cubemap", f'{name} {path} {ext}')
 
-    gltf_paths = [f'"{str(x)}"' for x in gltf_paths]
-    for gltf_name, gltf_path in zip(gltf_names, gltf_paths):
-        run_asset_pipeline(asset_pipeline_bin_path, "gltf", f'{gltf_name} {gltf_path}')
+    for name, path in gltfs:
+        run_asset_pipeline(asset_pipeline_bin_path, "gltf", f'{name} {path}')
 
 
 if __name__ == '__main__':
