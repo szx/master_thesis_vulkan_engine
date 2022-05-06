@@ -5,16 +5,16 @@
 #define END_OF_DATA_CONFIG_SECTION
 #define DATA_CONFIG_SECTIONS(X, ...) \
   X(settings, __VA_ARGS__) \
-  X(controls, __VA_ARGS__) \
   X(graphics, __VA_ARGS__) \
+  X(controls, __VA_ARGS__) \
   END_OF_DATA_CONFIG_SECTION
 
 #define END_OF_DATA_CONFIG_INT_KEYS
 #define DATA_CONFIG_INT_KEYS(X, ...) \
-  X(controls, Enabled, 1, __VA_ARGS__) \
   X(graphics, WindowWidth, 640, __VA_ARGS__) \
   X(graphics, WindowHeight, 480, __VA_ARGS__) \
   X(graphics, EnabledInstancing, 1, __VA_ARGS__) \
+  X(controls, Enabled, 1, __VA_ARGS__) \
   END_OF_DATA_CONFIG_INT_KEYS
 
 #define END_OF_DATA_CONFIG_STR_KEYS
@@ -38,7 +38,7 @@
 
 #define END_OF_DATA_ASSET_DB_TABLES
 #define DATA_ASSET_DB_TABLES(X, ...) \
-  X(image, key, key, width, int, height, int, depth, int, channels, int, type, int, data, byte_array, __VA_ARGS__) \
+  X(image, key, key, width, int, height, int, depth, int, channels, int, facecount, int, type, int, data, byte_array, __VA_ARGS__) \
   X(sampler, key, key, magfilter, int, minfilter, int, addresswrapu, int, addresswrapv, int, __VA_ARGS__) \
   X(texture, key, key, image, key, sampler, key, __VA_ARGS__) \
   X(material, key, key, basecolorfactor, vec4, metallicfactor, float, roughnessfactor, float, basecolortexture, key, metallicroughnesstexture, key, __VA_ARGS__) \
@@ -47,7 +47,8 @@
   X(mesh, key, key, primitives, key_array, __VA_ARGS__) \
   X(object, key, key, transform, mat4, mesh, key, camera, key, children, key_array, __VA_ARGS__) \
   X(camera, key, key, type, int, fovy, float, aspectratio, float, nearz, float, farz, float, __VA_ARGS__) \
-  X(scene, key, key, name, text, objects, key_array, cameras, key_array, __VA_ARGS__) \
+  X(skybox, key, key, cubemaptexture, key, __VA_ARGS__) \
+  X(scene, key, key, name, text, objects, key_array, cameras, key_array, skybox, key, __VA_ARGS__) \
   END_OF_DATA_ASSET_DB_TABLES
 
 #define END_OF_DATA_ASSET_DB_COLUMNS
@@ -57,6 +58,7 @@
   X(image, height, int, __VA_ARGS__) \
   X(image, depth, int, __VA_ARGS__) \
   X(image, channels, int, __VA_ARGS__) \
+  X(image, faceCount, int, __VA_ARGS__) \
   X(image, type, int, __VA_ARGS__) \
   X(image, data, byte_array, __VA_ARGS__) \
   X(sampler, key, key, __VA_ARGS__) \
@@ -98,8 +100,11 @@
   X(camera, aspectRatio, float, __VA_ARGS__) \
   X(camera, nearZ, float, __VA_ARGS__) \
   X(camera, farZ, float, __VA_ARGS__) \
+  X(skybox, key, key, __VA_ARGS__) \
+  X(skybox, cubemapTexture, key, __VA_ARGS__) \
   X(scene, key, key, __VA_ARGS__) \
   X(scene, name, text, __VA_ARGS__) \
   X(scene, objects, key_array, __VA_ARGS__) \
   X(scene, cameras, key_array, __VA_ARGS__) \
+  X(scene, skybox, key, __VA_ARGS__) \
   END_OF_DATA_ASSET_DB_COLUMNS

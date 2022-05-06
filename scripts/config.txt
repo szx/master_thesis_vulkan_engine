@@ -13,7 +13,7 @@ settings.StartScene = "metalroughspheresnotextures"
 
 [ASSET.DB]
 types = "BYTE:uint8_t, INT:uint32_t, FLOAT:float, VEC2:vec2, VEC3:vec3, VEC4:vec4, MAT4:mat4, TEXT:UT_string *, KEY:hash_t"
-image = "key KEY, width INT, height INT, depth INT, channels INT, type INT, data BYTE_ARRAY"
+image = "key KEY, width INT, height INT, depth INT, channels INT, faceCount INT, type INT, data BYTE_ARRAY"
 sampler = "key KEY, magFilter INT, minFilter INT, addressWrapU INT, addressWrapV INT"
 texture = "key KEY, image KEY, sampler KEY"
 material = "key KEY, baseColorFactor VEC4, metallicFactor FLOAT, roughnessFactor FLOAT, baseColorTexture KEY, metallicRoughnessTexture KEY"
@@ -22,4 +22,5 @@ primitive = "key KEY, material KEY, topology INT, indices KEY, positions KEY, no
 mesh = "key KEY, primitives KEY_ARRAY"
 object = "key KEY, transform MAT4, mesh KEY, camera KEY, children KEY_ARRAY"
 camera = "key KEY, type INT, fovY FLOAT, aspectRatio FLOAT, nearZ FLOAT, farZ FLOAT"
-scene = "key KEY, name TEXT, objects KEY_ARRAY, cameras KEY_ARRAY"
+skybox = "key KEY, cubemapTexture KEY"
+scene = "key KEY, name TEXT, objects KEY_ARRAY, cameras KEY_ARRAY, skybox KEY"

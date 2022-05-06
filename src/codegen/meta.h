@@ -283,6 +283,6 @@ const char *vulkan_camera_type_debug_str(int value);
 const char *vulkan_data_image_type_debug_str(int value);
 const char *vulkan_data_vertex_attribute_component_type_debug_str(int value);
 const char *vulkan_image_type_debug_str(int value);
-const char *vulkan_shader_generator_output_type_debug_str(int value);
+const char *vulkan_pipeline_type_debug_str(int value);
 const char *vulkan_shader_reflect_binding_type_debug_str(int value);
 const char *vulkan_shader_type_debug_str(int value);

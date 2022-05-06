@@ -60,8 +60,10 @@ vulkan_data_image *parse_cgltf_image(vulkan_data_scene *sceneData, cgltf_image *
   image->height = h;
   image->depth = 1;
   image->channels = c;
+  image->faceCount = 1;
   image->type = type;
-  size_t imageSize = image->width * image->height * image->depth * image->channels;
+  size_t imageSize =
+      image->width * image->height * image->depth * image->channels * image->faceCount;
   utarray_resize(image->data, imageSize);
   core_memcpy(utarray_front(image->data), pixels, imageSize);
   core_free(pixels);
@@ -339,6 +341,8 @@ vulkan_data_scene *parse_cgltf_scene(UT_string *name, UT_string *path) {
     utarray_push_back(sceneData->rootObjects, &object);
   }
 
+  // HIRO HIRO parse skybox
+
   cgltf_free(cgltfData);
   return sceneData;
 }
@@ -408,6 +412,13 @@ vulkan_data_scene *vulkan_data_scene_create(UT_string *name) {
   defaultTexture->key = vulkan_data_texture_calculate_key(defaultTexture);
   DL_APPEND(sceneData->textures, defaultTexture);
 
+  sceneData->skyboxes = NULL; // NOTE: We use default skybox.
+  vulkan_data_skybox *defaultSkybox = core_alloc(sizeof(vulkan_data_skybox));
+  vulkan_data_skybox_init(defaultSkybox, sceneData);
+  defaultSkybox->cubemapTexture = defaultTexture;
+  defaultSkybox->key = vulkan_data_skybox_calculate_key(defaultSkybox);
+  DL_APPEND(sceneData->skyboxes, defaultSkybox);
+
   sceneData->materials = NULL; // NOTE: We use default material.
   vulkan_data_material *defaultMaterial = core_alloc(sizeof(vulkan_data_material));
   vulkan_data_material_init(defaultMaterial, sceneData);
@@ -449,6 +460,11 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
   dl_foreach_elem(vulkan_data_texture *, texture, sceneData->textures) {
     vulkan_data_texture_deinit(texture);
     core_free(texture);
+  }
+
+  dl_foreach_elem(vulkan_data_skybox *, skybox, sceneData->skyboxes) {
+    vulkan_data_skybox_deinit(skybox);
+    core_free(skybox);
   }
 
   dl_foreach_elem(vulkan_data_material *, material, sceneData->materials) {
@@ -519,6 +535,7 @@ void vulkan_data_scene_destroy(vulkan_data_scene *sceneData) {
 DEF_VULKAN_ENTITY_FUNCS(image, images)
 DEF_VULKAN_ENTITY_FUNCS(sampler, samplers)
 DEF_VULKAN_ENTITY_FUNCS(texture, textures)
+DEF_VULKAN_ENTITY_FUNCS(skybox, skyboxes)
 DEF_VULKAN_ENTITY_FUNCS(material, materials)
 DEF_VULKAN_ENTITY_FUNCS(vertex_attribute, vertexAttributes)
 DEF_VULKAN_ENTITY_FUNCS(primitive, primitives)

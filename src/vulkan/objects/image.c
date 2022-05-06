@@ -8,10 +8,10 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
   image->type = type;
   image->width = width;
   image->height = height;
-  image->arrayLayers = 1;
   image->sampleCount = VK_SAMPLE_COUNT_1_BIT;
   if (image->type == vulkan_image_type_depth_buffer) {
     image->mipLevelCount = 1;
+    image->arrayLayers = 1;
     image->format = vulkan_find_depth_format(vkd);
     image->tiling = VK_IMAGE_TILING_OPTIMAL;
     image->createFlags = 0;
@@ -21,6 +21,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->name = "depth buffer image";
   } else if (image->type == vulkan_image_type_material_base_color) {
     image->mipLevelCount = 1 + (uint32_t)floor(log2((double)MAX(image->width, image->height)));
+    image->arrayLayers = 1;
     image->format = preferredFormat;
     image->tiling = VK_IMAGE_TILING_OPTIMAL;
     image->createFlags = 0;
@@ -31,6 +32,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->name = "material image";
   } else if (image->type == vulkan_image_type_material_parameters) {
     image->mipLevelCount = 1;
+    image->arrayLayers = 1;
     image->format = preferredFormat;
     image->tiling = VK_IMAGE_TILING_OPTIMAL;
     image->createFlags = 0;
@@ -39,6 +41,17 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->name = "material image";
+  } else if (image->type == vulkan_image_type_cubemap) {
+    image->mipLevelCount = 1;
+    image->arrayLayers = 6;
+    image->format = preferredFormat;
+    image->tiling = VK_IMAGE_TILING_OPTIMAL;
+    image->createFlags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+    image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+                        VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+    image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+    image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    image->name = "cubemap image";
   } else {
     assert(0);
   }
@@ -116,6 +129,7 @@ void vulkan_image_send_to_device(vulkan_image *image) {
                          &stagingBuffer, &stagingBufferMemory, "staging buffer for image");
     void *data;
     vkMapMemory(image->vkd->device, stagingBufferMemory, 0, totalSize, 0, &data);
+    // HIRO HIRO different for cubemap?
     for (size_t i = 0; i < texelNum; i++) {
       uint8_t *bytes = data;
       core_memcpy(bytes + i * texelSize, utarray_eltptr(image->texture->image->data, i * pixelSize),

@@ -11,12 +11,20 @@
 typedef enum vulkan_data_image_type {
   vulkan_data_image_type_material_base_color,
   vulkan_data_image_type_material_parameters,
+  vulkan_data_image_type_cubemap,
   vulkan_data_image_type_count
 } vulkan_data_image_type;
 
 typedef struct vulkan_data_image {
+  /// Dimensions of one face.
   uint32_t width, height, depth, channels;
+  /// Number of faces.
+  uint32_t faceCount;
+  /// Type of image.
   vulkan_data_image_type type;
+  /// uint8_t array with image data
+  /// For cubemap contains consecutive image data of right, left, top, bottom, back and front faces
+  /// with total size == 6*width*height*depth*channels.
   UT_array *data; // uint8_t array
 
   DECL_VULKAN_ENTITY(image)
@@ -52,8 +60,6 @@ void vulkan_data_sampler_debug_print(vulkan_data_sampler *sampler);
 
 /* texture */
 
-typedef struct vulkan_data_scene vulkan_data_scene;
-
 typedef struct vulkan_data_texture {
   vulkan_data_image *image;
   vulkan_data_sampler *sampler;
@@ -70,3 +76,21 @@ void vulkan_data_texture_deserialize(vulkan_data_texture *texture, data_asset_db
                                      data_key key);
 
 void vulkan_data_texture_debug_print(vulkan_data_texture *texture);
+
+/* skybox */
+
+typedef struct vulkan_data_skybox {
+  vulkan_data_texture *cubemapTexture;
+
+  DECL_VULKAN_ENTITY(skybox)
+} vulkan_data_skybox;
+
+void vulkan_data_skybox_init(vulkan_data_skybox *skybox, vulkan_data_scene *sceneData);
+void vulkan_data_skybox_deinit(vulkan_data_skybox *skybox);
+
+data_key vulkan_data_skybox_calculate_key(vulkan_data_skybox *skybox);
+void vulkan_data_skybox_serialize(vulkan_data_skybox *skybox, data_asset_db *assetDb);
+void vulkan_data_skybox_deserialize(vulkan_data_skybox *skybox, data_asset_db *assetDb,
+                                    data_key key);
+
+void vulkan_data_skybox_debug_print(vulkan_data_skybox *skybox);

@@ -5080,7 +5080,8 @@ const char *vulkan_camera_type_debug_str(int value) {
 const char *vulkan_data_image_type_debug_str(int value) {
   if (value == 0) { return "vulkan_data_image_type_material_base_color"; }
   if (value == 1) { return "vulkan_data_image_type_material_parameters"; }
-  if (value == 2) { return "vulkan_data_image_type_count"; }
+  if (value == 2) { return "vulkan_data_image_type_cubemap"; }
+  if (value == 3) { return "vulkan_data_image_type_count"; }
   return "UNKNOWN vulkan_data_image_type";
 }
 const char *vulkan_data_vertex_attribute_component_type_debug_str(int value) {
@@ -5093,14 +5094,15 @@ const char *vulkan_image_type_debug_str(int value) {
   if (value == 0) { return "vulkan_image_type_depth_buffer"; }
   if (value == 1) { return "vulkan_image_type_material_base_color"; }
   if (value == 2) { return "vulkan_image_type_material_parameters"; }
-  if (value == 3) { return "vulkan_image_type_count"; }
+  if (value == 3) { return "vulkan_image_type_cubemap"; }
+  if (value == 4) { return "vulkan_image_type_count"; }
   return "UNKNOWN vulkan_image_type";
 }
-const char *vulkan_shader_generator_output_type_debug_str(int value) {
-  if (value == 0) { return "vulkan_shader_generator_output_type_forward_vertex"; }
-  if (value == 1) { return "vulkan_shader_generator_output_type_forward_fragment"; }
-  if (value == 2) { return "vulkan_shader_generator_output_type_count"; }
-  return "UNKNOWN vulkan_shader_generator_output_type";
+const char *vulkan_pipeline_type_debug_str(int value) {
+  if (value == 0) { return "vulkan_pipeline_type_forward"; }
+  if (value == 1) { return "vulkan_pipeline_type_skybox"; }
+  if (value == 2) { return "vulkan_pipeline_type_count"; }
+  return "UNKNOWN vulkan_pipeline_type";
 }
 const char *vulkan_shader_reflect_binding_type_debug_str(int value) {
   if (value == 0) { return "vulkan_shader_reflect_binding_type_unknown"; }
