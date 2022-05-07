@@ -12,18 +12,24 @@
 /// Does not create any Vulkan objects (see vulkan_scene).
 typedef struct vulkan_data_scene {
   UT_string *name;
-  UT_string *path;                                /// Empty when loaded from asset db.
-  vulkan_data_image *images;                      /// List of all images used by scene.
-  vulkan_data_sampler *samplers;                  /// List of all samplers used by scene.
-  vulkan_data_texture *textures;                  /// List of all textures used by scene.
-  vulkan_data_skybox *skyboxes;                   /// List of all skyboxes used by scene.
-  vulkan_data_material *materials;                /// List of all materials used by scene.
-  vulkan_data_vertex_attribute *vertexAttributes; /// List of all vertex attributes used by scene.
-  vulkan_data_primitive *primitives;              /// List of all primitives used by scene.
-  vulkan_data_object *objects;                    /// List of all objects in scene.
-  UT_array *rootObjects; /// vulkan_data_object* array, object that are direct descendants of scene
+  UT_string *path; ///< Empty when loaded from asset db.
 
-  data_key key; /// Hash, used to prevent duplicates in asset database.
+  vulkan_data_image *images;                      ///< List of all images used by scene.
+  vulkan_data_sampler *samplers;                  ///< List of all samplers used by scene.
+  vulkan_data_texture *textures;                  ///< List of all textures used by scene.
+  vulkan_data_skybox *skyboxes;                   ///< List of all skyboxes used by scene.
+  vulkan_data_material *materials;                ///< List of all materials used by scene.
+  vulkan_data_vertex_attribute *vertexAttributes; ///< List of all vertex attributes used by scene.
+  vulkan_data_primitive *primitives;              ///< List of all primitives used by scene.
+  vulkan_data_object *objects;                    ///< List of all objects in scene.
+
+  /// vulkan_data_object* array, object that are direct descendants of scene
+  UT_array *rootObjects;
+  /// Skybox
+  vulkan_data_skybox *skybox;
+  // HIRO HIRO light data (ambientIntensity)?
+
+  data_key key; ///< Hash, used to prevent duplicates in asset database.
 } vulkan_data_scene;
 
 vulkan_data_scene *vulkan_data_scene_create(UT_string *name);
@@ -48,6 +54,7 @@ void vulkan_data_scene_deserialize(vulkan_data_scene *scene, data_asset_db *asse
 DECL_VULKAN_ENTITY_FUNCS(image)
 DECL_VULKAN_ENTITY_FUNCS(sampler)
 DECL_VULKAN_ENTITY_FUNCS(texture)
+DECL_VULKAN_ENTITY_FUNCS(skybox)
 DECL_VULKAN_ENTITY_FUNCS(material)
 DECL_VULKAN_ENTITY_FUNCS(vertex_attribute)
 DECL_VULKAN_ENTITY_FUNCS(primitive)
@@ -59,7 +66,9 @@ DECL_VULKAN_ENTITY_FUNCS(object)
 
 /* asset pipeline */
 vulkan_data_scene *vulkan_data_scene_create_with_gltf_file(UT_string *sceneName,
-                                                           UT_string *gltfPath);
+                                                           UT_string *gltfPath,
+                                                           UT_string *configPath,
+                                                           data_asset_db *assetDb);
 vulkan_data_scene *vulkan_data_scene_create_with_asset_db(data_asset_db *assetDb,
                                                           UT_string *sceneName);
 

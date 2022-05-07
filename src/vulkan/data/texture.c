@@ -187,20 +187,18 @@ void vulkan_data_texture_debug_print(vulkan_data_texture *texture) {
 /* skybox */
 
 void vulkan_data_skybox_init(vulkan_data_skybox *skybox, vulkan_data_scene *sceneData) {
+  utstring_new(skybox->name);
   skybox->cubemapTexture = NULL;
-  // HIRO ambient light intensity
 
   DEF_VULKAN_ENTITY(skybox, skybox)
 }
 
-void vulkan_data_skybox_deinit(vulkan_data_skybox *skybox) {}
+void vulkan_data_skybox_deinit(vulkan_data_skybox *skybox) { utstring_free(skybox->name); }
 
 data_key vulkan_data_skybox_calculate_key(vulkan_data_skybox *skybox) {
   hash_t value;
   HASH_START(hashState)
-  if (skybox->cubemapTexture) {
-    HASH_UPDATE(hashState, &skybox->cubemapTexture->key, sizeof(skybox->cubemapTexture->key))
-  }
+  HASH_UPDATE(hashState, utstring_body(skybox->name), utstring_len(skybox->name))
   HASH_DIGEST(hashState, value)
   HASH_END(hashState)
   return (data_key){value};
@@ -209,6 +207,7 @@ data_key vulkan_data_skybox_calculate_key(vulkan_data_skybox *skybox) {
 void vulkan_data_skybox_serialize(vulkan_data_skybox *skybox, data_asset_db *assetDb) {
   skybox->key = vulkan_data_skybox_calculate_key(skybox);
 
+  data_asset_db_insert_skybox_name_text(assetDb, skybox->key, (data_text){skybox->name});
   vulkan_data_texture_serialize(skybox->cubemapTexture, assetDb);
   data_asset_db_insert_skybox_cubemapTexture_key(assetDb, skybox->key, skybox->cubemapTexture->key);
 }
@@ -216,6 +215,9 @@ void vulkan_data_skybox_serialize(vulkan_data_skybox *skybox, data_asset_db *ass
 void vulkan_data_skybox_deserialize(vulkan_data_skybox *skybox, data_asset_db *assetDb,
                                     data_key key) {
   skybox->key = key;
+
+  utstring_free(skybox->name);
+  skybox->name = data_asset_db_select_skybox_name_text(assetDb, skybox->key).value;
   skybox->cubemapTexture = vulkan_data_scene_get_texture_by_key(
       skybox->sceneData, assetDb,
       data_asset_db_select_skybox_cubemapTexture_key(assetDb, skybox->key));
@@ -224,5 +226,6 @@ void vulkan_data_skybox_deserialize(vulkan_data_skybox *skybox, data_asset_db *a
 void vulkan_data_skybox_debug_print(vulkan_data_skybox *skybox) {
   log_debug("skybox:");
   log_debug("  hash=%zu", skybox->key);
+  log_debug("  name=%s", utstring_body(skybox->name));
   vulkan_data_texture_debug_print(skybox->cubemapTexture);
 }

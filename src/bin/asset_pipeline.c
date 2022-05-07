@@ -59,17 +59,13 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
   utstring_alloc(configPath, utstring_body(assetInput->sourceAssetPath));
   utstring_printf(configPath, "/%s.ini", utstring_body(assetInput->sourceAssetName));
 
-  data_config *config = data_config_create(configPath, data_config_type_scene);
-
-  // HIRO HIRO HIRO pass config vulkan_data_scene_create_with_gltf_file
-  vulkan_data_scene *sceneData =
-      vulkan_data_scene_create_with_gltf_file(assetInput->sourceAssetName, gltfPath);
+  vulkan_data_scene *sceneData = vulkan_data_scene_create_with_gltf_file(
+      assetInput->sourceAssetName, gltfPath, configPath, assetDb);
   vulkan_data_scene_serialize(sceneData, assetDb);
   vulkan_data_scene_destroy(sceneData);
 
   utstring_free(gltfPath);
   utstring_free(configPath);
-  data_config_destroy(config);
 }
 
 void write_cubemap_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetInput) {
@@ -112,6 +108,7 @@ void write_cubemap_to_assets(data_asset_db *assetDb, asset_pipeline_input *asset
   vulkan_data_image_serialize(&cubemapImage, assetDb);
 
   if (strncmp("skybox", utstring_body(assetInput->sourceAssetName), strlen("skybox")) == 0) {
+
     vulkan_data_sampler cubemapSampler;
     vulkan_data_sampler_init(&cubemapSampler, NULL);
 
@@ -122,6 +119,7 @@ void write_cubemap_to_assets(data_asset_db *assetDb, asset_pipeline_input *asset
 
     vulkan_data_skybox skybox;
     vulkan_data_skybox_init(&skybox, NULL);
+    utstring_printf(skybox.name, "%s", utstring_body(assetInput->sourceAssetName));
     skybox.cubemapTexture = &cubemapTexture;
     vulkan_data_skybox_serialize(&skybox, assetDb);
     vulkan_data_skybox_deinit(&skybox);

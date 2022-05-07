@@ -22,7 +22,7 @@ primitive = "key KEY, material KEY, topology INT, indices KEY, positions KEY, no
 mesh = "key KEY, primitives KEY_ARRAY"
 object = "key KEY, transform MAT4, mesh KEY, camera KEY, children KEY_ARRAY"
 camera = "key KEY, type INT, fovY FLOAT, aspectRatio FLOAT, nearZ FLOAT, farZ FLOAT"
-skybox = "key KEY, cubemapTexture KEY"
+skybox = "key KEY, name TEXT, cubemapTexture KEY"
 scene = "key KEY, name TEXT, objects KEY_ARRAY, cameras KEY_ARRAY, skybox KEY"
 
 [SCENE.CONFIG]

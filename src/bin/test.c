@@ -9,14 +9,15 @@
 
 // Loading sponza.gltf.
 TEST gltf_loading() {
-  // TODO: Loading extra files (images).
   data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_asset);
   data_asset_db *assetDb = data_asset_db_create();
   vulkan_device *vkd = vulkan_device_create(config, assetDb);
   UT_string *sceneName;
   utstring_alloc(sceneName, GLTF_NAME);
-  UT_string *gltfPath = get_asset_file_path(GLTF_NAME, GLTF_NAME ".gltf");
-  vulkan_data_scene *gltfSceneData = vulkan_data_scene_create_with_gltf_file(sceneName, gltfPath);
+  UT_string *gltfPath = get_asset_file_path("gltf/" GLTF_NAME, GLTF_NAME ".gltf");
+  UT_string *configPath = get_asset_file_path("gltf/" GLTF_NAME, GLTF_NAME ".ini");
+  vulkan_data_scene *gltfSceneData =
+      vulkan_data_scene_create_with_gltf_file(sceneName, gltfPath, configPath, assetDb);
   vulkan_data_scene *assetDbSceneData = vulkan_data_scene_create_with_asset_db(assetDb, sceneName);
 
   ASSERT_STR_EQ(utstring_body(gltfSceneData->name), utstring_body(assetDbSceneData->name));
@@ -72,7 +73,15 @@ TEST gltf_loading() {
       ASSERT_VERTEX_ATTRIBUTE(texCoords)
     }
   }
+
+  ASSERT_EQ(gltfSceneData->skybox->key.value, assetDbSceneData->skybox->key.value);
+  ASSERT(strcmp(utstring_body(gltfSceneData->skybox->name),
+                utstring_body(assetDbSceneData->skybox->name)) == 0);
+  ASSERT_EQ(gltfSceneData->skybox->cubemapTexture->key.value,
+            assetDbSceneData->skybox->cubemapTexture->key.value);
+
   utstring_free(gltfPath);
+  utstring_free(configPath);
   utstring_free(sceneName);
   vulkan_data_scene_destroy(assetDbSceneData);
   vulkan_data_scene_destroy(gltfSceneData);
@@ -92,13 +101,16 @@ TEST shaderc_compiling() {
 
   UT_string *sceneName;
   utstring_alloc(sceneName, GLTF_NAME);
-  vulkan_renderer *renderer = vulkan_renderer_create(config, assetDb, vks, sceneName);
+  vulkan_pipeline_type pipelines[] = {vulkan_pipeline_type_forward};
+  vulkan_renderer *renderer =
+      vulkan_renderer_create(config, assetDb, vks, sceneName, pipelines, array_size(pipelines));
   utstring_free(sceneName);
 
   vulkan_renderer_debug_print(renderer);
 
-  vulkan_shader *vertexShader = renderer->pipeline->shaderProgram->vertexShader;
-  vulkan_shader *fragmentShader = renderer->pipeline->shaderProgram->fragmentShader;
+  vulkan_pipeline *pipeline = *(vulkan_pipeline **)utarray_front(renderer->pipelines);
+  vulkan_shader *vertexShader = pipeline->shaderProgram->vertexShader;
+  vulkan_shader *fragmentShader = pipeline->shaderProgram->fragmentShader;
 
   // verify shader
   ASSERT(vertexShader->type == vulkan_shader_type_vertex);
@@ -217,7 +229,9 @@ TEST scene_graph_building() {
 
   log_info("Test scene renderer.");
   vulkan_swap_chain *vks = vulkan_swap_chain_create(vkd);
-  vulkan_renderer *renderer = vulkan_renderer_create(config, assetDb, vks, sceneName);
+  vulkan_pipeline_type pipelines[] = {vulkan_pipeline_type_forward};
+  vulkan_renderer *renderer =
+      vulkan_renderer_create(config, assetDb, vks, sceneName, pipelines, array_size(pipelines));
   vulkan_renderer_update(renderer);
   vulkan_renderer_send_to_device(renderer);
   vulkan_renderer_debug_print(renderer);

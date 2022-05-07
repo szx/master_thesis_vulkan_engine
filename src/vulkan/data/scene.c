@@ -316,7 +316,19 @@ vulkan_data_object *parse_cgltf_node(vulkan_data_scene *sceneData, cgltf_node *c
   return vulkan_data_scene_add_object(sceneData, object);
 }
 
-vulkan_data_scene *parse_cgltf_scene(UT_string *name, UT_string *path) {
+vulkan_data_skybox *parse_config_skybox(vulkan_data_scene *sceneData, data_config *config,
+                                        data_asset_db *assetDb) {
+  vulkan_data_skybox skybox; // TODO: My eyes bleed, deserialize smarter.
+  vulkan_data_skybox_init(&skybox, sceneData);
+  utstring_printf(skybox.name, "%s", utstring_body(config->scene.skyboxName));
+  data_key skyboxKey = vulkan_data_skybox_calculate_key(&skybox);
+  vulkan_data_skybox *result = vulkan_data_scene_get_skybox_by_key(sceneData, assetDb, skyboxKey);
+  vulkan_data_skybox_deinit(&skybox);
+  return result;
+}
+
+vulkan_data_scene *parse_cgltf_scene(UT_string *name, UT_string *path, UT_string *configPath,
+                                     data_asset_db *assetDb) {
   cgltf_options options = {0};
   cgltf_data *cgltfData = NULL;
   cgltf_result result = cgltf_result_success;
@@ -341,9 +353,15 @@ vulkan_data_scene *parse_cgltf_scene(UT_string *name, UT_string *path) {
     utarray_push_back(sceneData->rootObjects, &object);
   }
 
-  // HIRO HIRO parse skybox
-
   cgltf_free(cgltfData);
+
+  data_config *config = data_config_create(configPath, data_config_type_scene);
+
+  // parse skybox
+  sceneData->skybox = parse_config_skybox(sceneData, config, assetDb);
+
+  data_config_destroy(config);
+
   return sceneData;
 }
 
@@ -369,6 +387,7 @@ void vulkan_data_scene_serialize(vulkan_data_scene *sceneData, data_asset_db *as
   data_asset_db_insert_scene_name_text(assetDb, sceneData->key, (data_text){sceneData->name});
   data_asset_db_insert_scene_objects_key_array(assetDb, sceneData->key,
                                                data_key_array_temp(objectKeys));
+  data_asset_db_insert_scene_skybox_key(assetDb, sceneData->key, sceneData->skybox->key);
   utarray_free(objectKeys);
 }
 
@@ -378,13 +397,15 @@ void vulkan_data_scene_deserialize(vulkan_data_scene *sceneData, data_asset_db *
 
   data_key_array objectKeyArray =
       data_asset_db_select_scene_objects_key_array(assetDb, sceneData->key);
-
   utarray_foreach_elem_deref (data_key, objectKey, objectKeyArray.values) {
     /* object data */
     vulkan_data_object *object = vulkan_data_scene_get_object_by_key(sceneData, assetDb, objectKey);
     utarray_push_back(sceneData->rootObjects, &object);
   }
   data_key_array_deinit(&objectKeyArray);
+
+  sceneData->skybox = vulkan_data_scene_get_skybox_by_key(
+      sceneData, assetDb, data_asset_db_select_scene_skybox_key(assetDb, sceneData->key));
 }
 
 vulkan_data_scene *vulkan_data_scene_create(UT_string *name) {
@@ -438,6 +459,7 @@ vulkan_data_scene *vulkan_data_scene_create(UT_string *name) {
   sceneData->objects = NULL;
 
   utarray_alloc(sceneData->rootObjects, sizeof(vulkan_data_object *));
+  sceneData->skybox = defaultSkybox;
 
   sceneData->key = vulkan_data_scene_calculate_key(sceneData);
   return sceneData;
@@ -546,8 +568,10 @@ DEF_VULKAN_ENTITY_FUNCS(object, objects)
 #undef DEF_VULKAN_ENTITY_FUNCS
 
 vulkan_data_scene *vulkan_data_scene_create_with_gltf_file(UT_string *sceneName,
-                                                           UT_string *gltfPath) {
-  vulkan_data_scene *sceneData = parse_cgltf_scene(sceneName, gltfPath);
+                                                           UT_string *gltfPath,
+                                                           UT_string *configPath,
+                                                           data_asset_db *assetDb) {
+  vulkan_data_scene *sceneData = parse_cgltf_scene(sceneName, gltfPath, configPath, assetDb);
   return sceneData;
 }
 

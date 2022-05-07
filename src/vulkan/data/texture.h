@@ -80,6 +80,7 @@ void vulkan_data_texture_debug_print(vulkan_data_texture *texture);
 /* skybox */
 
 typedef struct vulkan_data_skybox {
+  UT_string *name;
   vulkan_data_texture *cubemapTexture;
 
   DECL_VULKAN_ENTITY(skybox)
