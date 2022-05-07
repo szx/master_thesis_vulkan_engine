@@ -163,6 +163,31 @@ vulkan_pipeline_info vulkan_pipeline_impl_forward_get_pipeline_info(vulkan_pipel
                                 .depthClearValue = (VkClearDepthStencilValue){0.0f, 0}};
 }
 
+typedef struct vulkan_pipeline_impl_forward_frame_state {
+  vulkan_batches_data batchesData;
+} vulkan_pipeline_impl_forward_frame_state;
+
+void vulkan_pipeline_impl_forward_frame_state_init(vulkan_pipeline_frame_state *frameState) {
+  vulkan_pipeline_impl_forward_frame_state *impl =
+      core_alloc(sizeof(vulkan_pipeline_impl_forward_frame_state));
+  vulkan_batches_data_init(&impl->batchesData, frameState->pipeline->vks->vkd);
+  frameState->impl = impl;
+}
+
+void vulkan_pipeline_impl_forward_frame_state_deinit(vulkan_pipeline_frame_state *frameState) {
+  vulkan_pipeline_impl_forward_frame_state *impl = frameState->impl;
+
+  vulkan_batches_data_deinit(&impl->batchesData);
+  core_free(impl);
+}
+
+void vulkan_pipeline_impl_forward_frame_state_send_to_device(
+    vulkan_pipeline_frame_state *frameState) {
+  vulkan_pipeline_impl_forward_frame_state *impl = frameState->impl;
+
+  vulkan_batches_data_send_to_device(&impl->batchesData);
+}
+
 void vulkan_pipeline_impl_forward_record_render_pass(vulkan_pipeline *pipeline,
                                                      VkCommandBuffer commandBuffer,
                                                      size_t swapChainImageIdx) {
@@ -172,6 +197,7 @@ void vulkan_pipeline_impl_forward_record_render_pass(vulkan_pipeline *pipeline,
   size_t currentFrameInFlight = pipeline->renderState->sync->currentFrameInFlight;
   vulkan_pipeline_frame_state *frameState =
       utarray_eltptr(pipeline->frameStates, currentFrameInFlight);
+  vulkan_pipeline_impl_forward_frame_state *frameStateImpl = frameState->impl;
 
   /* record new render pass into command buffer */
   // HIRO pass render pass and framebuffer as argument, allocate if NULL
@@ -200,7 +226,7 @@ void vulkan_pipeline_impl_forward_record_render_pass(vulkan_pipeline *pipeline,
                      sizeof(drawPushConstant), &drawPushConstant);
 
   vulkan_batches_record_draw_command(pipeline->renderState->batches, commandBuffer,
-                                     &frameState->batchesData);
+                                     &frameStateImpl->batchesData);
 
   vkCmdEndRenderPass(commandBuffer);
 }
@@ -211,9 +237,35 @@ void vulkan_pipeline_impl_forward_record_render_pass(vulkan_pipeline *pipeline,
 
 vulkan_pipeline_info vulkan_pipeline_impl_skybox_get_pipeline_info(vulkan_pipeline *pipeline) {
   return (vulkan_pipeline_info){.useOnscreenColorAttachment = true,
-                                .onscreenClearValue = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}},
+                                .onscreenClearValue = (VkClearColorValue){{0.5f, 0.5f, 0.5f, 1.0f}},
                                 .offscreenColorAttachmentCount = 0,
                                 .useDepthAttachment = false};
+}
+
+typedef struct vulkan_pipeline_impl_skybox_frame_state {
+  /// HIRO HIRO skybox vulkan_image
+  int foo;
+} vulkan_pipeline_impl_skybox_frame_state;
+
+void vulkan_pipeline_impl_skybox_frame_state_init(vulkan_pipeline_frame_state *frameState) {
+  vulkan_pipeline_impl_skybox_frame_state *impl =
+      core_alloc(sizeof(vulkan_pipeline_impl_skybox_frame_state));
+  // vulkan_batches_data_init(&impl->batchesData, frameState->pipeline->vks->vkd);
+  frameState->impl = impl;
+}
+
+void vulkan_pipeline_impl_skybox_frame_state_deinit(vulkan_pipeline_frame_state *frameState) {
+  vulkan_pipeline_impl_skybox_frame_state *impl = frameState->impl;
+
+  // vulkan_batches_data_deinit(&impl->batchesData);
+  core_free(impl);
+}
+
+void vulkan_pipeline_impl_skybox_frame_state_send_to_device(
+    vulkan_pipeline_frame_state *frameState) {
+  vulkan_pipeline_impl_skybox_frame_state *impl = frameState->impl;
+
+  // vulkan_batches_data_send_to_device(&impl->batchesData);
 }
 
 void vulkan_pipeline_impl_skybox_record_render_pass(vulkan_pipeline *pipeline,
@@ -225,9 +277,9 @@ void vulkan_pipeline_impl_skybox_record_render_pass(vulkan_pipeline *pipeline,
   size_t currentFrameInFlight = pipeline->renderState->sync->currentFrameInFlight;
   vulkan_pipeline_frame_state *frameState =
       utarray_eltptr(pipeline->frameStates, currentFrameInFlight);
+  vulkan_pipeline_impl_skybox_frame_state *frameStateImpl = frameState->impl;
 
   /* record new render pass into command buffer */
-  // HIRO implement skybox
   VkRenderPassBeginInfo renderPassInfo = {0};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
   renderPassInfo.renderPass = pipeline->renderPass;
@@ -252,8 +304,7 @@ void vulkan_pipeline_impl_skybox_record_render_pass(vulkan_pipeline *pipeline,
   vkCmdPushConstants(commandBuffer, pipeline->pipelineLayout, VK_SHADER_STAGE_ALL, 0,
                      sizeof(drawPushConstant), &drawPushConstant);
 
-  vulkan_batches_record_draw_command(pipeline->renderState->batches, commandBuffer,
-                                     &frameState->batchesData);
+  // HIRO CmdDraw skybox
 
   vkCmdEndRenderPass(commandBuffer);
 }

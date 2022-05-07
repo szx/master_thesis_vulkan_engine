@@ -27,9 +27,7 @@ void vulkan_pipeline_framebuffer_state_deinit(vulkan_pipeline_framebuffer_state 
 /// frame.
 typedef struct vulkan_pipeline_frame_state {
   vulkan_pipeline *pipeline; ///< Pointer.
-
-  // HIRO HIRO differs between pipelines, just use void* ?
-  vulkan_batches_data batchesData;
+  void *impl;                ///< Pointer to struct with frame state used by pipeline impl.
 } vulkan_pipeline_frame_state;
 
 void vulkan_pipeline_frame_state_init(vulkan_pipeline_frame_state *frameState,

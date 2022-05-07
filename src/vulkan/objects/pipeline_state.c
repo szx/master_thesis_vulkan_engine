@@ -32,16 +32,30 @@ void vulkan_pipeline_framebuffer_state_deinit(vulkan_pipeline_framebuffer_state 
 void vulkan_pipeline_frame_state_init(vulkan_pipeline_frame_state *frameState,
                                       vulkan_pipeline *pipeline) {
   frameState->pipeline = pipeline;
-
-  vulkan_batches_data_init(&frameState->batchesData, frameState->pipeline->vks->vkd);
+#define x(_name, ...)                                                                              \
+  if (frameState->pipeline->type == vulkan_pipeline_type_##_name) {                                \
+    vulkan_pipeline_impl_##_name##_frame_state_init(frameState);                                   \
+  }
+  VULKAN_PIPELINE_TYPES(x, )
+#undef x
 }
 
 void vulkan_pipeline_frame_state_deinit(vulkan_pipeline_frame_state *frameState) {
-  vulkan_batches_data_deinit(&frameState->batchesData);
+#define x(_name, ...)                                                                              \
+  if (frameState->pipeline->type == vulkan_pipeline_type_##_name) {                                \
+    vulkan_pipeline_impl_##_name##_frame_state_deinit(frameState);                                 \
+  }
+  VULKAN_PIPELINE_TYPES(x, )
+#undef x
 }
 
 void vulkan_pipeline_frame_state_send_to_device(vulkan_pipeline_frame_state *frameState) {
-  vulkan_batches_data_send_to_device(&frameState->batchesData);
+#define x(_name, ...)                                                                              \
+  if (frameState->pipeline->type == vulkan_pipeline_type_##_name) {                                \
+    vulkan_pipeline_impl_##_name##_frame_state_send_to_device(frameState);                         \
+  }
+  VULKAN_PIPELINE_TYPES(x, )
+#undef x
 }
 
 void vulkan_pipeline_frame_state_debug_print(vulkan_pipeline_frame_state *frameState, int indent) {
