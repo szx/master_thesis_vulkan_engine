@@ -1,7 +1,7 @@
 #include "graph.h"
 #include "tree.h"
 
-vulkan_scene_graph *vulkan_scene_graph_create(vulkan_data_scene *data,
+vulkan_scene_graph *vulkan_scene_graph_create(vulkan_scene_data *data,
                                               vulkan_render_cache_list *renderCacheList) {
   vulkan_scene_graph *sceneGraph = core_alloc(sizeof(vulkan_scene_graph));
   sceneGraph->data = NULL;
@@ -19,7 +19,7 @@ vulkan_scene_graph *vulkan_scene_graph_create(vulkan_data_scene *data,
 
 void vulkan_scene_graph_destroy(vulkan_scene_graph *sceneGraph) {
   if (sceneGraph->root->object != NULL) {
-    vulkan_data_object_deinit(sceneGraph->root->object);
+    vulkan_asset_object_deinit(sceneGraph->root->object);
     core_free(sceneGraph->root->object);
   }
 
@@ -34,7 +34,7 @@ void vulkan_scene_graph_destroy(vulkan_scene_graph *sceneGraph) {
 
 vulkan_scene_graph_node *add_entity(vulkan_scene_graph *sceneGraph,
                                     vulkan_scene_graph_node *parentSceneGraphNode,
-                                    vulkan_data_object *object, vulkan_data_primitive *primitive,
+                                    vulkan_asset_object *object, vulkan_asset_primitive *primitive,
                                     bool createSceneGraphNode) {
   /* add scene graph node */
   vulkan_scene_graph_node *sceneGraphNode = NULL;
@@ -77,13 +77,13 @@ vulkan_scene_graph_node *add_entity(vulkan_scene_graph *sceneGraph,
   } else if (sceneGraphNode->object != NULL) {
 
     if (sceneGraphNode->object->mesh != NULL) {
-      utarray_foreach_elem_deref (vulkan_data_primitive *, childPrimitive,
+      utarray_foreach_elem_deref (vulkan_asset_primitive *, childPrimitive,
                                   sceneGraphNode->object->mesh->primitives) {
         vulkan_scene_graph_node *childSceneGraphNode =
             add_entity(sceneGraph, sceneGraphNode, NULL, childPrimitive, !existsSceneGraphNode);
       }
     }
-    utarray_foreach_elem_deref (vulkan_data_object *, childObject, object->children) {
+    utarray_foreach_elem_deref (vulkan_asset_object *, childObject, object->children) {
       vulkan_scene_graph_node *childSceneGraphNode =
           add_entity(sceneGraph, sceneGraphNode, childObject, NULL, !existsSceneGraphNode);
     }
@@ -96,7 +96,7 @@ vulkan_scene_graph_node *add_entity(vulkan_scene_graph *sceneGraph,
 vulkan_scene_graph_node *vulkan_scene_graph_add_object(vulkan_scene_graph *sceneGraph,
                                                        vulkan_scene_graph_node *sceneGraphNode,
                                                        vulkan_scene_tree_node *sceneTreeNode,
-                                                       vulkan_data_object *successorObject) {
+                                                       vulkan_asset_object *successorObject) {
   vulkan_scene_graph_node *childSceneGraphNode =
       add_entity(sceneGraph, sceneGraphNode, successorObject, NULL, true);
 
@@ -114,14 +114,14 @@ void vulkan_scene_graph_set_dirty(vulkan_scene_graph *sceneGraph,
 }
 
 void vulkan_scene_graph_create_with_scene_data(vulkan_scene_graph *sceneGraph,
-                                               vulkan_data_scene *sceneData) {
+                                               vulkan_scene_data *sceneData) {
   sceneGraph->data = sceneData;
   assert(sceneGraph->root == NULL);
   assert(sceneGraph->nodes == NULL);
 
   /* construct scene graph and scene tree */
-  vulkan_data_object *rootObject = core_alloc(sizeof(vulkan_data_object));
-  vulkan_data_object_init(rootObject, sceneGraph->data);
+  vulkan_asset_object *rootObject = core_alloc(sizeof(vulkan_asset_object));
+  vulkan_asset_object_init(rootObject, sceneGraph->data);
   glm_mat4_identity(rootObject->transform);
   // NOTE: Change right-handed model-space into left-handed world-space.
   rootObject->transform[2][2] = -1.0f;
@@ -129,7 +129,7 @@ void vulkan_scene_graph_create_with_scene_data(vulkan_scene_graph *sceneGraph,
   sceneGraph->sceneTree->root =
       *(vulkan_scene_tree_node **)utarray_front(sceneGraph->root->observers);
 
-  utarray_foreach_elem_deref (vulkan_data_object *, rootChild, sceneGraph->data->rootObjects) {
+  utarray_foreach_elem_deref (vulkan_asset_object *, rootChild, sceneGraph->data->rootObjects) {
     vulkan_scene_graph_add_object(sceneGraph, sceneGraph->root, sceneGraph->sceneTree->root,
                                   rootChild);
   }

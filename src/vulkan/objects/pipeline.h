@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "../data/camera.h"
 #include "batch.h"
 #include "image.h"
 #include "pipeline_state.h"

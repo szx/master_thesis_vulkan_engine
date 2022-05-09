@@ -103,7 +103,7 @@ void vulkan_image_make_resident(vulkan_image *image) {
   }
 }
 
-void vulkan_image_update(vulkan_image *image, vulkan_data_texture *texture) {
+void vulkan_image_update(vulkan_image *image, vulkan_asset_texture *texture) {
   image->texture = texture;
   image->dirty = true;
 }

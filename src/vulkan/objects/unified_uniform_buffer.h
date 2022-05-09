@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../data/object.h"
+#include "../assets/object.h"
 #include "buffer.h"
 #include "camera.h"
 #include "lights.h"

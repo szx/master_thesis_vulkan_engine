@@ -1,7 +1,7 @@
 #include "primitive.h"
-#include "scene.h"
+#include "../scene/data.h"
 
-void vulkan_data_primitive_init(vulkan_data_primitive *primitive, vulkan_data_scene *sceneData) {
+void vulkan_asset_primitive_init(vulkan_asset_primitive *primitive, vulkan_scene_data *sceneData) {
   primitive->sceneData = sceneData;
   primitive->topology = VK_PRIMITIVE_TOPOLOGY_MAX_ENUM;
   primitive->vertexCount = 0;
@@ -13,12 +13,12 @@ void vulkan_data_primitive_init(vulkan_data_primitive *primitive, vulkan_data_sc
   primitive->geometryHash = 0;
   primitive->attributes = vulkan_attribute_type_unknown;
   primitive->material = NULL;
-  DEF_VULKAN_ENTITY(primitive, primitive)
+  VULKAN_ASSET_FIELD_DEFS(primitive, primitive)
 }
 
-void vulkan_data_primitive_deinit(vulkan_data_primitive *primitive) {}
+void vulkan_asset_primitive_deinit(vulkan_asset_primitive *primitive) {}
 
-data_key vulkan_data_primitive_calculate_key(vulkan_data_primitive *primitive) {
+data_key vulkan_asset_primitive_calculate_key(vulkan_asset_primitive *primitive) {
   hash_t value;
   HASH_START(hashState)
   HASH_UPDATE(hashState, &primitive->topology, sizeof(primitive->topology))
@@ -46,10 +46,10 @@ data_key vulkan_data_primitive_calculate_key(vulkan_data_primitive *primitive) {
   return (data_key){value};
 }
 
-void vulkan_data_primitive_serialize(vulkan_data_primitive *primitive, data_asset_db *assetDb) {
-  primitive->key = vulkan_data_primitive_calculate_key(primitive);
+void vulkan_asset_primitive_serialize(vulkan_asset_primitive *primitive, data_asset_db *assetDb) {
+  primitive->key = vulkan_asset_primitive_calculate_key(primitive);
 
-  vulkan_data_material_serialize(primitive->material, assetDb);
+  vulkan_asset_material_serialize(primitive->material, assetDb);
   assert(primitive->material != NULL);
   data_asset_db_insert_primitive_material_key(assetDb, primitive->key, primitive->material->key);
 
@@ -58,56 +58,56 @@ void vulkan_data_primitive_serialize(vulkan_data_primitive *primitive, data_asse
 
   assert(primitive->positions != NULL);
   data_asset_db_insert_primitive_positions_key(assetDb, primitive->key, primitive->positions->key);
-  vulkan_data_vertex_attribute_serialize(primitive->positions, assetDb);
+  vulkan_asset_vertex_attribute_serialize(primitive->positions, assetDb);
   assert(primitive->normals != NULL);
   data_asset_db_insert_primitive_normals_key(assetDb, primitive->key, primitive->normals->key);
-  vulkan_data_vertex_attribute_serialize(primitive->normals, assetDb);
+  vulkan_asset_vertex_attribute_serialize(primitive->normals, assetDb);
   assert(primitive->colors != NULL);
   data_asset_db_insert_primitive_colors_key(assetDb, primitive->key, primitive->colors->key);
-  vulkan_data_vertex_attribute_serialize(primitive->colors, assetDb);
+  vulkan_asset_vertex_attribute_serialize(primitive->colors, assetDb);
   assert(primitive->texCoords != NULL);
   data_asset_db_insert_primitive_texCoords_key(assetDb, primitive->key, primitive->texCoords->key);
-  vulkan_data_vertex_attribute_serialize(primitive->texCoords, assetDb);
+  vulkan_asset_vertex_attribute_serialize(primitive->texCoords, assetDb);
   assert(primitive->indices != NULL);
   data_asset_db_insert_primitive_indices_key(assetDb, primitive->key, primitive->indices->key);
-  vulkan_data_vertex_attribute_serialize(primitive->indices, assetDb);
+  vulkan_asset_vertex_attribute_serialize(primitive->indices, assetDb);
 }
 
-void vulkan_data_primitive_deserialize(vulkan_data_primitive *primitive, data_asset_db *assetDb,
-                                       data_key key) {
+void vulkan_asset_primitive_deserialize(vulkan_asset_primitive *primitive, data_asset_db *assetDb,
+                                        data_key key) {
   primitive->key = key;
-  primitive->material = vulkan_data_scene_get_material_by_key(
+  primitive->material = vulkan_scene_data_get_material_by_key(
       primitive->sceneData, assetDb,
       data_asset_db_select_primitive_material_key(assetDb, primitive->key));
 
   primitive->topology = data_asset_db_select_primitive_topology_int(assetDb, primitive->key).value;
   primitive->attributes = vulkan_attribute_type_unknown;
 
-  primitive->positions = vulkan_data_scene_get_vertex_attribute_by_key(
+  primitive->positions = vulkan_scene_data_get_vertex_attribute_by_key(
       primitive->sceneData, assetDb,
       data_asset_db_select_primitive_positions_key(assetDb, primitive->key));
   primitive->attributes |=
       utarray_len(primitive->positions->data) > 0 ? vulkan_attribute_type_position : 0;
 
-  primitive->normals = vulkan_data_scene_get_vertex_attribute_by_key(
+  primitive->normals = vulkan_scene_data_get_vertex_attribute_by_key(
       primitive->sceneData, assetDb,
       data_asset_db_select_primitive_normals_key(assetDb, primitive->key));
   primitive->attributes |=
       utarray_len(primitive->normals->data) > 0 ? vulkan_attribute_type_normal : 0;
 
-  primitive->colors = vulkan_data_scene_get_vertex_attribute_by_key(
+  primitive->colors = vulkan_scene_data_get_vertex_attribute_by_key(
       primitive->sceneData, assetDb,
       data_asset_db_select_primitive_colors_key(assetDb, primitive->key));
   primitive->attributes |=
       utarray_len(primitive->colors->data) > 0 ? vulkan_attribute_type_color : 0;
 
-  primitive->texCoords = vulkan_data_scene_get_vertex_attribute_by_key(
+  primitive->texCoords = vulkan_scene_data_get_vertex_attribute_by_key(
       primitive->sceneData, assetDb,
       data_asset_db_select_primitive_texCoords_key(assetDb, primitive->key));
   primitive->attributes |=
       utarray_len(primitive->texCoords->data) > 0 ? vulkan_attribute_type_texcoord : 0;
 
-  primitive->indices = vulkan_data_scene_get_vertex_attribute_by_key(
+  primitive->indices = vulkan_scene_data_get_vertex_attribute_by_key(
       primitive->sceneData, assetDb,
       data_asset_db_select_primitive_indices_key(assetDb, primitive->key));
 
@@ -134,19 +134,29 @@ void vulkan_data_primitive_deserialize(vulkan_data_primitive *primitive, data_as
   }
 }
 
-bool vulkan_data_primitive_vulkan_attributes_match(vulkan_data_primitive *primitive,
-                                                   vulkan_data_primitive *other) {
+void vulkan_asset_primitive_debug_print(vulkan_asset_primitive *primitive, int indent) {
+  log_debug(INDENT_FORMAT_STRING "primitive: %s\n", INDENT_FORMAT_ARGS(0),
+            VkPrimitiveTopology_debug_str(primitive->topology));
+  log_debug(INDENT_FORMAT_STRING "hash=%zu", INDENT_FORMAT_ARGS(2), primitive->key);
+  log_debug(INDENT_FORMAT_STRING "geometry_hash=%zu", INDENT_FORMAT_ARGS(2),
+            primitive->geometryHash);
+  vulkan_asset_vertex_attribute_debug_print(primitive->indices, indent + 2);
+  log_debug(INDENT_FORMAT_STRING "vertices: count=%d\n", INDENT_FORMAT_ARGS(2),
+            primitive->vertexCount);
+  vulkan_asset_vertex_attribute_debug_print(primitive->positions, indent + 2);
+  vulkan_asset_vertex_attribute_debug_print(primitive->normals, indent + 2);
+  vulkan_asset_vertex_attribute_debug_print(primitive->colors, indent + 2);
+  vulkan_asset_vertex_attribute_debug_print(primitive->texCoords, indent + 2);
+}
+
+bool vulkan_asset_primitive_vulkan_attributes_match(vulkan_asset_primitive *primitive,
+                                                    vulkan_asset_primitive *other) {
   return primitive->topology == other->topology && primitive->indices == other->indices &&
          primitive->positions == other->positions && primitive->normals == other->normals &&
          primitive->colors == other->colors && primitive->texCoords == other->texCoords;
 }
 
-bool vulkan_data_primitive_material_match(vulkan_data_primitive *primitive,
-                                          vulkan_data_primitive *other) {
-  return primitive->material == other->material;
-}
-
-vulkan_aabb vulkan_data_primitive_calculate_aabb(vulkan_data_primitive *primitive) {
+vulkan_aabb vulkan_asset_primitive_calculate_aabb(vulkan_asset_primitive *primitive) {
   vulkan_aabb aabb;
   glm_vec4_fill(aabb.min, FLT_MAX); // FLT_MIN is minimum number > 0
   glm_vec4_fill(aabb.max, -FLT_MAX);
@@ -154,19 +164,4 @@ vulkan_aabb vulkan_data_primitive_calculate_aabb(vulkan_data_primitive *primitiv
     vulkan_aabb_add_vec3(&aabb, *position);
   }
   return aabb;
-}
-
-void vulkan_data_primitive_debug_print(vulkan_data_primitive *primitive, int indent) {
-  log_debug(INDENT_FORMAT_STRING "primitive: %s\n", INDENT_FORMAT_ARGS(0),
-            VkPrimitiveTopology_debug_str(primitive->topology));
-  log_debug(INDENT_FORMAT_STRING "hash=%zu", INDENT_FORMAT_ARGS(2), primitive->key);
-  log_debug(INDENT_FORMAT_STRING "geometry_hash=%zu", INDENT_FORMAT_ARGS(2),
-            primitive->geometryHash);
-  vulkan_data_vertex_attribute_debug_print(primitive->indices, indent + 2);
-  log_debug(INDENT_FORMAT_STRING "vertices: count=%d\n", INDENT_FORMAT_ARGS(2),
-            primitive->vertexCount);
-  vulkan_data_vertex_attribute_debug_print(primitive->positions, indent + 2);
-  vulkan_data_vertex_attribute_debug_print(primitive->normals, indent + 2);
-  vulkan_data_vertex_attribute_debug_print(primitive->colors, indent + 2);
-  vulkan_data_vertex_attribute_debug_print(primitive->texCoords, indent + 2);
 }

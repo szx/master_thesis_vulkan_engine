@@ -16,9 +16,9 @@ TEST gltf_loading() {
   utstring_alloc(sceneName, GLTF_NAME);
   UT_string *gltfPath = get_asset_file_path("gltf/" GLTF_NAME, GLTF_NAME ".gltf");
   UT_string *configPath = get_asset_file_path("gltf/" GLTF_NAME, GLTF_NAME ".ini");
-  vulkan_data_scene *gltfSceneData =
-      vulkan_data_scene_create_with_gltf_file(sceneName, gltfPath, configPath, assetDb);
-  vulkan_data_scene *assetDbSceneData = vulkan_data_scene_create_with_asset_db(assetDb, sceneName);
+  vulkan_scene_data *gltfSceneData =
+      vulkan_scene_data_create_with_gltf_file(sceneName, gltfPath, configPath, assetDb);
+  vulkan_scene_data *assetDbSceneData = vulkan_scene_data_create_with_asset_db(assetDb, sceneName);
 
   ASSERT_STR_EQ(utstring_body(gltfSceneData->name), utstring_body(assetDbSceneData->name));
   ASSERT_EQ(gltfSceneData->key.value, assetDbSceneData->key.value);
@@ -30,10 +30,10 @@ TEST gltf_loading() {
                   utarray_front(assetDbPrimitive->_name->data),                                    \
                   utarray_size(gltfPrimitive->_name->data));
 
-  dl_foreach_elem(vulkan_data_object *, assetDbNode, assetDbSceneData->objects) {
+  dl_foreach_elem(vulkan_asset_object *, assetDbNode, assetDbSceneData->objects) {
     bool foundCorrespondingNode = false;
-    vulkan_data_object *gltfNode;
-    dl_foreach_elem(vulkan_data_object *, nodeIter, gltfSceneData->objects) {
+    vulkan_asset_object *gltfNode;
+    dl_foreach_elem(vulkan_asset_object *, nodeIter, gltfSceneData->objects) {
       if (nodeIter->key.value == assetDbNode->key.value) {
         foundCorrespondingNode = true;
         gltfNode = nodeIter;
@@ -43,19 +43,19 @@ TEST gltf_loading() {
     ASSERT_EQ(foundCorrespondingNode, true);
     ASSERT_MEM_EQ(gltfNode->transform, assetDbNode->transform, sizeof(mat4));
     ASSERT_EQ(utarray_len(gltfNode->children), utarray_len(assetDbNode->children));
-    vulkan_data_mesh *gltfMesh = gltfNode->mesh;
-    vulkan_data_mesh *assetDbMesh = assetDbNode->mesh;
+    vulkan_asset_mesh *gltfMesh = gltfNode->mesh;
+    vulkan_asset_mesh *assetDbMesh = assetDbNode->mesh;
     ASSERT((gltfMesh == NULL && assetDbMesh == NULL) ||
            (gltfMesh->key.value == assetDbMesh->key.value));
-    vulkan_data_camera *gltfCamera = gltfNode->camera;
-    vulkan_data_camera *assetDbCamera = assetDbNode->camera;
+    vulkan_asset_camera *gltfCamera = gltfNode->camera;
+    vulkan_asset_camera *assetDbCamera = assetDbNode->camera;
     ASSERT((gltfCamera == NULL && assetDbCamera == NULL) ||
            (gltfCamera->key.value == assetDbCamera->key.value));
 
     bool foundCorrespondingPrimitive = false;
-    dl_foreach_elem(vulkan_data_primitive *, gltfPrimitive, gltfSceneData->primitives) {
-      vulkan_data_primitive *assetDbPrimitive;
-      dl_foreach_elem(vulkan_data_primitive *, primitiveIter, assetDbSceneData->primitives) {
+    dl_foreach_elem(vulkan_asset_primitive *, gltfPrimitive, gltfSceneData->primitives) {
+      vulkan_asset_primitive *assetDbPrimitive;
+      dl_foreach_elem(vulkan_asset_primitive *, primitiveIter, assetDbSceneData->primitives) {
         if (gltfPrimitive->key.value == primitiveIter->key.value) {
           foundCorrespondingPrimitive = true;
           assetDbPrimitive = primitiveIter;
@@ -83,8 +83,8 @@ TEST gltf_loading() {
   utstring_free(gltfPath);
   utstring_free(configPath);
   utstring_free(sceneName);
-  vulkan_data_scene_destroy(assetDbSceneData);
-  vulkan_data_scene_destroy(gltfSceneData);
+  vulkan_scene_data_destroy(assetDbSceneData);
+  vulkan_scene_data_destroy(gltfSceneData);
   vulkan_device_destroy(vkd);
   data_asset_db_destroy(assetDb);
   data_config_destroy(config);
@@ -168,8 +168,8 @@ TEST scene_graph_building() {
 
   UT_string *sceneName;
   utstring_alloc(sceneName, GLTF_NAME);
-  vulkan_data_scene *assetDbSceneData = vulkan_data_scene_create_with_asset_db(assetDb, sceneName);
-  // vulkan_data_scene_debug_print(assetDbSceneData);
+  vulkan_scene_data *assetDbSceneData = vulkan_scene_data_create_with_asset_db(assetDb, sceneName);
+  // vulkan_scene_data_debug_print(assetDbSceneData);
   vulkan_render_cache_list *renderCacheList = vulkan_render_cache_list_create(MAX_INSTANCE_COUNT);
   vulkan_scene_graph *sceneGraph = vulkan_scene_graph_create(assetDbSceneData, renderCacheList);
 
@@ -197,7 +197,7 @@ TEST scene_graph_building() {
   // Verify adding new objects.
   // FIXME: Rethink and refactor vulkan_scene_graph_add_object.
   /*
-  vulkan_data_object *secondObject = assetDbSceneData->objects;
+  vulkan_asset_object *secondObject = assetDbSceneData->objects;
   ASSERT_NEQ(secondObject, NULL);
   vulkan_scene_node *firstAddedNode =
       vulkan_scene_graph_add_object(sceneGraph, firstObjectNode, secondObject);
@@ -243,7 +243,7 @@ TEST scene_graph_building() {
   vulkan_swap_chain_destroy(vks);
   vulkan_render_cache_list_destroy(renderCacheList);
   vulkan_scene_graph_destroy(sceneGraph);
-  vulkan_data_scene_destroy(assetDbSceneData);
+  vulkan_scene_data_destroy(assetDbSceneData);
   utstring_free(sceneName);
   vulkan_device_destroy(vkd);
   data_asset_db_destroy(assetDb);

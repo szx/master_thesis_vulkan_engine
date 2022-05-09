@@ -8,7 +8,7 @@
  */
 #pragma once
 
-#include "../data/texture.h"
+#include "../assets/texture.h"
 #include "render_cache.h"
 
 typedef struct vulkan_render_cache_list {
@@ -23,7 +23,7 @@ typedef struct vulkan_render_cache_list {
 
   /* additional state accumulated from scene data */
   // HIRO HIRO Refactor replace with skyboxRenderCache
-  vulkan_data_skybox *skybox;
+  vulkan_asset_skybox *skybox;
 
   bool dirty; ///< True if added or removed cache and not sorted.
 } vulkan_render_cache_list;
@@ -41,7 +41,7 @@ void vulkan_render_cache_list_add_camera_render_cache(vulkan_render_cache_list *
                                                       vulkan_render_cache *cameraRenderCache);
 
 void vulkan_render_cache_list_add_skybox(vulkan_render_cache_list *renderCacheList,
-                                         vulkan_data_skybox *skybox);
+                                         vulkan_asset_skybox *skybox);
 
 /// Sorts cache list in a way that minimizes number of created batches.
 /// Updates max set of vertex attributes.

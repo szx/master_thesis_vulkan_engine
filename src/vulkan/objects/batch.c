@@ -1,5 +1,5 @@
 #include "batch.h"
-#include "../data/primitive.h"
+#include "../assets/primitive.h"
 
 vulkan_batch *vulkan_batch_create(vulkan_batch_instancing_policy policy,
                                   vulkan_render_cache *firstCache) {
@@ -26,8 +26,8 @@ void vulkan_batch_destroy(vulkan_batch *batch) {
 
 bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_render_cache *cache) {
   if (batch->policy == vulkan_batch_instancing_policy_matching_vertex_attributes) {
-    return vulkan_data_primitive_vulkan_attributes_match(batch->firstCache->primitive,
-                                                         cache->primitive);
+    return vulkan_asset_primitive_vulkan_attributes_match(batch->firstCache->primitive,
+                                                          cache->primitive);
   }
   return false;
 }

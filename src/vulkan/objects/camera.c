@@ -187,7 +187,7 @@ void get_orthographic_matrix(float r, float t, float nearZ, float farZ, mat4 des
 }
 
 void vulkan_camera_set_projection_matrix(vulkan_camera *camera, mat4 projectionMatrix) {
-  vulkan_data_camera *cameraData = &camera->cameraRenderCache->camera;
+  vulkan_asset_camera *cameraData = &camera->cameraRenderCache->camera;
   if (cameraData->type == vulkan_camera_type_perspective) {
     float viewportAspectRatio = vulkan_swap_chain_get_aspect_ratio(camera->vks);
     get_perspective_matrix(cameraData->fovY, viewportAspectRatio, cameraData->nearZ,

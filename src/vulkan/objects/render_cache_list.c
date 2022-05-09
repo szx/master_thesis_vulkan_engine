@@ -1,5 +1,5 @@
 #include "render_cache_list.h"
-#include "../data/primitive.h"
+#include "../assets/primitive.h"
 
 vulkan_render_cache_list *vulkan_render_cache_list_create(size_t maxInstanceCount) {
   vulkan_render_cache_list *renderCacheList = core_alloc(sizeof(vulkan_render_cache_list));
@@ -57,7 +57,7 @@ void vulkan_render_cache_list_add_camera_render_cache(vulkan_render_cache_list *
 }
 
 void vulkan_render_cache_list_add_skybox(vulkan_render_cache_list *renderCacheList,
-                                         vulkan_data_skybox *skybox) {
+                                         vulkan_asset_skybox *skybox) {
   renderCacheList->skybox = skybox;
 }
 

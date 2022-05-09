@@ -59,10 +59,10 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
   utstring_alloc(configPath, utstring_body(assetInput->sourceAssetPath));
   utstring_printf(configPath, "/%s.ini", utstring_body(assetInput->sourceAssetName));
 
-  vulkan_data_scene *sceneData = vulkan_data_scene_create_with_gltf_file(
+  vulkan_scene_data *sceneData = vulkan_scene_data_create_with_gltf_file(
       assetInput->sourceAssetName, gltfPath, configPath, assetDb);
-  vulkan_data_scene_serialize(sceneData, assetDb);
-  vulkan_data_scene_destroy(sceneData);
+  vulkan_scene_data_serialize(sceneData, assetDb);
+  vulkan_scene_data_destroy(sceneData);
 
   utstring_free(gltfPath);
   utstring_free(configPath);
@@ -72,8 +72,8 @@ void write_cubemap_to_assets(data_asset_db *assetDb, asset_pipeline_input *asset
   log_info("processing cubemap '%s' in '%s.%s'", utstring_body(assetInput->sourceAssetName),
            utstring_body(assetInput->sourceAssetPath), utstring_body(assetInput->sourceAssetExt));
 
-  vulkan_data_image cubemapImage;
-  vulkan_data_image_init(&cubemapImage, NULL);
+  vulkan_asset_image cubemapImage;
+  vulkan_asset_image_init(&cubemapImage, NULL);
   utarray_clear(cubemapImage.data);
 
   const char *faceNames[] = {"right", "left", "top", "bottom", "back", "front"};
@@ -95,7 +95,7 @@ void write_cubemap_to_assets(data_asset_db *assetDb, asset_pipeline_input *asset
     cubemapImage.depth = 1;
     cubemapImage.channels = c;
     cubemapImage.faceCount = faceCount;
-    cubemapImage.type = vulkan_data_image_type_cubemap;
+    cubemapImage.type = vulkan_image_type_cubemap;
     size_t faceSize =
         cubemapImage.width * cubemapImage.height * cubemapImage.depth * cubemapImage.channels;
     if (utarray_len(cubemapImage.data) == 0) {
@@ -104,28 +104,28 @@ void write_cubemap_to_assets(data_asset_db *assetDb, asset_pipeline_input *asset
     core_memcpy(utarray_eltptr(cubemapImage.data, i * faceSize), pixels, faceSize);
     core_free(pixels);
   }
-  vulkan_data_image_debug_print(&cubemapImage);
-  vulkan_data_image_serialize(&cubemapImage, assetDb);
+  vulkan_asset_image_debug_print(&cubemapImage, 0);
+  vulkan_asset_image_serialize(&cubemapImage, assetDb);
 
   if (strncmp("skybox", utstring_body(assetInput->sourceAssetName), strlen("skybox")) == 0) {
 
-    vulkan_data_sampler cubemapSampler;
-    vulkan_data_sampler_init(&cubemapSampler, NULL);
+    vulkan_asset_sampler cubemapSampler;
+    vulkan_asset_sampler_init(&cubemapSampler, NULL);
 
-    vulkan_data_texture cubemapTexture;
-    vulkan_data_texture_init(&cubemapTexture, NULL);
+    vulkan_asset_texture cubemapTexture;
+    vulkan_asset_texture_init(&cubemapTexture, NULL);
     cubemapTexture.image = &cubemapImage;
     cubemapTexture.sampler = &cubemapSampler;
 
-    vulkan_data_skybox skybox;
-    vulkan_data_skybox_init(&skybox, NULL);
+    vulkan_asset_skybox skybox;
+    vulkan_asset_skybox_init(&skybox, NULL);
     utstring_printf(skybox.name, "%s", utstring_body(assetInput->sourceAssetName));
     skybox.cubemapTexture = &cubemapTexture;
-    vulkan_data_skybox_serialize(&skybox, assetDb);
-    vulkan_data_skybox_deinit(&skybox);
+    vulkan_asset_skybox_serialize(&skybox, assetDb);
+    vulkan_asset_skybox_deinit(&skybox);
   }
 
-  vulkan_data_image_deinit(&cubemapImage);
+  vulkan_asset_image_deinit(&cubemapImage);
 }
 
 int main(int argc, char *argv[]) {

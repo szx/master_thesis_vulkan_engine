@@ -1,6 +1,6 @@
 #include "functions.h"
 
-#include "data/texture.h"
+#include "assets/texture.h"
 #include "objects/buffer.h"
 #include "objects/device.h"
 #include "objects/image.h"
@@ -55,10 +55,10 @@ VkFormat vulkan_find_depth_format(vulkan_device *vkd) {
                                       array_size(formats));
 }
 
-VkFormat vulkan_find_texture_format(vulkan_device *vkd, vulkan_data_texture *texture) {
+VkFormat vulkan_find_texture_format(vulkan_device *vkd, vulkan_asset_texture *texture) {
   size_t channels = texture->image->channels;
   assert(channels > 0 && channels <= 4);
-  bool sRGB = texture->image->type == vulkan_data_image_type_material_base_color;
+  bool sRGB = texture->image->type == vulkan_image_type_material_base_color;
 
   VkFormat r8 = sRGB ? VK_FORMAT_R8_SRGB : VK_FORMAT_R8_UNORM;
   VkFormat r8g8 = sRGB ? VK_FORMAT_R8G8_SRGB : VK_FORMAT_R8G8_UNORM;

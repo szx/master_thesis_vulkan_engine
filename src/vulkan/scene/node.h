@@ -7,7 +7,7 @@
  */
 #pragma once
 
-#include "../data/scene.h"
+#include "../assets/assets.h"
 #include "../objects/render_cache.h"
 
 typedef struct vulkan_scene_graph vulkan_scene_graph;
@@ -20,8 +20,8 @@ typedef struct vulkan_scene_tree_node vulkan_scene_tree_node;
 typedef struct vulkan_scene_graph_node {
   vulkan_scene_graph *sceneGraph; ///< Pointer
 
-  vulkan_data_object *object;       ///< Pointer.
-  vulkan_data_primitive *primitive; ///< Pointer.
+  vulkan_asset_object *object;       ///< Pointer.
+  vulkan_asset_primitive *primitive; ///< Pointer.
 
   UT_array *childNodes; ///< vulkan_scene_graph_node* list
 
@@ -31,8 +31,8 @@ typedef struct vulkan_scene_graph_node {
 } vulkan_scene_graph_node;
 
 vulkan_scene_graph_node *vulkan_scene_graph_node_create(vulkan_scene_graph *sceneGraph,
-                                                        vulkan_data_object *object,
-                                                        vulkan_data_primitive *primitive);
+                                                        vulkan_asset_object *object,
+                                                        vulkan_asset_primitive *primitive);
 
 void vulkan_scene_graph_node_destroy(vulkan_scene_graph_node *sceneGraphNode);
 
@@ -49,8 +49,8 @@ void vulkan_scene_graph_node_debug_print(vulkan_scene_graph_node *sceneGraphNode
 typedef struct vulkan_scene_tree_node {
   vulkan_scene_tree *sceneTree; ///< Pointer
 
-  vulkan_data_object *object;       ///< Pointer.
-  vulkan_data_primitive *primitive; ///< Pointer.
+  vulkan_asset_object *object;       ///< Pointer.
+  vulkan_asset_primitive *primitive; ///< Pointer.
 
   struct vulkan_scene_tree_node *parentNode;
   UT_array *childNodes; ///< vulkan_scene_tree_node* list

@@ -7,12 +7,14 @@
  */
 #pragma once
 
+#include "../assets/camera.h"
 #include "../common.h"
-#include "../data/camera.h"
+
+// HIRO Refactor move to scene/render_cache
 
 typedef struct vulkan_scene_tree_node vulkan_scene_tree_node;
-typedef struct vulkan_data_mesh vulkan_data_mesh;
-typedef struct vulkan_data_primitive vulkan_data_primitive;
+typedef struct vulkan_asset_mesh vulkan_asset_mesh;
+typedef struct vulkan_asset_primitive vulkan_asset_primitive;
 typedef struct vulkan_textures_material_element vulkan_textures_material_element;
 
 typedef struct vulkan_render_cache {
@@ -21,11 +23,11 @@ typedef struct vulkan_render_cache {
   /* cache state accumulated from scene tree */
   size_t distanceFromRoot;
   bool visible;
-  mat4 transform;                   ///< Accumulated from object node.
-  vulkan_data_mesh *mesh;           ///< Accumulated from object node.
-  vulkan_data_camera camera;        ///< Accumulated from object node.
-  vulkan_data_primitive *primitive; ///< Accumulated from primitive node.
-  vulkan_aabb aabb;                 ///< Accumulated from primitive node.
+  mat4 transform;                    ///< Accumulated from object node.
+  vulkan_asset_mesh *mesh;           ///< Accumulated from object node.
+  vulkan_asset_camera camera;        ///< Accumulated from object node.
+  vulkan_asset_primitive *primitive; ///< Accumulated from primitive node.
+  vulkan_aabb aabb;                  ///< Accumulated from primitive node.
 
   /* cache state accumulated from vertex stream */
   size_t firstIndexOffset;

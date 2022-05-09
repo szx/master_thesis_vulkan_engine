@@ -1,7 +1,7 @@
 #include "render_cache.h"
 
-#include "../data/mesh.h"
-#include "../data/primitive.h"
+#include "../assets/mesh.h"
+#include "../assets/primitive.h"
 #include "../scene/node.h"
 #include "textures.h"
 
@@ -34,14 +34,14 @@ void vulkan_render_cache_reset(vulkan_render_cache *renderCache) {
     glm_mat4_copy(renderCache->node->object->transform, renderCache->transform);
     renderCache->mesh = renderCache->node->object->mesh;
     if (renderCache->node->object->camera) {
-      vulkan_data_camera_copy(&renderCache->camera, renderCache->node->object->camera);
+      vulkan_asset_camera_copy(&renderCache->camera, renderCache->node->object->camera);
     } else {
-      vulkan_data_camera_init(&renderCache->camera, NULL);
+      vulkan_asset_camera_init(&renderCache->camera, NULL);
     }
   } else {
     glm_mat4_identity(renderCache->transform);
     renderCache->mesh = NULL;
-    vulkan_data_camera_init(&renderCache->camera, NULL);
+    vulkan_asset_camera_init(&renderCache->camera, NULL);
   }
 
   if (renderCache->node != NULL) {
@@ -64,12 +64,12 @@ void vulkan_render_cache_accumulate(vulkan_render_cache *renderCache,
     renderCache->mesh = parentCache->mesh;
   }
   if (renderCache->node->object != NULL && renderCache->node->object->camera != NULL) {
-    vulkan_data_camera_copy(&renderCache->camera, renderCache->node->object->camera);
+    vulkan_asset_camera_copy(&renderCache->camera, renderCache->node->object->camera);
   } else {
-    vulkan_data_camera_copy(&renderCache->camera, &parentCache->camera);
+    vulkan_asset_camera_copy(&renderCache->camera, &parentCache->camera);
   }
   if (renderCache->primitive != NULL) {
-    renderCache->aabb = vulkan_data_primitive_calculate_aabb(renderCache->primitive);
+    renderCache->aabb = vulkan_asset_primitive_calculate_aabb(renderCache->primitive);
     glm_mat4_mulv(renderCache->transform, renderCache->aabb.min, renderCache->aabb.min);
     glm_mat4_mulv(renderCache->transform, renderCache->aabb.max, renderCache->aabb.max);
   }

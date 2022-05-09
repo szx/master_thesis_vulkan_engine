@@ -3,8 +3,8 @@
 
 /* scene graph node */
 vulkan_scene_graph_node *vulkan_scene_graph_node_create(vulkan_scene_graph *sceneGraph,
-                                                        vulkan_data_object *object,
-                                                        vulkan_data_primitive *primitive) {
+                                                        vulkan_asset_object *object,
+                                                        vulkan_asset_primitive *primitive) {
   vulkan_scene_graph_node *sceneGraphNode = core_alloc(sizeof(vulkan_scene_graph_node));
 
   sceneGraphNode->sceneGraph = sceneGraph;

@@ -1,6 +1,5 @@
 #include "unified_uniform_buffer.h"
-#include "../data/camera.h"
-#include "../data/primitive.h"
+#include "../assets/primitive.h"
 #include "textures.h"
 
 vulkan_unified_uniform_buffer *

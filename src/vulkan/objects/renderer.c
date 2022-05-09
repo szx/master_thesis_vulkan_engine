@@ -7,7 +7,7 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
 
   renderer->config = config;
   renderer->assetDb = assetDb;
-  renderer->data = vulkan_data_scene_create_with_asset_db(renderer->assetDb, sceneName);
+  renderer->data = vulkan_scene_data_create_with_asset_db(renderer->assetDb, sceneName);
   renderer->vkd = vks->vkd;
   renderer->vks = vks;
 
@@ -62,7 +62,7 @@ void vulkan_renderer_destroy(vulkan_renderer *renderer) {
 
   vulkan_scene_graph_destroy(renderer->sceneGraph);
   vulkan_render_cache_list_destroy(renderer->renderCacheList);
-  vulkan_data_scene_destroy(renderer->data);
+  vulkan_scene_data_destroy(renderer->data);
 
   core_free(renderer);
 }
@@ -224,7 +224,7 @@ void vulkan_renderer_run_main_loop(vulkan_renderer *renderer,
 
 void vulkan_renderer_debug_print(vulkan_renderer *renderer) {
   log_debug("renderer:\n");
-  vulkan_data_scene_debug_print(renderer->data);
+  vulkan_scene_data_debug_print(renderer->data, 0);
   vulkan_render_cache_list_debug_print(renderer->renderCacheList);
   vulkan_scene_graph_debug_print(renderer->sceneGraph);
   vulkan_render_state_debug_print(renderer->renderState);

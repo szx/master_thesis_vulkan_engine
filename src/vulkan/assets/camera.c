@@ -1,18 +1,18 @@
 #include "camera.h"
 
-void vulkan_data_camera_init(vulkan_data_camera *camera, vulkan_data_scene *sceneData) {
+void vulkan_asset_camera_init(vulkan_asset_camera *camera, vulkan_scene_data *sceneData) {
   camera->type = vulkan_camera_type_perspective;
   camera->fovY = glm_rad(45.0f);
   camera->aspectRatio = 1.0f;
   camera->nearZ = 0.1f;
   camera->farZ = 256.0f;
   camera->dirty = true;
-  DEF_VULKAN_ENTITY(camera, camera)
+  VULKAN_ASSET_FIELD_DEFS(camera, camera)
 }
 
-void vulkan_data_camera_deinit(vulkan_data_camera *camera) {}
+void vulkan_asset_camera_deinit(vulkan_asset_camera *camera) {}
 
-void vulkan_data_camera_copy(vulkan_data_camera *dst, vulkan_data_camera *src) {
+void vulkan_asset_camera_copy(vulkan_asset_camera *dst, vulkan_asset_camera *src) {
   dst->type = src->type;
   dst->fovY = src->fovY;
   dst->aspectRatio = src->aspectRatio;
@@ -21,7 +21,7 @@ void vulkan_data_camera_copy(vulkan_data_camera *dst, vulkan_data_camera *src) {
   dst->dirty = true;
 }
 
-data_key vulkan_data_camera_calculate_key(vulkan_data_camera *camera) {
+data_key vulkan_asset_camera_calculate_key(vulkan_asset_camera *camera) {
   hash_t value;
   HASH_START(hashState)
   HASH_UPDATE(hashState, &camera->type, sizeof(camera->type))
@@ -34,8 +34,8 @@ data_key vulkan_data_camera_calculate_key(vulkan_data_camera *camera) {
   return (data_key){value};
 }
 
-void vulkan_data_camera_serialize(vulkan_data_camera *camera, data_asset_db *assetDb) {
-  camera->key = vulkan_data_camera_calculate_key(camera);
+void vulkan_asset_camera_serialize(vulkan_asset_camera *camera, data_asset_db *assetDb) {
+  camera->key = vulkan_asset_camera_calculate_key(camera);
   data_asset_db_insert_camera_type_int(assetDb, camera->key, data_int_temp(camera->type));
   data_asset_db_insert_camera_fovY_float(assetDb, camera->key, data_float_temp(camera->fovY));
   data_asset_db_insert_camera_aspectRatio_float(assetDb, camera->key,
@@ -44,8 +44,8 @@ void vulkan_data_camera_serialize(vulkan_data_camera *camera, data_asset_db *ass
   data_asset_db_insert_camera_farZ_float(assetDb, camera->key, data_float_temp(camera->farZ));
 }
 
-void vulkan_data_camera_deserialize(vulkan_data_camera *camera, data_asset_db *assetDb,
-                                    data_key key) {
+void vulkan_asset_camera_deserialize(vulkan_asset_camera *camera, data_asset_db *assetDb,
+                                     data_key key) {
   camera->key = key;
   camera->type = data_asset_db_select_camera_type_int(assetDb, camera->key).value;
   camera->fovY = data_asset_db_select_camera_fovY_float(assetDb, camera->key).value;
@@ -55,7 +55,7 @@ void vulkan_data_camera_deserialize(vulkan_data_camera *camera, data_asset_db *a
   camera->farZ = d.value;
 }
 
-void vulkan_data_camera_debug_print(vulkan_data_camera *camera, int indent) {
+void vulkan_asset_camera_debug_print(vulkan_asset_camera *camera, int indent) {
   log_debug(INDENT_FORMAT_STRING "camera:", INDENT_FORMAT_ARGS(0));
   log_debug(INDENT_FORMAT_STRING "hash=%zu", INDENT_FORMAT_ARGS(2), camera->key);
   log_debug(INDENT_FORMAT_STRING "type=%s", INDENT_FORMAT_ARGS(2),

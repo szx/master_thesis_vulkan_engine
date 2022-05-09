@@ -1,17 +1,17 @@
 #include "textures.h"
-#include "../data/primitive.h"
+#include "../assets/primitive.h"
 
 vulkan_textures_texture_element *
-vulkan_textures_texture_element_create(vulkan_data_texture *texture, vulkan_device *vkd) {
+vulkan_textures_texture_element_create(vulkan_asset_texture *texture, vulkan_device *vkd) {
   vulkan_textures_texture_element *element = core_alloc(sizeof(vulkan_textures_texture_element));
 
   element->texture = texture;
   vulkan_image_type type = vulkan_image_type_material_base_color;
-  if (element->texture->image->type == vulkan_data_image_type_material_base_color) {
+  if (element->texture->image->type == vulkan_image_type_material_base_color) {
     type = vulkan_image_type_material_base_color;
-  } else if (element->texture->image->type == vulkan_data_image_type_material_parameters) {
+  } else if (element->texture->image->type == vulkan_image_type_material_parameters) {
     type = vulkan_image_type_material_parameters;
-  } else if (element->texture->image->type == vulkan_data_image_type_cubemap) {
+  } else if (element->texture->image->type == vulkan_image_type_cubemap) {
     type = vulkan_image_type_cubemap;
   } else {
     assert(0);
@@ -35,7 +35,7 @@ void vulkan_textures_texture_element_destroy(vulkan_textures_texture_element *el
 }
 
 vulkan_textures_material_element *vulkan_textures_material_element_create(
-    vulkan_data_material *material, vulkan_textures_texture_element *baseColorTextureElement,
+    vulkan_asset_material *material, vulkan_textures_texture_element *baseColorTextureElement,
     vulkan_textures_texture_element *metallicRoughnessTextureElement) {
   vulkan_textures_material_element *element = core_alloc(sizeof(vulkan_textures_material_element));
 
@@ -83,7 +83,7 @@ void vulkan_textures_update(vulkan_textures *textures) {
 
   utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
                               textures->renderCacheList->primitiveRenderCaches) {
-    vulkan_data_material *material = renderCache->primitive->material;
+    vulkan_asset_material *material = renderCache->primitive->material;
     if (material == NULL) {
       continue;
     }
@@ -101,7 +101,7 @@ void vulkan_textures_send_to_device(vulkan_textures *textures) {
 }
 
 vulkan_textures_material_element *vulkan_textures_add_material(vulkan_textures *textures,
-                                                               vulkan_data_material *material) {
+                                                               vulkan_asset_material *material) {
   vulkan_textures_material_element *element;
   HASH_FIND(hh, textures->materialElements, &material, sizeof(material), element);
   if (element != NULL) {
@@ -109,7 +109,7 @@ vulkan_textures_material_element *vulkan_textures_add_material(vulkan_textures *
   }
 
   log_info("adding material");
-  vulkan_data_material_debug_print(material);
+  vulkan_asset_material_debug_print(material, 0);
   element = vulkan_textures_material_element_create(
       material, vulkan_textures_add_texture(textures, material->baseColorTexture),
       vulkan_textures_add_texture(textures, material->metallicRoughnessTexture));
@@ -118,7 +118,7 @@ vulkan_textures_material_element *vulkan_textures_add_material(vulkan_textures *
 }
 
 vulkan_textures_texture_element *vulkan_textures_add_texture(vulkan_textures *textures,
-                                                             vulkan_data_texture *texture) {
+                                                             vulkan_asset_texture *texture) {
   vulkan_textures_texture_element *element;
   HASH_FIND(hh, textures->textureElements, &texture, sizeof(texture), element);
   if (element != NULL) {
@@ -126,7 +126,7 @@ vulkan_textures_texture_element *vulkan_textures_add_texture(vulkan_textures *te
   }
 
   log_info("adding texture");
-  vulkan_data_texture_debug_print(texture);
+  vulkan_asset_texture_debug_print(texture, 0);
   element = vulkan_textures_texture_element_create(texture, textures->vkd);
   HASH_ADD_PTR(textures->textureElements, texture, element);
   return element;

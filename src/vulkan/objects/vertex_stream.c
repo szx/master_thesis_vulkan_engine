@@ -1,5 +1,5 @@
 #include "vertex_stream.h"
-#include "../data/primitive.h"
+#include "../assets/primitive.h"
 
 uint32_t vulkan_attribute_type_to_stride(vulkan_attribute_type vertexAttributes) {
   if ((vertexAttributes & vulkan_attribute_type_texcoord) != 0) {
@@ -133,8 +133,8 @@ void vulkan_vertex_stream_add_primitive(vulkan_vertex_stream *stream,
     vulkan_render_cache_set_vertex_stream_offsets(renderCache, firstIndexOffset, firstVertexOffset);
     return;
   }
-  vulkan_data_primitive *primitive = renderCache->primitive;
-  assert(primitive->indices->componentType == vulkan_data_vertex_attribute_component_uint32_t);
+  vulkan_asset_primitive *primitive = renderCache->primitive;
+  assert(primitive->indices->componentType == vulkan_asset_vertex_attribute_component_uint32_t);
 
   vulkan_vertex_stream_element vertexStreamElement = vulkan_vertex_stream_add_geometry(
       stream, primitive->vertexCount, primitive->indices->data, primitive->positions->data,
