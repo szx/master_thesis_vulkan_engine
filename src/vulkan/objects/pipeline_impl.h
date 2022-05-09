@@ -25,11 +25,18 @@ typedef enum vulkan_pipeline_type {
       vulkan_pipeline_type_count
 } vulkan_pipeline_type;
 
+typedef enum vulkan_pipeline_offscreen_attachment_type {
+  vulkan_pipeline_offscreen_attachment_type_gbuffer_color,
+  vulkan_pipeline_offscreen_attachment_type_count
+} vulkan_pipeline_offscreen_attachment_type;
+
 typedef struct vulkan_pipeline_info {
   bool useOnscreenColorAttachment;
   VkClearColorValue onscreenClearValue;
 
   uint32_t offscreenColorAttachmentCount;
+  vulkan_pipeline_offscreen_attachment_type
+      offscreenColorAttachmentTypes[MAX_OFFSCREEN_ATTACHMENT_COUNT];
   VkClearColorValue offscreenClearValue;
 
   bool useDepthAttachment;

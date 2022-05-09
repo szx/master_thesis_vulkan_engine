@@ -52,34 +52,29 @@ void vulkan_pipeline_info_get_render_pass_create_info(
     VkAttachmentReference *depthAttachmentReference) {
 
   /* analyze pipeline chain */
-  bool isFirstPipeline = (prev == NULL);
-  bool isLastPipeline = (next == NULL);
-  size_t prevOnscreenColorAttachmentCount = 0;
-  size_t nextOnscreenColorAttachmentCount = 0;
-  vulkan_pipeline *it = prev;
-  while (it != NULL) {
-    vulkan_pipeline_info info = vulkan_pipeline_get_pipeline_info(it);
-    if (info.useOnscreenColorAttachment) {
-      prevOnscreenColorAttachmentCount++;
-    }
-    it = it->prev;
+#define ITERATE_INFO(_start, _body)                                                                \
+  {                                                                                                \
+    vulkan_pipeline *it = _start;                                                                  \
+    while (it != NULL) {                                                                           \
+      vulkan_pipeline_info info = vulkan_pipeline_get_pipeline_info(it);                           \
+      _body it = it->_start;                                                                       \
+    }                                                                                              \
   }
-  it = next;
-  while (it != NULL) {
-    vulkan_pipeline_info info = vulkan_pipeline_get_pipeline_info(it);
-    if (info.useOnscreenColorAttachment) {
-      nextOnscreenColorAttachmentCount++;
-    }
-    it = it->next;
-  }
-  bool isFirstOnscreenPipeline =
-      pipelineInfo.useOnscreenColorAttachment && prevOnscreenColorAttachmentCount == 0;
-  bool isLastOnscreenPipeline =
-      pipelineInfo.useOnscreenColorAttachment && nextOnscreenColorAttachmentCount == 0;
 
   /* prepare attachment info */
   size_t idx = 0;
   if (pipelineInfo.useOnscreenColorAttachment) {
+
+    size_t prevOnscreenColorAttachmentCount = 0;
+    size_t nextOnscreenColorAttachmentCount = 0;
+    ITERATE_INFO(
+        prev, if (info.useOnscreenColorAttachment) { prevOnscreenColorAttachmentCount++; })
+    ITERATE_INFO(
+        next, if (info.useOnscreenColorAttachment) { nextOnscreenColorAttachmentCount++; })
+    bool isFirstOnscreenPipeline =
+        pipelineInfo.useOnscreenColorAttachment && prevOnscreenColorAttachmentCount == 0;
+    bool isLastOnscreenPipeline =
+        pipelineInfo.useOnscreenColorAttachment && nextOnscreenColorAttachmentCount == 0;
 
     VkAttachmentLoadOp loadOp;
     if (isFirstOnscreenPipeline) {
@@ -119,19 +114,60 @@ void vulkan_pipeline_info_get_render_pass_create_info(
   }
 
   for (size_t i = 0; i < pipelineInfo.offscreenColorAttachmentCount; i++) {
+
+    size_t prevOffscreenColorAttachmentCount = 0;
+    size_t nextOffscreenColorAttachmentCount = 0;
+    ITERATE_INFO(
+        prev, if (info.offscreenColorAttachmentCount > 0) {
+          for (size_t typeIdx = 0; typeIdx < info.offscreenColorAttachmentCount; typeIdx++) {
+            if (info.offscreenColorAttachmentTypes[typeIdx] ==
+                pipelineInfo.offscreenColorAttachmentTypes[i]) {
+              prevOffscreenColorAttachmentCount++;
+            }
+          }
+        })
+    ITERATE_INFO(
+        next, if (info.offscreenColorAttachmentCount > 0) {
+          for (size_t typeIdx = 0; typeIdx < info.offscreenColorAttachmentCount; typeIdx++) {
+            if (info.offscreenColorAttachmentTypes[typeIdx] ==
+                pipelineInfo.offscreenColorAttachmentTypes[i]) {
+              nextOffscreenColorAttachmentCount++;
+            }
+          }
+        })
+
+    bool isFirstOffscreenPipeline =
+        pipelineInfo.useOnscreenColorAttachment && prevOffscreenColorAttachmentCount == 0;
+
+    VkAttachmentLoadOp loadOp;
+    if (isFirstOffscreenPipeline) {
+      loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    } else {
+      loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+    }
+
+    VkImageLayout initialLayout;
+    if (isFirstOffscreenPipeline) {
+      initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    } else {
+      initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    }
+
+    VkImageLayout finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
     offscreenColorAttachmentDescriptions[i] = (VkAttachmentDescription){
         .format = swapChainImageFormat,
         .samples = VK_SAMPLE_COUNT_1_BIT,
-        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR, // HIRO HIRO or load
+        .loadOp = loadOp,
         .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
         .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
         .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED, // HIRO HIRO or color optimal
-        .finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+        .initialLayout = initialLayout,
+        .finalLayout = finalLayout,
     };
     offscreenColorAttachmentReferences[i] = (VkAttachmentReference){
         .attachment = idx++,
-        .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+        .layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
     };
   }
 
@@ -151,6 +187,8 @@ void vulkan_pipeline_info_get_render_pass_create_info(
         .layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
     };
   }
+
+#undef ITERATE_INFO
 }
 
 /* forward */
