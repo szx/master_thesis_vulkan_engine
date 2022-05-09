@@ -14,21 +14,21 @@ vulkan_render_state *vulkan_render_state_create(vulkan_swap_chain *vks,
   renderState->config = config;
 
   vulkan_render_cache_list_update(renderState->renderCacheList);
-  renderState->camera = vulkan_camera_create(renderState->renderCacheList, renderState->vks);
-  renderState->lights = vulkan_lights_create(renderState->renderCacheList);
-
-  renderState->batches = vulkan_batches_create(renderCacheList, renderState->vkd);
 
   renderState->unifiedGeometryBuffer =
       vulkan_unified_geometry_buffer_create(renderState->vkd, renderState->renderCacheList);
   renderState->textures = vulkan_textures_create(renderState->vkd, renderState->renderCacheList);
   renderState->unifiedUniformBuffer =
       vulkan_unified_uniform_buffer_create(renderState->vkd, renderState->renderCacheList);
-
   renderState->descriptors = vulkan_descriptors_create(
       renderState->vkd, renderState->unifiedUniformBuffer, renderState->textures);
-
   renderState->sync = vulkan_sync_create(renderState->vkd);
+
+  // HIRO HIRO HIRO refactor camera + light to CPU+GPU mixed state
+  renderState->camera = vulkan_camera_create(renderState->renderCacheList, renderState->vks);
+  renderState->lights = vulkan_lights_create(renderState->renderCacheList);
+  renderState->skybox = vulkan_skybox_create(renderState);
+  renderState->batches = vulkan_batches_create(renderCacheList, renderState->vkd);
 
   vulkan_scene_render_state_update(renderState);
 
@@ -45,6 +45,7 @@ void vulkan_render_state_destroy(vulkan_render_state *renderState) {
   vulkan_unified_geometry_buffer_destroy(renderState->unifiedGeometryBuffer);
 
   vulkan_batches_destroy(renderState->batches);
+  vulkan_skybox_destroy(renderState->skybox);
   vulkan_lights_destroy(renderState->lights);
   vulkan_camera_destroy(renderState->camera);
 
@@ -68,7 +69,8 @@ void vulkan_scene_render_state_update(vulkan_render_state *renderState) {
   vulkan_unified_geometry_buffer_update(renderState->unifiedGeometryBuffer);
   vulkan_textures_update(renderState->textures);
   vulkan_unified_uniform_buffer_update(renderState->unifiedUniformBuffer, renderState->sync,
-                                       renderState->camera, renderState->lights);
+                                       renderState->camera, renderState->lights,
+                                       renderState->skybox);
 
   vulkan_descriptors_update(renderState->descriptors);
 }
@@ -90,6 +92,7 @@ void vulkan_render_state_debug_print(vulkan_render_state *renderState) {
   vulkan_batches_debug_print(renderState->batches);
   vulkan_camera_debug_print(renderState->camera, 2);
   vulkan_lights_debug_print(renderState->lights, 2);
+  vulkan_skybox_debug_print(renderState->skybox, 2);
   vulkan_unified_geometry_buffer_debug_print(renderState->unifiedGeometryBuffer);
   vulkan_unified_uniform_buffer_debug_print(renderState->unifiedUniformBuffer);
   vulkan_textures_debug_print(renderState->textures);

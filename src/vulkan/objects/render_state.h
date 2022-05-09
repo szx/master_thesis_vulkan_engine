@@ -7,6 +7,7 @@
 #include "camera.h"
 #include "lights.h"
 #include "render_cache_list.h"
+#include "skybox.h"
 #include "sync.h"
 #include "textures.h"
 #include "unified_geometry_buffer.h"
@@ -22,10 +23,6 @@ typedef struct vulkan_render_state {
   vulkan_render_cache_list *renderCacheList; ///< Pointer.
   data_config *config;                       ///< Pointer.
 
-  vulkan_camera *camera;
-  vulkan_lights *lights;
-  vulkan_batches *batches;
-
   /* GPU state */
   vulkan_unified_geometry_buffer *unifiedGeometryBuffer;
   vulkan_textures *textures;
@@ -33,6 +30,12 @@ typedef struct vulkan_render_state {
 
   vulkan_descriptors *descriptors;
   vulkan_sync *sync;
+
+  /* CPU + GPU state */
+  vulkan_camera *camera;
+  vulkan_lights *lights;
+  vulkan_skybox *skybox;
+  vulkan_batches *batches;
 
 } vulkan_render_state;
 

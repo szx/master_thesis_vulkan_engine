@@ -17,6 +17,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->createFlags = 0;
     image->usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
     image->aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
+    image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->name = "depth buffer image";
   } else if (image->type == vulkan_image_type_material_base_color) {
@@ -28,6 +29,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
                         VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
     image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+    image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->name = "material image";
   } else if (image->type == vulkan_image_type_material_parameters) {
@@ -39,6 +41,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
                         VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
     image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+    image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->name = "material image";
   } else if (image->type == vulkan_image_type_cubemap) {
@@ -50,6 +53,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                         VK_IMAGE_USAGE_TRANSFER_DST_BIT;
     image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+    image->viewType = VK_IMAGE_VIEW_TYPE_CUBE;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->name = "cubemap image";
   } else {
@@ -93,7 +97,7 @@ void vulkan_image_make_resident(vulkan_image *image) {
     image->imageMemory = vulkan_create_image_memory(image->vkd, image->image,
                                                     image->memoryPropertyFlags, image->name);
     image->imageView = vulkan_create_image_view(
-        image->vkd, image->image, VK_IMAGE_VIEW_TYPE_2D, image->format, image->aspectFlags,
+        image->vkd, image->image, image->viewType, image->format, image->aspectFlags,
         image->mipLevelCount, image->arrayLayers, image->name);
     image->resident = true;
   }
@@ -120,29 +124,32 @@ void vulkan_image_send_to_device(vulkan_image *image) {
     assert(pixelSize <= texelSize);
     size_t emptyComponents = texelSize - pixelSize;
     size_t texelNum = image->width * image->height;
-    size_t totalSize = texelNum * texelSize;
+    size_t totalLayerPixelSize = texelNum * pixelSize;
+    size_t totalLayerTexelSize = texelNum * texelSize;
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
-    vulkan_create_buffer(image->vkd, totalSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+    vulkan_create_buffer(image->vkd, totalLayerTexelSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                          &stagingBuffer, &stagingBufferMemory, "staging buffer for image");
-    void *data;
-    vkMapMemory(image->vkd->device, stagingBufferMemory, 0, totalSize, 0, &data);
-    // HIRO HIRO different for cubemap?
-    for (size_t i = 0; i < texelNum; i++) {
+    for (size_t layerIdx = 0; layerIdx < image->arrayLayers; layerIdx++) {
+      void *data;
+      vkMapMemory(image->vkd->device, stagingBufferMemory, 0, totalLayerTexelSize, 0, &data);
       uint8_t *bytes = data;
-      core_memcpy(bytes + i * texelSize, utarray_eltptr(image->texture->image->data, i * pixelSize),
-                  pixelSize);
-      if (emptyComponents > 0) {
-        core_memset(bytes + i * texelSize + pixelSize, 0, emptyComponents);
+      size_t pixelLayerOffset = layerIdx * totalLayerPixelSize;
+      for (size_t i = 0; i < texelNum; i++) {
+        core_memcpy(bytes + i * texelSize,
+                    utarray_eltptr(image->texture->image->data, pixelLayerOffset + i * pixelSize),
+                    pixelSize);
+        if (emptyComponents > 0) {
+          core_memset(bytes + i * texelSize + pixelSize, 0, emptyComponents);
+        }
       }
+      vkUnmapMemory(image->vkd->device, stagingBufferMemory);
+
+      vulkan_copy_buffer_to_image(image->vkd, stagingBuffer, image->image, image->width,
+                                  image->height, layerIdx);
     }
-    vkUnmapMemory(image->vkd->device, stagingBufferMemory);
-
-    vulkan_copy_buffer_to_image(image->vkd, stagingBuffer, image->image, image->width,
-                                image->height, 0);
-
     vkDestroyBuffer(image->vkd->device, stagingBuffer, vka);
     vkFreeMemory(image->vkd->device, stagingBufferMemory, vka);
 

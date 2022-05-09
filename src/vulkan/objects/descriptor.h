@@ -24,14 +24,18 @@ typedef struct vulkan_point_light_helper_struct {
   float radius;
 } vulkan_point_light_helper_struct;
 
+typedef struct vulkan_skybox_helper_struct {
+  uint skyboxCubemapTextureId;
+} vulkan_skybox_helper_struct;
+
 typedef struct vulkan_global_uniform_buffer_struct {
   mat4 viewMat;
   mat4 projMat;
-
   uint directionalLightCount;
   vulkan_directional_light_helper_struct directionalLights; ///< [MAX_DIRECTIONAL_LIGHT_COUNT]
   uint pointLightCount;
   vulkan_point_light_helper_struct pointLights; ///< [MAX_POINT_LIGHT_COUNT]
+  vulkan_skybox_helper_struct skybox;
 } vulkan_global_uniform_buffer_struct;
 
 typedef struct vulkan_materials_uniform_buffer_struct {

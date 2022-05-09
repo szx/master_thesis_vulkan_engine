@@ -11,6 +11,8 @@ vulkan_render_cache_list *vulkan_render_cache_list_create(size_t maxInstanceCoun
 
   utarray_alloc(renderCacheList->cameraRenderCaches, sizeof(vulkan_render_cache *));
 
+  renderCacheList->skybox = NULL;
+
   renderCacheList->dirty = true;
 
   return renderCacheList;
@@ -52,6 +54,11 @@ void vulkan_render_cache_list_remove_primitive_render_cache(
 void vulkan_render_cache_list_add_camera_render_cache(vulkan_render_cache_list *renderCacheList,
                                                       vulkan_render_cache *cameraRenderCache) {
   utarray_push_back(renderCacheList->cameraRenderCaches, &cameraRenderCache);
+}
+
+void vulkan_render_cache_list_add_skybox(vulkan_render_cache_list *renderCacheList,
+                                         vulkan_data_skybox *skybox) {
+  renderCacheList->skybox = skybox;
 }
 
 static int cache_list_sort_func(const void *_a, const void *_b) {

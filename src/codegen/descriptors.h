@@ -14,6 +14,10 @@ typedef struct vulkan_point_light_helper_element {
   alignas(4) float radius;
 } vulkan_point_light_helper_element;
 
+typedef struct vulkan_skybox_helper_element {
+  alignas(4) uint skyboxCubemapTextureId;
+} vulkan_skybox_helper_element;
+
 typedef struct vulkan_draw_push_constant_element {
   alignas(4) uint currentFrameInFlight;
 } vulkan_draw_push_constant_element;
@@ -25,6 +29,7 @@ typedef struct vulkan_global_uniform_buffer_element {
   vulkan_directional_light_helper_element directionalLights [MAX_DIRECTIONAL_LIGHT_COUNT];
   alignas(4) uint pointLightCount;
   vulkan_point_light_helper_element pointLights [MAX_POINT_LIGHT_COUNT];
+  vulkan_skybox_helper_element skybox ;
 } vulkan_global_uniform_buffer_element;
 
 typedef struct vulkan_instances_uniform_buffer_element {
@@ -46,6 +51,7 @@ void glsl_add_vulkan_instances_uniform_buffer(UT_string *s, uint32_t set, uint32
 void glsl_add_vulkan_materials_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);
 void glsl_add_vulkan_directional_light_helper_struct(UT_string *s);
 void glsl_add_vulkan_point_light_helper_struct(UT_string *s);
+void glsl_add_vulkan_skybox_helper_struct(UT_string *s);
 
 #define END_OF_VULKAN_PUSH_CONSTANTS
 #define VULKAN_PUSH_CONSTANTS(X, ...) \
@@ -63,4 +69,5 @@ void glsl_add_vulkan_point_light_helper_struct(UT_string *s);
 #define VULKAN_HELPER_STRUCTS(X, ...) \
   X(directional_light, __VA_ARGS__) \
   X(point_light, __VA_ARGS__) \
+  X(skybox, __VA_ARGS__) \
   END_OF_VULKAN_HELPER_STRUCTS

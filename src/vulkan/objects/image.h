@@ -29,6 +29,7 @@ typedef struct vulkan_image {
   VkImageUsageFlags usageFlags;
   VkMemoryPropertyFlags memoryPropertyFlags;
   VkImageAspectFlags aspectFlags;
+  VkImageViewType viewType;
   const char *name;
 
   VkImage image;

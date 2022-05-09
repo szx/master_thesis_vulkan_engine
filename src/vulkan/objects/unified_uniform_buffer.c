@@ -42,7 +42,7 @@ void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *unifor
 
 void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniformBuffer,
                                           vulkan_sync *sync, vulkan_camera *camera,
-                                          vulkan_lights *lights) {
+                                          vulkan_lights *lights, vulkan_skybox *skybox) {
   assert(utarray_len(uniformBuffer->renderCacheList->primitiveRenderCaches) > 0);
   assert(utarray_len(uniformBuffer->renderCacheList->cameraRenderCaches) > 0);
 
@@ -55,6 +55,8 @@ void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniform
     vulkan_lights_set_directional_light_elements(lights, &element->directionalLightCount,
                                                  element->directionalLights);
     vulkan_lights_set_point_light_elements(lights, &element->pointLightCount, element->pointLights);
+    vulkan_skybox_set_skybox_elements(skybox, &element->skybox);
+    // HIRO Refactor to camera/light/skybox_update_uniform_buffer
   }
 
   // materials

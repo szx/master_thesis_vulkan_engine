@@ -119,6 +119,7 @@ void vulkan_scene_graph_create_with_scene_data(vulkan_scene_graph *sceneGraph,
   assert(sceneGraph->root == NULL);
   assert(sceneGraph->nodes == NULL);
 
+  /* construct scene graph and scene tree */
   vulkan_data_object *rootObject = core_alloc(sizeof(vulkan_data_object));
   vulkan_data_object_init(rootObject, sceneGraph->data);
   glm_mat4_identity(rootObject->transform);
@@ -132,6 +133,9 @@ void vulkan_scene_graph_create_with_scene_data(vulkan_scene_graph *sceneGraph,
     vulkan_scene_graph_add_object(sceneGraph, sceneGraph->root, sceneGraph->sceneTree->root,
                                   rootChild);
   }
+
+  /* add additional state to render cache list */
+  vulkan_render_cache_list_add_skybox(sceneGraph->sceneTree->renderCacheList, sceneData->skybox);
 
   assert(sceneGraph->root);
 }

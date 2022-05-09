@@ -181,7 +181,7 @@ vulkan_shader_reflect_binding_create(SpvReflectDescriptorBinding *reflect) {
     binding->type = vulkan_shader_reflect_binding_type_##_name##_uniform_buffer;
   VULKAN_UNIFORM_BUFFERS(strcmp_uniform_buffer, )
 #undef strcmp_uniform_buffer
-  if (reflect->name != NULL && strcmp(reflect->name, "textures") == 0) {
+  if (reflect->name != NULL && strncmp(reflect->name, "textures", strlen("textures")) == 0) {
     binding->type = vulkan_shader_reflect_binding_type_textures;
   }
   verify(binding->type != vulkan_shader_reflect_binding_type_unknown &&

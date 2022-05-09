@@ -27,9 +27,9 @@ vec4 baseColorLinearMultiplier = vec4(1.0);
 #endif
 #if IN_TEXCOORD == 1
 uint baseColorTextureId = materials[materialId].baseColorTextureId;
-vec4 baseColorTexture = texture(textures[baseColorTextureId], inTexCoord); // automatically converted from sRGB to linear
+vec4 baseColorTexture = texture(textures2D[baseColorTextureId], inTexCoord); // automatically converted from sRGB to linear
 uint metallicRoughnessTextureId = materials[materialId].metallicRoughnessTextureId;
-vec4 metallicRoughnessTexture = texture(textures[metallicRoughnessTextureId], inTexCoord);
+vec4 metallicRoughnessTexture = texture(textures2D[metallicRoughnessTextureId], inTexCoord);
 float metallicTexture = metallicRoughnessTexture.b;
 float roughnessTexture = metallicRoughnessTexture.g;
 #else

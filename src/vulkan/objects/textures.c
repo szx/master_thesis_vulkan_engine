@@ -11,6 +11,8 @@ vulkan_textures_texture_element_create(vulkan_data_texture *texture, vulkan_devi
     type = vulkan_image_type_material_base_color;
   } else if (element->texture->image->type == vulkan_data_image_type_material_parameters) {
     type = vulkan_image_type_material_parameters;
+  } else if (element->texture->image->type == vulkan_data_image_type_cubemap) {
+    type = vulkan_image_type_cubemap;
   } else {
     assert(0);
   }
@@ -137,6 +139,12 @@ void vulkan_textures_debug_print(vulkan_textures *textures) {
 }
 
 void glsl_add_textures(UT_string *s, uint32_t set, uint32_t binding, vulkan_textures *textures) {
-  utstring_printf(s, "layout(set = %u, binding = %u) uniform sampler2D textures[];\n", set,
+  utstring_printf(s, "// Declare multiple shader variables with same set and binding numbers and "
+                     "different shader types.\n"
+                     "// Vulkan spec allows this aliasing ( \"DescriptorSet and Binding "
+                     "Assignment\", https://github.com/KhronosGroup/Vulkan-Docs/issues/1420 ).\n");
+  utstring_printf(s, "layout(set = %u, binding = %u) uniform sampler2D textures2D[];\n", set,
+                  binding);
+  utstring_printf(s, "layout(set = %u, binding = %u) uniform samplerCube texturesCube[];\n", set,
                   binding);
 }

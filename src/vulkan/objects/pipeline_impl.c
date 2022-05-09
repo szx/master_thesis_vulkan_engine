@@ -243,21 +243,22 @@ vulkan_pipeline_info vulkan_pipeline_impl_skybox_get_pipeline_info(vulkan_pipeli
 }
 
 typedef struct vulkan_pipeline_impl_skybox_frame_state {
-  /// HIRO HIRO skybox vulkan_image
-  int foo;
+  /// Skybox cubemap.
+  vulkan_textures_texture_element *cubemapTexture;
 } vulkan_pipeline_impl_skybox_frame_state;
 
 void vulkan_pipeline_impl_skybox_frame_state_init(vulkan_pipeline_frame_state *frameState) {
   vulkan_pipeline_impl_skybox_frame_state *impl =
       core_alloc(sizeof(vulkan_pipeline_impl_skybox_frame_state));
-  // vulkan_batches_data_init(&impl->batchesData, frameState->pipeline->vks->vkd);
+
+  // HIRO Refactor cubemapTexture can be shared between frames
+  impl->cubemapTexture = frameState->pipeline->renderState->skybox->cubemapTextureElement;
   frameState->impl = impl;
 }
 
 void vulkan_pipeline_impl_skybox_frame_state_deinit(vulkan_pipeline_frame_state *frameState) {
   vulkan_pipeline_impl_skybox_frame_state *impl = frameState->impl;
-
-  // vulkan_batches_data_deinit(&impl->batchesData);
+  // cubemapTexture is managed by vulkan_textures
   core_free(impl);
 }
 
@@ -265,7 +266,7 @@ void vulkan_pipeline_impl_skybox_frame_state_send_to_device(
     vulkan_pipeline_frame_state *frameState) {
   vulkan_pipeline_impl_skybox_frame_state *impl = frameState->impl;
 
-  // vulkan_batches_data_send_to_device(&impl->batchesData);
+  // cubemapTexture is managed by vulkan_textures
 }
 
 void vulkan_pipeline_impl_skybox_record_render_pass(vulkan_pipeline *pipeline,
@@ -304,7 +305,10 @@ void vulkan_pipeline_impl_skybox_record_render_pass(vulkan_pipeline *pipeline,
   vkCmdPushConstants(commandBuffer, pipeline->pipelineLayout, VK_SHADER_STAGE_ALL, 0,
                      sizeof(drawPushConstant), &drawPushConstant);
 
-  // HIRO CmdDraw skybox
+  // Draw cube.
+  uint32_t indexOffset = pipeline->renderState->skybox->boxVertexStreamElement.firstIndexOffset;
+  uint32_t vertexOffset = pipeline->renderState->skybox->boxVertexStreamElement.firstVertexOffset;
+  vkCmdDrawIndexed(commandBuffer, 36, 1, indexOffset, vertexOffset, 0);
 
   vkCmdEndRenderPass(commandBuffer);
 }
