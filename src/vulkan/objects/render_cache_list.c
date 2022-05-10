@@ -1,10 +1,10 @@
 #include "render_cache_list.h"
 #include "../assets/primitive.h"
 
-vulkan_render_cache_list *vulkan_render_cache_list_create(size_t maxInstanceCount) {
+vulkan_render_cache_list *vulkan_render_cache_list_create(size_t maxPrimitiveRenderCacheCount) {
   vulkan_render_cache_list *renderCacheList = core_alloc(sizeof(vulkan_render_cache_list));
 
-  renderCacheList->maxPrimitiveRenderCacheCount = maxInstanceCount;
+  renderCacheList->maxPrimitiveRenderCacheCount = maxPrimitiveRenderCacheCount;
   utarray_alloc(renderCacheList->primitiveRenderCaches, sizeof(vulkan_render_cache *));
   renderCacheList->primitiveRenderCachesSorted = true;
   renderCacheList->attributes = vulkan_attribute_type_unknown;

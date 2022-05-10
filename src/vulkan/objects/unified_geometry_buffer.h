@@ -10,17 +10,14 @@
 /// Used to aggregate scene's vertex data into one big vertex buffer.
 typedef struct vulkan_unified_geometry_buffer {
   /* CPU state */
-  vulkan_render_cache_list *renderCacheList; ///< Pointer.
-  vulkan_vertex_stream *dirtyVertexStream;   ///< Not NULL if buffers need to be updated.
+  vulkan_vertex_stream *dirtyVertexStream; ///< Not NULL if buffers need to be updated.
 
   /* GPU state */
   vulkan_buffer *indexBuffer;
   vulkan_buffer *vertexBuffer;
 } vulkan_unified_geometry_buffer;
 
-vulkan_unified_geometry_buffer *
-vulkan_unified_geometry_buffer_create(vulkan_device *vkd,
-                                      vulkan_render_cache_list *renderCacheList);
+vulkan_unified_geometry_buffer *vulkan_unified_geometry_buffer_create(vulkan_device *vkd);
 void vulkan_unified_geometry_buffer_destroy(vulkan_unified_geometry_buffer *geometryBuffer);
 
 void vulkan_unified_geometry_buffer_update(vulkan_unified_geometry_buffer *geometryBuffer,

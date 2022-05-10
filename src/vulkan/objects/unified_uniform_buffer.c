@@ -3,16 +3,14 @@
 #include "textures.h"
 
 vulkan_unified_uniform_buffer *
-vulkan_unified_uniform_buffer_create(vulkan_device *vkd,
-                                     vulkan_render_cache_list *renderCacheList) {
+vulkan_unified_uniform_buffer_create(vulkan_device *vkd, size_t maxPrimitiveRenderCacheCount) {
   vulkan_unified_uniform_buffer *uniformBuffer = core_alloc(sizeof(vulkan_unified_uniform_buffer));
-  uniformBuffer->renderCacheList = renderCacheList;
 
   uniformBuffer->globalData = vulkan_global_uniform_buffer_data_create(1, FRAMES_IN_FLIGHT);
   uniformBuffer->materialsData =
       vulkan_materials_uniform_buffer_data_create(MAX_MATERIAL_COUNT, FRAMES_IN_FLIGHT);
-  uniformBuffer->instancesData = vulkan_instances_uniform_buffer_data_create(
-      renderCacheList->maxPrimitiveRenderCacheCount, FRAMES_IN_FLIGHT);
+  uniformBuffer->instancesData =
+      vulkan_instances_uniform_buffer_data_create(maxPrimitiveRenderCacheCount, FRAMES_IN_FLIGHT);
 
   uniformBuffer->buffer = vulkan_buffer_create(vkd, vulkan_buffer_type_uniform);
 
@@ -40,10 +38,11 @@ void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *unifor
 }
 
 void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniformBuffer,
+                                          vulkan_render_cache_list *renderCacheList,
                                           vulkan_sync *sync, vulkan_camera *camera,
                                           vulkan_lights *lights, vulkan_skybox *skybox) {
-  assert(utarray_len(uniformBuffer->renderCacheList->primitiveRenderCaches) > 0);
-  assert(utarray_len(uniformBuffer->renderCacheList->cameraRenderCaches) > 0);
+  assert(utarray_len(renderCacheList->primitiveRenderCaches) > 0);
+  assert(utarray_len(renderCacheList->cameraRenderCaches) > 0);
 
   // global
   if (true /*TODO: update only if camera and lights are dirty*/) {
@@ -60,7 +59,7 @@ void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniform
 
   // materials
   utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
-                              uniformBuffer->renderCacheList->primitiveRenderCaches) {
+                              renderCacheList->primitiveRenderCaches) {
     vulkan_textures_material_element *materialElement = renderCache->materialElement;
     assert(materialElement != NULL);
     size_t materialId = materialElement->materialIdx;
@@ -80,7 +79,7 @@ void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniform
 
   // instances
   utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
-                              uniformBuffer->renderCacheList->primitiveRenderCaches) {
+                              renderCacheList->primitiveRenderCaches) {
     size_t instanceId = renderCache->instanceId;
     vulkan_instances_uniform_buffer_element *element =
         vulkan_instances_uniform_buffer_data_get_element(uniformBuffer->instancesData, instanceId,

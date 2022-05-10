@@ -170,7 +170,9 @@ TEST scene_graph_building() {
   utstring_alloc(sceneName, GLTF_NAME);
   vulkan_scene_data *assetDbSceneData = vulkan_scene_data_create_with_asset_db(assetDb, sceneName);
   // vulkan_scene_data_debug_print(assetDbSceneData);
-  vulkan_render_cache_list *renderCacheList = vulkan_render_cache_list_create(MAX_INSTANCE_COUNT);
+  vulkan_render_cache_list *renderCacheList =
+      vulkan_render_cache_list_create(config->asset.graphicsMaxPrimitiveRenderCacheCount);
+
   vulkan_scene_graph *sceneGraph = vulkan_scene_graph_create(assetDbSceneData, renderCacheList);
 
   log_info("Verify cache accumulation.");

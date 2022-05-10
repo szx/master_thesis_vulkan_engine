@@ -1,12 +1,9 @@
 #include "unified_geometry_buffer.h"
 
-vulkan_unified_geometry_buffer *
-vulkan_unified_geometry_buffer_create(vulkan_device *vkd,
-                                      vulkan_render_cache_list *renderCacheList) {
+vulkan_unified_geometry_buffer *vulkan_unified_geometry_buffer_create(vulkan_device *vkd) {
   vulkan_unified_geometry_buffer *geometryBuffer =
       core_alloc(sizeof(vulkan_unified_geometry_buffer));
 
-  geometryBuffer->renderCacheList = renderCacheList;
   geometryBuffer->dirtyVertexStream = NULL;
 
   geometryBuffer->indexBuffer = vulkan_buffer_create(vkd, vulkan_buffer_type_geometry_index);

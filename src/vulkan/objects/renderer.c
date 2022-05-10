@@ -11,7 +11,8 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
   renderer->vkd = vks->vkd;
   renderer->vks = vks;
 
-  renderer->renderCacheList = vulkan_render_cache_list_create(MAX_INSTANCE_COUNT);
+  renderer->renderCacheList =
+      vulkan_render_cache_list_create(renderer->config->asset.graphicsMaxPrimitiveRenderCacheCount);
 
   renderer->sceneGraph = vulkan_scene_graph_create(renderer->data, renderer->renderCacheList);
 

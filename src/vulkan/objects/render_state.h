@@ -28,7 +28,6 @@ typedef struct vulkan_render_state {
   vulkan_unified_geometry_buffer *unifiedGeometryBuffer;
   vulkan_textures *textures;
   vulkan_unified_uniform_buffer *unifiedUniformBuffer;
-
   vulkan_descriptors *descriptors;
   vulkan_sync *sync;
 

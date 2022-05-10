@@ -14,6 +14,7 @@ data_config *data_config_create(UT_string *path, data_config_type type) {
 #undef alloc_int
 #undef alloc_str
   config->dirty = false;
+  data_config_set_default_values(config);
   data_config_load(config);
   return config;
 }
