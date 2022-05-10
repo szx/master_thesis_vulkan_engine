@@ -263,8 +263,8 @@ void vulkan_pipeline_impl_forward_record_render_pass(vulkan_pipeline *pipeline,
   vkCmdPushConstants(commandBuffer, pipeline->pipelineLayout, VK_SHADER_STAGE_ALL, 0,
                      sizeof(drawPushConstant), &drawPushConstant);
 
-  vulkan_batches_record_draw_command(pipeline->renderState->batches, commandBuffer,
-                                     &frameStateImpl->batchesData);
+  vulkan_batches_record_draw_command(pipeline->pipelineSharedState->renderCacheListBatches,
+                                     commandBuffer, &frameStateImpl->batchesData);
 
   vkCmdEndRenderPass(commandBuffer);
 }
@@ -290,7 +290,7 @@ void vulkan_pipeline_impl_skybox_frame_state_init(vulkan_pipeline_frame_state *f
       core_alloc(sizeof(vulkan_pipeline_impl_skybox_frame_state));
 
   // HIRO Refactor cubemapTexture can be shared between frames
-  impl->cubemapTexture = frameState->pipeline->renderState->skybox->cubemapTextureElement;
+  impl->cubemapTexture = frameState->pipeline->pipelineSharedState->skybox->cubemapTextureElement;
   frameState->impl = impl;
 }
 
@@ -344,8 +344,10 @@ void vulkan_pipeline_impl_skybox_record_render_pass(vulkan_pipeline *pipeline,
                      sizeof(drawPushConstant), &drawPushConstant);
 
   // Draw cube.
-  uint32_t indexOffset = pipeline->renderState->skybox->boxVertexStreamElement.firstIndexOffset;
-  uint32_t vertexOffset = pipeline->renderState->skybox->boxVertexStreamElement.firstVertexOffset;
+  uint32_t indexOffset =
+      pipeline->pipelineSharedState->skybox->boxVertexStreamElement.firstIndexOffset;
+  uint32_t vertexOffset =
+      pipeline->pipelineSharedState->skybox->boxVertexStreamElement.firstVertexOffset;
   vkCmdDrawIndexed(commandBuffer, 36, 1, indexOffset, vertexOffset, 0);
 
   vkCmdEndRenderPass(commandBuffer);

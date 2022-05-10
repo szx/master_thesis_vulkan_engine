@@ -1,29 +1,26 @@
-#include "camera.h"
-#include "../scene/node.h"
+#include "camera_state.h"
 
-vulkan_camera *vulkan_camera_create(vulkan_render_cache_list *renderCacheList,
-                                    vulkan_swap_chain *vks) {
-  vulkan_camera *camera = core_alloc(sizeof(vulkan_camera));
+vulkan_camera_state *vulkan_camera_state_create(vulkan_render_state *renderState) {
+  vulkan_camera_state *camera = core_alloc(sizeof(vulkan_camera_state));
 
-  camera->renderCacheList = renderCacheList;
-  camera->vks = vks;
+  camera->renderState = renderState;
 
   camera->defaultCameraRenderCache = vulkan_render_cache_create(NULL);
-  vulkan_render_cache_list_add_camera_render_cache(camera->renderCacheList,
+  vulkan_render_cache_list_add_camera_render_cache(camera->renderState->renderCacheList,
                                                    camera->defaultCameraRenderCache);
 
   camera->cameraIdx = 0;
-  vulkan_camera_select(camera, camera->cameraIdx);
+  vulkan_camera_state_select(camera, camera->cameraIdx);
 
   return camera;
 }
 
-void vulkan_camera_destroy(vulkan_camera *camera) {
+void vulkan_camera_state_destroy(vulkan_camera_state *camera) {
   vulkan_render_cache_destroy(camera->defaultCameraRenderCache);
   core_free(camera);
 }
 
-void reset_default_camera(vulkan_camera *camera, vec3 distance) {
+void reset_default_camera(vulkan_camera_state *camera, vec3 distance) {
   glm_mat4_identity(camera->defaultCameraRenderCache->transform);
   glm_translate(camera->defaultCameraRenderCache->transform, distance);
   // NOTE: Change user.right-handed model-space into left-handed world-space (camera render cache
@@ -31,7 +28,7 @@ void reset_default_camera(vulkan_camera *camera, vec3 distance) {
   camera->defaultCameraRenderCache->transform[2][2] = -1.0f;
 }
 
-void update_camera_vectors(vulkan_camera *camera) {
+void update_camera_vectors(vulkan_camera_state *camera) {
   // limit pitch to prevent disorienting sudden front vector flipping
   if (camera->user.pitch >= glm_rad(90.0f)) {
     camera->user.pitch = nextafterf(glm_rad(90.0f), -FLT_MAX);
@@ -53,10 +50,11 @@ void update_camera_vectors(vulkan_camera *camera) {
   glm_normalize(camera->user.up);
 }
 
-void vulkan_camera_reset(vulkan_camera *camera) {
+void vulkan_camera_state_reset(vulkan_camera_state *camera) {
   // Set up default camera using primitives' aabb.
-  vulkan_render_cache_list_calculate_aabb_for_primitive_render_caches(camera->renderCacheList);
-  vulkan_aabb *aabb = &camera->renderCacheList->aabb;
+  vulkan_render_cache_list_calculate_aabb_for_primitive_render_caches(
+      camera->renderState->renderCacheList);
+  vulkan_aabb *aabb = &camera->renderState->renderCacheList->aabb;
 
   vec3 extent, center;
   glm_vec3_sub(aabb->max, aabb->min, extent);
@@ -97,23 +95,25 @@ void vulkan_camera_reset(vulkan_camera *camera) {
   reset_default_camera(camera, GLM_VEC3_ZERO);
 
   update_camera_vectors(camera);
-  vulkan_camera_update(camera);
+  vulkan_camera_state_update(camera);
 }
 
-void vulkan_camera_move(vulkan_camera *camera, float frontDt, float rightDt, float upDt) {
+void vulkan_camera_state_move(vulkan_camera_state *camera, float frontDt, float rightDt,
+                              float upDt) {
   glm_vec3_muladds(camera->user.front, frontDt, camera->user.position);
   glm_vec3_muladds(camera->user.right, rightDt, camera->user.position);
   glm_vec3_muladds(camera->user.up, upDt, camera->user.position);
 }
 
-void vulkan_camera_rotate(vulkan_camera *camera, float yawDt, float pitchDt, float rollDt) {
+void vulkan_camera_state_rotate(vulkan_camera_state *camera, float yawDt, float pitchDt,
+                                float rollDt) {
   camera->user.yaw += yawDt;
   camera->user.pitch += pitchDt;
   camera->user.roll += rollDt;
   update_camera_vectors(camera);
 }
 
-void vulkan_camera_update(vulkan_camera *camera) {
+void vulkan_camera_state_update(vulkan_camera_state *camera) {
   glm_mat4_identity(camera->user.transform);
 
   mat4 translation;
@@ -125,21 +125,22 @@ void vulkan_camera_update(vulkan_camera *camera) {
   glm_mat4_mul(translation, rotation, camera->user.transform);
 }
 
-void vulkan_camera_select(vulkan_camera *camera, size_t cameraIdx) {
-  assert(utarray_len(camera->renderCacheList->cameraRenderCaches) > 0);
+void vulkan_camera_state_select(vulkan_camera_state *camera, size_t cameraIdx) {
+  assert(utarray_len(camera->renderState->renderCacheList->cameraRenderCaches) > 0);
 
-  camera->cameraIdx = cameraIdx % utarray_len(camera->renderCacheList->cameraRenderCaches);
+  camera->cameraIdx =
+      cameraIdx % utarray_len(camera->renderState->renderCacheList->cameraRenderCaches);
   log_debug("selecting camera %zu", camera->cameraIdx);
 
-  assert(utarray_len(camera->renderCacheList->cameraRenderCaches) > 0);
-  assert(camera->cameraIdx < utarray_len(camera->renderCacheList->cameraRenderCaches));
+  assert(utarray_len(camera->renderState->renderCacheList->cameraRenderCaches) > 0);
+  assert(camera->cameraIdx < utarray_len(camera->renderState->renderCacheList->cameraRenderCaches));
   camera->cameraRenderCache = *(vulkan_render_cache **)utarray_eltptr(
-      camera->renderCacheList->cameraRenderCaches, camera->cameraIdx);
+      camera->renderState->renderCacheList->cameraRenderCaches, camera->cameraIdx);
 
-  vulkan_camera_reset(camera);
+  vulkan_camera_state_reset(camera);
 }
 
-void vulkan_camera_set_view_matrix(vulkan_camera *camera, mat4 viewMatrix) {
+void vulkan_camera_state_set_view_matrix(vulkan_camera_state *camera, mat4 viewMatrix) {
   // View matrix is inversed model matrix.
   mat4 transform;
   if (camera->cameraRenderCache == camera->defaultCameraRenderCache) {
@@ -188,10 +189,10 @@ void get_orthographic_matrix(float r, float t, float nearZ, float farZ, mat4 des
   dest[3][2] = -dest[3][2];
 }
 
-void vulkan_camera_set_projection_matrix(vulkan_camera *camera, mat4 projectionMatrix) {
+void vulkan_camera_state_set_projection_matrix(vulkan_camera_state *camera, mat4 projectionMatrix) {
   vulkan_asset_camera *cameraData = &camera->cameraRenderCache->camera;
   if (cameraData->type == vulkan_camera_type_perspective) {
-    float viewportAspectRatio = vulkan_swap_chain_get_aspect_ratio(camera->vks);
+    float viewportAspectRatio = vulkan_swap_chain_get_aspect_ratio(camera->renderState->vks);
     get_perspective_matrix(cameraData->fovY, viewportAspectRatio, cameraData->nearZ,
                            cameraData->farZ, projectionMatrix);
   } else if (cameraData->type == vulkan_camera_type_orthographic) {
@@ -201,15 +202,15 @@ void vulkan_camera_set_projection_matrix(vulkan_camera *camera, mat4 projectionM
   }
 }
 
-void vulkan_camera_set_position(vulkan_camera *camera, vec3 position) {
+void vulkan_camera_state_set_position(vulkan_camera_state *camera, vec3 position) {
   mat4 viewMat;
-  vulkan_camera_set_view_matrix(camera, viewMat);
+  vulkan_camera_state_set_view_matrix(camera, viewMat);
   mat4 viewMatInv;
   glm_mat4_inv(viewMat, viewMatInv);
   glm_vec3_copy(viewMatInv[3], position);
 }
 
-void vulkan_camera_debug_print(vulkan_camera *camera, int indent) {
+void vulkan_camera_state_debug_print(vulkan_camera_state *camera, int indent) {
   log_debug(INDENT_FORMAT_STRING "camera %zu:", INDENT_FORMAT_ARGS(0), camera->cameraIdx);
   vulkan_render_cache_debug_print(camera->cameraRenderCache);
 }

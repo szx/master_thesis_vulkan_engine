@@ -1,4 +1,4 @@
-/* Represents
+/* Represents serializable structures.
  */
 #pragma once
 

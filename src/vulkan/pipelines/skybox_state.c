@@ -1,15 +1,17 @@
-#include "skybox.h"
-#include "render_state.h"
+#include "skybox_state.h"
+#include "../objects/render_state.h"
 
-vulkan_skybox *vulkan_skybox_create(vulkan_render_state *renderState) {
-  vulkan_skybox *skybox = core_alloc(sizeof(vulkan_skybox));
+vulkan_skybox_state *vulkan_skybox_state_create(vulkan_render_state *renderState) {
+  vulkan_skybox_state *skybox = core_alloc(sizeof(vulkan_skybox_state));
 
   skybox->renderState = renderState;
+
   skybox->cubemapTextureElement = vulkan_textures_add_texture(
       skybox->renderState->textures, skybox->renderState->renderCacheList->skybox->cubemapTexture);
   skybox->ambientIntensity = 1.0f;
 
-  // HIRO: Refactor manual adding of geometry.
+  // HIRO Refactor manual adding of geometry.
+  // HIRO Refactor move boxVertexStreamElement to render state
   UT_array *indices;
   utarray_alloc(indices, sizeof(uint32_t));
   utarray_resize(indices, 36);
@@ -67,20 +69,20 @@ vulkan_skybox *vulkan_skybox_create(vulkan_render_state *renderState) {
               utarray_size(positions));
 
   skybox->boxVertexStreamElement = vulkan_vertex_stream_add_geometry(
-      renderState->vertexStream, 36, indices, positions, NULL, NULL, NULL);
+      skybox->renderState->vertexStream, 36, indices, positions, NULL, NULL, NULL);
   utarray_free(indices);
   utarray_free(positions);
   return skybox;
 }
 
-void vulkan_skybox_destroy(vulkan_skybox *skybox) { core_free(skybox); }
+void vulkan_skybox_state_destroy(vulkan_skybox_state *skybox) { core_free(skybox); }
 
-void vulkan_skybox_set_skybox_elements(vulkan_skybox *skybox,
-                                       vulkan_skybox_helper_element *skyboxElement) {
+void vulkan_skybox_state_set_skybox_elements(vulkan_skybox_state *skybox,
+                                             vulkan_skybox_helper_element *skyboxElement) {
   skyboxElement->skyboxCubemapTextureId = skybox->cubemapTextureElement->textureIdx;
 }
 
-void vulkan_skybox_debug_print(vulkan_skybox *skybox, int indent) {
+void vulkan_skybox_state_debug_print(vulkan_skybox_state *skybox, int indent) {
   log_debug(INDENT_FORMAT_STRING "skybox:", INDENT_FORMAT_ARGS(0));
   log_debug(INDENT_FORMAT_STRING "ambientIntensity: %f", INDENT_FORMAT_ARGS(2),
             skybox->ambientIntensity);

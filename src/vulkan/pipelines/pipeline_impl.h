@@ -2,11 +2,7 @@
 
 #pragma once
 
-#include "batch.h"
-#include "image.h"
-#include "render_cache_list.h"
-#include "render_state.h"
-#include "swap_chain.h"
+#include "../common.h"
 
 typedef struct vulkan_pipeline vulkan_pipeline;
 typedef struct vulkan_pipeline_frame_state vulkan_pipeline_frame_state;

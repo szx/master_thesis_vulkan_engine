@@ -2,9 +2,11 @@
  */
 #pragma once
 
+#include "../pipelines/pipeline.h"
 #include "../scene/graph.h"
-#include "pipeline.h"
 #include "render_state.h"
+
+// HIRO HIRO Refactor move renderer and render_state to vulkan/renderer/
 
 /// Creates and destroys Vulkan objects used to draw scene described by scene graph.
 /// Maintains chaining of different pipelines.

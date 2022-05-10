@@ -3,6 +3,8 @@
 #pragma once
 
 #include "../core/core.h"
+
+// HIRO HIRO refactor remove typedefs from functions.h (split into two headers)
 typedef struct vulkan_device vulkan_device;
 typedef struct vulkan_shader_program vulkan_shader_program;
 typedef struct vulkan_render_state vulkan_render_state;

@@ -4,8 +4,8 @@
  */
 #pragma once
 
-#include "buffer.h"
-#include "render_cache_list.h"
+#include "../objects/buffer.h"
+#include "../objects/render_cache_list.h"
 
 typedef enum vulkan_batch_instancing_policy {
   /// No instancing - one render cache always results in one draw command with instanceCount == 1.
@@ -59,6 +59,7 @@ void vulkan_batches_data_send_to_device(vulkan_batches_data *batchesData);
 /// Creates batches from render cache list.
 /// Used to record draw commands.
 typedef struct vulkan_batches {
+  // HIRO refactor remove renderCacheList from batches, just replace with function
   vulkan_render_cache_list *renderCacheList; ///< Pointer.
   vulkan_device *vkd;                        ///< Pointer.
 

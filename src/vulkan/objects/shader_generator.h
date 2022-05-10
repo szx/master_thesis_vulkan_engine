@@ -1,8 +1,8 @@
 /* GLSL shader source code generator */
 #pragma once
 
+#include "../pipelines/pipeline_impl.h"
 #include "descriptor.h"
-#include "pipeline_impl.h"
 #include "render_state.h"
 #include "shader_reflect.h"
 

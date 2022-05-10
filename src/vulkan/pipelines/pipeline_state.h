@@ -2,10 +2,7 @@
 
 #pragma once
 
-#include "batch.h"
-#include "image.h"
-#include "render_cache_list.h"
-#include "render_state.h"
+#include "../objects/image.h"
 
 typedef struct vulkan_pipeline vulkan_pipeline;
 
@@ -37,23 +34,3 @@ void vulkan_pipeline_frame_state_deinit(vulkan_pipeline_frame_state *frameState)
 void vulkan_pipeline_frame_state_send_to_device(vulkan_pipeline_frame_state *frameState);
 
 void vulkan_pipeline_frame_state_debug_print(vulkan_pipeline_frame_state *frameState, int indent);
-
-/// Manages resources shared between frames (depth buffer) used by pipeline to render one
-/// one swap chain frame.
-typedef struct vulkan_pipeline_shared_state {
-  vulkan_swap_chain *vks; ///< Pointer.
-
-  /// Depth buffer image.
-  /// We can share it between pipelines, because it is synchronized using pipeline barriers.
-  vulkan_image *depthBufferImage;
-} vulkan_pipeline_shared_state;
-
-vulkan_pipeline_shared_state *vulkan_pipeline_shared_state_create(vulkan_swap_chain *vks);
-void vulkan_pipeline_shared_state_destroy(vulkan_pipeline_shared_state *pipelineSharedState);
-
-void vulkan_pipeline_shared_state_init(vulkan_pipeline_shared_state *pipelineSharedState,
-                                       vulkan_swap_chain *vks);
-void vulkan_pipeline_shared_state_deinit(vulkan_pipeline_shared_state *pipelineSharedState);
-
-void vulkan_pipeline_shared_state_debug_print(vulkan_pipeline_shared_state *pipelineSharedState,
-                                              int indent);

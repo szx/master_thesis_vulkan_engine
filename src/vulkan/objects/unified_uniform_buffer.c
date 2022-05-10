@@ -37,25 +37,18 @@ void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *unifor
   core_free(uniformBuffer);
 }
 
-void vulkan_unified_uniform_buffer_update(vulkan_unified_uniform_buffer *uniformBuffer,
-                                          vulkan_render_cache_list *renderCacheList,
-                                          vulkan_sync *sync, vulkan_camera *camera,
-                                          vulkan_lights *lights, vulkan_skybox *skybox) {
+void vulkan_unified_uniform_buffer_update(
+    vulkan_unified_uniform_buffer *uniformBuffer, vulkan_render_cache_list *renderCacheList,
+    vulkan_sync *sync, vulkan_unified_uniform_buffer_update_func updateGlobalUniformBufferFunc,
+    void *updateGlobalUniformBufferFuncData) {
   assert(utarray_len(renderCacheList->primitiveRenderCaches) > 0);
   assert(utarray_len(renderCacheList->cameraRenderCaches) > 0);
 
   // global
-  if (true /*TODO: update only if camera and lights are dirty*/) {
-    vulkan_global_uniform_buffer_element *element = vulkan_global_uniform_buffer_data_get_element(
-        uniformBuffer->globalData, 0, sync->currentFrameInFlight);
-    vulkan_camera_set_view_matrix(camera, element->viewMat);
-    vulkan_camera_set_projection_matrix(camera, element->projMat);
-    vulkan_lights_set_directional_light_elements(lights, &element->directionalLightCount,
-                                                 element->directionalLights);
-    vulkan_lights_set_point_light_elements(lights, &element->pointLightCount, element->pointLights);
-    vulkan_skybox_set_skybox_elements(skybox, &element->skybox);
-    // HIRO Refactor to camera/light/skybox_update_uniform_buffer
-  }
+  vulkan_global_uniform_buffer_element *global = vulkan_global_uniform_buffer_data_get_element(
+      uniformBuffer->globalData, 0, sync->currentFrameInFlight);
+
+  updateGlobalUniformBufferFunc(updateGlobalUniformBufferFuncData, global);
 
   // materials
   utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,

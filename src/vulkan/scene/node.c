@@ -109,7 +109,7 @@ void vulkan_scene_tree_node_add_child(vulkan_scene_tree_node *sceneTreeNode,
 void vulkan_scene_tree_node_set_render_cache(vulkan_scene_tree_node *sceneTreeNode,
                                              vulkan_render_cache *renderCache) {
   vulkan_render_cache_reset(renderCache);
-  assert(sceneTreeNode != NULL); // HIRO Refactor is it true?
+  assert(sceneTreeNode != NULL);
 
   if (sceneTreeNode->object != NULL) {
     glm_mat4_copy(sceneTreeNode->object->transform, renderCache->transform);

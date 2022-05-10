@@ -16,10 +16,11 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
 
   renderer->sceneGraph = vulkan_scene_graph_create(renderer->data, renderer->renderCacheList);
 
-  renderer->renderState =
-      vulkan_render_state_create(renderer->vks, renderer->renderCacheList, renderer->config);
+  renderer->renderState = vulkan_render_state_create(
+      renderer->vks, renderer->renderCacheList, renderer->config,
+      vulkan_pipeline_shared_state_update_global_uniform_buffer_callback);
 
-  renderer->pipelineSharedState = vulkan_pipeline_shared_state_create(renderer->vks);
+  renderer->pipelineSharedState = vulkan_pipeline_shared_state_create(renderer->renderState);
 
   utarray_alloc(renderer->pipelines, sizeof(vulkan_pipeline *));
 
@@ -88,7 +89,7 @@ void vulkan_renderer_recreate_swap_chain(vulkan_renderer *renderer) {
 
   vulkan_swap_chain_init(renderer->vks, renderer->vkd);
 
-  vulkan_pipeline_shared_state_init(renderer->pipelineSharedState, renderer->vks);
+  vulkan_pipeline_shared_state_init(renderer->pipelineSharedState, renderer->renderState);
 
   utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
     vulkan_pipeline_init_start(pipeline, pipeline->type, renderer->vks, renderer->renderState,
@@ -99,7 +100,13 @@ void vulkan_renderer_recreate_swap_chain(vulkan_renderer *renderer) {
 }
 
 void vulkan_renderer_update(vulkan_renderer *renderer) {
-  vulkan_render_state_update(renderer->renderState);
+  vulkan_pipeline_shared_state_update(
+      renderer->pipelineSharedState,
+      (renderer->config->asset.graphicsEnabledInstancing
+           ? vulkan_batch_instancing_policy_matching_vertex_attributes
+           : vulkan_batch_instancing_policy_no_instancing));
+
+  vulkan_render_state_update(renderer->renderState, renderer->pipelineSharedState);
 }
 
 void vulkan_renderer_send_to_device(vulkan_renderer *renderer) {
@@ -225,10 +232,11 @@ void vulkan_renderer_run_main_loop(vulkan_renderer *renderer,
 
 void vulkan_renderer_debug_print(vulkan_renderer *renderer) {
   log_debug("renderer:\n");
-  vulkan_scene_data_debug_print(renderer->data, 0);
+  vulkan_scene_data_debug_print(renderer->data, 2);
   vulkan_render_cache_list_debug_print(renderer->renderCacheList);
   vulkan_scene_graph_debug_print(renderer->sceneGraph);
   vulkan_render_state_debug_print(renderer->renderState);
+  vulkan_pipeline_shared_state_debug_print(renderer->pipelineSharedState, 2);
   utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
     vulkan_pipeline_debug_print(pipeline);
   }
