@@ -3,9 +3,7 @@
 #pragma once
 
 #include "../common.h"
-#include "../objects/render_cache_list.h"
 #include "../objects/render_state.h"
-#include "../objects/swap_chain.h"
 
 // TODO: Frustum planes.
 

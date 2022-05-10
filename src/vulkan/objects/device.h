@@ -5,7 +5,7 @@
 #include "../../data/data.h"
 #include "../constants.h"
 #include "../debug.h"
-#include "../functions.h"
+#include "device_functions.h"
 #include "input.h"
 
 extern const VkAllocationCallbacks *vka;

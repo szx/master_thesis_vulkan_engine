@@ -66,3 +66,16 @@ VKAPI_ATTR VkBool32 VKAPI_CALL vulkan_debug_callback_for_instance(
 /// Returns create info for debug messenger with user callback.
 VkDebugUtilsMessengerCreateInfoEXT
 vulkan_debug_messenger_create_info(PFN_vkDebugUtilsMessengerCallbackEXT pfnUserCallback);
+
+#define DEBUG_NAME_FORMAT_START()                                                                  \
+  va_list args;                                                                                    \
+  va_start(args, debugFormat);                                                                     \
+  char *debugName;                                                                                 \
+  UT_string *s;                                                                                    \
+  utstring_new(s);                                                                                 \
+  utstring_printf_va(s, debugFormat, args);                                                        \
+  va_end(args);                                                                                    \
+  debugName = core_strdup(utstring_body(s));                                                       \
+  utstring_free(s);
+
+#define DEBUG_NAME_FORMAT_END() free(debugName);

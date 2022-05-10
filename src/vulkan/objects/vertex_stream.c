@@ -146,7 +146,7 @@ void vulkan_vertex_stream_add_primitive(vulkan_vertex_stream *stream,
                                                 vertexStreamElement.firstVertexOffset);
 }
 
-size_t vulkan_vertex_stream_get_vertex_buffer_binding_count(vulkan_vertex_stream *stream) {
+uint32_t vulkan_vertex_stream_get_vertex_buffer_binding_count(vulkan_vertex_stream *stream) {
   return 1;
 }
 
@@ -163,7 +163,7 @@ vulkan_vertex_stream_get_vertex_buffer_binding_description(vulkan_vertex_stream 
 
 VkVertexInputAttributeDescription *
 vulkan_vertex_stream_get_vertex_attribute_descriptions(vulkan_vertex_stream *stream,
-                                                       size_t *count) {
+                                                       uint32_t *count) {
   assert(stream->renderCacheList->attributes > 0);
   vulkan_attribute_type attributes = stream->renderCacheList->attributes;
   *count = count_bits(attributes);

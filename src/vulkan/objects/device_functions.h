@@ -2,15 +2,9 @@
 
 #pragma once
 
-#include "../core/core.h"
+#include "../../core/core.h"
 
-// HIRO HIRO refactor remove typedefs from functions.h (split into two headers)
 typedef struct vulkan_device vulkan_device;
-typedef struct vulkan_shader_program vulkan_shader_program;
-typedef struct vulkan_render_state vulkan_render_state;
-typedef struct vulkan_swap_chain vulkan_swap_chain;
-typedef struct vulkan_descriptor_binding vulkan_descriptor_binding;
-typedef struct vulkan_asset_texture vulkan_asset_texture;
 
 uint32_t vulkan_find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
                                  VkMemoryPropertyFlags properties);
@@ -18,7 +12,6 @@ VkFormat vulkan_find_supported_format(vulkan_device *vkd, VkImageTiling tiling,
                                       VkFormatFeatureFlags features, VkFormat *candidates,
                                       size_t candidateCount);
 VkFormat vulkan_find_depth_format(vulkan_device *vkd);
-VkFormat vulkan_find_texture_format(vulkan_device *vkd, vulkan_asset_texture *texture);
 size_t vulkan_format_size(VkFormat format);
 VkIndexType vulkan_stride_to_index_type(size_t stride);
 
@@ -65,19 +58,6 @@ VkDescriptorPool vulkan_create_descriptor_pool(vulkan_device *vkd, size_t totalU
                                                size_t maxAllocatedDescriptorSetsCount,
                                                bool bindless, const char *debugFormat, ...);
 
-VkDescriptorSetLayout vulkan_create_descriptor_set_layout(vulkan_device *vkd,
-                                                          vulkan_descriptor_binding *bindings,
-                                                          size_t bindingCount, bool bindless,
-                                                          const char *debugFormat, ...);
-
-VkDescriptorSet
-vulkan_create_descriptor_set(vulkan_device *vkd, VkDescriptorSetLayout descriptorSetLayout,
-                             VkDescriptorPool descriptorPool, vulkan_descriptor_binding *bindings,
-                             size_t bindingCount, bool bindless, const char *debugFormat, ...);
-
-void vulkan_update_descriptor_set(vulkan_device *vkd, VkDescriptorSet descriptorSet,
-                                  vulkan_descriptor_binding *bindings, size_t bindingCount);
-
 VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
                                                VkPipelineLayoutCreateFlags flags,
                                                const VkDescriptorSetLayout *descriptorSetLayouts,
@@ -87,8 +67,16 @@ VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
                                                const char *debugFormat, ...);
 
 VkPipeline vulkan_create_graphics_pipeline(
-    vulkan_device *vkd, vulkan_shader_program *shaderProgram, vulkan_render_state *renderState,
-    vulkan_swap_chain *vks,
+    vulkan_device *vkd,
+
+    VkPipelineShaderStageCreateInfo *shaderStages, uint32_t shaderStageCount,
+
+    const VkVertexInputBindingDescription *vertexInputBindingDescriptions,
+    size_t vertexBindingDescriptionsCount,
+    const VkVertexInputAttributeDescription *vertexAttributeDescriptions,
+    size_t vertexAttributeDescriptionsCount,
+
+    uint32_t framebufferWidth, uint32_t framebufferHeight,
 
     const VkDescriptorSetLayout *descriptorSetLayouts, size_t descriptorSetLayoutCount,
     const VkPushConstantRange *pushConstantRanges, size_t pushConstantRangeCount,

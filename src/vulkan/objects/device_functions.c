@@ -1,11 +1,6 @@
-#include "functions.h"
+#include "device_functions.h"
 
-#include "assets/texture.h"
-#include "objects/buffer.h"
-#include "objects/device.h"
-#include "objects/image.h"
-#include "objects/shader_program.h"
-#include "objects/swap_chain.h"
+#include "device.h"
 
 uint32_t vulkan_find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
                                  VkMemoryPropertyFlags properties) {
@@ -55,44 +50,6 @@ VkFormat vulkan_find_depth_format(vulkan_device *vkd) {
                                       array_size(formats));
 }
 
-VkFormat vulkan_find_texture_format(vulkan_device *vkd, vulkan_asset_texture *texture) {
-  size_t channels = texture->image->channels;
-  assert(channels > 0 && channels <= 4);
-  bool sRGB = texture->image->type == vulkan_image_type_material_base_color;
-
-  VkFormat r8 = sRGB ? VK_FORMAT_R8_SRGB : VK_FORMAT_R8_UNORM;
-  VkFormat r8g8 = sRGB ? VK_FORMAT_R8G8_SRGB : VK_FORMAT_R8G8_UNORM;
-  VkFormat r8g8b8 = sRGB ? VK_FORMAT_R8G8B8_SRGB : VK_FORMAT_R8G8B8_UNORM;
-  VkFormat r8g8b8a8 = sRGB ? VK_FORMAT_R8G8B8A8_SRGB : VK_FORMAT_R8G8B8A8_UNORM;
-
-  if (channels == 1) {
-    VkFormat formats[] = {r8, r8g8, r8g8b8, r8g8b8a8};
-    return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
-                                        VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
-                                        array_size(formats));
-  }
-  if (channels == 2) {
-    VkFormat formats[] = {r8g8, r8g8b8, r8g8b8a8};
-    return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
-                                        VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
-                                        array_size(formats));
-  }
-  if (channels == 3) {
-    VkFormat formats[] = {r8g8b8, r8g8b8a8};
-    return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
-                                        VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
-                                        array_size(formats));
-  }
-  if (channels == 4) {
-    VkFormat formats[] = {r8g8b8a8};
-    return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
-                                        VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
-                                        array_size(formats));
-  }
-  assert(0);
-  return VK_FORMAT_UNDEFINED;
-}
-
 size_t vulkan_format_size(VkFormat format) {
   if (format == VK_FORMAT_R8_SRGB || format == VK_FORMAT_R8_UNORM) {
     return 1;
@@ -120,19 +77,6 @@ VkIndexType vulkan_stride_to_index_type(size_t stride) {
   assert(0);
   return 0;
 }
-
-#define DEBUG_NAME_FORMAT_START()                                                                  \
-  va_list args;                                                                                    \
-  va_start(args, debugFormat);                                                                     \
-  char *debugName;                                                                                 \
-  UT_string *s;                                                                                    \
-  utstring_new(s);                                                                                 \
-  utstring_printf_va(s, debugFormat, args);                                                        \
-  va_end(args);                                                                                    \
-  debugName = core_strdup(utstring_body(s));                                                       \
-  utstring_free(s);
-
-#define DEBUG_NAME_FORMAT_END() free(debugName);
 
 VkCommandPool vulkan_create_command_pool(vulkan_device *vkd, uint32_t queueFamilyIndex,
                                          VkCommandPoolCreateFlags flags, const char *debugFormat,
@@ -400,161 +344,6 @@ VkDescriptorPool vulkan_create_descriptor_pool(vulkan_device *vkd, size_t totalU
   return descriptorPool;
 }
 
-VkDescriptorSetLayout vulkan_create_descriptor_set_layout(vulkan_device *vkd,
-                                                          vulkan_descriptor_binding *bindings,
-                                                          size_t bindingCount, bool bindless,
-                                                          const char *debugFormat, ...) {
-
-  VkDescriptorSetLayoutBinding layoutBindings[bindingCount];
-  for (size_t i = 0; i < bindingCount; i++) {
-    VkDescriptorSetLayoutBinding *layoutBinding = &layoutBindings[i];
-    vulkan_descriptor_binding *binding = &bindings[i];
-
-    *layoutBinding = (VkDescriptorSetLayoutBinding){.binding = binding->bindingNumber,
-                                                    .descriptorCount = binding->descriptorCount,
-                                                    .descriptorType = binding->descriptorType,
-                                                    .pImmutableSamplers = NULL,
-                                                    .stageFlags = VK_SHADER_STAGE_VERTEX_BIT |
-                                                                  VK_SHADER_STAGE_FRAGMENT_BIT};
-  }
-
-  VkDescriptorSetLayoutCreateInfo layoutInfo = {0};
-  layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-  layoutInfo.bindingCount = bindingCount;
-  layoutInfo.pBindings = layoutBindings;
-  VkDescriptorSetLayoutBindingFlagsCreateInfo layoutBindingFlagsInfo = {
-      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO};
-  VkDescriptorBindingFlags layoutBindingFlags[layoutInfo.bindingCount];
-  if (bindless) {
-    layoutInfo.flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT;
-    for (size_t i = 0; i < array_size(layoutBindingFlags); i++) {
-      VkDescriptorBindingFlags bindingFlags = VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT;
-      layoutBindingFlags[i] = bindingFlags;
-    }
-    layoutBindingFlags[array_size(layoutBindingFlags) - 1] |=
-        VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT |
-        VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT;
-    layoutBindingFlagsInfo.bindingCount = layoutInfo.bindingCount;
-    layoutBindingFlagsInfo.pBindingFlags = layoutBindingFlags;
-    layoutInfo.pNext = &layoutBindingFlagsInfo;
-  }
-
-  VkDescriptorSetLayout descriptorSetLayout;
-  verify(vkCreateDescriptorSetLayout(vkd->device, &layoutInfo, vka, &descriptorSetLayout) ==
-         VK_SUCCESS);
-
-  DEBUG_NAME_FORMAT_START()
-  vulkan_debug_name_descriptor_set_layout(vkd->debug, descriptorSetLayout,
-                                          "%s - descriptor set layout (%zu bindings)", debugName,
-                                          layoutInfo.bindingCount);
-  DEBUG_NAME_FORMAT_END();
-
-  return descriptorSetLayout;
-}
-
-VkDescriptorSet
-vulkan_create_descriptor_set(vulkan_device *vkd, VkDescriptorSetLayout descriptorSetLayout,
-                             VkDescriptorPool descriptorPool, vulkan_descriptor_binding *bindings,
-                             size_t bindingCount, bool bindless, const char *debugFormat, ...) {
-
-  VkDescriptorSetLayout layouts[1] = {descriptorSetLayout};
-  VkDescriptorSetAllocateInfo allocInfo = {0};
-  allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-  allocInfo.descriptorPool = descriptorPool;
-  allocInfo.descriptorSetCount = 1;
-  allocInfo.pSetLayouts = layouts;
-  VkDescriptorSetVariableDescriptorCountAllocateInfo variableDescriptorCountAllocateInfo = {
-      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO};
-  uint32_t maxBindlessDescriptors = vkd->limits.maxPerStageBindlessDescriptorSampledImages;
-  if (bindless) {
-    variableDescriptorCountAllocateInfo.descriptorSetCount = 1;
-    // NOTE: Assumed that variable-sized descriptor binds images.
-    variableDescriptorCountAllocateInfo.pDescriptorCounts = &maxBindlessDescriptors;
-    allocInfo.pNext = &variableDescriptorCountAllocateInfo;
-  }
-
-  VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
-  verify(vkAllocateDescriptorSets(vkd->device, &allocInfo, &descriptorSet) == VK_SUCCESS);
-
-  DEBUG_NAME_FORMAT_START()
-  vulkan_debug_name_descriptor_set(vkd->debug, descriptorSet, "%s - descriptor set", debugName);
-  DEBUG_NAME_FORMAT_END();
-
-  vulkan_update_descriptor_set(vkd, descriptorSet, bindings, bindingCount);
-
-  return descriptorSet;
-}
-
-void vulkan_update_descriptor_set(vulkan_device *vkd, VkDescriptorSet descriptorSet,
-                                  vulkan_descriptor_binding *bindings, size_t bindingCount) {
-  VkWriteDescriptorSet descriptorWrites[bindingCount];
-  VkDescriptorBufferInfo bufferInfos[bindingCount];
-  size_t unifiedBufferWrites = 0;
-  for (size_t i = 0; i < bindingCount; i++) {
-    vulkan_descriptor_binding *binding = &bindings[i];
-
-    if (binding->descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER) {
-      VkWriteDescriptorSet *descriptorWrite = &descriptorWrites[unifiedBufferWrites];
-
-      *descriptorWrite = (VkWriteDescriptorSet){.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-                                                .dstSet = descriptorSet,
-                                                .dstBinding = binding->bindingNumber,
-                                                .dstArrayElement = 0,
-                                                .descriptorType = binding->descriptorType,
-                                                .descriptorCount = binding->descriptorCount};
-
-      assert(binding->descriptorCount == 1);
-      VkDescriptorBufferInfo *bufferInfo = &bufferInfos[unifiedBufferWrites];
-      bufferInfo->buffer = binding->bufferElement->buffer->buffer;
-      bufferInfo->offset = binding->bufferElement->bufferOffset;
-      assert(bufferInfo->offset % vkd->limits.minUniformBufferOffsetAlignment == 0);
-      bufferInfo->range = binding->bufferElement->size;
-      assert(bufferInfo->range <= vkd->limits.maxUniformBufferRange);
-      descriptorWrite->pBufferInfo = bufferInfo;
-
-      unifiedBufferWrites++;
-    }
-  }
-  if (unifiedBufferWrites > 0) {
-    vkUpdateDescriptorSets(vkd->device, unifiedBufferWrites, descriptorWrites, 0, NULL);
-  }
-
-  for (size_t i = 0; i < bindingCount; i++) {
-    vulkan_descriptor_binding *binding = &bindings[i];
-    if (binding->descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER) {
-      vulkan_textures *textures = binding->textures;
-      uint32_t textureElementCount = HASH_COUNT(textures->textureElements);
-      if (textureElementCount == 0) {
-        continue;
-      }
-      VkWriteDescriptorSet texturesDescriptorWrites[textureElementCount];
-      VkDescriptorImageInfo imageInfos[textureElementCount];
-      size_t texturesDescriptorWriteIdx = 0;
-      for (vulkan_textures_texture_element *textureElement = textures->textureElements;
-           textureElement != NULL; textureElement = textureElement->hh.next) {
-        VkWriteDescriptorSet *descriptorWrite =
-            &texturesDescriptorWrites[texturesDescriptorWriteIdx];
-
-        *descriptorWrite = (VkWriteDescriptorSet){.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-                                                  .dstSet = descriptorSet,
-                                                  .dstBinding = binding->bindingNumber,
-                                                  .dstArrayElement = textureElement->textureIdx,
-                                                  .descriptorType = binding->descriptorType,
-                                                  .descriptorCount = 1};
-
-        VkDescriptorImageInfo *imageInfo = &imageInfos[texturesDescriptorWriteIdx];
-        imageInfo->sampler = textureElement->sampler;
-        imageInfo->imageView = textureElement->image->imageView;
-        imageInfo->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        descriptorWrite->pImageInfo = imageInfo;
-
-        texturesDescriptorWriteIdx++;
-      }
-      vkUpdateDescriptorSets(vkd->device, textureElementCount, texturesDescriptorWrites, 0, NULL);
-    }
-  }
-}
-
 VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
                                                VkPipelineLayoutCreateFlags flags,
                                                const VkDescriptorSetLayout *descriptorSetLayouts,
@@ -581,32 +370,27 @@ VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
 }
 
 VkPipeline vulkan_create_graphics_pipeline(
-    vulkan_device *vkd, vulkan_shader_program *shaderProgram, vulkan_render_state *renderState,
-    vulkan_swap_chain *vks,
+    vulkan_device *vkd,
+
+    VkPipelineShaderStageCreateInfo *shaderStages, uint32_t shaderStageCount,
+
+    const VkVertexInputBindingDescription *vertexInputBindingDescriptions,
+    size_t vertexBindingDescriptionsCount,
+    const VkVertexInputAttributeDescription *vertexAttributeDescriptions,
+    size_t vertexAttributeDescriptionsCount,
+
+    uint32_t framebufferWidth, uint32_t framebufferHeight,
 
     const VkDescriptorSetLayout *descriptorSetLayouts, size_t descriptorSetLayoutCount,
     const VkPushConstantRange *pushConstantRanges, size_t pushConstantRangeCount,
 
     VkRenderPass renderPass, VkPipelineLayout *pipelineLayout, const char *debugFormat, ...) {
 
-  /* shaders */
-  size_t shaderStageCount;
-  VkPipelineShaderStageCreateInfo *shaderStages =
-      vulkan_shader_program_get_shader_stages(shaderProgram, &shaderStageCount);
-
   /* vertex input */
   VkPipelineVertexInputStateCreateInfo vertexInputInfo = {0};
   vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-  size_t vertexBindingDescriptionsCount =
-      vulkan_vertex_stream_get_vertex_buffer_binding_count(renderState->vertexStream);
-  VkVertexInputBindingDescription vertexInputBindingDescription =
-      vulkan_vertex_stream_get_vertex_buffer_binding_description(renderState->vertexStream);
   vertexInputInfo.vertexBindingDescriptionCount = vertexBindingDescriptionsCount;
-  vertexInputInfo.pVertexBindingDescriptions = &vertexInputBindingDescription;
-  size_t vertexAttributeDescriptionsCount;
-  VkVertexInputAttributeDescription *vertexAttributeDescriptions =
-      vulkan_vertex_stream_get_vertex_attribute_descriptions(renderState->vertexStream,
-                                                             &vertexAttributeDescriptionsCount);
+  vertexInputInfo.pVertexBindingDescriptions = vertexInputBindingDescriptions;
   vertexInputInfo.vertexAttributeDescriptionCount = vertexAttributeDescriptionsCount;
   vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions;
 
@@ -619,14 +403,15 @@ VkPipeline vulkan_create_graphics_pipeline(
   VkViewport viewport = {0};
   viewport.x = 0.0f;
   viewport.y = 0.0f;
-  viewport.width = (float)vks->swapChainExtent.width;
-  viewport.height = (float)vks->swapChainExtent.height;
+  viewport.width = (float)framebufferWidth;
+  viewport.height = (float)framebufferHeight;
   viewport.minDepth = 0.0f;
   viewport.maxDepth = 1.0f;
   VkRect2D scissor = {0};
   scissor.offset.x = 0;
   scissor.offset.y = 0;
-  scissor.extent = vks->swapChainExtent;
+  scissor.extent.width = framebufferWidth;
+  scissor.extent.height = framebufferHeight;
 
   VkPipelineViewportStateCreateInfo viewportState = {0};
   viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -703,7 +488,6 @@ VkPipeline vulkan_create_graphics_pipeline(
   vulkan_debug_name_render_pass(vkd->debug, renderPass, "%s - graphics pipeline", debugName);
   DEBUG_NAME_FORMAT_END();
 
-  core_free(vertexAttributeDescriptions);
   core_free(shaderStages);
   return graphicsPipeline;
 }

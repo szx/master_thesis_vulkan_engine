@@ -3,9 +3,7 @@
 #pragma once
 
 #include "../common.h"
-#include "../objects/descriptor.h"
-#include "../objects/textures.h"
-#include "../objects/vertex_stream.h"
+#include "../objects/render_state.h"
 
 typedef struct vulkan_pipeline_skybox_state {
   vulkan_render_state *renderState; ///< Pointer.

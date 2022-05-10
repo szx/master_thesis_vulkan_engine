@@ -1,5 +1,42 @@
 #include "textures.h"
-#include "../assets/primitive.h"
+
+VkFormat vulkan_find_texture_format(vulkan_device *vkd, vulkan_asset_texture *texture) {
+  size_t channels = texture->image->channels;
+  assert(channels > 0 && channels <= 4);
+  bool sRGB = texture->image->type == vulkan_image_type_material_base_color;
+
+  VkFormat r8 = sRGB ? VK_FORMAT_R8_SRGB : VK_FORMAT_R8_UNORM;
+  VkFormat r8g8 = sRGB ? VK_FORMAT_R8G8_SRGB : VK_FORMAT_R8G8_UNORM;
+  VkFormat r8g8b8 = sRGB ? VK_FORMAT_R8G8B8_SRGB : VK_FORMAT_R8G8B8_UNORM;
+  VkFormat r8g8b8a8 = sRGB ? VK_FORMAT_R8G8B8A8_SRGB : VK_FORMAT_R8G8B8A8_UNORM;
+
+  if (channels == 1) {
+    VkFormat formats[] = {r8, r8g8, r8g8b8, r8g8b8a8};
+    return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
+                                        VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
+                                        array_size(formats));
+  }
+  if (channels == 2) {
+    VkFormat formats[] = {r8g8, r8g8b8, r8g8b8a8};
+    return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
+                                        VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
+                                        array_size(formats));
+  }
+  if (channels == 3) {
+    VkFormat formats[] = {r8g8b8, r8g8b8a8};
+    return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
+                                        VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
+                                        array_size(formats));
+  }
+  if (channels == 4) {
+    VkFormat formats[] = {r8g8b8a8};
+    return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
+                                        VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
+                                        array_size(formats));
+  }
+  assert(0);
+  return VK_FORMAT_UNDEFINED;
+}
 
 vulkan_textures_texture_element *
 vulkan_textures_texture_element_create(vulkan_asset_texture *texture, vulkan_device *vkd) {

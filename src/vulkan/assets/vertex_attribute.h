@@ -4,7 +4,6 @@
  */
 #pragma once
 
-#include "../functions.h"
 #include "common.h"
 
 typedef enum vulkan_asset_vertex_attribute_component_type {

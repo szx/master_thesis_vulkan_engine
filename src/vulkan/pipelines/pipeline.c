@@ -30,6 +30,11 @@ void create_render_pass(vulkan_pipeline *pipeline) {
 }
 
 void create_graphics_pipeline(vulkan_pipeline *pipeline) {
+
+  size_t shaderStageCount;
+  VkPipelineShaderStageCreateInfo *shaderStages =
+      vulkan_shader_program_get_shader_stages(pipeline->shaderProgram, &shaderStageCount);
+
   size_t descriptorSetLayoutCount = 0;
   VkDescriptorSetLayout *descriptorSetLayouts = vulkan_descriptors_get_descriptor_set_layouts(
       pipeline->renderState->descriptors, &descriptorSetLayoutCount);
@@ -41,11 +46,32 @@ void create_graphics_pipeline(vulkan_pipeline *pipeline) {
                                                 .offset = 0,
                                                 .size = sizeof(vulkan_draw_push_constant_element)};
 
+  uint32_t vertexBindingDescriptionsCount =
+      vulkan_vertex_stream_get_vertex_buffer_binding_count(pipeline->renderState->vertexStream);
+  assert(vertexBindingDescriptionsCount == 1);
+  VkVertexInputBindingDescription vertexInputBindingDescription =
+      vulkan_vertex_stream_get_vertex_buffer_binding_description(
+          pipeline->renderState->vertexStream);
+
+  uint32_t vertexAttributeDescriptionsCount;
+  VkVertexInputAttributeDescription *vertexAttributeDescriptions =
+      vulkan_vertex_stream_get_vertex_attribute_descriptions(pipeline->renderState->vertexStream,
+                                                             &vertexAttributeDescriptionsCount);
+
   pipeline->graphicsPipeline = vulkan_create_graphics_pipeline(
-      pipeline->vks->vkd, pipeline->shaderProgram, pipeline->renderState, pipeline->vks,
+      pipeline->vks->vkd,
+
+      shaderStages, shaderStageCount,
+
+      &vertexInputBindingDescription, vertexBindingDescriptionsCount, vertexAttributeDescriptions,
+      vertexAttributeDescriptionsCount,
+
+      pipeline->vks->swapChainExtent.width, pipeline->vks->swapChainExtent.height,
+
       descriptorSetLayouts, descriptorSetLayoutCount, pushConstantRanges, pushConstantRangeCount,
       pipeline->renderPass, &pipeline->pipelineLayout, "pipeline");
 
+  core_free(vertexAttributeDescriptions);
   core_free(descriptorSetLayouts);
 }
 

@@ -5,7 +5,6 @@
  */
 #pragma once
 
-#include "../functions.h"
 #include "common.h"
 #include "material.h"
 #include "vertex_attribute.h"

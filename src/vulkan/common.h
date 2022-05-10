@@ -6,7 +6,6 @@
 #include "../data/data.h"
 #include "constants.h"
 #include "debug.h"
-#include "functions.h"
 #include "objects/device.h"
 
 typedef enum vulkan_attribute_type {

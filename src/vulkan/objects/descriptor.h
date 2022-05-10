@@ -96,6 +96,19 @@ typedef struct vulkan_descriptor_binding {
   };
 } vulkan_descriptor_binding;
 
+VkDescriptorSetLayout vulkan_create_descriptor_set_layout(vulkan_device *vkd,
+                                                          vulkan_descriptor_binding *bindings,
+                                                          size_t bindingCount, bool bindless,
+                                                          const char *debugFormat, ...);
+
+VkDescriptorSet
+vulkan_create_descriptor_set(vulkan_device *vkd, VkDescriptorSetLayout descriptorSetLayout,
+                             VkDescriptorPool descriptorPool, vulkan_descriptor_binding *bindings,
+                             size_t bindingCount, bool bindless, const char *debugFormat, ...);
+
+void vulkan_update_descriptor_set(vulkan_device *vkd, VkDescriptorSet descriptorSet,
+                                  vulkan_descriptor_binding *bindings, size_t bindingCount);
+
 void vulkan_descriptor_binding_debug_print(vulkan_descriptor_binding *binding, int indent);
 
 /// Descriptors used to bind resources (uniform buffers and textures) to shaders.

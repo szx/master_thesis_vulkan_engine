@@ -50,10 +50,11 @@ void vulkan_vertex_stream_add_primitive(vulkan_vertex_stream *stream,
                                         vulkan_render_cache *renderCache,
                                         vulkan_render_cache *lastRenderCache);
 
-size_t vulkan_vertex_stream_get_vertex_buffer_binding_count(vulkan_vertex_stream *stream);
+uint32_t vulkan_vertex_stream_get_vertex_buffer_binding_count(vulkan_vertex_stream *stream);
 
 VkVertexInputBindingDescription
 vulkan_vertex_stream_get_vertex_buffer_binding_description(vulkan_vertex_stream *stream);
 
 VkVertexInputAttributeDescription *
-vulkan_vertex_stream_get_vertex_attribute_descriptions(vulkan_vertex_stream *stream, size_t *count);
+vulkan_vertex_stream_get_vertex_attribute_descriptions(vulkan_vertex_stream *stream,
+                                                       uint32_t *count);

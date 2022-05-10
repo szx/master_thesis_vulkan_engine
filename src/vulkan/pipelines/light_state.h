@@ -3,8 +3,7 @@
 #pragma once
 
 #include "../common.h"
-#include "../objects/descriptor.h"
-#include "../objects/render_cache_list.h"
+#include "../objects/render_state.h"
 
 typedef struct vulkan_pipeline_light_state {
   vulkan_render_state *renderState; ///< Pointer.
