@@ -19,23 +19,23 @@ void update_func(vulkan_renderer *renderer, double dt) {
     if (pipelineSharedState->camera->cameraIdx == 0) {
       cameraIdx = utarray_len(renderState->renderCacheList->cameraRenderCaches) - 1;
     }
-    vulkan_camera_state_select(pipelineSharedState->camera, cameraIdx);
+    vulkan_pipeline_camera_state_select(pipelineSharedState->camera, cameraIdx);
   }
   if (renderer->vkd->input.keyboard.release.rightBracket) {
-    vulkan_camera_state_select(pipelineSharedState->camera,
-                               pipelineSharedState->camera->cameraIdx + 1);
+    vulkan_pipeline_camera_state_select(pipelineSharedState->camera,
+                                        pipelineSharedState->camera->cameraIdx + 1);
   }
 
   if (firstFrame) {
     vulkan_directional_light_helper_element *defaultLight =
-        vulkan_light_state_get_directional_light_element(pipelineSharedState->lights, 0);
+        vulkan_pipeline_light_state_get_directional_light_element(pipelineSharedState->lights, 0);
     assert(defaultLight != NULL);
   }
   if (renderer->vkd->input.keyboard.release.l) {
     vulkan_point_light_helper_element *defaultLight =
-        vulkan_light_state_get_point_light_element(pipelineSharedState->lights, 0);
+        vulkan_pipeline_light_state_get_point_light_element(pipelineSharedState->lights, 0);
     assert(defaultLight != NULL);
-    vulkan_camera_state_set_position(pipelineSharedState->camera, defaultLight->position);
+    vulkan_pipeline_camera_state_set_position(pipelineSharedState->camera, defaultLight->position);
   }
 
   /* camera */
@@ -44,22 +44,22 @@ void update_func(vulkan_renderer *renderer, double dt) {
     moveSpeed *= 10.0f;
   }
   if (renderer->vkd->input.keyboard.press.w) {
-    vulkan_camera_state_move(pipelineSharedState->camera, moveSpeed * dt, 0.0f, 0.0f);
+    vulkan_pipeline_camera_state_move(pipelineSharedState->camera, moveSpeed * dt, 0.0f, 0.0f);
   }
   if (renderer->vkd->input.keyboard.press.s) {
-    vulkan_camera_state_move(pipelineSharedState->camera, -moveSpeed * dt, 0.0f, 0.0f);
+    vulkan_pipeline_camera_state_move(pipelineSharedState->camera, -moveSpeed * dt, 0.0f, 0.0f);
   }
   if (renderer->vkd->input.keyboard.press.d) {
-    vulkan_camera_state_move(pipelineSharedState->camera, 0.0f, moveSpeed * dt, 0.0f);
+    vulkan_pipeline_camera_state_move(pipelineSharedState->camera, 0.0f, moveSpeed * dt, 0.0f);
   }
   if (renderer->vkd->input.keyboard.press.a) {
-    vulkan_camera_state_move(pipelineSharedState->camera, 0.0f, -moveSpeed * dt, 0.0f);
+    vulkan_pipeline_camera_state_move(pipelineSharedState->camera, 0.0f, -moveSpeed * dt, 0.0f);
   }
   if (renderer->vkd->input.keyboard.press.q) {
-    vulkan_camera_state_move(pipelineSharedState->camera, 0.0f, 0.0f, moveSpeed * dt);
+    vulkan_pipeline_camera_state_move(pipelineSharedState->camera, 0.0f, 0.0f, moveSpeed * dt);
   }
   if (renderer->vkd->input.keyboard.press.e) {
-    vulkan_camera_state_move(pipelineSharedState->camera, 0.0f, 0.0f, -moveSpeed * dt);
+    vulkan_pipeline_camera_state_move(pipelineSharedState->camera, 0.0f, 0.0f, -moveSpeed * dt);
   }
 
   float offsetX = vkd->input.mouse.x - vkd->input.mouse.lastX;
@@ -69,7 +69,7 @@ void update_func(vulkan_renderer *renderer, double dt) {
                   pipelineSharedState->camera->user.rotationSpeed * dt;
     float pitchDt = offsetY * vkd->input.mouse.sensitivity *
                     pipelineSharedState->camera->user.rotationSpeed * dt;
-    vulkan_camera_state_rotate(pipelineSharedState->camera, yawDt, pitchDt, 0.0f);
+    vulkan_pipeline_camera_state_rotate(pipelineSharedState->camera, yawDt, pitchDt, 0.0f);
   }
   vkd->input.mouse.lastX = vkd->input.mouse.x;
   vkd->input.mouse.lastY = vkd->input.mouse.y;

@@ -15,9 +15,9 @@ typedef struct vulkan_pipeline_shared_state {
   vulkan_render_state *renderState; ///< Pointer.
 
   // HIRO Rename vulkan_pipeline_*_state
-  vulkan_camera_state *camera;
-  vulkan_light_state *lights;
-  vulkan_skybox_state *skybox;
+  vulkan_pipeline_camera_state *camera;
+  vulkan_pipeline_light_state *lights;
+  vulkan_pipeline_skybox_state *skybox;
 
   // TODO: Maintain two batches for transparent and opaque objects.
   vulkan_batches *renderCacheListBatches;
