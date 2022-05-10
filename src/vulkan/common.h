@@ -26,6 +26,12 @@ typedef enum vulkan_image_type {
   vulkan_image_type_count
 } vulkan_image_type;
 
+typedef enum vulkan_camera_type {
+  vulkan_camera_type_orthographic,
+  vulkan_camera_type_perspective,
+  vulkan_camera_type_count
+} vulkan_camera_type;
+
 /// Axis-aligned bounding box.
 typedef struct vulkan_aabb {
   vec4 min;

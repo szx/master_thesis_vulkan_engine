@@ -52,7 +52,9 @@ void vulkan_descriptor_binding_debug_print(vulkan_descriptor_binding *binding, i
             binding->descriptorCount);
   log_debug(INDENT_FORMAT_STRING "descriptorType=%s", INDENT_FORMAT_ARGS(2),
             VkDescriptorType_debug_str(binding->descriptorType));
-  vulkan_buffer_element_debug_print(binding->bufferElement, 2);
+  if (binding->descriptorType != VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER) {
+    vulkan_buffer_element_debug_print(binding->bufferElement, 2);
+  }
 }
 
 vulkan_descriptors *vulkan_descriptors_create(vulkan_device *vkd,

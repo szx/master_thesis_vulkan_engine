@@ -22,6 +22,7 @@ typedef struct vulkan_render_state {
   /* CPU state */
   vulkan_render_cache_list *renderCacheList; ///< Pointer.
   data_config *config;                       ///< Pointer.
+  vulkan_vertex_stream *vertexStream;
 
   /* GPU state */
   vulkan_unified_geometry_buffer *unifiedGeometryBuffer;
@@ -45,7 +46,7 @@ vulkan_render_state *vulkan_render_state_create(vulkan_swap_chain *vks,
 
 void vulkan_render_state_destroy(vulkan_render_state *renderState);
 
-void vulkan_scene_render_state_update(vulkan_render_state *renderState);
+void vulkan_render_state_update(vulkan_render_state *renderState);
 
 void vulkan_render_state_send_to_device(vulkan_render_state *renderState);
 

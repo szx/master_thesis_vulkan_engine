@@ -6,14 +6,13 @@ vulkan_render_cache_list *vulkan_render_cache_list_create(size_t maxInstanceCoun
 
   renderCacheList->maxPrimitiveRenderCacheCount = maxInstanceCount;
   utarray_alloc(renderCacheList->primitiveRenderCaches, sizeof(vulkan_render_cache *));
+  renderCacheList->primitiveRenderCachesSorted = true;
   renderCacheList->attributes = vulkan_attribute_type_unknown;
   renderCacheList->aabb = vulkan_aabb_default();
 
   utarray_alloc(renderCacheList->cameraRenderCaches, sizeof(vulkan_render_cache *));
 
   renderCacheList->skybox = NULL;
-
-  renderCacheList->dirty = true;
 
   return renderCacheList;
 }
@@ -31,34 +30,30 @@ void vulkan_render_cache_list_add_primitive_render_cache(
          renderCacheList->maxPrimitiveRenderCacheCount);
   utarray_push_back(renderCacheList->primitiveRenderCaches, &primitiveRenderCache);
 
-  renderCacheList->dirty = true;
+  renderCacheList->primitiveRenderCachesSorted = false;
+
+  renderCacheList->attributes |= primitiveRenderCache->primitive->attributes;
+
+  // NOTE: Primitive render cache's AABB are is calculated in
+  // vulkan_render_cache_list_sort_primitive_render_caches.
+
+  // NOTE: Primitive render cache's textures are added in vulkan_render_cache_list_update_textures.
 }
 
-void vulkan_render_cache_list_remove_primitive_render_cache(
-    vulkan_render_cache_list *renderCacheList, vulkan_render_cache *primitiveRenderCache) {
-  assert(primitiveRenderCache->primitive != NULL);
-  size_t idx = 0;
-  utarray_foreach_elem_deref (vulkan_render_cache *, existingCache,
+void vulkan_render_cache_list_update_textures(vulkan_render_cache_list *renderCacheList,
+                                              vulkan_textures *textures) {
+  utarray_foreach_elem_deref (vulkan_render_cache *, primitiveRenderCache,
                               renderCacheList->primitiveRenderCaches) {
-    if (existingCache == primitiveRenderCache) {
-      break;
+    assert(primitiveRenderCache->primitive != NULL);
+    vulkan_asset_material *material = primitiveRenderCache->primitive->material;
+    if (material == NULL) {
+      continue;
     }
-    idx++;
+    vulkan_textures_material_element *element = vulkan_textures_add_material(textures, material);
+    primitiveRenderCache->materialElement = element;
+
+    // TODO: Unload unneeded textures.
   }
-  assert(idx < utarray_len(renderCacheList->primitiveRenderCaches));
-  utarray_erase(renderCacheList->primitiveRenderCaches, idx, 1);
-  // TODO: Remove AABB.
-  renderCacheList->dirty = true;
-}
-
-void vulkan_render_cache_list_add_camera_render_cache(vulkan_render_cache_list *renderCacheList,
-                                                      vulkan_render_cache *cameraRenderCache) {
-  utarray_push_back(renderCacheList->cameraRenderCaches, &cameraRenderCache);
-}
-
-void vulkan_render_cache_list_add_skybox(vulkan_render_cache_list *renderCacheList,
-                                         vulkan_asset_skybox *skybox) {
-  renderCacheList->skybox = skybox;
 }
 
 static int cache_list_sort_func(const void *_a, const void *_b) {
@@ -90,23 +85,35 @@ static int cache_list_sort_func(const void *_a, const void *_b) {
   return 0;
 }
 
-void vulkan_render_cache_list_update(vulkan_render_cache_list *renderCacheList) {
-  if (!renderCacheList->dirty) {
+void vulkan_render_cache_list_sort_primitive_render_caches(
+    vulkan_render_cache_list *renderCacheList) {
+  if (renderCacheList->primitiveRenderCachesSorted) {
     return;
   }
-  log_debug("update");
+  log_debug("sorting primitive render caches");
 
+  // sort primitive render caches for batching
   utarray_sort(renderCacheList->primitiveRenderCaches, cache_list_sort_func);
 
-  renderCacheList->attributes = vulkan_attribute_type_unknown;
-  renderCacheList->aabb = vulkan_aabb_default();
-  utarray_foreach_elem_deref (vulkan_render_cache *, cache,
-                              renderCacheList->primitiveRenderCaches) {
-    renderCacheList->attributes |= cache->primitive->attributes;
-    vulkan_aabb_add_aabb(&renderCacheList->aabb, &cache->aabb);
-  }
+  renderCacheList->primitiveRenderCachesSorted = true;
+}
 
-  renderCacheList->dirty = true;
+void vulkan_render_cache_list_calculate_aabb_for_primitive_render_caches(
+    vulkan_render_cache_list *renderCacheList) {
+  utarray_foreach_elem_deref (vulkan_render_cache *, primitiveRenderCache,
+                              renderCacheList->primitiveRenderCaches) {
+    vulkan_aabb_add_aabb(&renderCacheList->aabb, &primitiveRenderCache->aabb);
+  }
+}
+
+void vulkan_render_cache_list_add_camera_render_cache(vulkan_render_cache_list *renderCacheList,
+                                                      vulkan_render_cache *cameraRenderCache) {
+  utarray_push_back(renderCacheList->cameraRenderCaches, &cameraRenderCache);
+}
+
+void vulkan_render_cache_list_add_skybox(vulkan_render_cache_list *renderCacheList,
+                                         vulkan_asset_skybox *skybox) {
+  renderCacheList->skybox = skybox;
 }
 
 void vulkan_render_cache_list_debug_print(vulkan_render_cache_list *renderCacheList) {

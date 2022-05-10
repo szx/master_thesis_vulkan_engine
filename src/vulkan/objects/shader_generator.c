@@ -59,8 +59,7 @@ void glsl_add_shader_type_defines(UT_string *s, vulkan_shader_type shaderType) {
 
 void glsl_add_defines(UT_string *s, vulkan_shader_type shaderType,
                       vulkan_render_state *renderState) {
-  glsl_add_vertex_shader_input_variables_defines(s,
-                                                 renderState->unifiedGeometryBuffer->vertexStream);
+  glsl_add_vertex_shader_input_variables_defines(s, renderState->vertexStream);
   glsl_add_shader_type_defines(s, shaderType);
 #define x(_name, ...) utstring_printf(s, "#define " #_name " %d\n", _name);
   VULKAN_SHADER_CONSTANTS(x, )
@@ -189,9 +188,8 @@ vulkan_shader *vulkan_shader_generator_get_shader(vulkan_shader_generator *shade
   glsl_add_descriptors(shaderGenerator->sourceCode, shaderGenerator->renderState->descriptors);
 
   if (shaderType == vulkan_shader_type_vertex) {
-    glsl_add_vertex_shader_input_variables(
-        shaderGenerator->sourceCode,
-        shaderGenerator->renderState->unifiedGeometryBuffer->vertexStream);
+    glsl_add_vertex_shader_input_variables(shaderGenerator->sourceCode,
+                                           shaderGenerator->renderState->vertexStream);
     glsl_add_vertex_shader_output_variables(shaderGenerator->sourceCode);
   } else if (shaderType == vulkan_shader_type_fragment) {
     glsl_add_fragment_shader_input_variables(shaderGenerator->sourceCode);

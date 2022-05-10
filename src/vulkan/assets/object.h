@@ -5,7 +5,6 @@
  */
 #pragma once
 
-#include "../objects/vertex_stream.h"
 #include "camera.h"
 #include "common.h"
 #include "mesh.h"

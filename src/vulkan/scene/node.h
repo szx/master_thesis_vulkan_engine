@@ -72,4 +72,9 @@ void vulkan_scene_tree_node_add_parent(vulkan_scene_tree_node *sceneTreeNode,
 void vulkan_scene_tree_node_add_child(vulkan_scene_tree_node *sceneTreeNode,
                                       vulkan_scene_tree_node *childNode);
 
+void vulkan_scene_tree_node_set_render_cache(vulkan_scene_tree_node *sceneTreeNode,
+                                             vulkan_render_cache *renderCache);
+void vulkan_scene_tree_node_accumulate_to_render_cache(vulkan_scene_tree_node *parentSceneTreeNode,
+                                                       vulkan_render_cache *renderCache);
+
 void vulkan_scene_tree_node_debug_print(vulkan_scene_tree_node *sceneTreeNode);

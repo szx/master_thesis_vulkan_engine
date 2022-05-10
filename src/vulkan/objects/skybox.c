@@ -67,7 +67,7 @@ vulkan_skybox *vulkan_skybox_create(vulkan_render_state *renderState) {
               utarray_size(positions));
 
   skybox->boxVertexStreamElement = vulkan_vertex_stream_add_geometry(
-      renderState->unifiedGeometryBuffer->vertexStream, 36, indices, positions, NULL, NULL, NULL);
+      renderState->vertexStream, 36, indices, positions, NULL, NULL, NULL);
   utarray_free(indices);
   utarray_free(positions);
   return skybox;

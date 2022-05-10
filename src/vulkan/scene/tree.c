@@ -60,6 +60,8 @@ void vulkan_scene_tree_set_dirty(vulkan_scene_tree *sceneTree,
                                  vulkan_scene_tree_node *sceneTreeNode) {
   if (!sceneTreeNode->dirty) {
     sceneTreeNode->dirty = true;
+    // Update render cache with dirty tree node.
+    vulkan_scene_tree_node_set_render_cache(sceneTreeNode, sceneTreeNode->renderCache);
     utarray_push_back(sceneTree->dirtyNodes, &sceneTreeNode);
   }
 }
@@ -84,7 +86,7 @@ void validate_node(vulkan_scene_tree_node *node) {
   }
 
   if (node->parentNode != NULL) {
-    vulkan_render_cache_accumulate(node->renderCache, node->parentNode->renderCache);
+    vulkan_scene_tree_node_accumulate_to_render_cache(node->parentNode, node->renderCache);
   }
 
   utarray_foreach_elem_deref (vulkan_scene_tree_node *, childNode, node->childNodes) {

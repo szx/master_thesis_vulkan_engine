@@ -12,12 +12,11 @@ vulkan_render_state *vulkan_render_state_create(vulkan_swap_chain *vks,
 
   renderState->renderCacheList = renderCacheList;
   renderState->config = config;
-
-  vulkan_render_cache_list_update(renderState->renderCacheList);
+  renderState->vertexStream = vulkan_vertex_stream_create(renderState->renderCacheList);
 
   renderState->unifiedGeometryBuffer =
       vulkan_unified_geometry_buffer_create(renderState->vkd, renderState->renderCacheList);
-  renderState->textures = vulkan_textures_create(renderState->vkd, renderState->renderCacheList);
+  renderState->textures = vulkan_textures_create(renderState->vkd);
   renderState->unifiedUniformBuffer =
       vulkan_unified_uniform_buffer_create(renderState->vkd, renderState->renderCacheList);
   renderState->descriptors = vulkan_descriptors_create(
@@ -30,7 +29,7 @@ vulkan_render_state *vulkan_render_state_create(vulkan_swap_chain *vks,
   renderState->skybox = vulkan_skybox_create(renderState);
   renderState->batches = vulkan_batches_create(renderCacheList, renderState->vkd);
 
-  vulkan_scene_render_state_update(renderState);
+  vulkan_render_state_update(renderState);
 
   return renderState;
 }
@@ -49,11 +48,17 @@ void vulkan_render_state_destroy(vulkan_render_state *renderState) {
   vulkan_lights_destroy(renderState->lights);
   vulkan_camera_destroy(renderState->camera);
 
+  vulkan_vertex_stream_destroy(renderState->vertexStream);
+
   core_free(renderState);
 }
 
-void vulkan_scene_render_state_update(vulkan_render_state *renderState) {
+void vulkan_render_state_update(vulkan_render_state *renderState) {
+  vulkan_render_cache_list_update_textures(renderState->renderCacheList, renderState->textures);
+  vulkan_vertex_stream_update(renderState->vertexStream);
+
   vulkan_camera_update(renderState->camera);
+  // HIRO Refactor vulkan_lights_update();
 
   vulkan_batch_instancing_policy batchPolicy =
       renderState->config->asset.graphicsEnabledInstancing
@@ -66,7 +71,8 @@ void vulkan_scene_render_state_update(vulkan_render_state *renderState) {
     assert(batch->drawCommand.vertexOffset != INT32_MAX);
   }
 
-  vulkan_unified_geometry_buffer_update(renderState->unifiedGeometryBuffer);
+  vulkan_unified_geometry_buffer_update(renderState->unifiedGeometryBuffer,
+                                        renderState->vertexStream);
   vulkan_textures_update(renderState->textures);
   vulkan_unified_uniform_buffer_update(renderState->unifiedUniformBuffer, renderState->sync,
                                        renderState->camera, renderState->lights,
@@ -95,7 +101,7 @@ void vulkan_render_state_debug_print(vulkan_render_state *renderState) {
   vulkan_skybox_debug_print(renderState->skybox, 2);
   vulkan_unified_geometry_buffer_debug_print(renderState->unifiedGeometryBuffer);
   vulkan_unified_uniform_buffer_debug_print(renderState->unifiedUniformBuffer);
-  vulkan_textures_debug_print(renderState->textures);
+  vulkan_textures_debug_print(renderState->textures, 2);
   vulkan_descriptors_debug_print(renderState->descriptors, 2);
   vulkan_sync_debug_print(renderState->sync, 2);
 }

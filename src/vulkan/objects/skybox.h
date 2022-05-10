@@ -5,6 +5,7 @@
 #include "../common.h"
 #include "descriptor.h"
 #include "textures.h"
+#include "vertex_stream.h"
 
 typedef struct vulkan_skybox {
   vulkan_render_state *renderState; ///< Pointer.

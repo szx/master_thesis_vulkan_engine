@@ -3,10 +3,7 @@
 #pragma once
 
 #include "../assets/material.h"
-#include "camera.h"
 #include "image.h"
-#include "render_cache_list.h"
-#include "shader.h"
 
 /// Hash table for textures and their associated images and samplers.
 typedef struct vulkan_textures_texture_element {
@@ -39,7 +36,6 @@ void vulkan_textures_material_element_destroy(vulkan_textures_material_element *
 typedef struct vulkan_textures {
   /* CPU state */
   vulkan_device *vkd;                        ///< Pointer.
-  vulkan_render_cache_list *renderCacheList; ///< Pointer.
 
   /* GPU state */
   vulkan_textures_texture_element *textureElements;
@@ -47,8 +43,7 @@ typedef struct vulkan_textures {
 
 } vulkan_textures;
 
-vulkan_textures *vulkan_textures_create(vulkan_device *vkd,
-                                        vulkan_render_cache_list *renderCacheList);
+vulkan_textures *vulkan_textures_create(vulkan_device *vkd);
 void vulkan_textures_destroy(vulkan_textures *textures);
 
 void vulkan_textures_update(vulkan_textures *textures);
@@ -61,6 +56,6 @@ vulkan_textures_material_element *vulkan_textures_add_material(vulkan_textures *
 vulkan_textures_texture_element *vulkan_textures_add_texture(vulkan_textures *textures,
                                                              vulkan_asset_texture *texture);
 
-void vulkan_textures_debug_print(vulkan_textures *textures);
+void vulkan_textures_debug_print(vulkan_textures *textures, int indent);
 
 void glsl_add_textures(UT_string *s, uint32_t set, uint32_t binding, vulkan_textures *textures);

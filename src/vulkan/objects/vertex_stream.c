@@ -41,14 +41,16 @@ vulkan_vertex_stream *vulkan_vertex_stream_create(vulkan_render_cache_list *rend
 }
 
 void vulkan_vertex_stream_update(vulkan_vertex_stream *stream) {
-  if (!stream->renderCacheList->dirty) {
+  if (stream->renderCacheList->primitiveRenderCachesSorted) {
     return;
   }
-  log_debug("update");
+  log_debug("updating vulkan_vertex_stream");
 
-  vulkan_render_cache_list_update(stream->renderCacheList);
+  // TODO: Reallocates whole geometry buffer, even if only one primitive render cache is added.
+  vulkan_render_cache_list_sort_primitive_render_caches(stream->renderCacheList);
+  assert(stream->renderCacheList->primitiveRenderCachesSorted);
+
   assert(stream->renderCacheList->attributes > 0);
-  assert(stream->renderCacheList->dirty);
 
   utarray_realloc(stream->indexData, sizeof(uint32_t));
   utarray_realloc(stream->vertexData,
@@ -62,7 +64,6 @@ void vulkan_vertex_stream_update(vulkan_vertex_stream *stream) {
     lastRenderCache = renderCache;
   }
 
-  stream->renderCacheList->dirty = false;
   stream->dirty = true;
 }
 

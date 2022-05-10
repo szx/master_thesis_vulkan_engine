@@ -11,7 +11,7 @@
 typedef struct vulkan_unified_geometry_buffer {
   /* CPU state */
   vulkan_render_cache_list *renderCacheList; ///< Pointer.
-  vulkan_vertex_stream *vertexStream;
+  vulkan_vertex_stream *dirtyVertexStream;   ///< Not NULL if buffers need to be updated.
 
   /* GPU state */
   vulkan_buffer *indexBuffer;
@@ -23,7 +23,8 @@ vulkan_unified_geometry_buffer_create(vulkan_device *vkd,
                                       vulkan_render_cache_list *renderCacheList);
 void vulkan_unified_geometry_buffer_destroy(vulkan_unified_geometry_buffer *geometryBuffer);
 
-void vulkan_unified_geometry_buffer_update(vulkan_unified_geometry_buffer *geometryBuffer);
+void vulkan_unified_geometry_buffer_update(vulkan_unified_geometry_buffer *geometryBuffer,
+                                           vulkan_vertex_stream *vertexStream);
 void vulkan_unified_geometry_buffer_send_to_device(vulkan_unified_geometry_buffer *geometryBuffer);
 
 void vulkan_unified_geometry_buffer_record_bind_command(

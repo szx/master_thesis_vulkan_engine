@@ -5,10 +5,9 @@
 #include "../scene/node.h"
 #include "textures.h"
 
-vulkan_render_cache *vulkan_render_cache_create(vulkan_scene_tree_node *sceneTreeNode) {
+vulkan_render_cache *vulkan_render_cache_create() {
   vulkan_render_cache *renderCache = core_alloc(sizeof(vulkan_render_cache));
 
-  renderCache->node = sceneTreeNode;
   renderCache->prev = NULL;
   renderCache->next = NULL;
 
@@ -30,49 +29,13 @@ void vulkan_render_cache_reset(vulkan_render_cache *renderCache) {
 
   renderCache->visible = true;
 
-  if (renderCache->node != NULL && renderCache->node->object != NULL) {
-    glm_mat4_copy(renderCache->node->object->transform, renderCache->transform);
-    renderCache->mesh = renderCache->node->object->mesh;
-    if (renderCache->node->object->camera) {
-      vulkan_asset_camera_copy(&renderCache->camera, renderCache->node->object->camera);
-    } else {
-      vulkan_asset_camera_init(&renderCache->camera, NULL);
-    }
-  } else {
-    glm_mat4_identity(renderCache->transform);
-    renderCache->mesh = NULL;
-    vulkan_asset_camera_init(&renderCache->camera, NULL);
-  }
+  glm_mat4_identity(renderCache->transform);
+  renderCache->mesh = NULL;
+  vulkan_asset_camera_init(&renderCache->camera, NULL);
 
-  if (renderCache->node != NULL) {
-    renderCache->primitive = renderCache->node->primitive;
-  } else {
-    renderCache->primitive = NULL;
-  }
+  renderCache->primitive = NULL;
 
   renderCache->aabb = vulkan_aabb_default();
-}
-
-void vulkan_render_cache_accumulate(vulkan_render_cache *renderCache,
-                                    vulkan_render_cache *parentCache) {
-  assert(parentCache->node->primitive == NULL);
-  vulkan_render_cache_reset(renderCache);
-  renderCache->distanceFromRoot = parentCache->distanceFromRoot + 1;
-  renderCache->visible = parentCache->visible;
-  glm_mat4_mul(parentCache->transform, renderCache->transform, renderCache->transform);
-  if (parentCache->mesh != NULL) {
-    renderCache->mesh = parentCache->mesh;
-  }
-  if (renderCache->node->object != NULL && renderCache->node->object->camera != NULL) {
-    vulkan_asset_camera_copy(&renderCache->camera, renderCache->node->object->camera);
-  } else {
-    vulkan_asset_camera_copy(&renderCache->camera, &parentCache->camera);
-  }
-  if (renderCache->primitive != NULL) {
-    renderCache->aabb = vulkan_asset_primitive_calculate_aabb(renderCache->primitive);
-    glm_mat4_mulv(renderCache->transform, renderCache->aabb.min, renderCache->aabb.min);
-    glm_mat4_mulv(renderCache->transform, renderCache->aabb.max, renderCache->aabb.max);
-  }
 }
 
 void vulkan_render_cache_set_vertex_stream_offsets(vulkan_render_cache *renderCache,
@@ -83,7 +46,7 @@ void vulkan_render_cache_set_vertex_stream_offsets(vulkan_render_cache *renderCa
 }
 
 void debug_log_cache(vulkan_render_cache *renderCache) {
-  log_raw(stdout, "\"cache\\n%p\\n", renderCache->node);
+  log_raw(stdout, "\"cache\\n%p\\n", renderCache);
   log_raw(stdout, "distanceFromRoot: %d\\n", renderCache->distanceFromRoot);
   log_raw(stdout, "visible: %d\\n", renderCache->visible);
   log_raw(stdout, "transform: \\n" MAT4_FORMAT_STRING("\\n") "\\n",

@@ -1,4 +1,5 @@
 #include "graph.h"
+#include "../objects/render_cache_list.h"
 #include "tree.h"
 
 vulkan_scene_graph *vulkan_scene_graph_create(vulkan_scene_data *data,

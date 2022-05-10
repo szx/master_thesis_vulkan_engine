@@ -6,13 +6,6 @@
 
 #include "common.h"
 
-// HIRO Refactor move to objects
-typedef enum vulkan_camera_type {
-  vulkan_camera_type_orthographic,
-  vulkan_camera_type_perspective,
-  vulkan_camera_type_count
-} vulkan_camera_type;
-
 typedef struct vulkan_asset_camera {
   vulkan_camera_type type;
   union {

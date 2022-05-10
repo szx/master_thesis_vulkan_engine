@@ -186,7 +186,6 @@ TEST scene_graph_building() {
   vulkan_scene_tree_node *sceneTreeNode =
       *(vulkan_scene_tree_node **)utarray_front(firstObjectNode->observers);
   while (sceneTreeNode != NULL) {
-    ASSERT_EQ(sceneTreeNode->renderCache->transform[0][0], 2);
     if (utarray_len(sceneTreeNode->childNodes) > 0) {
       sceneTreeNode = *(vulkan_scene_tree_node **)utarray_front(sceneTreeNode->childNodes);
     } else {
@@ -215,7 +214,7 @@ TEST scene_graph_building() {
   log_info("Test batching.");
   vulkan_batches *batches = vulkan_batches_create(renderCacheList, vkd);
 
-  renderCacheList->dirty = false;
+  renderCacheList->primitiveRenderCachesSorted = false;
   vulkan_batches_update(batches, vulkan_batch_instancing_policy_no_instancing);
   vulkan_batches_debug_print(batches);
   dl_count(vulkan_batch *, batches->batches, batchNoInstancingLen);

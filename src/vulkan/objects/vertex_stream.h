@@ -30,7 +30,9 @@ typedef struct vulkan_vertex_stream {
   UT_array *indexData;  ///< uint32_t array
   UT_array *vertexData; ///< vulkan_vertex array
 
-  bool dirty; ///< True in new primitive has been added.
+  /// True in new primitive has been added.
+  /// Unified geometry buffer is responsible for synchronizing vertex stream.
+  bool dirty;
 } vulkan_vertex_stream;
 
 vulkan_vertex_stream *vulkan_vertex_stream_create(vulkan_render_cache_list *renderCacheList);

@@ -53,12 +53,10 @@ void vulkan_textures_material_element_destroy(vulkan_textures_material_element *
   core_free(element);
 }
 
-vulkan_textures *vulkan_textures_create(vulkan_device *vkd,
-                                        vulkan_render_cache_list *renderCacheList) {
+vulkan_textures *vulkan_textures_create(vulkan_device *vkd) {
   vulkan_textures *textures = core_alloc(sizeof(vulkan_textures));
 
   textures->vkd = vkd;
-  textures->renderCacheList = renderCacheList;
   textures->textureElements = NULL;
   textures->materialElements = NULL;
 
@@ -79,19 +77,7 @@ void vulkan_textures_destroy(vulkan_textures *textures) {
 }
 
 void vulkan_textures_update(vulkan_textures *textures) {
-  assert(utarray_len(textures->renderCacheList->primitiveRenderCaches) > 0);
-
-  utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
-                              textures->renderCacheList->primitiveRenderCaches) {
-    vulkan_asset_material *material = renderCache->primitive->material;
-    if (material == NULL) {
-      continue;
-    }
-    vulkan_textures_material_element *element = vulkan_textures_add_material(textures, material);
-    renderCache->materialElement = element;
-
-    // TODO: Unload unneeded textures.
-  }
+  // No-op.
 }
 
 void vulkan_textures_send_to_device(vulkan_textures *textures) {
@@ -132,10 +118,12 @@ vulkan_textures_texture_element *vulkan_textures_add_texture(vulkan_textures *te
   return element;
 }
 
-void vulkan_textures_debug_print(vulkan_textures *textures) {
-  log_debug("textures:\n");
-  log_debug("texture count=%zu\n", HASH_CNT(hh, textures->textureElements));
-  log_debug("material count=%zu\n", HASH_CNT(hh, textures->materialElements));
+void vulkan_textures_debug_print(vulkan_textures *textures, int indent) {
+  log_debug(INDENT_FORMAT_STRING "textures:", INDENT_FORMAT_ARGS(0));
+  log_debug(INDENT_FORMAT_STRING "texture count=%zu\n", INDENT_FORMAT_ARGS(2),
+            HASH_CNT(hh, textures->textureElements));
+  log_debug(INDENT_FORMAT_STRING "material count=%zu\n", INDENT_FORMAT_ARGS(2),
+            HASH_CNT(hh, textures->materialElements));
 }
 
 void glsl_add_textures(UT_string *s, uint32_t set, uint32_t binding, vulkan_textures *textures) {

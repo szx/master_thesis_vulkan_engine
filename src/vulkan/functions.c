@@ -597,17 +597,16 @@ VkPipeline vulkan_create_graphics_pipeline(
   /* vertex input */
   VkPipelineVertexInputStateCreateInfo vertexInputInfo = {0};
   vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-  size_t vertexBindingDescriptionsCount = vulkan_vertex_stream_get_vertex_buffer_binding_count(
-      renderState->unifiedGeometryBuffer->vertexStream);
+  size_t vertexBindingDescriptionsCount =
+      vulkan_vertex_stream_get_vertex_buffer_binding_count(renderState->vertexStream);
   VkVertexInputBindingDescription vertexInputBindingDescription =
-      vulkan_vertex_stream_get_vertex_buffer_binding_description(
-          renderState->unifiedGeometryBuffer->vertexStream);
+      vulkan_vertex_stream_get_vertex_buffer_binding_description(renderState->vertexStream);
   vertexInputInfo.vertexBindingDescriptionCount = vertexBindingDescriptionsCount;
   vertexInputInfo.pVertexBindingDescriptions = &vertexInputBindingDescription;
   size_t vertexAttributeDescriptionsCount;
   VkVertexInputAttributeDescription *vertexAttributeDescriptions =
-      vulkan_vertex_stream_get_vertex_attribute_descriptions(
-          renderState->unifiedGeometryBuffer->vertexStream, &vertexAttributeDescriptionsCount);
+      vulkan_vertex_stream_get_vertex_attribute_descriptions(renderState->vertexStream,
+                                                             &vertexAttributeDescriptionsCount);
   vertexInputInfo.vertexAttributeDescriptionCount = vertexAttributeDescriptionsCount;
   vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions;
 

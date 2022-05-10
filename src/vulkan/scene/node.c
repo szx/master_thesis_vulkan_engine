@@ -82,7 +82,8 @@ vulkan_scene_tree_node *vulkan_scene_tree_node_create(vulkan_scene_tree *sceneTr
   sceneTreeNode->prev = NULL;
   sceneTreeNode->next = NULL;
 
-  sceneTreeNode->renderCache = vulkan_render_cache_create(sceneTreeNode);
+  sceneTreeNode->renderCache = vulkan_render_cache_create();
+  vulkan_scene_tree_node_set_render_cache(sceneTreeNode, sceneTreeNode->renderCache);
   sceneTreeNode->dirty = false;
 
   return sceneTreeNode;
@@ -105,6 +106,50 @@ void vulkan_scene_tree_node_add_child(vulkan_scene_tree_node *sceneTreeNode,
   utarray_push_back(sceneTreeNode->childNodes, &childNode);
 }
 
+void vulkan_scene_tree_node_set_render_cache(vulkan_scene_tree_node *sceneTreeNode,
+                                             vulkan_render_cache *renderCache) {
+  vulkan_render_cache_reset(renderCache);
+  assert(sceneTreeNode != NULL); // HIRO Refactor is it true?
+
+  if (sceneTreeNode->object != NULL) {
+    glm_mat4_copy(sceneTreeNode->object->transform, renderCache->transform);
+    renderCache->mesh = sceneTreeNode->object->mesh;
+    if (sceneTreeNode->object->camera) {
+      vulkan_asset_camera_copy(&renderCache->camera, sceneTreeNode->object->camera);
+    } else {
+      vulkan_asset_camera_init(&renderCache->camera, NULL);
+    }
+  }
+
+  if (sceneTreeNode->primitive != NULL) {
+    renderCache->primitive = sceneTreeNode->primitive;
+    renderCache->aabb = vulkan_asset_primitive_calculate_aabb(renderCache->primitive);
+  }
+}
+
+void vulkan_scene_tree_node_accumulate_to_render_cache(vulkan_scene_tree_node *parentSceneTreeNode,
+                                                       vulkan_render_cache *renderCache) {
+  assert(parentSceneTreeNode->primitive == NULL);
+  vulkan_render_cache *parentCache = parentSceneTreeNode->renderCache;
+
+  renderCache->distanceFromRoot = parentCache->distanceFromRoot + 1;
+  renderCache->visible = parentCache->visible;
+
+  glm_mat4_mul(parentCache->transform, renderCache->transform, renderCache->transform);
+  if (parentCache->mesh != NULL) {
+    renderCache->mesh = parentCache->mesh;
+  }
+  if (parentSceneTreeNode->object != NULL && parentSceneTreeNode->object->camera != NULL) {
+    vulkan_asset_camera_copy(&renderCache->camera, parentSceneTreeNode->object->camera);
+  } else {
+    vulkan_asset_camera_copy(&renderCache->camera, &parentCache->camera);
+  }
+  if (renderCache->primitive != NULL) {
+    renderCache->aabb = vulkan_asset_primitive_calculate_aabb(renderCache->primitive);
+    glm_mat4_mulv(renderCache->transform, renderCache->aabb.min, renderCache->aabb.min);
+    glm_mat4_mulv(renderCache->transform, renderCache->aabb.max, renderCache->aabb.max);
+  }
+}
 void debug_log_tree_node(vulkan_scene_tree_node *sceneTreeNode) {
   log_raw(stdout, "\"%p\\n", sceneTreeNode);
   if (sceneTreeNode->object != NULL) {

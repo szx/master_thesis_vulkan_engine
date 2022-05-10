@@ -54,8 +54,10 @@ void update_camera_vectors(vulkan_camera *camera) {
 }
 
 void vulkan_camera_reset(vulkan_camera *camera) {
-  // Set user.up default camera using primitives' aabb.
+  // Set up default camera using primitives' aabb.
+  vulkan_render_cache_list_calculate_aabb_for_primitive_render_caches(camera->renderCacheList);
   vulkan_aabb *aabb = &camera->renderCacheList->aabb;
+
   vec3 extent, center;
   glm_vec3_sub(aabb->max, aabb->min, extent);
   glm_vec3_add(aabb->max, aabb->min, center);

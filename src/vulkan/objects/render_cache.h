@@ -7,19 +7,14 @@
  */
 #pragma once
 
-#include "../assets/camera.h"
+#include "../assets/assets.h"
 #include "../common.h"
+#include "textures.h"
 
-// HIRO Refactor move to scene/render_cache
-
-typedef struct vulkan_scene_tree_node vulkan_scene_tree_node;
-typedef struct vulkan_asset_mesh vulkan_asset_mesh;
-typedef struct vulkan_asset_primitive vulkan_asset_primitive;
+// HIRO Refactor remove typedef
 typedef struct vulkan_textures_material_element vulkan_textures_material_element;
 
 typedef struct vulkan_render_cache {
-  vulkan_scene_tree_node *node;
-
   /* cache state accumulated from scene tree */
   size_t distanceFromRoot;
   bool visible;
@@ -37,20 +32,17 @@ typedef struct vulkan_render_cache {
   size_t instanceId; ///< Index in render cache list, equals gl_InstanceIndex in shader thanks to
                      ///< draw call batching.
 
-  /* cache state accumulated from textures */
+  /* cache state accumulated from render cache list */
   vulkan_textures_material_element
       *materialElement; ///< Contains index of material in materials array in textures.
 
   struct vulkan_render_cache *prev, *next;
 } vulkan_render_cache;
 
-vulkan_render_cache *vulkan_render_cache_create(vulkan_scene_tree_node *sceneTreeNode);
+vulkan_render_cache *vulkan_render_cache_create();
 void vulkan_render_cache_destroy(vulkan_render_cache *renderCache);
 
-/// Set cache with parent node.
 void vulkan_render_cache_reset(vulkan_render_cache *renderCache);
-void vulkan_render_cache_accumulate(vulkan_render_cache *renderCache,
-                                    vulkan_render_cache *parentCache);
 
 void vulkan_render_cache_set_vertex_stream_offsets(vulkan_render_cache *renderCache,
                                                    size_t firstIndexOffset,

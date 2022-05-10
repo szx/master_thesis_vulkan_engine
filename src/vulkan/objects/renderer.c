@@ -98,7 +98,7 @@ void vulkan_renderer_recreate_swap_chain(vulkan_renderer *renderer) {
 }
 
 void vulkan_renderer_update(vulkan_renderer *renderer) {
-  vulkan_scene_render_state_update(renderer->renderState);
+  vulkan_render_state_update(renderer->renderState);
 }
 
 void vulkan_renderer_send_to_device(vulkan_renderer *renderer) {
