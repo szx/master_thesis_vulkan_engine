@@ -13,7 +13,7 @@ vulkan_render_state *vulkan_render_state_create(
   renderState->renderCacheList = renderCacheList;
   renderState->config = config;
   renderState->updateGlobalUniformBufferFunc = updateGlobalUniformBufferFunc;
-  renderState->vertexStream = vulkan_vertex_stream_create(renderState->renderCacheList);
+  renderState->vertexStream = vulkan_vertex_stream_create(renderState->renderCacheList->attributes);
 
   renderState->unifiedGeometryBuffer = vulkan_unified_geometry_buffer_create(renderState->vkd);
   renderState->textures = vulkan_textures_create(renderState->vkd);
@@ -43,15 +43,16 @@ void vulkan_render_state_destroy(vulkan_render_state *renderState) {
 
 void vulkan_render_state_update(vulkan_render_state *renderState,
                                 void *updateGlobalUniformBufferFuncData) {
+  vulkan_render_cache_list_update_geometry(renderState->renderCacheList, renderState->vertexStream);
   vulkan_render_cache_list_update_textures(renderState->renderCacheList, renderState->textures);
   vulkan_vertex_stream_update(renderState->vertexStream);
 
   vulkan_unified_geometry_buffer_update(renderState->unifiedGeometryBuffer,
                                         renderState->vertexStream);
   vulkan_textures_update(renderState->textures);
-  vulkan_unified_uniform_buffer_update(
-      renderState->unifiedUniformBuffer, renderState->renderCacheList, renderState->sync,
-      renderState->updateGlobalUniformBufferFunc, updateGlobalUniformBufferFuncData);
+  vulkan_unified_uniform_buffer_update(renderState->unifiedUniformBuffer, renderState->sync,
+                                       renderState->updateGlobalUniformBufferFunc,
+                                       updateGlobalUniformBufferFuncData);
   vulkan_descriptors_update(renderState->descriptors);
 }
 

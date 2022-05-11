@@ -9,10 +9,8 @@
 
 #include "../assets/assets.h"
 #include "../common.h"
-#include "textures.h"
-
-// HIRO Refactor remove typedef
-typedef struct vulkan_textures_material_element vulkan_textures_material_element;
+#include "../objects/textures.h"
+#include "../objects/vertex_stream.h"
 
 // HIRO refactor split into multiple types
 // HIRO add key to prevent multiple adding in vulkan_render_cache_list
@@ -27,6 +25,7 @@ typedef struct vulkan_render_cache {
   vulkan_aabb aabb;                  ///< Accumulated from primitive node.
 
   /* cache state accumulated from vertex stream */
+  // HIRO Refactor replace with vertex_stream_element
   size_t firstIndexOffset;
   size_t firstVertexOffset;
 

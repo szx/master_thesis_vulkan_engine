@@ -3,11 +3,13 @@
  */
 #pragma once
 
-#include "../objects/batch.h"
-#include "../objects/render_state.h"
+#include "../renderers/batch.h"
+#include "../renderers/render_state.h"
 #include "camera_state.h"
 #include "light_state.h"
 #include "skybox_state.h"
+
+// HIRO refactor rename file to shared_state.h
 
 /// Manages resources shared between frames (depth buffer) used by pipeline to render one
 /// one swap chain frame.
@@ -39,9 +41,6 @@ void vulkan_pipeline_shared_state_reinit_with_new_swap_chain(
 
 void vulkan_pipeline_shared_state_update(vulkan_pipeline_shared_state *pipelineSharedState,
                                          vulkan_batch_instancing_policy instancingPolicy);
-
-void vulkan_pipeline_shared_state_update_global_uniform_buffer_callback(
-    void *data, vulkan_global_uniform_buffer_element *global);
 
 void vulkan_pipeline_shared_state_debug_print(vulkan_pipeline_shared_state *pipelineSharedState,
                                               int indent);

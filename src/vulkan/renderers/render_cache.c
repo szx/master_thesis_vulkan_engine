@@ -2,8 +2,8 @@
 
 #include "../assets/mesh.h"
 #include "../assets/primitive.h"
+#include "../objects/textures.h"
 #include "../scene/node.h"
-#include "textures.h"
 
 vulkan_render_cache *vulkan_render_cache_create() {
   vulkan_render_cache *renderCache = core_alloc(sizeof(vulkan_render_cache));

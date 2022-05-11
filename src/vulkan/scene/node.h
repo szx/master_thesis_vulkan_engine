@@ -8,7 +8,7 @@
 #pragma once
 
 #include "../assets/assets.h"
-#include "../objects/render_cache.h"
+#include "../renderers/render_cache.h"
 
 typedef struct vulkan_scene_graph vulkan_scene_graph;
 typedef struct vulkan_scene_tree vulkan_scene_tree;

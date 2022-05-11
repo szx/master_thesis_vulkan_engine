@@ -93,6 +93,7 @@ void vulkan_batches_reset(vulkan_batches *batches) {
 
 void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_instancing_policy policy) {
   // sort cache list and update attributes
+  // HIRO Refactor do not sort directly in render cache list, maintain separate list
   vulkan_render_cache_list_sort_primitive_render_caches(batches->renderCacheList);
   assert(batches->renderCacheList->primitiveRenderCachesSorted);
 

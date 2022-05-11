@@ -27,12 +27,13 @@ vulkan_vertex vulkan_vertex_default() {
   return element;
 }
 
-vulkan_vertex_stream *vulkan_vertex_stream_create(vulkan_render_cache_list *renderCacheList) {
+vulkan_vertex_stream *vulkan_vertex_stream_create(vulkan_attribute_type attributes) {
   vulkan_vertex_stream *stream = core_alloc(sizeof(vulkan_vertex_stream));
 
-  stream->renderCacheList = renderCacheList;
-  stream->indexData = NULL;
-  stream->vertexData = NULL;
+  assert(attributes > 0);
+  stream->attributes = attributes;
+  utarray_alloc(stream->indexData, sizeof(uint32_t));
+  utarray_alloc(stream->vertexData, vulkan_attribute_type_to_stride(stream->attributes));
   stream->dirty = true;
 
   vulkan_vertex_stream_update(stream);
@@ -41,30 +42,8 @@ vulkan_vertex_stream *vulkan_vertex_stream_create(vulkan_render_cache_list *rend
 }
 
 void vulkan_vertex_stream_update(vulkan_vertex_stream *stream) {
-  if (stream->renderCacheList->primitiveRenderCachesSorted) {
-    return;
-  }
-  log_debug("updating vulkan_vertex_stream");
-
-  // TODO: Reallocates whole geometry buffer, even if only one primitive render cache is added.
-  vulkan_render_cache_list_sort_primitive_render_caches(stream->renderCacheList);
-  assert(stream->renderCacheList->primitiveRenderCachesSorted);
-
-  assert(stream->renderCacheList->attributes > 0);
-
-  utarray_realloc(stream->indexData, sizeof(uint32_t));
-  utarray_realloc(stream->vertexData,
-                  vulkan_attribute_type_to_stride(stream->renderCacheList->attributes));
-
-  // add unique primitives to geometry buffer
-  vulkan_render_cache *lastRenderCache = NULL;
-  utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
-                              stream->renderCacheList->primitiveRenderCaches) {
-    vulkan_vertex_stream_add_primitive(stream, renderCache, lastRenderCache);
-    lastRenderCache = renderCache;
-  }
-
-  stream->dirty = true;
+  // No-op.
+  // Unified geometry buffer is responsible for synchronizing vertex stream.
 }
 
 void vulkan_vertex_stream_destroy(vulkan_vertex_stream *stream) {
@@ -114,63 +93,13 @@ vulkan_vertex_stream_add_geometry(vulkan_vertex_stream *stream, uint32_t vertexC
       vec3 *texCoord = utarray_eltptr(texCoords, idx);
       glm_vec2_copy(*texCoord, element.texCoord);
     }
+    assert(vertexStreamElement.attributes <= stream->attributes);
     utarray_push_back(stream->vertexData, &element);
   }
 
   stream->dirty = true;
 
   return vertexStreamElement;
-}
-
-void vulkan_vertex_stream_add_primitive(vulkan_vertex_stream *stream,
-                                        vulkan_render_cache *renderCache,
-                                        vulkan_render_cache *lastRenderCache) {
-  // HIRO Refactor rewrite to return vulkan_vertex_stream_element
-  // PERF: Compress stream (overlapping vertex attributes).
-
-  if (lastRenderCache != NULL && lastRenderCache->primitive == renderCache->primitive) {
-    size_t firstIndexOffset = lastRenderCache->firstIndexOffset;
-    size_t firstVertexOffset = lastRenderCache->firstVertexOffset;
-    vulkan_render_cache_set_vertex_stream_offsets(renderCache, firstIndexOffset, firstVertexOffset);
-    return;
-  }
-  vulkan_asset_primitive *primitive = renderCache->primitive;
-  assert(primitive->indices->componentType == vulkan_asset_vertex_attribute_component_uint32_t);
-
-  vulkan_vertex_stream_element vertexStreamElement = vulkan_vertex_stream_add_geometry(
-      stream, primitive->vertexCount, primitive->indices->data, primitive->positions->data,
-      primitive->normals->data, primitive->colors->data, primitive->texCoords->data);
-
-  assert(vertexStreamElement.attributes <= stream->renderCacheList->attributes);
-  vulkan_render_cache_set_vertex_stream_offsets(renderCache, vertexStreamElement.firstIndexOffset,
-                                                vertexStreamElement.firstVertexOffset);
-}
-
-void vulkan_vertex_stream_add_other(vulkan_vertex_stream *stream,
-                                    vulkan_render_cache *renderCache) {
-  assert(renderCache->primitive);
-  renderCache->primitive->key = vulkan_asset_primitive_calculate_key(renderCache->primitive);
-  utarray_foreach_elem_deref (vulkan_render_cache *, otherRenderCache,
-                              stream->renderCacheList->otherRenderCaches) {
-    if (otherRenderCache->primitive->key.value == renderCache->primitive->key.value) {
-      size_t firstIndexOffset = otherRenderCache->firstIndexOffset;
-      size_t firstVertexOffset = otherRenderCache->firstVertexOffset;
-      vulkan_render_cache_set_vertex_stream_offsets(renderCache, firstIndexOffset,
-                                                    firstVertexOffset);
-      return;
-    }
-  }
-
-  vulkan_asset_primitive *primitive = renderCache->primitive;
-  assert(primitive->indices->componentType == vulkan_asset_vertex_attribute_component_uint32_t);
-
-  vulkan_vertex_stream_element vertexStreamElement = vulkan_vertex_stream_add_geometry(
-      stream, primitive->vertexCount, primitive->indices->data, primitive->positions->data,
-      primitive->normals->data, primitive->colors->data, primitive->texCoords->data);
-
-  assert(vertexStreamElement.attributes <= stream->renderCacheList->attributes);
-  vulkan_render_cache_set_vertex_stream_offsets(renderCache, vertexStreamElement.firstIndexOffset,
-                                                vertexStreamElement.firstVertexOffset);
 }
 
 uint32_t vulkan_vertex_stream_get_vertex_buffer_binding_count(vulkan_vertex_stream *stream) {
@@ -191,8 +120,8 @@ vulkan_vertex_stream_get_vertex_buffer_binding_description(vulkan_vertex_stream 
 VkVertexInputAttributeDescription *
 vulkan_vertex_stream_get_vertex_attribute_descriptions(vulkan_vertex_stream *stream,
                                                        uint32_t *count) {
-  assert(stream->renderCacheList->attributes > 0);
-  vulkan_attribute_type attributes = stream->renderCacheList->attributes;
+  assert(stream->attributes > 0);
+  vulkan_attribute_type attributes = stream->attributes;
   *count = count_bits(attributes);
 
   VkVertexInputAttributeDescription *attributeDescriptions =

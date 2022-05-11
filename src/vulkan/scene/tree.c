@@ -1,5 +1,5 @@
 #include "tree.h"
-#include "../objects/render_cache_list.h"
+#include "../renderers/render_cache_list.h"
 
 vulkan_scene_tree *vulkan_scene_tree_create(vulkan_scene_graph *sceneGraph,
                                             vulkan_render_cache_list *renderCacheList) {

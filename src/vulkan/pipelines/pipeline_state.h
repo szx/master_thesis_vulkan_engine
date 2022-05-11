@@ -4,6 +4,7 @@
 
 #include "../objects/image.h"
 
+// HIRO refactor rename file to frame_state.h
 typedef struct vulkan_pipeline vulkan_pipeline;
 
 /// Manages framebuffer used by pipeline's render pass.

@@ -5,7 +5,7 @@
 #pragma once
 
 #include "../objects/buffer.h"
-#include "../objects/render_cache_list.h"
+#include "../renderers/render_cache_list.h"
 
 typedef enum vulkan_batch_instancing_policy {
   /// No instancing - one render cache always results in one draw command with instanceCount == 1.

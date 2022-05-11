@@ -30,8 +30,8 @@ void glsl_add_common_source(UT_string *s) {
 }
 
 void glsl_add_vertex_shader_input_variables_defines(UT_string *s, vulkan_vertex_stream *stream) {
-  assert(stream->renderCacheList->attributes > 0);
-  size_t attributes = stream->renderCacheList->attributes;
+  assert(stream->attributes > 0);
+  size_t attributes = stream->attributes;
 
   if ((attributes & vulkan_attribute_type_position) != 0) {
     utstring_printf(s, "#define IN_POSITION 1\n");
@@ -67,8 +67,8 @@ void glsl_add_defines(UT_string *s, vulkan_shader_type shaderType,
 }
 
 void glsl_add_vertex_shader_input_variables(UT_string *s, vulkan_vertex_stream *stream) {
-  assert(stream->renderCacheList->attributes > 0);
-  size_t attributes = stream->renderCacheList->attributes;
+  assert(stream->attributes > 0);
+  size_t attributes = stream->attributes;
 
   uint32_t location = 0;
   if ((attributes & vulkan_attribute_type_position) != 0) {

@@ -1,10 +1,10 @@
 /* GLSL shader source code generator */
 #pragma once
 
+#include "../objects/descriptor.h"
+#include "../objects/shader_reflect.h"
 #include "../pipelines/pipeline_impl.h"
-#include "descriptor.h"
-#include "render_state.h"
-#include "shader_reflect.h"
+#include "../renderers/render_state.h"
 
 /// Generates GLSL shader source code.
 typedef struct vulkan_shader_generator {

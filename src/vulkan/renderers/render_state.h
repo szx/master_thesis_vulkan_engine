@@ -3,12 +3,12 @@
 #pragma once
 
 #include "../assets/object.h"
+#include "../objects/swap_chain.h"
+#include "../objects/sync.h"
+#include "../objects/textures.h"
+#include "../objects/unified_geometry_buffer.h"
+#include "../objects/unified_uniform_buffer.h"
 #include "render_cache_list.h"
-#include "swap_chain.h"
-#include "sync.h"
-#include "textures.h"
-#include "unified_geometry_buffer.h"
-#include "unified_uniform_buffer.h"
 
 /// Render state,
 /// Contains all CPU and GPU state that is completely independent of pipelines.

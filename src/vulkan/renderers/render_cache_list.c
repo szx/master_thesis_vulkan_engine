@@ -7,6 +7,7 @@ vulkan_render_cache_list *vulkan_render_cache_list_create(size_t maxPrimitiveRen
   renderCacheList->maxPrimitiveRenderCacheCount = maxPrimitiveRenderCacheCount;
   utarray_alloc(renderCacheList->primitiveRenderCaches, sizeof(vulkan_render_cache *));
   renderCacheList->primitiveRenderCachesSorted = true;
+  renderCacheList->primitiveRenderCachesDirty = false;
   renderCacheList->attributes = vulkan_attribute_type_unknown;
   renderCacheList->aabb = vulkan_aabb_default();
 
@@ -36,13 +37,68 @@ void vulkan_render_cache_list_add_primitive_render_cache(
   utarray_push_back(renderCacheList->primitiveRenderCaches, &primitiveRenderCache);
 
   renderCacheList->primitiveRenderCachesSorted = false;
+  renderCacheList->primitiveRenderCachesDirty = true;
 
   renderCacheList->attributes |= primitiveRenderCache->primitive->attributes;
 
   // NOTE: Primitive render cache's AABB are is calculated in
   // vulkan_render_cache_list_sort_primitive_render_caches.
 
+  // NOTE: Primitive render cache's geometry is added in vulkan_render_cache_list_update_geometry.
   // NOTE: Primitive render cache's textures are added in vulkan_render_cache_list_update_textures.
+}
+
+void vulkan_render_cache_list_update_geometry(vulkan_render_cache_list *renderCacheList,
+                                              vulkan_vertex_stream *vertexStream) {
+  if (!renderCacheList->primitiveRenderCachesDirty) {
+    return;
+  }
+  log_debug("updating renderCacheList -> vulkan_vertex_stream");
+
+  // Sort primitive render caches by geometry to minimize geometry buffer size.
+  vulkan_render_cache_list_sort_primitive_render_caches(renderCacheList);
+  assert(renderCacheList->primitiveRenderCachesSorted);
+
+  assert(renderCacheList->attributes > 0);
+  assert(renderCacheList->attributes <= vertexStream->attributes);
+
+  // TODO:
+  //  Used to reallocate whole geometry buffer, even if only one primitive render cache is
+  //  added.
+  //  Now buffer grows indefinitely. Implement some sort of garbage collection.
+  // utarray_realloc(vertexStream->indexData, sizeof(uint32_t));
+  // utarray_realloc(vertexStream->vertexData,
+  //                vulkan_attribute_type_to_stride(vertexStream->attributes));
+
+  // add unique primitives to geometry buffer
+  vulkan_render_cache *lastRenderCache = NULL;
+  utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
+                              renderCacheList->primitiveRenderCaches) {
+    // PERF: Compress stream (overlapping vertex attributes).
+
+    if (lastRenderCache != NULL && lastRenderCache->primitive == renderCache->primitive) {
+      size_t firstIndexOffset = lastRenderCache->firstIndexOffset;
+      size_t firstVertexOffset = lastRenderCache->firstVertexOffset;
+      vulkan_render_cache_set_vertex_stream_offsets(renderCache, firstIndexOffset,
+                                                    firstVertexOffset);
+      return;
+    }
+
+    vulkan_asset_primitive *primitive = renderCache->primitive;
+    assert(primitive->indices->componentType == vulkan_asset_vertex_attribute_component_uint32_t);
+
+    vulkan_vertex_stream_element vertexStreamElement = vulkan_vertex_stream_add_geometry(
+        vertexStream, primitive->vertexCount, primitive->indices->data, primitive->positions->data,
+        primitive->normals->data, primitive->colors->data, primitive->texCoords->data);
+
+    assert(vertexStreamElement.attributes <= vertexStream->attributes);
+    vulkan_render_cache_set_vertex_stream_offsets(renderCache, vertexStreamElement.firstIndexOffset,
+                                                  vertexStreamElement.firstVertexOffset);
+
+    lastRenderCache = renderCache;
+  }
+
+  renderCacheList->primitiveRenderCachesDirty = false;
 }
 
 void vulkan_render_cache_list_update_textures(vulkan_render_cache_list *renderCacheList,

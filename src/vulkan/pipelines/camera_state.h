@@ -3,7 +3,7 @@
 #pragma once
 
 #include "../common.h"
-#include "../objects/render_state.h"
+#include "../renderers/render_state.h"
 
 // TODO: Frustum planes.
 

@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "../objects/shader_program.h"
 #include "pipeline_impl.h"
 #include "pipeline_shared_state.h"
 #include "pipeline_state.h"
+#include "shader_program.h"
 
 /// Used to record command to command buffer.
 /// Can be chained with other pipelines.

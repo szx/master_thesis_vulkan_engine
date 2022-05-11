@@ -17,8 +17,10 @@
 typedef struct vulkan_render_cache_list {
   /* primitive render caches accumulated from scene tree */
   size_t maxPrimitiveRenderCacheCount; ///< Max number of render caches.
-  UT_array *primitiveRenderCaches;  ///< vulkan_render_cache* array of primitive scene node caches.
+  UT_array *primitiveRenderCaches; ///< vulkan_render_cache* array of primitive scene node caches.
+  // HIRO refactor remove primitiveRenderCachesSorted, batches should be responsible
   bool primitiveRenderCachesSorted; ///< True if primitiveRenderCaches is sorted.
+  bool primitiveRenderCachesDirty;  ///< True if added cache.
   vulkan_attribute_type attributes; ///< Max set of primitive vertex attributes.
   vulkan_aabb aabb; ///< World-space AABB derived from primitive's transform and model-space AABB.
 
@@ -26,6 +28,7 @@ typedef struct vulkan_render_cache_list {
   UT_array *cameraRenderCaches; ///< vulkan_render_cache* array of camera scene node caches.
 
   /* primitive render caches accumulated from pipeline shared data (boxes, UI, etc.) */
+  // HIRO refactor remove other render caches
   UT_array *otherRenderCaches; ///< vulkan_render_cache* array of render caches.
   bool otherRenderCachesDirty; ///< True if added cache to otherRenderCaches
 
@@ -45,6 +48,9 @@ void vulkan_render_cache_list_sort_primitive_render_caches(
 
 void vulkan_render_cache_list_calculate_aabb_for_primitive_render_caches(
     vulkan_render_cache_list *renderCacheList);
+
+void vulkan_render_cache_list_update_geometry(vulkan_render_cache_list *renderCacheList,
+                                              vulkan_vertex_stream *vertexStream);
 
 void vulkan_render_cache_list_update_textures(vulkan_render_cache_list *renderCacheList,
                                               vulkan_textures *textures);

@@ -4,7 +4,6 @@
 
 #include "../assets/object.h"
 #include "buffer.h"
-#include "render_cache_list.h"
 #include "shader.h"
 #include "sync.h"
 
@@ -24,11 +23,13 @@ vulkan_unified_uniform_buffer_create(vulkan_device *vkd, size_t maxPrimitiveRend
 void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *uniformBuffer);
 
 typedef void (*vulkan_unified_uniform_buffer_update_func)(
-    void *pipelineSharedState, vulkan_global_uniform_buffer_element *global);
+    void *data, size_t currentFrameInFlight, vulkan_global_uniform_buffer_data *globalData,
+    vulkan_materials_uniform_buffer_data *materialsData,
+    vulkan_instances_uniform_buffer_data *instancesData);
 
 void vulkan_unified_uniform_buffer_update(
-    vulkan_unified_uniform_buffer *uniformBuffer, vulkan_render_cache_list *renderCacheList,
-    vulkan_sync *sync, vulkan_unified_uniform_buffer_update_func updateGlobalUniformBufferFunc,
+    vulkan_unified_uniform_buffer *uniformBuffer, vulkan_sync *sync,
+    vulkan_unified_uniform_buffer_update_func updateGlobalUniformBufferFunc,
     void *updateGlobalUniformBufferFuncData);
 
 void vulkan_unified_uniform_buffer_send_to_device(vulkan_unified_uniform_buffer *uniformBuffer);

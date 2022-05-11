@@ -16,9 +16,9 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
 
   renderer->sceneGraph = vulkan_scene_graph_create(renderer->data, renderer->renderCacheList);
 
-  renderer->renderState = vulkan_render_state_create(
-      renderer->vks, renderer->renderCacheList, renderer->config,
-      vulkan_pipeline_shared_state_update_global_uniform_buffer_callback);
+  renderer->renderState =
+      vulkan_render_state_create(renderer->vks, renderer->renderCacheList, renderer->config,
+                                 vulkan_renderer_update_global_uniform_buffer_callback);
 
   renderer->pipelineSharedState = vulkan_pipeline_shared_state_create(renderer->renderState);
 
@@ -107,7 +107,66 @@ void vulkan_renderer_update(vulkan_renderer *renderer) {
            ? vulkan_batch_instancing_policy_matching_vertex_attributes
            : vulkan_batch_instancing_policy_no_instancing));
 
-  vulkan_render_state_update(renderer->renderState, renderer->pipelineSharedState);
+  vulkan_render_state_update(renderer->renderState, renderer);
+}
+
+void vulkan_renderer_update_global_uniform_buffer_callback(
+    void *data, size_t currentFrameInFlight, vulkan_global_uniform_buffer_data *globalData,
+    vulkan_materials_uniform_buffer_data *materialsData,
+    vulkan_instances_uniform_buffer_data *instancesData) {
+
+  vulkan_renderer *renderer = data;
+
+  // globals
+  vulkan_global_uniform_buffer_element *global =
+      vulkan_global_uniform_buffer_data_get_element(globalData, 0, currentFrameInFlight);
+
+  vulkan_pipeline_camera_state *camera = renderer->pipelineSharedState->camera;
+  vulkan_pipeline_camera_state_set_view_matrix(camera, global->viewMat);
+  vulkan_pipeline_camera_state_set_projection_matrix(camera, global->projMat);
+
+  vulkan_pipeline_light_state *lights = renderer->pipelineSharedState->lights;
+  vulkan_pipeline_light_state_set_directional_light_elements(lights, &global->directionalLightCount,
+                                                             global->directionalLights);
+  vulkan_pipeline_light_state_set_point_light_elements(lights, &global->pointLightCount,
+                                                       global->pointLights);
+
+  vulkan_pipeline_skybox_state *skybox = renderer->pipelineSharedState->skybox;
+  vulkan_pipeline_skybox_state_set_skybox_elements(skybox, &global->skybox);
+
+  // materials
+  utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
+                              renderer->renderCacheList->primitiveRenderCaches) {
+    vulkan_textures_material_element *materialElement = renderCache->materialElement;
+    assert(materialElement != NULL);
+    size_t materialId = materialElement->materialIdx;
+    // PERF: Update material only once (either keep track here or just iterate on
+    // textures->materialElements).
+    vulkan_materials_uniform_buffer_element *element =
+        vulkan_materials_uniform_buffer_data_get_element(materialsData, materialId,
+                                                         currentFrameInFlight);
+
+    element->baseColorTextureId = materialElement->baseColorTextureElement->textureIdx;
+    glm_vec4_copy(materialElement->material->baseColorFactor, element->baseColorFactor);
+    element->metallicRoughnessTextureId =
+        materialElement->metallicRoughnessTextureElement->textureIdx;
+    element->metallicFactor = materialElement->material->metallicFactor;
+    element->roughnessFactor = materialElement->material->roughnessFactor;
+  }
+
+  // instances
+  utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
+                              renderer->renderCacheList->primitiveRenderCaches) {
+    size_t instanceId = renderCache->instanceId;
+    vulkan_instances_uniform_buffer_element *element =
+        vulkan_instances_uniform_buffer_data_get_element(instancesData, instanceId,
+                                                         currentFrameInFlight);
+
+    glm_mat4_copy(renderCache->transform, element->modelMat);
+
+    size_t materialId = renderCache->materialElement->materialIdx;
+    element->materialId = materialId;
+  }
 }
 
 void vulkan_renderer_send_to_device(vulkan_renderer *renderer) {

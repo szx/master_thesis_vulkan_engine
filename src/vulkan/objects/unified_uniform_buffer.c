@@ -38,50 +38,13 @@ void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *unifor
 }
 
 void vulkan_unified_uniform_buffer_update(
-    vulkan_unified_uniform_buffer *uniformBuffer, vulkan_render_cache_list *renderCacheList,
-    vulkan_sync *sync, vulkan_unified_uniform_buffer_update_func updateGlobalUniformBufferFunc,
+    vulkan_unified_uniform_buffer *uniformBuffer, vulkan_sync *sync,
+    vulkan_unified_uniform_buffer_update_func updateGlobalUniformBufferFunc,
     void *updateGlobalUniformBufferFuncData) {
-  assert(utarray_len(renderCacheList->primitiveRenderCaches) > 0);
 
-  // global
-  vulkan_global_uniform_buffer_element *global = vulkan_global_uniform_buffer_data_get_element(
-      uniformBuffer->globalData, 0, sync->currentFrameInFlight);
-
-  updateGlobalUniformBufferFunc(updateGlobalUniformBufferFuncData, global);
-
-  // materials
-  utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
-                              renderCacheList->primitiveRenderCaches) {
-    vulkan_textures_material_element *materialElement = renderCache->materialElement;
-    assert(materialElement != NULL);
-    size_t materialId = materialElement->materialIdx;
-    // PERF: Update material only once (either keep track here or just iterate on
-    // textures->materialElements).
-    vulkan_materials_uniform_buffer_element *element =
-        vulkan_materials_uniform_buffer_data_get_element(uniformBuffer->materialsData, materialId,
-                                                         sync->currentFrameInFlight);
-
-    element->baseColorTextureId = materialElement->baseColorTextureElement->textureIdx;
-    glm_vec4_copy(materialElement->material->baseColorFactor, element->baseColorFactor);
-    element->metallicRoughnessTextureId =
-        materialElement->metallicRoughnessTextureElement->textureIdx;
-    element->metallicFactor = materialElement->material->metallicFactor;
-    element->roughnessFactor = materialElement->material->roughnessFactor;
-  }
-
-  // instances
-  utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
-                              renderCacheList->primitiveRenderCaches) {
-    size_t instanceId = renderCache->instanceId;
-    vulkan_instances_uniform_buffer_element *element =
-        vulkan_instances_uniform_buffer_data_get_element(uniformBuffer->instancesData, instanceId,
-                                                         sync->currentFrameInFlight);
-
-    glm_mat4_copy(renderCache->transform, element->modelMat);
-
-    size_t materialId = renderCache->materialElement->materialIdx;
-    element->materialId = materialId;
-  }
+  updateGlobalUniformBufferFunc(updateGlobalUniformBufferFuncData, sync->currentFrameInFlight,
+                                uniformBuffer->globalData, uniformBuffer->materialsData,
+                                uniformBuffer->instancesData);
 
   // TODO: Dirty only parts of unified uniform buffer.
   uniformBuffer->buffer->dirty = true;

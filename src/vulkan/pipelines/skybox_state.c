@@ -1,5 +1,5 @@
 #include "skybox_state.h"
-#include "../objects/render_state.h"
+#include "../renderers/render_state.h"
 
 vulkan_pipeline_skybox_state *
 vulkan_pipeline_skybox_state_create(vulkan_render_state *renderState) {
@@ -11,10 +11,9 @@ vulkan_pipeline_skybox_state_create(vulkan_render_state *renderState) {
       skybox->renderState->textures, skybox->renderState->renderCacheList->skybox->cubemapTexture);
   skybox->ambientIntensity = 1.0f;
 
-  // HIRO Refactor manual adding of geometry.
+  // HIRO HIRO HIRO HIRO Refactor manual adding of geometry.
   // HIRO Refactor move boxVertexStreamElement to render state
 
-  // HIRO HIRO added twice during swap chain reinitialization
   skybox->boxRenderCache = vulkan_render_cache_create();
   skybox->boxRenderCache->primitive = core_alloc(sizeof(vulkan_asset_primitive));
   vulkan_asset_primitive_init(skybox->boxRenderCache->primitive, NULL);
@@ -86,10 +85,17 @@ vulkan_pipeline_skybox_state_create(vulkan_render_state *renderState) {
   skybox->boxRenderCache->primitive->texCoords = core_alloc(sizeof(vulkan_asset_vertex_attribute));
   vulkan_asset_vertex_attribute_init(skybox->boxRenderCache->primitive->texCoords, NULL);
 
-  vulkan_vertex_stream_add_other(skybox->renderState->vertexStream, skybox->boxRenderCache);
+  vulkan_vertex_stream_element vertexStreamElement = vulkan_vertex_stream_add_geometry(
+      skybox->renderState->vertexStream, skybox->boxRenderCache->primitive->vertexCount,
+      skybox->boxRenderCache->primitive->indices->data,
+      skybox->boxRenderCache->primitive->positions->data,
+      skybox->boxRenderCache->primitive->normals->data,
+      skybox->boxRenderCache->primitive->colors->data,
+      skybox->boxRenderCache->primitive->texCoords->data);
+  vulkan_render_cache_set_vertex_stream_offsets(skybox->boxRenderCache,
+                                                vertexStreamElement.firstIndexOffset,
+                                                vertexStreamElement.firstVertexOffset);
 
-  vulkan_render_cache_list_add_other_render_cache(skybox->renderState->renderCacheList,
-                                                  skybox->boxRenderCache);
   return skybox;
 }
 

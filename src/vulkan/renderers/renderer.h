@@ -6,8 +6,6 @@
 #include "../scene/graph.h"
 #include "render_state.h"
 
-// HIRO HIRO Refactor move renderer and render_state to vulkan/renderer/
-
 /// Creates and destroys Vulkan objects used to draw scene described by scene graph.
 /// Maintains chaining of different pipelines.
 typedef struct vulkan_renderer {
@@ -34,6 +32,11 @@ void vulkan_renderer_destroy(vulkan_renderer *renderer);
 void vulkan_renderer_recreate_swap_chain(vulkan_renderer *renderer);
 
 void vulkan_renderer_update(vulkan_renderer *renderer);
+
+void vulkan_renderer_update_global_uniform_buffer_callback(
+    void *data, size_t currentFrameInFlight, vulkan_global_uniform_buffer_data *globalData,
+    vulkan_materials_uniform_buffer_data *materialsData,
+    vulkan_instances_uniform_buffer_data *instancesData);
 
 void vulkan_renderer_send_to_device(vulkan_renderer *renderer);
 

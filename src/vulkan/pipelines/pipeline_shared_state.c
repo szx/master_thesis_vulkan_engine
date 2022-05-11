@@ -70,21 +70,6 @@ void vulkan_pipeline_shared_state_update(vulkan_pipeline_shared_state *pipelineS
   }
 }
 
-void vulkan_pipeline_shared_state_update_global_uniform_buffer_callback(
-    void *data, vulkan_global_uniform_buffer_element *global) {
-
-  vulkan_pipeline_shared_state *pipelineSharedState = data;
-  vulkan_pipeline_camera_state_set_view_matrix(pipelineSharedState->camera, global->viewMat);
-  vulkan_pipeline_camera_state_set_projection_matrix(pipelineSharedState->camera, global->projMat);
-
-  vulkan_pipeline_light_state_set_directional_light_elements(
-      pipelineSharedState->lights, &global->directionalLightCount, global->directionalLights);
-  vulkan_pipeline_light_state_set_point_light_elements(
-      pipelineSharedState->lights, &global->pointLightCount, global->pointLights);
-
-  vulkan_pipeline_skybox_state_set_skybox_elements(pipelineSharedState->skybox, &global->skybox);
-}
-
 void vulkan_pipeline_shared_state_debug_print(vulkan_pipeline_shared_state *pipelineSharedState,
                                               int indent) {
   log_debug(INDENT_FORMAT_STRING "shared state:", INDENT_FORMAT_ARGS(0));

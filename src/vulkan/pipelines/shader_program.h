@@ -2,6 +2,7 @@
 #pragma once
 
 #include "shader_generator.h"
+// HIRO refactor rename to vulkan_pipeline_shader_state
 
 /// Creates all shaders for all shader stages of the pipeline.
 typedef struct vulkan_shader_program {
