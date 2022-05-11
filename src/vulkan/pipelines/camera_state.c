@@ -7,9 +7,7 @@ vulkan_pipeline_camera_state_create(vulkan_render_state *renderState) {
   camera->renderState = renderState;
 
   camera->defaultCameraRenderCache = vulkan_render_cache_create(NULL);
-  vulkan_render_cache_list_add_camera_render_cache(camera->renderState->renderCacheList,
-                                                   camera->defaultCameraRenderCache);
-
+  // NOTE: Do not add this camera cache to render cache list (swap chain reinitialization).
   camera->cameraIdx = 0;
   vulkan_pipeline_camera_state_select(camera, camera->cameraIdx);
 
@@ -19,6 +17,10 @@ vulkan_pipeline_camera_state_create(vulkan_render_state *renderState) {
 void vulkan_pipeline_camera_state_destroy(vulkan_pipeline_camera_state *camera) {
   vulkan_render_cache_destroy(camera->defaultCameraRenderCache);
   core_free(camera);
+}
+
+void vulkan_pipeline_camera_state_reinit_with_new_swap_chain(vulkan_pipeline_camera_state *camera) {
+  // No-op.
 }
 
 void reset_default_camera(vulkan_pipeline_camera_state *camera, vec3 distance) {
@@ -127,16 +129,17 @@ void vulkan_pipeline_camera_state_update(vulkan_pipeline_camera_state *camera) {
 }
 
 void vulkan_pipeline_camera_state_select(vulkan_pipeline_camera_state *camera, size_t cameraIdx) {
-  assert(utarray_len(camera->renderState->renderCacheList->cameraRenderCaches) > 0);
+  size_t cameraCount = 1 + utarray_len(camera->renderState->renderCacheList->cameraRenderCaches);
+  camera->cameraIdx = cameraIdx % cameraCount;
 
-  camera->cameraIdx =
-      cameraIdx % utarray_len(camera->renderState->renderCacheList->cameraRenderCaches);
-  log_debug("selecting camera %zu", camera->cameraIdx);
-
-  assert(utarray_len(camera->renderState->renderCacheList->cameraRenderCaches) > 0);
-  assert(camera->cameraIdx < utarray_len(camera->renderState->renderCacheList->cameraRenderCaches));
-  camera->cameraRenderCache = *(vulkan_render_cache **)utarray_eltptr(
-      camera->renderState->renderCacheList->cameraRenderCaches, camera->cameraIdx);
+  if (camera->cameraIdx == 0) {
+    log_debug("selecting default camera %zu", camera->cameraIdx);
+    camera->cameraRenderCache = camera->defaultCameraRenderCache;
+  } else {
+    log_debug("selecting camera %zu", camera->cameraIdx);
+    camera->cameraRenderCache = *(vulkan_render_cache **)utarray_eltptr(
+        camera->renderState->renderCacheList->cameraRenderCaches, camera->cameraIdx - 1);
+  }
 
   vulkan_pipeline_camera_state_reset(camera);
 }

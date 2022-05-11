@@ -29,8 +29,9 @@ void vulkan_pipeline_shared_state_init(vulkan_pipeline_shared_state *pipelineSha
       pipelineSharedState->renderState->renderCacheList, pipelineSharedState->renderState->vkd);
 
   pipelineSharedState->depthBufferImage = vulkan_image_create(
-      renderState->vkd, vulkan_image_type_depth_buffer, renderState->vks->swapChainExtent.width,
-      renderState->vks->swapChainExtent.height, VK_FORMAT_UNDEFINED);
+      pipelineSharedState->renderState->vkd, vulkan_image_type_depth_buffer,
+      pipelineSharedState->renderState->vks->swapChainExtent.width,
+      pipelineSharedState->renderState->vks->swapChainExtent.height, VK_FORMAT_UNDEFINED);
 }
 
 void vulkan_pipeline_shared_state_deinit(vulkan_pipeline_shared_state *pipelineSharedState) {
@@ -40,6 +41,20 @@ void vulkan_pipeline_shared_state_deinit(vulkan_pipeline_shared_state *pipelineS
   vulkan_pipeline_camera_state_destroy(pipelineSharedState->camera);
 
   vulkan_image_destroy(pipelineSharedState->depthBufferImage);
+}
+
+void vulkan_pipeline_shared_state_reinit_with_new_swap_chain(
+    vulkan_pipeline_shared_state *pipelineSharedState) {
+
+  vulkan_pipeline_skybox_state_reinit_with_new_swap_chain(pipelineSharedState->skybox);
+  vulkan_pipeline_light_state_reinit_with_new_swap_chain(pipelineSharedState->lights);
+  vulkan_pipeline_camera_state_reinit_with_new_swap_chain(pipelineSharedState->camera);
+
+  vulkan_image_destroy(pipelineSharedState->depthBufferImage);
+  pipelineSharedState->depthBufferImage = vulkan_image_create(
+      pipelineSharedState->renderState->vkd, vulkan_image_type_depth_buffer,
+      pipelineSharedState->renderState->vks->swapChainExtent.width,
+      pipelineSharedState->renderState->vks->swapChainExtent.height, VK_FORMAT_UNDEFINED);
 }
 
 void vulkan_pipeline_shared_state_update(vulkan_pipeline_shared_state *pipelineSharedState,

@@ -14,6 +14,8 @@
 // HIRO Refactor remove typedef
 typedef struct vulkan_textures_material_element vulkan_textures_material_element;
 
+// HIRO refactor split into multiple types
+// HIRO add key to prevent multiple adding in vulkan_render_cache_list
 typedef struct vulkan_render_cache {
   /* cache state accumulated from scene tree */
   size_t distanceFromRoot;

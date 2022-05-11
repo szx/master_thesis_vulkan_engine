@@ -12,6 +12,8 @@
 #include "render_cache.h"
 
 // HIRO Refactor rename to vulkan_renderer_cache
+// HIRO Refactor split vulkan_render_cache into multiple types (primitive, camera, other)
+// HIRO Refactor sort pointers to render caches in batches (allows transparent/opaque batches)
 typedef struct vulkan_render_cache_list {
   /* primitive render caches accumulated from scene tree */
   size_t maxPrimitiveRenderCacheCount; ///< Max number of render caches.
@@ -23,8 +25,11 @@ typedef struct vulkan_render_cache_list {
   /* camera render caches accumulated from scene tree */
   UT_array *cameraRenderCaches; ///< vulkan_render_cache* array of camera scene node caches.
 
+  /* primitive render caches accumulated from pipeline shared data (boxes, UI, etc.) */
+  UT_array *otherRenderCaches; ///< vulkan_render_cache* array of render caches.
+  bool otherRenderCachesDirty; ///< True if added cache to otherRenderCaches
+
   /* additional state accumulated from scene data */
-  // HIRO HIRO Refactor replace with skyboxRenderCache
   vulkan_asset_skybox *skybox;
 
 } vulkan_render_cache_list;
@@ -46,6 +51,9 @@ void vulkan_render_cache_list_update_textures(vulkan_render_cache_list *renderCa
 
 void vulkan_render_cache_list_add_camera_render_cache(vulkan_render_cache_list *renderCacheList,
                                                       vulkan_render_cache *cameraRenderCache);
+
+void vulkan_render_cache_list_add_other_render_cache(vulkan_render_cache_list *renderCacheList,
+                                                     vulkan_render_cache *otherRenderCache);
 
 void vulkan_render_cache_list_add_skybox(vulkan_render_cache_list *renderCacheList,
                                          vulkan_asset_skybox *skybox);

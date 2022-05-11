@@ -344,10 +344,9 @@ void vulkan_pipeline_impl_skybox_record_render_pass(vulkan_pipeline *pipeline,
                      sizeof(drawPushConstant), &drawPushConstant);
 
   // Draw cube.
-  uint32_t indexOffset =
-      pipeline->pipelineSharedState->skybox->boxVertexStreamElement.firstIndexOffset;
-  uint32_t vertexOffset =
-      pipeline->pipelineSharedState->skybox->boxVertexStreamElement.firstVertexOffset;
+  // HIRO HIRO functions to CmdDraw single render cache without batching
+  uint32_t indexOffset = pipeline->pipelineSharedState->skybox->boxRenderCache->firstIndexOffset;
+  uint32_t vertexOffset = pipeline->pipelineSharedState->skybox->boxRenderCache->firstVertexOffset;
   vkCmdDrawIndexed(commandBuffer, 36, 1, indexOffset, vertexOffset, 0);
 
   vkCmdEndRenderPass(commandBuffer);

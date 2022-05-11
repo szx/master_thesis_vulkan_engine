@@ -83,13 +83,14 @@ void vulkan_renderer_recreate_swap_chain(vulkan_renderer *renderer) {
     vulkan_pipeline_deinit(pipeline);
   }
 
-  vulkan_pipeline_shared_state_deinit(renderer->pipelineSharedState);
+  // vulkan_pipeline_shared_state_deinit(renderer->pipelineSharedState);
 
   vulkan_swap_chain_deinit(renderer->vks);
 
   vulkan_swap_chain_init(renderer->vks, renderer->vkd);
 
-  vulkan_pipeline_shared_state_init(renderer->pipelineSharedState, renderer->renderState);
+  // vulkan_pipeline_shared_state_init(renderer->pipelineSharedState, renderer->renderState);
+  vulkan_pipeline_shared_state_reinit_with_new_swap_chain(renderer->pipelineSharedState);
 
   utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
     vulkan_pipeline_init_start(pipeline, pipeline->type, renderer->vks, renderer->renderState,

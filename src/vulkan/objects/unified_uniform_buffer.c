@@ -42,7 +42,6 @@ void vulkan_unified_uniform_buffer_update(
     vulkan_sync *sync, vulkan_unified_uniform_buffer_update_func updateGlobalUniformBufferFunc,
     void *updateGlobalUniformBufferFuncData) {
   assert(utarray_len(renderCacheList->primitiveRenderCaches) > 0);
-  assert(utarray_len(renderCacheList->cameraRenderCaches) > 0);
 
   // global
   vulkan_global_uniform_buffer_element *global = vulkan_global_uniform_buffer_data_get_element(

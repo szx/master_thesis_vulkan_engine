@@ -28,6 +28,7 @@ typedef struct vulkan_pipeline_camera_state {
 
 vulkan_pipeline_camera_state *vulkan_pipeline_camera_state_create(vulkan_render_state *renderState);
 void vulkan_pipeline_camera_state_destroy(vulkan_pipeline_camera_state *camera);
+void vulkan_pipeline_camera_state_reinit_with_new_swap_chain(vulkan_pipeline_camera_state *camera);
 
 void vulkan_pipeline_camera_state_reset(vulkan_pipeline_camera_state *camera);
 

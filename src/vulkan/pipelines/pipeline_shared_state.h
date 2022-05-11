@@ -34,6 +34,8 @@ void vulkan_pipeline_shared_state_destroy(vulkan_pipeline_shared_state *pipeline
 void vulkan_pipeline_shared_state_init(vulkan_pipeline_shared_state *pipelineSharedState,
                                        vulkan_render_state *renderState);
 void vulkan_pipeline_shared_state_deinit(vulkan_pipeline_shared_state *pipelineSharedState);
+void vulkan_pipeline_shared_state_reinit_with_new_swap_chain(
+    vulkan_pipeline_shared_state *pipelineSharedState);
 
 void vulkan_pipeline_shared_state_update(vulkan_pipeline_shared_state *pipelineSharedState,
                                          vulkan_batch_instancing_policy instancingPolicy);

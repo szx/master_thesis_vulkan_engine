@@ -146,6 +146,33 @@ void vulkan_vertex_stream_add_primitive(vulkan_vertex_stream *stream,
                                                 vertexStreamElement.firstVertexOffset);
 }
 
+void vulkan_vertex_stream_add_other(vulkan_vertex_stream *stream,
+                                    vulkan_render_cache *renderCache) {
+  assert(renderCache->primitive);
+  renderCache->primitive->key = vulkan_asset_primitive_calculate_key(renderCache->primitive);
+  utarray_foreach_elem_deref (vulkan_render_cache *, otherRenderCache,
+                              stream->renderCacheList->otherRenderCaches) {
+    if (otherRenderCache->primitive->key.value == renderCache->primitive->key.value) {
+      size_t firstIndexOffset = otherRenderCache->firstIndexOffset;
+      size_t firstVertexOffset = otherRenderCache->firstVertexOffset;
+      vulkan_render_cache_set_vertex_stream_offsets(renderCache, firstIndexOffset,
+                                                    firstVertexOffset);
+      return;
+    }
+  }
+
+  vulkan_asset_primitive *primitive = renderCache->primitive;
+  assert(primitive->indices->componentType == vulkan_asset_vertex_attribute_component_uint32_t);
+
+  vulkan_vertex_stream_element vertexStreamElement = vulkan_vertex_stream_add_geometry(
+      stream, primitive->vertexCount, primitive->indices->data, primitive->positions->data,
+      primitive->normals->data, primitive->colors->data, primitive->texCoords->data);
+
+  assert(vertexStreamElement.attributes <= stream->renderCacheList->attributes);
+  vulkan_render_cache_set_vertex_stream_offsets(renderCache, vertexStreamElement.firstIndexOffset,
+                                                vertexStreamElement.firstVertexOffset);
+}
+
 uint32_t vulkan_vertex_stream_get_vertex_buffer_binding_count(vulkan_vertex_stream *stream) {
   return 1;
 }

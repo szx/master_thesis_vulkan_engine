@@ -12,12 +12,16 @@ vulkan_render_cache_list *vulkan_render_cache_list_create(size_t maxPrimitiveRen
 
   utarray_alloc(renderCacheList->cameraRenderCaches, sizeof(vulkan_render_cache *));
 
+  utarray_alloc(renderCacheList->otherRenderCaches, sizeof(vulkan_render_cache *));
+  renderCacheList->otherRenderCachesDirty = false;
+
   renderCacheList->skybox = NULL;
 
   return renderCacheList;
 }
 
 void vulkan_render_cache_list_destroy(vulkan_render_cache_list *renderCacheList) {
+  utarray_free(renderCacheList->otherRenderCaches);
   utarray_free(renderCacheList->cameraRenderCaches);
   utarray_free(renderCacheList->primitiveRenderCaches);
   core_free(renderCacheList);
@@ -28,6 +32,7 @@ void vulkan_render_cache_list_add_primitive_render_cache(
   assert(primitiveRenderCache->primitive != NULL);
   verify(utarray_len(renderCacheList->primitiveRenderCaches) <
          renderCacheList->maxPrimitiveRenderCacheCount);
+
   utarray_push_back(renderCacheList->primitiveRenderCaches, &primitiveRenderCache);
 
   renderCacheList->primitiveRenderCachesSorted = false;
@@ -109,6 +114,15 @@ void vulkan_render_cache_list_calculate_aabb_for_primitive_render_caches(
 void vulkan_render_cache_list_add_camera_render_cache(vulkan_render_cache_list *renderCacheList,
                                                       vulkan_render_cache *cameraRenderCache) {
   utarray_push_back(renderCacheList->cameraRenderCaches, &cameraRenderCache);
+}
+
+void vulkan_render_cache_list_add_other_render_cache(vulkan_render_cache_list *renderCacheList,
+                                                     vulkan_render_cache *otherRenderCache) {
+  assert(otherRenderCache->primitive != NULL);
+
+  utarray_push_back(renderCacheList->otherRenderCaches, &otherRenderCache);
+
+  renderCacheList->otherRenderCachesDirty = true;
 }
 
 void vulkan_render_cache_list_add_skybox(vulkan_render_cache_list *renderCacheList,
