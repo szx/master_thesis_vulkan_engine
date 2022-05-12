@@ -100,9 +100,7 @@ void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_instancing_poli
 
   vulkan_batches_reset(batches);
 
-  dl_count(vulkan_renderer_cache_primitive_element *, batches->rendererCache->primitiveElements,
-           primitiveElementCount);
-  assert(primitiveElementCount > 0);
+  assert(dl_count(batches->rendererCache->primitiveElements) > 0);
 
   vulkan_renderer_cache_primitive_element *lastPrimitiveElement = NULL;
   vulkan_batch *lastBatch = NULL;
@@ -136,7 +134,7 @@ void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_instancing_poli
 
 void vulkan_batches_record_draw_command(vulkan_batches *batches, VkCommandBuffer commandBuffer,
                                         vulkan_batches_data *batchesData) {
-  dl_count(vulkan_batch *, batches->batches, drawCommandCount);
+  size_t drawCommandCount = dl_count(batches->batches);
   verify(drawCommandCount <= batches->vkd->limits.maxDrawIndirectCommands);
   if (drawCommandCount == 0) {
     return;
@@ -158,7 +156,6 @@ void vulkan_batches_record_draw_command(vulkan_batches *batches, VkCommandBuffer
 
 void vulkan_batches_debug_print(vulkan_batches *batches) {
   log_debug("BATCHES:");
-  dl_count(vulkan_batch *, batches->batches, batchLen);
-  log_debug("batch count: %zu", batchLen);
+  log_debug("batch count: %zu", dl_count(batches->batches));
   dl_foreach_elem(vulkan_batch *, batch, batches->batches) { vulkan_batch_debug_print(batch); }
 }

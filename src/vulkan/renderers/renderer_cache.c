@@ -11,14 +11,20 @@ vulkan_renderer_cache *vulkan_renderer_cache_create(size_t maxPrimitiveElementCo
   rendererCache->attributes = vulkan_attribute_type_unknown;
   rendererCache->aabb = vulkan_aabb_default();
 
+  rendererCache->primitiveElements = NULL;
   rendererCache->cameraElements = NULL;
 
+  // HIRO refactor default camera from scene data
+  rendererCache->defaultCamera = core_alloc(sizeof(vulkan_asset_camera));
+  vulkan_asset_camera_init(rendererCache->defaultCamera, NULL);
   rendererCache->skybox = NULL;
 
   return rendererCache;
 }
 
 void vulkan_renderer_cache_destroy(vulkan_renderer_cache *rendererCache) {
+  vulkan_asset_camera_deinit(rendererCache->defaultCamera);
+  core_free(rendererCache->defaultCamera);
 
   dl_foreach_elem(vulkan_renderer_cache_camera_element *, element, rendererCache->cameraElements) {
     vulkan_renderer_cache_camera_element_destroy(element);
@@ -36,10 +42,9 @@ void vulkan_renderer_cache_add_primitive_element(
     vulkan_renderer_cache *rendererCache,
     vulkan_renderer_cache_primitive_element *primitiveElement) {
 
+  assert(primitiveElement != NULL);
   assert(primitiveElement->primitive != NULL);
-  dl_count(vulkan_renderer_cache_primitive_element *, rendererCache->primitiveElements,
-           primitiveElementCount);
-  verify(primitiveElementCount < rendererCache->maxPrimitiveElementCount);
+  verify(dl_count(rendererCache->primitiveElements) < rendererCache->maxPrimitiveElementCount);
 
   DL_APPEND(rendererCache->primitiveElements, primitiveElement);
 

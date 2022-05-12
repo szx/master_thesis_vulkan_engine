@@ -37,3 +37,29 @@ size_t count_bits(size_t bits) {
   }
   return count;
 }
+
+size_t _dl_count(size_t offsetofNext, void *dl) {
+  void *it = dl;
+  size_t count = 0;
+  while (it != NULL) {
+    count++;
+    char *ptr = (char *)it + offsetofNext;
+    it = *(void **)(ptr);
+  }
+  return count;
+}
+
+void *_dl_elt(size_t offsetofNext, void *dl, size_t i) {
+  void *it = dl;
+  size_t count = 0;
+  while (it != NULL) {
+    if (count == i) {
+      return it;
+    }
+    count++;
+    char *ptr = (char *)it + offsetofNext;
+    it = *(void **)(ptr);
+  }
+  assert(0);
+  return NULL;
+}

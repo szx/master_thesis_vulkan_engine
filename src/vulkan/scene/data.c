@@ -562,6 +562,7 @@ VULKAN_ASSET_FIELD_DEFS_FUNCS(material, materials)
 VULKAN_ASSET_FIELD_DEFS_FUNCS(vertex_attribute, vertexAttributes)
 VULKAN_ASSET_FIELD_DEFS_FUNCS(primitive, primitives)
 VULKAN_ASSET_FIELD_DEFS_FUNCS(object, objects)
+// VULKAN_ASSET_FIELD_DEFS_FUNCS(object, objects)
 
 #undef DEF_GET_VULKAN_ASSET_BY_KEY
 #undef DEF_ADD_VULKAN_ENTITY

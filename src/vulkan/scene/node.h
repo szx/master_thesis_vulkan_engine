@@ -46,6 +46,25 @@ void vulkan_scene_graph_node_debug_print(vulkan_scene_graph_node *sceneGraphNode
 
 /* scene tree node */
 
+typedef struct vulkan_scene_tree_node_accumulated {
+  /* accumulated from object */
+  size_t distanceFromRoot;
+  bool visible;
+  mat4 transform;
+
+  /* accumulated from primitive */
+  vulkan_asset_primitive *primitive;
+  vulkan_aabb aabb;
+
+  /* accumulated from camera */
+  vulkan_asset_camera *camera;
+} vulkan_scene_tree_node_accumulated;
+
+void vulkan_scene_tree_node_accumulated_init(vulkan_scene_tree_node_accumulated *accumulated);
+void vulkan_scene_tree_node_accumulated_deinit(vulkan_scene_tree_node_accumulated *accumulated);
+void vulkan_scene_tree_node_accumulated_debug_print(
+    vulkan_scene_tree_node_accumulated *accumulated);
+
 typedef struct vulkan_scene_tree_node {
   vulkan_scene_tree *sceneTree; ///< Pointer
 
@@ -57,8 +76,7 @@ typedef struct vulkan_scene_tree_node {
 
   struct vulkan_scene_tree_node *prev, *next; ///< List of all nodes in scene tree.
 
-  vulkan_renderer_cache_primitive_element *primitiveElement;
-  vulkan_renderer_cache_camera_element *cameraElement;
+  vulkan_scene_tree_node_accumulated accumulated;
 
   bool dirty; ///< True if scene node state changed and cache is out of sync.
 } vulkan_scene_tree_node;
@@ -74,8 +92,7 @@ void vulkan_scene_tree_node_add_parent(vulkan_scene_tree_node *sceneTreeNode,
 void vulkan_scene_tree_node_add_child(vulkan_scene_tree_node *sceneTreeNode,
                                       vulkan_scene_tree_node *childNode);
 
-void vulkan_scene_tree_node_set_renderer_cache_elements(vulkan_scene_tree_node *sceneTreeNode);
-void vulkan_scene_tree_node_accumulate_to_renderer_cache_elements_from_parent(
-    vulkan_scene_tree_node *sceneTreeNode);
+void vulkan_scene_tree_node_reset_accumulated(vulkan_scene_tree_node *sceneTreeNode);
+void vulkan_scene_tree_node_accumulate_from_parent(vulkan_scene_tree_node *sceneTreeNode);
 
 void vulkan_scene_tree_node_debug_print(vulkan_scene_tree_node *sceneTreeNode);

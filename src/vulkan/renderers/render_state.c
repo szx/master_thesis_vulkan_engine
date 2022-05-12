@@ -3,9 +3,8 @@
 vulkan_render_state *vulkan_render_state_create(
     vulkan_swap_chain *vks, vulkan_renderer_cache *rendererCache, data_config *config,
     vulkan_unified_uniform_buffer_update_func updateGlobalUniformBufferFunc) {
-  dl_count(vulkan_renderer_cache_primitive_element *, rendererCache->primitiveElements,
-           primitiveElementCount);
-  assert(primitiveElementCount > 0);
+
+  assert(dl_count(rendererCache->primitiveElements) > 0);
 
   vulkan_render_state *renderState = core_alloc(sizeof(vulkan_render_state));
 

@@ -38,12 +38,14 @@ typedef XXH64_hash_t hash_t;
 
 #define INDENT_FORMAT_STRING "%*s"
 #define INDENT_FORMAT_ARGS(_inc) (indent + _inc), ""
+#define VEC4_FORMAT_STRING() "%f %f %f %f"
+#define VEC4_FORMAT_ARGS(_prefix) _prefix[0], _prefix[1], _prefix[2], _prefix[3]
 #define MAT4_FORMAT_STRING(_separator)                                                             \
-  "%f %f %f %f" _separator "%f %f %f %f" _separator "%f %f %f %f" _separator "%f %f %f %f"
+  VEC4_FORMAT_STRING()                                                                             \
+  _separator VEC4_FORMAT_STRING() _separator VEC4_FORMAT_STRING() _separator VEC4_FORMAT_STRING()
 #define MAT4_FORMAT_ARGS(_prefix)                                                                  \
-  _prefix[0][0], _prefix[0][1], _prefix[0][2], _prefix[0][3], _prefix[1][0], _prefix[1][1],        \
-      _prefix[1][2], _prefix[1][3], _prefix[2][0], _prefix[2][1], _prefix[2][2], _prefix[2][3],    \
-      _prefix[3][0], _prefix[3][1], _prefix[3][2], _prefix[3][3]
+  VEC4_FORMAT_ARGS(_prefix[0]), VEC4_FORMAT_ARGS(_prefix[1]), VEC4_FORMAT_ARGS(_prefix[2]),        \
+      VEC4_FORMAT_ARGS(_prefix[3])
 
 /* macro magic */
 // https://embeddedartistry.com/blog/2020/07/27/exploiting-the-preprocessor-for-fun-and-profit/
@@ -92,6 +94,7 @@ typedef XXH64_hash_t hash_t;
 #define MACRO_FOREACH_16(_macro, _elem, ...) _macro(15, _elem) MACRO_FOREACH_15(_macro, __VA_ARGS__)
 
 #define is_aligned(ptr, bytes) (((uintptr_t)(const void *)(ptr)) % (bytes) == 0)
+#define TYPEOF(x) __typeof__(x)
 #define member_size(type, member) sizeof(((type *)0)->member)
 #define array_size(array) (sizeof(array) / sizeof((array)[0]))
 #define VLA(_count) ((_count) > 0 ? (_count) : 1)
@@ -125,7 +128,9 @@ typedef XXH64_hash_t hash_t;
   MACRO_DECL_AS_FOR(_elem##i, _type _elem##Temp = {0})                                             \
   DL_FOREACH_SAFE(_dl, _elem, _elem##Temp)
 
-// HIRO Refactor dl_count
-#define dl_count(_type, _dl, _count)                                                               \
-  size_t _count = 0;                                                                               \
-  dl_foreach_elem(_type, _count##Elem, _dl) { _count++; }
+// NOTE: Following linked list functions are not really speed demons.
+size_t _dl_count(size_t offsetofNext, void *dl);
+#define dl_count(_dl) _dl_count(offsetof(TYPEOF(*_dl), next), _dl)
+
+void *_dl_elt(size_t offsetofNext, void *dl, size_t i);
+#define dl_elt(_dl, _i) (TYPEOF(_dl)) _dl_elt(offsetof(TYPEOF(*_dl), next), _dl, _i)

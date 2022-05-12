@@ -6,7 +6,8 @@ vulkan_pipeline_camera_state_create(vulkan_render_state *renderState) {
 
   camera->renderState = renderState;
 
-  camera->defaultCameraElement = vulkan_renderer_cache_camera_element_create();
+  camera->defaultCameraElement = vulkan_renderer_cache_camera_element_create(
+      renderState->rendererCache->defaultCamera, GLM_MAT4_IDENTITY);
   camera->cameraIdx = 0;
   vulkan_pipeline_camera_state_select(camera, camera->cameraIdx);
 
@@ -35,9 +36,8 @@ void vulkan_pipeline_camera_state_update(vulkan_pipeline_camera_state *camera) {
 }
 
 void vulkan_pipeline_camera_state_select(vulkan_pipeline_camera_state *camera, size_t cameraIdx) {
-  dl_count(vulkan_renderer_cache_camera_element *,
-           camera->renderState->rendererCache->cameraElements, cameraElementCount);
-  size_t cameraCount = 1 + cameraElementCount;
+
+  size_t cameraCount = 1 + dl_count(camera->renderState->rendererCache->cameraElements);
   camera->cameraIdx = cameraIdx % (cameraCount);
 
   if (camera->cameraIdx == 0) {
@@ -45,12 +45,9 @@ void vulkan_pipeline_camera_state_select(vulkan_pipeline_camera_state *camera, s
     camera->cameraElement = camera->defaultCameraElement;
   } else {
     log_debug("selecting camera %zu", camera->cameraIdx);
-    // HIRO refactor fix dl_elt()
-    // camera->cameraElement = *(vulkan_renderer_cache_element **)utarray_eltptr(
-    //    camera->renderState->rendererCache->cameraElements, camera->cameraIdx - 1);
-    camera->cameraElement = camera->renderState->rendererCache->cameraElements;
+    camera->cameraElement =
+        dl_elt(camera->renderState->rendererCache->cameraElements, camera->cameraIdx - 1);
   }
-
   vulkan_pipeline_camera_state_reset(camera);
 }
 
@@ -97,8 +94,8 @@ void vulkan_pipeline_camera_state_reset(vulkan_pipeline_camera_state *camera) {
   if (extent[2] > 0) {
     // Try to fix camera clipping.
     float defaultNearZ = extent[2] / 10;
-    camera->defaultCameraElement->camera.nearZ =
-        MIN(defaultNearZ, camera->defaultCameraElement->camera.nearZ);
+    camera->defaultCameraElement->camera->nearZ =
+        MIN(defaultNearZ, camera->defaultCameraElement->camera->nearZ);
   }
 
   vec3 extentAbs;
@@ -198,7 +195,7 @@ void get_orthographic_matrix(float r, float t, float nearZ, float farZ, mat4 des
 
 void vulkan_pipeline_camera_state_set_projection_matrix(vulkan_pipeline_camera_state *camera,
                                                         mat4 projectionMatrix) {
-  vulkan_asset_camera *cameraData = &camera->cameraElement->camera;
+  vulkan_asset_camera *cameraData = camera->cameraElement->camera;
   if (cameraData->type == vulkan_camera_type_perspective) {
     float viewportAspectRatio = vulkan_swap_chain_get_aspect_ratio(camera->renderState->vks);
     get_perspective_matrix(cameraData->fovY, viewportAspectRatio, cameraData->nearZ,

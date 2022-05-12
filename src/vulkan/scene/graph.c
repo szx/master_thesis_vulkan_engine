@@ -12,8 +12,6 @@ vulkan_scene_graph *vulkan_scene_graph_create(vulkan_scene_data *data,
 
   vulkan_scene_graph_create_with_scene_data(sceneGraph, data);
 
-  vulkan_scene_graph_set_dirty(sceneGraph, sceneGraph->root);
-  vulkan_scene_tree_validate(sceneGraph->sceneTree);
 
   return sceneGraph;
 }
@@ -135,7 +133,33 @@ void vulkan_scene_graph_create_with_scene_data(vulkan_scene_graph *sceneGraph,
                                   rootChild);
   }
 
+  /* validate and accumulate */
+  vulkan_scene_graph_set_dirty(sceneGraph, sceneGraph->root);
+  vulkan_scene_tree_validate(sceneGraph->sceneTree);
+
   /* add additional state to renderer cache */
+  // PERF: Instead of iterating over every scene tree node, iterate just by leaves and camera nodes.
+  dl_foreach_elem(vulkan_scene_tree_node *, sceneTreeNode, sceneGraph->sceneTree->nodes) {
+    vulkan_scene_tree_node_accumulated *accumulated = &sceneTreeNode->accumulated;
+    if (accumulated->primitive != NULL) {
+      log_debug("adding renderer cache primitive element");
+      vulkan_renderer_cache_primitive_element *primitiveElement =
+          vulkan_renderer_cache_primitive_element_create();
+      primitiveElement->visible = accumulated->visible;
+      glm_mat4_copy(accumulated->transform, primitiveElement->transform);
+      primitiveElement->primitive = accumulated->primitive;
+      primitiveElement->aabb = accumulated->aabb;
+      vulkan_renderer_cache_add_primitive_element(sceneGraph->sceneTree->rendererCache,
+                                                  primitiveElement);
+    }
+    if (accumulated->camera != NULL) {
+      log_debug("adding renderer cache camera element");
+      vulkan_renderer_cache_camera_element *cameraElement =
+          vulkan_renderer_cache_camera_element_create(accumulated->camera, accumulated->transform);
+      vulkan_renderer_cache_add_camera_element(sceneGraph->sceneTree->rendererCache, cameraElement);
+    }
+  }
+  // HIRO refactor vulkan_renderer_cache_add_skybox_element
   vulkan_renderer_cache_add_skybox(sceneGraph->sceneTree->rendererCache, sceneData->skybox);
 
   assert(sceneGraph->root);

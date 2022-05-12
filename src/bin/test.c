@@ -157,7 +157,7 @@ void assert_graph(vulkan_scene_graph *sceneGraph) {
   }
   /* renderer cache */
   vulkan_renderer_cache *rendererCache = sceneTree->rendererCache;
-  assert(utarray_len(rendererCache->primitiveElements) == primitiveNodeNum);
+  assert(dl_count(rendererCache->primitiveElements) == primitiveNodeNum);
 }
 
 // Building scene graph.
@@ -219,11 +219,11 @@ TEST scene_graph_building() {
   rendererCache->primitiveElementsSorted = false;
   vulkan_batches_update(batches, vulkan_batch_instancing_policy_no_instancing);
   vulkan_batches_debug_print(batches);
-  dl_count(vulkan_batch *, batches->batches, batchNoInstancingLen);
+  size_t batchNoInstancingLen = dl_count(batches->batches);
 
   vulkan_batches_update(batches, vulkan_batch_instancing_policy_matching_vertex_attributes);
   vulkan_batches_debug_print(batches);
-  dl_count(vulkan_batch *, batches->batches, batchVertexAttributesLen);
+  size_t batchVertexAttributesLen = dl_count(batches->batches);
   ASSERT(batchVertexAttributesLen <= batchNoInstancingLen);
 
   vulkan_batches_destroy(batches);

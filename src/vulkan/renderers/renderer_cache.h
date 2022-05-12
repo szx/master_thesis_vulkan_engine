@@ -36,6 +36,7 @@ typedef struct vulkan_renderer_cache {
   vulkan_renderer_cache_camera_element *cameraElements;
 
   /* additional state accumulated from scene data */
+  vulkan_asset_camera *defaultCamera;
   vulkan_asset_skybox *skybox;
 
 } vulkan_renderer_cache;
