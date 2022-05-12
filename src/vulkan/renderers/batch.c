@@ -2,7 +2,7 @@
 #include "../assets/primitive.h"
 
 vulkan_batch *vulkan_batch_create(vulkan_batch_instancing_policy policy,
-                                  vulkan_render_cache *firstCache) {
+                                  vulkan_renderer_cache_primitive_element *firstCache) {
   assert(firstCache->primitive != NULL);
 
   vulkan_batch *batch = core_alloc(sizeof(vulkan_batch));
@@ -24,7 +24,8 @@ void vulkan_batch_destroy(vulkan_batch *batch) {
   core_free(batch);
 }
 
-bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_render_cache *cache) {
+bool vulkan_batch_matching_cache(vulkan_batch *batch,
+                                 vulkan_renderer_cache_primitive_element *cache) {
   if (batch->policy == vulkan_batch_instancing_policy_matching_vertex_attributes) {
     return vulkan_asset_primitive_vulkan_attributes_match(batch->firstCache->primitive,
                                                           cache->primitive);
@@ -32,7 +33,8 @@ bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_render_cache *cache
   return false;
 }
 
-void vulkan_batch_add_cache(vulkan_batch *batch, vulkan_render_cache *cache, size_t instanceId) {
+void vulkan_batch_add_cache(vulkan_batch *batch, vulkan_renderer_cache_primitive_element *cache,
+                            size_t instanceId) {
   cache->instanceId = instanceId;
   batch->drawCommand.instanceCount++;
 }
@@ -93,34 +95,39 @@ void vulkan_batches_reset(vulkan_batches *batches) {
 void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_instancing_policy policy) {
   // sort renderer cache elements and update attributes
   // HIRO Refactor do not sort directly in renderer cache, maintain separate list
-  vulkan_renderer_cache_sort_primitive_render_caches(batches->rendererCache);
-  assert(batches->rendererCache->primitiveRenderCachesSorted);
+  vulkan_renderer_cache_sort_primitive_elements(batches->rendererCache);
+  assert(batches->rendererCache->primitiveElementsSorted);
 
   vulkan_batches_reset(batches);
 
-  assert(utarray_len(batches->rendererCache->primitiveRenderCaches) > 0);
-  vulkan_render_cache *lastCache = NULL;
+  dl_count(vulkan_renderer_cache_primitive_element *, batches->rendererCache->primitiveElements,
+           primitiveElementCount);
+  assert(primitiveElementCount > 0);
+
+  vulkan_renderer_cache_primitive_element *lastPrimitiveElement = NULL;
   vulkan_batch *lastBatch = NULL;
   size_t instanceId = 0;
-  utarray_foreach_elem_deref (vulkan_render_cache *, cache,
-                              batches->rendererCache->primitiveRenderCaches) {
-    if (!cache->visible) {
+
+  // HIRO refactor batches to separate list of primitive elements
+  dl_foreach_elem(vulkan_renderer_cache_primitive_element *, primitiveElement,
+                  batches->rendererCache->primitiveElements) {
+    if (!primitiveElement->visible) {
       continue;
     }
 
-    if (lastCache == NULL) {
-      lastCache = cache;
+    if (lastPrimitiveElement == NULL) {
+      lastPrimitiveElement = primitiveElement;
     }
 
-    if (lastBatch == NULL || !vulkan_batch_matching_cache(lastBatch, cache)) {
-      vulkan_batch *newBatch = vulkan_batch_create(policy, cache);
-      vulkan_batch_add_cache(newBatch, cache, instanceId);
+    if (lastBatch == NULL || !vulkan_batch_matching_cache(lastBatch, primitiveElement)) {
+      vulkan_batch *newBatch = vulkan_batch_create(policy, primitiveElement);
+      vulkan_batch_add_cache(newBatch, primitiveElement, instanceId);
 
       DL_APPEND(batches->batches, newBatch);
-      lastCache = cache;
+      lastPrimitiveElement = primitiveElement;
       lastBatch = newBatch;
     } else {
-      vulkan_batch_add_cache(lastBatch, cache, instanceId);
+      vulkan_batch_add_cache(lastBatch, primitiveElement, instanceId);
     }
 
     instanceId++;

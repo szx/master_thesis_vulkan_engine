@@ -19,7 +19,7 @@ typedef struct vulkan_unified_uniform_buffer {
 } vulkan_unified_uniform_buffer;
 
 vulkan_unified_uniform_buffer *
-vulkan_unified_uniform_buffer_create(vulkan_device *vkd, size_t maxPrimitiveRenderCacheCount);
+vulkan_unified_uniform_buffer_create(vulkan_device *vkd, size_t maxPrimitiveElementCount);
 void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *uniformBuffer);
 
 typedef void (*vulkan_unified_uniform_buffer_update_func)(

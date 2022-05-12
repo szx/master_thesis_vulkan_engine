@@ -157,7 +157,7 @@ void assert_graph(vulkan_scene_graph *sceneGraph) {
   }
   /* renderer cache */
   vulkan_renderer_cache *rendererCache = sceneTree->rendererCache;
-  assert(utarray_len(rendererCache->primitiveRenderCaches) == primitiveNodeNum);
+  assert(utarray_len(rendererCache->primitiveElements) == primitiveNodeNum);
 }
 
 // Building scene graph.
@@ -171,7 +171,7 @@ TEST scene_graph_building() {
   vulkan_scene_data *assetDbSceneData = vulkan_scene_data_create_with_asset_db(assetDb, sceneName);
   // vulkan_scene_data_debug_print(assetDbSceneData);
   vulkan_renderer_cache *rendererCache =
-      vulkan_renderer_cache_create(config->asset.graphicsMaxPrimitiveRenderCacheCount);
+      vulkan_renderer_cache_create(config->asset.graphicsMaxPrimitiveElementCount);
 
   vulkan_scene_graph *sceneGraph = vulkan_scene_graph_create(assetDbSceneData, rendererCache);
 
@@ -216,7 +216,7 @@ TEST scene_graph_building() {
   log_info("Test batching.");
   vulkan_batches *batches = vulkan_batches_create(rendererCache, vkd);
 
-  rendererCache->primitiveRenderCachesSorted = false;
+  rendererCache->primitiveElementsSorted = false;
   vulkan_batches_update(batches, vulkan_batch_instancing_policy_no_instancing);
   vulkan_batches_debug_print(batches);
   dl_count(vulkan_batch *, batches->batches, batchNoInstancingLen);

@@ -35,12 +35,13 @@ vulkan_scene_tree_node *vulkan_scene_tree_add_node(vulkan_scene_tree *sceneTree,
   vulkan_scene_graph_node_add_observer(sceneGraphNode, sceneTreeNode);
 
   if (sceneTreeNode->primitive != NULL) {
-    vulkan_renderer_cache_add_primitive_render_cache(sceneTree->rendererCache,
-                                                     sceneTreeNode->renderCache);
+    // HIRO refactor scene tree node primitiveElement can be NULL
+    vulkan_renderer_cache_add_primitive_element(sceneTree->rendererCache,
+                                                sceneTreeNode->primitiveElement);
   }
   if (sceneTreeNode->object != NULL && sceneTreeNode->object->camera != NULL) {
-    vulkan_renderer_cache_add_camera_render_cache(sceneTree->rendererCache,
-                                                  sceneTreeNode->renderCache);
+    vulkan_renderer_cache_add_camera_element(sceneTree->rendererCache,
+                                             sceneTreeNode->cameraElement);
   }
 
   vulkan_scene_tree_node_add_child(parentSceneTreeNode, sceneTreeNode);
@@ -60,8 +61,8 @@ void vulkan_scene_tree_set_dirty(vulkan_scene_tree *sceneTree,
                                  vulkan_scene_tree_node *sceneTreeNode) {
   if (!sceneTreeNode->dirty) {
     sceneTreeNode->dirty = true;
-    // Update render cache with dirty tree node.
-    vulkan_scene_tree_node_set_render_cache(sceneTreeNode, sceneTreeNode->renderCache);
+    // Update renderer cache elements with dirty tree node.
+    vulkan_scene_tree_node_set_renderer_cache_elements(sceneTreeNode);
     utarray_push_back(sceneTree->dirtyNodes, &sceneTreeNode);
   }
 }
@@ -86,7 +87,7 @@ void validate_node(vulkan_scene_tree_node *node) {
   }
 
   if (node->parentNode != NULL) {
-    vulkan_scene_tree_node_accumulate_to_render_cache(node->parentNode, node->renderCache);
+    vulkan_scene_tree_node_accumulate_to_renderer_cache_elements_from_parent(node);
   }
 
   utarray_foreach_elem_deref (vulkan_scene_tree_node *, childNode, node->childNodes) {

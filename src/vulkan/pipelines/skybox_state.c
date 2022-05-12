@@ -14,7 +14,7 @@ vulkan_pipeline_skybox_state_create(vulkan_render_state *renderState) {
   // HIRO HIRO HIRO HIRO Refactor manual adding of geometry (after refactoring renderer_cache).
   // HIRO Refactor move boxVertexStreamElement to render state
 
-  skybox->boxRenderCache = vulkan_render_cache_create();
+  skybox->boxRenderCache = vulkan_renderer_cache_primitive_element_create();
   skybox->boxRenderCache->primitive = core_alloc(sizeof(vulkan_asset_primitive));
   vulkan_asset_primitive_init(skybox->boxRenderCache->primitive, NULL);
 

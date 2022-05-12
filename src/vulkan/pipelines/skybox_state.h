@@ -11,7 +11,7 @@ typedef struct vulkan_pipeline_skybox_state {
   vulkan_textures_texture_element *cubemapTextureElement;
   vulkan_textures_texture_element *cubemapTexture;
   float ambientIntensity;
-  vulkan_render_cache *boxRenderCache;
+  vulkan_renderer_cache_primitive_element *boxRenderCache;
 
 } vulkan_pipeline_skybox_state;
 

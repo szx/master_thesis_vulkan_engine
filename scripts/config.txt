@@ -8,7 +8,7 @@ graphics.WindowWidth = 640
 graphics.WindowHeight = 480
 graphics.WindowTitle = "cpptest"
 graphics.EnabledInstancing = 1
-graphics.MaxPrimitiveRenderCacheCount = 1000
+graphics.MaxPrimitiveElementCount = 1000
 controls.Enabled = 1
 settings.StartScene = "MetalRoughSpheresNoTextures"
 

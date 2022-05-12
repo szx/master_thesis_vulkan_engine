@@ -11,8 +11,8 @@ typedef struct vulkan_pipeline_camera_state {
   vulkan_render_state *renderState; ///< Pointer.
 
   size_t cameraIdx;
-  vulkan_render_cache *cameraRenderCache; ///< Pointer.
-  vulkan_render_cache *defaultCameraRenderCache;
+  vulkan_renderer_cache_camera_element *cameraElement; ///< Pointer.
+  vulkan_renderer_cache_camera_element *defaultCameraElement;
 
   struct {
     float moveSpeed;

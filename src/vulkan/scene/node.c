@@ -82,15 +82,19 @@ vulkan_scene_tree_node *vulkan_scene_tree_node_create(vulkan_scene_tree *sceneTr
   sceneTreeNode->prev = NULL;
   sceneTreeNode->next = NULL;
 
-  sceneTreeNode->renderCache = vulkan_render_cache_create();
-  vulkan_scene_tree_node_set_render_cache(sceneTreeNode, sceneTreeNode->renderCache);
+  // HIRO refactor elements should be NULL by default, created as needed
+  sceneTreeNode->primitiveElement = vulkan_renderer_cache_primitive_element_create();
+  sceneTreeNode->cameraElement = vulkan_renderer_cache_camera_element_create();
+
+  vulkan_scene_tree_node_set_renderer_cache_elements(sceneTreeNode);
   sceneTreeNode->dirty = false;
 
   return sceneTreeNode;
 }
 
 void vulkan_scene_tree_node_destroy(vulkan_scene_tree_node *sceneTreeNode) {
-  vulkan_render_cache_destroy(sceneTreeNode->renderCache);
+  vulkan_renderer_cache_primitive_element_destroy(sceneTreeNode->primitiveElement);
+  vulkan_renderer_cache_camera_element_destroy(sceneTreeNode->cameraElement);
   utarray_free(sceneTreeNode->childNodes);
   core_free(sceneTreeNode);
 }
@@ -106,48 +110,63 @@ void vulkan_scene_tree_node_add_child(vulkan_scene_tree_node *sceneTreeNode,
   utarray_push_back(sceneTreeNode->childNodes, &childNode);
 }
 
-void vulkan_scene_tree_node_set_render_cache(vulkan_scene_tree_node *sceneTreeNode,
-                                             vulkan_render_cache *renderCache) {
-  vulkan_render_cache_reset(renderCache);
+void vulkan_scene_tree_node_set_renderer_cache_elements(vulkan_scene_tree_node *sceneTreeNode) {
+  vulkan_renderer_cache_primitive_element_reset(sceneTreeNode->primitiveElement);
+
   assert(sceneTreeNode != NULL);
 
   if (sceneTreeNode->object != NULL) {
-    glm_mat4_copy(sceneTreeNode->object->transform, renderCache->transform);
-    renderCache->mesh = sceneTreeNode->object->mesh;
+    glm_mat4_copy(sceneTreeNode->object->transform, sceneTreeNode->primitiveElement->transform);
+    sceneTreeNode->primitiveElement->mesh = sceneTreeNode->object->mesh;
     if (sceneTreeNode->object->camera) {
-      vulkan_asset_camera_copy(&renderCache->camera, sceneTreeNode->object->camera);
+      vulkan_asset_camera_copy(&sceneTreeNode->cameraElement->camera,
+                               sceneTreeNode->object->camera);
+      glm_mat4_copy(sceneTreeNode->primitiveElement->transform,
+                    sceneTreeNode->cameraElement->transform);
     } else {
-      vulkan_asset_camera_init(&renderCache->camera, NULL);
+      vulkan_asset_camera_init(&sceneTreeNode->cameraElement->camera, NULL);
+      glm_mat4_copy(sceneTreeNode->primitiveElement->transform,
+                    sceneTreeNode->cameraElement->transform);
     }
   }
 
   if (sceneTreeNode->primitive != NULL) {
-    renderCache->primitive = sceneTreeNode->primitive;
-    renderCache->aabb = vulkan_asset_primitive_calculate_aabb(renderCache->primitive);
+    sceneTreeNode->primitiveElement->primitive = sceneTreeNode->primitive;
+    sceneTreeNode->primitiveElement->aabb =
+        vulkan_asset_primitive_calculate_aabb(sceneTreeNode->primitiveElement->primitive);
   }
 }
 
-void vulkan_scene_tree_node_accumulate_to_render_cache(vulkan_scene_tree_node *parentSceneTreeNode,
-                                                       vulkan_render_cache *renderCache) {
+void vulkan_scene_tree_node_accumulate_to_renderer_cache_elements_from_parent(
+    vulkan_scene_tree_node *sceneTreeNode) {
+  vulkan_scene_tree_node *parentSceneTreeNode = sceneTreeNode->parentNode;
   assert(parentSceneTreeNode->primitive == NULL);
-  vulkan_render_cache *parentCache = parentSceneTreeNode->renderCache;
 
-  renderCache->distanceFromRoot = parentCache->distanceFromRoot + 1;
-  renderCache->visible = parentCache->visible;
+  vulkan_renderer_cache_primitive_element *primitiveElement = sceneTreeNode->primitiveElement;
+  vulkan_renderer_cache_primitive_element *parentPrimitiveElement =
+      parentSceneTreeNode->primitiveElement;
 
-  glm_mat4_mul(parentCache->transform, renderCache->transform, renderCache->transform);
-  if (parentCache->mesh != NULL) {
-    renderCache->mesh = parentCache->mesh;
+  primitiveElement->distanceFromRoot = parentPrimitiveElement->distanceFromRoot + 1;
+  primitiveElement->visible = parentPrimitiveElement->visible;
+
+  glm_mat4_mul(parentPrimitiveElement->transform, primitiveElement->transform,
+               primitiveElement->transform);
+  if (parentPrimitiveElement->mesh != NULL) {
+    primitiveElement->mesh = parentPrimitiveElement->mesh;
   }
   if (parentSceneTreeNode->object != NULL && parentSceneTreeNode->object->camera != NULL) {
-    vulkan_asset_camera_copy(&renderCache->camera, parentSceneTreeNode->object->camera);
+    vulkan_asset_camera_copy(&sceneTreeNode->cameraElement->camera,
+                             parentSceneTreeNode->object->camera);
   } else {
-    vulkan_asset_camera_copy(&renderCache->camera, &parentCache->camera);
+    vulkan_asset_camera_copy(&sceneTreeNode->cameraElement->camera,
+                             &parentSceneTreeNode->cameraElement->camera);
   }
-  if (renderCache->primitive != NULL) {
-    renderCache->aabb = vulkan_asset_primitive_calculate_aabb(renderCache->primitive);
-    glm_mat4_mulv(renderCache->transform, renderCache->aabb.min, renderCache->aabb.min);
-    glm_mat4_mulv(renderCache->transform, renderCache->aabb.max, renderCache->aabb.max);
+  if (primitiveElement->primitive != NULL) {
+    primitiveElement->aabb = vulkan_asset_primitive_calculate_aabb(primitiveElement->primitive);
+    glm_mat4_mulv(primitiveElement->transform, primitiveElement->aabb.min,
+                  primitiveElement->aabb.min);
+    glm_mat4_mulv(primitiveElement->transform, primitiveElement->aabb.max,
+                  primitiveElement->aabb.max);
   }
 }
 void debug_log_tree_node(vulkan_scene_tree_node *sceneTreeNode) {
@@ -172,7 +191,13 @@ void vulkan_scene_tree_node_debug_print(vulkan_scene_tree_node *sceneTreeNode) {
   log_raw(stdout, " { rank=same; ");
   debug_log_tree_node(sceneTreeNode);
   log_raw(stdout, " -> ");
-  vulkan_render_cache_debug_print(sceneTreeNode->renderCache);
+  vulkan_renderer_cache_primitive_element_debug_print(sceneTreeNode->primitiveElement);
+  log_raw(stdout, " } ");
+
+  log_raw(stdout, " { rank=same; ");
+  debug_log_tree_node(sceneTreeNode);
+  log_raw(stdout, " -> ");
+  vulkan_renderer_cache_camera_element_debug_print(sceneTreeNode->cameraElement);
   log_raw(stdout, " } ");
 
   utarray_foreach_elem_deref (vulkan_scene_tree_node *, childNode, sceneTreeNode->childNodes) {

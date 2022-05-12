@@ -8,9 +8,11 @@
 #include "../renderers/renderer_cache.h"
 
 typedef enum vulkan_batch_instancing_policy {
-  /// No instancing - one render cache always results in one draw command with instanceCount == 1.
+  /// No instancing - one renderer cache primitive element always results in one draw command with
+  /// instanceCount == 1.
   vulkan_batch_instancing_policy_no_instancing,
-  /// Instancing - render caches with same vertex attributes result in one draw command with
+  /// Instancing - renderer cache primitive elements with same vertex attributes result in one draw
+  /// command with
   /// instanceCount > 1.
   vulkan_batch_instancing_policy_matching_vertex_attributes,
 } vulkan_batch_instancing_policy;
@@ -21,7 +23,8 @@ typedef enum vulkan_batch_instancing_policy {
 /// using one draw command (draw call batching).
 typedef struct vulkan_batch {
   vulkan_batch_instancing_policy policy;
-  vulkan_render_cache *firstCache; /// Geometry and material used to draw this cache.
+  vulkan_renderer_cache_primitive_element
+      *firstCache; /// Geometry and material used to draw this cache.
 
   /// Indirect draw command.
   /// indexCount - number of vertices to draw, calculated from first cache's primitive
@@ -35,11 +38,13 @@ typedef struct vulkan_batch {
 } vulkan_batch;
 
 vulkan_batch *vulkan_batch_create(vulkan_batch_instancing_policy policy,
-                                  vulkan_render_cache *firstCache);
+                                  vulkan_renderer_cache_primitive_element *firstCache);
 void vulkan_batch_destroy(vulkan_batch *batch);
 
-bool vulkan_batch_matching_cache(vulkan_batch *batch, vulkan_render_cache *cache);
-void vulkan_batch_add_cache(vulkan_batch *batch, vulkan_render_cache *cache, size_t instanceId);
+bool vulkan_batch_matching_cache(vulkan_batch *batch,
+                                 vulkan_renderer_cache_primitive_element *cache);
+void vulkan_batch_add_cache(vulkan_batch *batch, vulkan_renderer_cache_primitive_element *cache,
+                            size_t instanceId);
 void vulkan_batch_update_draw_command(vulkan_batch *batch);
 
 void vulkan_batch_debug_print(vulkan_batch *batch);

@@ -3,7 +3,9 @@
 vulkan_render_state *vulkan_render_state_create(
     vulkan_swap_chain *vks, vulkan_renderer_cache *rendererCache, data_config *config,
     vulkan_unified_uniform_buffer_update_func updateGlobalUniformBufferFunc) {
-  assert(utarray_len(rendererCache->primitiveRenderCaches) > 0);
+  dl_count(vulkan_renderer_cache_primitive_element *, rendererCache->primitiveElements,
+           primitiveElementCount);
+  assert(primitiveElementCount > 0);
 
   vulkan_render_state *renderState = core_alloc(sizeof(vulkan_render_state));
 
@@ -18,7 +20,7 @@ vulkan_render_state *vulkan_render_state_create(
   renderState->unifiedGeometryBuffer = vulkan_unified_geometry_buffer_create(renderState->vkd);
   renderState->textures = vulkan_textures_create(renderState->vkd);
   renderState->unifiedUniformBuffer = vulkan_unified_uniform_buffer_create(
-      renderState->vkd, renderState->rendererCache->maxPrimitiveRenderCacheCount);
+      renderState->vkd, renderState->rendererCache->maxPrimitiveElementCount);
   renderState->descriptors = vulkan_descriptors_create(
       renderState->vkd, renderState->unifiedUniformBuffer, renderState->textures);
   renderState->sync = vulkan_sync_create(renderState->vkd);

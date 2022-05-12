@@ -12,7 +12,7 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
   renderer->vks = vks;
 
   renderer->rendererCache =
-      vulkan_renderer_cache_create(renderer->config->asset.graphicsMaxPrimitiveRenderCacheCount);
+      vulkan_renderer_cache_create(renderer->config->asset.graphicsMaxPrimitiveElementCount);
 
   renderer->sceneGraph = vulkan_scene_graph_create(renderer->data, renderer->rendererCache);
 
@@ -135,9 +135,9 @@ void vulkan_renderer_update_global_uniform_buffer_callback(
   vulkan_pipeline_skybox_state_set_skybox_elements(skybox, &global->skybox);
 
   // materials
-  utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
-                              renderer->rendererCache->primitiveRenderCaches) {
-    vulkan_textures_material_element *materialElement = renderCache->materialElement;
+  dl_foreach_elem(vulkan_renderer_cache_primitive_element *, primitiveElement,
+                  renderer->rendererCache->primitiveElements) {
+    vulkan_textures_material_element *materialElement = primitiveElement->materialElement;
     assert(materialElement != NULL);
     size_t materialId = materialElement->materialIdx;
     // PERF: Update material only once (either keep track here or just iterate on
@@ -155,16 +155,16 @@ void vulkan_renderer_update_global_uniform_buffer_callback(
   }
 
   // instances
-  utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
-                              renderer->rendererCache->primitiveRenderCaches) {
-    size_t instanceId = renderCache->instanceId;
+  dl_foreach_elem(vulkan_renderer_cache_primitive_element *, primitiveElement,
+                  renderer->rendererCache->primitiveElements) {
+    size_t instanceId = primitiveElement->instanceId;
     vulkan_instances_uniform_buffer_element *element =
         vulkan_instances_uniform_buffer_data_get_element(instancesData, instanceId,
                                                          currentFrameInFlight);
 
-    glm_mat4_copy(renderCache->transform, element->modelMat);
+    glm_mat4_copy(primitiveElement->transform, element->modelMat);
 
-    size_t materialId = renderCache->materialElement->materialIdx;
+    size_t materialId = primitiveElement->materialElement->materialIdx;
     element->materialId = materialId;
   }
 }

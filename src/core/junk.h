@@ -125,6 +125,7 @@ typedef XXH64_hash_t hash_t;
   MACRO_DECL_AS_FOR(_elem##i, _type _elem##Temp = {0})                                             \
   DL_FOREACH_SAFE(_dl, _elem, _elem##Temp)
 
+// HIRO Refactor dl_count
 #define dl_count(_type, _dl, _count)                                                               \
   size_t _count = 0;                                                                               \
   dl_foreach_elem(_type, _count##Elem, _dl) { _count++; }

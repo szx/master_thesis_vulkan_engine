@@ -3,14 +3,14 @@
 #include "textures.h"
 
 vulkan_unified_uniform_buffer *
-vulkan_unified_uniform_buffer_create(vulkan_device *vkd, size_t maxPrimitiveRenderCacheCount) {
+vulkan_unified_uniform_buffer_create(vulkan_device *vkd, size_t maxPrimitiveElementCount) {
   vulkan_unified_uniform_buffer *uniformBuffer = core_alloc(sizeof(vulkan_unified_uniform_buffer));
 
   uniformBuffer->globalData = vulkan_global_uniform_buffer_data_create(1, FRAMES_IN_FLIGHT);
   uniformBuffer->materialsData =
       vulkan_materials_uniform_buffer_data_create(MAX_MATERIAL_COUNT, FRAMES_IN_FLIGHT);
   uniformBuffer->instancesData =
-      vulkan_instances_uniform_buffer_data_create(maxPrimitiveRenderCacheCount, FRAMES_IN_FLIGHT);
+      vulkan_instances_uniform_buffer_data_create(maxPrimitiveElementCount, FRAMES_IN_FLIGHT);
 
   uniformBuffer->buffer = vulkan_buffer_create(vkd, vulkan_buffer_type_uniform);
 

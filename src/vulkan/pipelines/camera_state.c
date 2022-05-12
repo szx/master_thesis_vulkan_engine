@@ -6,8 +6,7 @@ vulkan_pipeline_camera_state_create(vulkan_render_state *renderState) {
 
   camera->renderState = renderState;
 
-  camera->defaultCameraRenderCache = vulkan_render_cache_create(NULL);
-  // NOTE: Do not add this camera cache to renderer cache (swap chain reinitialization).
+  camera->defaultCameraElement = vulkan_renderer_cache_camera_element_create();
   camera->cameraIdx = 0;
   vulkan_pipeline_camera_state_select(camera, camera->cameraIdx);
 
@@ -15,7 +14,7 @@ vulkan_pipeline_camera_state_create(vulkan_render_state *renderState) {
 }
 
 void vulkan_pipeline_camera_state_destroy(vulkan_pipeline_camera_state *camera) {
-  vulkan_render_cache_destroy(camera->defaultCameraRenderCache);
+  vulkan_renderer_cache_camera_element_destroy(camera->defaultCameraElement);
   core_free(camera);
 }
 
@@ -36,27 +35,31 @@ void vulkan_pipeline_camera_state_update(vulkan_pipeline_camera_state *camera) {
 }
 
 void vulkan_pipeline_camera_state_select(vulkan_pipeline_camera_state *camera, size_t cameraIdx) {
-  size_t cameraCount = 1 + utarray_len(camera->renderState->rendererCache->cameraRenderCaches);
-  camera->cameraIdx = cameraIdx % cameraCount;
+  dl_count(vulkan_renderer_cache_camera_element *,
+           camera->renderState->rendererCache->cameraElements, cameraElementCount);
+  size_t cameraCount = 1 + cameraElementCount;
+  camera->cameraIdx = cameraIdx % (cameraCount);
 
   if (camera->cameraIdx == 0) {
     log_debug("selecting default camera %zu", camera->cameraIdx);
-    camera->cameraRenderCache = camera->defaultCameraRenderCache;
+    camera->cameraElement = camera->defaultCameraElement;
   } else {
     log_debug("selecting camera %zu", camera->cameraIdx);
-    camera->cameraRenderCache = *(vulkan_render_cache **)utarray_eltptr(
-        camera->renderState->rendererCache->cameraRenderCaches, camera->cameraIdx - 1);
+    // HIRO refactor fix dl_elt()
+    // camera->cameraElement = *(vulkan_renderer_cache_element **)utarray_eltptr(
+    //    camera->renderState->rendererCache->cameraElements, camera->cameraIdx - 1);
+    camera->cameraElement = camera->renderState->rendererCache->cameraElements;
   }
 
   vulkan_pipeline_camera_state_reset(camera);
 }
 
 void reset_default_camera(vulkan_pipeline_camera_state *camera, vec3 distance) {
-  glm_mat4_identity(camera->defaultCameraRenderCache->transform);
-  glm_translate(camera->defaultCameraRenderCache->transform, distance);
-  // NOTE: Change user.right-handed model-space into left-handed world-space (camera render cache
-  // are already flipped thanks to root transform).
-  camera->defaultCameraRenderCache->transform[2][2] = -1.0f;
+  glm_mat4_identity(camera->defaultCameraElement->transform);
+  glm_translate(camera->defaultCameraElement->transform, distance);
+  // NOTE: Change right-handed model-space into left-handed world-space (renderer cache camera
+  // element are already flipped thanks to root transform).
+  camera->defaultCameraElement->transform[2][2] = -1.0f;
 }
 
 void update_camera_vectors(vulkan_pipeline_camera_state *camera) {
@@ -83,8 +86,7 @@ void update_camera_vectors(vulkan_pipeline_camera_state *camera) {
 
 void vulkan_pipeline_camera_state_reset(vulkan_pipeline_camera_state *camera) {
   // Set up default camera using primitives' aabb.
-  vulkan_renderer_cache_calculate_aabb_for_primitive_render_caches(
-      camera->renderState->rendererCache);
+  vulkan_renderer_cache_calculate_aabb_for_primitive_elements(camera->renderState->rendererCache);
   vulkan_aabb *aabb = &camera->renderState->rendererCache->aabb;
 
   vec3 extent, center;
@@ -95,8 +97,8 @@ void vulkan_pipeline_camera_state_reset(vulkan_pipeline_camera_state *camera) {
   if (extent[2] > 0) {
     // Try to fix camera clipping.
     float defaultNearZ = extent[2] / 10;
-    camera->defaultCameraRenderCache->camera.nearZ =
-        MIN(defaultNearZ, camera->defaultCameraRenderCache->camera.nearZ);
+    camera->defaultCameraElement->camera.nearZ =
+        MIN(defaultNearZ, camera->defaultCameraElement->camera.nearZ);
   }
 
   vec3 extentAbs;
@@ -144,16 +146,14 @@ void vulkan_pipeline_camera_state_rotate(vulkan_pipeline_camera_state *camera, f
   update_camera_vectors(camera);
 }
 
-
-
 void vulkan_pipeline_camera_state_set_view_matrix(vulkan_pipeline_camera_state *camera,
                                                   mat4 viewMatrix) {
   // View matrix is inversed model matrix.
   mat4 transform;
-  if (camera->cameraRenderCache == camera->defaultCameraRenderCache) {
-    glm_mat4_mul(camera->user.transform, camera->cameraRenderCache->transform, transform);
+  if (camera->cameraElement == camera->defaultCameraElement) {
+    glm_mat4_mul(camera->user.transform, camera->cameraElement->transform, transform);
   } else {
-    glm_mat4_copy(camera->cameraRenderCache->transform, transform);
+    glm_mat4_copy(camera->cameraElement->transform, transform);
   }
   glm_mat4_inv(transform, viewMatrix);
 }
@@ -198,7 +198,7 @@ void get_orthographic_matrix(float r, float t, float nearZ, float farZ, mat4 des
 
 void vulkan_pipeline_camera_state_set_projection_matrix(vulkan_pipeline_camera_state *camera,
                                                         mat4 projectionMatrix) {
-  vulkan_asset_camera *cameraData = &camera->cameraRenderCache->camera;
+  vulkan_asset_camera *cameraData = &camera->cameraElement->camera;
   if (cameraData->type == vulkan_camera_type_perspective) {
     float viewportAspectRatio = vulkan_swap_chain_get_aspect_ratio(camera->renderState->vks);
     get_perspective_matrix(cameraData->fovY, viewportAspectRatio, cameraData->nearZ,
@@ -221,5 +221,5 @@ void vulkan_pipeline_camera_state_set_position(vulkan_pipeline_camera_state *cam
 
 void vulkan_pipeline_camera_state_debug_print(vulkan_pipeline_camera_state *camera, int indent) {
   log_debug(INDENT_FORMAT_STRING "camera %zu:", INDENT_FORMAT_ARGS(0), camera->cameraIdx);
-  vulkan_render_cache_debug_print(camera->cameraRenderCache);
+  vulkan_renderer_cache_camera_element_debug_print(camera->cameraElement);
 }
