@@ -12,8 +12,7 @@ vulkan_render_cache *vulkan_render_cache_create() {
   renderCache->next = NULL;
 
   vulkan_render_cache_reset(renderCache);
-  renderCache->firstIndexOffset = 0;
-  renderCache->firstVertexOffset = 0;
+  renderCache->vertexStreamElement = (vulkan_vertex_stream_element){0};
 
   renderCache->instanceId = 0;
 
@@ -38,13 +37,6 @@ void vulkan_render_cache_reset(vulkan_render_cache *renderCache) {
   renderCache->aabb = vulkan_aabb_default();
 }
 
-void vulkan_render_cache_set_vertex_stream_offsets(vulkan_render_cache *renderCache,
-                                                   size_t firstIndexOffset,
-                                                   size_t firstVertexOffset) {
-  renderCache->firstIndexOffset = firstIndexOffset;
-  renderCache->firstVertexOffset = firstVertexOffset;
-}
-
 void debug_log_cache(vulkan_render_cache *renderCache) {
   log_raw(stdout, "\"cache\\n%p\\n", renderCache);
   log_raw(stdout, "distanceFromRoot: %d\\n", renderCache->distanceFromRoot);
@@ -54,8 +46,8 @@ void debug_log_cache(vulkan_render_cache *renderCache) {
   log_raw(stdout, "mesh: %p\\n", renderCache->mesh);
   log_raw(stdout, "cameraFovY %f\\n", renderCache->camera.fovY);
   log_raw(stdout, "primitive: %p\\n", renderCache->primitive);
-  log_raw(stdout, "firstIndexOffset: %zu\\n", renderCache->firstIndexOffset);
-  log_raw(stdout, "firstVertexOffset: %zu\\n", renderCache->firstVertexOffset);
+  log_raw(stdout, "firstIndexOffset: %zu\\n", renderCache->vertexStreamElement.firstIndexOffset);
+  log_raw(stdout, "firstVertexOffset: %zu\\n", renderCache->vertexStreamElement.firstVertexOffset);
   log_raw(stdout, "instanceId: %zu", renderCache->instanceId);
   if (renderCache->materialElement != NULL) {
     log_raw(stdout, "materialId: %zu", renderCache->materialElement->materialIdx);

@@ -85,16 +85,13 @@ vulkan_pipeline_skybox_state_create(vulkan_render_state *renderState) {
   skybox->boxRenderCache->primitive->texCoords = core_alloc(sizeof(vulkan_asset_vertex_attribute));
   vulkan_asset_vertex_attribute_init(skybox->boxRenderCache->primitive->texCoords, NULL);
 
-  vulkan_vertex_stream_element vertexStreamElement = vulkan_vertex_stream_add_geometry(
+  skybox->boxRenderCache->vertexStreamElement = vulkan_vertex_stream_add_geometry(
       skybox->renderState->vertexStream, skybox->boxRenderCache->primitive->vertexCount,
       skybox->boxRenderCache->primitive->indices->data,
       skybox->boxRenderCache->primitive->positions->data,
       skybox->boxRenderCache->primitive->normals->data,
       skybox->boxRenderCache->primitive->colors->data,
       skybox->boxRenderCache->primitive->texCoords->data);
-  vulkan_render_cache_set_vertex_stream_offsets(skybox->boxRenderCache,
-                                                vertexStreamElement.firstIndexOffset,
-                                                vertexStreamElement.firstVertexOffset);
 
   return skybox;
 }

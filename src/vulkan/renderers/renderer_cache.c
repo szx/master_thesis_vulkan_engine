@@ -70,17 +70,15 @@ void vulkan_renderer_cache_update_geometry(vulkan_renderer_cache *rendererCache,
   // utarray_realloc(vertexStream->vertexData,
   //                vulkan_attribute_type_to_stride(vertexStream->attributes));
 
-  // add unique primitives to geometry buffer
+  // Add unique primitives to geometry buffer.
   vulkan_render_cache *lastRenderCache = NULL;
   utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
                               rendererCache->primitiveRenderCaches) {
     // PERF: Compress stream (overlapping vertex attributes).
 
     if (lastRenderCache != NULL && lastRenderCache->primitive == renderCache->primitive) {
-      size_t firstIndexOffset = lastRenderCache->firstIndexOffset;
-      size_t firstVertexOffset = lastRenderCache->firstVertexOffset;
-      vulkan_render_cache_set_vertex_stream_offsets(renderCache, firstIndexOffset,
-                                                    firstVertexOffset);
+      // Reuse geometry if last primitive is the same one.
+      renderCache->vertexStreamElement = lastRenderCache->vertexStreamElement;
       return;
     }
 
@@ -92,8 +90,7 @@ void vulkan_renderer_cache_update_geometry(vulkan_renderer_cache *rendererCache,
         primitive->normals->data, primitive->colors->data, primitive->texCoords->data);
 
     assert(vertexStreamElement.attributes <= vertexStream->attributes);
-    vulkan_render_cache_set_vertex_stream_offsets(renderCache, vertexStreamElement.firstIndexOffset,
-                                                  vertexStreamElement.firstVertexOffset);
+    renderCache->vertexStreamElement = vertexStreamElement;
 
     lastRenderCache = renderCache;
   }

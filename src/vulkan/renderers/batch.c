@@ -39,8 +39,8 @@ void vulkan_batch_add_cache(vulkan_batch *batch, vulkan_render_cache *cache, siz
 
 void vulkan_batch_update_draw_command(vulkan_batch *batch) {
   batch->drawCommand.indexCount = utarray_len(batch->firstCache->primitive->indices->data);
-  batch->drawCommand.firstIndex = batch->firstCache->firstIndexOffset;
-  batch->drawCommand.vertexOffset = batch->firstCache->firstVertexOffset;
+  batch->drawCommand.firstIndex = batch->firstCache->vertexStreamElement.firstIndexOffset;
+  batch->drawCommand.vertexOffset = batch->firstCache->vertexStreamElement.firstVertexOffset;
   batch->drawCommand.firstInstance = batch->firstCache->instanceId;
 }
 
