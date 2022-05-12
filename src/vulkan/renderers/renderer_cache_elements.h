@@ -17,7 +17,6 @@ typedef struct vulkan_renderer_cache_primitive_element {
   size_t distanceFromRoot;
   bool visible;
   mat4 transform;                    ///< Accumulated from object node.
-  vulkan_asset_mesh *mesh;           ///< Accumulated from object node.
   vulkan_asset_primitive *primitive; ///< Accumulated from primitive node.
   vulkan_aabb aabb;                  ///< Accumulated from primitive node.
 

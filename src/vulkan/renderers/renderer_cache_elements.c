@@ -29,7 +29,6 @@ void vulkan_renderer_cache_primitive_element_reset(
   element->distanceFromRoot = 0;
   element->visible = true;
   glm_mat4_identity(element->transform);
-  element->mesh = NULL;
   element->primitive = NULL;
   element->aabb = vulkan_aabb_default();
 }
@@ -41,7 +40,6 @@ void vulkan_renderer_cache_primitive_element_debug_print(
   log_raw(stdout, "visible: %d\\n", element->visible);
   log_raw(stdout, "transform: \\n" MAT4_FORMAT_STRING("\\n") "\\n",
           MAT4_FORMAT_ARGS(element->transform));
-  log_raw(stdout, "mesh: %p\\n", element->mesh);
   log_raw(stdout, "primitive: %p\\n", element->primitive);
   log_raw(stdout, "firstIndexOffset: %zu\\n", element->vertexStreamElement.firstIndexOffset);
   log_raw(stdout, "firstVertexOffset: %zu\\n", element->vertexStreamElement.firstVertexOffset);

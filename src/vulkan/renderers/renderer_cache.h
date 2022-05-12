@@ -12,7 +12,6 @@
 #include "../assets/texture.h"
 #include "renderer_cache_elements.h"
 
-// HIRO Refactor split vulkan_renderer_cache_element into multiple types (primitive, camera, other)
 // HIRO
 //  Refactor sort pointers to renderer cache primitive elements in batches (allows
 //  transparent/opaque batches)

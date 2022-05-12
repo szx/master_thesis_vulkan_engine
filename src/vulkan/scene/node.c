@@ -82,7 +82,6 @@ vulkan_scene_tree_node *vulkan_scene_tree_node_create(vulkan_scene_tree *sceneTr
   sceneTreeNode->prev = NULL;
   sceneTreeNode->next = NULL;
 
-  // HIRO refactor elements should be NULL by default, created as needed
   sceneTreeNode->primitiveElement = vulkan_renderer_cache_primitive_element_create();
   sceneTreeNode->cameraElement = vulkan_renderer_cache_camera_element_create();
 
@@ -117,7 +116,6 @@ void vulkan_scene_tree_node_set_renderer_cache_elements(vulkan_scene_tree_node *
 
   if (sceneTreeNode->object != NULL) {
     glm_mat4_copy(sceneTreeNode->object->transform, sceneTreeNode->primitiveElement->transform);
-    sceneTreeNode->primitiveElement->mesh = sceneTreeNode->object->mesh;
     if (sceneTreeNode->object->camera) {
       vulkan_asset_camera_copy(&sceneTreeNode->cameraElement->camera,
                                sceneTreeNode->object->camera);
@@ -151,9 +149,6 @@ void vulkan_scene_tree_node_accumulate_to_renderer_cache_elements_from_parent(
 
   glm_mat4_mul(parentPrimitiveElement->transform, primitiveElement->transform,
                primitiveElement->transform);
-  if (parentPrimitiveElement->mesh != NULL) {
-    primitiveElement->mesh = parentPrimitiveElement->mesh;
-  }
   if (parentSceneTreeNode->object != NULL && parentSceneTreeNode->object->camera != NULL) {
     vulkan_asset_camera_copy(&sceneTreeNode->cameraElement->camera,
                              parentSceneTreeNode->object->camera);
