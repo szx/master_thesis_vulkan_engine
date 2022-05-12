@@ -7,7 +7,7 @@
 #include "data.h"
 #include "node.h"
 
-typedef struct vulkan_render_cache_list vulkan_render_cache_list;
+typedef struct vulkan_renderer_cache vulkan_renderer_cache;
 typedef struct vulkan_scene_tree vulkan_scene_tree;
 
 typedef struct vulkan_scene_graph {
@@ -20,7 +20,7 @@ typedef struct vulkan_scene_graph {
 } vulkan_scene_graph;
 
 vulkan_scene_graph *vulkan_scene_graph_create(vulkan_scene_data *sceneData,
-                                              vulkan_render_cache_list *renderCacheList);
+                                              vulkan_renderer_cache *rendererCache);
 void vulkan_scene_graph_destroy(vulkan_scene_graph *sceneGraph);
 
 /// Adds object data as new scene graph and tree nodes.

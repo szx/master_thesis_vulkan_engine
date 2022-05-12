@@ -22,13 +22,12 @@ typedef struct vulkan_vertex_stream_element {
 } vulkan_vertex_stream_element;
 
 /// Interleaved vertex stream.
-/// Generated from primitives in render cache list.
 typedef struct vulkan_vertex_stream {
   vulkan_attribute_type attributes; ///< Vertex attributes that can be present in vertex stream.
   UT_array *indexData;              ///< uint32_t array
   UT_array *vertexData;             ///< vulkan_vertex array
 
-  /// True in new primitive has been added.
+  /// True in new geometry has been added.
   /// Unified geometry buffer is responsible for synchronizing vertex stream.
   bool dirty;
 } vulkan_vertex_stream;

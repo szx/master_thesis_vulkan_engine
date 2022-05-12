@@ -8,10 +8,10 @@ vulkan_pipeline_skybox_state_create(vulkan_render_state *renderState) {
   skybox->renderState = renderState;
 
   skybox->cubemapTextureElement = vulkan_textures_add_texture(
-      skybox->renderState->textures, skybox->renderState->renderCacheList->skybox->cubemapTexture);
+      skybox->renderState->textures, skybox->renderState->rendererCache->skybox->cubemapTexture);
   skybox->ambientIntensity = 1.0f;
 
-  // HIRO HIRO HIRO HIRO Refactor manual adding of geometry (after refactoring render_cache_list).
+  // HIRO HIRO HIRO HIRO Refactor manual adding of geometry (after refactoring renderer_cache).
   // HIRO Refactor move boxVertexStreamElement to render state
 
   skybox->boxRenderCache = vulkan_render_cache_create();

@@ -155,9 +155,9 @@ void assert_graph(vulkan_scene_graph *sceneGraph) {
     }
     assert(!sceneNode->dirty);
   }
-  /* cache list */
-  vulkan_render_cache_list *renderCacheList = sceneTree->renderCacheList;
-  assert(utarray_len(renderCacheList->primitiveRenderCaches) == primitiveNodeNum);
+  /* renderer cache */
+  vulkan_renderer_cache *rendererCache = sceneTree->rendererCache;
+  assert(utarray_len(rendererCache->primitiveRenderCaches) == primitiveNodeNum);
 }
 
 // Building scene graph.
@@ -170,10 +170,10 @@ TEST scene_graph_building() {
   utstring_alloc(sceneName, GLTF_NAME);
   vulkan_scene_data *assetDbSceneData = vulkan_scene_data_create_with_asset_db(assetDb, sceneName);
   // vulkan_scene_data_debug_print(assetDbSceneData);
-  vulkan_render_cache_list *renderCacheList =
-      vulkan_render_cache_list_create(config->asset.graphicsMaxPrimitiveRenderCacheCount);
+  vulkan_renderer_cache *rendererCache =
+      vulkan_renderer_cache_create(config->asset.graphicsMaxPrimitiveRenderCacheCount);
 
-  vulkan_scene_graph *sceneGraph = vulkan_scene_graph_create(assetDbSceneData, renderCacheList);
+  vulkan_scene_graph *sceneGraph = vulkan_scene_graph_create(assetDbSceneData, rendererCache);
 
   log_info("Verify cache accumulation.");
   vulkan_scene_graph_node *firstObjectNode =
@@ -214,9 +214,9 @@ TEST scene_graph_building() {
 */
 
   log_info("Test batching.");
-  vulkan_batches *batches = vulkan_batches_create(renderCacheList, vkd);
+  vulkan_batches *batches = vulkan_batches_create(rendererCache, vkd);
 
-  renderCacheList->primitiveRenderCachesSorted = false;
+  rendererCache->primitiveRenderCachesSorted = false;
   vulkan_batches_update(batches, vulkan_batch_instancing_policy_no_instancing);
   vulkan_batches_debug_print(batches);
   dl_count(vulkan_batch *, batches->batches, batchNoInstancingLen);
@@ -242,7 +242,7 @@ TEST scene_graph_building() {
 
   vulkan_renderer_destroy(renderer);
   vulkan_swap_chain_destroy(vks);
-  vulkan_render_cache_list_destroy(renderCacheList);
+  vulkan_renderer_cache_destroy(rendererCache);
   vulkan_scene_graph_destroy(sceneGraph);
   vulkan_scene_data_destroy(assetDbSceneData);
   utstring_free(sceneName);

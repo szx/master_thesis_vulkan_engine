@@ -13,7 +13,7 @@ typedef struct vulkan_renderer {
   data_config *config;    ///< Pointer.
   data_asset_db *assetDb; ///< Pointer.
   vulkan_scene_data *data;
-  vulkan_render_cache_list *renderCacheList;
+  vulkan_renderer_cache *rendererCache;
   vulkan_scene_graph *sceneGraph;
 
   /* GPU state */

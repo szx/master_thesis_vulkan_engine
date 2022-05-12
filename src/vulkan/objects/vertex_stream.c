@@ -1,5 +1,4 @@
 #include "vertex_stream.h"
-#include "../assets/primitive.h"
 
 uint32_t vulkan_attribute_type_to_stride(vulkan_attribute_type vertexAttributes) {
   if ((vertexAttributes & vulkan_attribute_type_texcoord) != 0) {

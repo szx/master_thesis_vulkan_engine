@@ -5,7 +5,7 @@
 #pragma once
 
 #include "../objects/buffer.h"
-#include "../renderers/render_cache_list.h"
+#include "../renderers/renderer_cache.h"
 
 typedef enum vulkan_batch_instancing_policy {
   /// No instancing - one render cache always results in one draw command with instanceCount == 1.
@@ -17,8 +17,8 @@ typedef enum vulkan_batch_instancing_policy {
 
 /// Draw call batch.
 /// Corresponds to one indirect draw command with instancing.
-/// Encapsulates contiguous sequence of caches in cache list.
-/// Depends on order of caches in cache list.
+/// Maintains list of pointers to renderer cache elements from renderer cache that can be rendered
+/// using one draw command (draw call batching).
 typedef struct vulkan_batch {
   vulkan_batch_instancing_policy policy;
   vulkan_render_cache *firstCache; /// Geometry and material used to draw this cache.
@@ -56,20 +56,19 @@ void vulkan_batches_data_deinit(vulkan_batches_data *batchesData);
 
 void vulkan_batches_data_send_to_device(vulkan_batches_data *batchesData);
 
-/// Creates batches from render cache list.
+/// Creates batches from renderer cache.
 /// Used to record draw commands.
 typedef struct vulkan_batches {
-  // HIRO refactor remove renderCacheList from batches, just replace with function
-  vulkan_render_cache_list *renderCacheList; ///< Pointer.
-  vulkan_device *vkd;                        ///< Pointer.
+  // HIRO refactor remove rendererCache from batches, just replace with function
+  vulkan_renderer_cache *rendererCache; ///< Pointer.
+  vulkan_device *vkd;                   ///< Pointer.
 
   /// List of batches created from scene graph.
   vulkan_batch *batches;
 
 } vulkan_batches;
 
-vulkan_batches *vulkan_batches_create(vulkan_render_cache_list *renderCacheList,
-                                      vulkan_device *vkd);
+vulkan_batches *vulkan_batches_create(vulkan_renderer_cache *rendererCache, vulkan_device *vkd);
 void vulkan_batches_destroy(vulkan_batches *batches);
 
 void vulkan_batches_reset(vulkan_batches *batches);

@@ -25,8 +25,8 @@ void vulkan_pipeline_shared_state_init(vulkan_pipeline_shared_state *pipelineSha
       vulkan_pipeline_light_state_create(pipelineSharedState->renderState);
   pipelineSharedState->skybox =
       vulkan_pipeline_skybox_state_create(pipelineSharedState->renderState);
-  pipelineSharedState->renderCacheListBatches = vulkan_batches_create(
-      pipelineSharedState->renderState->renderCacheList, pipelineSharedState->renderState->vkd);
+  pipelineSharedState->rendererCacheBatches = vulkan_batches_create(
+      pipelineSharedState->renderState->rendererCache, pipelineSharedState->renderState->vkd);
 
   pipelineSharedState->depthBufferImage = vulkan_image_create(
       pipelineSharedState->renderState->vkd, vulkan_image_type_depth_buffer,
@@ -35,7 +35,7 @@ void vulkan_pipeline_shared_state_init(vulkan_pipeline_shared_state *pipelineSha
 }
 
 void vulkan_pipeline_shared_state_deinit(vulkan_pipeline_shared_state *pipelineSharedState) {
-  vulkan_batches_destroy(pipelineSharedState->renderCacheListBatches);
+  vulkan_batches_destroy(pipelineSharedState->rendererCacheBatches);
   vulkan_pipeline_skybox_state_destroy(pipelineSharedState->skybox);
   vulkan_pipeline_light_state_destroy(pipelineSharedState->lights);
   vulkan_pipeline_camera_state_destroy(pipelineSharedState->camera);
@@ -63,8 +63,8 @@ void vulkan_pipeline_shared_state_update(vulkan_pipeline_shared_state *pipelineS
   vulkan_pipeline_light_state_update(pipelineSharedState->lights);
   vulkan_pipeline_skybox_state_update(pipelineSharedState->skybox);
 
-  vulkan_batches_update(pipelineSharedState->renderCacheListBatches, instancingPolicy);
-  dl_foreach_elem(vulkan_batch *, batch, pipelineSharedState->renderCacheListBatches->batches) {
+  vulkan_batches_update(pipelineSharedState->rendererCacheBatches, instancingPolicy);
+  dl_foreach_elem(vulkan_batch *, batch, pipelineSharedState->rendererCacheBatches->batches) {
     vulkan_batch_update_draw_command(batch);
     assert(batch->drawCommand.firstIndex != INT32_MAX);
     assert(batch->drawCommand.vertexOffset != INT32_MAX);
@@ -74,7 +74,7 @@ void vulkan_pipeline_shared_state_update(vulkan_pipeline_shared_state *pipelineS
 void vulkan_pipeline_shared_state_debug_print(vulkan_pipeline_shared_state *pipelineSharedState,
                                               int indent) {
   log_debug(INDENT_FORMAT_STRING "shared state:", INDENT_FORMAT_ARGS(0));
-  vulkan_batches_debug_print(pipelineSharedState->renderCacheListBatches);
+  vulkan_batches_debug_print(pipelineSharedState->rendererCacheBatches);
   vulkan_pipeline_camera_state_debug_print(pipelineSharedState->camera, indent + 2);
   vulkan_pipeline_light_state_debug_print(pipelineSharedState->lights, indent + 2);
   vulkan_pipeline_skybox_state_debug_print(pipelineSharedState->skybox, indent + 2);

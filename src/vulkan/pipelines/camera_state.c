@@ -7,7 +7,7 @@ vulkan_pipeline_camera_state_create(vulkan_render_state *renderState) {
   camera->renderState = renderState;
 
   camera->defaultCameraRenderCache = vulkan_render_cache_create(NULL);
-  // NOTE: Do not add this camera cache to render cache list (swap chain reinitialization).
+  // NOTE: Do not add this camera cache to renderer cache (swap chain reinitialization).
   camera->cameraIdx = 0;
   vulkan_pipeline_camera_state_select(camera, camera->cameraIdx);
 
@@ -36,7 +36,7 @@ void vulkan_pipeline_camera_state_update(vulkan_pipeline_camera_state *camera) {
 }
 
 void vulkan_pipeline_camera_state_select(vulkan_pipeline_camera_state *camera, size_t cameraIdx) {
-  size_t cameraCount = 1 + utarray_len(camera->renderState->renderCacheList->cameraRenderCaches);
+  size_t cameraCount = 1 + utarray_len(camera->renderState->rendererCache->cameraRenderCaches);
   camera->cameraIdx = cameraIdx % cameraCount;
 
   if (camera->cameraIdx == 0) {
@@ -45,7 +45,7 @@ void vulkan_pipeline_camera_state_select(vulkan_pipeline_camera_state *camera, s
   } else {
     log_debug("selecting camera %zu", camera->cameraIdx);
     camera->cameraRenderCache = *(vulkan_render_cache **)utarray_eltptr(
-        camera->renderState->renderCacheList->cameraRenderCaches, camera->cameraIdx - 1);
+        camera->renderState->rendererCache->cameraRenderCaches, camera->cameraIdx - 1);
   }
 
   vulkan_pipeline_camera_state_reset(camera);
@@ -83,9 +83,9 @@ void update_camera_vectors(vulkan_pipeline_camera_state *camera) {
 
 void vulkan_pipeline_camera_state_reset(vulkan_pipeline_camera_state *camera) {
   // Set up default camera using primitives' aabb.
-  vulkan_render_cache_list_calculate_aabb_for_primitive_render_caches(
-      camera->renderState->renderCacheList);
-  vulkan_aabb *aabb = &camera->renderState->renderCacheList->aabb;
+  vulkan_renderer_cache_calculate_aabb_for_primitive_render_caches(
+      camera->renderState->rendererCache);
+  vulkan_aabb *aabb = &camera->renderState->rendererCache->aabb;
 
   vec3 extent, center;
   glm_vec3_sub(aabb->max, aabb->min, extent);

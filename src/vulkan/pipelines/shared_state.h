@@ -19,7 +19,7 @@ typedef struct vulkan_pipeline_shared_state {
   vulkan_pipeline_skybox_state *skybox;
 
   // HIRO: Maintain two batches for transparent and opaque objects.
-  vulkan_batches *renderCacheListBatches;
+  vulkan_batches *rendererCacheBatches;
 
   /// Depth buffer image.
   /// We can share it between pipelines, because it is synchronized using pipeline barriers.

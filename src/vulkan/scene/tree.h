@@ -6,12 +6,11 @@
 
 #include "graph.h"
 
-typedef struct vulkan_render_cache_list vulkan_render_cache_list;
+typedef struct vulkan_renderer_cache vulkan_renderer_cache;
 
 typedef struct vulkan_scene_tree {
-  vulkan_scene_graph *graph; ///< Pointer.
-  vulkan_render_cache_list
-      *renderCacheList; ///< Pointer. Tree adds cache for each primitive node leaf.
+  vulkan_scene_graph *graph;            ///< Pointer.
+  vulkan_renderer_cache *rendererCache; ///< Pointer. Tree adds cache for each primitive node leaf.
 
   vulkan_scene_tree_node *root;  ///< Root node.
   vulkan_scene_tree_node *nodes; ///< Doubly-linked list of all nodes of scene tree.
@@ -19,7 +18,7 @@ typedef struct vulkan_scene_tree {
 } vulkan_scene_tree;
 
 vulkan_scene_tree *vulkan_scene_tree_create(vulkan_scene_graph *sceneGraph,
-                                            vulkan_render_cache_list *renderCacheList);
+                                            vulkan_renderer_cache *rendererCache);
 void vulkan_scene_tree_destroy(vulkan_scene_tree *sceneTree);
 
 /// Adds scene entity data as new tree node.

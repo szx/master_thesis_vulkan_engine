@@ -1,29 +1,27 @@
 #include "render_state.h"
 
 vulkan_render_state *vulkan_render_state_create(
-    vulkan_swap_chain *vks, vulkan_render_cache_list *renderCacheList, data_config *config,
+    vulkan_swap_chain *vks, vulkan_renderer_cache *rendererCache, data_config *config,
     vulkan_unified_uniform_buffer_update_func updateGlobalUniformBufferFunc) {
-  assert(utarray_len(renderCacheList->primitiveRenderCaches) > 0);
+  assert(utarray_len(rendererCache->primitiveRenderCaches) > 0);
 
   vulkan_render_state *renderState = core_alloc(sizeof(vulkan_render_state));
 
   renderState->vks = vks;
   renderState->vkd = renderState->vks->vkd;
 
-  renderState->renderCacheList = renderCacheList;
+  renderState->rendererCache = rendererCache;
   renderState->config = config;
   renderState->updateGlobalUniformBufferFunc = updateGlobalUniformBufferFunc;
-  renderState->vertexStream = vulkan_vertex_stream_create(renderState->renderCacheList->attributes);
+  renderState->vertexStream = vulkan_vertex_stream_create(renderState->rendererCache->attributes);
 
   renderState->unifiedGeometryBuffer = vulkan_unified_geometry_buffer_create(renderState->vkd);
   renderState->textures = vulkan_textures_create(renderState->vkd);
   renderState->unifiedUniformBuffer = vulkan_unified_uniform_buffer_create(
-      renderState->vkd, renderState->renderCacheList->maxPrimitiveRenderCacheCount);
+      renderState->vkd, renderState->rendererCache->maxPrimitiveRenderCacheCount);
   renderState->descriptors = vulkan_descriptors_create(
       renderState->vkd, renderState->unifiedUniformBuffer, renderState->textures);
   renderState->sync = vulkan_sync_create(renderState->vkd);
-
-  // HIRO refactor is it needed? vulkan_render_state_update(renderState);
 
   return renderState;
 }
@@ -43,8 +41,8 @@ void vulkan_render_state_destroy(vulkan_render_state *renderState) {
 
 void vulkan_render_state_update(vulkan_render_state *renderState,
                                 void *updateGlobalUniformBufferFuncData) {
-  vulkan_render_cache_list_update_geometry(renderState->renderCacheList, renderState->vertexStream);
-  vulkan_render_cache_list_update_textures(renderState->renderCacheList, renderState->textures);
+  vulkan_renderer_cache_update_geometry(renderState->rendererCache, renderState->vertexStream);
+  vulkan_renderer_cache_update_textures(renderState->rendererCache, renderState->textures);
   vulkan_vertex_stream_update(renderState->vertexStream);
 
   vulkan_unified_geometry_buffer_update(renderState->unifiedGeometryBuffer,

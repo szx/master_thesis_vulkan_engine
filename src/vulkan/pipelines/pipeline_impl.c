@@ -263,7 +263,7 @@ void vulkan_pipeline_impl_forward_record_render_pass(vulkan_pipeline *pipeline,
   vkCmdPushConstants(commandBuffer, pipeline->pipelineLayout, VK_SHADER_STAGE_ALL, 0,
                      sizeof(drawPushConstant), &drawPushConstant);
 
-  vulkan_batches_record_draw_command(pipeline->pipelineSharedState->renderCacheListBatches,
+  vulkan_batches_record_draw_command(pipeline->pipelineSharedState->rendererCacheBatches,
                                      commandBuffer, &frameStateImpl->batchesData);
 
   vkCmdEndRenderPass(commandBuffer);

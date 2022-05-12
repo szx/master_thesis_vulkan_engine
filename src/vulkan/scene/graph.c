@@ -1,12 +1,12 @@
 #include "graph.h"
-#include "../renderers/render_cache_list.h"
+#include "../renderers/renderer_cache.h"
 #include "tree.h"
 
 vulkan_scene_graph *vulkan_scene_graph_create(vulkan_scene_data *data,
-                                              vulkan_render_cache_list *renderCacheList) {
+                                              vulkan_renderer_cache *rendererCache) {
   vulkan_scene_graph *sceneGraph = core_alloc(sizeof(vulkan_scene_graph));
   sceneGraph->data = NULL;
-  sceneGraph->sceneTree = vulkan_scene_tree_create(sceneGraph, renderCacheList);
+  sceneGraph->sceneTree = vulkan_scene_tree_create(sceneGraph, rendererCache);
   sceneGraph->root = NULL;
   sceneGraph->nodes = NULL;
 
@@ -135,8 +135,8 @@ void vulkan_scene_graph_create_with_scene_data(vulkan_scene_graph *sceneGraph,
                                   rootChild);
   }
 
-  /* add additional state to render cache list */
-  vulkan_render_cache_list_add_skybox(sceneGraph->sceneTree->renderCacheList, sceneData->skybox);
+  /* add additional state to renderer cache */
+  vulkan_renderer_cache_add_skybox(sceneGraph->sceneTree->rendererCache, sceneData->skybox);
 
   assert(sceneGraph->root);
 }

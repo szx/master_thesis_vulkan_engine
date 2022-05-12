@@ -17,7 +17,7 @@ void update_func(vulkan_renderer *renderer, double dt) {
   if (renderer->vkd->input.keyboard.release.leftBracket) {
     size_t cameraIdx = pipelineSharedState->camera->cameraIdx - 1;
     if (pipelineSharedState->camera->cameraIdx == 0) {
-      cameraIdx = utarray_len(renderState->renderCacheList->cameraRenderCaches) - 1;
+      cameraIdx = utarray_len(renderState->rendererCache->cameraRenderCaches) - 1;
     }
     vulkan_pipeline_camera_state_select(pipelineSharedState->camera, cameraIdx);
   }

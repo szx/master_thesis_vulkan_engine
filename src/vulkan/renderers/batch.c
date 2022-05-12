@@ -70,11 +70,10 @@ void vulkan_batches_data_send_to_device(vulkan_batches_data *batchesData) {
   vulkan_buffer_send_to_device(batchesData->indirectDrawBuffer);
 }
 
-vulkan_batches *vulkan_batches_create(vulkan_render_cache_list *renderCacheList,
-                                      vulkan_device *vkd) {
+vulkan_batches *vulkan_batches_create(vulkan_renderer_cache *rendererCache, vulkan_device *vkd) {
   vulkan_batches *batches = core_alloc(sizeof(vulkan_batches));
 
-  batches->renderCacheList = renderCacheList;
+  batches->rendererCache = rendererCache;
   batches->vkd = vkd;
   batches->batches = NULL;
 
@@ -92,19 +91,19 @@ void vulkan_batches_reset(vulkan_batches *batches) {
 }
 
 void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_instancing_policy policy) {
-  // sort cache list and update attributes
-  // HIRO Refactor do not sort directly in render cache list, maintain separate list
-  vulkan_render_cache_list_sort_primitive_render_caches(batches->renderCacheList);
-  assert(batches->renderCacheList->primitiveRenderCachesSorted);
+  // sort renderer cache elements and update attributes
+  // HIRO Refactor do not sort directly in renderer cache, maintain separate list
+  vulkan_renderer_cache_sort_primitive_render_caches(batches->rendererCache);
+  assert(batches->rendererCache->primitiveRenderCachesSorted);
 
   vulkan_batches_reset(batches);
 
-  assert(utarray_len(batches->renderCacheList->primitiveRenderCaches) > 0);
+  assert(utarray_len(batches->rendererCache->primitiveRenderCaches) > 0);
   vulkan_render_cache *lastCache = NULL;
   vulkan_batch *lastBatch = NULL;
   size_t instanceId = 0;
   utarray_foreach_elem_deref (vulkan_render_cache *, cache,
-                              batches->renderCacheList->primitiveRenderCaches) {
+                              batches->rendererCache->primitiveRenderCaches) {
     if (!cache->visible) {
       continue;
     }

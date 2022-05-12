@@ -11,13 +11,13 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
   renderer->vkd = vks->vkd;
   renderer->vks = vks;
 
-  renderer->renderCacheList =
-      vulkan_render_cache_list_create(renderer->config->asset.graphicsMaxPrimitiveRenderCacheCount);
+  renderer->rendererCache =
+      vulkan_renderer_cache_create(renderer->config->asset.graphicsMaxPrimitiveRenderCacheCount);
 
-  renderer->sceneGraph = vulkan_scene_graph_create(renderer->data, renderer->renderCacheList);
+  renderer->sceneGraph = vulkan_scene_graph_create(renderer->data, renderer->rendererCache);
 
   renderer->renderState =
-      vulkan_render_state_create(renderer->vks, renderer->renderCacheList, renderer->config,
+      vulkan_render_state_create(renderer->vks, renderer->rendererCache, renderer->config,
                                  vulkan_renderer_update_global_uniform_buffer_callback);
 
   renderer->pipelineSharedState = vulkan_pipeline_shared_state_create(renderer->renderState);
@@ -63,7 +63,7 @@ void vulkan_renderer_destroy(vulkan_renderer *renderer) {
   vulkan_render_state_destroy(renderer->renderState);
 
   vulkan_scene_graph_destroy(renderer->sceneGraph);
-  vulkan_render_cache_list_destroy(renderer->renderCacheList);
+  vulkan_renderer_cache_destroy(renderer->rendererCache);
   vulkan_scene_data_destroy(renderer->data);
 
   core_free(renderer);
@@ -136,7 +136,7 @@ void vulkan_renderer_update_global_uniform_buffer_callback(
 
   // materials
   utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
-                              renderer->renderCacheList->primitiveRenderCaches) {
+                              renderer->rendererCache->primitiveRenderCaches) {
     vulkan_textures_material_element *materialElement = renderCache->materialElement;
     assert(materialElement != NULL);
     size_t materialId = materialElement->materialIdx;
@@ -156,7 +156,7 @@ void vulkan_renderer_update_global_uniform_buffer_callback(
 
   // instances
   utarray_foreach_elem_deref (vulkan_render_cache *, renderCache,
-                              renderer->renderCacheList->primitiveRenderCaches) {
+                              renderer->rendererCache->primitiveRenderCaches) {
     size_t instanceId = renderCache->instanceId;
     vulkan_instances_uniform_buffer_element *element =
         vulkan_instances_uniform_buffer_data_get_element(instancesData, instanceId,
@@ -293,7 +293,7 @@ void vulkan_renderer_run_main_loop(vulkan_renderer *renderer,
 void vulkan_renderer_debug_print(vulkan_renderer *renderer) {
   log_debug("renderer:\n");
   vulkan_scene_data_debug_print(renderer->data, 2);
-  vulkan_render_cache_list_debug_print(renderer->renderCacheList);
+  vulkan_renderer_cache_debug_print(renderer->rendererCache);
   vulkan_scene_graph_debug_print(renderer->sceneGraph);
   vulkan_render_state_debug_print(renderer->renderState);
   vulkan_pipeline_shared_state_debug_print(renderer->pipelineSharedState, 2);

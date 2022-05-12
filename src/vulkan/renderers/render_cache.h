@@ -13,7 +13,7 @@
 #include "../objects/vertex_stream.h"
 
 // HIRO refactor split render cache into multiple types
-// HIRO add key to prevent multiple adding in vulkan_render_cache_list
+// HIRO add key to prevent multiple adding in vulkan_renderer_cache
 typedef struct vulkan_render_cache {
   /* cache state accumulated from scene tree */
   size_t distanceFromRoot;
@@ -30,10 +30,10 @@ typedef struct vulkan_render_cache {
   size_t firstVertexOffset;
 
   /* cache state accumulated during draw call batching. */
-  size_t instanceId; ///< Index in render cache list, equals gl_InstanceIndex in shader thanks to
+  size_t instanceId; ///< Index in renderer cache, equals gl_InstanceIndex in shader thanks to
                      ///< draw call batching.
 
-  /* cache state accumulated from render cache list */
+  /* cache state accumulated from renderer cache */
   vulkan_textures_material_element
       *materialElement; ///< Contains index of material in materials array in textures.
 

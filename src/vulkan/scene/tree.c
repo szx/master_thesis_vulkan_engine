@@ -1,11 +1,11 @@
 #include "tree.h"
-#include "../renderers/render_cache_list.h"
+#include "../renderers/renderer_cache.h"
 
 vulkan_scene_tree *vulkan_scene_tree_create(vulkan_scene_graph *sceneGraph,
-                                            vulkan_render_cache_list *renderCacheList) {
+                                            vulkan_renderer_cache *rendererCache) {
   vulkan_scene_tree *sceneTree = core_alloc(sizeof(vulkan_scene_tree));
   sceneTree->graph = sceneGraph;
-  sceneTree->renderCacheList = renderCacheList;
+  sceneTree->rendererCache = rendererCache;
   sceneTree->root = NULL;
   sceneTree->nodes = NULL;
   utarray_alloc(sceneTree->dirtyNodes, sizeof(vulkan_scene_tree_node *));
@@ -35,12 +35,12 @@ vulkan_scene_tree_node *vulkan_scene_tree_add_node(vulkan_scene_tree *sceneTree,
   vulkan_scene_graph_node_add_observer(sceneGraphNode, sceneTreeNode);
 
   if (sceneTreeNode->primitive != NULL) {
-    vulkan_render_cache_list_add_primitive_render_cache(sceneTree->renderCacheList,
-                                                        sceneTreeNode->renderCache);
+    vulkan_renderer_cache_add_primitive_render_cache(sceneTree->rendererCache,
+                                                     sceneTreeNode->renderCache);
   }
   if (sceneTreeNode->object != NULL && sceneTreeNode->object->camera != NULL) {
-    vulkan_render_cache_list_add_camera_render_cache(sceneTree->renderCacheList,
-                                                     sceneTreeNode->renderCache);
+    vulkan_renderer_cache_add_camera_render_cache(sceneTree->rendererCache,
+                                                  sceneTreeNode->renderCache);
   }
 
   vulkan_scene_tree_node_add_child(parentSceneTreeNode, sceneTreeNode);
@@ -108,5 +108,5 @@ void vulkan_scene_tree_debug_print(vulkan_scene_tree *sceneTree) {
   log_raw(stdout, "digraph scene_tree {");
   vulkan_scene_tree_node_debug_print(sceneTree->root);
   log_raw(stdout, "}\n");
-  vulkan_render_cache_list_debug_print(sceneTree->renderCacheList);
+  vulkan_renderer_cache_debug_print(sceneTree->rendererCache);
 }
