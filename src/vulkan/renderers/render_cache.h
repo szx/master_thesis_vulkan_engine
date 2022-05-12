@@ -12,7 +12,7 @@
 #include "../objects/textures.h"
 #include "../objects/vertex_stream.h"
 
-// HIRO refactor split into multiple types
+// HIRO refactor split render cache into multiple types
 // HIRO add key to prevent multiple adding in vulkan_render_cache_list
 typedef struct vulkan_render_cache {
   /* cache state accumulated from scene tree */

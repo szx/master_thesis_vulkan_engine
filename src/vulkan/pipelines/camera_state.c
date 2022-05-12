@@ -23,6 +23,34 @@ void vulkan_pipeline_camera_state_reinit_with_new_swap_chain(vulkan_pipeline_cam
   // No-op.
 }
 
+void vulkan_pipeline_camera_state_update(vulkan_pipeline_camera_state *camera) {
+  glm_mat4_identity(camera->user.transform);
+
+  mat4 translation;
+  glm_translate_make(translation, camera->user.position);
+
+  mat4 rotation;
+  glm_euler_yxz((vec3){camera->user.pitch, camera->user.yaw, camera->user.roll}, rotation);
+
+  glm_mat4_mul(translation, rotation, camera->user.transform);
+}
+
+void vulkan_pipeline_camera_state_select(vulkan_pipeline_camera_state *camera, size_t cameraIdx) {
+  size_t cameraCount = 1 + utarray_len(camera->renderState->renderCacheList->cameraRenderCaches);
+  camera->cameraIdx = cameraIdx % cameraCount;
+
+  if (camera->cameraIdx == 0) {
+    log_debug("selecting default camera %zu", camera->cameraIdx);
+    camera->cameraRenderCache = camera->defaultCameraRenderCache;
+  } else {
+    log_debug("selecting camera %zu", camera->cameraIdx);
+    camera->cameraRenderCache = *(vulkan_render_cache **)utarray_eltptr(
+        camera->renderState->renderCacheList->cameraRenderCaches, camera->cameraIdx - 1);
+  }
+
+  vulkan_pipeline_camera_state_reset(camera);
+}
+
 void reset_default_camera(vulkan_pipeline_camera_state *camera, vec3 distance) {
   glm_mat4_identity(camera->defaultCameraRenderCache->transform);
   glm_translate(camera->defaultCameraRenderCache->transform, distance);
@@ -116,33 +144,7 @@ void vulkan_pipeline_camera_state_rotate(vulkan_pipeline_camera_state *camera, f
   update_camera_vectors(camera);
 }
 
-void vulkan_pipeline_camera_state_update(vulkan_pipeline_camera_state *camera) {
-  glm_mat4_identity(camera->user.transform);
 
-  mat4 translation;
-  glm_translate_make(translation, camera->user.position);
-
-  mat4 rotation;
-  glm_euler_yxz((vec3){camera->user.pitch, camera->user.yaw, camera->user.roll}, rotation);
-
-  glm_mat4_mul(translation, rotation, camera->user.transform);
-}
-
-void vulkan_pipeline_camera_state_select(vulkan_pipeline_camera_state *camera, size_t cameraIdx) {
-  size_t cameraCount = 1 + utarray_len(camera->renderState->renderCacheList->cameraRenderCaches);
-  camera->cameraIdx = cameraIdx % cameraCount;
-
-  if (camera->cameraIdx == 0) {
-    log_debug("selecting default camera %zu", camera->cameraIdx);
-    camera->cameraRenderCache = camera->defaultCameraRenderCache;
-  } else {
-    log_debug("selecting camera %zu", camera->cameraIdx);
-    camera->cameraRenderCache = *(vulkan_render_cache **)utarray_eltptr(
-        camera->renderState->renderCacheList->cameraRenderCaches, camera->cameraIdx - 1);
-  }
-
-  vulkan_pipeline_camera_state_reset(camera);
-}
 
 void vulkan_pipeline_camera_state_set_view_matrix(vulkan_pipeline_camera_state *camera,
                                                   mat4 viewMatrix) {

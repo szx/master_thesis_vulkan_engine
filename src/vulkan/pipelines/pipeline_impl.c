@@ -281,30 +281,24 @@ vulkan_pipeline_info vulkan_pipeline_impl_skybox_get_pipeline_info(vulkan_pipeli
 }
 
 typedef struct vulkan_pipeline_impl_skybox_frame_state {
-  /// Skybox cubemap.
-  vulkan_textures_texture_element *cubemapTexture;
+  void *skyboxFrameStateIsEmptyForNow;
 } vulkan_pipeline_impl_skybox_frame_state;
 
 void vulkan_pipeline_impl_skybox_frame_state_init(vulkan_pipeline_frame_state *frameState) {
   vulkan_pipeline_impl_skybox_frame_state *impl =
       core_alloc(sizeof(vulkan_pipeline_impl_skybox_frame_state));
 
-  // HIRO Refactor cubemapTexture can be shared between frames
-  impl->cubemapTexture = frameState->pipeline->pipelineSharedState->skybox->cubemapTextureElement;
   frameState->impl = impl;
 }
 
 void vulkan_pipeline_impl_skybox_frame_state_deinit(vulkan_pipeline_frame_state *frameState) {
   vulkan_pipeline_impl_skybox_frame_state *impl = frameState->impl;
-  // cubemapTexture is managed by vulkan_textures
   core_free(impl);
 }
 
 void vulkan_pipeline_impl_skybox_frame_state_send_to_device(
     vulkan_pipeline_frame_state *frameState) {
-  vulkan_pipeline_impl_skybox_frame_state *impl = frameState->impl;
-
-  // cubemapTexture is managed by vulkan_textures
+  // vulkan_pipeline_impl_skybox_frame_state *impl = frameState->impl;
 }
 
 void vulkan_pipeline_impl_skybox_record_render_pass(vulkan_pipeline *pipeline,

@@ -1,12 +1,12 @@
 #include "shader_generator.h"
 
-void vulkan_shader_generator_init(vulkan_shader_generator *shaderGenerator,
-                                  vulkan_render_state *renderState) {
+void vulkan_pipeline_shader_generator_init(vulkan_pipeline_shader_generator *shaderGenerator,
+                                           vulkan_render_state *renderState) {
   shaderGenerator->renderState = renderState;
   utstring_new(shaderGenerator->sourceCode);
 }
 
-void vulkan_shader_generator_deinit(vulkan_shader_generator *shaderGenerator) {
+void vulkan_pipeline_shader_generator_deinit(vulkan_pipeline_shader_generator *shaderGenerator) {
   utstring_free(shaderGenerator->sourceCode);
 }
 
@@ -178,9 +178,10 @@ void glsl_add_body(UT_string *s, vulkan_pipeline_type pipelineType, vulkan_shade
   utstring_free(inputPath);
 }
 
-vulkan_shader *vulkan_shader_generator_get_shader(vulkan_shader_generator *shaderGenerator,
-                                                  vulkan_pipeline_type pipelineType,
-                                                  vulkan_shader_type shaderType) {
+vulkan_shader *
+vulkan_pipeline_shader_generator_get_shader(vulkan_pipeline_shader_generator *shaderGenerator,
+                                            vulkan_pipeline_type pipelineType,
+                                            vulkan_shader_type shaderType) {
   utstring_clear(shaderGenerator->sourceCode);
 
   glsl_add_header(shaderGenerator->sourceCode);

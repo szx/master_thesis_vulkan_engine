@@ -9,19 +9,16 @@
 #include "light_state.h"
 #include "skybox_state.h"
 
-// HIRO refactor rename file to shared_state.h
-
 /// Manages resources shared between frames (depth buffer) used by pipeline to render one
 /// one swap chain frame.
 typedef struct vulkan_pipeline_shared_state {
   vulkan_render_state *renderState; ///< Pointer.
 
-  // HIRO Rename vulkan_pipeline_*_state
   vulkan_pipeline_camera_state *camera;
   vulkan_pipeline_light_state *lights;
   vulkan_pipeline_skybox_state *skybox;
 
-  // TODO: Maintain two batches for transparent and opaque objects.
+  // HIRO: Maintain two batches for transparent and opaque objects.
   vulkan_batches *renderCacheListBatches;
 
   /// Depth buffer image.

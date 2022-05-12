@@ -1,28 +1,30 @@
 #include "shader_program.h"
 
-vulkan_shader_program *vulkan_shader_program_create(vulkan_render_state *renderState,
-                                                    vulkan_pipeline_type type) {
-  vulkan_shader_program *shaderProgram = core_alloc(sizeof(vulkan_shader_program));
+vulkan_pipeline_shader_program *
+vulkan_pipeline_shader_program_create(vulkan_render_state *renderState, vulkan_pipeline_type type) {
+  vulkan_pipeline_shader_program *shaderProgram =
+      core_alloc(sizeof(vulkan_pipeline_shader_program));
 
-  vulkan_shader_generator_init(&shaderProgram->shaderGenerator, renderState);
+  vulkan_pipeline_shader_generator_init(&shaderProgram->shaderGenerator, renderState);
 
-  shaderProgram->vertexShader = vulkan_shader_generator_get_shader(&shaderProgram->shaderGenerator,
-                                                                   type, vulkan_shader_type_vertex);
-  shaderProgram->fragmentShader = vulkan_shader_generator_get_shader(
+  shaderProgram->vertexShader = vulkan_pipeline_shader_generator_get_shader(
+      &shaderProgram->shaderGenerator, type, vulkan_shader_type_vertex);
+  shaderProgram->fragmentShader = vulkan_pipeline_shader_generator_get_shader(
       &shaderProgram->shaderGenerator, type, vulkan_shader_type_fragment);
 
   return shaderProgram;
 }
 
-void vulkan_shader_program_destroy(vulkan_shader_program *shaderProgram) {
+void vulkan_pipeline_shader_program_destroy(vulkan_pipeline_shader_program *shaderProgram) {
   vulkan_shader_destroy(shaderProgram->vertexShader);
   vulkan_shader_destroy(shaderProgram->fragmentShader);
-  vulkan_shader_generator_deinit(&shaderProgram->shaderGenerator);
+  vulkan_pipeline_shader_generator_deinit(&shaderProgram->shaderGenerator);
   core_free(shaderProgram);
 }
 
 VkPipelineShaderStageCreateInfo *
-vulkan_shader_program_get_shader_stages(vulkan_shader_program *shaderProgram, size_t *count) {
+vulkan_pipeline_shader_program_get_shader_stages(vulkan_pipeline_shader_program *shaderProgram,
+                                                 size_t *count) {
   size_t shaderStageCount = 2;
   *count = shaderStageCount;
 
@@ -46,7 +48,8 @@ vulkan_shader_program_get_shader_stages(vulkan_shader_program *shaderProgram, si
   return shaderStages;
 }
 
-void vulkan_shader_program_debug_print(vulkan_shader_program *shaderProgram, int indent) {
+void vulkan_pipeline_shader_program_debug_print(vulkan_pipeline_shader_program *shaderProgram,
+                                                int indent) {
   log_debug(INDENT_FORMAT_STRING "shader generator:", INDENT_FORMAT_ARGS(0));
   vulkan_shader_debug_print(shaderProgram->vertexShader, indent + 2);
   vulkan_shader_debug_print(shaderProgram->fragmentShader, indent + 2);

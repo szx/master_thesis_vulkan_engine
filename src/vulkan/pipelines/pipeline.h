@@ -1,11 +1,12 @@
-/* Vulkan API helper objects. */
+/* Generic pipeline.
+ */
 
 #pragma once
 
+#include "frame_state.h"
 #include "pipeline_impl.h"
-#include "pipeline_shared_state.h"
-#include "pipeline_state.h"
 #include "shader_program.h"
+#include "shared_state.h"
 
 /// Used to record command to command buffer.
 /// Can be chained with other pipelines.
@@ -15,7 +16,7 @@ typedef struct vulkan_pipeline {
   vulkan_pipeline_shared_state *pipelineSharedState; ///< Pointer.
 
   vulkan_pipeline_type type;
-  vulkan_shader_program *shaderProgram;
+  vulkan_pipeline_shader_program *shaderProgram;
   VkRenderPass renderPass;
   VkPipelineLayout pipelineLayout;
   VkPipeline graphicsPipeline;

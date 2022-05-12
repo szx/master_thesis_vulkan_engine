@@ -33,7 +33,7 @@ void create_graphics_pipeline(vulkan_pipeline *pipeline) {
 
   size_t shaderStageCount;
   VkPipelineShaderStageCreateInfo *shaderStages =
-      vulkan_shader_program_get_shader_stages(pipeline->shaderProgram, &shaderStageCount);
+      vulkan_pipeline_shader_program_get_shader_stages(pipeline->shaderProgram, &shaderStageCount);
 
   size_t descriptorSetLayoutCount = 0;
   VkDescriptorSetLayout *descriptorSetLayouts = vulkan_descriptors_get_descriptor_set_layouts(
@@ -96,7 +96,7 @@ void vulkan_pipeline_init_start(vulkan_pipeline *pipeline, vulkan_pipeline_type 
   pipeline->pipelineSharedState = pipelineSharedState;
 
   pipeline->type = type;
-  pipeline->shaderProgram = vulkan_shader_program_create(renderState, pipeline->type);
+  pipeline->shaderProgram = vulkan_pipeline_shader_program_create(renderState, pipeline->type);
 }
 
 void vulkan_pipeline_init_prev_next(vulkan_pipeline *pipeline, vulkan_pipeline *prev,
@@ -141,7 +141,7 @@ void vulkan_pipeline_deinit(vulkan_pipeline *pipeline) {
   vkDestroyPipelineLayout(pipeline->vks->vkd->device, pipeline->pipelineLayout, vka);
   vkDestroyPipeline(pipeline->vks->vkd->device, pipeline->graphicsPipeline, vka);
   vkDestroyRenderPass(pipeline->vks->vkd->device, pipeline->renderPass, vka);
-  vulkan_shader_program_destroy(pipeline->shaderProgram);
+  vulkan_pipeline_shader_program_destroy(pipeline->shaderProgram);
 }
 
 vulkan_pipeline_info vulkan_pipeline_get_pipeline_info(vulkan_pipeline *pipeline) {
@@ -174,7 +174,7 @@ void vulkan_pipeline_record_render_pass(vulkan_pipeline *pipeline, VkCommandBuff
 
 void vulkan_pipeline_debug_print(vulkan_pipeline *pipeline) {
   log_debug("pipeline:\n");
-  vulkan_shader_program_debug_print(pipeline->shaderProgram, 2);
+  vulkan_pipeline_shader_program_debug_print(pipeline->shaderProgram, 2);
   utarray_foreach_elem_it (vulkan_pipeline_frame_state *, frameState, pipeline->frameStates) {
     vulkan_pipeline_frame_state_debug_print(frameState, 2);
   }

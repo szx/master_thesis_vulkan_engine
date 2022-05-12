@@ -11,7 +11,7 @@ vulkan_pipeline_skybox_state_create(vulkan_render_state *renderState) {
       skybox->renderState->textures, skybox->renderState->renderCacheList->skybox->cubemapTexture);
   skybox->ambientIntensity = 1.0f;
 
-  // HIRO HIRO HIRO HIRO Refactor manual adding of geometry.
+  // HIRO HIRO HIRO HIRO Refactor manual adding of geometry (after refactoring render_cache_list).
   // HIRO Refactor move boxVertexStreamElement to render state
 
   skybox->boxRenderCache = vulkan_render_cache_create();
@@ -105,6 +105,11 @@ void vulkan_pipeline_skybox_state_destroy(vulkan_pipeline_skybox_state *skybox) 
 
 void vulkan_pipeline_skybox_state_reinit_with_new_swap_chain(vulkan_pipeline_skybox_state *skybox) {
   // No-op.
+}
+
+void vulkan_pipeline_skybox_state_update(vulkan_pipeline_skybox_state *skybox) {
+  // No-op.
+  // TODO: Update skybox parameters (day-light cycle?)
 }
 
 void vulkan_pipeline_skybox_state_set_skybox_elements(vulkan_pipeline_skybox_state *skybox,

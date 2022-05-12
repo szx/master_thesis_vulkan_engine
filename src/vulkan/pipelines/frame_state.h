@@ -1,10 +1,12 @@
-/* Vulkan API helper objects. */
-
+/* Pipeline frame state.
+ * All objects unique to pipeline.
+ * Pipeline maintains number of framebuffer states equal to number of swap chain images.
+ * Pipeline maintains number of frame states equal to FRAMES_IN_FLIGHT.
+ */
 #pragma once
 
 #include "../objects/image.h"
 
-// HIRO refactor rename file to frame_state.h
 typedef struct vulkan_pipeline vulkan_pipeline;
 
 /// Manages framebuffer used by pipeline's render pass.

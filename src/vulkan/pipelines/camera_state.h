@@ -29,16 +29,15 @@ typedef struct vulkan_pipeline_camera_state {
 vulkan_pipeline_camera_state *vulkan_pipeline_camera_state_create(vulkan_render_state *renderState);
 void vulkan_pipeline_camera_state_destroy(vulkan_pipeline_camera_state *camera);
 void vulkan_pipeline_camera_state_reinit_with_new_swap_chain(vulkan_pipeline_camera_state *camera);
+void vulkan_pipeline_camera_state_update(vulkan_pipeline_camera_state *camera);
 
+void vulkan_pipeline_camera_state_select(vulkan_pipeline_camera_state *camera, size_t cameraIdx);
 void vulkan_pipeline_camera_state_reset(vulkan_pipeline_camera_state *camera);
-
 void vulkan_pipeline_camera_state_move(vulkan_pipeline_camera_state *camera, float frontDt,
                                        float rightDt, float upDt);
 void vulkan_pipeline_camera_state_rotate(vulkan_pipeline_camera_state *camera, float yawDt,
                                          float pitchDt, float rollDt);
-void vulkan_pipeline_camera_state_update(vulkan_pipeline_camera_state *camera);
 
-void vulkan_pipeline_camera_state_select(vulkan_pipeline_camera_state *camera, size_t cameraIdx);
 
 void vulkan_pipeline_camera_state_set_view_matrix(vulkan_pipeline_camera_state *camera,
                                                   mat4 viewMatrix);

@@ -2,6 +2,6 @@
  */
 #pragma once
 
-#include "pipeline_shared_state.h"
+#include "shared_state.h"
 
 #include "pipeline.h"

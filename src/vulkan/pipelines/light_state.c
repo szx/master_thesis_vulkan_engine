@@ -19,6 +19,12 @@ void vulkan_pipeline_light_state_destroy(vulkan_pipeline_light_state *lights) {
 void vulkan_pipeline_light_state_reinit_with_new_swap_chain(vulkan_pipeline_light_state *light) {
   // No-op.
 }
+
+void vulkan_pipeline_light_state_update(vulkan_pipeline_light_state *light) {
+  // No-op.
+  // TODO: Update light positions?
+}
+
 vulkan_directional_light_helper_element *
 vulkan_pipeline_light_state_get_directional_light_element(vulkan_pipeline_light_state *lights,
                                                           size_t lightIdx) {
