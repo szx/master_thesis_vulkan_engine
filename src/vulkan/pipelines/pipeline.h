@@ -44,6 +44,7 @@ void vulkan_pipeline_deinit(vulkan_pipeline *pipeline);
 
 vulkan_pipeline_info vulkan_pipeline_get_pipeline_info(vulkan_pipeline *pipeline);
 
+void vulkan_pipeline_update(vulkan_pipeline *pipeline);
 void vulkan_pipeline_send_to_device(vulkan_pipeline *pipeline);
 void vulkan_pipeline_record_render_pass(vulkan_pipeline *pipeline, VkCommandBuffer commandBuffer,
                                         size_t swapChainImageIdx);

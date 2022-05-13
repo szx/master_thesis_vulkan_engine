@@ -58,14 +58,14 @@ void vulkan_pipeline_shared_state_reinit_with_new_swap_chain(
 }
 
 void vulkan_pipeline_shared_state_update(vulkan_pipeline_shared_state *pipelineSharedState,
-                                         vulkan_batch_instancing_policy instancingPolicy) {
+                                         vulkan_draw_call_instancing_policy instancingPolicy) {
   vulkan_pipeline_camera_state_update(pipelineSharedState->camera);
   vulkan_pipeline_light_state_update(pipelineSharedState->lights);
   vulkan_pipeline_skybox_state_update(pipelineSharedState->skybox);
 
   vulkan_batches_update(pipelineSharedState->rendererCacheBatches, instancingPolicy);
-  dl_foreach_elem(vulkan_batch *, batch, pipelineSharedState->rendererCacheBatches->batches) {
-    vulkan_batch_update_draw_command(batch);
+  dl_foreach_elem(vulkan_draw_call *, batch, pipelineSharedState->rendererCacheBatches->batches) {
+    vulkan_draw_call_update_draw_command(batch);
     assert(batch->drawCommand.firstIndex != INT32_MAX);
     assert(batch->drawCommand.vertexOffset != INT32_MAX);
   }

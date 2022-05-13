@@ -279,7 +279,7 @@ const char *log_level_debug_str(int value);
 const char *shaderc_include_type_debug_str(int value);
 const char *vulkan_asset_vertex_attribute_component_type_debug_str(int value);
 void vulkan_attribute_type_debug_print(int flags, int indent);
-const char *vulkan_batch_instancing_policy_debug_str(int value);
+const char *vulkan_draw_call_instancing_policy_debug_str(int value);
 const char *vulkan_buffer_type_debug_str(int value);
 const char *vulkan_camera_type_debug_str(int value);
 const char *vulkan_image_type_debug_str(int value);

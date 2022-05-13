@@ -202,28 +202,37 @@ vulkan_pipeline_info vulkan_pipeline_impl_forward_get_pipeline_info(vulkan_pipel
 }
 
 typedef struct vulkan_pipeline_impl_forward_frame_state {
-  vulkan_batches_data batchesData;
+  // HIRO Maintain two batches for transparent and opaque objects.
+  vulkan_draw_call_data rendererCacheBatchesData;
 } vulkan_pipeline_impl_forward_frame_state;
 
 void vulkan_pipeline_impl_forward_frame_state_init(vulkan_pipeline_frame_state *frameState) {
   vulkan_pipeline_impl_forward_frame_state *impl =
       core_alloc(sizeof(vulkan_pipeline_impl_forward_frame_state));
-  vulkan_batches_data_init(&impl->batchesData, frameState->pipeline->vks->vkd);
+
+  vulkan_draw_call_data_init(&impl->rendererCacheBatchesData, frameState->pipeline->vks->vkd);
+
   frameState->impl = impl;
 }
 
 void vulkan_pipeline_impl_forward_frame_state_deinit(vulkan_pipeline_frame_state *frameState) {
   vulkan_pipeline_impl_forward_frame_state *impl = frameState->impl;
 
-  vulkan_batches_data_deinit(&impl->batchesData);
+  vulkan_draw_call_data_deinit(&impl->rendererCacheBatchesData);
   core_free(impl);
+}
+
+void vulkan_pipeline_impl_forward_frame_state_update(vulkan_pipeline_frame_state *frameState) {
+  vulkan_pipeline_impl_forward_frame_state *impl = frameState->impl;
+
+  vulkan_draw_call_data_send_to_device(&impl->rendererCacheBatchesData);
 }
 
 void vulkan_pipeline_impl_forward_frame_state_send_to_device(
     vulkan_pipeline_frame_state *frameState) {
   vulkan_pipeline_impl_forward_frame_state *impl = frameState->impl;
 
-  vulkan_batches_data_send_to_device(&impl->batchesData);
+  vulkan_draw_call_data_send_to_device(&impl->rendererCacheBatchesData);
 }
 
 void vulkan_pipeline_impl_forward_record_render_pass(vulkan_pipeline *pipeline,
@@ -264,7 +273,7 @@ void vulkan_pipeline_impl_forward_record_render_pass(vulkan_pipeline *pipeline,
                      sizeof(drawPushConstant), &drawPushConstant);
 
   vulkan_batches_record_draw_command(pipeline->pipelineSharedState->rendererCacheBatches,
-                                     commandBuffer, &frameStateImpl->batchesData);
+                                     commandBuffer, &frameStateImpl->rendererCacheBatchesData);
 
   vkCmdEndRenderPass(commandBuffer);
 }
@@ -296,9 +305,14 @@ void vulkan_pipeline_impl_skybox_frame_state_deinit(vulkan_pipeline_frame_state 
   core_free(impl);
 }
 
+void vulkan_pipeline_impl_skybox_frame_state_update(vulkan_pipeline_frame_state *frameState) {
+  // No-op.
+  // HIRO Refactor move skyboxState from shared_state to frame_state and mark some fields as shared?
+}
+
 void vulkan_pipeline_impl_skybox_frame_state_send_to_device(
     vulkan_pipeline_frame_state *frameState) {
-  // vulkan_pipeline_impl_skybox_frame_state *impl = frameState->impl;
+  // No-op.
 }
 
 void vulkan_pipeline_impl_skybox_record_render_pass(vulkan_pipeline *pipeline,

@@ -155,6 +155,13 @@ vulkan_pipeline_info vulkan_pipeline_get_pipeline_info(vulkan_pipeline *pipeline
   return (vulkan_pipeline_info){0};
 }
 
+void vulkan_pipeline_update(vulkan_pipeline *pipeline) {
+  vulkan_pipeline_frame_state *frameState =
+      utarray_eltptr(pipeline->frameStates, pipeline->renderState->sync->currentFrameInFlight);
+
+  vulkan_pipeline_frame_state_update(frameState);
+}
+
 void vulkan_pipeline_send_to_device(vulkan_pipeline *pipeline) {
   vulkan_pipeline_frame_state *frameState =
       utarray_eltptr(pipeline->frameStates, pipeline->renderState->sync->currentFrameInFlight);

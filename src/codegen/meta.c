@@ -5070,10 +5070,10 @@ void vulkan_attribute_type_debug_print(int flags, int indent) {
   if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_texcoord", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_tangent", INDENT_FORMAT_ARGS(2)); }
 }
-const char *vulkan_batch_instancing_policy_debug_str(int value) {
-  if (value == 0) { return "vulkan_batch_instancing_policy_no_instancing"; }
-  if (value == 1) { return "vulkan_batch_instancing_policy_matching_vertex_attributes"; }
-  return "UNKNOWN vulkan_batch_instancing_policy";
+const char *vulkan_draw_call_instancing_policy_debug_str(int value) {
+  if (value == 0) { return "vulkan_draw_call_instancing_policy_no_instancing"; }
+  if (value == 1) { return "vulkan_draw_call_instancing_policy_matching_vertex_attributes"; }
+  return "UNKNOWN vulkan_draw_call_instancing_policy";
 }
 const char *vulkan_buffer_type_debug_str(int value) {
   if (value == 0) { return "vulkan_buffer_type_geometry_index"; }

@@ -216,12 +216,11 @@ TEST scene_graph_building() {
   log_info("Test batching.");
   vulkan_batches *batches = vulkan_batches_create(rendererCache, vkd);
 
-  rendererCache->primitiveElementsSorted = false;
-  vulkan_batches_update(batches, vulkan_batch_instancing_policy_no_instancing);
+  vulkan_batches_update(batches, vulkan_draw_call_instancing_policy_no_instancing);
   vulkan_batches_debug_print(batches);
   size_t batchNoInstancingLen = dl_count(batches->batches);
 
-  vulkan_batches_update(batches, vulkan_batch_instancing_policy_matching_vertex_attributes);
+  vulkan_batches_update(batches, vulkan_draw_call_instancing_policy_matching_vertex_attributes);
   vulkan_batches_debug_print(batches);
   size_t batchVertexAttributesLen = dl_count(batches->batches);
   ASSERT(batchVertexAttributesLen <= batchNoInstancingLen);

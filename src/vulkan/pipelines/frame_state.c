@@ -49,6 +49,15 @@ void vulkan_pipeline_frame_state_deinit(vulkan_pipeline_frame_state *frameState)
 #undef x
 }
 
+void vulkan_pipeline_frame_state_update(vulkan_pipeline_frame_state *frameState) {
+#define x(_name, ...)                                                                              \
+  if (frameState->pipeline->type == vulkan_pipeline_type_##_name) {                                \
+    vulkan_pipeline_impl_##_name##_frame_state_update(frameState);                                 \
+  }
+  VULKAN_PIPELINE_TYPES(x, )
+#undef x
+}
+
 void vulkan_pipeline_frame_state_send_to_device(vulkan_pipeline_frame_state *frameState) {
 #define x(_name, ...)                                                                              \
   if (frameState->pipeline->type == vulkan_pipeline_type_##_name) {                                \

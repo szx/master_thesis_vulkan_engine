@@ -4,8 +4,8 @@
 
 #define END_OF_DATA_ASSET_CONFIG_SECTION
 #define DATA_ASSET_CONFIG_SECTIONS(X, ...) \
-  X(controls, __VA_ARGS__) \
   X(settings, __VA_ARGS__) \
+  X(controls, __VA_ARGS__) \
   X(graphics, __VA_ARGS__) \
   END_OF_DATA_ASSET_CONFIG_SECTION
 

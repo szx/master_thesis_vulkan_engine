@@ -101,11 +101,15 @@ void vulkan_renderer_recreate_swap_chain(vulkan_renderer *renderer) {
 }
 
 void vulkan_renderer_update(vulkan_renderer *renderer) {
+  utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
+    vulkan_pipeline_update(pipeline);
+  }
+
   vulkan_pipeline_shared_state_update(
       renderer->pipelineSharedState,
       (renderer->config->asset.graphicsEnabledInstancing
-           ? vulkan_batch_instancing_policy_matching_vertex_attributes
-           : vulkan_batch_instancing_policy_no_instancing));
+           ? vulkan_draw_call_instancing_policy_matching_vertex_attributes
+           : vulkan_draw_call_instancing_policy_no_instancing));
 
   vulkan_render_state_update(renderer->renderState, renderer);
 }

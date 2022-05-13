@@ -14,6 +14,9 @@
 typedef struct vulkan_pipeline_shared_state {
   vulkan_render_state *renderState; ///< Pointer.
 
+  /** CPU state used to update uniform buffers.
+   * Can (should) be changed only in main loop's updateFunc, which prevents synchronization
+   * issues. */
   vulkan_pipeline_camera_state *camera;
   vulkan_pipeline_light_state *lights;
   vulkan_pipeline_skybox_state *skybox;
@@ -37,7 +40,7 @@ void vulkan_pipeline_shared_state_reinit_with_new_swap_chain(
     vulkan_pipeline_shared_state *pipelineSharedState);
 
 void vulkan_pipeline_shared_state_update(vulkan_pipeline_shared_state *pipelineSharedState,
-                                         vulkan_batch_instancing_policy instancingPolicy);
+                                         vulkan_draw_call_instancing_policy instancingPolicy);
 
 void vulkan_pipeline_shared_state_debug_print(vulkan_pipeline_shared_state *pipelineSharedState,
                                               int indent);

@@ -66,6 +66,8 @@ typedef struct vulkan_pipeline vulkan_pipeline;
                                                                                                    \
   void vulkan_pipeline_impl_##_name##_frame_state_init(vulkan_pipeline_frame_state *frameState);   \
   void vulkan_pipeline_impl_##_name##_frame_state_deinit(vulkan_pipeline_frame_state *frameState); \
+                                                                                                   \
+  void vulkan_pipeline_impl_##_name##_frame_state_update(vulkan_pipeline_frame_state *frameState); \
   void vulkan_pipeline_impl_##_name##_frame_state_send_to_device(                                  \
       vulkan_pipeline_frame_state *frameState);                                                    \
                                                                                                    \
