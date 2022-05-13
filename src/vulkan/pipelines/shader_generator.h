@@ -3,7 +3,7 @@
 
 #include "../objects/descriptor.h"
 #include "../objects/shader_reflect.h"
-#include "../pipelines/pipeline_impl.h"
+#include "../pipelines/pipeline_defs.h"
 #include "../renderers/render_state.h"
 
 /// Generates GLSL shader source code.
