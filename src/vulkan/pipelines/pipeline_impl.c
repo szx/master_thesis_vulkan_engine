@@ -11,52 +11,21 @@ vulkan_pipeline_info vulkan_pipeline_impl_forward_get_pipeline_info(vulkan_pipel
                                 .depthClearValue = (VkClearDepthStencilValue){0.0f, 0}};
 }
 
-void vulkan_pipeline_impl_forward_frame_state_init(vulkan_pipeline_frame_state *frameState) {
-  vulkan_pipeline_impl_forward_frame_state *impl =
-      core_alloc(sizeof(vulkan_pipeline_impl_forward_frame_state));
-
-  vulkan_draw_call_data_init(&impl->rendererCacheBatchesData, frameState->pipeline->vks->vkd);
-
-  frameState->impl = impl;
-}
-
-void vulkan_pipeline_impl_forward_frame_state_deinit(vulkan_pipeline_frame_state *frameState) {
-  vulkan_pipeline_impl_forward_frame_state *impl = frameState->impl;
-
-  vulkan_draw_call_data_deinit(&impl->rendererCacheBatchesData);
-  core_free(impl);
-}
-
-void vulkan_pipeline_impl_forward_frame_state_update(vulkan_pipeline_frame_state *frameState) {
-  vulkan_pipeline_impl_forward_frame_state *impl = frameState->impl;
-
-  vulkan_draw_call_data_send_to_device(&impl->rendererCacheBatchesData);
-}
-
-void vulkan_pipeline_impl_forward_frame_state_send_to_device(
-    vulkan_pipeline_frame_state *frameState) {
-  vulkan_pipeline_impl_forward_frame_state *impl = frameState->impl;
-
-  vulkan_draw_call_data_send_to_device(&impl->rendererCacheBatchesData);
-}
-
 void vulkan_pipeline_impl_forward_record_render_pass(vulkan_pipeline *pipeline,
                                                      VkCommandBuffer commandBuffer,
                                                      size_t swapChainImageIdx) {
   vulkan_pipeline_info pipelineInfo = vulkan_pipeline_get_pipeline_info(pipeline);
-  vulkan_pipeline_framebuffer_state *framebufferState =
-      utarray_eltptr(pipeline->framebufferStates, swapChainImageIdx);
+  VkFramebuffer *framebuffer = utarray_eltptr(pipeline->framebuffers, swapChainImageIdx);
   size_t currentFrameInFlight = pipeline->renderState->sync->currentFrameInFlight;
   vulkan_pipeline_frame_state *frameState =
-      utarray_eltptr(pipeline->frameStates, currentFrameInFlight);
-  vulkan_pipeline_impl_forward_frame_state *frameStateImpl = frameState->impl;
+      utarray_eltptr(pipeline->pipelineState->frameStates, currentFrameInFlight);
 
   /* record new render pass into command buffer */
   // HIRO pass render pass and framebuffer as argument, allocate if NULL
   VkRenderPassBeginInfo renderPassInfo = {0};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
   renderPassInfo.renderPass = pipeline->renderPass;
-  renderPassInfo.framebuffer = framebufferState->framebuffer;
+  renderPassInfo.framebuffer = *framebuffer;
   renderPassInfo.renderArea.offset = (VkOffset2D){0, 0};
   renderPassInfo.renderArea.extent = pipeline->vks->swapChainExtent;
   uint32_t clearValueCount = vulkan_pipeline_info_get_framebuffer_attachment_count(pipelineInfo);
@@ -77,8 +46,8 @@ void vulkan_pipeline_impl_forward_record_render_pass(vulkan_pipeline *pipeline,
   vkCmdPushConstants(commandBuffer, pipeline->pipelineLayout, VK_SHADER_STAGE_ALL, 0,
                      sizeof(drawPushConstant), &drawPushConstant);
 
-  vulkan_batches_record_draw_command(pipeline->pipelineSharedState->rendererCacheBatches,
-                                     commandBuffer, &frameStateImpl->rendererCacheBatchesData);
+  vulkan_batches_record_draw_command(pipeline->pipelineState->sharedState.rendererCacheBatches,
+                                     commandBuffer, &frameState->rendererCacheBatchesData);
 
   vkCmdEndRenderPass(commandBuffer);
 }
@@ -94,44 +63,18 @@ vulkan_pipeline_info vulkan_pipeline_impl_skybox_get_pipeline_info(vulkan_pipeli
                                 .useDepthAttachment = false};
 }
 
-void vulkan_pipeline_impl_skybox_frame_state_init(vulkan_pipeline_frame_state *frameState) {
-  vulkan_pipeline_impl_skybox_frame_state *impl =
-      core_alloc(sizeof(vulkan_pipeline_impl_skybox_frame_state));
-
-  frameState->impl = impl;
-}
-
-void vulkan_pipeline_impl_skybox_frame_state_deinit(vulkan_pipeline_frame_state *frameState) {
-  vulkan_pipeline_impl_skybox_frame_state *impl = frameState->impl;
-  core_free(impl);
-}
-
-void vulkan_pipeline_impl_skybox_frame_state_update(vulkan_pipeline_frame_state *frameState) {
-  // No-op.
-  // HIRO Refactor move skyboxState from shared_state to frame_state and mark some fields as shared?
-}
-
-void vulkan_pipeline_impl_skybox_frame_state_send_to_device(
-    vulkan_pipeline_frame_state *frameState) {
-  // No-op.
-}
-
 void vulkan_pipeline_impl_skybox_record_render_pass(vulkan_pipeline *pipeline,
                                                     VkCommandBuffer commandBuffer,
                                                     size_t swapChainImageIdx) {
   vulkan_pipeline_info pipelineInfo = vulkan_pipeline_get_pipeline_info(pipeline);
-  vulkan_pipeline_framebuffer_state *framebufferState =
-      utarray_eltptr(pipeline->framebufferStates, swapChainImageIdx);
+  VkFramebuffer *framebuffer = utarray_eltptr(pipeline->framebuffers, swapChainImageIdx);
   size_t currentFrameInFlight = pipeline->renderState->sync->currentFrameInFlight;
-  vulkan_pipeline_frame_state *frameState =
-      utarray_eltptr(pipeline->frameStates, currentFrameInFlight);
-  vulkan_pipeline_impl_skybox_frame_state *frameStateImpl = frameState->impl;
 
   /* record new render pass into command buffer */
   VkRenderPassBeginInfo renderPassInfo = {0};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
   renderPassInfo.renderPass = pipeline->renderPass;
-  renderPassInfo.framebuffer = framebufferState->framebuffer;
+  renderPassInfo.framebuffer = *framebuffer;
   renderPassInfo.renderArea.offset = (VkOffset2D){0, 0};
   renderPassInfo.renderArea.extent = pipeline->vks->swapChainExtent;
   uint32_t clearValueCount = vulkan_pipeline_info_get_framebuffer_attachment_count(pipelineInfo);
@@ -154,10 +97,10 @@ void vulkan_pipeline_impl_skybox_record_render_pass(vulkan_pipeline *pipeline,
 
   // Draw cube.
   // HIRO HIRO functions to CmdDraw single primitive renderer cache without batching
-  uint32_t indexOffset =
-      pipeline->pipelineSharedState->skybox->boxRenderCache->vertexStreamElement.firstIndexOffset;
-  uint32_t vertexOffset =
-      pipeline->pipelineSharedState->skybox->boxRenderCache->vertexStreamElement.firstVertexOffset;
+  uint32_t indexOffset = pipeline->pipelineState->sharedState.skybox->boxRenderCache
+                             ->vertexStreamElement.firstIndexOffset;
+  uint32_t vertexOffset = pipeline->pipelineState->sharedState.skybox->boxRenderCache
+                              ->vertexStreamElement.firstVertexOffset;
   vkCmdDrawIndexed(commandBuffer, 36, 1, indexOffset, vertexOffset, 0);
 
   vkCmdEndRenderPass(commandBuffer);

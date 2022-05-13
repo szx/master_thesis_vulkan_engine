@@ -75,11 +75,37 @@ void create_graphics_pipeline(vulkan_pipeline *pipeline) {
   core_free(descriptorSetLayouts);
 }
 
+void createFramebuffers(vulkan_pipeline *pipeline) {
+  vulkan_pipeline_info pipelineInfo = vulkan_pipeline_get_pipeline_info(pipeline);
+
+  uint32_t framebufferAttachmentCount =
+      vulkan_pipeline_info_get_framebuffer_attachment_count(pipelineInfo);
+  assert(framebufferAttachmentCount > 0);
+
+  utarray_alloc(pipeline->framebuffers, sizeof(VkFramebuffer));
+  utarray_resize(pipeline->framebuffers, utarray_len(pipeline->vks->swapChainImageViews));
+  size_t swapChainImageIdx = 0;
+  utarray_foreach_elem_it (VkFramebuffer *, framebuffer, pipeline->framebuffers) {
+    VkImageView framebufferAttachments[framebufferAttachmentCount];
+    vulkan_pipeline_info_get_framebuffer_attachment_image_views(
+        pipelineInfo,
+        *(VkImageView *)utarray_eltptr(pipeline->vks->swapChainImageViews, swapChainImageIdx), NULL,
+        pipeline->pipelineState->sharedState.depthBufferImage->imageView, framebufferAttachments);
+
+    *framebuffer = vulkan_create_framebuffer(
+        pipeline->vks->vkd, pipeline->renderPass, framebufferAttachmentCount,
+        framebufferAttachments, pipeline->vks->swapChainExtent.width,
+        pipeline->vks->swapChainExtent.height, "pipeline framebuffer state #%d", swapChainImageIdx);
+
+    swapChainImageIdx++;
+  }
+}
+
 vulkan_pipeline *vulkan_pipeline_create_start(vulkan_pipeline_type type, vulkan_swap_chain *vks,
                                               vulkan_render_state *renderState,
-                                              vulkan_pipeline_shared_state *pipelineSharedState) {
+                                              vulkan_pipeline_state *pipelineState) {
   vulkan_pipeline *pipeline = core_alloc(sizeof(vulkan_pipeline));
-  vulkan_pipeline_init_start(pipeline, type, vks, renderState, pipelineSharedState);
+  vulkan_pipeline_init_start(pipeline, type, vks, renderState, pipelineState);
   return pipeline;
 }
 
@@ -90,10 +116,10 @@ void vulkan_pipeline_destroy(vulkan_pipeline *pipeline) {
 
 void vulkan_pipeline_init_start(vulkan_pipeline *pipeline, vulkan_pipeline_type type,
                                 vulkan_swap_chain *vks, vulkan_render_state *renderState,
-                                vulkan_pipeline_shared_state *pipelineSharedState) {
+                                vulkan_pipeline_state *pipelineState) {
   pipeline->vks = vks;
   pipeline->renderState = renderState;
-  pipeline->pipelineSharedState = pipelineSharedState;
+  pipeline->pipelineState = pipelineState;
 
   pipeline->type = type;
   pipeline->shaderProgram = vulkan_pipeline_shader_program_create(renderState, pipeline->type);
@@ -106,38 +132,15 @@ void vulkan_pipeline_init_prev_next(vulkan_pipeline *pipeline, vulkan_pipeline *
 }
 
 void vulkan_pipeline_init_finish(vulkan_pipeline *pipeline) {
-
   create_render_pass(pipeline);
   create_graphics_pipeline(pipeline);
-
-  utarray_alloc(pipeline->framebufferStates, sizeof(vulkan_pipeline_frame_state));
-  utarray_resize(pipeline->framebufferStates, utarray_len(pipeline->vks->swapChainImageViews));
-  size_t swapChainImageIdx = 0;
-  utarray_foreach_elem_it (vulkan_pipeline_framebuffer_state *, framebufferStates,
-                           pipeline->framebufferStates) {
-    vulkan_pipeline_framebuffer_state_init(framebufferStates, pipeline, swapChainImageIdx);
-    swapChainImageIdx++;
-  }
-
-  utarray_alloc(pipeline->frameStates, sizeof(vulkan_pipeline_frame_state));
-  utarray_resize(pipeline->frameStates, FRAMES_IN_FLIGHT);
-  utarray_foreach_elem_it (vulkan_pipeline_frame_state *, frameState, pipeline->frameStates) {
-    vulkan_pipeline_frame_state_init(frameState, pipeline);
-  }
+  createFramebuffers(pipeline);
 }
 
 void vulkan_pipeline_deinit(vulkan_pipeline *pipeline) {
-  utarray_foreach_elem_it (vulkan_pipeline_framebuffer_state *, framebufferStates,
-                           pipeline->framebufferStates) {
-    vulkan_pipeline_framebuffer_state_deinit(framebufferStates);
+  utarray_foreach_elem_deref (VkFramebuffer, framebuffer, pipeline->framebuffers) {
+    vkDestroyFramebuffer(pipeline->vks->vkd->device, framebuffer, vka);
   }
-  utarray_free(pipeline->framebufferStates);
-
-  utarray_foreach_elem_it (vulkan_pipeline_frame_state *, frameState, pipeline->frameStates) {
-    vulkan_pipeline_frame_state_deinit(frameState);
-  }
-  utarray_free(pipeline->frameStates);
-
   vkDestroyPipelineLayout(pipeline->vks->vkd->device, pipeline->pipelineLayout, vka);
   vkDestroyPipeline(pipeline->vks->vkd->device, pipeline->graphicsPipeline, vka);
   vkDestroyRenderPass(pipeline->vks->vkd->device, pipeline->renderPass, vka);
@@ -155,20 +158,6 @@ vulkan_pipeline_info vulkan_pipeline_get_pipeline_info(vulkan_pipeline *pipeline
   return (vulkan_pipeline_info){0};
 }
 
-void vulkan_pipeline_update(vulkan_pipeline *pipeline) {
-  vulkan_pipeline_frame_state *frameState =
-      utarray_eltptr(pipeline->frameStates, pipeline->renderState->sync->currentFrameInFlight);
-
-  vulkan_pipeline_frame_state_update(frameState);
-}
-
-void vulkan_pipeline_send_to_device(vulkan_pipeline *pipeline) {
-  vulkan_pipeline_frame_state *frameState =
-      utarray_eltptr(pipeline->frameStates, pipeline->renderState->sync->currentFrameInFlight);
-
-  vulkan_pipeline_frame_state_send_to_device(frameState);
-}
-
 void vulkan_pipeline_record_render_pass(vulkan_pipeline *pipeline, VkCommandBuffer commandBuffer,
                                         size_t swapChainImageIdx) {
 #define x(_name, ...)                                                                              \
@@ -182,8 +171,5 @@ void vulkan_pipeline_record_render_pass(vulkan_pipeline *pipeline, VkCommandBuff
 void vulkan_pipeline_debug_print(vulkan_pipeline *pipeline) {
   log_debug("pipeline:\n");
   vulkan_pipeline_shader_program_debug_print(pipeline->shaderProgram, 2);
-  utarray_foreach_elem_it (vulkan_pipeline_frame_state *, frameState, pipeline->frameStates) {
-    vulkan_pipeline_frame_state_debug_print(frameState, 2);
-  }
-  vulkan_pipeline_shared_state_debug_print(pipeline->pipelineSharedState, 2);
+  vulkan_pipeline_state_debug_print(pipeline->pipelineState, 2);
 }

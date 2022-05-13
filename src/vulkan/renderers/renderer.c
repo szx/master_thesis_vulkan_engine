@@ -20,14 +20,14 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
       vulkan_render_state_create(renderer->vks, renderer->rendererCache, renderer->config,
                                  vulkan_renderer_update_global_uniform_buffer_callback);
 
-  renderer->pipelineSharedState = vulkan_pipeline_shared_state_create(renderer->renderState);
+  renderer->pipelineState = vulkan_pipeline_state_create(renderer->renderState);
 
   utarray_alloc(renderer->pipelines, sizeof(vulkan_pipeline *));
 
   for (size_t i = 0; i < pipelineCount; i++) {
     vulkan_pipeline_type type = pipelines[i];
     vulkan_pipeline *pipeline = vulkan_pipeline_create_start(
-        type, renderer->vks, renderer->renderState, renderer->pipelineSharedState);
+        type, renderer->vks, renderer->renderState, renderer->pipelineState);
     utarray_push_back(renderer->pipelines, &pipeline);
   }
   // HIRO GUI pipeline
@@ -58,7 +58,7 @@ void vulkan_renderer_destroy(vulkan_renderer *renderer) {
   }
   utarray_free(renderer->pipelines);
 
-  vulkan_pipeline_shared_state_destroy(renderer->pipelineSharedState);
+  vulkan_pipeline_state_destroy(renderer->pipelineState);
 
   vulkan_render_state_destroy(renderer->renderState);
 
@@ -83,33 +83,25 @@ void vulkan_renderer_recreate_swap_chain(vulkan_renderer *renderer) {
     vulkan_pipeline_deinit(pipeline);
   }
 
-  // vulkan_pipeline_shared_state_deinit(renderer->pipelineSharedState);
+  // vulkan_pipeline_state_deinit(renderer->pipelineState);
 
   vulkan_swap_chain_deinit(renderer->vks);
 
   vulkan_swap_chain_init(renderer->vks, renderer->vkd);
 
-  // vulkan_pipeline_shared_state_init(renderer->pipelineSharedState, renderer->renderState);
-  vulkan_pipeline_shared_state_reinit_with_new_swap_chain(renderer->pipelineSharedState);
+  // vulkan_pipeline_state_init(renderer->pipelineState, renderer->renderState);
+  vulkan_pipeline_state_reinit_with_new_swap_chain(renderer->pipelineState);
 
   utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
     vulkan_pipeline_init_start(pipeline, pipeline->type, renderer->vks, renderer->renderState,
-                               renderer->pipelineSharedState);
+                               renderer->pipelineState);
     vulkan_pipeline_init_prev_next(pipeline, pipeline->prev, pipeline->next);
     vulkan_pipeline_init_finish(pipeline);
   }
 }
 
 void vulkan_renderer_update(vulkan_renderer *renderer) {
-  utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
-    vulkan_pipeline_update(pipeline);
-  }
-
-  vulkan_pipeline_shared_state_update(
-      renderer->pipelineSharedState,
-      (renderer->config->asset.graphicsEnabledInstancing
-           ? vulkan_draw_call_instancing_policy_matching_vertex_attributes
-           : vulkan_draw_call_instancing_policy_no_instancing));
+  vulkan_pipeline_state_update(renderer->pipelineState);
 
   vulkan_render_state_update(renderer->renderState, renderer);
 }
@@ -125,17 +117,17 @@ void vulkan_renderer_update_global_uniform_buffer_callback(
   vulkan_global_uniform_buffer_element *global =
       vulkan_global_uniform_buffer_data_get_element(globalData, 0, currentFrameInFlight);
 
-  vulkan_pipeline_camera_state *camera = renderer->pipelineSharedState->camera;
+  vulkan_pipeline_camera_state *camera = renderer->pipelineState->sharedState.camera;
   vulkan_pipeline_camera_state_set_view_matrix(camera, global->viewMat);
   vulkan_pipeline_camera_state_set_projection_matrix(camera, global->projMat);
 
-  vulkan_pipeline_light_state *lights = renderer->pipelineSharedState->lights;
+  vulkan_pipeline_light_state *lights = renderer->pipelineState->sharedState.lights;
   vulkan_pipeline_light_state_set_directional_light_elements(lights, &global->directionalLightCount,
                                                              global->directionalLights);
   vulkan_pipeline_light_state_set_point_light_elements(lights, &global->pointLightCount,
                                                        global->pointLights);
 
-  vulkan_pipeline_skybox_state *skybox = renderer->pipelineSharedState->skybox;
+  vulkan_pipeline_skybox_state *skybox = renderer->pipelineState->sharedState.skybox;
   vulkan_pipeline_skybox_state_set_skybox_elements(skybox, &global->skybox);
 
   // materials
@@ -174,10 +166,8 @@ void vulkan_renderer_update_global_uniform_buffer_callback(
 }
 
 void vulkan_renderer_send_to_device(vulkan_renderer *renderer) {
+  vulkan_pipeline_state_send_to_device(renderer->pipelineState);
   vulkan_render_state_send_to_device(renderer->renderState);
-  utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
-    vulkan_pipeline_send_to_device(pipeline);
-  }
 }
 
 void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
@@ -300,7 +290,7 @@ void vulkan_renderer_debug_print(vulkan_renderer *renderer) {
   vulkan_renderer_cache_debug_print(renderer->rendererCache);
   vulkan_scene_graph_debug_print(renderer->sceneGraph);
   vulkan_render_state_debug_print(renderer->renderState);
-  vulkan_pipeline_shared_state_debug_print(renderer->pipelineSharedState, 2);
+  vulkan_pipeline_state_debug_print(renderer->pipelineState, 2);
   utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
     vulkan_pipeline_debug_print(pipeline);
   }

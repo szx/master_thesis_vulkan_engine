@@ -52,7 +52,9 @@ void vulkan_sync_reset_current_frame_fence(vulkan_sync *sync) {
 }
 
 void vulkan_sync_advance_to_next_frame(vulkan_sync *sync) {
-  sync->currentFrameInFlight = (sync->currentFrameInFlight + 1) % FRAMES_IN_FLIGHT;
+  size_t nextFrameInFlight = (sync->currentFrameInFlight + 1) % FRAMES_IN_FLIGHT;
+  log_debug("advancing from frame %zu to frame %zu", sync->currentFrameInFlight, nextFrameInFlight);
+  sync->currentFrameInFlight = nextFrameInFlight;
 }
 
 VkCommandBuffer vulkan_sync_get_current_frame_command_buffer(vulkan_sync *sync) {

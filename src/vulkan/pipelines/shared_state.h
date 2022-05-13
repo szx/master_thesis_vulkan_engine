@@ -30,17 +30,14 @@ typedef struct vulkan_pipeline_shared_state {
 
 } vulkan_pipeline_shared_state;
 
-vulkan_pipeline_shared_state *vulkan_pipeline_shared_state_create(vulkan_render_state *renderState);
-void vulkan_pipeline_shared_state_destroy(vulkan_pipeline_shared_state *pipelineSharedState);
-
-void vulkan_pipeline_shared_state_init(vulkan_pipeline_shared_state *pipelineSharedState,
+void vulkan_pipeline_shared_state_init(vulkan_pipeline_shared_state *sharedState,
                                        vulkan_render_state *renderState);
-void vulkan_pipeline_shared_state_deinit(vulkan_pipeline_shared_state *pipelineSharedState);
+void vulkan_pipeline_shared_state_deinit(vulkan_pipeline_shared_state *sharedState);
 void vulkan_pipeline_shared_state_reinit_with_new_swap_chain(
-    vulkan_pipeline_shared_state *pipelineSharedState);
+    vulkan_pipeline_shared_state *sharedState);
 
-void vulkan_pipeline_shared_state_update(vulkan_pipeline_shared_state *pipelineSharedState,
-                                         vulkan_draw_call_instancing_policy instancingPolicy);
+void vulkan_pipeline_shared_state_update(vulkan_pipeline_shared_state *sharedState);
+void vulkan_pipeline_shared_state_send_to_device(vulkan_pipeline_shared_state *sharedState);
 
-void vulkan_pipeline_shared_state_debug_print(vulkan_pipeline_shared_state *pipelineSharedState,
+void vulkan_pipeline_shared_state_debug_print(vulkan_pipeline_shared_state *sharedState,
                                               int indent);

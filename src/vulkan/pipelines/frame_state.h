@@ -6,32 +6,24 @@
 #pragma once
 
 #include "../objects/image.h"
+#include "../renderers/batch.h"
 
-typedef struct vulkan_pipeline vulkan_pipeline;
+typedef struct vulkan_pipeline_state vulkan_pipeline_state;
 
-/// Manages framebuffer used by pipeline's render pass.
-typedef struct vulkan_pipeline_framebuffer_state {
-  vulkan_pipeline *pipeline; ///< Pointer.
-
-  /// Framebuffer used to write into swap chain (onscreen rendering) into images (offscreen
-  /// rendering).
-  VkFramebuffer framebuffer;
-
-} vulkan_pipeline_framebuffer_state;
-
-void vulkan_pipeline_framebuffer_state_init(vulkan_pipeline_framebuffer_state *framebufferState,
-                                            vulkan_pipeline *pipeline, uint32_t swapChainImageIdx);
-void vulkan_pipeline_framebuffer_state_deinit(vulkan_pipeline_framebuffer_state *framebufferState);
-
-/// Manages frame-specific resources (indirect buffer) used by pipeline to render on
-/// frame.
+/// Manages frame-specific resources (indirect buffer) used by pipelines.
 typedef struct vulkan_pipeline_frame_state {
-  vulkan_pipeline *pipeline; ///< Pointer.
-  void *impl;                ///< Pointer to struct with frame state used by pipeline impl.
+
+  vulkan_pipeline_state *pipelineState; /// Pointer.
+
+  /// Frame in flight index.
+  size_t frameInFlight;
+
+  // HIRO Maintain two batches for transparent and opaque objects.
+  vulkan_draw_call_data rendererCacheBatchesData;
 } vulkan_pipeline_frame_state;
 
 void vulkan_pipeline_frame_state_init(vulkan_pipeline_frame_state *frameState,
-                                      vulkan_pipeline *pipeline);
+                                      vulkan_pipeline_state *pipelineState, size_t frameInFlight);
 void vulkan_pipeline_frame_state_deinit(vulkan_pipeline_frame_state *frameState);
 
 void vulkan_pipeline_frame_state_update(vulkan_pipeline_frame_state *frameState);

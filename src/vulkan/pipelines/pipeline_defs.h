@@ -6,7 +6,6 @@
 #include "../common.h"
 
 typedef struct vulkan_pipeline vulkan_pipeline;
-typedef struct vulkan_pipeline_frame_state vulkan_pipeline_frame_state;
 
 #define END_OF_VULKAN_PIPELINE_TYPES
 #define VULKAN_PIPELINE_TYPES(X, ...)                                                              \
@@ -58,16 +57,3 @@ void vulkan_pipeline_info_get_render_pass_create_info(
     VkAttachmentReference *offscreenColorAttachmentReferences,
     VkAttachmentDescription *depthAttachmentDescription,
     VkAttachmentReference *depthAttachmentReference);
-
-/* pipeline frame state */
-
-#include "../renderers/batch.h"
-
-typedef struct vulkan_pipeline_impl_forward_frame_state {
-  // HIRO Maintain two batches for transparent and opaque objects.
-  vulkan_draw_call_data rendererCacheBatchesData;
-} vulkan_pipeline_impl_forward_frame_state;
-
-typedef struct vulkan_pipeline_impl_skybox_frame_state {
-  void *skyboxFrameStateIsEmptyForNow;
-} vulkan_pipeline_impl_skybox_frame_state;
