@@ -4,8 +4,8 @@
 
 #define END_OF_DATA_ASSET_CONFIG_SECTION
 #define DATA_ASSET_CONFIG_SECTIONS(X, ...) \
-  X(graphics, __VA_ARGS__) \
   X(settings, __VA_ARGS__) \
+  X(graphics, __VA_ARGS__) \
   X(controls, __VA_ARGS__) \
   END_OF_DATA_ASSET_CONFIG_SECTION
 
@@ -20,8 +20,8 @@
 
 #define END_OF_DATA_ASSET_CONFIG_STR_KEYS
 #define DATA_ASSET_CONFIG_STR_KEYS(X, ...) \
-  X(graphics, WindowTitle, "cpptest", __VA_ARGS__) \
   X(settings, StartScene, "MetalRoughSpheresNoTextures", __VA_ARGS__) \
+  X(graphics, WindowTitle, "cpptest", __VA_ARGS__) \
   END_OF_DATA_ASSET_CONFIG_STR_KEYS
 
 #define END_OF_DATA_SCENE_CONFIG_SECTION

@@ -8,10 +8,7 @@
 typedef struct vulkan_pipeline_skybox_state {
   vulkan_render_state *renderState; ///< Pointer.
 
-  vulkan_textures_texture_element *cubemapTextureElement;
-  vulkan_textures_texture_element *cubemapTexture;
   float ambientIntensity;
-  vulkan_renderer_cache_primitive_element *boxRenderCache;
 
 } vulkan_pipeline_skybox_state;
 

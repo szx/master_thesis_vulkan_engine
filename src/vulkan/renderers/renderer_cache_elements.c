@@ -162,3 +162,36 @@ void vulkan_renderer_cache_camera_element_debug_print(
   log_raw(stdout, "cameraFovY %f\\n", element->camera->fovY);
   log_raw(stdout, "\"; ");
 }
+
+/* skybox renderer cache element */
+
+vulkan_renderer_cache_skybox_element *
+vulkan_renderer_cache_skybox_element_create(vulkan_asset_skybox *skybox) {
+  assert(skybox != NULL);
+
+  vulkan_renderer_cache_skybox_element *element =
+      core_alloc(sizeof(vulkan_renderer_cache_skybox_element));
+
+  element->prev = NULL;
+  element->next = NULL;
+
+  element->skybox = skybox;
+
+  vulkan_asset_material_init(&element->cubemapMaterial, NULL);
+  element->cubemapMaterial.baseColorTexture = element->skybox->cubemapTexture;
+  element->cubemapMaterial.metallicRoughnessTexture = element->skybox->cubemapTexture;
+
+  return element;
+}
+
+void vulkan_renderer_cache_skybox_element_destroy(vulkan_renderer_cache_skybox_element *element) {
+  vulkan_asset_material_deinit(&element->cubemapMaterial);
+  core_free(element);
+}
+
+void vulkan_renderer_cache_skybox_element_debug_print(
+    vulkan_renderer_cache_skybox_element *element) {
+  log_raw(stdout, "\"renderer skybox skybox element\\n%p\\n", element);
+  log_raw(stdout, "cubemapTexture %p\\n", element->skybox->cubemapTexture);
+  log_raw(stdout, "\"; ");
+}

@@ -131,10 +131,8 @@ void vulkan_renderer_update_global_uniform_buffer_callback(
   vulkan_pipeline_skybox_state_set_skybox_elements(skybox, &global->skybox);
 
   // materials
-  dl_foreach_elem(vulkan_renderer_cache_primitive_element *, primitiveElement,
-                  renderer->rendererCache->primitiveElements) {
-    vulkan_textures_material_element *materialElement = primitiveElement->materialElement;
-    assert(materialElement != NULL);
+  uthash_foreach_elem_it(vulkan_textures_material_element *, materialElement,
+                         renderer->renderState->textures->materialElements) {
     size_t materialId = materialElement->materialIdx;
     // PERF: Update material only once (either keep track here or just iterate on
     // textures->materialElements).
@@ -151,8 +149,10 @@ void vulkan_renderer_update_global_uniform_buffer_callback(
   }
 
   // instances
-  dl_foreach_elem(vulkan_renderer_cache_primitive_element *, primitiveElement,
-                  renderer->rendererCache->primitiveElements) {
+  // HIRO Refactor move to batches
+  utarray_foreach_elem_deref (
+      vulkan_renderer_cache_primitive_element *, primitiveElement,
+      renderer->pipelineState->sharedState.rendererCacheBatches->primitiveElements) {
     size_t instanceId = primitiveElement->instanceId;
     vulkan_instances_uniform_buffer_element *element =
         vulkan_instances_uniform_buffer_data_get_element(instancesData, instanceId,

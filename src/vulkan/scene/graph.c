@@ -156,8 +156,10 @@ void vulkan_scene_graph_create_with_scene_data(vulkan_scene_graph *sceneGraph,
       vulkan_renderer_cache_add_camera_element(sceneGraph->sceneTree->rendererCache, cameraElement);
     }
   }
-  // HIRO refactor vulkan_renderer_cache_add_skybox_element
-  vulkan_renderer_cache_add_skybox(sceneGraph->sceneTree->rendererCache, sceneData->skybox);
+
+  vulkan_renderer_cache_skybox_element *skyboxElement =
+      vulkan_renderer_cache_skybox_element_create(sceneData->skybox);
+  vulkan_renderer_cache_add_skybox(sceneGraph->sceneTree->rendererCache, skyboxElement);
 
   assert(sceneGraph->root);
 }

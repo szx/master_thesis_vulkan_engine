@@ -8,7 +8,7 @@
 #include "../objects/textures.h"
 #include "../objects/vertex_stream.h"
 
-// HIRO add key to prevent multiple adding in vulkan_renderer_cache
+// TODO: Add key to prevent multiple adding in vulkan_renderer_cache?
 
 /* primitive renderer cache element */
 
@@ -64,9 +64,29 @@ typedef struct vulkan_renderer_cache_camera_element {
 
 vulkan_renderer_cache_camera_element *
 vulkan_renderer_cache_camera_element_create(vulkan_asset_camera *camera, mat4 transform);
+
 void vulkan_renderer_cache_camera_element_destroy(vulkan_renderer_cache_camera_element *element);
 
 void vulkan_renderer_cache_camera_element_debug_print(
     vulkan_renderer_cache_camera_element *element);
 
-// HIRO refactor renderer cache skybox element
+/* skybox renderer cache element */
+
+typedef struct vulkan_renderer_cache_skybox_element {
+  /* cache state accumulated from scene tree */
+  vulkan_asset_skybox *skybox; ///< Accumulated from scene data.
+  vulkan_asset_material cubemapMaterial;
+
+  /* cache state set during texture update */
+  vulkan_textures_material_element *cubemapMaterialElement;
+
+  struct vulkan_renderer_cache_camera_element *prev, *next;
+} vulkan_renderer_cache_skybox_element;
+
+vulkan_renderer_cache_skybox_element *
+vulkan_renderer_cache_skybox_element_create(vulkan_asset_skybox *skybox);
+
+void vulkan_renderer_cache_skybox_element_destroy(vulkan_renderer_cache_skybox_element *element);
+
+void vulkan_renderer_cache_skybox_element_debug_print(
+    vulkan_renderer_cache_skybox_element *element);

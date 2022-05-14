@@ -31,9 +31,13 @@ typedef struct vulkan_renderer_cache {
   vulkan_renderer_cache_camera_element *cameraElements;
 
   /* additional state accumulated from scene data */
-  // HIRO Refactor replace with camera/skybox elements
-  vulkan_asset_camera *defaultCamera;
-  vulkan_asset_skybox *skybox;
+  vulkan_renderer_cache_camera_element *defaultCameraElement;
+  vulkan_renderer_cache_skybox_element *skyboxElement;
+
+  /* additional state set up during render cache creation */
+  /// Pointer to element in primitiveElement.
+  vulkan_renderer_cache_primitive_element *basicBoxPrimitiveElement;
+  // TODO: quadPrimitiveElement
 
   bool _primitiveElementsDirty;
   UT_array *_newPrimitiveElements; ///< vulkan_renderer_cache_primitive_element* array
@@ -64,6 +68,6 @@ void vulkan_renderer_cache_add_camera_element(vulkan_renderer_cache *rendererCac
                                               vulkan_renderer_cache_camera_element *cameraElement);
 
 void vulkan_renderer_cache_add_skybox(vulkan_renderer_cache *rendererCache,
-                                      vulkan_asset_skybox *skybox);
+                                      vulkan_renderer_cache_skybox_element *skyboxElement);
 
 void vulkan_renderer_cache_debug_print(vulkan_renderer_cache *rendererCache);

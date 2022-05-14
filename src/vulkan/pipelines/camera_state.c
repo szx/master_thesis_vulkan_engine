@@ -6,8 +6,6 @@ vulkan_pipeline_camera_state_create(vulkan_render_state *renderState) {
 
   camera->renderState = renderState;
 
-  camera->defaultCameraElement = vulkan_renderer_cache_camera_element_create(
-      renderState->rendererCache->defaultCamera, GLM_MAT4_IDENTITY);
   camera->cameraIdx = 0;
   vulkan_pipeline_camera_state_select(camera, camera->cameraIdx);
 
@@ -15,7 +13,6 @@ vulkan_pipeline_camera_state_create(vulkan_render_state *renderState) {
 }
 
 void vulkan_pipeline_camera_state_destroy(vulkan_pipeline_camera_state *camera) {
-  vulkan_renderer_cache_camera_element_destroy(camera->defaultCameraElement);
   core_free(camera);
 }
 
@@ -42,7 +39,7 @@ void vulkan_pipeline_camera_state_select(vulkan_pipeline_camera_state *camera, s
 
   if (camera->cameraIdx == 0) {
     log_debug("selecting default camera %zu", camera->cameraIdx);
-    camera->cameraElement = camera->defaultCameraElement;
+    camera->cameraElement = camera->renderState->rendererCache->defaultCameraElement;
   } else {
     log_debug("selecting camera %zu", camera->cameraIdx);
     camera->cameraElement =
@@ -52,11 +49,11 @@ void vulkan_pipeline_camera_state_select(vulkan_pipeline_camera_state *camera, s
 }
 
 void reset_default_camera(vulkan_pipeline_camera_state *camera, vec3 distance) {
-  glm_mat4_identity(camera->defaultCameraElement->transform);
-  glm_translate(camera->defaultCameraElement->transform, distance);
+  glm_mat4_identity(camera->renderState->rendererCache->defaultCameraElement->transform);
+  glm_translate(camera->renderState->rendererCache->defaultCameraElement->transform, distance);
   // NOTE: Change right-handed model-space into left-handed world-space (renderer cache camera
   // element are already flipped thanks to root transform).
-  camera->defaultCameraElement->transform[2][2] = -1.0f;
+  camera->renderState->rendererCache->defaultCameraElement->transform[2][2] = -1.0f;
 }
 
 void update_camera_vectors(vulkan_pipeline_camera_state *camera) {
@@ -92,10 +89,10 @@ void vulkan_pipeline_camera_state_reset(vulkan_pipeline_camera_state *camera) {
   glm_vec3_divs(center, 2.0f, center);
 
   if (extent[2] > 0) {
-    // Try to fix camera clipping.
+    // Try to fix default camera clipping.
     float defaultNearZ = extent[2] / 10;
-    camera->defaultCameraElement->camera->nearZ =
-        MIN(defaultNearZ, camera->defaultCameraElement->camera->nearZ);
+    camera->renderState->rendererCache->defaultCameraElement->camera->nearZ =
+        MIN(defaultNearZ, camera->renderState->rendererCache->defaultCameraElement->camera->nearZ);
   }
 
   vec3 extentAbs;
@@ -147,7 +144,7 @@ void vulkan_pipeline_camera_state_set_view_matrix(vulkan_pipeline_camera_state *
                                                   mat4 viewMatrix) {
   // View matrix is inversed model matrix.
   mat4 transform;
-  if (camera->cameraElement == camera->defaultCameraElement) {
+  if (camera->cameraElement == camera->renderState->rendererCache->defaultCameraElement) {
     glm_mat4_mul(camera->user.transform, camera->cameraElement->transform, transform);
   } else {
     glm_mat4_copy(camera->cameraElement->transform, transform);
