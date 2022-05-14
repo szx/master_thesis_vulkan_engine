@@ -10,6 +10,7 @@
 #pragma once
 
 #include "../assets/texture.h"
+#include "batch.h"
 #include "renderer_cache_elements.h"
 
 // HIRO
@@ -22,11 +23,6 @@ typedef struct vulkan_renderer_cache {
   /// Linked list of all renderer cache primitive elements.
   vulkan_renderer_cache_primitive_element *primitiveElements;
 
-  // HIRO refactor remove primitiveElementsSorted, batches should be responsible
-  bool primitiveElementsSorted; ///< True if primitiveElements is sorted.
-
-  bool primitiveElementsDirty; ///< True if added cache.
-
   vulkan_attribute_type attributes; ///< Max set of primitive vertex attributes.
 
   vulkan_aabb aabb; ///< World-space AABB derived from primitive's transform and model-space AABB.
@@ -36,8 +32,12 @@ typedef struct vulkan_renderer_cache {
   vulkan_renderer_cache_camera_element *cameraElements;
 
   /* additional state accumulated from scene data */
+  // HIRO Refactor move assets to scene data, replace with camera/skybox elements
   vulkan_asset_camera *defaultCamera;
   vulkan_asset_skybox *skybox;
+
+  bool _primitiveElementsDirty;
+  UT_array *_newPrimitiveElements; ///< vulkan_renderer_cache_primitive_element* array
 
 } vulkan_renderer_cache;
 
@@ -48,8 +48,6 @@ void vulkan_renderer_cache_add_primitive_element(
     vulkan_renderer_cache *rendererCache,
     vulkan_renderer_cache_primitive_element *primitiveElement);
 
-void vulkan_renderer_cache_sort_primitive_elements(vulkan_renderer_cache *rendererCache);
-
 void vulkan_renderer_cache_calculate_aabb_for_primitive_elements(
     vulkan_renderer_cache *rendererCache);
 
@@ -58,6 +56,9 @@ void vulkan_renderer_cache_update_geometry(vulkan_renderer_cache *rendererCache,
 
 void vulkan_renderer_cache_update_textures(vulkan_renderer_cache *rendererCache,
                                            vulkan_textures *textures);
+
+void vulkan_renderer_cache_add_new_primitive_elements_to_batches(
+    vulkan_renderer_cache *rendererCache, vulkan_batches *batches);
 
 void vulkan_renderer_cache_add_camera_element(vulkan_renderer_cache *rendererCache,
                                               vulkan_renderer_cache_camera_element *cameraElement);

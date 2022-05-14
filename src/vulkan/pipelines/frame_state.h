@@ -19,7 +19,7 @@ typedef struct vulkan_pipeline_frame_state {
   size_t frameInFlight;
 
   // HIRO Maintain two batches for transparent and opaque objects.
-  vulkan_draw_call_data rendererCacheBatchesData;
+  vulkan_batches_buffer rendererCacheBatchesData;
 } vulkan_pipeline_frame_state;
 
 void vulkan_pipeline_frame_state_init(vulkan_pipeline_frame_state *frameState,

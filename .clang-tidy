@@ -145,20 +145,20 @@ CheckOptions:
     value:           'true'
   - key:             readability-suspicious-call-argument.JaroWinklerSimilarAbove
     value:           '85'
-  - key:             readability-suspicious-call-argument.JaroWinkler
-    value:           'true'
-  - key:             llvm-else-after-return.WarnOnUnfixable
-    value:           'false'
-  - key:             readability-simplify-subscript-expr.Types
-    value:           '::std::basic_string;::std::basic_string_view;::std::vector;::std::array'
+  - key: readability-suspicious-call-argument.JaroWinkler
+    value: 'true'
+  - key: llvm-else-after-return.WarnOnUnfixable
+    value: 'false'
+  - key: readability-simplify-subscript-expr.Types
+    value: '::std::basic_string;::std::basic_string_view;::std::vector;::std::array'
   - key: readability-identifier-naming.NamespaceCase
     value: lower_case
   - key: readability-identifier-naming.ClassCase
     value: lower_case
+  - key: readability-identifier-naming.MemberIgnoredRegexp
+    value: "_[A-Za-z0-9_]+"
   - key: readability-identifier-naming.MemberCase
     value: camelBack
-  - key: readability-identifier-naming.PrivateMemberSuffix
-    value: _
   - key: readability-identifier-naming.StructCase
     value: lower_case
   - key: readability-identifier-naming.FunctionCase

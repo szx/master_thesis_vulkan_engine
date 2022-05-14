@@ -5,12 +5,12 @@ void vulkan_pipeline_frame_state_init(vulkan_pipeline_frame_state *frameState,
                                       vulkan_pipeline_state *pipelineState, size_t frameInFlight) {
   frameState->pipelineState = pipelineState;
   frameState->frameInFlight = frameInFlight;
-  vulkan_draw_call_data_init(&frameState->rendererCacheBatchesData,
+  vulkan_batches_buffer_init(&frameState->rendererCacheBatchesData,
                              frameState->pipelineState->renderState->vkd);
 }
 
 void vulkan_pipeline_frame_state_deinit(vulkan_pipeline_frame_state *frameState) {
-  vulkan_draw_call_data_deinit(&frameState->rendererCacheBatchesData);
+  vulkan_batches_buffer_deinit(&frameState->rendererCacheBatchesData);
 }
 
 void vulkan_pipeline_frame_state_update(vulkan_pipeline_frame_state *frameState) {
@@ -19,7 +19,7 @@ void vulkan_pipeline_frame_state_update(vulkan_pipeline_frame_state *frameState)
 }
 
 void vulkan_pipeline_frame_state_send_to_device(vulkan_pipeline_frame_state *frameState) {
-  vulkan_draw_call_data_send_to_device(&frameState->rendererCacheBatchesData);
+  vulkan_batches_buffer_send_to_device(&frameState->rendererCacheBatchesData);
 }
 
 void vulkan_pipeline_frame_state_debug_print(vulkan_pipeline_frame_state *frameState, int indent) {

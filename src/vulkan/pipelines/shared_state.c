@@ -7,8 +7,7 @@ void vulkan_pipeline_shared_state_init(vulkan_pipeline_shared_state *sharedState
   sharedState->camera = vulkan_pipeline_camera_state_create(sharedState->renderState);
   sharedState->lights = vulkan_pipeline_light_state_create(sharedState->renderState);
   sharedState->skybox = vulkan_pipeline_skybox_state_create(sharedState->renderState);
-  sharedState->rendererCacheBatches =
-      vulkan_batches_create(sharedState->renderState->rendererCache, sharedState->renderState->vkd);
+  sharedState->rendererCacheBatches = vulkan_batches_create(sharedState->renderState->vkd);
 
   sharedState->depthBufferImage = vulkan_image_create(
       sharedState->renderState->vkd, vulkan_image_type_depth_buffer,
@@ -46,16 +45,13 @@ void vulkan_pipeline_shared_state_update(vulkan_pipeline_shared_state *sharedSta
   vulkan_pipeline_light_state_update(sharedState->lights);
   vulkan_pipeline_skybox_state_update(sharedState->skybox);
 
-  vulkan_draw_call_instancing_policy instancingPolicy =
+  vulkan_renderer_cache_add_new_primitive_elements_to_batches(
+      sharedState->renderState->rendererCache, sharedState->rendererCacheBatches);
+  vulkan_batch_instancing_policy instancingPolicy =
       (sharedState->renderState->config->asset.graphicsEnabledInstancing
-           ? vulkan_draw_call_instancing_policy_matching_vertex_attributes
-           : vulkan_draw_call_instancing_policy_no_instancing);
+           ? vulkan_batch_instancing_policy_matching_vertex_attributes
+           : vulkan_batch_instancing_policy_no_instancing);
   vulkan_batches_update(sharedState->rendererCacheBatches, instancingPolicy);
-  dl_foreach_elem(vulkan_draw_call *, batch, sharedState->rendererCacheBatches->batches) {
-    vulkan_draw_call_update_draw_command(batch);
-    assert(batch->drawCommand.firstIndex != INT32_MAX);
-    assert(batch->drawCommand.vertexOffset != INT32_MAX);
-  }
 }
 
 void vulkan_pipeline_shared_state_send_to_device(vulkan_pipeline_shared_state *sharedState) {
