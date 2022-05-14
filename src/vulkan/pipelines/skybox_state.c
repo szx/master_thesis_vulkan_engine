@@ -11,79 +11,53 @@ vulkan_pipeline_skybox_state_create(vulkan_render_state *renderState) {
       skybox->renderState->textures, skybox->renderState->rendererCache->skybox->cubemapTexture);
   skybox->ambientIntensity = 1.0f;
 
-  // HIRO HIRO HIRO HIRO Refactor manual adding of geometry (after refactoring renderer_cache).
-  // HIRO Refactor move boxVertexStreamElement to render state
-
-  skybox->boxRenderCache = vulkan_renderer_cache_primitive_element_create();
-  skybox->boxRenderCache->primitive = core_alloc(sizeof(vulkan_asset_primitive));
-  vulkan_asset_primitive_init(skybox->boxRenderCache->primitive, NULL);
-
-  skybox->boxRenderCache->primitive->vertexCount = 36;
-
-  skybox->boxRenderCache->primitive->indices = core_alloc(sizeof(vulkan_asset_vertex_attribute));
-  vulkan_asset_vertex_attribute_init(skybox->boxRenderCache->primitive->indices, NULL);
-  utarray_resize(skybox->boxRenderCache->primitive->indices->data, 36);
-  core_memcpy(utarray_front(skybox->boxRenderCache->primitive->indices->data),
-              (uint32_t[36]){0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11,
-                             12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
-                             24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35},
-              utarray_size(skybox->boxRenderCache->primitive->indices->data));
-
-  skybox->boxRenderCache->primitive->positions = core_alloc(sizeof(vulkan_asset_vertex_attribute));
-  vulkan_asset_vertex_attribute_init(skybox->boxRenderCache->primitive->positions, NULL);
-  utarray_realloc(skybox->boxRenderCache->primitive->positions->data, sizeof(vec3));
-  utarray_resize(skybox->boxRenderCache->primitive->positions->data, 36);
-  core_memcpy(utarray_front(skybox->boxRenderCache->primitive->positions->data),
-              (vec3[36]){// -X side,
-                         {-1, -1, 1},
-                         {-1, -1, -1},
-                         {-1, 1, -1},
-                         {-1, 1, -1},
-                         {-1, 1, 1},
-                         {-1, -1, 1},
-                         // +X side
-                         {1, -1, -1},
-                         {1, -1, 1},
-                         {1, 1, 1},
-                         {1, 1, 1},
-                         {1, 1, -1},
-                         {1, -1, -1},
-                         // -Y side
-                         {-1, -1, -1},
-                         {-1, -1, 1},
-                         {1, -1, -1},
-                         {1, -1, -1},
-                         {-1, -1, 1},
-                         {1, -1, 1},
-                         // +Y side
-                         {-1, 1, -1},
-                         {1, 1, -1},
-                         {1, 1, 1},
-                         {1, 1, 1},
-                         {-1, 1, 1},
-                         {-1, 1, -1},
-                         // -Z side
-                         {-1, 1, -1},
-                         {-1, -1, -1},
-                         {1, -1, -1},
-                         {1, -1, -1},
-                         {1, 1, -1},
-                         {-1, 1, -1},
-                         // +Z side
-                         {-1, -1, 1},
-                         {-1, 1, 1},
-                         {1, 1, 1},
-                         {1, 1, 1},
-                         {1, -1, 1},
-                         {-1, -1, 1}},
-              utarray_size(skybox->boxRenderCache->primitive->positions->data));
-
-  skybox->boxRenderCache->primitive->normals = core_alloc(sizeof(vulkan_asset_vertex_attribute));
-  vulkan_asset_vertex_attribute_init(skybox->boxRenderCache->primitive->normals, NULL);
-  skybox->boxRenderCache->primitive->colors = core_alloc(sizeof(vulkan_asset_vertex_attribute));
-  vulkan_asset_vertex_attribute_init(skybox->boxRenderCache->primitive->colors, NULL);
-  skybox->boxRenderCache->primitive->texCoords = core_alloc(sizeof(vulkan_asset_vertex_attribute));
-  vulkan_asset_vertex_attribute_init(skybox->boxRenderCache->primitive->texCoords, NULL);
+  skybox->boxRenderCache = vulkan_renderer_cache_primitive_element_create_from_geometry(
+      true, GLM_MAT4_IDENTITY, 36,
+      (uint32_t[36]){0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17,
+                     18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35},
+      (vec3[36]){// -X side,
+                 {-1, -1, 1},
+                 {-1, -1, -1},
+                 {-1, 1, -1},
+                 {-1, 1, -1},
+                 {-1, 1, 1},
+                 {-1, -1, 1},
+                 // +X side
+                 {1, -1, -1},
+                 {1, -1, 1},
+                 {1, 1, 1},
+                 {1, 1, 1},
+                 {1, 1, -1},
+                 {1, -1, -1},
+                 // -Y side
+                 {-1, -1, -1},
+                 {-1, -1, 1},
+                 {1, -1, -1},
+                 {1, -1, -1},
+                 {-1, -1, 1},
+                 {1, -1, 1},
+                 // +Y side
+                 {-1, 1, -1},
+                 {1, 1, -1},
+                 {1, 1, 1},
+                 {1, 1, 1},
+                 {-1, 1, 1},
+                 {-1, 1, -1},
+                 // -Z side
+                 {-1, 1, -1},
+                 {-1, -1, -1},
+                 {1, -1, -1},
+                 {1, -1, -1},
+                 {1, 1, -1},
+                 {-1, 1, -1},
+                 // +Z side
+                 {-1, -1, 1},
+                 {-1, 1, 1},
+                 {1, 1, 1},
+                 {1, 1, 1},
+                 {1, -1, 1},
+                 {-1, -1, 1}},
+      NULL, NULL, NULL);
 
   skybox->boxRenderCache->vertexStreamElement = vulkan_vertex_stream_add_geometry(
       skybox->renderState->vertexStream, skybox->boxRenderCache->primitive->vertexCount,
@@ -97,6 +71,7 @@ vulkan_pipeline_skybox_state_create(vulkan_render_state *renderState) {
 }
 
 void vulkan_pipeline_skybox_state_destroy(vulkan_pipeline_skybox_state *skybox) {
+  vulkan_renderer_cache_primitive_element_destroy(skybox->boxRenderCache);
   core_free(skybox);
 }
 

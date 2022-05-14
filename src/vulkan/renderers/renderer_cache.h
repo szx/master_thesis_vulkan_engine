@@ -9,14 +9,13 @@
  */
 #pragma once
 
-#include "../assets/texture.h"
+#include "../assets/assets.h"
+#include "../scene/data.h"
 #include "batch.h"
 #include "renderer_cache_elements.h"
 
-// HIRO
-//  Refactor sort pointers to renderer cache primitive elements in batches (allows
-//  transparent/opaque batches)
 typedef struct vulkan_renderer_cache {
+  vulkan_scene_data *sceneData; ///< Pointer.
 
   size_t maxPrimitiveElementCount; ///< Max number of renderer cache primitive elements.
 
@@ -32,7 +31,7 @@ typedef struct vulkan_renderer_cache {
   vulkan_renderer_cache_camera_element *cameraElements;
 
   /* additional state accumulated from scene data */
-  // HIRO Refactor move assets to scene data, replace with camera/skybox elements
+  // HIRO Refactor replace with camera/skybox elements
   vulkan_asset_camera *defaultCamera;
   vulkan_asset_skybox *skybox;
 
@@ -41,7 +40,8 @@ typedef struct vulkan_renderer_cache {
 
 } vulkan_renderer_cache;
 
-vulkan_renderer_cache *vulkan_renderer_cache_create(size_t maxPrimitiveElementCount);
+vulkan_renderer_cache *vulkan_renderer_cache_create(vulkan_scene_data *sceneData,
+                                                    size_t maxPrimitiveElementCount);
 void vulkan_renderer_cache_destroy(vulkan_renderer_cache *rendererCache);
 
 void vulkan_renderer_cache_add_primitive_element(

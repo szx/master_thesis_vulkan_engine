@@ -26,6 +26,11 @@ void vulkan_aabb_add_aabb(vulkan_aabb *aabb, vulkan_aabb *other) {
   aabb->max[3] = MAX(aabb->max[3], other->max[3]);
 }
 
+void vulkan_aabb_mul_mat4(vulkan_aabb *aabb, mat4 transform) {
+  glm_mat4_mulv(transform, aabb->min, aabb->min);
+  glm_mat4_mulv(transform, aabb->max, aabb->max);
+}
+
 void vulkan_aabb_debug_print(vulkan_aabb *aabb, int indent) {
   log_debug(INDENT_FORMAT_STRING "aabb:", INDENT_FORMAT_ARGS(0));
   log_debug(INDENT_FORMAT_STRING "min=(%f,%f,%f,%f)", INDENT_FORMAT_ARGS(2), aabb->min[0],

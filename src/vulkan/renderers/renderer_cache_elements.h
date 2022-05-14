@@ -31,9 +31,21 @@ typedef struct vulkan_renderer_cache_primitive_element {
       *materialElement; ///< Contains index of material in materials array in textures.
 
   struct vulkan_renderer_cache_primitive_element *prev, *next;
+
+  bool _ownsPrimitive;
 } vulkan_renderer_cache_primitive_element;
 
-vulkan_renderer_cache_primitive_element *vulkan_renderer_cache_primitive_element_create();
+vulkan_renderer_cache_primitive_element *
+vulkan_renderer_cache_primitive_element_create(bool visible, mat4 transform,
+                                               vulkan_asset_primitive *primitive, vulkan_aabb aabb);
+
+vulkan_renderer_cache_primitive_element *
+vulkan_renderer_cache_primitive_element_create_from_geometry(bool visible, mat4 transform,
+                                                             uint32_t vertexCount,
+                                                             uint32_t *indices, vec3 *positions,
+                                                             vec3 *normals, vec3 *colors,
+                                                             vec2 *texCoords);
+
 void vulkan_renderer_cache_primitive_element_destroy(
     vulkan_renderer_cache_primitive_element *element);
 

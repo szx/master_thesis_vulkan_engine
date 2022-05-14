@@ -54,8 +54,6 @@ void vulkan_pipeline_impl_forward_record_render_pass(vulkan_pipeline *pipeline,
 
 /* skybox */
 
-// TODO: Implement skybox pipeline.
-
 vulkan_pipeline_info vulkan_pipeline_impl_skybox_get_pipeline_info(vulkan_pipeline *pipeline) {
   return (vulkan_pipeline_info){.useOnscreenColorAttachment = true,
                                 .onscreenClearValue = (VkClearColorValue){{0.5f, 0.5f, 0.5f, 1.0f}},

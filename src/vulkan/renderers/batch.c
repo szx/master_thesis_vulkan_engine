@@ -84,7 +84,11 @@ vulkan_batches *vulkan_batches_create(vulkan_device *vkd) {
 }
 
 void vulkan_batches_destroy(vulkan_batches *batches) {
+  utarray_free(batches->primitiveElements);
+
   vulkan_batches_reset(batches);
+  utarray_free(batches->array);
+
   core_free(batches);
 }
 
@@ -133,7 +137,7 @@ static int sort_primitive_elements_before_update_cmp(const void *aPtr, const voi
 
 static void sort_primitive_elements_before_update(vulkan_batches *batches) {
   log_debug("sorting primitive elements before batches update");
-  // TODO: Sorting primitives should depend on selected instancing policy.
+  // PERF: Sorting primitives should depend on selected instancing policy.
   assert(utarray_len(batches->primitiveElements) > 0);
 
   // sort primitive elements in order to minimize number of instances

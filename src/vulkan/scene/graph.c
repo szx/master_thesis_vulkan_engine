@@ -12,7 +12,6 @@ vulkan_scene_graph *vulkan_scene_graph_create(vulkan_scene_data *data,
 
   vulkan_scene_graph_create_with_scene_data(sceneGraph, data);
 
-
   return sceneGraph;
 }
 
@@ -144,11 +143,9 @@ void vulkan_scene_graph_create_with_scene_data(vulkan_scene_graph *sceneGraph,
     if (accumulated->primitive != NULL) {
       log_debug("adding renderer cache primitive element");
       vulkan_renderer_cache_primitive_element *primitiveElement =
-          vulkan_renderer_cache_primitive_element_create();
-      primitiveElement->visible = accumulated->visible;
-      glm_mat4_copy(accumulated->transform, primitiveElement->transform);
-      primitiveElement->primitive = accumulated->primitive;
-      primitiveElement->aabb = accumulated->aabb;
+          vulkan_renderer_cache_primitive_element_create(accumulated->visible,
+                                                         accumulated->transform,
+                                                         accumulated->primitive, accumulated->aabb);
       vulkan_renderer_cache_add_primitive_element(sceneGraph->sceneTree->rendererCache,
                                                   primitiveElement);
     }

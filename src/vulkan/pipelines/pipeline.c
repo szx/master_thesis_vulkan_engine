@@ -141,6 +141,8 @@ void vulkan_pipeline_deinit(vulkan_pipeline *pipeline) {
   utarray_foreach_elem_deref (VkFramebuffer, framebuffer, pipeline->framebuffers) {
     vkDestroyFramebuffer(pipeline->vks->vkd->device, framebuffer, vka);
   }
+  utarray_free(pipeline->framebuffers);
+
   vkDestroyPipelineLayout(pipeline->vks->vkd->device, pipeline->pipelineLayout, vka);
   vkDestroyPipeline(pipeline->vks->vkd->device, pipeline->graphicsPipeline, vka);
   vkDestroyRenderPass(pipeline->vks->vkd->device, pipeline->renderPass, vka);

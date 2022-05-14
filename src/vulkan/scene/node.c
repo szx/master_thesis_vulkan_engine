@@ -146,6 +146,7 @@ void vulkan_scene_tree_node_reset_accumulated(vulkan_scene_tree_node *sceneTreeN
     sceneTreeNode->accumulated.primitive = sceneTreeNode->primitive;
     sceneTreeNode->accumulated.aabb =
         vulkan_asset_primitive_calculate_aabb(sceneTreeNode->accumulated.primitive);
+    vulkan_aabb_mul_mat4(&sceneTreeNode->accumulated.aabb, sceneTreeNode->accumulated.transform);
   }
 
   if (sceneTreeNode->object != NULL && sceneTreeNode->object->camera != NULL) {
@@ -165,8 +166,7 @@ void vulkan_scene_tree_node_accumulate_from_parent(vulkan_scene_tree_node *scene
 
   if (accumulated->primitive != NULL) {
     accumulated->aabb = vulkan_asset_primitive_calculate_aabb(accumulated->primitive);
-    glm_mat4_mulv(accumulated->transform, accumulated->aabb.min, accumulated->aabb.min);
-    glm_mat4_mulv(accumulated->transform, accumulated->aabb.max, accumulated->aabb.max);
+    vulkan_aabb_mul_mat4(&accumulated->aabb, accumulated->transform);
   }
 
   assert(!(parentAccumulated->camera != NULL && accumulated->camera != NULL));

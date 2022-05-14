@@ -23,9 +23,12 @@ typedef struct vulkan_scene_data {
 
   /// vulkan_asset_object* array, object that are direct descendants of scene
   UT_array *rootObjects;
-  /// Skybox
+  /// Skybox/
   vulkan_asset_skybox *skybox;
   // HIRO HIRO light data (ambientIntensity)?
+
+  /// Default camera.
+  vulkan_asset_camera defaultCamera;
 
   data_key key; ///< Hash, used to prevent duplicates in asset database.
 } vulkan_scene_data;

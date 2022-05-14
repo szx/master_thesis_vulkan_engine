@@ -1,8 +1,11 @@
 #include "renderer_cache.h"
 #include "../assets/primitive.h"
 
-vulkan_renderer_cache *vulkan_renderer_cache_create(size_t maxPrimitiveElementCount) {
+vulkan_renderer_cache *vulkan_renderer_cache_create(vulkan_scene_data *sceneData,
+                                                    size_t maxPrimitiveElementCount) {
   vulkan_renderer_cache *rendererCache = core_alloc(sizeof(vulkan_renderer_cache));
+
+  rendererCache->sceneData = sceneData;
 
   rendererCache->maxPrimitiveElementCount = maxPrimitiveElementCount;
   rendererCache->primitiveElements = NULL;
@@ -12,9 +15,7 @@ vulkan_renderer_cache *vulkan_renderer_cache_create(size_t maxPrimitiveElementCo
   rendererCache->primitiveElements = NULL;
   rendererCache->cameraElements = NULL;
 
-  // HIRO refactor default camera from scene data
-  rendererCache->defaultCamera = core_alloc(sizeof(vulkan_asset_camera));
-  vulkan_asset_camera_init(rendererCache->defaultCamera, NULL);
+  rendererCache->defaultCamera = &rendererCache->sceneData->defaultCamera;
   rendererCache->skybox = NULL;
 
   rendererCache->_primitiveElementsDirty = false;
@@ -25,8 +26,6 @@ vulkan_renderer_cache *vulkan_renderer_cache_create(size_t maxPrimitiveElementCo
 }
 
 void vulkan_renderer_cache_destroy(vulkan_renderer_cache *rendererCache) {
-  vulkan_asset_camera_deinit(rendererCache->defaultCamera);
-  core_free(rendererCache->defaultCamera);
 
   dl_foreach_elem(vulkan_renderer_cache_camera_element *, element, rendererCache->cameraElements) {
     vulkan_renderer_cache_camera_element_destroy(element);

@@ -8,7 +8,6 @@
 #include "shared_state.h"
 
 /// Contains all resources used by pipelines.
-/// HIRO REFACTOR ENSURE THAT vulkan_pipeline_state IS CREATED AFTER PIPELINES
 typedef struct vulkan_pipeline_state {
   vulkan_render_state *renderState; ///< Pointer.
 

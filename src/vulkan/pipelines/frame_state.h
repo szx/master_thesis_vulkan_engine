@@ -24,7 +24,11 @@ typedef struct vulkan_pipeline_frame_state {
 
 void vulkan_pipeline_frame_state_init(vulkan_pipeline_frame_state *frameState,
                                       vulkan_pipeline_state *pipelineState, size_t frameInFlight);
+
 void vulkan_pipeline_frame_state_deinit(vulkan_pipeline_frame_state *frameState);
+
+void vulkan_pipeline_frame_state_reinit_with_new_swap_chain(
+    vulkan_pipeline_frame_state *frameState);
 
 void vulkan_pipeline_frame_state_update(vulkan_pipeline_frame_state *frameState);
 

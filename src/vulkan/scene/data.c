@@ -461,6 +461,8 @@ vulkan_scene_data *vulkan_scene_data_create(UT_string *name) {
   utarray_alloc(sceneData->rootObjects, sizeof(vulkan_asset_object *));
   sceneData->skybox = defaultSkybox;
 
+  vulkan_asset_camera_init(&sceneData->defaultCamera, sceneData);
+
   sceneData->key = vulkan_scene_data_calculate_key(sceneData);
   return sceneData;
 }
@@ -510,6 +512,8 @@ void vulkan_scene_data_destroy(vulkan_scene_data *sceneData) {
   }
 
   utarray_free(sceneData->rootObjects);
+
+  vulkan_asset_camera_deinit(&sceneData->defaultCamera);
 
   core_free(sceneData);
 }

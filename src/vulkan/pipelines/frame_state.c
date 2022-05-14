@@ -13,6 +13,11 @@ void vulkan_pipeline_frame_state_deinit(vulkan_pipeline_frame_state *frameState)
   vulkan_batches_buffer_deinit(&frameState->rendererCacheBatchesData);
 }
 
+void vulkan_pipeline_frame_state_reinit_with_new_swap_chain(
+    vulkan_pipeline_frame_state *frameState) {
+  // No-op.
+}
+
 void vulkan_pipeline_frame_state_update(vulkan_pipeline_frame_state *frameState) {
   // No-op.
   log_debug("updating pipeline frame state %zu", frameState->frameInFlight);

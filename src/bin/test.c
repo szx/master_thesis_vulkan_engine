@@ -170,8 +170,8 @@ TEST scene_graph_building() {
   utstring_alloc(sceneName, GLTF_NAME);
   vulkan_scene_data *assetDbSceneData = vulkan_scene_data_create_with_asset_db(assetDb, sceneName);
   // vulkan_scene_data_debug_print(assetDbSceneData);
-  vulkan_renderer_cache *rendererCache =
-      vulkan_renderer_cache_create(config->asset.graphicsMaxPrimitiveElementCount);
+  vulkan_renderer_cache *rendererCache = vulkan_renderer_cache_create(
+      assetDbSceneData, config->asset.graphicsMaxPrimitiveElementCount);
 
   vulkan_scene_graph *sceneGraph = vulkan_scene_graph_create(assetDbSceneData, rendererCache);
 

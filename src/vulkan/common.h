@@ -40,4 +40,5 @@ typedef struct vulkan_aabb {
 vulkan_aabb vulkan_aabb_default();
 void vulkan_aabb_add_vec3(vulkan_aabb *aabb, vec3 other);
 void vulkan_aabb_add_aabb(vulkan_aabb *aabb, vulkan_aabb *other);
+void vulkan_aabb_mul_mat4(vulkan_aabb *aabb, mat4 transform);
 void vulkan_aabb_debug_print(vulkan_aabb *aabb, int indent);

@@ -38,7 +38,10 @@ void vulkan_pipeline_state_deinit(vulkan_pipeline_state *pipelineState) {
 
 void vulkan_pipeline_state_reinit_with_new_swap_chain(vulkan_pipeline_state *pipelineState) {
   vulkan_pipeline_shared_state_reinit_with_new_swap_chain(&pipelineState->sharedState);
-  // HIRO Refactor pipeline frame state reinit_with_new_swap_chain
+
+  utarray_foreach_elem_it (vulkan_pipeline_frame_state *, frameState, pipelineState->frameStates) {
+    vulkan_pipeline_frame_state_reinit_with_new_swap_chain(frameState);
+  }
 }
 
 void vulkan_pipeline_state_update(vulkan_pipeline_state *pipelineState) {
