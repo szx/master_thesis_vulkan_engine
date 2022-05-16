@@ -38,7 +38,9 @@ typedef struct vulkan_batch {
 } vulkan_batch;
 
 void vulkan_batch_init(vulkan_batch *batch,
-                       vulkan_renderer_cache_primitive_element *firstPrimitiveElement);
+                       vulkan_renderer_cache_primitive_element *firstPrimitiveElement,
+                       size_t firstInstanceId);
+
 void vulkan_batch_deinit(vulkan_batch *batch);
 
 bool vulkan_batch_matching_primitive_element(vulkan_batch *batch,
@@ -47,7 +49,10 @@ bool vulkan_batch_matching_primitive_element(vulkan_batch *batch,
 void vulkan_batch_add_primitive_element(vulkan_batch *batch,
                                         vulkan_renderer_cache_primitive_element *cache,
                                         size_t instanceId);
+
 void vulkan_batch_update_draw_command(vulkan_batch *batch);
+
+void vulkan_batch_record_basic_draw_command(vulkan_batch *batch, VkCommandBuffer commandBuffer);
 
 void vulkan_batch_debug_print(vulkan_batch *batch);
 

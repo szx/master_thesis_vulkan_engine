@@ -2,18 +2,18 @@
 #include "../assets/primitive.h"
 
 void vulkan_batch_init(vulkan_batch *batch,
-                       vulkan_renderer_cache_primitive_element *firstPrimitiveElement) {
+                       vulkan_renderer_cache_primitive_element *firstPrimitiveElement,
+                       size_t firstInstanceId) {
   assert(firstPrimitiveElement->primitive != NULL);
 
   batch->firstPrimitiveElement = firstPrimitiveElement;
 
   batch->drawCommand.instanceCount = 0;
-  vulkan_batch_update_draw_command(batch);
-  batch->drawCommand.vertexOffset = INT32_MAX;
-  batch->drawCommand.firstIndex = INT32_MAX;
+  batch->drawCommand = (VkDrawIndexedIndirectCommand){0};
+  vulkan_batch_add_primitive_element(batch, batch->firstPrimitiveElement, firstInstanceId);
 }
 
-void vulkan_batch_destroy(vulkan_batch *batch) {
+void vulkan_batch_deinit(vulkan_batch *batch) {
   // No-op.
 }
 
@@ -30,11 +30,15 @@ bool vulkan_batch_matching_primitive_element(vulkan_batch *batch,
 void vulkan_batch_add_primitive_element(vulkan_batch *batch,
                                         vulkan_renderer_cache_primitive_element *cache,
                                         size_t instanceId) {
-  cache->instanceId = instanceId;
+  vulkan_renderer_cache_primitive_set_instance_id(cache, instanceId);
   batch->drawCommand.instanceCount++;
 }
 
 void vulkan_batch_update_draw_command(vulkan_batch *batch) {
+  assert(vulkan_renderer_cache_primitive_is_valid(batch->firstPrimitiveElement, instanceId));
+  assert(
+      vulkan_renderer_cache_primitive_is_valid(batch->firstPrimitiveElement, vertexStreamElement));
+
   batch->drawCommand.indexCount =
       utarray_len(batch->firstPrimitiveElement->primitive->indices->data);
   batch->drawCommand.firstIndex =
@@ -42,6 +46,13 @@ void vulkan_batch_update_draw_command(vulkan_batch *batch) {
   batch->drawCommand.vertexOffset =
       batch->firstPrimitiveElement->vertexStreamElement.firstVertexOffset;
   batch->drawCommand.firstInstance = batch->firstPrimitiveElement->instanceId;
+}
+
+void vulkan_batch_record_basic_draw_command(vulkan_batch *batch, VkCommandBuffer commandBuffer) {
+  vulkan_batch_update_draw_command(batch);
+  vkCmdDrawIndexed(commandBuffer, batch->drawCommand.indexCount, batch->drawCommand.instanceCount,
+                   batch->drawCommand.firstIndex, batch->drawCommand.vertexOffset,
+                   batch->drawCommand.firstInstance);
 }
 
 void vulkan_batch_debug_print(vulkan_batch *batch) {
@@ -93,7 +104,7 @@ void vulkan_batches_destroy(vulkan_batches *batches) {
 }
 
 void vulkan_batches_reset(vulkan_batches *batches) {
-  utarray_foreach_elem_it (vulkan_batch *, batch, batches->array) { vulkan_batch_destroy(batch); }
+  utarray_foreach_elem_it (vulkan_batch *, batch, batches->array) { vulkan_batch_deinit(batch); }
 }
 
 void vulkan_batches_add_primitive_element(
@@ -173,9 +184,7 @@ void vulkan_batches_update(vulkan_batches *batches, vulkan_batch_instancing_poli
     if (lastBatch == NULL ||
         !vulkan_batch_matching_primitive_element(lastBatch, primitiveElement, policy)) {
       vulkan_batch newBatch;
-      vulkan_batch_init(&newBatch, primitiveElement);
-      vulkan_batch_add_primitive_element(&newBatch, primitiveElement, instanceId);
-
+      vulkan_batch_init(&newBatch, primitiveElement, instanceId);
       utarray_push_back(batches->array, &newBatch);
       lastPrimitiveElement = primitiveElement;
       lastBatch = utarray_back(batches->array);

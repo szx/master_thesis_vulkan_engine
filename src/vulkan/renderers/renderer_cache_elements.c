@@ -24,12 +24,46 @@ vulkan_renderer_cache_primitive_element *vulkan_renderer_cache_primitive_element
   element->instanceId = 0;
   element->materialElement = 0;
 
+#if defined(DEBUG)
+  element->_instanceIdSet = false;
+  element->_vertexStreamElementSet = false;
+  element->_materialElementSet = false;
+#endif
+
   return element;
 }
 
 void vulkan_renderer_cache_primitive_element_destroy(
     vulkan_renderer_cache_primitive_element *element) {
   core_free(element);
+}
+
+void vulkan_renderer_cache_primitive_set_vulkan_vertex_stream_element(
+    vulkan_renderer_cache_primitive_element *element,
+    vulkan_vertex_stream_element vertexStreamElement) {
+#if defined(DEBUG)
+  assert(!element->_vertexStreamElementSet);
+  element->_vertexStreamElementSet = true;
+#endif
+  element->vertexStreamElement = vertexStreamElement;
+}
+
+void vulkan_renderer_cache_primitive_set_instance_id(
+    vulkan_renderer_cache_primitive_element *element, size_t instanceId) {
+#if defined(DEBUG)
+  element->_instanceIdSet = true;
+#endif
+  element->instanceId = instanceId;
+}
+
+void vulkan_renderer_cache_primitive_set_material_element(
+    vulkan_renderer_cache_primitive_element *element,
+    vulkan_textures_material_element *materialElement) {
+  assert(materialElement != NULL);
+#if defined(DEBUG)
+  element->_materialElementSet = true;
+#endif
+  element->materialElement = materialElement;
 }
 
 void vulkan_renderer_cache_primitive_element_debug_print(

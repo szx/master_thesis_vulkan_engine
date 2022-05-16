@@ -37,6 +37,16 @@ typedef struct vulkan_renderer_cache_primitive_element {
   vulkan_textures_material_element
       *materialElement; ///< Contains index of material in materials array in textures.
 
+#if defined(DEBUG)
+  /// Prevents using the primitive element in multiple batches (which could result in multiple
+  /// instanceIds).
+  bool _instanceIdSet;
+  /// Prevents recording draw command for unset vertexStreamElement;
+  bool _vertexStreamElementSet;
+  /// Prevents recording draw command for unset materialElement;
+  bool _materialElementSet;
+#endif
+
   struct vulkan_renderer_cache_primitive_element *prev, *next;
 
 } vulkan_renderer_cache_primitive_element;
@@ -47,6 +57,23 @@ vulkan_renderer_cache_primitive_element *vulkan_renderer_cache_primitive_element
 
 void vulkan_renderer_cache_primitive_element_destroy(
     vulkan_renderer_cache_primitive_element *element);
+
+void vulkan_renderer_cache_primitive_set_vulkan_vertex_stream_element(
+    vulkan_renderer_cache_primitive_element *element,
+    vulkan_vertex_stream_element vertexStreamElement);
+
+void vulkan_renderer_cache_primitive_set_instance_id(
+    vulkan_renderer_cache_primitive_element *element, size_t instanceId);
+
+void vulkan_renderer_cache_primitive_set_material_element(
+    vulkan_renderer_cache_primitive_element *element,
+    vulkan_textures_material_element *materialElement);
+
+#if defined(DEBUG)
+#define vulkan_renderer_cache_primitive_is_valid(_element, _field) (_element)->_##_field##Set
+#else
+#define vulkan_renderer_cache_primitive_is_valid(_element, _field) true
+#endif
 
 void vulkan_renderer_cache_primitive_element_debug_print(
     vulkan_renderer_cache_primitive_element *element);

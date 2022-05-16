@@ -203,7 +203,8 @@ void vulkan_renderer_cache_update_geometry(vulkan_renderer_cache *rendererCache,
         primitive->normals->data, primitive->colors->data, primitive->texCoords->data);
 
     assert(vertexStreamElement.attributes <= vertexStream->attributes);
-    primitiveElement->vertexStreamElement = vertexStreamElement;
+    vulkan_renderer_cache_primitive_set_vulkan_vertex_stream_element(primitiveElement,
+                                                                     vertexStreamElement);
 
     lastPrimitiveElement = primitiveElement;
   }
@@ -220,8 +221,9 @@ void vulkan_renderer_cache_update_textures(vulkan_renderer_cache *rendererCache,
     if (material == NULL) {
       continue;
     }
-    vulkan_textures_material_element *element = vulkan_textures_add_material(textures, material);
-    primitiveElement->materialElement = element;
+    vulkan_textures_material_element *materialElement =
+        vulkan_textures_add_material(textures, material);
+    vulkan_renderer_cache_primitive_set_material_element(primitiveElement, materialElement);
 
     // TODO: Unload unneeded textures.
   }

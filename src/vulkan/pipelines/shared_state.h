@@ -21,7 +21,8 @@ typedef struct vulkan_pipeline_shared_state {
   vulkan_pipeline_light_state *lights;
   vulkan_pipeline_skybox_state *skybox;
 
-  // HIRO: Maintain two batches for transparent and opaque objects.
+  // HIRO: Maintain two batches for transparent and opaque objects
+  // HIRO: in batches recording multiple commands controlled by sorting with multiple policies?
   vulkan_batches *rendererCacheBatches;
 
   /// Depth buffer image.

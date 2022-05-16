@@ -94,13 +94,12 @@ void vulkan_pipeline_impl_skybox_record_render_pass(vulkan_pipeline *pipeline,
                      sizeof(drawPushConstant), &drawPushConstant);
 
   // Draw cube.
-  // HIRO HIRO functions to CmdDraw single primitive renderer cache without batching
   vulkan_renderer_cache_primitive_element *basicBoxPrimitiveElement =
       pipeline->pipelineState->renderState->rendererCache->basicBoxPrimitiveElement;
-  assert(basicBoxPrimitiveElement->vertexStreamElement.attributes > 0);
-  uint32_t indexOffset = basicBoxPrimitiveElement->vertexStreamElement.firstIndexOffset;
-  uint32_t vertexOffset = basicBoxPrimitiveElement->vertexStreamElement.firstVertexOffset;
-  vkCmdDrawIndexed(commandBuffer, 36, 1, indexOffset, vertexOffset, 0);
+  vulkan_batch batch;
+  vulkan_batch_init(&batch, basicBoxPrimitiveElement, 0);
+  vulkan_batch_record_basic_draw_command(&batch, commandBuffer);
+  vulkan_batch_deinit(&batch);
 
   vkCmdEndRenderPass(commandBuffer);
 }

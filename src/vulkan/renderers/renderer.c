@@ -149,10 +149,12 @@ void vulkan_renderer_update_global_uniform_buffer_callback(
   }
 
   // instances
-  // HIRO Refactor move to batches
+  // HIRO move to batches
   utarray_foreach_elem_deref (
       vulkan_renderer_cache_primitive_element *, primitiveElement,
       renderer->pipelineState->sharedState.rendererCacheBatches->primitiveElements) {
+
+    assert(vulkan_renderer_cache_primitive_is_valid(primitiveElement, instanceId));
     size_t instanceId = primitiveElement->instanceId;
     vulkan_instances_uniform_buffer_element *element =
         vulkan_instances_uniform_buffer_data_get_element(instancesData, instanceId,
@@ -160,6 +162,7 @@ void vulkan_renderer_update_global_uniform_buffer_callback(
 
     glm_mat4_copy(primitiveElement->transform, element->modelMat);
 
+    assert(vulkan_renderer_cache_primitive_is_valid(primitiveElement, materialElement));
     size_t materialId = primitiveElement->materialElement->materialIdx;
     element->materialId = materialId;
   }
