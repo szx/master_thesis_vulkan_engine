@@ -28,6 +28,11 @@ typedef struct vulkan_skybox_helper_struct {
   uint skyboxCubemapTextureId;
 } vulkan_skybox_helper_struct;
 
+typedef struct vulkan_viewport_helper_struct {
+  uint width;
+  uint height;
+} vulkan_viewport_helper_struct;
+
 typedef struct vulkan_global_uniform_buffer_struct {
   mat4 viewMat;
   mat4 projMat;
@@ -36,6 +41,7 @@ typedef struct vulkan_global_uniform_buffer_struct {
   uint pointLightCount;
   vulkan_point_light_helper_struct pointLights; ///< [MAX_POINT_LIGHT_COUNT]
   vulkan_skybox_helper_struct skybox;
+  vulkan_viewport_helper_struct viewport;
 } vulkan_global_uniform_buffer_struct;
 
 typedef struct vulkan_materials_uniform_buffer_struct {

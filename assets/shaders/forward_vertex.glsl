@@ -7,8 +7,6 @@ gl_Position = global[globalIdx].projMat * global[globalIdx].viewMat * instances[
 
 #ifdef IN_COLOR
 outColor = inColor;
-#else
-outColor = vec3(1.0);
 #endif
 
 #ifdef IN_NORMAL

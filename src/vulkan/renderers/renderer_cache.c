@@ -54,6 +54,23 @@ void add_basic_primitive_elements(vulkan_renderer_cache *rendererCache) {
       boxBasicPrimitive, vulkan_aabb_default());
   vulkan_renderer_cache_add_primitive_element(rendererCache,
                                               rendererCache->basicBoxPrimitiveElement);
+
+  vulkan_asset_primitive *basicFullscreenTrianglePrimitive =
+      vulkan_asset_primitive_create_from_geometry(
+          rendererCache->sceneData, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 3, (uint32_t[3]){0, 1, 2},
+          // fullscreen triangle in Vulkan clip space
+          (vec3[3]){
+              {-1, -1, 0},
+              {-1, 3, 0},
+              {3, -1, 0},
+          },
+          NULL, NULL, NULL);
+  rendererCache->basicFullscreenTrianglePrimitiveElement =
+      vulkan_renderer_cache_primitive_element_create(
+          vulkan_renderer_cache_primitive_element_source_type_basic, true, GLM_MAT4_IDENTITY,
+          basicFullscreenTrianglePrimitive, vulkan_aabb_default());
+  vulkan_renderer_cache_add_primitive_element(
+      rendererCache, rendererCache->basicFullscreenTrianglePrimitiveElement);
 }
 
 vulkan_renderer_cache *vulkan_renderer_cache_create(vulkan_scene_data *sceneData,

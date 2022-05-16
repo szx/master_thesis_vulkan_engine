@@ -30,7 +30,6 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
         type, renderer->vks, renderer->renderState, renderer->pipelineState);
     utarray_push_back(renderer->pipelines, &pipeline);
   }
-  // HIRO GUI pipeline
   // HIRO screen-space postprocessing effects pipeline
 
   for (size_t i = 0; i < utarray_len(renderer->pipelines); i++) {
@@ -130,6 +129,9 @@ void vulkan_renderer_update_global_uniform_buffer_callback(
   vulkan_pipeline_skybox_state *skybox = renderer->pipelineState->sharedState.skybox;
   vulkan_pipeline_skybox_state_set_skybox_elements(skybox, &global->skybox);
 
+  global->viewport.width = renderer->vks->swapChainExtent.width;
+  global->viewport.height = renderer->vks->swapChainExtent.height;
+
   // materials
   uthash_foreach_elem_it(vulkan_textures_material_element *, materialElement,
                          renderer->renderState->textures->materialElements) {
@@ -207,6 +209,7 @@ void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
   verify(vkBeginCommandBuffer(commandBuffer, &beginInfo) == VK_SUCCESS);
 
+  // HIRO bind descriptors etc, remove binding from pipeline impl
   utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
     vulkan_pipeline_record_render_pass(pipeline, commandBuffer, swapChainImageIdx);
   }

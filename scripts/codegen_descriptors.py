@@ -9,6 +9,28 @@ supported_field_type = ['float', 'uint', 'vec2', 'vec3', 'vec4', 'mat4']
 uniform_buffer_std140_alignments = {'float': 4, 'uint': 4, 'vec2': 8, 'vec3': 16, 'vec4': 16, 'mat4': 16}
 
 
+def get_std140_alignment(field_type):
+    alignment = uniform_buffer_std140_alignments.get(field_type, None)
+    assert (alignment is not None)
+    return alignment
+
+
+def round_to_next_multiple(number, multiple):
+    assert (multiple > 0)
+    remainder = number % multiple
+    if remainder == 0:
+        return number
+    return number + multiple - remainder
+
+
+def get_std140_alignment_for_helper_struct(struct_fields):
+    alignments = [get_std140_alignment(x[1]) for x in struct_fields]
+    max_alignment = max(alignments)
+    rounded_max_alignment = round_to_next_multiple(max_alignment, 16)
+    assert (rounded_max_alignment > 0)
+    return rounded_max_alignment
+
+
 def get_descriptor_h_str():
     descriptor_h_path = (src_path / "vulkan" / "objects" / "descriptor.h")
     s = []
@@ -64,7 +86,7 @@ def codegen_descriptors():
         struct_name = struct_name + '_helper_element'
         decls.append(f'typedef struct {struct_name} {{')
         for field_name, field_type in struct_fields:
-            alignment = uniform_buffer_std140_alignments.get(field_type, 'unknown_alignment')
+            alignment = get_std140_alignment(field_type)
             decls.append(f'  alignas({alignment}) {field_type} {field_name};')
         decls.append(f'}} {struct_name};\n')
 
@@ -73,7 +95,7 @@ def codegen_descriptors():
         struct_name = struct_name + '_push_constant_element'
         decls.append(f'typedef struct {struct_name} {{')
         for field_name, field_type in struct_fields:
-            alignment = uniform_buffer_std140_alignments.get(field_type, 'unknown_alignment')
+            alignment = get_std140_alignment(field_type)
             decls.append(f'  alignas({alignment}) {field_type} {field_name};')
         decls.append(f'}} {struct_name};\n')
 
@@ -82,10 +104,13 @@ def codegen_descriptors():
         struct_name = struct_name + '_uniform_buffer_element'
         decls.append(f'typedef struct {struct_name} {{')
         for field_name, field_type, field_comment in struct_fields:
-            if field_type.endswith("_struct"):
-                decls.append(f'  {field_type.replace("_struct", "_element")} {field_name} {field_comment};')
+            if field_type.endswith("_helper_struct"):
+                helper_struct_name = field_type.partition("_helper_struct")[0]
+                alignment = get_std140_alignment_for_helper_struct(helper_structs[helper_struct_name])
+                decls.append(
+                    f'  alignas({alignment}) {field_type.replace("_struct", "_element")} {field_name} {field_comment};')
             else:
-                alignment = uniform_buffer_std140_alignments.get(field_type, 'unknown_alignment')
+                alignment = get_std140_alignment(field_type)
                 decls.append(f'  alignas({alignment}) {field_type} {field_name};')
         decls.append(f'}} {struct_name};\n')
 

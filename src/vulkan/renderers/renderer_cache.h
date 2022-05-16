@@ -35,9 +35,8 @@ typedef struct vulkan_renderer_cache {
   vulkan_renderer_cache_skybox_element *skyboxElement;
 
   /* additional state set up during render cache creation */
-  /// Pointer to element in primitiveElement.
   vulkan_renderer_cache_primitive_element *basicBoxPrimitiveElement;
-  // TODO: quadPrimitiveElement
+  vulkan_renderer_cache_primitive_element *basicFullscreenTrianglePrimitiveElement;
 
   bool _primitiveElementsDirty;
   UT_array *_newPrimitiveElements; ///< vulkan_renderer_cache_primitive_element* array
