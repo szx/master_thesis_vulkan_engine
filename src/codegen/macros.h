@@ -4,24 +4,25 @@
 
 #define END_OF_DATA_ASSET_CONFIG_SECTION
 #define DATA_ASSET_CONFIG_SECTIONS(X, ...) \
-  X(settings, __VA_ARGS__) \
-  X(graphics, __VA_ARGS__) \
   X(controls, __VA_ARGS__) \
+  X(graphics, __VA_ARGS__) \
+  X(settings, __VA_ARGS__) \
   END_OF_DATA_ASSET_CONFIG_SECTION
 
 #define END_OF_DATA_ASSET_CONFIG_INT_KEYS
 #define DATA_ASSET_CONFIG_INT_KEYS(X, ...) \
+  X(controls, Enabled, 1, __VA_ARGS__) \
   X(graphics, WindowWidth, 640, __VA_ARGS__) \
   X(graphics, WindowHeight, 480, __VA_ARGS__) \
   X(graphics, EnabledInstancing, 1, __VA_ARGS__) \
   X(graphics, MaxPrimitiveElementCount, 1000, __VA_ARGS__) \
-  X(controls, Enabled, 1, __VA_ARGS__) \
   END_OF_DATA_ASSET_CONFIG_INT_KEYS
 
 #define END_OF_DATA_ASSET_CONFIG_STR_KEYS
 #define DATA_ASSET_CONFIG_STR_KEYS(X, ...) \
-  X(settings, StartScene, "MetalRoughSpheresNoTextures", __VA_ARGS__) \
   X(graphics, WindowTitle, "cpptest", __VA_ARGS__) \
+  X(graphics, Font, "Go-Mono", __VA_ARGS__) \
+  X(settings, StartScene, "MetalRoughSpheresNoTextures", __VA_ARGS__) \
   END_OF_DATA_ASSET_CONFIG_STR_KEYS
 
 #define END_OF_DATA_SCENE_CONFIG_SECTION
@@ -70,6 +71,7 @@
   X(object, key, key, transform, mat4, mesh, key, camera, key, children, key_array, __VA_ARGS__) \
   X(camera, key, key, type, int, fovy, float, aspectratio, float, nearz, float, farz, float, __VA_ARGS__) \
   X(skybox, key, key, name, text, cubemaptexture, key, __VA_ARGS__) \
+  X(font, key, key, name, text, fonttexture, key, characters, text, __VA_ARGS__) \
   X(scene, key, key, name, text, objects, key_array, cameras, key_array, skybox, key, __VA_ARGS__) \
   END_OF_DATA_ASSET_DB_TABLES
 
@@ -125,6 +127,10 @@
   X(skybox, key, key, __VA_ARGS__) \
   X(skybox, name, text, __VA_ARGS__) \
   X(skybox, cubemapTexture, key, __VA_ARGS__) \
+  X(font, key, key, __VA_ARGS__) \
+  X(font, name, text, __VA_ARGS__) \
+  X(font, fontTexture, key, __VA_ARGS__) \
+  X(font, characters, text, __VA_ARGS__) \
   X(scene, key, key, __VA_ARGS__) \
   X(scene, name, text, __VA_ARGS__) \
   X(scene, objects, key_array, __VA_ARGS__) \

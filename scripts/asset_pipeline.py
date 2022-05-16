@@ -23,6 +23,15 @@ def get_cubemap_files(assets_path):
     return cubemaps
 
 
+def get_font_files(assets_path):
+    fonts = []
+    for gltf_path in assets_path.glob('font/*.ttf'):
+        name = gltf_path.stem
+        path = gltf_path
+        fonts.append((name, path))
+    return fonts
+
+
 def get_gltf_files(assets_path):
     gltfs = []
     for gltf_path in assets_path.glob('**/*.gltf'):
@@ -38,6 +47,8 @@ def main(bin_path):
 
     cubemaps = get_cubemap_files(assets_path)
     print(cubemaps)
+    fonts = get_font_files(assets_path)
+    print(fonts)
     gltfs = get_gltf_files(assets_path)
     print(assets_path, gltfs)
     asset_pipeline_bin_path = bin_path / "asset_pipeline"
@@ -46,10 +57,13 @@ def main(bin_path):
     run_asset_pipeline(asset_pipeline_bin_path, "empty_assets", '')
 
     for name, path, ext in cubemaps:
-        run_asset_pipeline(asset_pipeline_bin_path, "cubemap", f'{name} {path} {ext}')
+        run_asset_pipeline(asset_pipeline_bin_path, "cubemap", f'"{name}" "{path}" {ext}')
+
+    for name, path in fonts:
+        run_asset_pipeline(asset_pipeline_bin_path, "font", f'"{name}" "{path}"')
 
     for name, path in gltfs:
-        run_asset_pipeline(asset_pipeline_bin_path, "gltf", f'{name} {path}')
+        run_asset_pipeline(asset_pipeline_bin_path, "gltf", f'"{name}" "{path}"')
 
 
 if __name__ == '__main__':

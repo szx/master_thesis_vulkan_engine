@@ -25,6 +25,7 @@
 
 #include "cgltf.h"
 #include "stb_image.h"
+#include "stb_truetype.h"
 
 #include <assert.h>
 #include <stdalign.h>

@@ -22,6 +22,7 @@ typedef enum vulkan_image_type {
   vulkan_image_type_material_base_color,
   vulkan_image_type_material_parameters,
   vulkan_image_type_cubemap,
+  vulkan_image_type_font_bitmap,
   vulkan_image_type_count
 } vulkan_image_type;
 

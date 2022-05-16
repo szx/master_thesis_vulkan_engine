@@ -117,7 +117,7 @@ UT_string *read_text_file(UT_string *path) {
     result[size] = 0;
     fclose(file);
 
-    utstring_printf(s, "%s", result);
+    utstring_bincpy(s, result, size + 1);
     free(result);
   }
 

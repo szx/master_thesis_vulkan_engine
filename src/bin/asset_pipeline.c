@@ -108,7 +108,6 @@ void write_cubemap_to_assets(data_asset_db *assetDb, asset_pipeline_input *asset
   vulkan_asset_image_serialize(&cubemapImage, assetDb);
 
   if (strncmp("skybox", utstring_body(assetInput->sourceAssetName), strlen("skybox")) == 0) {
-
     vulkan_asset_sampler cubemapSampler;
     vulkan_asset_sampler_init(&cubemapSampler, NULL);
 
@@ -126,6 +125,82 @@ void write_cubemap_to_assets(data_asset_db *assetDb, asset_pipeline_input *asset
   }
 
   vulkan_asset_image_deinit(&cubemapImage);
+}
+
+void write_font_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetInput) {
+  log_info("processing font '%s' in '%s'", utstring_body(assetInput->sourceAssetName),
+           utstring_body(assetInput->sourceAssetPath));
+
+  UT_string *ttfContents = read_text_file(assetInput->sourceAssetPath);
+  stbtt_fontinfo info;
+  if (!stbtt_InitFont(&info, (unsigned char *)utstring_body(ttfContents), 0)) {
+    log_error("failed to init font %s", utstring_body(assetInput->sourceAssetPath));
+  }
+
+  // all visible ASCII characters
+  char *characters =
+      " !\"#$%&\\'()*+,-./"
+      "0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+  int boxWidth = 32;
+  int boxHeight = 32;
+  int bitmapWidth = 512;
+  int bitmapHeight = 512;
+  assert((size_t)bitmapWidth * bitmapHeight >= strlen(characters) * boxWidth);
+
+  int ascent;
+  stbtt_GetFontVMetrics(&info, &ascent, NULL, NULL);
+  float scale = stbtt_ScaleForPixelHeight(&info, boxHeight);
+  ascent = roundf(ascent * scale);
+
+  UT_array *bitmap;
+  utarray_alloc(bitmap, sizeof(uint8_t));
+  utarray_resize(bitmap, bitmapWidth * bitmapHeight);
+
+  /* create bitmap from TTF */
+  uint8_t *boxTopLeft = utarray_front(bitmap);
+  for (size_t i = 0; i < strlen(characters); ++i) {
+    int characterWidth, characterHeight, yOff;
+    uint8_t *pixels = stbtt_GetCodepointBitmap(&info, scale, scale, characters[i], &characterWidth,
+                                               &characterHeight, NULL, &yOff);
+
+    if (i % (bitmapWidth / boxWidth) == 0 && i != 0) {
+      boxTopLeft = (uint8_t *)utarray_front(bitmap) +
+                   (i / (bitmapWidth / boxWidth)) * boxHeight * bitmapWidth;
+    }
+
+    for (int v = 0; v < characterHeight; v++) {
+      uint8_t *x0 = boxTopLeft;              // character touches top-left corner
+      x0 += (ascent + yOff) * bitmapWidth;   // character moved down into baseline
+      x0 += (boxWidth - characterWidth) / 2; // character moved right into the middle of the box
+      core_memcpy(x0 + v * bitmapWidth, pixels + v * characterWidth, characterWidth);
+    }
+    stbtt_FreeBitmap(pixels, NULL);
+
+    boxTopLeft += boxWidth;
+  }
+  utstring_free(ttfContents);
+
+  // stbi_write_png("test.png", bitmapWidth, bitmapHeight, 1, utarray_front(bitmap), bitmapWidth);
+
+  /* serialize font bitmap image */
+  vulkan_asset_image fontImage;
+  vulkan_asset_image_init(&fontImage, NULL);
+  utarray_resize(fontImage.data, utarray_len(bitmap));
+  core_memcpy(utarray_front(fontImage.data), utarray_front(bitmap), utarray_size(bitmap));
+  utarray_free(bitmap);
+  fontImage.width = bitmapWidth;
+  fontImage.height = bitmapHeight;
+  fontImage.depth = 1;
+  fontImage.channels = 1;
+  fontImage.faceCount = 1;
+  fontImage.type = vulkan_image_type_font_bitmap;
+
+  vulkan_asset_image_debug_print(&fontImage, 0);
+  vulkan_asset_image_serialize(&fontImage, assetDb);
+
+  // HIRO serialize vulkan_asset_font (name, characters, fontImage)
+
+  vulkan_asset_image_deinit(&fontImage);
 }
 
 int main(int argc, char *argv[]) {
@@ -151,6 +226,11 @@ int main(int argc, char *argv[]) {
     log_info("write meshes to asset database");
     data_asset_db *assetDb = data_asset_db_create();
     write_cubemap_to_assets(assetDb, input);
+    data_asset_db_destroy(assetDb);
+  } else if (strcmp("font", utstring_body(input->sourceAssetType)) == 0) {
+    log_info("write font to asset database");
+    data_asset_db *assetDb = data_asset_db_create();
+    write_font_to_assets(assetDb, input);
     data_asset_db_destroy(assetDb);
   }
   log_info("finished asset pipeline");
