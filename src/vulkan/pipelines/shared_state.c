@@ -46,7 +46,8 @@ void vulkan_pipeline_shared_state_update(vulkan_pipeline_shared_state *sharedSta
   vulkan_pipeline_skybox_state_update(sharedState->skybox);
 
   vulkan_renderer_cache_add_new_primitive_elements_to_batches(
-      sharedState->renderState->rendererCache, sharedState->rendererCacheBatches);
+      sharedState->renderState->rendererCache, sharedState->rendererCacheBatches,
+      vulkan_renderer_cache_primitive_element_source_type_scene_tree);
   vulkan_batch_instancing_policy instancingPolicy =
       (sharedState->renderState->config->asset.graphicsEnabledInstancing
            ? vulkan_batch_instancing_policy_matching_vertex_attributes

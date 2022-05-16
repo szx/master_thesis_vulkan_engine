@@ -143,9 +143,9 @@ void vulkan_scene_graph_create_with_scene_data(vulkan_scene_graph *sceneGraph,
     if (accumulated->primitive != NULL) {
       log_debug("adding renderer cache primitive element");
       vulkan_renderer_cache_primitive_element *primitiveElement =
-          vulkan_renderer_cache_primitive_element_create(accumulated->visible,
-                                                         accumulated->transform,
-                                                         accumulated->primitive, accumulated->aabb);
+          vulkan_renderer_cache_primitive_element_create(
+              vulkan_renderer_cache_primitive_element_source_type_scene_tree, accumulated->visible,
+              accumulated->transform, accumulated->primitive, accumulated->aabb);
       vulkan_renderer_cache_add_primitive_element(sceneGraph->sceneTree->rendererCache,
                                                   primitiveElement);
     }

@@ -28,6 +28,10 @@ typedef struct vulkan_asset_primitive {
 
 VULKAN_ASSET_FUNC_DECLS(primitive)
 
+vulkan_asset_primitive *vulkan_asset_primitive_create_from_geometry(
+    vulkan_scene_data *sceneData, VkPrimitiveTopology topology, uint32_t vertexCount,
+    uint32_t *indices, vec3 *positions, vec3 *normals, vec3 *colors, vec2 *texCoords);
+
 bool vulkan_asset_primitive_vulkan_attributes_match(vulkan_asset_primitive *primitive,
                                                     vulkan_asset_primitive *other);
 

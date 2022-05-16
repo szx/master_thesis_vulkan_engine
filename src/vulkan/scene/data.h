@@ -40,17 +40,20 @@ data_key vulkan_scene_data_calculate_key(vulkan_scene_data *scene);
 void vulkan_scene_data_serialize(vulkan_scene_data *scene, data_asset_db *assetDb);
 void vulkan_scene_data_deserialize(vulkan_scene_data *scene, data_asset_db *assetDb, data_key key);
 
-/* get_*_by_key() and add_*() */
 #define GET_VULKAN_ASSET_BY_KEY_DECL(_type)                                                        \
   vulkan_asset_##_type *vulkan_scene_data_get_##_type##_by_key(                                    \
       vulkan_scene_data *sceneData, data_asset_db *assetDb, data_key key);
+
+#define GET_VULKAN_DEFAULT_ASSET(_type)                                                            \
+  vulkan_asset_##_type *vulkan_scene_data_get_default_##_type(vulkan_scene_data *sceneData);
 
 #define ADD_VULKAN_ASSET_DECL(_type)                                                               \
   vulkan_asset_##_type *vulkan_scene_data_add_##_type(vulkan_scene_data *sceneData,                \
                                                       vulkan_asset_##_type *entity);
 
 #define VULKAN_SCENE_ASSETS_DECLS(_type)                                                           \
-  GET_VULKAN_ASSET_BY_KEY_DECL(_type) ADD_VULKAN_ASSET_DECL(_type)
+  GET_VULKAN_ASSET_BY_KEY_DECL(_type)                                                              \
+  GET_VULKAN_DEFAULT_ASSET(_type) ADD_VULKAN_ASSET_DECL(_type)
 
 VULKAN_SCENE_ASSETS_DECLS(image)
 VULKAN_SCENE_ASSETS_DECLS(sampler)

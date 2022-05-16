@@ -317,7 +317,7 @@ vulkan_asset_object *parse_cgltf_node(vulkan_scene_data *sceneData, cgltf_node *
 
 vulkan_asset_skybox *parse_config_skybox(vulkan_scene_data *sceneData, data_config *config,
                                          data_asset_db *assetDb) {
-  vulkan_asset_skybox skybox; // TODO: My eyes bleed, deserialize smarter.
+  vulkan_asset_skybox skybox; // FIXME: My eyes bleed, deserialize smarter.
   vulkan_asset_skybox_init(&skybox, sceneData);
   utstring_printf(skybox.name, "%s", utstring_body(config->scene.skyboxName));
   data_key skyboxKey = vulkan_asset_skybox_calculate_key(&skybox);
@@ -538,6 +538,11 @@ void vulkan_scene_data_destroy(vulkan_scene_data *sceneData) {
     return entity;                                                                                 \
   }
 
+#define DEF_GET_VULKAN_DEFAULT_ASSET(_type, _var)                                                  \
+  vulkan_asset_##_type *vulkan_scene_data_get_default_##_type(vulkan_scene_data *sceneData) {      \
+    return sceneData->_var;                                                                        \
+  }
+
 #define DEF_ADD_VULKAN_ENTITY(_type, _var)                                                         \
   vulkan_asset_##_type *vulkan_scene_data_add_##_type(vulkan_scene_data *sceneData,                \
                                                       vulkan_asset_##_type *entity) {              \
@@ -556,7 +561,8 @@ void vulkan_scene_data_destroy(vulkan_scene_data *sceneData) {
   }
 
 #define VULKAN_ASSET_FIELD_DEFS_FUNCS(_type, _var)                                                 \
-  DEF_GET_VULKAN_ASSET_BY_KEY(_type, _var) DEF_ADD_VULKAN_ENTITY(_type, _var)
+  DEF_GET_VULKAN_ASSET_BY_KEY(_type, _var)                                                         \
+  DEF_GET_VULKAN_DEFAULT_ASSET(_type, _var) DEF_ADD_VULKAN_ENTITY(_type, _var)
 
 VULKAN_ASSET_FIELD_DEFS_FUNCS(image, images)
 VULKAN_ASSET_FIELD_DEFS_FUNCS(sampler, samplers)
@@ -566,7 +572,6 @@ VULKAN_ASSET_FIELD_DEFS_FUNCS(material, materials)
 VULKAN_ASSET_FIELD_DEFS_FUNCS(vertex_attribute, vertexAttributes)
 VULKAN_ASSET_FIELD_DEFS_FUNCS(primitive, primitives)
 VULKAN_ASSET_FIELD_DEFS_FUNCS(object, objects)
-// VULKAN_ASSET_FIELD_DEFS_FUNCS(object, objects)
 
 #undef DEF_GET_VULKAN_ASSET_BY_KEY
 #undef DEF_ADD_VULKAN_ENTITY

@@ -8,11 +8,18 @@
 #include "../objects/textures.h"
 #include "../objects/vertex_stream.h"
 
-// TODO: Add key to prevent multiple adding in vulkan_renderer_cache?
-
 /* primitive renderer cache element */
 
+/// Describes which object has added a particular renderer cache primitive element.
+typedef enum vulkan_renderer_cache_primitive_element_source_type {
+  vulkan_renderer_cache_primitive_element_source_type_scene_tree,
+  vulkan_renderer_cache_primitive_element_source_type_basic,
+  vulkan_renderer_cache_primitive_element_source_type_count,
+} vulkan_renderer_cache_primitive_element_source_type;
+
 typedef struct vulkan_renderer_cache_primitive_element {
+  vulkan_renderer_cache_primitive_element_source_type sourceType;
+
   /* cache state set by scene tree (or manually) */
   bool visible;
   mat4 transform;                    ///< Accumulated from object node.
@@ -32,19 +39,11 @@ typedef struct vulkan_renderer_cache_primitive_element {
 
   struct vulkan_renderer_cache_primitive_element *prev, *next;
 
-  bool _ownsPrimitive;
 } vulkan_renderer_cache_primitive_element;
 
-vulkan_renderer_cache_primitive_element *
-vulkan_renderer_cache_primitive_element_create(bool visible, mat4 transform,
-                                               vulkan_asset_primitive *primitive, vulkan_aabb aabb);
-
-vulkan_renderer_cache_primitive_element *
-vulkan_renderer_cache_primitive_element_create_from_geometry(bool visible, mat4 transform,
-                                                             uint32_t vertexCount,
-                                                             uint32_t *indices, vec3 *positions,
-                                                             vec3 *normals, vec3 *colors,
-                                                             vec2 *texCoords);
+vulkan_renderer_cache_primitive_element *vulkan_renderer_cache_primitive_element_create(
+    vulkan_renderer_cache_primitive_element_source_type sourceType, bool visible, mat4 transform,
+    vulkan_asset_primitive *primitive, vulkan_aabb aabb);
 
 void vulkan_renderer_cache_primitive_element_destroy(
     vulkan_renderer_cache_primitive_element *element);

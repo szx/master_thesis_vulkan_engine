@@ -2,54 +2,56 @@
 #include "../assets/primitive.h"
 
 void add_basic_primitive_elements(vulkan_renderer_cache *rendererCache) {
-  rendererCache->basicBoxPrimitiveElement =
-      vulkan_renderer_cache_primitive_element_create_from_geometry(
-          false, GLM_MAT4_IDENTITY, 36,
-          (uint32_t[36]){0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17,
-                         18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35},
-          (vec3[36]){// -X side,
-                     {-1, -1, 1},
-                     {-1, -1, -1},
-                     {-1, 1, -1},
-                     {-1, 1, -1},
-                     {-1, 1, 1},
-                     {-1, -1, 1},
-                     // +X side
-                     {1, -1, -1},
-                     {1, -1, 1},
-                     {1, 1, 1},
-                     {1, 1, 1},
-                     {1, 1, -1},
-                     {1, -1, -1},
-                     // -Y side
-                     {-1, -1, -1},
-                     {-1, -1, 1},
-                     {1, -1, -1},
-                     {1, -1, -1},
-                     {-1, -1, 1},
-                     {1, -1, 1},
-                     // +Y side
-                     {-1, 1, -1},
-                     {1, 1, -1},
-                     {1, 1, 1},
-                     {1, 1, 1},
-                     {-1, 1, 1},
-                     {-1, 1, -1},
-                     // -Z side
-                     {-1, 1, -1},
-                     {-1, -1, -1},
-                     {1, -1, -1},
-                     {1, -1, -1},
-                     {1, 1, -1},
-                     {-1, 1, -1},
-                     // +Z side
-                     {-1, -1, 1},
-                     {-1, 1, 1},
-                     {1, 1, 1},
-                     {1, 1, 1},
-                     {1, -1, 1},
-                     {-1, -1, 1}},
-          NULL, NULL, NULL);
+  vulkan_asset_primitive *boxBasicPrimitive = vulkan_asset_primitive_create_from_geometry(
+      rendererCache->sceneData, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 36,
+      (uint32_t[36]){0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17,
+                     18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35},
+      (vec3[36]){// -X side,
+                 {-1, -1, 1},
+                 {-1, -1, -1},
+                 {-1, 1, -1},
+                 {-1, 1, -1},
+                 {-1, 1, 1},
+                 {-1, -1, 1},
+                 // +X side
+                 {1, -1, -1},
+                 {1, -1, 1},
+                 {1, 1, 1},
+                 {1, 1, 1},
+                 {1, 1, -1},
+                 {1, -1, -1},
+                 // -Y side
+                 {-1, -1, -1},
+                 {-1, -1, 1},
+                 {1, -1, -1},
+                 {1, -1, -1},
+                 {-1, -1, 1},
+                 {1, -1, 1},
+                 // +Y side
+                 {-1, 1, -1},
+                 {1, 1, -1},
+                 {1, 1, 1},
+                 {1, 1, 1},
+                 {-1, 1, 1},
+                 {-1, 1, -1},
+                 // -Z side
+                 {-1, 1, -1},
+                 {-1, -1, -1},
+                 {1, -1, -1},
+                 {1, -1, -1},
+                 {1, 1, -1},
+                 {-1, 1, -1},
+                 // +Z side
+                 {-1, -1, 1},
+                 {-1, 1, 1},
+                 {1, 1, 1},
+                 {1, 1, 1},
+                 {1, -1, 1},
+                 {-1, -1, 1}},
+      NULL, NULL, NULL);
+  rendererCache->basicBoxPrimitiveElement = vulkan_renderer_cache_primitive_element_create(
+      vulkan_renderer_cache_primitive_element_source_type_basic, true, GLM_MAT4_IDENTITY,
+      boxBasicPrimitive, vulkan_aabb_default());
   vulkan_renderer_cache_add_primitive_element(rendererCache,
                                               rendererCache->basicBoxPrimitiveElement);
 }
@@ -93,6 +95,8 @@ void vulkan_renderer_cache_destroy(vulkan_renderer_cache *rendererCache) {
   }
 
   vulkan_renderer_cache_camera_element_destroy(rendererCache->defaultCameraElement);
+
+  vulkan_renderer_cache_skybox_element_destroy(rendererCache->skyboxElement);
 
   utarray_free(rendererCache->_newPrimitiveElements);
   core_free(rendererCache);
@@ -227,16 +231,17 @@ void vulkan_renderer_cache_update_textures(vulkan_renderer_cache *rendererCache,
 }
 
 void vulkan_renderer_cache_add_new_primitive_elements_to_batches(
-    vulkan_renderer_cache *rendererCache, vulkan_batches *batches) {
-  // HIRO Refactor Replace with more generic function that supports removal al primitive elements.
+    vulkan_renderer_cache *rendererCache, vulkan_batches *batches,
+    vulkan_renderer_cache_primitive_element_source_type sourceType) {
   if (utarray_len(rendererCache->_newPrimitiveElements) == 0) {
     return;
   }
   log_debug("updating render cache -> batches");
   utarray_foreach_elem_deref (vulkan_renderer_cache_primitive_element *, primitiveElement,
                               rendererCache->_newPrimitiveElements) {
-    if (primitiveElement->visible) // HIRO refactor sus
+    if (primitiveElement->sourceType == sourceType) {
       vulkan_batches_add_primitive_element(batches, primitiveElement);
+    }
   }
   utarray_clear(rendererCache->_newPrimitiveElements);
 }

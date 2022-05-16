@@ -62,7 +62,8 @@ void vulkan_renderer_cache_update_textures(vulkan_renderer_cache *rendererCache,
                                            vulkan_textures *textures);
 
 void vulkan_renderer_cache_add_new_primitive_elements_to_batches(
-    vulkan_renderer_cache *rendererCache, vulkan_batches *batches);
+    vulkan_renderer_cache *rendererCache, vulkan_batches *batches,
+    vulkan_renderer_cache_primitive_element_source_type sourceType);
 
 void vulkan_renderer_cache_add_camera_element(vulkan_renderer_cache *rendererCache,
                                               vulkan_renderer_cache_camera_element *cameraElement);

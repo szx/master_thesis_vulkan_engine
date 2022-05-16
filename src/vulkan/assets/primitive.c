@@ -149,6 +149,40 @@ void vulkan_asset_primitive_debug_print(vulkan_asset_primitive *primitive, int i
   vulkan_asset_vertex_attribute_debug_print(primitive->texCoords, indent + 2);
 }
 
+vulkan_asset_primitive *vulkan_asset_primitive_create_from_geometry(
+    vulkan_scene_data *sceneData, VkPrimitiveTopology topology, uint32_t vertexCount,
+    uint32_t *indices, vec3 *positions, vec3 *normals, vec3 *colors, vec2 *texCoords) {
+  vulkan_asset_primitive *primitive = core_alloc(sizeof(vulkan_asset_primitive));
+  vulkan_asset_primitive_init(primitive, sceneData);
+
+  primitive->topology = topology;
+  primitive->vertexCount = vertexCount;
+  primitive->attributes = 0;
+#define VERTEX_ATTRIBUTE(_name, _type, _attributeType)                                             \
+  {                                                                                                \
+    vulkan_asset_vertex_attribute *attribute = core_alloc(sizeof(vulkan_asset_vertex_attribute));  \
+    vulkan_asset_vertex_attribute_init(attribute, sceneData);                                      \
+    if (_name != NULL) {                                                                           \
+      attribute->componentType = vulkan_asset_vertex_attribute_component_##_type;                  \
+      utarray_realloc(attribute->data, sizeof(_type));                                             \
+      utarray_resize(attribute->data, primitive->vertexCount);                                     \
+      core_memcpy(utarray_front(attribute->data), _name, utarray_size(attribute->data));           \
+      primitive->attributes |= _attributeType;                                                     \
+    }                                                                                              \
+    primitive->_name = vulkan_scene_data_add_vertex_attribute(sceneData, attribute);               \
+  }
+  VERTEX_ATTRIBUTE(indices, uint32_t, vulkan_attribute_type_unknown)
+  VERTEX_ATTRIBUTE(positions, vec3, vulkan_attribute_type_position)
+  VERTEX_ATTRIBUTE(normals, vec3, vulkan_attribute_type_normal)
+  VERTEX_ATTRIBUTE(colors, vec3, vulkan_attribute_type_color)
+  VERTEX_ATTRIBUTE(texCoords, vec2, vulkan_attribute_type_texcoord)
+#undef VERTEX_ATTRIBUTE
+
+  primitive->material = vulkan_scene_data_get_default_material(sceneData);
+
+  return vulkan_scene_data_add_primitive(sceneData, primitive);
+}
+
 bool vulkan_asset_primitive_vulkan_attributes_match(vulkan_asset_primitive *primitive,
                                                     vulkan_asset_primitive *other) {
   return primitive->topology == other->topology && primitive->indices == other->indices &&
