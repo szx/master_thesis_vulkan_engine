@@ -1,7 +1,8 @@
 uint globalIdx = getGlobalIdx();
 
 vec2 clipPosition = inWorldPosition.xy;
-// HIRO move to uniform
+
+// HIRO HIRO HIRO move to uniform
 uint text[8] = {1,1,1,4,5,6,7,8};
 uint textLen = 3;
 uint characterSize = global[globalIdx].font.characterSize;
@@ -10,7 +11,7 @@ uint characterCountX = fontTextureSize / characterSize;
 
 uint boxIdxX = uint((clipPosition.x+1.0)/2 * global[globalIdx].viewport.width) / characterSize;
 uint boxIdxY = uint((clipPosition.y+1.0)/2 * global[globalIdx].viewport.height) / characterSize;
-uint textIdx = boxIdxX + boxIdxY * (global[globalIdx].viewport.width / characterSize); // HIRO indirection
+uint textIdx = boxIdxX + boxIdxY * (global[globalIdx].viewport.width / characterSize);
 debugPrintfEXT("textIdx=%d boxIdxX=%d boxIdxY=%d", textIdx, boxIdxX, boxIdxY);
 if (textIdx >= textLen) discard;
 

@@ -32,6 +32,8 @@ typedef struct vulkan_font_helper_struct {
   uint fontTextureId;
   uint characterSize;
   uint fontTextureSize;
+  // NOTE:
+  uint text; ///< array=MAX_TEXT_CHARACTER_COUNT
 } vulkan_font_helper_struct;
 
 typedef struct vulkan_viewport_helper_struct {
@@ -43,9 +45,9 @@ typedef struct vulkan_global_uniform_buffer_struct {
   mat4 viewMat;
   mat4 projMat;
   uint directionalLightCount;
-  vulkan_directional_light_helper_struct directionalLights; ///< [MAX_DIRECTIONAL_LIGHT_COUNT]
+  vulkan_directional_light_helper_struct directionalLights; ///< array=MAX_DIRECTIONAL_LIGHT_COUNT
   uint pointLightCount;
-  vulkan_point_light_helper_struct pointLights; ///< [MAX_POINT_LIGHT_COUNT]
+  vulkan_point_light_helper_struct pointLights; ///< array=MAX_POINT_LIGHT_COUNT
   vulkan_skybox_helper_struct skybox;
   vulkan_font_helper_struct font;
   vulkan_viewport_helper_struct viewport;

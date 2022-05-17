@@ -8,6 +8,7 @@
 #define MAX_MATERIAL_COUNT 128
 #define MAX_DIRECTIONAL_LIGHT_COUNT 1
 #define MAX_POINT_LIGHT_COUNT 8
+#define MAX_TEXT_CHARACTER_COUNT 256
 #define MIN_DELTA_TIME (1.0 / 60.0)
 
 #define END_OF_VULKAN_SHADER_CONSTANTS
@@ -15,4 +16,5 @@
   X(FRAMES_IN_FLIGHT, __VA_ARGS__)                                                                 \
   X(MAX_DIRECTIONAL_LIGHT_COUNT, __VA_ARGS__)                                                      \
   X(MAX_POINT_LIGHT_COUNT, __VA_ARGS__)                                                            \
+  X(MAX_TEXT_CHARACTER_COUNT, __VA_ARGS__)                                                         \
   END_OF_VULKAN_SHADER_CONSTANTS

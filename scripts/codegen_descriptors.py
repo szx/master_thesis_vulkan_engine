@@ -5,30 +5,55 @@ used by unified uniform buffer and shader descriptors.
 from utils import *
 
 supported_field_type = ['float', 'uint', 'vec2', 'vec3', 'vec4', 'mat4']
-# alignments taken from https://www.khronos.org/registry/OpenGL/extensions/ARB/ARB_uniform_buffer_object.txt
-uniform_buffer_std140_alignments = {'float': 4, 'uint': 4, 'vec2': 8, 'vec3': 16, 'vec4': 16, 'mat4': 16}
+# std430 alignments taken from https://github.com/KhronosGroup/GLSL/blob/master/extensions/ext/GL_EXT_scalar_block_layout.txt
+uniform_buffer_std430_alignments = {'float': 4, 'uint': 4, 'vec2': 8, 'vec3': 16, 'vec4': 16, 'mat4': 16}
 
 
-def get_std140_alignment(field_type):
-    alignment = uniform_buffer_std140_alignments.get(field_type, None)
+def get_std430_alignment_for_basic_type(field_type):
+    alignment = uniform_buffer_std430_alignments.get(field_type, None)
     assert (alignment is not None)
     return alignment
 
 
-def round_to_next_multiple(number, multiple):
-    assert (multiple > 0)
-    remainder = number % multiple
-    if remainder == 0:
-        return number
-    return number + multiple - remainder
+def get_std430_for_helper_struct(struct_fields, field_info, helper_structs):
+    return 0
 
 
-def get_std140_alignment_for_helper_struct(struct_fields):
-    alignments = [get_std140_alignment(x[1]) for x in struct_fields]
-    max_alignment = max(alignments)
-    rounded_max_alignment = round_to_next_multiple(max_alignment, 16)
-    assert (rounded_max_alignment > 0)
-    return rounded_max_alignment
+def get_std430_for_array(field_type, field_info, helper_structs):
+    alignment = get_std430_alignment(field_type, field_info, helper_structs)
+    return alignment
+
+
+def get_std430_alignment(field_type, field_info, helper_structs):
+    """Vulkan spec: 15.5.4. Offset and Stride Assignment"""
+    if 'array' in field_info:
+        return get_std430_for_array(field_type, {}, helper_structs)
+    elif field_type.endswith("_helper_element"):
+        helper_struct_name = field_type.partition("_helper_element")[0]
+        return get_std430_for_helper_struct(helper_structs[helper_struct_name], field_info, helper_structs)
+    else:
+        return get_std430_alignment_for_basic_type(field_type)
+
+
+def get_field_array_str(field_info):
+    if 'array' in field_info:
+        return f'[{field_info["array"]}]'
+    else:
+        return ''
+
+
+def parse_struct_fields(struct_decl):
+    struct_fields = []
+    for struct_field in struct_decl.get_children():
+        field_name = struct_field.spelling
+        field_type = struct_field.type.spelling.replace("_helper_struct", "_helper_element")
+        field_info = {}
+        if struct_field.brief_comment:
+            for info in struct_field.brief_comment.split(','):
+                key, _, value = [x.strip() for x in info.partition('=')]
+                field_info[key] = value
+        struct_fields.append((field_name, field_type, field_info))
+    return struct_fields
 
 
 def get_descriptor_h_str():
@@ -52,31 +77,14 @@ def codegen_descriptors():
     for struct_decl in struct_decls:
         if struct_decl.spelling.endswith('_push_constant_struct'):
             struct_name = struct_decl.spelling.partition('_push_constant_struct')[0]
-            struct_fields = []
-            for struct_field in struct_decl.get_children():
-                field_name = struct_field.spelling
-                field_type = struct_field.type.spelling
-                struct_fields.append((field_name, field_type))
-            push_constant_structs[struct_name] = struct_fields
+            push_constant_structs[struct_name] = parse_struct_fields(struct_decl)
         if struct_decl.spelling.endswith('_uniform_buffer_struct'):
             struct_name = struct_decl.spelling.partition('_uniform_buffer_struct')[0]
-            struct_fields = []
-            for struct_field in struct_decl.get_children():
-                field_name = struct_field.spelling
-                field_type = struct_field.type.spelling
-                field_comment = ''
-                if struct_field.brief_comment:
-                    field_comment = struct_field.brief_comment
-                struct_fields.append((field_name, field_type, field_comment))
-            uniform_buffer_structs[struct_name] = struct_fields
+            uniform_buffer_structs[struct_name] = parse_struct_fields(struct_decl)
         if struct_decl.spelling.endswith('_helper_struct'):
             struct_name = struct_decl.spelling.partition('_helper_struct')[0]
-            struct_fields = []
-            for struct_field in struct_decl.get_children():
-                field_name = struct_field.spelling
-                field_type = struct_field.type.spelling
-                struct_fields.append((field_name, field_type))
-            helper_structs[struct_name] = struct_fields
+            helper_structs[struct_name] = parse_struct_fields(struct_decl)
+
     print(f'uniform_buffer_structs: {uniform_buffer_structs}')
     print(f'push_constant_structs: {push_constant_structs}')
     print(f'helper_structs: {helper_structs}')
@@ -85,33 +93,27 @@ def codegen_descriptors():
     for struct_name, struct_fields in helper_structs.items():
         struct_name = struct_name + '_helper_element'
         decls.append(f'typedef struct {struct_name} {{')
-        for field_name, field_type in struct_fields:
-            alignment = get_std140_alignment(field_type)
-            decls.append(f'  alignas({alignment}) {field_type} {field_name};')
+        for field_name, field_type, field_info in struct_fields:
+            alignment = get_std430_alignment(field_type, field_info, helper_structs)
+            decls.append(f'  alignas({alignment}) {field_type} {field_name} {get_field_array_str(field_info)};')
         decls.append(f'}} {struct_name};\n')
 
     # generate aligned _push_constant_element
     for struct_name, struct_fields in push_constant_structs.items():
         struct_name = struct_name + '_push_constant_element'
         decls.append(f'typedef struct {struct_name} {{')
-        for field_name, field_type in struct_fields:
-            alignment = get_std140_alignment(field_type)
-            decls.append(f'  alignas({alignment}) {field_type} {field_name};')
+        for field_name, field_type, field_info in struct_fields:
+            alignment = get_std430_alignment(field_type, field_info, helper_structs)
+            decls.append(f'  alignas({alignment}) {field_type} {field_name} {get_field_array_str(field_info)};')
         decls.append(f'}} {struct_name};\n')
 
     # generate aligned _uniform_buffer_element
     for struct_name, struct_fields in uniform_buffer_structs.items():
         struct_name = struct_name + '_uniform_buffer_element'
         decls.append(f'typedef struct {struct_name} {{')
-        for field_name, field_type, field_comment in struct_fields:
-            if field_type.endswith("_helper_struct"):
-                helper_struct_name = field_type.partition("_helper_struct")[0]
-                alignment = get_std140_alignment_for_helper_struct(helper_structs[helper_struct_name])
-                decls.append(
-                    f'  alignas({alignment}) {field_type.replace("_struct", "_element")} {field_name} {field_comment};')
-            else:
-                alignment = get_std140_alignment(field_type)
-                decls.append(f'  alignas({alignment}) {field_type} {field_name};')
+        for field_name, field_type, field_info in struct_fields:
+            alignment = get_std430_alignment(field_type, field_info, helper_structs)
+            decls.append(f'  alignas({alignment}) {field_type} {field_name} {get_field_array_str(field_info)};')
         decls.append(f'}} {struct_name};\n')
 
     # generate GLSL strings for push constants
@@ -124,8 +126,8 @@ def codegen_descriptors():
         block_name = instance_name + "Block"
 
         defs.append(f'  utstring_printf(s, "layout(push_constant) uniform {block_name} {{\\n");')
-        for field_name, field_type in struct_fields:
-            defs.append(f' utstring_printf(s, "  {field_type} {field_name};\\n");')
+        for field_name, field_type, field_info in struct_fields:
+            defs.append(f' utstring_printf(s, "  {field_type} {field_name} {get_field_array_str(field_info)};\\n");')
         defs.append(f'  utstring_printf(s, "}} {instance_name};\\n");')
         defs.append(f'}}')
 
@@ -140,11 +142,12 @@ def codegen_descriptors():
         struct_name = instance_name + "Struct"
 
         defs.append(f'  utstring_printf(s, "struct {struct_name} {{\\n");')
-        for field_name, field_type, field_comment in struct_fields:
-            defs.append(f' utstring_printf(s, "  {field_type} {field_name} {field_comment};\\n");')
+        for field_name, field_type, field_info in struct_fields:
+            defs.append(f' utstring_printf(s, "  {field_type} {field_name} {get_field_array_str(field_info)};\\n");')
         defs.append(f'  utstring_printf(s, "}};\\n");')
 
-        defs.append(f'  utstring_printf(s, "layout(set = %u, binding = %u) uniform {block_name} {{\\n", set, binding);')
+        defs.append(
+            f'  utstring_printf(s, "layout(std430, set = %u, binding = %u) uniform {block_name} {{\\n", set, binding);')
         defs.append(f'  utstring_printf(s, "  {struct_name} {instance_name}");')
         defs.append(f'  if (count > 1) {{utstring_printf(s, "[%u]", count);}}')
         defs.append(f'  utstring_printf(s, ";\\n}};\\n");')
@@ -153,13 +156,13 @@ def codegen_descriptors():
     # generate GLSL strings for helper structs
     for struct_name, struct_fields in helper_structs.items():
         decls.append(
-            f'void glsl_add_{struct_name}_helper_struct(UT_string *s);')
+            f'void glsl_add_{struct_name}_helper_element(UT_string *s);')
         defs.append(
-            f'void glsl_add_{struct_name}_helper_struct(UT_string *s) {{')
+            f'void glsl_add_{struct_name}_helper_element(UT_string *s) {{')
 
-        defs.append(f'  utstring_printf(s, "struct {struct_name}_helper_struct {{\\n");')
-        for field_name, field_type in struct_fields:
-            defs.append(f' utstring_printf(s, "  {field_type} {field_name};\\n");')
+        defs.append(f'  utstring_printf(s, "struct {struct_name}_helper_element {{\\n");')
+        for field_name, field_type, field_info in struct_fields:
+            defs.append(f' utstring_printf(s, "  {field_type} {field_name} {get_field_array_str(field_info)};\\n");')
         defs.append(f'  utstring_printf(s, "}};\\n");')
         defs.append(f'}}')
 

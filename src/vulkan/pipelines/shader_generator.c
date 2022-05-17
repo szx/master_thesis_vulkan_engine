@@ -15,6 +15,7 @@ void vulkan_pipeline_shader_generator_deinit(vulkan_pipeline_shader_generator *s
 void glsl_add_header(UT_string *s) {
   utstring_printf(s, "#version 450\n");
   utstring_printf(s, "#extension GL_EXT_nonuniform_qualifier : enable\n");
+  utstring_printf(s, "#extension GL_EXT_scalar_block_layout : enable\n");
 #if defined(DEBUG)
   utstring_printf(s, "#extension GL_EXT_debug_printf : enable\n");
   utstring_printf(s, "#define DEBUG_PRINTF 1\n");
@@ -133,7 +134,7 @@ void glsl_add_fragment_shader_output_variables(UT_string *s) {
 
 void glsl_add_descriptors(UT_string *s, vulkan_descriptors *descriptors) {
 
-#define x(_name, ...) glsl_add_vulkan_##_name##_helper_struct(s);
+#define x(_name, ...) glsl_add_vulkan_##_name##_helper_element(s);
   VULKAN_HELPER_STRUCTS(x, )
 #undef x
 
