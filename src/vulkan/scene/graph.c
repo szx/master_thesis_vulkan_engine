@@ -163,12 +163,9 @@ void vulkan_scene_graph_create_with_scene_data(vulkan_scene_graph *sceneGraph,
   vulkan_renderer_cache_add_skybox(sceneGraph->sceneTree->rendererCache, skyboxElement);
 
   log_debug("adding renderer cache font element");
-  // HIRO add vulkan_renderer_cache_font_element
-  /*
-vulkan_renderer_cache_skybox_element *skyboxElement =
-      vulkan_renderer_cache_skybox_element_create(sceneData->skybox);
-  vulkan_renderer_cache_add_skybox(sceneGraph->sceneTree->rendererCache, skyboxElement);
-*/
+  vulkan_renderer_cache_font_element *fontElement =
+      vulkan_renderer_cache_font_element_create(sceneData->font);
+  vulkan_renderer_cache_add_font(sceneGraph->sceneTree->rendererCache, fontElement);
 
   assert(sceneGraph->root);
 }

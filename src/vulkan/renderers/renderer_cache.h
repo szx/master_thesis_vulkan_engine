@@ -33,6 +33,7 @@ typedef struct vulkan_renderer_cache {
   /* additional state accumulated from scene data */
   vulkan_renderer_cache_camera_element *defaultCameraElement;
   vulkan_renderer_cache_skybox_element *skyboxElement;
+  vulkan_renderer_cache_font_element *fontElement;
 
   /* additional state set up during render cache creation */
   vulkan_renderer_cache_primitive_element *basicBoxPrimitiveElement;
@@ -69,5 +70,8 @@ void vulkan_renderer_cache_add_camera_element(vulkan_renderer_cache *rendererCac
 
 void vulkan_renderer_cache_add_skybox(vulkan_renderer_cache *rendererCache,
                                       vulkan_renderer_cache_skybox_element *skyboxElement);
+
+void vulkan_renderer_cache_add_font(vulkan_renderer_cache *rendererCache,
+                                    vulkan_renderer_cache_font_element *fontElement);
 
 void vulkan_renderer_cache_debug_print(vulkan_renderer_cache *rendererCache);

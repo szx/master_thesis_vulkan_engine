@@ -122,9 +122,6 @@ vulkan_renderer_cache_skybox_element_create(vulkan_asset_skybox *skybox) {
   vulkan_renderer_cache_skybox_element *element =
       core_alloc(sizeof(vulkan_renderer_cache_skybox_element));
 
-  element->prev = NULL;
-  element->next = NULL;
-
   element->skybox = skybox;
 
   vulkan_asset_material_init(&element->cubemapMaterial, NULL);
@@ -141,7 +138,36 @@ void vulkan_renderer_cache_skybox_element_destroy(vulkan_renderer_cache_skybox_e
 
 void vulkan_renderer_cache_skybox_element_debug_print(
     vulkan_renderer_cache_skybox_element *element) {
-  log_raw(stdout, "\"renderer skybox skybox element\\n%p\\n", element);
+  log_raw(stdout, "\"renderer cache skybox element\\n%p\\n", element);
   log_raw(stdout, "cubemapTexture %p\\n", element->skybox->cubemapTexture);
+  log_raw(stdout, "\"; ");
+}
+
+/* font renderer cache element */
+
+vulkan_renderer_cache_font_element *
+vulkan_renderer_cache_font_element_create(vulkan_asset_font *font) {
+  assert(font != NULL);
+
+  vulkan_renderer_cache_font_element *element =
+      core_alloc(sizeof(vulkan_renderer_cache_font_element));
+
+  element->font = font;
+
+  vulkan_asset_material_init(&element->fontMaterial, NULL);
+  element->fontMaterial.baseColorTexture = element->font->fontTexture;
+  element->fontMaterial.metallicRoughnessTexture = element->font->fontTexture;
+
+  return element;
+}
+
+void vulkan_renderer_cache_font_element_destroy(vulkan_renderer_cache_font_element *element) {
+  vulkan_asset_material_deinit(&element->fontMaterial);
+  core_free(element);
+}
+
+void vulkan_renderer_cache_font_element_debug_print(vulkan_renderer_cache_font_element *element) {
+  log_raw(stdout, "\"renderer cache font element\\n%p\\n", element);
+  log_raw(stdout, "fontTexture %p\\n", element->font->fontTexture);
   log_raw(stdout, "\"; ");
 }

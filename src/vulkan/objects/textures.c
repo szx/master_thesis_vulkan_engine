@@ -43,16 +43,8 @@ vulkan_textures_texture_element_create(vulkan_asset_texture *texture, vulkan_dev
   vulkan_textures_texture_element *element = core_alloc(sizeof(vulkan_textures_texture_element));
 
   element->texture = texture;
-  vulkan_image_type type = vulkan_image_type_material_base_color;
-  if (element->texture->image->type == vulkan_image_type_material_base_color) {
-    type = vulkan_image_type_material_base_color;
-  } else if (element->texture->image->type == vulkan_image_type_material_parameters) {
-    type = vulkan_image_type_material_parameters;
-  } else if (element->texture->image->type == vulkan_image_type_cubemap) {
-    type = vulkan_image_type_cubemap;
-  } else {
-    assert(0);
-  }
+  vulkan_image_type type = element->texture->image->type;
+
   element->image = vulkan_image_create(vkd, type, element->texture->image->width,
                                        element->texture->image->height,
                                        vulkan_find_texture_format(vkd, texture));

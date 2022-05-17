@@ -90,6 +90,7 @@ vulkan_renderer_cache *vulkan_renderer_cache_create(vulkan_scene_data *sceneData
   rendererCache->defaultCameraElement = vulkan_renderer_cache_camera_element_create(
       &rendererCache->sceneData->defaultCamera, GLM_MAT4_IDENTITY);
   rendererCache->skyboxElement = NULL;
+  rendererCache->fontElement = NULL;
 
   rendererCache->_primitiveElementsDirty = false;
   utarray_alloc(rendererCache->_newPrimitiveElements,
@@ -112,8 +113,8 @@ void vulkan_renderer_cache_destroy(vulkan_renderer_cache *rendererCache) {
   }
 
   vulkan_renderer_cache_camera_element_destroy(rendererCache->defaultCameraElement);
-
   vulkan_renderer_cache_skybox_element_destroy(rendererCache->skyboxElement);
+  vulkan_renderer_cache_font_element_destroy(rendererCache->fontElement);
 
   utarray_free(rendererCache->_newPrimitiveElements);
   core_free(rendererCache);
@@ -247,6 +248,9 @@ void vulkan_renderer_cache_update_textures(vulkan_renderer_cache *rendererCache,
 
   rendererCache->skyboxElement->cubemapMaterialElement =
       vulkan_textures_add_material(textures, &rendererCache->skyboxElement->cubemapMaterial);
+
+  rendererCache->fontElement->fontMaterialElement =
+      vulkan_textures_add_material(textures, &rendererCache->fontElement->fontMaterial);
 }
 
 void vulkan_renderer_cache_add_new_primitive_elements_to_batches(
@@ -283,6 +287,11 @@ void vulkan_renderer_cache_add_camera_element(vulkan_renderer_cache *rendererCac
 void vulkan_renderer_cache_add_skybox(vulkan_renderer_cache *rendererCache,
                                       vulkan_renderer_cache_skybox_element *skyboxElement) {
   rendererCache->skyboxElement = skyboxElement;
+}
+
+void vulkan_renderer_cache_add_font(vulkan_renderer_cache *rendererCache,
+                                    vulkan_renderer_cache_font_element *fontElement) {
+  rendererCache->fontElement = fontElement;
 }
 
 void vulkan_renderer_cache_debug_print(vulkan_renderer_cache *rendererCache) {
