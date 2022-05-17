@@ -315,19 +315,19 @@ vulkan_asset_object *parse_cgltf_node(vulkan_scene_data *sceneData, cgltf_node *
   return vulkan_scene_data_add_object(sceneData, object);
 }
 
-vulkan_asset_skybox *parse_config_skybox(vulkan_scene_data *sceneData, data_config *config,
+vulkan_asset_skybox *parse_config_skybox(vulkan_scene_data *sceneData, data_config *sceneConfig,
                                          data_asset_db *assetDb) {
-  vulkan_asset_skybox skybox; // FIXME: My eyes bleed, deserialize smarter.
+  vulkan_asset_skybox skybox; // FIXME: Deserialize smarter, key == skyboxName.
   vulkan_asset_skybox_init(&skybox, sceneData);
-  utstring_printf(skybox.name, "%s", utstring_body(config->scene.skyboxName));
+  utstring_printf(skybox.name, "%s", utstring_body(sceneConfig->scene.skyboxName));
   data_key skyboxKey = vulkan_asset_skybox_calculate_key(&skybox);
   vulkan_asset_skybox *result = vulkan_scene_data_get_skybox_by_key(sceneData, assetDb, skyboxKey);
   vulkan_asset_skybox_deinit(&skybox);
   return result;
 }
 
-vulkan_scene_data *parse_cgltf_scene(UT_string *name, UT_string *path, UT_string *configPath,
-                                     data_asset_db *assetDb) {
+vulkan_scene_data *parse_cgltf_scene(UT_string *name, UT_string *path, UT_string *sceneConfigPath,
+                                     data_config *assetConfig, data_asset_db *assetDb) {
   cgltf_options options = {0};
   cgltf_data *cgltfData = NULL;
   cgltf_result result = cgltf_result_success;
@@ -343,7 +343,7 @@ vulkan_scene_data *parse_cgltf_scene(UT_string *name, UT_string *path, UT_string
   assert(cgltfData->scenes_count == 1); // We support only one scene per glTF file.
   cgltf_scene *cgltfScene = &cgltfData->scene[0];
 
-  vulkan_scene_data *sceneData = vulkan_scene_data_create(name);
+  vulkan_scene_data *sceneData = vulkan_scene_data_create(name, assetConfig);
   utstring_concat(sceneData->path, path);
 
   // parse objects
@@ -354,12 +354,12 @@ vulkan_scene_data *parse_cgltf_scene(UT_string *name, UT_string *path, UT_string
 
   cgltf_free(cgltfData);
 
-  data_config *config = data_config_create(configPath, data_config_type_scene);
+  data_config *sceneConfig = data_config_create(sceneConfigPath, data_config_type_scene);
 
   // parse skybox
-  sceneData->skybox = parse_config_skybox(sceneData, config, assetDb);
+  sceneData->skybox = parse_config_skybox(sceneData, sceneConfig, assetDb);
 
-  data_config_destroy(config);
+  data_config_destroy(sceneConfig);
 
   return sceneData;
 }
@@ -406,10 +406,20 @@ void vulkan_scene_data_deserialize(vulkan_scene_data *sceneData, data_asset_db *
 
   sceneData->skybox = vulkan_scene_data_get_skybox_by_key(
       sceneData, assetDb, data_asset_db_select_scene_skybox_key(assetDb, sceneData->key));
+
+  // FIXME: Deserialize smarter, key == fontName.
+  vulkan_asset_font font;
+  vulkan_asset_font_init(&font, sceneData);
+  utstring_printf(font.name, "%s", utstring_body(sceneData->assetConfig->asset.graphicsFont));
+  data_key fontKey = vulkan_asset_font_calculate_key(&font);
+  sceneData->font = vulkan_scene_data_get_font_by_key(sceneData, assetDb, fontKey);
 }
 
-vulkan_scene_data *vulkan_scene_data_create(UT_string *name) {
+vulkan_scene_data *vulkan_scene_data_create(UT_string *name, data_config *assetConfig) {
   vulkan_scene_data *sceneData = core_alloc(sizeof(vulkan_scene_data));
+
+  sceneData->assetConfig = assetConfig;
+
   utstring_new(sceneData->name);
   utstring_concat(sceneData->name, name);
 
@@ -440,6 +450,13 @@ vulkan_scene_data *vulkan_scene_data_create(UT_string *name) {
   defaultSkybox->key = vulkan_asset_skybox_calculate_key(defaultSkybox);
   DL_APPEND(sceneData->skyboxes, defaultSkybox);
 
+  sceneData->fonts = NULL; // NOTE: We use default font.
+  vulkan_asset_font *defaultFont = core_alloc(sizeof(vulkan_asset_font));
+  vulkan_asset_font_init(defaultFont, sceneData);
+  defaultFont->fontTexture = defaultTexture;
+  defaultFont->key = vulkan_asset_font_calculate_key(defaultFont);
+  DL_APPEND(sceneData->fonts, defaultFont);
+
   sceneData->materials = NULL; // NOTE: We use default material.
   vulkan_asset_material *defaultMaterial = core_alloc(sizeof(vulkan_asset_material));
   vulkan_asset_material_init(defaultMaterial, sceneData);
@@ -460,6 +477,8 @@ vulkan_scene_data *vulkan_scene_data_create(UT_string *name) {
 
   utarray_alloc(sceneData->rootObjects, sizeof(vulkan_asset_object *));
   sceneData->skybox = defaultSkybox;
+
+  sceneData->font = defaultFont;
 
   vulkan_asset_camera_init(&sceneData->defaultCamera, sceneData);
 
@@ -489,6 +508,11 @@ void vulkan_scene_data_destroy(vulkan_scene_data *sceneData) {
   dl_foreach_elem(vulkan_asset_skybox *, skybox, sceneData->skyboxes) {
     vulkan_asset_skybox_deinit(skybox);
     core_free(skybox);
+  }
+
+  dl_foreach_elem(vulkan_asset_font *, font, sceneData->fonts) {
+    vulkan_asset_font_deinit(font);
+    core_free(font);
   }
 
   dl_foreach_elem(vulkan_asset_material *, material, sceneData->materials) {
@@ -568,6 +592,7 @@ VULKAN_ASSET_FIELD_DEFS_FUNCS(image, images)
 VULKAN_ASSET_FIELD_DEFS_FUNCS(sampler, samplers)
 VULKAN_ASSET_FIELD_DEFS_FUNCS(texture, textures)
 VULKAN_ASSET_FIELD_DEFS_FUNCS(skybox, skyboxes)
+VULKAN_ASSET_FIELD_DEFS_FUNCS(font, fonts)
 VULKAN_ASSET_FIELD_DEFS_FUNCS(material, materials)
 VULKAN_ASSET_FIELD_DEFS_FUNCS(vertex_attribute, vertexAttributes)
 VULKAN_ASSET_FIELD_DEFS_FUNCS(primitive, primitives)
@@ -579,16 +604,19 @@ VULKAN_ASSET_FIELD_DEFS_FUNCS(object, objects)
 
 vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *sceneName,
                                                            UT_string *gltfPath,
-                                                           UT_string *configPath,
+                                                           UT_string *sceneConfigPath,
+                                                           data_config *assetConfig,
                                                            data_asset_db *assetDb) {
-  vulkan_scene_data *sceneData = parse_cgltf_scene(sceneName, gltfPath, configPath, assetDb);
+  vulkan_scene_data *sceneData =
+      parse_cgltf_scene(sceneName, gltfPath, sceneConfigPath, assetConfig, assetDb);
   return sceneData;
 }
 
-vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_asset_db *assetDb,
+vulkan_scene_data *vulkan_scene_data_create_with_asset_db(data_config *assetConfig,
+                                                          data_asset_db *assetDb,
                                                           UT_string *sceneName) {
   vulkan_scene_data *sceneData = NULL;
-  sceneData = vulkan_scene_data_create(sceneName);
+  sceneData = vulkan_scene_data_create(sceneName, assetConfig);
   data_key sceneKey = vulkan_scene_data_calculate_key(sceneData);
   vulkan_scene_data_deserialize(sceneData, assetDb, sceneKey);
   return sceneData;

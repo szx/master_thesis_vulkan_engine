@@ -15,9 +15,9 @@ TEST gltf_loading() {
   UT_string *sceneName;
   utstring_alloc(sceneName, GLTF_NAME);
   UT_string *gltfPath = get_asset_file_path("gltf/" GLTF_NAME, GLTF_NAME ".gltf");
-  UT_string *configPath = get_asset_file_path("gltf/" GLTF_NAME, GLTF_NAME ".ini");
+  UT_string *sceneConfigPath = get_asset_file_path("gltf/" GLTF_NAME, GLTF_NAME ".ini");
   vulkan_scene_data *gltfSceneData =
-      vulkan_scene_data_create_with_gltf_file(sceneName, gltfPath, configPath, assetDb);
+      vulkan_scene_data_create_with_gltf_file(sceneName, gltfPath, sceneConfigPath, assetDb);
   vulkan_scene_data *assetDbSceneData = vulkan_scene_data_create_with_asset_db(assetDb, sceneName);
 
   ASSERT_STR_EQ(utstring_body(gltfSceneData->name), utstring_body(assetDbSceneData->name));
@@ -81,7 +81,7 @@ TEST gltf_loading() {
             assetDbSceneData->skybox->cubemapTexture->key.value);
 
   utstring_free(gltfPath);
-  utstring_free(configPath);
+  utstring_free(sceneConfigPath);
   utstring_free(sceneName);
   vulkan_scene_data_destroy(assetDbSceneData);
   vulkan_scene_data_destroy(gltfSceneData);

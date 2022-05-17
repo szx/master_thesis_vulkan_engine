@@ -231,3 +231,53 @@ void vulkan_asset_skybox_debug_print(vulkan_asset_skybox *skybox, int indent) {
   log_debug(INDENT_FORMAT_STRING "name=%s", INDENT_FORMAT_ARGS(2), utstring_body(skybox->name));
   vulkan_asset_texture_debug_print(skybox->cubemapTexture, indent + 2);
 }
+
+/* font */
+
+void vulkan_asset_font_init(vulkan_asset_font *font, vulkan_scene_data *sceneData) {
+  utstring_new(font->name);
+  font->fontTexture = NULL;
+  utstring_new(font->characters);
+
+  VULKAN_ASSET_FIELD_DEFS(font, font)
+}
+
+void vulkan_asset_font_deinit(vulkan_asset_font *font) {
+  utstring_free(font->name);
+  utstring_free(font->characters);
+}
+
+data_key vulkan_asset_font_calculate_key(vulkan_asset_font *font) {
+  hash_t value;
+  HASH_START(hashState)
+  HASH_UPDATE(hashState, utstring_body(font->name), utstring_len(font->name))
+  HASH_DIGEST(hashState, value)
+  HASH_END(hashState)
+  return (data_key){value};
+}
+
+void vulkan_asset_font_serialize(vulkan_asset_font *font, data_asset_db *assetDb) {
+  font->key = vulkan_asset_font_calculate_key(font);
+
+  data_asset_db_insert_font_name_text(assetDb, font->key, (data_text){font->name});
+  vulkan_asset_texture_serialize(font->fontTexture, assetDb);
+  data_asset_db_insert_font_fontTexture_key(assetDb, font->key, font->fontTexture->key);
+  data_asset_db_insert_font_characters_text(assetDb, font->key, (data_text){font->characters});
+}
+
+void vulkan_asset_font_deserialize(vulkan_asset_font *font, data_asset_db *assetDb, data_key key) {
+  font->key = key;
+
+  utstring_free(font->name);
+  font->name = data_asset_db_select_font_name_text(assetDb, font->key).value;
+  font->fontTexture = vulkan_scene_data_get_texture_by_key(
+      font->sceneData, assetDb, data_asset_db_select_font_fontTexture_key(assetDb, font->key));
+  font->characters = data_asset_db_select_font_characters_text(assetDb, font->key).value;
+}
+
+void vulkan_asset_font_debug_print(vulkan_asset_font *font, int indent) {
+  log_debug(INDENT_FORMAT_STRING "font:", INDENT_FORMAT_ARGS(0));
+  log_debug(INDENT_FORMAT_STRING "hash=%zu", INDENT_FORMAT_ARGS(2), font->key);
+  log_debug(INDENT_FORMAT_STRING "name=%s", INDENT_FORMAT_ARGS(2), utstring_body(font->name));
+  vulkan_asset_texture_debug_print(font->fontTexture, indent + 2);
+}

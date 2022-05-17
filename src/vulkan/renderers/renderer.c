@@ -7,7 +7,7 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
 
   renderer->config = config;
   renderer->assetDb = assetDb;
-  renderer->data = vulkan_scene_data_create_with_asset_db(renderer->assetDb, sceneName);
+  renderer->data = vulkan_scene_data_create_with_asset_db(config, renderer->assetDb, sceneName);
   renderer->vkd = vks->vkd;
   renderer->vks = vks;
 

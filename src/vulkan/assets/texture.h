@@ -57,3 +57,15 @@ typedef struct vulkan_asset_skybox {
 } vulkan_asset_skybox;
 
 VULKAN_ASSET_FUNC_DECLS(skybox)
+
+/* font */
+
+typedef struct vulkan_asset_font {
+  UT_string *name;
+  vulkan_asset_texture *fontTexture;
+  UT_string *characters;
+
+  VULKAN_ASSET_FIELD_DECLS(font)
+} vulkan_asset_font;
+
+VULKAN_ASSET_FUNC_DECLS(font)

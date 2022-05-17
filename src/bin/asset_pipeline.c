@@ -55,17 +55,22 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
   UT_string *gltfPath;
   utstring_alloc(gltfPath, utstring_body(assetInput->sourceAssetPath));
   utstring_printf(gltfPath, "/%s.gltf", utstring_body(assetInput->sourceAssetName));
-  UT_string *configPath;
-  utstring_alloc(configPath, utstring_body(assetInput->sourceAssetPath));
-  utstring_printf(configPath, "/%s.ini", utstring_body(assetInput->sourceAssetName));
+  UT_string *sceneConfigPath;
+  utstring_alloc(sceneConfigPath, utstring_body(assetInput->sourceAssetPath));
+  utstring_printf(sceneConfigPath, "/%s.ini", utstring_body(assetInput->sourceAssetName));
+
+  data_config *assetConfig =
+      data_config_create(globals.assetConfigFilepath, data_config_type_asset);
 
   vulkan_scene_data *sceneData = vulkan_scene_data_create_with_gltf_file(
-      assetInput->sourceAssetName, gltfPath, configPath, assetDb);
+      assetInput->sourceAssetName, gltfPath, sceneConfigPath, assetConfig, assetDb);
   vulkan_scene_data_serialize(sceneData, assetDb);
   vulkan_scene_data_destroy(sceneData);
 
+  data_config_destroy(assetConfig);
+
   utstring_free(gltfPath);
-  utstring_free(configPath);
+  utstring_free(sceneConfigPath);
 }
 
 void write_cubemap_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetInput) {
@@ -198,7 +203,22 @@ void write_font_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetInp
   vulkan_asset_image_debug_print(&fontImage, 0);
   vulkan_asset_image_serialize(&fontImage, assetDb);
 
-  // HIRO serialize vulkan_asset_font (name, characters, fontImage)
+  /* serialize font */
+  vulkan_asset_sampler fontSampler;
+  vulkan_asset_sampler_init(&fontSampler, NULL);
+
+  vulkan_asset_texture fontTexture;
+  vulkan_asset_texture_init(&fontTexture, NULL);
+  fontTexture.image = &fontImage;
+  fontTexture.sampler = &fontSampler;
+
+  vulkan_asset_font font;
+  vulkan_asset_font_init(&font, NULL);
+  utstring_printf(font.name, "%s", utstring_body(assetInput->sourceAssetName));
+  font.fontTexture = &fontTexture;
+  utstring_printf(font.characters, "%s", characters);
+  vulkan_asset_font_serialize(&font, assetDb);
+  vulkan_asset_font_deinit(&font);
 
   vulkan_asset_image_deinit(&fontImage);
 }
