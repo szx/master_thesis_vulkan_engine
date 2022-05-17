@@ -28,11 +28,9 @@ size_t count_bits(size_t bits);
 typedef XXH64_hash_t hash_t;
 #define HASH_START(_state)                                                                         \
   XXH64_state_t *const _state = XXH64_createState();                                               \
-  assert(_state != NULL);                                                                          \
   const XXH64_hash_t _state##seed = 0;                                                             \
-  assert(XXH64_reset(_state, _state##seed) != XXH_ERROR);
-#define HASH_UPDATE(_state, _dataPtr, _size)                                                       \
-  assert(XXH64_update(_state, (const void *)_dataPtr, _size) != XXH_ERROR);
+  XXH64_reset(_state, _state##seed);
+#define HASH_UPDATE(_state, _dataPtr, _size) XXH64_update(_state, (const void *)_dataPtr, _size);
 #define HASH_DIGEST(_state, _var) _var = XXH64_digest(_state);
 #define HASH_END(_state) XXH64_freeState(_state);
 
