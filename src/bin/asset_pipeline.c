@@ -217,6 +217,7 @@ void write_font_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetInp
   utstring_printf(font.name, "%s", utstring_body(assetInput->sourceAssetName));
   font.fontTexture = &fontTexture;
   utstring_printf(font.characters, "%s", characters);
+  font.characterSize = boxWidth;
   vulkan_asset_font_serialize(&font, assetDb);
   vulkan_asset_font_deinit(&font);
 

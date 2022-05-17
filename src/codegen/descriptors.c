@@ -57,6 +57,8 @@ void glsl_add_vulkan_directional_light_helper_struct(UT_string *s) {
 void glsl_add_vulkan_font_helper_struct(UT_string *s) {
   utstring_printf(s, "struct vulkan_font_helper_struct {\n");
  utstring_printf(s, "  uint fontTextureId;\n");
+ utstring_printf(s, "  uint characterSize;\n");
+ utstring_printf(s, "  uint fontTextureSize;\n");
   utstring_printf(s, "};\n");
 }
 void glsl_add_vulkan_point_light_helper_struct(UT_string *s) {

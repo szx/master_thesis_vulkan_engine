@@ -30,6 +30,8 @@ typedef struct vulkan_skybox_helper_struct {
 
 typedef struct vulkan_font_helper_struct {
   uint fontTextureId;
+  uint characterSize;
+  uint fontTextureSize;
 } vulkan_font_helper_struct;
 
 typedef struct vulkan_viewport_helper_struct {

@@ -10,6 +10,8 @@ typedef struct vulkan_directional_light_helper_element {
 
 typedef struct vulkan_font_helper_element {
   alignas(4) uint fontTextureId;
+  alignas(4) uint characterSize;
+  alignas(4) uint fontTextureSize;
 } vulkan_font_helper_element;
 
 typedef struct vulkan_point_light_helper_element {

@@ -64,6 +64,7 @@ typedef struct vulkan_asset_font {
   UT_string *name;
   vulkan_asset_texture *fontTexture;
   UT_string *characters;
+  uint32_t characterSize;
 
   VULKAN_ASSET_FIELD_DECLS(font)
 } vulkan_asset_font;

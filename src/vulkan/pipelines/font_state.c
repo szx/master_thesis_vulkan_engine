@@ -19,13 +19,17 @@ void vulkan_pipeline_font_state_reinit_with_new_swap_chain(vulkan_pipeline_font_
 
 void vulkan_pipeline_font_state_update(vulkan_pipeline_font_state *font) {
   // No-op.
-  // TODO: Update font parameters (day-light cycle?)
+  // HIRO Update font helper struct with text (after conversion)
 }
 
 void vulkan_pipeline_font_state_set_font_elements(vulkan_pipeline_font_state *font,
                                                   vulkan_font_helper_element *fontElement) {
   fontElement->fontTextureId = font->renderState->rendererCache->fontElement->fontMaterialElement
                                    ->baseColorTextureElement->textureIdx;
+  fontElement->characterSize = font->renderState->rendererCache->fontElement->font->characterSize;
+  fontElement->fontTextureSize =
+      font->renderState->rendererCache->fontElement->font->fontTexture->image->width;
+  // HIRO Update font helper struct with text (after conversion)
 }
 
 void vulkan_pipeline_font_state_debug_print(vulkan_pipeline_font_state *font, int indent) {

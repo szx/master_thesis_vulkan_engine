@@ -238,6 +238,7 @@ void vulkan_asset_font_init(vulkan_asset_font *font, vulkan_scene_data *sceneDat
   utstring_new(font->name);
   font->fontTexture = NULL;
   utstring_new(font->characters);
+  font->characterSize = 0;
 
   VULKAN_ASSET_FIELD_DEFS(font, font)
 }
@@ -263,6 +264,8 @@ void vulkan_asset_font_serialize(vulkan_asset_font *font, data_asset_db *assetDb
   vulkan_asset_texture_serialize(font->fontTexture, assetDb);
   data_asset_db_insert_font_fontTexture_key(assetDb, font->key, font->fontTexture->key);
   data_asset_db_insert_font_characters_text(assetDb, font->key, (data_text){font->characters});
+  data_asset_db_insert_font_characterSize_int(assetDb, font->key,
+                                              data_int_temp(font->characterSize));
 }
 
 void vulkan_asset_font_deserialize(vulkan_asset_font *font, data_asset_db *assetDb, data_key key) {
@@ -273,6 +276,7 @@ void vulkan_asset_font_deserialize(vulkan_asset_font *font, data_asset_db *asset
   font->fontTexture = vulkan_scene_data_get_texture_by_key(
       font->sceneData, assetDb, data_asset_db_select_font_fontTexture_key(assetDb, font->key));
   font->characters = data_asset_db_select_font_characters_text(assetDb, font->key).value;
+  font->characterSize = data_asset_db_select_font_characterSize_int(assetDb, font->key).value;
 }
 
 void vulkan_asset_font_debug_print(vulkan_asset_font *font, int indent) {
@@ -280,4 +284,5 @@ void vulkan_asset_font_debug_print(vulkan_asset_font *font, int indent) {
   log_debug(INDENT_FORMAT_STRING "hash=%zu", INDENT_FORMAT_ARGS(2), font->key);
   log_debug(INDENT_FORMAT_STRING "name=%s", INDENT_FORMAT_ARGS(2), utstring_body(font->name));
   vulkan_asset_texture_debug_print(font->fontTexture, indent + 2);
+  log_debug(INDENT_FORMAT_STRING "characterSize=%u", INDENT_FORMAT_ARGS(2), font->characterSize);
 }
