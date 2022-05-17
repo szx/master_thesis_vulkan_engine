@@ -6,6 +6,7 @@
 #include "../renderers/batch.h"
 #include "../renderers/render_state.h"
 #include "camera_state.h"
+#include "font_state.h"
 #include "light_state.h"
 #include "skybox_state.h"
 
@@ -20,6 +21,7 @@ typedef struct vulkan_pipeline_shared_state {
   vulkan_pipeline_camera_state *camera;
   vulkan_pipeline_light_state *lights;
   vulkan_pipeline_skybox_state *skybox;
+  vulkan_pipeline_font_state *font;
 
   // HIRO: Maintain two batches for transparent and opaque objects
   // HIRO: in batches recording multiple commands controlled by sorting with multiple policies?
@@ -38,6 +40,8 @@ void vulkan_pipeline_shared_state_reinit_with_new_swap_chain(
     vulkan_pipeline_shared_state *sharedState);
 
 void vulkan_pipeline_shared_state_update(vulkan_pipeline_shared_state *sharedState);
+void vulkan_pipeline_shared_state_set_unified_uniform_buffer(
+    vulkan_pipeline_shared_state *sharedState, vulkan_global_uniform_buffer_element *global);
 void vulkan_pipeline_shared_state_send_to_device(vulkan_pipeline_shared_state *sharedState);
 
 void vulkan_pipeline_shared_state_debug_print(vulkan_pipeline_shared_state *sharedState,

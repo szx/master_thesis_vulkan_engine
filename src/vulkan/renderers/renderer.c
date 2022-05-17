@@ -18,7 +18,7 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
 
   renderer->renderState =
       vulkan_render_state_create(renderer->vks, renderer->rendererCache, renderer->config,
-                                 vulkan_renderer_update_global_uniform_buffer_callback);
+                                 vulkan_renderer_update_unified_uniform_buffer_callback);
 
   renderer->pipelineState = vulkan_pipeline_state_create(renderer->renderState);
 
@@ -105,7 +105,7 @@ void vulkan_renderer_update(vulkan_renderer *renderer) {
   vulkan_render_state_update(renderer->renderState, renderer);
 }
 
-void vulkan_renderer_update_global_uniform_buffer_callback(
+void vulkan_renderer_update_unified_uniform_buffer_callback(
     void *data, size_t currentFrameInFlight, vulkan_global_uniform_buffer_data *globalData,
     vulkan_materials_uniform_buffer_data *materialsData,
     vulkan_instances_uniform_buffer_data *instancesData) {
@@ -115,22 +115,8 @@ void vulkan_renderer_update_global_uniform_buffer_callback(
   // globals
   vulkan_global_uniform_buffer_element *global =
       vulkan_global_uniform_buffer_data_get_element(globalData, 0, currentFrameInFlight);
-
-  vulkan_pipeline_camera_state *camera = renderer->pipelineState->sharedState.camera;
-  vulkan_pipeline_camera_state_set_view_matrix(camera, global->viewMat);
-  vulkan_pipeline_camera_state_set_projection_matrix(camera, global->projMat);
-
-  vulkan_pipeline_light_state *lights = renderer->pipelineState->sharedState.lights;
-  vulkan_pipeline_light_state_set_directional_light_elements(lights, &global->directionalLightCount,
-                                                             global->directionalLights);
-  vulkan_pipeline_light_state_set_point_light_elements(lights, &global->pointLightCount,
-                                                       global->pointLights);
-
-  vulkan_pipeline_skybox_state *skybox = renderer->pipelineState->sharedState.skybox;
-  vulkan_pipeline_skybox_state_set_skybox_elements(skybox, &global->skybox);
-
-  global->viewport.width = renderer->vks->swapChainExtent.width;
-  global->viewport.height = renderer->vks->swapChainExtent.height;
+  vulkan_pipeline_shared_state_set_unified_uniform_buffer(&renderer->pipelineState->sharedState,
+                                                          global);
 
   // materials
   uthash_foreach_elem_it(vulkan_textures_material_element *, materialElement,

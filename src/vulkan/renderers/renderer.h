@@ -33,7 +33,7 @@ void vulkan_renderer_recreate_swap_chain(vulkan_renderer *renderer);
 
 void vulkan_renderer_update(vulkan_renderer *renderer);
 
-void vulkan_renderer_update_global_uniform_buffer_callback(
+void vulkan_renderer_update_unified_uniform_buffer_callback(
     void *data, size_t currentFrameInFlight, vulkan_global_uniform_buffer_data *globalData,
     vulkan_materials_uniform_buffer_data *materialsData,
     vulkan_instances_uniform_buffer_data *instancesData);

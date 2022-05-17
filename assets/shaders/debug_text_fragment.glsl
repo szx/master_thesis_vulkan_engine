@@ -1,10 +1,11 @@
 uint globalIdx = getGlobalIdx();
 
-uint skyboxCubemapTextureId = global[globalIdx].skybox.skyboxCubemapTextureId;
-vec4 skyboxCubemapTexture = texture(texturesCube[skyboxCubemapTextureId], inWorldPosition);
-
 vec2 clipPosition = inWorldPosition.xy;
+// HIRO characterUV from characters
 
-// HIRO Render using clipPosition, global.viewport and bitmap texture
-if (clipPosition.x < 0) discard;
-outColor = vec4(0);
+uint fontTextureId = global[globalIdx].font.fontTextureId;
+float fontTexture = texture(textures2D[fontTextureId], clipPosition).x;
+
+// HIRO alpha blending
+if (clipPosition.x < 0 || fontTexture == 0) discard;
+outColor = vec4(fontTexture);
