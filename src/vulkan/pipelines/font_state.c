@@ -32,7 +32,6 @@ void vulkan_pipeline_font_state_set_font_elements(vulkan_pipeline_font_state *fo
       font->renderState->rendererCache->fontElement->font->fontTexture->image->width;
 
   // HIRO pack text
-  fontElement->textLength = utstring_len(font->text);
   UT_string *characters = font->renderState->rendererCache->fontElement->font->characters;
   size_t widthInCharacters =
       font->renderState->vks->swapChainExtent.width / fontElement->characterSize;
@@ -57,6 +56,7 @@ void vulkan_pipeline_font_state_set_font_elements(vulkan_pipeline_font_state *fo
       textIdx++;
     }
   }
+  fontElement->textLength = textIdx;
 }
 
 void vulkan_pipeline_font_state_debug_print(vulkan_pipeline_font_state *font, int indent) {

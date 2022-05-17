@@ -2,7 +2,7 @@
 #include "../data/data.h"
 #include "../vulkan/vulkan.h"
 
-void update_func(vulkan_renderer *renderer, double dt) {
+void update_func(vulkan_renderer *renderer, double fps, double dt) {
   static bool firstFrame = true;
   vulkan_device *vkd = renderer->vkd;
   vulkan_render_state *renderState = renderer->renderState;
@@ -78,8 +78,7 @@ void update_func(vulkan_renderer *renderer, double dt) {
 
   /* text */
   utstring_clear(fontState->text);
-  utstring_printf(fontState->text, "Hello, world!\nFPS: --");
-
+  utstring_printf(fontState->text, "Hello, world!\nFPS: %.2f", fps);
   if (firstFrame) {
     firstFrame = false;
   }

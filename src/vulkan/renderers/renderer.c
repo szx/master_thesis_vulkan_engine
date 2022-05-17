@@ -256,17 +256,18 @@ void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
 }
 
 void vulkan_renderer_run_main_loop(vulkan_renderer *renderer,
-                                   void (*updateFunc)(vulkan_renderer *renderer, double dt)) {
+                                   vulkan_renderer_main_loop_update_func updateFunc) {
   glfwMakeContextCurrent(renderer->vkd->window);
 
   double currentTime = glfwGetTime();
   while (glfwWindowShouldClose(renderer->vkd->window) == 0) {
     double newTime = glfwGetTime();
     double frameTime = newTime - currentTime;
+    double fps = 1.0 / frameTime;
     currentTime = newTime;
     while (frameTime > 0.0) {
       double dt = MIN(frameTime, MIN_DELTA_TIME);
-      updateFunc(renderer, dt);
+      updateFunc(renderer, fps, dt);
       vulkan_input_clear_released_keys(&renderer->vkd->input);
       frameTime -= dt;
     }

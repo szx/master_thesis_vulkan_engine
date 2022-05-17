@@ -42,7 +42,10 @@ void vulkan_renderer_send_to_device(vulkan_renderer *renderer);
 
 void vulkan_renderer_draw_frame(vulkan_renderer *renderer);
 
+typedef void (*vulkan_renderer_main_loop_update_func)(vulkan_renderer *renderer, double fps,
+                                                      double dt);
+
 void vulkan_renderer_run_main_loop(vulkan_renderer *renderer,
-                                   void (*updateFunc)(vulkan_renderer *renderer, double dt));
+                                   vulkan_renderer_main_loop_update_func updateFunc);
 
 void vulkan_renderer_debug_print(vulkan_renderer *renderer);
