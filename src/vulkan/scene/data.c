@@ -413,6 +413,7 @@ void vulkan_scene_data_deserialize(vulkan_scene_data *sceneData, data_asset_db *
   utstring_printf(font.name, "%s", utstring_body(sceneData->assetConfig->asset.graphicsFont));
   data_key fontKey = vulkan_asset_font_calculate_key(&font);
   sceneData->font = vulkan_scene_data_get_font_by_key(sceneData, assetDb, fontKey);
+  vulkan_asset_font_deinit(&font);
 }
 
 vulkan_scene_data *vulkan_scene_data_create(UT_string *name, data_config *assetConfig) {

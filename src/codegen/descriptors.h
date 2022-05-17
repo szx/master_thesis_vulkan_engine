@@ -12,6 +12,7 @@ typedef struct vulkan_font_helper_element {
   alignas(4) uint fontTextureId ;
   alignas(4) uint characterSize ;
   alignas(4) uint fontTextureSize ;
+  alignas(4) uint textLength ;
   alignas(4) uint text [MAX_TEXT_CHARACTER_COUNT];
 } vulkan_font_helper_element;
 

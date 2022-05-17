@@ -275,6 +275,7 @@ void vulkan_asset_font_deserialize(vulkan_asset_font *font, data_asset_db *asset
   font->name = data_asset_db_select_font_name_text(assetDb, font->key).value;
   font->fontTexture = vulkan_scene_data_get_texture_by_key(
       font->sceneData, assetDb, data_asset_db_select_font_fontTexture_key(assetDb, font->key));
+  utstring_free(font->characters);
   font->characters = data_asset_db_select_font_characters_text(assetDb, font->key).value;
   font->characterSize = data_asset_db_select_font_characterSize_int(assetDb, font->key).value;
 }

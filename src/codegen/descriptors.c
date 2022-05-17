@@ -59,6 +59,7 @@ void glsl_add_vulkan_font_helper_element(UT_string *s) {
  utstring_printf(s, "  uint fontTextureId ;\n");
  utstring_printf(s, "  uint characterSize ;\n");
  utstring_printf(s, "  uint fontTextureSize ;\n");
+ utstring_printf(s, "  uint textLength ;\n");
  utstring_printf(s, "  uint text [MAX_TEXT_CHARACTER_COUNT];\n");
   utstring_printf(s, "};\n");
 }

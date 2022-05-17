@@ -10,6 +10,7 @@ void update_func(vulkan_renderer *renderer, double dt) {
   vulkan_pipeline_camera_state *cameraState = renderer->pipelineState->sharedState.camera;
   vulkan_pipeline_light_state *lightState = renderer->pipelineState->sharedState.lights;
   vulkan_pipeline_skybox_state *skyboxState = renderer->pipelineState->sharedState.skybox;
+  vulkan_pipeline_font_state *fontState = renderer->pipelineState->sharedState.font;
 
   if (renderer->vkd->input.keyboard.release.esc) {
     // TODO: Move to vulkan_renderer_quit.
@@ -74,6 +75,10 @@ void update_func(vulkan_renderer *renderer, double dt) {
   }
   vkd->input.mouse.lastX = vkd->input.mouse.x;
   vkd->input.mouse.lastY = vkd->input.mouse.y;
+
+  /* text */
+  utstring_clear(fontState->text);
+  utstring_printf(fontState->text, "Hello, world!\nFPS: --");
 
   if (firstFrame) {
     firstFrame = false;

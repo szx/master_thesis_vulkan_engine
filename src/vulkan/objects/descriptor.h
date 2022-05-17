@@ -32,7 +32,7 @@ typedef struct vulkan_font_helper_struct {
   uint fontTextureId;
   uint characterSize;
   uint fontTextureSize;
-  // NOTE:
+  uint textLength;
   uint text; ///< array=MAX_TEXT_CHARACTER_COUNT
 } vulkan_font_helper_struct;
 

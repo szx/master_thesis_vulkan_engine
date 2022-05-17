@@ -9,8 +9,7 @@
 typedef struct vulkan_pipeline_font_state {
   vulkan_render_state *renderState; ///< Pointer.
 
-  float ambientIntensity;
-  // HIRO UT_string *text;
+  UT_string *text;
 
 } vulkan_pipeline_font_state;
 
