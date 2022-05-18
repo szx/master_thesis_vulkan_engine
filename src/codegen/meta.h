@@ -282,6 +282,7 @@ void vulkan_attribute_type_debug_print(int flags, int indent);
 const char *vulkan_batch_instancing_policy_debug_str(int value);
 const char *vulkan_buffer_type_debug_str(int value);
 const char *vulkan_camera_type_debug_str(int value);
+const char *vulkan_color_blending_type_debug_str(int value);
 const char *vulkan_image_type_debug_str(int value);
 const char *vulkan_pipeline_offscreen_attachment_type_debug_str(int value);
 const char *vulkan_pipeline_type_debug_str(int value);

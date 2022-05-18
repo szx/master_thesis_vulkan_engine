@@ -59,7 +59,7 @@ void vulkan_pipeline_font_state_set_font_elements(vulkan_pipeline_font_state *fo
         }
 
         // Pack 4 characters in one uint.
-        uint32_t mask = 0xFF << (textOffset * 8);
+        uint32_t mask = 0xFFu << (textOffset * 8);
         fontElement->text[textIdx] &= ~mask;
         fontElement->text[textIdx] |= characterIdx << (textOffset * 8);
 

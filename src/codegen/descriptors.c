@@ -20,7 +20,7 @@ void glsl_add_vulkan_global_uniform_buffer(UT_string *s, uint32_t set, uint32_t 
  utstring_printf(s, "  vulkan_font_helper_element font ;\n");
  utstring_printf(s, "  vulkan_viewport_helper_element viewport ;\n");
   utstring_printf(s, "};\n");
-  utstring_printf(s, "layout(std430, set = %u, binding = %u) uniform globalBlock {\n", set, binding);
+  utstring_printf(s, "layout(scalar, set = %u, binding = %u) uniform globalBlock {\n", set, binding);
   utstring_printf(s, "  globalStruct global");
   if (count > 1) {utstring_printf(s, "[%u]", count);}
   utstring_printf(s, ";\n};\n");
@@ -30,7 +30,7 @@ void glsl_add_vulkan_instances_uniform_buffer(UT_string *s, uint32_t set, uint32
  utstring_printf(s, "  mat4 modelMat ;\n");
  utstring_printf(s, "  uint materialId ;\n");
   utstring_printf(s, "};\n");
-  utstring_printf(s, "layout(std430, set = %u, binding = %u) uniform instancesBlock {\n", set, binding);
+  utstring_printf(s, "layout(scalar, set = %u, binding = %u) uniform instancesBlock {\n", set, binding);
   utstring_printf(s, "  instancesStruct instances");
   if (count > 1) {utstring_printf(s, "[%u]", count);}
   utstring_printf(s, ";\n};\n");
@@ -43,7 +43,7 @@ void glsl_add_vulkan_materials_uniform_buffer(UT_string *s, uint32_t set, uint32
  utstring_printf(s, "  float metallicFactor ;\n");
  utstring_printf(s, "  float roughnessFactor ;\n");
   utstring_printf(s, "};\n");
-  utstring_printf(s, "layout(std430, set = %u, binding = %u) uniform materialsBlock {\n", set, binding);
+  utstring_printf(s, "layout(scalar, set = %u, binding = %u) uniform materialsBlock {\n", set, binding);
   utstring_printf(s, "  materialsStruct materials");
   if (count > 1) {utstring_printf(s, "[%u]", count);}
   utstring_printf(s, ";\n};\n");

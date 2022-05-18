@@ -2,13 +2,14 @@
 
 #pragma once
 #include "../vulkan/constants.h"
+#include "../core/junk.h"
 
-typedef struct vulkan_directional_light_helper_element {
-  alignas(16) vec3 direction ;
-  alignas(16) vec3 color ;
+typedef struct packed_struct vulkan_directional_light_helper_element {
+  alignas(4) vec3 direction ;
+  alignas(4) vec3 color ;
 } vulkan_directional_light_helper_element;
 
-typedef struct vulkan_font_helper_element {
+typedef struct packed_struct vulkan_font_helper_element {
   alignas(4) uint fontTextureId ;
   alignas(4) uint characterSize ;
   alignas(4) uint fontTextureSize ;
@@ -16,45 +17,45 @@ typedef struct vulkan_font_helper_element {
   alignas(4) uint text [MAX_TEXT_CHARACTER_COUNT];
 } vulkan_font_helper_element;
 
-typedef struct vulkan_point_light_helper_element {
-  alignas(16) vec3 position ;
-  alignas(16) vec3 color ;
+typedef struct packed_struct vulkan_point_light_helper_element {
+  alignas(4) vec3 position ;
+  alignas(4) vec3 color ;
   alignas(4) float radius ;
 } vulkan_point_light_helper_element;
 
-typedef struct vulkan_skybox_helper_element {
+typedef struct packed_struct vulkan_skybox_helper_element {
   alignas(4) uint skyboxCubemapTextureId ;
 } vulkan_skybox_helper_element;
 
-typedef struct vulkan_viewport_helper_element {
+typedef struct packed_struct vulkan_viewport_helper_element {
   alignas(4) uint width ;
   alignas(4) uint height ;
 } vulkan_viewport_helper_element;
 
-typedef struct vulkan_draw_push_constant_element {
+typedef struct packed_struct vulkan_draw_push_constant_element {
   alignas(4) uint currentFrameInFlight ;
 } vulkan_draw_push_constant_element;
 
-typedef struct vulkan_global_uniform_buffer_element {
-  alignas(16) mat4 viewMat ;
-  alignas(16) mat4 projMat ;
+typedef struct packed_struct vulkan_global_uniform_buffer_element {
+  alignas(4) mat4 viewMat ;
+  alignas(4) mat4 projMat ;
   alignas(4) uint directionalLightCount ;
-  alignas(0) vulkan_directional_light_helper_element directionalLights [MAX_DIRECTIONAL_LIGHT_COUNT];
+  alignas(4) vulkan_directional_light_helper_element directionalLights [MAX_DIRECTIONAL_LIGHT_COUNT];
   alignas(4) uint pointLightCount ;
-  alignas(0) vulkan_point_light_helper_element pointLights [MAX_POINT_LIGHT_COUNT];
-  alignas(0) vulkan_skybox_helper_element skybox ;
-  alignas(0) vulkan_font_helper_element font ;
-  alignas(0) vulkan_viewport_helper_element viewport ;
+  alignas(4) vulkan_point_light_helper_element pointLights [MAX_POINT_LIGHT_COUNT];
+  alignas(4) vulkan_skybox_helper_element skybox ;
+  alignas(4) vulkan_font_helper_element font ;
+  alignas(4) vulkan_viewport_helper_element viewport ;
 } vulkan_global_uniform_buffer_element;
 
-typedef struct vulkan_instances_uniform_buffer_element {
-  alignas(16) mat4 modelMat ;
+typedef struct packed_struct vulkan_instances_uniform_buffer_element {
+  alignas(4) mat4 modelMat ;
   alignas(4) uint materialId ;
 } vulkan_instances_uniform_buffer_element;
 
-typedef struct vulkan_materials_uniform_buffer_element {
+typedef struct packed_struct vulkan_materials_uniform_buffer_element {
   alignas(4) uint baseColorTextureId ;
-  alignas(16) vec4 baseColorFactor ;
+  alignas(4) vec4 baseColorFactor ;
   alignas(4) uint metallicRoughnessTextureId ;
   alignas(4) float metallicFactor ;
   alignas(4) float roughnessFactor ;

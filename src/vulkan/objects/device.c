@@ -336,13 +336,17 @@ bool physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevic
            features12.descriptorBindingVariableDescriptorCount);
   log_info("descriptorBindingPartiallyBound = %d", features12.descriptorBindingPartiallyBound);
   log_info("runtimeDescriptorArray = %d", features12.runtimeDescriptorArray);
+  // Scalar block layout allows us to use std430 memory layout for GLSL buffers, which corresponds
+  // more directly to C struct alignment rules.
+  log_info("scalarBlockLayout = %d", features12.scalarBlockLayout);
   log_info("multiDrawIndirect = %d", features10.multiDrawIndirect);
   log_info("drawIndirectFirstInstance = %d", features10.drawIndirectFirstInstance);
   bool featuresSupported =
       features10.samplerAnisotropy && features10.shaderUniformBufferArrayDynamicIndexing &&
       features10.shaderSampledImageArrayDynamicIndexing && featuresRobustness2.nullDescriptor &&
       features12.descriptorIndexing && features12.descriptorBindingVariableDescriptorCount &&
-      features12.descriptorBindingPartiallyBound && features10.multiDrawIndirect &&
+      features12.descriptorBindingPartiallyBound && features12.runtimeDescriptorArray &&
+      features12.scalarBlockLayout && features10.multiDrawIndirect &&
       features10.drawIndirectFirstInstance;
 
   return queueFamiliesComplete && extensionsSupported && swapChainAdequate && goodVulkanVersion &&
@@ -527,10 +531,15 @@ void create_logical_device(vulkan_device *vkd) {
       .descriptorBindingPartiallyBound = VK_TRUE,
       .runtimeDescriptorArray = VK_TRUE,
   };
+  VkPhysicalDeviceScalarBlockLayoutFeatures scalarBlockLayoutFeatures = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES,
+      .scalarBlockLayout = VK_TRUE,
+  };
   VkPhysicalDeviceFeatures2 deviceFeatures2 = {.sType =
                                                    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
                                                .features = deviceFeatures,
                                                .pNext = &descriptorIndexingFeatures};
+  descriptorIndexingFeatures.pNext = &scalarBlockLayoutFeatures;
 
   VkDeviceCreateInfo createInfo = {0};
   createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;

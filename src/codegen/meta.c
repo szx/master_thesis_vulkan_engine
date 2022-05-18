@@ -5089,6 +5089,12 @@ const char *vulkan_camera_type_debug_str(int value) {
   if (value == 2) { return "vulkan_camera_type_count"; }
   return "UNKNOWN vulkan_camera_type";
 }
+const char *vulkan_color_blending_type_debug_str(int value) {
+  if (value == 0) { return "vulkan_color_blending_type_none"; }
+  if (value == 1) { return "vulkan_color_blending_type_alpha"; }
+  if (value == 2) { return "vulkan_color_blending_type_count"; }
+  return "UNKNOWN vulkan_color_blending_type";
+}
 const char *vulkan_image_type_debug_str(int value) {
   if (value == 0) { return "vulkan_image_type_depth_buffer"; }
   if (value == 1) { return "vulkan_image_type_material_base_color"; }

@@ -6,17 +6,22 @@ from utils import *
 
 supported_field_type = ['float', 'uint', 'vec2', 'vec3', 'vec4', 'mat4']
 # std430 alignments taken from https://github.com/KhronosGroup/GLSL/blob/master/extensions/ext/GL_EXT_scalar_block_layout.txt
-uniform_buffer_std430_alignments = {'float': 4, 'uint': 4, 'vec2': 8, 'vec3': 16, 'vec4': 16, 'mat4': 16}
+# alignment_name = "std430"
+# uniform_buffer_alignments = {'float': 4, 'uint': 4, 'vec2': 8, 'vec3': 16, 'vec4': 16, 'mat4': 16}
+# scalar alignments taken from https://github.com/KhronosGroup/GLSL/blob/master/extensions/ext/GL_EXT_scalar_block_layout.txt
+alignment_name = "scalar"
+uniform_buffer_alignments = {'float': 4, 'uint': 4, 'vec2': 4, 'vec3': 4, 'vec4': 4, 'mat4': 4}
 
 
 def get_std430_alignment_for_basic_type(field_type):
-    alignment = uniform_buffer_std430_alignments.get(field_type, None)
+    alignment = uniform_buffer_alignments.get(field_type, None)
     assert (alignment is not None)
     return alignment
 
 
 def get_std430_for_helper_struct(struct_fields, field_info, helper_structs):
-    return 0
+    alignment = max([get_std430_alignment(x[1], field_info, helper_structs) for x in struct_fields])
+    return alignment
 
 
 def get_std430_for_array(field_type, field_info, helper_structs):
@@ -69,7 +74,7 @@ def codegen_descriptors():
     push_constant_structs = {}
     uniform_buffer_structs = {}
     helper_structs = {}
-    decls = ['#pragma once', '#include "../vulkan/constants.h"', '']
+    decls = ['#pragma once', '#include "../vulkan/constants.h"', '#include "../core/junk.h"', '']
     defs = ['#include "descriptors.h"', '#include "../core/core.h"', '']
 
     # parse C structs ending with _struct
@@ -92,7 +97,7 @@ def codegen_descriptors():
     # generate aligned _helper_element
     for struct_name, struct_fields in helper_structs.items():
         struct_name = struct_name + '_helper_element'
-        decls.append(f'typedef struct {struct_name} {{')
+        decls.append(f'typedef struct packed_struct {struct_name} {{')
         for field_name, field_type, field_info in struct_fields:
             alignment = get_std430_alignment(field_type, field_info, helper_structs)
             decls.append(f'  alignas({alignment}) {field_type} {field_name} {get_field_array_str(field_info)};')
@@ -101,7 +106,7 @@ def codegen_descriptors():
     # generate aligned _push_constant_element
     for struct_name, struct_fields in push_constant_structs.items():
         struct_name = struct_name + '_push_constant_element'
-        decls.append(f'typedef struct {struct_name} {{')
+        decls.append(f'typedef struct packed_struct {struct_name} {{')
         for field_name, field_type, field_info in struct_fields:
             alignment = get_std430_alignment(field_type, field_info, helper_structs)
             decls.append(f'  alignas({alignment}) {field_type} {field_name} {get_field_array_str(field_info)};')
@@ -110,7 +115,7 @@ def codegen_descriptors():
     # generate aligned _uniform_buffer_element
     for struct_name, struct_fields in uniform_buffer_structs.items():
         struct_name = struct_name + '_uniform_buffer_element'
-        decls.append(f'typedef struct {struct_name} {{')
+        decls.append(f'typedef struct packed_struct {struct_name} {{')
         for field_name, field_type, field_info in struct_fields:
             alignment = get_std430_alignment(field_type, field_info, helper_structs)
             decls.append(f'  alignas({alignment}) {field_type} {field_name} {get_field_array_str(field_info)};')
@@ -147,7 +152,7 @@ def codegen_descriptors():
         defs.append(f'  utstring_printf(s, "}};\\n");')
 
         defs.append(
-            f'  utstring_printf(s, "layout(std430, set = %u, binding = %u) uniform {block_name} {{\\n", set, binding);')
+            f'  utstring_printf(s, "layout({alignment_name}, set = %u, binding = %u) uniform {block_name} {{\\n", set, binding);')
         defs.append(f'  utstring_printf(s, "  {struct_name} {instance_name}");')
         defs.append(f'  if (count > 1) {{utstring_printf(s, "[%u]", count);}}')
         defs.append(f'  utstring_printf(s, ";\\n}};\\n");')
