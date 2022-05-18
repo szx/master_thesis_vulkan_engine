@@ -66,8 +66,16 @@ VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
                                                size_t pushConstantRangeCount,
                                                const char *debugFormat, ...);
 
+typedef enum vulkan_color_blending_type {
+  vulkan_color_blending_type_none,
+  vulkan_color_blending_type_alpha,
+  vulkan_color_blending_type_count,
+} vulkan_color_blending_type;
+
 VkPipeline vulkan_create_graphics_pipeline(
     vulkan_device *vkd,
+
+    vulkan_color_blending_type colorBlendingType,
 
     VkPipelineShaderStageCreateInfo *shaderStages, uint32_t shaderStageCount,
 

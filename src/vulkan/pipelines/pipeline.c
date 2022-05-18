@@ -30,6 +30,8 @@ void create_render_pass(vulkan_pipeline *pipeline) {
 }
 
 void create_graphics_pipeline(vulkan_pipeline *pipeline) {
+  vulkan_pipeline_info pipelineInfo = vulkan_pipeline_get_pipeline_info(pipeline);
+  bool colorBlendingType = pipelineInfo.colorBlendingType;
 
   size_t shaderStageCount;
   VkPipelineShaderStageCreateInfo *shaderStages =
@@ -60,6 +62,8 @@ void create_graphics_pipeline(vulkan_pipeline *pipeline) {
 
   pipeline->graphicsPipeline = vulkan_create_graphics_pipeline(
       pipeline->vks->vkd,
+
+      colorBlendingType,
 
       shaderStages, shaderStageCount,
 

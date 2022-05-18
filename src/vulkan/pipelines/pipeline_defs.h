@@ -37,6 +37,8 @@ typedef struct vulkan_pipeline_info {
 
   bool useDepthAttachment;
   VkClearDepthStencilValue depthClearValue;
+
+  bool colorBlendingType;
 } vulkan_pipeline_info;
 
 uint32_t vulkan_pipeline_info_get_framebuffer_attachment_count(vulkan_pipeline_info pipelineInfo);

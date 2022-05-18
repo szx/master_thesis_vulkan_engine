@@ -8,7 +8,8 @@ vulkan_pipeline_info vulkan_pipeline_impl_forward_get_pipeline_info(vulkan_pipel
                                 .onscreenClearValue = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}},
                                 .offscreenColorAttachmentCount = 0,
                                 .useDepthAttachment = true,
-                                .depthClearValue = (VkClearDepthStencilValue){0.0f, 0}};
+                                .depthClearValue = (VkClearDepthStencilValue){0.0f, 0},
+                                .colorBlendingType = vulkan_color_blending_type_none};
 }
 
 void vulkan_pipeline_impl_forward_record_render_pass(vulkan_pipeline *pipeline,
@@ -108,9 +109,7 @@ void vulkan_pipeline_impl_skybox_record_render_pass(vulkan_pipeline *pipeline,
 
 vulkan_pipeline_info vulkan_pipeline_impl_debug_text_get_pipeline_info(vulkan_pipeline *pipeline) {
   return (vulkan_pipeline_info){.useOnscreenColorAttachment = true,
-                                .onscreenClearValue = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}},
-                                .offscreenColorAttachmentCount = 0,
-                                .useDepthAttachment = false};
+                                .colorBlendingType = vulkan_color_blending_type_alpha};
 }
 
 void vulkan_pipeline_impl_debug_text_record_render_pass(vulkan_pipeline *pipeline,
