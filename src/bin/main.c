@@ -77,8 +77,14 @@ void update_func(vulkan_renderer *renderer, double fps, double dt) {
   vkd->input.mouse.lastY = vkd->input.mouse.y;
 
   /* text */
+  if (renderer->vkd->input.keyboard.release.t) {
+    fontState->debugTextEnabled = !fontState->debugTextEnabled;
+  }
   utstring_clear(fontState->text);
-  utstring_printf(fontState->text, "Hello, world!\nFPS: %.2f", fps);
+  if (fontState->debugTextEnabled) {
+    utstring_printf(fontState->text, "FPS: %.2f\ndt: %.2f", fps, dt);
+  }
+
   if (firstFrame) {
     firstFrame = false;
   }

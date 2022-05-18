@@ -11,6 +11,7 @@
   X(q, GLFW_KEY_Q, __VA_ARGS__)                                                                    \
   X(e, GLFW_KEY_E, __VA_ARGS__)                                                                    \
   X(l, GLFW_KEY_L, __VA_ARGS__)                                                                    \
+  X(t, GLFW_KEY_T, __VA_ARGS__)                                                                    \
   X(num1, GLFW_KEY_W, __VA_ARGS__)                                                                 \
   X(num2, GLFW_KEY_W, __VA_ARGS__)                                                                 \
   X(num3, GLFW_KEY_W, __VA_ARGS__)                                                                 \

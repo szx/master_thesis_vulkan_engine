@@ -8,10 +8,15 @@ uint characterCountX = fontTextureSize / characterSize;
 
 uint boxIdxX = uint((clipPosition.x+1.0)/2 * global[globalIdx].viewport.width) / characterSize;
 uint boxIdxY = uint((clipPosition.y+1.0)/2 * global[globalIdx].viewport.height) / characterSize;
-uint textIdx = boxIdxX + boxIdxY * (global[globalIdx].viewport.width / characterSize);
+
+uint textIdxBeforeUnpacking = boxIdxX + (boxIdxY * (global[globalIdx].viewport.width / characterSize));
+uint textOffset = textIdxBeforeUnpacking % 4;
+uint textIdx = textIdxBeforeUnpacking / 4;
 if (textIdx >= global[globalIdx].font.textLength) discard;
 
-uint character = global[globalIdx].font.text[textIdx];
+uint characterBeforeUnpacking = global[globalIdx].font.text[textIdx];
+uint characterMask = 0xFF << (textOffset * 8);
+uint character = (characterBeforeUnpacking & characterMask) >> (textOffset * 8);
 uint characterIdxX = character % characterCountX;
 uint characterIdxY = character / characterCountX;
 

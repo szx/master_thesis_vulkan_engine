@@ -9,6 +9,7 @@
 typedef struct vulkan_pipeline_font_state {
   vulkan_render_state *renderState; ///< Pointer.
 
+  bool debugTextEnabled;
   UT_string *text;
 
 } vulkan_pipeline_font_state;
