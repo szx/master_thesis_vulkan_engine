@@ -386,7 +386,7 @@ VkPipeline vulkan_create_graphics_pipeline(
     const VkDescriptorSetLayout *descriptorSetLayouts, size_t descriptorSetLayoutCount,
     const VkPushConstantRange *pushConstantRanges, size_t pushConstantRangeCount,
 
-    VkRenderPass renderPass, VkPipelineLayout *pipelineLayout, const char *debugFormat, ...) {
+    VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const char *debugFormat, ...) {
 
   /* vertex input */
   VkPipelineVertexInputStateCreateInfo vertexInputInfo = {0};
@@ -472,12 +472,6 @@ VkPipeline vulkan_create_graphics_pipeline(
   colorBlending.blendConstants[2] = 0.0f;
   colorBlending.blendConstants[3] = 0.0f;
 
-  /* pipeline layout */
-  DEBUG_NAME_FORMAT_START()
-  *pipelineLayout =
-      vulkan_create_pipeline_layout(vkd, 0, descriptorSetLayouts, descriptorSetLayoutCount,
-                                    pushConstantRanges, pushConstantRangeCount, "%s", debugName);
-
   VkGraphicsPipelineCreateInfo pipelineInfo = {0};
   pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
   pipelineInfo.stageCount = shaderStageCount;
@@ -489,7 +483,7 @@ VkPipeline vulkan_create_graphics_pipeline(
   pipelineInfo.pMultisampleState = &multisampling;
   pipelineInfo.pDepthStencilState = &depthStencil;
   pipelineInfo.pColorBlendState = &colorBlending;
-  pipelineInfo.layout = *pipelineLayout;
+  pipelineInfo.layout = pipelineLayout;
   pipelineInfo.renderPass = renderPass;
   pipelineInfo.subpass = 0;
   pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
@@ -497,6 +491,7 @@ VkPipeline vulkan_create_graphics_pipeline(
   VkPipeline graphicsPipeline;
   verify(vkCreateGraphicsPipelines(vkd->device, VK_NULL_HANDLE, 1, &pipelineInfo, vka,
                                    &graphicsPipeline) == VK_SUCCESS);
+  DEBUG_NAME_FORMAT_START()
   vulkan_debug_name_render_pass(vkd->debug, renderPass, "%s - graphics pipeline", debugName);
   DEBUG_NAME_FORMAT_END();
 

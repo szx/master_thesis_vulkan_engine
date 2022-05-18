@@ -38,15 +38,6 @@ void vulkan_pipeline_impl_forward_record_render_pass(vulkan_pipeline *pipeline,
 
   vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->graphicsPipeline);
 
-  vulkan_unified_geometry_buffer_record_bind_command(pipeline->renderState->unifiedGeometryBuffer,
-                                                     commandBuffer);
-  vulkan_descriptors_record_bind_command(pipeline->renderState->descriptors, commandBuffer,
-                                         pipeline->pipelineLayout);
-  vulkan_draw_push_constant_element drawPushConstant = {.currentFrameInFlight =
-                                                            currentFrameInFlight};
-  vkCmdPushConstants(commandBuffer, pipeline->pipelineLayout, VK_SHADER_STAGE_ALL, 0,
-                     sizeof(drawPushConstant), &drawPushConstant);
-
   vulkan_batches_record_draw_command(pipeline->pipelineState->sharedState.rendererCacheBatches,
                                      commandBuffer, &frameState->rendererCacheBatchesData);
 
@@ -84,15 +75,6 @@ void vulkan_pipeline_impl_skybox_record_render_pass(vulkan_pipeline *pipeline,
   vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
   vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->graphicsPipeline);
-
-  vulkan_unified_geometry_buffer_record_bind_command(pipeline->renderState->unifiedGeometryBuffer,
-                                                     commandBuffer);
-  vulkan_descriptors_record_bind_command(pipeline->renderState->descriptors, commandBuffer,
-                                         pipeline->pipelineLayout);
-  vulkan_draw_push_constant_element drawPushConstant = {.currentFrameInFlight =
-                                                            currentFrameInFlight};
-  vkCmdPushConstants(commandBuffer, pipeline->pipelineLayout, VK_SHADER_STAGE_ALL, 0,
-                     sizeof(drawPushConstant), &drawPushConstant);
 
   // Draw cube.
   vulkan_renderer_cache_primitive_element *basicBoxPrimitiveElement =
@@ -134,15 +116,6 @@ void vulkan_pipeline_impl_debug_text_record_render_pass(vulkan_pipeline *pipelin
   vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
   vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->graphicsPipeline);
-
-  vulkan_unified_geometry_buffer_record_bind_command(pipeline->renderState->unifiedGeometryBuffer,
-                                                     commandBuffer);
-  vulkan_descriptors_record_bind_command(pipeline->renderState->descriptors, commandBuffer,
-                                         pipeline->pipelineLayout);
-  vulkan_draw_push_constant_element drawPushConstant = {.currentFrameInFlight =
-                                                            currentFrameInFlight};
-  vkCmdPushConstants(commandBuffer, pipeline->pipelineLayout, VK_SHADER_STAGE_ALL, 0,
-                     sizeof(drawPushConstant), &drawPushConstant);
 
   // Draw full-screen triangle.
   // See also:

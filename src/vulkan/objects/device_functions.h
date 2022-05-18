@@ -89,7 +89,7 @@ VkPipeline vulkan_create_graphics_pipeline(
     const VkDescriptorSetLayout *descriptorSetLayouts, size_t descriptorSetLayoutCount,
     const VkPushConstantRange *pushConstantRanges, size_t pushConstantRangeCount,
 
-    VkRenderPass renderPass, VkPipelineLayout *pipelineLayout, const char *debugFormat, ...);
+    VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const char *debugFormat, ...);
 
 VkRenderPass vulkan_create_render_pass(
     vulkan_device *vkd, VkAttachmentDescription *onscreenColorAttachmentDescription,

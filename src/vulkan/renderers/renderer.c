@@ -195,7 +195,14 @@ void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
   verify(vkBeginCommandBuffer(commandBuffer, &beginInfo) == VK_SUCCESS);
 
-  // HIRO bind descriptors etc, remove binding from pipeline impl
+  // Bind unified buffers and descriptors.
+  vulkan_unified_geometry_buffer_record_bind_command(renderer->renderState->unifiedGeometryBuffer,
+                                                     commandBuffer);
+  vulkan_descriptors_record_bind_commands(
+      renderer->renderState->descriptors, commandBuffer,
+      (vulkan_draw_push_constant_element){.currentFrameInFlight =
+                                              renderer->renderState->sync->currentFrameInFlight});
+
   utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
     vulkan_pipeline_record_render_pass(pipeline, commandBuffer, swapChainImageIdx);
   }

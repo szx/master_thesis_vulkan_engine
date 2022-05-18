@@ -19,7 +19,6 @@ typedef struct vulkan_pipeline {
   vulkan_pipeline_shader_program *shaderProgram;
   VkRenderPass renderPass;
   UT_array *framebuffers; // VkFramebuffer list
-  VkPipelineLayout pipelineLayout;
   VkPipeline graphicsPipeline;
 
   /// Pipeline used by renderer before this pipeline (or NULL if first).

@@ -26,7 +26,8 @@ void create_render_pass(vulkan_pipeline *pipeline) {
       offscreenColorAttachmentDescriptions, offscreenColorAttachmentCount,
       offscreenColorAttachmentReferences, offscreenColorAttachmentCount,
       (useDepthAttachment ? &depthAttachmentDescription : NULL),
-      (useDepthAttachment ? &depthAttachmentReference : NULL), "pipeline");
+      (useDepthAttachment ? &depthAttachmentReference : NULL), "pipeline %s",
+      vulkan_pipeline_type_debug_str(pipeline->type));
 }
 
 void create_graphics_pipeline(vulkan_pipeline *pipeline) {
@@ -73,13 +74,14 @@ void create_graphics_pipeline(vulkan_pipeline *pipeline) {
       pipeline->vks->swapChainExtent.width, pipeline->vks->swapChainExtent.height,
 
       descriptorSetLayouts, descriptorSetLayoutCount, pushConstantRanges, pushConstantRangeCount,
-      pipeline->renderPass, &pipeline->pipelineLayout, "pipeline");
+      pipeline->renderPass, pipeline->renderState->descriptors->pipelineLayout, "pipeline %s",
+      vulkan_pipeline_type_debug_str(pipeline->type));
 
   core_free(vertexAttributeDescriptions);
   core_free(descriptorSetLayouts);
 }
 
-void createFramebuffers(vulkan_pipeline *pipeline) {
+void create_framebuffers(vulkan_pipeline *pipeline) {
   vulkan_pipeline_info pipelineInfo = vulkan_pipeline_get_pipeline_info(pipeline);
 
   uint32_t framebufferAttachmentCount =
@@ -138,7 +140,7 @@ void vulkan_pipeline_init_prev_next(vulkan_pipeline *pipeline, vulkan_pipeline *
 void vulkan_pipeline_init_finish(vulkan_pipeline *pipeline) {
   create_render_pass(pipeline);
   create_graphics_pipeline(pipeline);
-  createFramebuffers(pipeline);
+  create_framebuffers(pipeline);
 }
 
 void vulkan_pipeline_deinit(vulkan_pipeline *pipeline) {
@@ -147,7 +149,6 @@ void vulkan_pipeline_deinit(vulkan_pipeline *pipeline) {
   }
   utarray_free(pipeline->framebuffers);
 
-  vkDestroyPipelineLayout(pipeline->vks->vkd->device, pipeline->pipelineLayout, vka);
   vkDestroyPipeline(pipeline->vks->vkd->device, pipeline->graphicsPipeline, vka);
   vkDestroyRenderPass(pipeline->vks->vkd->device, pipeline->renderPass, vka);
   vulkan_pipeline_shader_program_destroy(pipeline->shaderProgram);

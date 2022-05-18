@@ -145,6 +145,9 @@ typedef struct vulkan_descriptors {
   VkDescriptorSet descriptorSet;
   uint32_t descriptorSetNumber;
 
+  /// Pipeline layout for descriptor set.
+  VkPipelineLayout pipelineLayout;
+
   vulkan_descriptor_binding uniformBufferBindings[VULKAN_UNIFORM_BUFFER_COUNT];
   vulkan_descriptor_binding texturesBinding;
 
@@ -165,9 +168,9 @@ void vulkan_descriptors_update(vulkan_descriptors *descriptors);
 
 void vulkan_descriptors_send_to_device(vulkan_descriptors *descriptors);
 
-void vulkan_descriptors_record_bind_command(vulkan_descriptors *descriptors,
-                                            VkCommandBuffer commandBuffer,
-                                            VkPipelineLayout pipelineLayout);
+void vulkan_descriptors_record_bind_commands(vulkan_descriptors *descriptors,
+                                             VkCommandBuffer commandBuffer,
+                                             vulkan_draw_push_constant_element drawPushConstant);
 VkDescriptorSetLayout *
 vulkan_descriptors_get_descriptor_set_layouts(vulkan_descriptors *descriptors, size_t *count);
 

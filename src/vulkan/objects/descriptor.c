@@ -276,10 +276,27 @@ vulkan_descriptors *vulkan_descriptors_create(vulkan_device *vkd,
       descriptors->vkd, descriptors->descriptorSetLayout, descriptors->descriptorPool, bindings,
       array_size(bindings), true, "descriptors");
 
+  // create pipeline layout
+  size_t descriptorSetLayoutCount = 0;
+  VkDescriptorSetLayout *descriptorSetLayouts =
+      vulkan_descriptors_get_descriptor_set_layouts(descriptors, &descriptorSetLayoutCount);
+  assert(descriptorSetLayoutCount > 0);
+
+  size_t pushConstantRangeCount = 1;
+  VkPushConstantRange pushConstantRanges[pushConstantRangeCount];
+  pushConstantRanges[0] = (VkPushConstantRange){.stageFlags = VK_SHADER_STAGE_ALL,
+                                                .offset = 0,
+                                                .size = sizeof(vulkan_draw_push_constant_element)};
+
+  descriptors->pipelineLayout =
+      vulkan_create_pipeline_layout(vkd, 0, descriptorSetLayouts, descriptorSetLayoutCount,
+                                    pushConstantRanges, pushConstantRangeCount, "descriptors");
+
   return descriptors;
 }
 
 void vulkan_descriptors_destroy(vulkan_descriptors *descriptors) {
+  vkDestroyPipelineLayout(descriptors->vkd->device, descriptors->pipelineLayout, vka);
   vkDestroyDescriptorSetLayout(descriptors->vkd->device, descriptors->descriptorSetLayout, vka);
   vkDestroyDescriptorPool(descriptors->vkd->device, descriptors->descriptorPool, vka);
   core_free(descriptors);
@@ -294,11 +311,14 @@ void vulkan_descriptors_send_to_device(vulkan_descriptors *descriptors) {
                                &descriptors->texturesBinding, 1);
 }
 
-void vulkan_descriptors_record_bind_command(vulkan_descriptors *descriptors,
-                                            VkCommandBuffer commandBuffer,
-                                            VkPipelineLayout pipelineLayout) {
-  vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1,
-                          &descriptors->descriptorSet, 0, NULL);
+void vulkan_descriptors_record_bind_commands(vulkan_descriptors *descriptors,
+                                             VkCommandBuffer commandBuffer,
+                                             vulkan_draw_push_constant_element drawPushConstant) {
+  vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                          descriptors->pipelineLayout, 0, 1, &descriptors->descriptorSet, 0, NULL);
+
+  vkCmdPushConstants(commandBuffer, descriptors->pipelineLayout, VK_SHADER_STAGE_ALL, 0,
+                     sizeof(drawPushConstant), &drawPushConstant);
 }
 
 VkDescriptorSetLayout *
