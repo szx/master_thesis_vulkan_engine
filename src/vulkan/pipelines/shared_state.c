@@ -5,6 +5,7 @@ void vulkan_pipeline_shared_state_init(vulkan_pipeline_shared_state *sharedState
   sharedState->renderState = renderState;
 
   sharedState->camera = vulkan_pipeline_camera_state_create(sharedState->renderState);
+  sharedState->materials = vulkan_pipeline_material_state_create(sharedState->renderState);
   sharedState->lights = vulkan_pipeline_light_state_create(sharedState->renderState);
   sharedState->skybox = vulkan_pipeline_skybox_state_create(sharedState->renderState);
   sharedState->font = vulkan_pipeline_font_state_create(sharedState->renderState);
@@ -21,6 +22,7 @@ void vulkan_pipeline_shared_state_deinit(vulkan_pipeline_shared_state *sharedSta
   vulkan_pipeline_font_state_destroy(sharedState->font);
   vulkan_pipeline_skybox_state_destroy(sharedState->skybox);
   vulkan_pipeline_light_state_destroy(sharedState->lights);
+  vulkan_pipeline_material_state_destroy(sharedState->materials);
   vulkan_pipeline_camera_state_destroy(sharedState->camera);
 
   vulkan_image_destroy(sharedState->depthBufferImage);
@@ -32,6 +34,7 @@ void vulkan_pipeline_shared_state_reinit_with_new_swap_chain(
   vulkan_pipeline_font_state_reinit_with_new_swap_chain(sharedState->font);
   vulkan_pipeline_skybox_state_reinit_with_new_swap_chain(sharedState->skybox);
   vulkan_pipeline_light_state_reinit_with_new_swap_chain(sharedState->lights);
+  vulkan_pipeline_material_state_reinit_with_new_swap_chain(sharedState->materials);
   vulkan_pipeline_camera_state_reinit_with_new_swap_chain(sharedState->camera);
 
   vulkan_image_destroy(sharedState->depthBufferImage);
@@ -45,6 +48,7 @@ void vulkan_pipeline_shared_state_update(vulkan_pipeline_shared_state *sharedSta
   log_debug("updating pipeline shared state");
 
   vulkan_pipeline_camera_state_update(sharedState->camera);
+  vulkan_pipeline_material_state_update(sharedState->materials);
   vulkan_pipeline_light_state_update(sharedState->lights);
   vulkan_pipeline_skybox_state_update(sharedState->skybox);
   vulkan_pipeline_font_state_update(sharedState->font);
@@ -70,6 +74,10 @@ void vulkan_pipeline_shared_state_set_unified_uniform_buffer(
   vulkan_pipeline_camera_state_set_view_matrix(camera, global->viewMat);
   vulkan_pipeline_camera_state_set_projection_matrix(camera, global->projMat);
 
+  vulkan_pipeline_material_state *materials = sharedState->materials;
+  vulkan_pipeline_material_state_set_material_elements(materials, &global->materialCount,
+                                                       global->materials);
+
   vulkan_pipeline_light_state *lights = sharedState->lights;
   vulkan_pipeline_light_state_set_directional_light_elements(lights, &global->directionalLightCount,
                                                              global->directionalLights);
@@ -91,6 +99,7 @@ void vulkan_pipeline_shared_state_debug_print(vulkan_pipeline_shared_state *shar
   log_debug(INDENT_FORMAT_STRING "shared state:", INDENT_FORMAT_ARGS(0));
   vulkan_batches_debug_print(sharedState->rendererCacheBatches);
   vulkan_pipeline_camera_state_debug_print(sharedState->camera, indent + 2);
+  vulkan_pipeline_material_state_debug_print(sharedState->materials, indent + 2);
   vulkan_pipeline_light_state_debug_print(sharedState->lights, indent + 2);
   vulkan_pipeline_skybox_state_debug_print(sharedState->skybox, indent + 2);
   vulkan_pipeline_font_state_debug_print(sharedState->font, indent + 2);

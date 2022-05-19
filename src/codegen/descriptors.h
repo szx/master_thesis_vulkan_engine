@@ -17,6 +17,14 @@ typedef struct packed_struct vulkan_font_helper_element {
   alignas(4) uint text [MAX_TEXT_CHARACTER_COUNT];
 } vulkan_font_helper_element;
 
+typedef struct packed_struct vulkan_material_helper_element {
+  alignas(4) uint baseColorTextureId ;
+  alignas(4) vec4 baseColorFactor ;
+  alignas(4) uint metallicRoughnessTextureId ;
+  alignas(4) float metallicFactor ;
+  alignas(4) float roughnessFactor ;
+} vulkan_material_helper_element;
+
 typedef struct packed_struct vulkan_point_light_helper_element {
   alignas(4) vec3 position ;
   alignas(4) vec3 color ;
@@ -39,6 +47,8 @@ typedef struct packed_struct vulkan_draw_push_constant_element {
 typedef struct packed_struct vulkan_global_uniform_buffer_element {
   alignas(4) mat4 viewMat ;
   alignas(4) mat4 projMat ;
+  alignas(4) uint materialCount ;
+  alignas(4) vulkan_material_helper_element materials [MAX_MATERIAL_COUNT];
   alignas(4) uint directionalLightCount ;
   alignas(4) vulkan_directional_light_helper_element directionalLights [MAX_DIRECTIONAL_LIGHT_COUNT];
   alignas(4) uint pointLightCount ;
@@ -53,20 +63,12 @@ typedef struct packed_struct vulkan_instances_uniform_buffer_element {
   alignas(4) uint materialId ;
 } vulkan_instances_uniform_buffer_element;
 
-typedef struct packed_struct vulkan_materials_uniform_buffer_element {
-  alignas(4) uint baseColorTextureId ;
-  alignas(4) vec4 baseColorFactor ;
-  alignas(4) uint metallicRoughnessTextureId ;
-  alignas(4) float metallicFactor ;
-  alignas(4) float roughnessFactor ;
-} vulkan_materials_uniform_buffer_element;
-
 void glsl_add_vulkan_draw_push_constant(UT_string *s);
 void glsl_add_vulkan_global_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);
 void glsl_add_vulkan_instances_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);
-void glsl_add_vulkan_materials_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);
 void glsl_add_vulkan_directional_light_helper_element(UT_string *s);
 void glsl_add_vulkan_font_helper_element(UT_string *s);
+void glsl_add_vulkan_material_helper_element(UT_string *s);
 void glsl_add_vulkan_point_light_helper_element(UT_string *s);
 void glsl_add_vulkan_skybox_helper_element(UT_string *s);
 void glsl_add_vulkan_viewport_helper_element(UT_string *s);
@@ -80,13 +82,13 @@ void glsl_add_vulkan_viewport_helper_element(UT_string *s);
 #define VULKAN_UNIFORM_BUFFERS(X, ...) \
   X(global, __VA_ARGS__) \
   X(instances, __VA_ARGS__) \
-  X(materials, __VA_ARGS__) \
   END_OF_VULKAN_UNIFORM_BUFFERS
 
 #define END_OF_VULKAN_HELPER_STRUCTS
 #define VULKAN_HELPER_STRUCTS(X, ...) \
   X(directional_light, __VA_ARGS__) \
   X(font, __VA_ARGS__) \
+  X(material, __VA_ARGS__) \
   X(point_light, __VA_ARGS__) \
   X(skybox, __VA_ARGS__) \
   X(viewport, __VA_ARGS__) \

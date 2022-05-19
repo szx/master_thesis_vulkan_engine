@@ -12,6 +12,8 @@ void glsl_add_vulkan_global_uniform_buffer(UT_string *s, uint32_t set, uint32_t 
   utstring_printf(s, "struct globalStruct {\n");
  utstring_printf(s, "  mat4 viewMat ;\n");
  utstring_printf(s, "  mat4 projMat ;\n");
+ utstring_printf(s, "  uint materialCount ;\n");
+ utstring_printf(s, "  vulkan_material_helper_element materials [MAX_MATERIAL_COUNT];\n");
  utstring_printf(s, "  uint directionalLightCount ;\n");
  utstring_printf(s, "  vulkan_directional_light_helper_element directionalLights [MAX_DIRECTIONAL_LIGHT_COUNT];\n");
  utstring_printf(s, "  uint pointLightCount ;\n");
@@ -35,19 +37,6 @@ void glsl_add_vulkan_instances_uniform_buffer(UT_string *s, uint32_t set, uint32
   if (count > 1) {utstring_printf(s, "[%u]", count);}
   utstring_printf(s, ";\n};\n");
 }
-void glsl_add_vulkan_materials_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count) {
-  utstring_printf(s, "struct materialsStruct {\n");
- utstring_printf(s, "  uint baseColorTextureId ;\n");
- utstring_printf(s, "  vec4 baseColorFactor ;\n");
- utstring_printf(s, "  uint metallicRoughnessTextureId ;\n");
- utstring_printf(s, "  float metallicFactor ;\n");
- utstring_printf(s, "  float roughnessFactor ;\n");
-  utstring_printf(s, "};\n");
-  utstring_printf(s, "layout(scalar, set = %u, binding = %u) uniform materialsBlock {\n", set, binding);
-  utstring_printf(s, "  materialsStruct materials");
-  if (count > 1) {utstring_printf(s, "[%u]", count);}
-  utstring_printf(s, ";\n};\n");
-}
 void glsl_add_vulkan_directional_light_helper_element(UT_string *s) {
   utstring_printf(s, "struct vulkan_directional_light_helper_element {\n");
  utstring_printf(s, "  vec3 direction ;\n");
@@ -61,6 +50,15 @@ void glsl_add_vulkan_font_helper_element(UT_string *s) {
  utstring_printf(s, "  uint fontTextureSize ;\n");
  utstring_printf(s, "  uint textLength ;\n");
  utstring_printf(s, "  uint text [MAX_TEXT_CHARACTER_COUNT];\n");
+  utstring_printf(s, "};\n");
+}
+void glsl_add_vulkan_material_helper_element(UT_string *s) {
+  utstring_printf(s, "struct vulkan_material_helper_element {\n");
+ utstring_printf(s, "  uint baseColorTextureId ;\n");
+ utstring_printf(s, "  vec4 baseColorFactor ;\n");
+ utstring_printf(s, "  uint metallicRoughnessTextureId ;\n");
+ utstring_printf(s, "  float metallicFactor ;\n");
+ utstring_printf(s, "  float roughnessFactor ;\n");
   utstring_printf(s, "};\n");
 }
 void glsl_add_vulkan_point_light_helper_element(UT_string *s) {

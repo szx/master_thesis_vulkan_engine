@@ -35,7 +35,6 @@ void vulkan_renderer_update(vulkan_renderer *renderer);
 
 void vulkan_renderer_update_unified_uniform_buffer_callback(
     void *data, size_t currentFrameInFlight, vulkan_global_uniform_buffer_data *globalData,
-    vulkan_materials_uniform_buffer_data *materialsData,
     vulkan_instances_uniform_buffer_data *instancesData);
 
 void vulkan_renderer_send_to_device(vulkan_renderer *renderer);

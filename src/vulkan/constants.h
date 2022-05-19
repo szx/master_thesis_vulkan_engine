@@ -14,6 +14,7 @@
 #define END_OF_VULKAN_SHADER_CONSTANTS
 #define VULKAN_SHADER_CONSTANTS(X, ...)                                                            \
   X(FRAMES_IN_FLIGHT, __VA_ARGS__)                                                                 \
+  X(MAX_MATERIAL_COUNT, __VA_ARGS__)                                                               \
   X(MAX_DIRECTIONAL_LIGHT_COUNT, __VA_ARGS__)                                                      \
   X(MAX_POINT_LIGHT_COUNT, __VA_ARGS__)                                                            \
   X(MAX_TEXT_CHARACTER_COUNT, __VA_ARGS__)                                                         \

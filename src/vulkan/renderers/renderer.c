@@ -107,7 +107,6 @@ void vulkan_renderer_update(vulkan_renderer *renderer) {
 
 void vulkan_renderer_update_unified_uniform_buffer_callback(
     void *data, size_t currentFrameInFlight, vulkan_global_uniform_buffer_data *globalData,
-    vulkan_materials_uniform_buffer_data *materialsData,
     vulkan_instances_uniform_buffer_data *instancesData) {
 
   vulkan_renderer *renderer = data;
@@ -117,24 +116,6 @@ void vulkan_renderer_update_unified_uniform_buffer_callback(
       vulkan_global_uniform_buffer_data_get_element(globalData, 0, currentFrameInFlight);
   vulkan_pipeline_shared_state_set_unified_uniform_buffer(&renderer->pipelineState->sharedState,
                                                           global);
-
-  // materials
-  uthash_foreach_elem_it(vulkan_textures_material_element *, materialElement,
-                         renderer->renderState->textures->materialElements) {
-    size_t materialId = materialElement->materialIdx;
-    // PERF: Update material only once (either keep track here or just iterate on
-    // textures->materialElements).
-    vulkan_materials_uniform_buffer_element *element =
-        vulkan_materials_uniform_buffer_data_get_element(materialsData, materialId,
-                                                         currentFrameInFlight);
-
-    element->baseColorTextureId = materialElement->baseColorTextureElement->textureIdx;
-    glm_vec4_copy(materialElement->material->baseColorFactor, element->baseColorFactor);
-    element->metallicRoughnessTextureId =
-        materialElement->metallicRoughnessTextureElement->textureIdx;
-    element->metallicFactor = materialElement->material->metallicFactor;
-    element->roughnessFactor = materialElement->material->roughnessFactor;
-  }
 
   // instances
   // HIRO move to batches

@@ -4,14 +4,19 @@
 
 #include "buffer.h"
 
-typedef struct vulkan_unified_uniform_buffer vulkan_unified_uniform_buffer;
-typedef struct vulkan_textures vulkan_textures;
-
 typedef uint32_t uint;
 
 typedef struct vulkan_draw_push_constant_struct {
   uint currentFrameInFlight;
 } vulkan_draw_push_constant_struct;
+
+typedef struct vulkan_material_helper_struct {
+  uint baseColorTextureId;
+  vec4 baseColorFactor;
+  uint metallicRoughnessTextureId;
+  float metallicFactor;
+  float roughnessFactor;
+} vulkan_material_helper_struct;
 
 typedef struct vulkan_directional_light_helper_struct {
   vec3 direction;
@@ -44,6 +49,8 @@ typedef struct vulkan_viewport_helper_struct {
 typedef struct vulkan_global_uniform_buffer_struct {
   mat4 viewMat;
   mat4 projMat;
+  uint materialCount;
+  vulkan_material_helper_struct materials; ///< array=MAX_MATERIAL_COUNT
   uint directionalLightCount;
   vulkan_directional_light_helper_struct directionalLights; ///< array=MAX_DIRECTIONAL_LIGHT_COUNT
   uint pointLightCount;
@@ -52,14 +59,6 @@ typedef struct vulkan_global_uniform_buffer_struct {
   vulkan_font_helper_struct font;
   vulkan_viewport_helper_struct viewport;
 } vulkan_global_uniform_buffer_struct;
-
-typedef struct vulkan_materials_uniform_buffer_struct {
-  uint baseColorTextureId;
-  vec4 baseColorFactor;
-  uint metallicRoughnessTextureId;
-  float metallicFactor;
-  float roughnessFactor;
-} vulkan_materials_uniform_buffer_struct;
 
 typedef struct vulkan_instances_uniform_buffer_struct {
   mat4 modelMat;
@@ -98,6 +97,8 @@ VULKAN_UNIFORM_BUFFERS(decl_uniform_buffer_data, )
 #undef decl_uniform_buffer_data
 
 typedef struct vulkan_descriptors vulkan_descriptors;
+typedef struct vulkan_unified_uniform_buffer vulkan_unified_uniform_buffer;
+typedef struct vulkan_textures vulkan_textures;
 
 /// Describes one descriptor binding in descriptor set.
 typedef struct vulkan_descriptor_binding {

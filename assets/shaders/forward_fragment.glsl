@@ -2,9 +2,9 @@ uint globalIdx = getGlobalIdx();
 uint instanceId = getInstanceId();
 uint materialId = getMaterialId(instanceId);
 
-vec4 baseColorFactor = materials[materialId].baseColorFactor;
-float metallicFactor = materials[materialId].metallicFactor;
-float roughnessFactor = materials[materialId].roughnessFactor;
+vec4 baseColorFactor = global[globalIdx].materials[materialId].baseColorFactor;
+float metallicFactor = global[globalIdx].materials[materialId].metallicFactor;
+float roughnessFactor = global[globalIdx]. materials[materialId].roughnessFactor;
 
 vec3 cameraPosition = (inverse(global[globalIdx].viewMat) * vec4(0, 0, 0, 1)).xyz; // PERF: Move to global[globalIdx].
 vec3 v = normalize(cameraPosition - inWorldPosition);
@@ -26,9 +26,9 @@ vec4 baseColorLinearMultiplier = vec4(inColor, 1.0);
 vec4 baseColorLinearMultiplier = vec4(1.0);
 #endif
 #if IN_TEXCOORD == 1
-uint baseColorTextureId = materials[materialId].baseColorTextureId;
+uint baseColorTextureId = global[globalIdx].materials[materialId].baseColorTextureId;
 vec4 baseColorTexture = texture(textures2D[baseColorTextureId], inTexCoord); // automatically converted from sRGB to linear
-uint metallicRoughnessTextureId = materials[materialId].metallicRoughnessTextureId;
+uint metallicRoughnessTextureId = global[globalIdx].materials[materialId].metallicRoughnessTextureId;
 vec4 metallicRoughnessTexture = texture(textures2D[metallicRoughnessTextureId], inTexCoord);
 float metallicTexture = metallicRoughnessTexture.b;
 float roughnessTexture = metallicRoughnessTexture.g;

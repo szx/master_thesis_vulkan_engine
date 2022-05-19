@@ -8,6 +8,7 @@
 #include "camera_state.h"
 #include "font_state.h"
 #include "light_state.h"
+#include "material_state.h"
 #include "skybox_state.h"
 
 /// Manages resources shared between frames (depth buffer) used by pipeline to render one
@@ -19,6 +20,7 @@ typedef struct vulkan_pipeline_shared_state {
    * Can (should) be changed only in main loop's updateFunc, which prevents synchronization
    * issues. */
   vulkan_pipeline_camera_state *camera;
+  vulkan_pipeline_material_state *materials;
   vulkan_pipeline_light_state *lights;
   vulkan_pipeline_skybox_state *skybox;
   vulkan_pipeline_font_state *font;

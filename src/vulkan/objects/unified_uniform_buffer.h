@@ -10,7 +10,6 @@
 typedef struct vulkan_unified_uniform_buffer {
   /* CPU state */
   vulkan_global_uniform_buffer_data *globalData;
-  vulkan_materials_uniform_buffer_data *materialsData;
   vulkan_instances_uniform_buffer_data *instancesData;
 
   /* GPU state */
@@ -24,7 +23,6 @@ void vulkan_unified_uniform_buffer_destroy(vulkan_unified_uniform_buffer *unifor
 
 typedef void (*vulkan_unified_uniform_buffer_update_func)(
     void *data, size_t currentFrameInFlight, vulkan_global_uniform_buffer_data *globalData,
-    vulkan_materials_uniform_buffer_data *materialsData,
     vulkan_instances_uniform_buffer_data *instancesData);
 
 void vulkan_unified_uniform_buffer_update(

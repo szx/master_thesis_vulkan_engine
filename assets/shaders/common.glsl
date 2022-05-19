@@ -15,7 +15,7 @@ uint getInstanceId() {
 
 uint getMaterialId(uint instanceId) {
   uint idx = instances[instanceId].materialId;
-  return FRAMES_IN_FLIGHT*idx + draw.currentFrameInFlight;
+  return idx;
 }
 
 
