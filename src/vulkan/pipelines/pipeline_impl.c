@@ -93,6 +93,49 @@ void vulkan_pipeline_impl_deferred_geometry_record_render_pass(vulkan_pipeline *
   vkCmdEndRenderPass(commandBuffer);
 }
 
+/* deferred lighting */
+
+vulkan_pipeline_info
+vulkan_pipeline_impl_deferred_lighting_get_pipeline_info(vulkan_pipeline *pipeline) {
+  return (vulkan_pipeline_info){.useOnscreenColorAttachment = true};
+}
+
+void vulkan_pipeline_impl_deferred_lighting_record_render_pass(vulkan_pipeline *pipeline,
+                                                               VkCommandBuffer commandBuffer,
+                                                               size_t swapChainImageIdx) {
+  vulkan_pipeline_info pipelineInfo = vulkan_pipeline_get_pipeline_info(pipeline);
+  VkFramebuffer *framebuffer = utarray_eltptr(pipeline->framebuffers, swapChainImageIdx);
+  size_t currentFrameInFlight = pipeline->renderState->sync->currentFrameInFlight;
+
+  /* record new render pass into command buffer */
+  VkRenderPassBeginInfo renderPassInfo = {0};
+  renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+  renderPassInfo.renderPass = pipeline->renderPass;
+  renderPassInfo.framebuffer = *framebuffer;
+  renderPassInfo.renderArea.offset = (VkOffset2D){0, 0};
+  renderPassInfo.renderArea.extent = pipeline->vks->swapChainExtent;
+  uint32_t clearValueCount = vulkan_pipeline_info_get_framebuffer_attachment_count(pipelineInfo);
+  VkClearValue clearValues[clearValueCount];
+  vulkan_pipeline_info_get_framebuffer_attachment_clear_values(pipelineInfo, clearValues);
+  renderPassInfo.clearValueCount = array_size(clearValues);
+  renderPassInfo.pClearValues = clearValues;
+  vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+  vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->graphicsPipeline);
+
+  // Draw full-screen triangle.
+  // See also:
+  // https://www.saschawillems.de/blog/2016/08/13/vulkan-tutorial-on-rendering-a-fullscreen-quad-without-buffers/
+  vulkan_renderer_cache_primitive_element *basicFullscreenTrianglePrimitiveElement =
+      pipeline->pipelineState->renderState->rendererCache->basicFullscreenTrianglePrimitiveElement;
+  vulkan_batch batch;
+  vulkan_batch_init(&batch, basicFullscreenTrianglePrimitiveElement, 0);
+  vulkan_batch_record_basic_draw_command(&batch, commandBuffer);
+  vulkan_batch_deinit(&batch);
+
+  vkCmdEndRenderPass(commandBuffer);
+}
+
 /* skybox */
 
 vulkan_pipeline_info vulkan_pipeline_impl_skybox_get_pipeline_info(vulkan_pipeline *pipeline) {

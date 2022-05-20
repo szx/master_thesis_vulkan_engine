@@ -118,13 +118,13 @@ void vulkan_pipeline_shared_state_debug_print(vulkan_pipeline_shared_state *shar
 vulkan_image *vulkan_pipeline_shared_state_get_offscreen_framebuffer_attachment_image(
     vulkan_pipeline_shared_state *sharedState, vulkan_pipeline_offscreen_attachment_type type) {
   if (type == vulkan_pipeline_offscreen_attachment_type_g_buffer_0) {
-    return sharedState->gBuffer->worldPositionTextureElement->image;
+    return sharedState->gBuffer->gBuffer0TextureElement->image;
   }
   if (type == vulkan_pipeline_offscreen_attachment_type_g_buffer_1) {
-    return sharedState->gBuffer->baseColorTextureElement->image;
+    return sharedState->gBuffer->gBuffer1TextureElement->image;
   }
   if (type == vulkan_pipeline_offscreen_attachment_type_g_buffer_2) {
-    return sharedState->gBuffer->normalTextureElement->image;
+    return sharedState->gBuffer->gBuffer2TextureElement->image;
   }
   assert(0);
   return NULL;

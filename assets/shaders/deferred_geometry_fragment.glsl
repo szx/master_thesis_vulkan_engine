@@ -6,8 +6,6 @@ vec4 baseColorFactor = global[globalIdx].materials[materialId].baseColorFactor;
 float metallicFactor = global[globalIdx].materials[materialId].metallicFactor;
 float roughnessFactor = global[globalIdx]. materials[materialId].roughnessFactor;
 
-vec3 cameraPosition = (inverse(global[globalIdx].viewMat) * vec4(0, 0, 0, 1)).xyz; // PERF: Move to global[globalIdx].
-vec3 v = normalize(cameraPosition - inWorldPosition);
 #if IN_NORMAL == 1
 vec3 n = normalize(inWorldNormal); // normalized world normal
 #else
@@ -35,9 +33,9 @@ vec4 baseColor = baseColorTexture * baseColorFactor * baseColorLinearMultiplier;
 float metallic = metallicTexture * metallicFactor;
 float perceptualRoughness = roughnessTexture * roughnessFactor;
 
-// render to worldPositionTexture
-outFragColor0 = vec4(inWorldPosition, 1.0);
+// render to gBuffer0Texture
+outFragColor0 = vec4(inWorldPosition, metallic);
 // render to baseColorTextureElement
 outFragColor1 = baseColor;
 // render to normalTextureElement
-outFragColor2 = vec4(n, 1.0);
+outFragColor2 = vec4(n, perceptualRoughness);

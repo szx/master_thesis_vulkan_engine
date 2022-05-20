@@ -55,9 +55,9 @@ void glsl_add_vulkan_font_helper_element(UT_string *s) {
 }
 void glsl_add_vulkan_g_buffer_helper_element(UT_string *s) {
   utstring_printf(s, "struct vulkan_g_buffer_helper_element {\n");
- utstring_printf(s, "  uint worldPositionTextureId ;\n");
- utstring_printf(s, "  uint diffuseTextureId ;\n");
- utstring_printf(s, "  uint normalTextureId ;\n");
+ utstring_printf(s, "  uint gBuffer0TextureId ;\n");
+ utstring_printf(s, "  uint gBuffer1TextureId ;\n");
+ utstring_printf(s, "  uint gBuffer2TextureId ;\n");
   utstring_printf(s, "};\n");
 }
 void glsl_add_vulkan_material_helper_element(UT_string *s) {

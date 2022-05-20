@@ -5101,19 +5101,27 @@ const char *vulkan_image_type_debug_str(int value) {
   if (value == 2) { return "vulkan_image_type_material_parameters"; }
   if (value == 3) { return "vulkan_image_type_cubemap"; }
   if (value == 4) { return "vulkan_image_type_font_bitmap"; }
-  if (value == 5) { return "vulkan_image_type_count"; }
+  if (value == 5) { return "vulkan_image_type_g_buffer_0"; }
+  if (value == 6) { return "vulkan_image_type_g_buffer_1"; }
+  if (value == 7) { return "vulkan_image_type_g_buffer_2"; }
+  if (value == 8) { return "vulkan_image_type_g_buffer_count"; }
+  if (value == 9) { return "vulkan_image_type_count"; }
   return "UNKNOWN vulkan_image_type";
 }
 const char *vulkan_pipeline_offscreen_attachment_type_debug_str(int value) {
-  if (value == 0) { return "vulkan_pipeline_offscreen_attachment_type_gbuffer_color"; }
-  if (value == 1) { return "vulkan_pipeline_offscreen_attachment_type_count"; }
+  if (value == 0) { return "vulkan_pipeline_offscreen_attachment_type_g_buffer_0"; }
+  if (value == 1) { return "vulkan_pipeline_offscreen_attachment_type_g_buffer_1"; }
+  if (value == 2) { return "vulkan_pipeline_offscreen_attachment_type_g_buffer_2"; }
+  if (value == 3) { return "vulkan_pipeline_offscreen_attachment_type_count"; }
   return "UNKNOWN vulkan_pipeline_offscreen_attachment_type";
 }
 const char *vulkan_pipeline_type_debug_str(int value) {
   if (value == 0) { return "vulkan_pipeline_type_forward"; }
-  if (value == 1) { return "vulkan_pipeline_type_skybox"; }
-  if (value == 2) { return "vulkan_pipeline_type_debug_text"; }
-  if (value == 3) { return "vulkan_pipeline_type_count"; }
+  if (value == 1) { return "vulkan_pipeline_type_deferred_geometry"; }
+  if (value == 2) { return "vulkan_pipeline_type_deferred_lighting"; }
+  if (value == 3) { return "vulkan_pipeline_type_skybox"; }
+  if (value == 4) { return "vulkan_pipeline_type_debug_text"; }
+  if (value == 5) { return "vulkan_pipeline_type_count"; }
   return "UNKNOWN vulkan_pipeline_type";
 }
 const char *vulkan_renderer_cache_primitive_element_source_type_debug_str(int value) {
@@ -5126,9 +5134,8 @@ const char *vulkan_shader_reflect_binding_type_debug_str(int value) {
   if (value == 0) { return "vulkan_shader_reflect_binding_type_unknown"; }
   if (value == 1) { return "vulkan_shader_reflect_binding_type_global_uniform_buffer"; }
   if (value == 2) { return "vulkan_shader_reflect_binding_type_instances_uniform_buffer"; }
-  if (value == 3) { return "vulkan_shader_reflect_binding_type_materials_uniform_buffer"; }
-  if (value == 4) { return "vulkan_shader_reflect_binding_type_textures"; }
-  if (value == 5) { return "vulkan_shader_reflect_binding_type_count"; }
+  if (value == 3) { return "vulkan_shader_reflect_binding_type_textures"; }
+  if (value == 4) { return "vulkan_shader_reflect_binding_type_count"; }
   return "UNKNOWN vulkan_shader_reflect_binding_type";
 }
 const char *vulkan_shader_type_debug_str(int value) {

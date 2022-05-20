@@ -18,9 +18,9 @@ typedef struct packed_struct vulkan_font_helper_element {
 } vulkan_font_helper_element;
 
 typedef struct packed_struct vulkan_g_buffer_helper_element {
-  alignas(4) uint worldPositionTextureId ;
-  alignas(4) uint diffuseTextureId ;
-  alignas(4) uint normalTextureId ;
+  alignas(4) uint gBuffer0TextureId ;
+  alignas(4) uint gBuffer1TextureId ;
+  alignas(4) uint gBuffer2TextureId ;
 } vulkan_g_buffer_helper_element;
 
 typedef struct packed_struct vulkan_material_helper_element {

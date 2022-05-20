@@ -11,6 +11,7 @@ typedef struct vulkan_pipeline vulkan_pipeline;
 #define VULKAN_PIPELINE_TYPES(X, ...)                                                              \
   X(forward, __VA_ARGS__)                                                                          \
   X(deferred_geometry, __VA_ARGS__)                                                                \
+  X(deferred_lighting, __VA_ARGS__)                                                                \
   X(skybox, __VA_ARGS__)                                                                           \
   X(debug_text, __VA_ARGS__)                                                                       \
   END_OF_VULKAN_PIPELINE_TYPES

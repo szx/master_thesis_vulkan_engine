@@ -47,9 +47,9 @@ typedef struct vulkan_viewport_helper_struct {
 } vulkan_viewport_helper_struct;
 
 typedef struct vulkan_g_buffer_helper_struct {
-  uint worldPositionTextureId;
-  uint diffuseTextureId;
-  uint normalTextureId;
+  uint gBuffer0TextureId;
+  uint gBuffer1TextureId;
+  uint gBuffer2TextureId;
 } vulkan_g_buffer_helper_struct;
 
 typedef struct vulkan_global_uniform_buffer_struct {
