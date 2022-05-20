@@ -7,6 +7,7 @@
 #include "../renderers/render_state.h"
 #include "camera_state.h"
 #include "font_state.h"
+#include "g_buffer_state.h"
 #include "light_state.h"
 #include "material_state.h"
 #include "skybox_state.h"
@@ -24,6 +25,7 @@ typedef struct vulkan_pipeline_shared_state {
   vulkan_pipeline_light_state *lights;
   vulkan_pipeline_skybox_state *skybox;
   vulkan_pipeline_font_state *font;
+  vulkan_pipeline_g_buffer_state *gBuffer;
 
   // HIRO: Maintain two batches for transparent and opaque objects
   // HIRO: in batches recording multiple commands controlled by sorting with multiple policies?

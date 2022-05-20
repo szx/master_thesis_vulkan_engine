@@ -21,6 +21,7 @@ void glsl_add_vulkan_global_uniform_buffer(UT_string *s, uint32_t set, uint32_t 
  utstring_printf(s, "  vulkan_skybox_helper_element skybox ;\n");
  utstring_printf(s, "  vulkan_font_helper_element font ;\n");
  utstring_printf(s, "  vulkan_viewport_helper_element viewport ;\n");
+ utstring_printf(s, "  vulkan_g_buffer_helper_element gBuffer ;\n");
   utstring_printf(s, "};\n");
   utstring_printf(s, "layout(scalar, set = %u, binding = %u) uniform globalBlock {\n", set, binding);
   utstring_printf(s, "  globalStruct global");
@@ -50,6 +51,13 @@ void glsl_add_vulkan_font_helper_element(UT_string *s) {
  utstring_printf(s, "  uint fontTextureSize ;\n");
  utstring_printf(s, "  uint textLength ;\n");
  utstring_printf(s, "  uint text [MAX_TEXT_CHARACTER_COUNT];\n");
+  utstring_printf(s, "};\n");
+}
+void glsl_add_vulkan_g_buffer_helper_element(UT_string *s) {
+  utstring_printf(s, "struct vulkan_g_buffer_helper_element {\n");
+ utstring_printf(s, "  uint worldPositionTextureId ;\n");
+ utstring_printf(s, "  uint diffuseTextureId ;\n");
+ utstring_printf(s, "  uint normalTextureId ;\n");
   utstring_printf(s, "};\n");
 }
 void glsl_add_vulkan_material_helper_element(UT_string *s) {

@@ -22,6 +22,7 @@ typedef struct vulkan_image {
   VkMemoryPropertyFlags memoryPropertyFlags;
   VkImageAspectFlags aspectFlags;
   VkImageViewType viewType;
+  bool copyDataToDevice;
   const char *name;
 
   VkImage image;

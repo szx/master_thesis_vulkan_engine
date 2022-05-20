@@ -46,6 +46,12 @@ typedef struct vulkan_viewport_helper_struct {
   uint height;
 } vulkan_viewport_helper_struct;
 
+typedef struct vulkan_g_buffer_helper_struct {
+  uint worldPositionTextureId;
+  uint diffuseTextureId;
+  uint normalTextureId;
+} vulkan_g_buffer_helper_struct;
+
 typedef struct vulkan_global_uniform_buffer_struct {
   mat4 viewMat;
   mat4 projMat;
@@ -58,12 +64,15 @@ typedef struct vulkan_global_uniform_buffer_struct {
   vulkan_skybox_helper_struct skybox;
   vulkan_font_helper_struct font;
   vulkan_viewport_helper_struct viewport;
+  vulkan_g_buffer_helper_struct gBuffer;
 } vulkan_global_uniform_buffer_struct;
 
 typedef struct vulkan_instances_uniform_buffer_struct {
   mat4 modelMat;
   uint materialId;
 } vulkan_instances_uniform_buffer_struct;
+
+// HIRO HIRO add glsl codegen from descriptors.h
 
 // *_uniform_element
 // VULKAN_UNIFORM_BUFFERS

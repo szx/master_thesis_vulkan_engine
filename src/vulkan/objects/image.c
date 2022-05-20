@@ -19,6 +19,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    image->copyDataToDevice = true;
     image->name = "depth buffer image";
   } else if (image->type == vulkan_image_type_material_base_color) {
     image->mipLevelCount = 1 + (uint32_t)floor(log2((double)MAX(image->width, image->height)));
@@ -31,6 +32,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    image->copyDataToDevice = true;
     image->name = "material image";
   } else if (image->type == vulkan_image_type_material_parameters) {
     image->mipLevelCount = 1;
@@ -43,6 +45,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    image->copyDataToDevice = true;
     image->name = "material image";
   } else if (image->type == vulkan_image_type_cubemap) {
     image->mipLevelCount = 1;
@@ -55,6 +58,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
     image->viewType = VK_IMAGE_VIEW_TYPE_CUBE;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    image->copyDataToDevice = true;
     image->name = "cubemap image";
   } else if (image->type == vulkan_image_type_font_bitmap) {
     image->mipLevelCount = 1;
@@ -67,7 +71,29 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    image->copyDataToDevice = true;
     image->name = "font bitmap image";
+  } else if (image->type >= vulkan_image_type_g_buffer_1 &&
+             image->type <= vulkan_image_type_g_buffer_4) {
+    image->mipLevelCount = 1;
+    image->arrayLayers = 1;
+    image->format = preferredFormat;
+    image->tiling = VK_IMAGE_TILING_OPTIMAL;
+    image->createFlags = 0;
+    image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+    image->viewType = VK_IMAGE_VIEW_TYPE_2D;
+    image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    image->copyDataToDevice = false;
+    if (image->type == vulkan_image_type_g_buffer_1) {
+      image->name = "G-buffer image #1";
+    } else if (image->type == vulkan_image_type_g_buffer_2) {
+      image->name = "G-buffer image #2";
+    } else if (image->type == vulkan_image_type_g_buffer_3) {
+      image->name = "G-buffer image #3";
+    } else if (image->type == vulkan_image_type_g_buffer_4) {
+      image->name = "G-buffer image #4";
+    }
   } else {
     assert(0);
   }
@@ -102,12 +128,23 @@ void vulkan_image_destroy(vulkan_image *image) {
 void vulkan_image_make_resident(vulkan_image *image) {
   if (!image->resident) {
     verify(image->width > 0 && image->height > 0);
+    if (image->image != VK_NULL_HANDLE) {
+      vkDestroyImage(image->vkd->device, image->image, vka);
+    }
     image->image =
         vulkan_create_image(image->vkd, image->width, image->height, image->mipLevelCount,
                             image->arrayLayers, image->sampleCount, image->format, image->tiling,
                             image->createFlags, image->usageFlags, image->name);
+
+    if (image->imageMemory != VK_NULL_HANDLE) {
+      vkFreeMemory(image->vkd->device, image->imageMemory, vka);
+    }
     image->imageMemory = vulkan_create_image_memory(image->vkd, image->image,
                                                     image->memoryPropertyFlags, image->name);
+
+    if (image->imageView != VK_NULL_HANDLE) {
+      vkDestroyImageView(image->vkd->device, image->imageView, vka);
+    }
     image->imageView = vulkan_create_image_view(
         image->vkd, image->image, image->viewType, image->format, image->aspectFlags,
         image->mipLevelCount, image->arrayLayers, image->name);
@@ -121,12 +158,12 @@ void vulkan_image_update(vulkan_image *image, vulkan_asset_texture *texture) {
 }
 
 void vulkan_image_send_to_device(vulkan_image *image) {
+  vulkan_image_make_resident(image);
+
   if (!image->dirty) {
     return;
   }
-
-  vulkan_image_make_resident(image);
-  if (image->texture != NULL) {
+  if (image->texture != NULL && image->copyDataToDevice) {
     vulkan_transition_image_layout(image->vkd, image->image, image->format,
                                    VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                    image->mipLevelCount, image->arrayLayers);

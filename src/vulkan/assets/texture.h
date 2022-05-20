@@ -47,6 +47,11 @@ typedef struct vulkan_asset_texture {
 
 VULKAN_ASSET_FUNC_DECLS(texture)
 
+vulkan_asset_texture *vulkan_asset_texture_create_from_params(vulkan_scene_data *sceneData,
+                                                              vulkan_image_type type,
+                                                              uint32_t width, uint32_t height,
+                                                              uint32_t depth, uint32_t channels);
+
 /* skybox */
 
 typedef struct vulkan_asset_skybox {

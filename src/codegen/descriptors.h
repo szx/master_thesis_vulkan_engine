@@ -17,6 +17,12 @@ typedef struct packed_struct vulkan_font_helper_element {
   alignas(4) uint text [MAX_TEXT_CHARACTER_COUNT];
 } vulkan_font_helper_element;
 
+typedef struct packed_struct vulkan_g_buffer_helper_element {
+  alignas(4) uint worldPositionTextureId ;
+  alignas(4) uint diffuseTextureId ;
+  alignas(4) uint normalTextureId ;
+} vulkan_g_buffer_helper_element;
+
 typedef struct packed_struct vulkan_material_helper_element {
   alignas(4) uint baseColorTextureId ;
   alignas(4) vec4 baseColorFactor ;
@@ -56,6 +62,7 @@ typedef struct packed_struct vulkan_global_uniform_buffer_element {
   alignas(4) vulkan_skybox_helper_element skybox ;
   alignas(4) vulkan_font_helper_element font ;
   alignas(4) vulkan_viewport_helper_element viewport ;
+  alignas(4) vulkan_g_buffer_helper_element gBuffer ;
 } vulkan_global_uniform_buffer_element;
 
 typedef struct packed_struct vulkan_instances_uniform_buffer_element {
@@ -68,6 +75,7 @@ void glsl_add_vulkan_global_uniform_buffer(UT_string *s, uint32_t set, uint32_t 
 void glsl_add_vulkan_instances_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);
 void glsl_add_vulkan_directional_light_helper_element(UT_string *s);
 void glsl_add_vulkan_font_helper_element(UT_string *s);
+void glsl_add_vulkan_g_buffer_helper_element(UT_string *s);
 void glsl_add_vulkan_material_helper_element(UT_string *s);
 void glsl_add_vulkan_point_light_helper_element(UT_string *s);
 void glsl_add_vulkan_skybox_helper_element(UT_string *s);
@@ -88,6 +96,7 @@ void glsl_add_vulkan_viewport_helper_element(UT_string *s);
 #define VULKAN_HELPER_STRUCTS(X, ...) \
   X(directional_light, __VA_ARGS__) \
   X(font, __VA_ARGS__) \
+  X(g_buffer, __VA_ARGS__) \
   X(material, __VA_ARGS__) \
   X(point_light, __VA_ARGS__) \
   X(skybox, __VA_ARGS__) \

@@ -30,6 +30,8 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
         type, renderer->vks, renderer->renderState, renderer->pipelineState);
     utarray_push_back(renderer->pipelines, &pipeline);
   }
+  // HIRO HIRO HIRO deferred geometry pipeline
+  // HIRO HIRO deferred lighting pipeline
   // HIRO screen-space postprocessing effects pipeline
 
   for (size_t i = 0; i < utarray_len(renderer->pipelines); i++) {

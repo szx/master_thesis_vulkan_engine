@@ -23,6 +23,10 @@ typedef enum vulkan_image_type {
   vulkan_image_type_material_parameters,
   vulkan_image_type_cubemap,
   vulkan_image_type_font_bitmap,
+  vulkan_image_type_g_buffer_1,
+  vulkan_image_type_g_buffer_2,
+  vulkan_image_type_g_buffer_3,
+  vulkan_image_type_g_buffer_4,
   vulkan_image_type_count
 } vulkan_image_type;
 
