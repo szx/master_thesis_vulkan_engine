@@ -9,6 +9,35 @@ uint32_t vulkan_pipeline_info_get_framebuffer_attachment_count(vulkan_pipeline_i
   return count;
 }
 
+uint32_t
+vulkan_pipeline_info_get_framebuffer_color_attachment_count(vulkan_pipeline_info pipelineInfo) {
+  uint32_t count = (pipelineInfo.useOnscreenColorAttachment ? 1 : 0) +
+                   pipelineInfo.offscreenColorAttachmentCount;
+  assert(count > 0);
+  return count;
+}
+
+void vulkan_pipeline_info_get_offscreen_framebuffer_attachment_image_views(
+    vulkan_pipeline_info pipelineInfo, vulkan_pipeline *pipeline,
+    VkImageView *offscreenImageViews) {
+  for (size_t i = 0; i < pipelineInfo.offscreenColorAttachmentCount; i++) {
+    offscreenImageViews[i] =
+        vulkan_pipeline_shared_state_get_offscreen_framebuffer_attachment_image(
+            &pipeline->pipelineState->sharedState, pipelineInfo.offscreenColorAttachmentTypes[i])
+            ->imageView;
+  }
+}
+
+void vulkan_pipeline_info_get_offscreen_framebuffer_attachment_formats(
+    vulkan_pipeline_info pipelineInfo, vulkan_pipeline *pipeline, VkFormat *offscreenFormats) {
+  for (size_t i = 0; i < pipelineInfo.offscreenColorAttachmentCount; i++) {
+    offscreenFormats[i] =
+        vulkan_pipeline_shared_state_get_offscreen_framebuffer_attachment_image(
+            &pipeline->pipelineState->sharedState, pipelineInfo.offscreenColorAttachmentTypes[i])
+            ->format;
+  }
+}
+
 void vulkan_pipeline_info_get_framebuffer_attachment_image_views(
     vulkan_pipeline_info pipelineInfo, VkImageView swapChainImageView,
     VkImageView *offscreenImageViews, VkImageView depthBufferImageView,
@@ -19,6 +48,7 @@ void vulkan_pipeline_info_get_framebuffer_attachment_image_views(
     framebufferAttachments[idx++] = swapChainImageView;
   }
   for (size_t i = 0; i < pipelineInfo.offscreenColorAttachmentCount; i++) {
+    assert(offscreenImageViews != NULL);
     framebufferAttachments[idx++] = offscreenImageViews[i];
   }
   if (pipelineInfo.useDepthAttachment) {
@@ -43,7 +73,7 @@ void vulkan_pipeline_info_get_framebuffer_attachment_clear_values(vulkan_pipelin
 
 void vulkan_pipeline_info_get_render_pass_create_info(
     vulkan_pipeline_info pipelineInfo, vulkan_pipeline *prev, vulkan_pipeline *next,
-    VkFormat swapChainImageFormat, VkFormat depthBufferImageFormat,
+    VkFormat swapChainImageFormat, VkFormat *offscreenImageFormats, VkFormat depthBufferImageFormat,
     VkAttachmentDescription *onscreenColorAttachmentDescription,
     VkAttachmentReference *onscreenColorAttachmentReference,
     VkAttachmentDescription *offscreenColorAttachmentDescriptions,
@@ -114,6 +144,9 @@ void vulkan_pipeline_info_get_render_pass_create_info(
   }
 
   for (size_t i = 0; i < pipelineInfo.offscreenColorAttachmentCount; i++) {
+    vulkan_pipeline_offscreen_attachment_type offscreenAttachmentType =
+        pipelineInfo.offscreenColorAttachmentTypes[i];
+    VkFormat offscreenImageFormat = offscreenImageFormats[i];
 
     size_t prevOffscreenColorAttachmentCount = 0;
     size_t nextOffscreenColorAttachmentCount = 0;
@@ -136,8 +169,7 @@ void vulkan_pipeline_info_get_render_pass_create_info(
           }
         })
 
-    bool isFirstOffscreenPipeline =
-        pipelineInfo.useOnscreenColorAttachment && prevOffscreenColorAttachmentCount == 0;
+    bool isFirstOffscreenPipeline = prevOffscreenColorAttachmentCount == 0;
 
     VkAttachmentLoadOp loadOp;
     if (isFirstOffscreenPipeline) {
@@ -156,7 +188,7 @@ void vulkan_pipeline_info_get_render_pass_create_info(
     VkImageLayout finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
     offscreenColorAttachmentDescriptions[i] = (VkAttachmentDescription){
-        .format = swapChainImageFormat,
+        .format = offscreenImageFormat,
         .samples = VK_SAMPLE_COUNT_1_BIT,
         .loadOp = loadOp,
         .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
@@ -167,7 +199,7 @@ void vulkan_pipeline_info_get_render_pass_create_info(
     };
     offscreenColorAttachmentReferences[i] = (VkAttachmentReference){
         .attachment = idx++,
-        .layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+        .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
     };
   }
 

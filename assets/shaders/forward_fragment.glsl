@@ -105,4 +105,4 @@ for (int i = 0; i < min(global[globalIdx].pointLightCount, MAX_POINT_LIGHT_COUNT
 }
 
 // HIRO linear to srgb?
-outColor = vec4(lighting, 1.0);
+outFragColor0 = vec4(lighting, 1.0);

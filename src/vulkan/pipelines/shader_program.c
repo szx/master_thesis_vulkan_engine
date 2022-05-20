@@ -1,16 +1,17 @@
 #include "shader_program.h"
 
 vulkan_pipeline_shader_program *
-vulkan_pipeline_shader_program_create(vulkan_render_state *renderState, vulkan_pipeline_type type) {
+vulkan_pipeline_shader_program_create(vulkan_render_state *renderState,
+                                      vulkan_pipeline_info pipelineInfo) {
   vulkan_pipeline_shader_program *shaderProgram =
       core_alloc(sizeof(vulkan_pipeline_shader_program));
 
   vulkan_pipeline_shader_generator_init(&shaderProgram->shaderGenerator, renderState);
 
   shaderProgram->vertexShader = vulkan_pipeline_shader_generator_get_shader(
-      &shaderProgram->shaderGenerator, type, vulkan_shader_type_vertex);
+      &shaderProgram->shaderGenerator, pipelineInfo, vulkan_shader_type_vertex);
   shaderProgram->fragmentShader = vulkan_pipeline_shader_generator_get_shader(
-      &shaderProgram->shaderGenerator, type, vulkan_shader_type_fragment);
+      &shaderProgram->shaderGenerator, pipelineInfo, vulkan_shader_type_fragment);
 
   return shaderProgram;
 }

@@ -19,5 +19,5 @@ void vulkan_pipeline_shader_generator_deinit(vulkan_pipeline_shader_generator *s
 
 vulkan_shader *
 vulkan_pipeline_shader_generator_get_shader(vulkan_pipeline_shader_generator *shaderGenerator,
-                                            vulkan_pipeline_type pipelineType,
+                                            vulkan_pipeline_info pipelineInfo,
                                             vulkan_shader_type shaderType);

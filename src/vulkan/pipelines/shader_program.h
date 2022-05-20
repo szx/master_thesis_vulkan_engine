@@ -17,7 +17,8 @@ typedef struct vulkan_pipeline_shader_program {
 } vulkan_pipeline_shader_program;
 
 vulkan_pipeline_shader_program *
-vulkan_pipeline_shader_program_create(vulkan_render_state *renderState, vulkan_pipeline_type type);
+vulkan_pipeline_shader_program_create(vulkan_render_state *renderState,
+                                      vulkan_pipeline_info pipelineInfo);
 void vulkan_pipeline_shader_program_destroy(vulkan_pipeline_shader_program *shaderProgram);
 
 VkPipelineShaderStageCreateInfo *

@@ -75,7 +75,7 @@ typedef enum vulkan_color_blending_type {
 VkPipeline vulkan_create_graphics_pipeline(
     vulkan_device *vkd,
 
-    vulkan_color_blending_type colorBlendingType,
+    uint32_t colorAttachmentCount, vulkan_color_blending_type colorBlendingType,
 
     VkPipelineShaderStageCreateInfo *shaderStages, uint32_t shaderStageCount,
 

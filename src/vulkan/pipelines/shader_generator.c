@@ -127,9 +127,11 @@ void glsl_add_fragment_shader_input_variables(UT_string *s) {
   utstring_printf(s, "#endif\n");
 }
 
-void glsl_add_fragment_shader_output_variables(UT_string *s) {
-  uint32_t location = 0;
-  utstring_printf(s, "layout(location = %u) out vec4 outColor;\n", location);
+void glsl_add_fragment_shader_output_variables(UT_string *s,
+                                               uint32_t framebufferColorAttachmentCount) {
+  for (uint32_t i = 0; i < framebufferColorAttachmentCount; i++) {
+    utstring_printf(s, "layout(location = %u) out vec4 outFragColor%u;\n", i, i);
+  }
 }
 
 void glsl_add_descriptors(UT_string *s, vulkan_descriptors *descriptors) {
@@ -185,7 +187,7 @@ void glsl_add_body(UT_string *s, vulkan_pipeline_type pipelineType, vulkan_shade
 
 vulkan_shader *
 vulkan_pipeline_shader_generator_get_shader(vulkan_pipeline_shader_generator *shaderGenerator,
-                                            vulkan_pipeline_type pipelineType,
+                                            vulkan_pipeline_info pipelineInfo,
                                             vulkan_shader_type shaderType) {
   utstring_clear(shaderGenerator->sourceCode);
 
@@ -199,7 +201,9 @@ vulkan_pipeline_shader_generator_get_shader(vulkan_pipeline_shader_generator *sh
     glsl_add_vertex_shader_output_variables(shaderGenerator->sourceCode);
   } else if (shaderType == vulkan_shader_type_fragment) {
     glsl_add_fragment_shader_input_variables(shaderGenerator->sourceCode);
-    glsl_add_fragment_shader_output_variables(shaderGenerator->sourceCode);
+    glsl_add_fragment_shader_output_variables(
+        shaderGenerator->sourceCode,
+        vulkan_pipeline_info_get_framebuffer_color_attachment_count(pipelineInfo));
   } else {
     assert(0);
     return NULL;
@@ -208,7 +212,7 @@ vulkan_pipeline_shader_generator_get_shader(vulkan_pipeline_shader_generator *sh
   glsl_add_common_source(shaderGenerator->sourceCode);
 
   glsl_add_entry_point_begin(shaderGenerator->sourceCode);
-  glsl_add_body(shaderGenerator->sourceCode, pipelineType, shaderType);
+  glsl_add_body(shaderGenerator->sourceCode, pipelineInfo.pipelineType, shaderType);
   glsl_add_entry_point_end(shaderGenerator->sourceCode);
 
   return vulkan_shader_create_with_str(shaderGenerator->renderState->vkd, shaderType,

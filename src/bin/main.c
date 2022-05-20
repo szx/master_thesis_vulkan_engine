@@ -96,8 +96,9 @@ int main(int argc, char *argv[]) {
   data_asset_db *assetDb = data_asset_db_create();
   vulkan_device *vkd = vulkan_device_create(config, assetDb);
   vulkan_swap_chain *vks = vulkan_swap_chain_create(vkd);
-  vulkan_pipeline_type pipelines[] = {vulkan_pipeline_type_skybox, vulkan_pipeline_type_forward,
-                                      vulkan_pipeline_type_debug_text};
+  vulkan_pipeline_type pipelines[] = {
+      vulkan_pipeline_type_skybox, vulkan_pipeline_type_deferred_geometry,
+      vulkan_pipeline_type_forward, vulkan_pipeline_type_debug_text};
   vulkan_renderer *renderer = vulkan_renderer_create(
       config, assetDb, vks, config->asset.settingsStartScene, pipelines, array_size(pipelines));
 

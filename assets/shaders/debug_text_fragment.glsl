@@ -28,4 +28,4 @@ vec2 fontTextureUV = (fontTextureTopLeftInPixels + characterUVInPixels) / fontTe
 uint fontTextureId = global[globalIdx].font.fontTextureId;
 float fontTexture = texture(textures2D[fontTextureId], fontTextureUV).x;
 
-outColor = vec4(1, 1, 1, fontTexture);
+outFragColor0 = vec4(1, 1, 1, fontTexture);

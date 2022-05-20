@@ -5,8 +5,13 @@ void create_render_pass(vulkan_pipeline *pipeline) {
   bool useOnscreenColorAttachment = pipelineInfo.useOnscreenColorAttachment;
   uint32_t offscreenColorAttachmentCount = pipelineInfo.offscreenColorAttachmentCount;
   bool useDepthAttachment = pipelineInfo.useDepthAttachment;
-
   assert(useOnscreenColorAttachment || offscreenColorAttachmentCount > 0);
+
+  VkFormat swapChainImageFormat = pipeline->vks->swapChainImageFormat;
+  VkFormat offscreenFormats[VLA(offscreenColorAttachmentCount)];
+  vulkan_pipeline_info_get_offscreen_framebuffer_attachment_formats(pipelineInfo, pipeline,
+                                                                    offscreenFormats);
+  VkFormat depthBufferImageFormat = vulkan_find_depth_format(pipeline->vks->vkd);
 
   VkAttachmentDescription onscreenColorAttachmentDescription;
   VkAttachmentReference onscreenColorAttachmentReference;
@@ -15,8 +20,8 @@ void create_render_pass(vulkan_pipeline *pipeline) {
   VkAttachmentDescription depthAttachmentDescription;
   VkAttachmentReference depthAttachmentReference;
   vulkan_pipeline_info_get_render_pass_create_info(
-      pipelineInfo, pipeline->prev, pipeline->next, pipeline->vks->swapChainImageFormat,
-      vulkan_find_depth_format(pipeline->vks->vkd), &onscreenColorAttachmentDescription,
+      pipelineInfo, pipeline->prev, pipeline->next, swapChainImageFormat, offscreenFormats,
+      depthBufferImageFormat, &onscreenColorAttachmentDescription,
       &onscreenColorAttachmentReference, offscreenColorAttachmentDescriptions,
       offscreenColorAttachmentReferences, &depthAttachmentDescription, &depthAttachmentReference);
 
@@ -32,6 +37,8 @@ void create_render_pass(vulkan_pipeline *pipeline) {
 
 void create_graphics_pipeline(vulkan_pipeline *pipeline) {
   vulkan_pipeline_info pipelineInfo = vulkan_pipeline_get_pipeline_info(pipeline);
+  uint32_t colorAttachmentCount =
+      vulkan_pipeline_info_get_framebuffer_color_attachment_count(pipelineInfo);
   bool colorBlendingType = pipelineInfo.colorBlendingType;
 
   size_t shaderStageCount;
@@ -64,7 +71,7 @@ void create_graphics_pipeline(vulkan_pipeline *pipeline) {
   pipeline->graphicsPipeline = vulkan_create_graphics_pipeline(
       pipeline->vks->vkd,
 
-      colorBlendingType,
+      colorAttachmentCount, colorBlendingType,
 
       shaderStages, shaderStageCount,
 
@@ -87,16 +94,24 @@ void create_framebuffers(vulkan_pipeline *pipeline) {
   uint32_t framebufferAttachmentCount =
       vulkan_pipeline_info_get_framebuffer_attachment_count(pipelineInfo);
   assert(framebufferAttachmentCount > 0);
+  uint32_t offscreenFramebufferAttachmentCount = pipelineInfo.offscreenColorAttachmentCount;
 
   utarray_alloc(pipeline->framebuffers, sizeof(VkFramebuffer));
   utarray_resize(pipeline->framebuffers, utarray_len(pipeline->vks->swapChainImageViews));
   size_t swapChainImageIdx = 0;
   utarray_foreach_elem_it (VkFramebuffer *, framebuffer, pipeline->framebuffers) {
+    VkImageView swapChainImageView =
+        *(VkImageView *)utarray_eltptr(pipeline->vks->swapChainImageViews, swapChainImageIdx);
+    VkImageView depthBufferImageView =
+        pipeline->pipelineState->sharedState.depthBufferImage->imageView;
+    VkImageView offscreenImageViews[VLA(offscreenFramebufferAttachmentCount)];
+    vulkan_pipeline_info_get_offscreen_framebuffer_attachment_image_views(pipelineInfo, pipeline,
+                                                                          offscreenImageViews);
+
     VkImageView framebufferAttachments[framebufferAttachmentCount];
     vulkan_pipeline_info_get_framebuffer_attachment_image_views(
-        pipelineInfo,
-        *(VkImageView *)utarray_eltptr(pipeline->vks->swapChainImageViews, swapChainImageIdx), NULL,
-        pipeline->pipelineState->sharedState.depthBufferImage->imageView, framebufferAttachments);
+        pipelineInfo, swapChainImageView, offscreenImageViews, depthBufferImageView,
+        framebufferAttachments);
 
     *framebuffer = vulkan_create_framebuffer(
         pipeline->vks->vkd, pipeline->renderPass, framebufferAttachmentCount,
@@ -128,7 +143,8 @@ void vulkan_pipeline_init_start(vulkan_pipeline *pipeline, vulkan_pipeline_type 
   pipeline->pipelineState = pipelineState;
 
   pipeline->type = type;
-  pipeline->shaderProgram = vulkan_pipeline_shader_program_create(renderState, pipeline->type);
+  pipeline->shaderProgram = vulkan_pipeline_shader_program_create(
+      renderState, vulkan_pipeline_get_pipeline_info(pipeline));
 }
 
 void vulkan_pipeline_init_prev_next(vulkan_pipeline *pipeline, vulkan_pipeline *prev,
@@ -157,7 +173,10 @@ void vulkan_pipeline_deinit(vulkan_pipeline *pipeline) {
 vulkan_pipeline_info vulkan_pipeline_get_pipeline_info(vulkan_pipeline *pipeline) {
 #define x(_name, ...)                                                                              \
   if (pipeline->type == vulkan_pipeline_type_##_name) {                                            \
-    return vulkan_pipeline_impl_##_name##_get_pipeline_info(pipeline);                             \
+    vulkan_pipeline_info pipelineInfo =                                                            \
+        vulkan_pipeline_impl_##_name##_get_pipeline_info(pipeline);                                \
+    pipelineInfo.pipelineType = pipeline->type;                                                    \
+    return pipelineInfo;                                                                           \
   }
   VULKAN_PIPELINE_TYPES(x, )
 #undef x

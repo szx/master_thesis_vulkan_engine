@@ -73,8 +73,8 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = true;
     image->name = "font bitmap image";
-  } else if (image->type >= vulkan_image_type_g_buffer_1 &&
-             image->type <= vulkan_image_type_g_buffer_4) {
+  } else if (image->type >= vulkan_image_type_g_buffer_0 &&
+             image->type <= vulkan_image_type_g_buffer_count) {
     image->mipLevelCount = 1;
     image->arrayLayers = 1;
     image->format = preferredFormat;
@@ -85,14 +85,14 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = false;
-    if (image->type == vulkan_image_type_g_buffer_1) {
+    if (image->type == vulkan_image_type_g_buffer_0) {
+      image->name = "G-buffer image #0";
+    } else if (image->type == vulkan_image_type_g_buffer_1) {
       image->name = "G-buffer image #1";
     } else if (image->type == vulkan_image_type_g_buffer_2) {
       image->name = "G-buffer image #2";
-    } else if (image->type == vulkan_image_type_g_buffer_3) {
+    } else if (image->type == vulkan_image_type_g_buffer_count) {
       image->name = "G-buffer image #3";
-    } else if (image->type == vulkan_image_type_g_buffer_4) {
-      image->name = "G-buffer image #4";
     }
   } else {
     assert(0);

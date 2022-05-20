@@ -372,7 +372,7 @@ VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
 VkPipeline vulkan_create_graphics_pipeline(
     vulkan_device *vkd,
 
-    vulkan_color_blending_type colorBlendingType,
+    uint32_t colorAttachmentCount, vulkan_color_blending_type colorBlendingType,
 
     VkPipelineShaderStageCreateInfo *shaderStages, uint32_t shaderStageCount,
 
@@ -447,26 +447,29 @@ VkPipeline vulkan_create_graphics_pipeline(
   depthStencil.stencilTestEnable = VK_FALSE;
 
   // Blending options for framebuffer attachment.
-  VkPipelineColorBlendAttachmentState colorBlendAttachment = {0};
-  // NOTE: Color write mask is applied even with blending disabled.
-  colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-                                        VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-  if (colorBlendingType == vulkan_color_blending_type_alpha) {
-    colorBlendAttachment.blendEnable = VK_TRUE;
-    colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-    colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-    colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-    colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-    colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-    colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+  VkPipelineColorBlendAttachmentState colorBlendAttachment[VLA(colorAttachmentCount)];
+  for (size_t i = 0; i < array_size(colorBlendAttachment); i++) {
+    // NOTE: Color write mask is applied even with blending disabled.
+    colorBlendAttachment[i] = (VkPipelineColorBlendAttachmentState){
+        .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+                          VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT};
+    if (colorBlendingType == vulkan_color_blending_type_alpha) {
+      colorBlendAttachment[i].blendEnable = VK_TRUE;
+      colorBlendAttachment[i].srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+      colorBlendAttachment[i].dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+      colorBlendAttachment[i].colorBlendOp = VK_BLEND_OP_ADD;
+      colorBlendAttachment[i].srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+      colorBlendAttachment[i].dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+      colorBlendAttachment[i].alphaBlendOp = VK_BLEND_OP_ADD;
+    }
   }
 
   VkPipelineColorBlendStateCreateInfo colorBlending = {0};
   colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
   colorBlending.logicOpEnable = VK_FALSE;
   colorBlending.logicOp = VK_LOGIC_OP_COPY;
-  colorBlending.attachmentCount = 1;
-  colorBlending.pAttachments = &colorBlendAttachment;
+  colorBlending.attachmentCount = colorAttachmentCount;
+  colorBlending.pAttachments = colorBlendAttachment;
   colorBlending.blendConstants[0] = 0.0f;
   colorBlending.blendConstants[1] = 0.0f;
   colorBlending.blendConstants[2] = 0.0f;

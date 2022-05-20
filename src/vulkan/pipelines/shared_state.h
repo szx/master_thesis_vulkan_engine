@@ -10,6 +10,7 @@
 #include "g_buffer_state.h"
 #include "light_state.h"
 #include "material_state.h"
+#include "pipeline_defs.h"
 #include "skybox_state.h"
 
 /// Manages resources shared between frames (depth buffer) used by pipeline to render one
@@ -25,12 +26,15 @@ typedef struct vulkan_pipeline_shared_state {
   vulkan_pipeline_light_state *lights;
   vulkan_pipeline_skybox_state *skybox;
   vulkan_pipeline_font_state *font;
-  vulkan_pipeline_g_buffer_state *gBuffer;
 
   // HIRO: Maintain two batches for transparent and opaque objects
   // HIRO: in batches recording multiple commands controlled by sorting with multiple policies?
   vulkan_batches *rendererCacheBatches;
 
+  /// G-Buffer state.
+  /// We shared G-buffer images across frames in flight and sync them using barriers.
+  // HIRO HIRO HIRO actual syncing
+  vulkan_pipeline_g_buffer_state *gBuffer;
   /// Depth buffer image.
   /// We can share it between pipelines, because it is synchronized using pipeline barriers.
   vulkan_image *depthBufferImage;
@@ -50,3 +54,6 @@ void vulkan_pipeline_shared_state_send_to_device(vulkan_pipeline_shared_state *s
 
 void vulkan_pipeline_shared_state_debug_print(vulkan_pipeline_shared_state *sharedState,
                                               int indent);
+
+vulkan_image *vulkan_pipeline_shared_state_get_offscreen_framebuffer_attachment_image(
+    vulkan_pipeline_shared_state *sharedState, vulkan_pipeline_offscreen_attachment_type type);
