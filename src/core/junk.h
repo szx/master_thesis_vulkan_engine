@@ -63,8 +63,11 @@ typedef XXH64_hash_t hash_t;
 // FIXME: Expands to 1 for 0 arguments.
 #define MACRO_NARGS(...) MACRO_NARGS_(__VA_ARGS__, MACRO_NARGS_RSEQ_N())
 #define MACRO_NARGS_(...) MACRO_ARG_N(__VA_ARGS__)
-#define MACRO_NARGS_RSEQ_N() 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
-#define MACRO_ARG_N(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, N, ...) N
+#define MACRO_NARGS_RSEQ_N()                                                                       \
+  24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
+#define MACRO_ARG_N(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17,    \
+                    _18, _19, _20, _21, _22, _23, _24, N, ...)                                     \
+  N
 
 // Returns name concatenated with number of variadic arguments.
 #define MACRO_OVERLOAD(_name, ...) MACRO_CONCAT(_name, MACRO_NARGS(__VA_ARGS__))
@@ -90,6 +93,14 @@ typedef XXH64_hash_t hash_t;
 #define MACRO_FOREACH_14(_macro, _elem, ...) _macro(13, _elem) MACRO_FOREACH_13(_macro, __VA_ARGS__)
 #define MACRO_FOREACH_15(_macro, _elem, ...) _macro(14, _elem) MACRO_FOREACH_14(_macro, __VA_ARGS__)
 #define MACRO_FOREACH_16(_macro, _elem, ...) _macro(15, _elem) MACRO_FOREACH_15(_macro, __VA_ARGS__)
+#define MACRO_FOREACH_17(_macro, _elem, ...) _macro(15, _elem) MACRO_FOREACH_16(_macro, __VA_ARGS__)
+#define MACRO_FOREACH_18(_macro, _elem, ...) _macro(15, _elem) MACRO_FOREACH_17(_macro, __VA_ARGS__)
+#define MACRO_FOREACH_19(_macro, _elem, ...) _macro(15, _elem) MACRO_FOREACH_18(_macro, __VA_ARGS__)
+#define MACRO_FOREACH_20(_macro, _elem, ...) _macro(15, _elem) MACRO_FOREACH_19(_macro, __VA_ARGS__)
+#define MACRO_FOREACH_21(_macro, _elem, ...) _macro(15, _elem) MACRO_FOREACH_20(_macro, __VA_ARGS__)
+#define MACRO_FOREACH_22(_macro, _elem, ...) _macro(15, _elem) MACRO_FOREACH_21(_macro, __VA_ARGS__)
+#define MACRO_FOREACH_23(_macro, _elem, ...) _macro(15, _elem) MACRO_FOREACH_22(_macro, __VA_ARGS__)
+#define MACRO_FOREACH_24(_macro, _elem, ...) _macro(15, _elem) MACRO_FOREACH_23(_macro, __VA_ARGS__)
 
 #define TYPEOF(x) __typeof__(x)
 #define VLA(_count) ((_count) > 0 ? (_count) : 1)

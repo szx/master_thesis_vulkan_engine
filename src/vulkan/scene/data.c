@@ -179,6 +179,14 @@ vulkan_asset_vertex_attribute *parse_cgltf_vertex_attribute(vulkan_scene_data *s
                                        (float *)utarray_eltptr(vertexAttribute->data, idx), 3));
     }
     vertexAttribute->componentType = vulkan_asset_vertex_attribute_component_vec3;
+  } else if (cgltfAccessor->type == cgltf_type_vec4) {
+    utarray_realloc(vertexAttribute->data, sizeof(vec4));
+    utarray_resize(vertexAttribute->data, cgltfAccessor->count);
+    for (size_t idx = 0; idx < utarray_len(vertexAttribute->data); idx++) {
+      verify(cgltf_accessor_read_float(cgltfAccessor, idx,
+                                       (float *)utarray_eltptr(vertexAttribute->data, idx), 4));
+    }
+    vertexAttribute->componentType = vulkan_asset_vertex_attribute_component_vec4;
   }
 
   return vulkan_scene_data_add_vertex_attribute(sceneData, vertexAttribute);
@@ -225,21 +233,31 @@ vulkan_asset_primitive *parse_cgltf_primitive(vulkan_scene_data *sceneData,
       primitive->colors = parse_cgltf_vertex_attribute(sceneData, cgltfAttribute->data);
     } else if (type == vulkan_attribute_type_texcoord) {
       primitive->texCoords = parse_cgltf_vertex_attribute(sceneData, cgltfAttribute->data);
+    } else if (type == vulkan_attribute_type_tangent) {
+      primitive->tangents = parse_cgltf_vertex_attribute(sceneData, cgltfAttribute->data);
     } else {
       vulkan_attribute_type_debug_print(type, 0);
       log_warn("unsupported vertex attribute type, skipping");
     }
   }
-  primitive->indices =
-      (primitive->indices == NULL) ? sceneData->vertexAttributes : primitive->indices;
-  primitive->positions =
-      (primitive->positions == NULL) ? sceneData->vertexAttributes : primitive->positions;
-  primitive->normals =
-      (primitive->normals == NULL) ? sceneData->vertexAttributes : primitive->normals;
-  primitive->colors = (primitive->colors == NULL) ? sceneData->vertexAttributes : primitive->colors;
-  primitive->texCoords =
-      (primitive->texCoords == NULL) ? sceneData->vertexAttributes : primitive->texCoords;
-
+  primitive->indices = (primitive->indices == NULL)
+                           ? vulkan_scene_data_get_default_vertex_attribute(sceneData)
+                           : primitive->indices;
+  primitive->positions = (primitive->positions == NULL)
+                             ? vulkan_scene_data_get_default_vertex_attribute(sceneData)
+                             : primitive->positions;
+  primitive->normals = (primitive->normals == NULL)
+                           ? vulkan_scene_data_get_default_vertex_attribute(sceneData)
+                           : primitive->normals;
+  primitive->colors = (primitive->colors == NULL)
+                          ? vulkan_scene_data_get_default_vertex_attribute(sceneData)
+                          : primitive->colors;
+  primitive->texCoords = (primitive->texCoords == NULL)
+                             ? vulkan_scene_data_get_default_vertex_attribute(sceneData)
+                             : primitive->texCoords;
+  primitive->tangents = (primitive->tangents == NULL)
+                            ? vulkan_scene_data_get_default_vertex_attribute(sceneData)
+                            : primitive->tangents;
   return vulkan_scene_data_add_primitive(sceneData, primitive);
 }
 

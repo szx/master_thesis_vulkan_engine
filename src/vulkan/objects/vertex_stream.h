@@ -11,6 +11,7 @@ typedef struct vulkan_vertex {
   vec3 normal;
   vec3 color;
   vec2 texCoord;
+  vec4 tangent;
 } vulkan_vertex;
 
 vulkan_vertex vulkan_vertex_default();
@@ -41,7 +42,7 @@ void vulkan_vertex_stream_destroy(vulkan_vertex_stream *stream);
 vulkan_vertex_stream_element
 vulkan_vertex_stream_add_geometry(vulkan_vertex_stream *stream, uint32_t vertexCount,
                                   UT_array *indices, UT_array *positions, UT_array *normals,
-                                  UT_array *colors, UT_array *texCoords);
+                                  UT_array *colors, UT_array *texCoords, UT_array *tangents);
 
 uint32_t vulkan_vertex_stream_get_vertex_buffer_binding_count(vulkan_vertex_stream *stream);
 

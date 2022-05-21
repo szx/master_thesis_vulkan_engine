@@ -9,6 +9,7 @@ void vulkan_asset_primitive_init(vulkan_asset_primitive *primitive, vulkan_scene
   primitive->normals = NULL;
   primitive->colors = NULL;
   primitive->texCoords = NULL;
+  primitive->tangents = NULL;
   primitive->indices = NULL;
   primitive->geometryHash = 0;
   primitive->attributes = vulkan_attribute_type_unknown;
@@ -33,6 +34,9 @@ data_key vulkan_asset_primitive_calculate_key(vulkan_asset_primitive *primitive)
   }
   if (primitive->texCoords) {
     HASH_UPDATE(hashState, &primitive->texCoords->key, sizeof(primitive->texCoords->key))
+  }
+  if (primitive->tangents) {
+    HASH_UPDATE(hashState, &primitive->tangents->key, sizeof(primitive->tangents->key))
   }
   if (primitive->indices) {
     HASH_UPDATE(hashState, &primitive->indices->key, sizeof(primitive->indices->key))
@@ -68,6 +72,9 @@ void vulkan_asset_primitive_serialize(vulkan_asset_primitive *primitive, data_as
   assert(primitive->texCoords != NULL);
   data_asset_db_insert_primitive_texCoords_key(assetDb, primitive->key, primitive->texCoords->key);
   vulkan_asset_vertex_attribute_serialize(primitive->texCoords, assetDb);
+  assert(primitive->tangents != NULL);
+  data_asset_db_insert_primitive_tangents_key(assetDb, primitive->key, primitive->tangents->key);
+  vulkan_asset_vertex_attribute_serialize(primitive->tangents, assetDb);
   assert(primitive->indices != NULL);
   data_asset_db_insert_primitive_indices_key(assetDb, primitive->key, primitive->indices->key);
   vulkan_asset_vertex_attribute_serialize(primitive->indices, assetDb);
@@ -107,6 +114,12 @@ void vulkan_asset_primitive_deserialize(vulkan_asset_primitive *primitive, data_
   primitive->attributes |=
       utarray_len(primitive->texCoords->data) > 0 ? vulkan_attribute_type_texcoord : 0;
 
+  primitive->tangents = vulkan_scene_data_get_vertex_attribute_by_key(
+      primitive->sceneData, assetDb,
+      data_asset_db_select_primitive_tangents_key(assetDb, primitive->key));
+  primitive->attributes |=
+      utarray_len(primitive->tangents->data) > 0 ? vulkan_attribute_type_tangent : 0;
+
   primitive->indices = vulkan_scene_data_get_vertex_attribute_by_key(
       primitive->sceneData, assetDb,
       data_asset_db_select_primitive_indices_key(assetDb, primitive->key));
@@ -132,6 +145,11 @@ void vulkan_asset_primitive_deserialize(vulkan_asset_primitive *primitive, data_
     verify(primitive->vertexCount == 0 || primitive->vertexCount == texCoordsCount);
     primitive->vertexCount = texCoordsCount;
   }
+  uint32_t tangentsCount = utarray_len(primitive->tangents->data);
+  if (tangentsCount > 0) {
+    verify(primitive->vertexCount == 0 || primitive->vertexCount == tangentsCount);
+    primitive->vertexCount = tangentsCount;
+  }
 }
 
 void vulkan_asset_primitive_debug_print(vulkan_asset_primitive *primitive, int indent) {
@@ -147,11 +165,14 @@ void vulkan_asset_primitive_debug_print(vulkan_asset_primitive *primitive, int i
   vulkan_asset_vertex_attribute_debug_print(primitive->normals, indent + 2);
   vulkan_asset_vertex_attribute_debug_print(primitive->colors, indent + 2);
   vulkan_asset_vertex_attribute_debug_print(primitive->texCoords, indent + 2);
+  vulkan_asset_vertex_attribute_debug_print(primitive->tangents, indent + 2);
 }
 
-vulkan_asset_primitive *vulkan_asset_primitive_create_from_geometry(
-    vulkan_scene_data *sceneData, VkPrimitiveTopology topology, uint32_t vertexCount,
-    uint32_t *indices, vec3 *positions, vec3 *normals, vec3 *colors, vec2 *texCoords) {
+vulkan_asset_primitive *
+vulkan_asset_primitive_create_from_geometry(vulkan_scene_data *sceneData,
+                                            VkPrimitiveTopology topology, uint32_t vertexCount,
+                                            uint32_t *indices, vec3 *positions, vec3 *normals,
+                                            vec3 *colors, vec2 *texCoords, vec4 *tangents) {
   vulkan_asset_primitive *primitive = core_alloc(sizeof(vulkan_asset_primitive));
   vulkan_asset_primitive_init(primitive, sceneData);
 
@@ -176,6 +197,7 @@ vulkan_asset_primitive *vulkan_asset_primitive_create_from_geometry(
   VERTEX_ATTRIBUTE(normals, vec3, vulkan_attribute_type_normal)
   VERTEX_ATTRIBUTE(colors, vec3, vulkan_attribute_type_color)
   VERTEX_ATTRIBUTE(texCoords, vec2, vulkan_attribute_type_texcoord)
+  VERTEX_ATTRIBUTE(tangents, vec4, vulkan_attribute_type_tangent)
 #undef VERTEX_ATTRIBUTE
 
   primitive->material = vulkan_scene_data_get_default_material(sceneData);
@@ -187,7 +209,8 @@ bool vulkan_asset_primitive_vulkan_attributes_match(vulkan_asset_primitive *prim
                                                     vulkan_asset_primitive *other) {
   return primitive->topology == other->topology && primitive->indices == other->indices &&
          primitive->positions == other->positions && primitive->normals == other->normals &&
-         primitive->colors == other->colors && primitive->texCoords == other->texCoords;
+         primitive->colors == other->colors && primitive->texCoords == other->texCoords &&
+         primitive->tangents == other->tangents;
 }
 
 vulkan_aabb vulkan_asset_primitive_calculate_aabb(vulkan_asset_primitive *primitive) {

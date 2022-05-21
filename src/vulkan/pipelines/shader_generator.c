@@ -14,10 +14,10 @@ void vulkan_pipeline_shader_generator_deinit(vulkan_pipeline_shader_generator *s
 
 void glsl_add_header(UT_string *s) {
   utstring_printf(s, "#version 450\n");
-  utstring_printf(s, "#extension GL_EXT_nonuniform_qualifier : enable\n");
-  utstring_printf(s, "#extension GL_EXT_scalar_block_layout : enable\n");
+  utstring_printf(s, "#extension GL_EXT_nonuniform_qualifier : require\n");
+  utstring_printf(s, "#extension GL_EXT_scalar_block_layout : require\n");
 #if defined(DEBUG)
-  utstring_printf(s, "#extension GL_EXT_debug_printf : enable\n");
+  utstring_printf(s, "#extension GL_EXT_debug_printf : require\n");
   utstring_printf(s, "#define DEBUG_PRINTF 1\n");
 #endif
 }
@@ -45,6 +45,9 @@ void glsl_add_vertex_shader_input_variables_defines(UT_string *s, vulkan_vertex_
   }
   if ((attributes & vulkan_attribute_type_texcoord) != 0) {
     utstring_printf(s, "#define IN_TEXCOORD 1\n");
+  }
+  if ((attributes & vulkan_attribute_type_tangent) != 0) {
+    utstring_printf(s, "#define IN_TANGENT 1\n");
   }
 }
 
@@ -86,6 +89,10 @@ void glsl_add_vertex_shader_input_variables(UT_string *s, vulkan_vertex_stream *
   }
   if ((attributes & vulkan_attribute_type_texcoord) != 0) {
     utstring_printf(s, "layout(location = %u) in vec2 inTexCoord;\n", location);
+    location++;
+  }
+  if ((attributes & vulkan_attribute_type_tangent) != 0) {
+    utstring_printf(s, "layout(location = %u) in vec2 inTangent;\n", location);
   }
 }
 
@@ -106,6 +113,10 @@ void glsl_add_vertex_shader_output_variables(UT_string *s) {
   utstring_printf(s, "#ifdef IN_TEXCOORD\n");
   utstring_printf(s, "layout(location = %u) out vec2 outTexCoord;\n", location);
   utstring_printf(s, "#endif\n");
+  location++;
+  utstring_printf(s, "#ifdef IN_TANGENT\n");
+  utstring_printf(s, "layout(location = %u) out vec4 outTangent;\n", location);
+  utstring_printf(s, "#endif\n");
 }
 
 void glsl_add_fragment_shader_input_variables(UT_string *s) {
@@ -124,6 +135,10 @@ void glsl_add_fragment_shader_input_variables(UT_string *s) {
   location++;
   utstring_printf(s, "#ifdef IN_TEXCOORD\n");
   utstring_printf(s, "layout(location = %u) in vec2 inTexCoord;\n", location);
+  utstring_printf(s, "#endif\n");
+  location++;
+  utstring_printf(s, "#ifdef IN_TANGENT\n");
+  utstring_printf(s, "layout(location = %u) in vec2 inTangent;\n", location);
   utstring_printf(s, "#endif\n");
 }
 

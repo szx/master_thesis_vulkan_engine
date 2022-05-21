@@ -1,6 +1,9 @@
 #include "vertex_stream.h"
 
 uint32_t vulkan_attribute_type_to_stride(vulkan_attribute_type vertexAttributes) {
+  if ((vertexAttributes & vulkan_attribute_type_tangent) != 0) {
+    return offsetof(vulkan_vertex, tangent) + member_size(vulkan_vertex, tangent);
+  }
   if ((vertexAttributes & vulkan_attribute_type_texcoord) != 0) {
     return offsetof(vulkan_vertex, texCoord) + member_size(vulkan_vertex, texCoord);
   }
@@ -22,6 +25,7 @@ vulkan_vertex vulkan_vertex_default() {
   glm_vec3_zero(element.normal);
   glm_vec3_zero(element.color);
   glm_vec2_zero(element.texCoord);
+  glm_vec2_zero(element.tangent);
   return element;
 }
 
@@ -53,7 +57,7 @@ void vulkan_vertex_stream_destroy(vulkan_vertex_stream *stream) {
 vulkan_vertex_stream_element
 vulkan_vertex_stream_add_geometry(vulkan_vertex_stream *stream, uint32_t vertexCount,
                                   UT_array *indices, UT_array *positions, UT_array *normals,
-                                  UT_array *colors, UT_array *texCoords) {
+                                  UT_array *colors, UT_array *texCoords, UT_array *tangents) {
 
   size_t firstIndexOffset = utarray_len(stream->indexData);
   size_t firstVertexOffset = utarray_len(stream->vertexData);
@@ -68,6 +72,7 @@ vulkan_vertex_stream_add_geometry(vulkan_vertex_stream *stream, uint32_t vertexC
   assert(normals == NULL || utarray_len(normals) == 0 || utarray_len(normals) == vertexCount);
   assert(colors == NULL || utarray_len(colors) == 0 || utarray_len(colors) == vertexCount);
   assert(texCoords == NULL || utarray_len(texCoords) == 0 || utarray_len(texCoords) == vertexCount);
+  assert(tangents == NULL || utarray_len(tangents) == 0 || utarray_len(tangents) == vertexCount);
 
   for (size_t idx = 0; idx < vertexCount; idx++) {
     vulkan_vertex element = vulkan_vertex_default();
@@ -90,6 +95,11 @@ vulkan_vertex_stream_add_geometry(vulkan_vertex_stream *stream, uint32_t vertexC
       vertexStreamElement.attributes |= vulkan_attribute_type_texcoord;
       vec3 *texCoord = utarray_eltptr(texCoords, idx);
       glm_vec2_copy(*texCoord, element.texCoord);
+    }
+    if (tangents != NULL && utarray_len(tangents) > 0) {
+      vertexStreamElement.attributes |= vulkan_attribute_type_tangent;
+      vec4 *tangent = utarray_eltptr(tangents, idx);
+      glm_vec4_copy(*tangent, element.tangent);
     }
     assert(vertexStreamElement.attributes <= stream->attributes);
     utarray_push_back(stream->vertexData, &element);
@@ -128,30 +138,44 @@ vulkan_vertex_stream_get_vertex_attribute_descriptions(vulkan_vertex_stream *str
 
   size_t idx = 0;
   while (attributes > 0) {
-    vulkan_attribute_type type = vulkan_attribute_type_unknown;
+    vulkan_attribute_type type;
+
     size_t offset = 0;
     size_t componentNum = 3;
     if ((attributes & vulkan_attribute_type_position) != 0) {
       type = vulkan_attribute_type_position;
       goto end;
     }
+
     offset += componentNum * sizeof(float);
+    componentNum = 3;
     if ((attributes & vulkan_attribute_type_normal) != 0) {
       type = vulkan_attribute_type_normal;
       goto end;
     }
+
     offset += componentNum * sizeof(float);
+    componentNum = 3;
     if ((attributes & vulkan_attribute_type_color) != 0) {
       type = vulkan_attribute_type_color;
       goto end;
     }
+
     offset += componentNum * sizeof(float);
+    componentNum = 2;
     if ((attributes & vulkan_attribute_type_texcoord) != 0) {
       type = vulkan_attribute_type_texcoord;
-      componentNum = 2;
-    } else {
-      panic("unknown attribute");
+      goto end;
     }
+
+    offset += componentNum * sizeof(float);
+    componentNum = 4;
+    if ((attributes & vulkan_attribute_type_tangent) != 0) {
+      type = vulkan_attribute_type_tangent;
+      goto end;
+    }
+
+    UNREACHABLE;
 
   end:
     format = VK_FORMAT_R32_SFLOAT + 3 * (componentNum - 1);

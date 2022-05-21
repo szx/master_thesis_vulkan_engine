@@ -48,7 +48,7 @@ void add_basic_primitive_elements(vulkan_renderer_cache *rendererCache) {
                  {1, 1, 1},
                  {-1, -1, 1},
                  {1, -1, 1}},
-      NULL, NULL, NULL);
+      NULL, NULL, NULL, NULL);
   rendererCache->basicBoxPrimitiveElement = vulkan_renderer_cache_primitive_element_create(
       vulkan_renderer_cache_primitive_element_source_type_basic, true, GLM_MAT4_IDENTITY,
       boxBasicPrimitive, vulkan_aabb_default());
@@ -64,7 +64,7 @@ void add_basic_primitive_elements(vulkan_renderer_cache *rendererCache) {
               {-1, 3, 0},
               {3, -1, 0},
           },
-          NULL, NULL, NULL);
+          NULL, NULL, NULL, NULL);
   rendererCache->basicFullscreenTrianglePrimitiveElement =
       vulkan_renderer_cache_primitive_element_create(
           vulkan_renderer_cache_primitive_element_source_type_basic, true, GLM_MAT4_IDENTITY,
@@ -215,10 +215,10 @@ void vulkan_renderer_cache_update_geometry(vulkan_renderer_cache *rendererCache,
 
     vulkan_asset_primitive *primitive = primitiveElement->primitive;
     assert(primitive->indices->componentType == vulkan_asset_vertex_attribute_component_uint32_t);
-
     vulkan_vertex_stream_element vertexStreamElement = vulkan_vertex_stream_add_geometry(
         vertexStream, primitive->vertexCount, primitive->indices->data, primitive->positions->data,
-        primitive->normals->data, primitive->colors->data, primitive->texCoords->data);
+        primitive->normals->data, primitive->colors->data, primitive->texCoords->data,
+        primitive->tangents->data);
 
     assert(vertexStreamElement.attributes <= vertexStream->attributes);
     vulkan_renderer_cache_primitive_set_vulkan_vertex_stream_element(primitiveElement,

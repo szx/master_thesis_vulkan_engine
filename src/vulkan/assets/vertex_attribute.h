@@ -9,7 +9,9 @@
 typedef enum vulkan_asset_vertex_attribute_component_type {
   vulkan_asset_vertex_attribute_component_uint32_t,
   vulkan_asset_vertex_attribute_component_vec2,
-  vulkan_asset_vertex_attribute_component_vec3
+  vulkan_asset_vertex_attribute_component_vec3,
+  vulkan_asset_vertex_attribute_component_vec4,
+  vulkan_asset_vertex_attribute_component_count,
 } vulkan_asset_vertex_attribute_component_type;
 
 typedef struct vulkan_asset_vertex_attribute {

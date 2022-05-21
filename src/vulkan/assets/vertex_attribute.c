@@ -36,6 +36,9 @@ void vulkan_asset_vertex_attribute_serialize(vulkan_asset_vertex_attribute *vert
   } else if (vertexAttribute->componentType == vulkan_asset_vertex_attribute_component_vec3) {
     data_asset_db_insert_vertexAttribute_valuesVec3_vec3_array(
         assetDb, vertexAttribute->key, data_vec3_array_temp(vertexAttribute->data));
+  } else if (vertexAttribute->componentType == vulkan_asset_vertex_attribute_component_vec4) {
+    data_asset_db_insert_vertexAttribute_valuesVec4_vec4_array(
+        assetDb, vertexAttribute->key, data_vec4_array_temp(vertexAttribute->data));
   }
 }
 
@@ -49,6 +52,8 @@ void vulkan_asset_vertex_attribute_deserialize(vulkan_asset_vertex_attribute *ve
       data_asset_db_select_vertexAttribute_valuesVec2_vec2_array(assetDb, vertexAttribute->key);
   data_vec3_array valuesVec3 =
       data_asset_db_select_vertexAttribute_valuesVec3_vec3_array(assetDb, vertexAttribute->key);
+  data_vec4_array valuesVec4 =
+      data_asset_db_select_vertexAttribute_valuesVec4_vec4_array(assetDb, vertexAttribute->key);
   if (utarray_len(valuesInt.values) > 0) {
     verify(utarray_len(valuesVec2.values) == 0 && utarray_len(valuesVec3.values) == 0);
     utarray_realloc(vertexAttribute->data, sizeof(uint32_t));
@@ -70,12 +75,21 @@ void vulkan_asset_vertex_attribute_deserialize(vulkan_asset_vertex_attribute *ve
     core_memcpy(utarray_front(vertexAttribute->data), utarray_front(valuesVec3.values),
                 utarray_size(valuesVec3.values));
     vertexAttribute->componentType = vulkan_asset_vertex_attribute_component_vec3;
+  } else if (utarray_len(valuesVec4.values) > 0) {
+    verify(utarray_len(valuesInt.values) == 0 && utarray_len(valuesVec2.values) == 0 &&
+           utarray_len(valuesVec3.values) == 0);
+    utarray_realloc(vertexAttribute->data, sizeof(vec4));
+    utarray_resize(vertexAttribute->data, utarray_len(valuesVec4.values));
+    core_memcpy(utarray_front(vertexAttribute->data), utarray_front(valuesVec4.values),
+                utarray_size(valuesVec4.values));
+    vertexAttribute->componentType = vulkan_asset_vertex_attribute_component_vec4;
   } else {
     verify(0);
   }
   data_int_array_deinit(&valuesInt);
   data_vec2_array_deinit(&valuesVec2);
   data_vec3_array_deinit(&valuesVec3);
+  data_vec4_array_deinit(&valuesVec4);
 }
 
 void vulkan_asset_vertex_attribute_debug_print(vulkan_asset_vertex_attribute *vertexAttribute,
@@ -96,6 +110,11 @@ void vulkan_asset_vertex_attribute_debug_print(vulkan_asset_vertex_attribute *ve
     utarray_foreach_elem_it (vec3 *, value, vertexAttribute->data) {
       log_debug(INDENT_FORMAT_STRING "%d: %f %f %f\n", INDENT_FORMAT_ARGS(4), vertexIdx++,
                 (*value)[0], (*value)[1], (*value)[2]);
+    }
+  } else if (vertexAttribute->componentType == vulkan_asset_vertex_attribute_component_vec4) {
+    utarray_foreach_elem_it (vec4 *, value, vertexAttribute->data) {
+      log_debug(INDENT_FORMAT_STRING "%d: %f %f %f %f\n", INDENT_FORMAT_ARGS(4), vertexIdx++,
+                (*value)[0], (*value)[1], (*value)[2], (*value)[3]);
     }
   }
 }
