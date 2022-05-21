@@ -47,4 +47,6 @@ typedef void (*vulkan_renderer_main_loop_update_func)(vulkan_renderer *renderer,
 void vulkan_renderer_run_main_loop(vulkan_renderer *renderer,
                                    vulkan_renderer_main_loop_update_func updateFunc);
 
+void vulkan_renderer_exit_main_loop(vulkan_renderer *renderer);
+
 void vulkan_renderer_debug_print(vulkan_renderer *renderer);

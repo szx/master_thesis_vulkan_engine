@@ -13,8 +13,7 @@ void update_func(vulkan_renderer *renderer, double fps, double dt) {
   vulkan_pipeline_font_state *fontState = renderer->pipelineState->sharedState.font;
 
   if (renderer->vkd->input.keyboard.release.esc) {
-    // TODO: Move to vulkan_renderer_quit.
-    glfwSetWindowShouldClose(renderer->vkd->window, true);
+    vulkan_renderer_exit_main_loop(renderer);
   }
 
   /* camera */

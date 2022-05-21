@@ -267,6 +267,10 @@ void vulkan_renderer_run_main_loop(vulkan_renderer *renderer,
   vkDeviceWaitIdle(renderer->vkd->device);
 }
 
+void vulkan_renderer_exit_main_loop(vulkan_renderer *renderer) {
+  glfwSetWindowShouldClose(renderer->vkd->window, true);
+}
+
 void vulkan_renderer_debug_print(vulkan_renderer *renderer) {
   log_debug("renderer:\n");
   vulkan_scene_data_debug_print(renderer->data, 2);
