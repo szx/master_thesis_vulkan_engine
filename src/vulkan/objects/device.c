@@ -86,7 +86,7 @@ void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, in
 
 void glfw_mouse_callback(GLFWwindow *window, double x, double y) {
   vulkan_device *vkd = glfwGetWindowUserPointer(window);
-  static bool skip = true; // TODO: True if first callback after leaving/recreating window.
+  static bool skip = true; // True if first callback after leaving/recreating window.
   if (skip) {
     vkd->input.mouse.lastX = x;
     vkd->input.mouse.lastY = y;

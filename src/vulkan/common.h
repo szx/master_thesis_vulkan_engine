@@ -26,9 +26,23 @@ typedef enum vulkan_image_type {
   vulkan_image_type_g_buffer_0,
   vulkan_image_type_g_buffer_1,
   vulkan_image_type_g_buffer_2,
+  vulkan_image_type_g_buffer_3,
   vulkan_image_type_g_buffer_count,
   vulkan_image_type_count
 } vulkan_image_type;
+
+typedef struct vulkan_image_type_info {
+  bool depthFormat;
+  bool colorFormat;
+
+  bool uNormEncoding;
+  bool sRGBEncoding;
+  bool floatingPointEncoding;
+
+  char componentBits;
+} vulkan_image_type_info;
+
+extern vulkan_image_type_info vulkanImageTypeInfo[];
 
 typedef enum vulkan_camera_type {
   vulkan_camera_type_orthographic,

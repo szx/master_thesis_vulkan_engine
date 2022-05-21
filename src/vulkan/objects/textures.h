@@ -5,8 +5,6 @@
 #include "../assets/material.h"
 #include "image.h"
 
-VkFormat vulkan_find_texture_format(vulkan_device *vkd, vulkan_asset_texture *texture);
-
 /// Hash table for textures and their associated images and samplers.
 typedef struct vulkan_textures_texture_element {
   vulkan_asset_texture *texture; ///< Pointer. Key.

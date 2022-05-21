@@ -12,6 +12,7 @@ typedef struct vulkan_image {
   vulkan_image_type type;
   uint32_t width;
   uint32_t height;
+  uint32_t channels;
   uint32_t mipLevelCount;
   uint32_t arrayLayers;
   VkSampleCountFlagBits sampleCount;
@@ -35,7 +36,7 @@ typedef struct vulkan_image {
 } vulkan_image;
 
 vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, uint32_t width,
-                                  uint32_t height, VkFormat preferredFormat);
+                                  uint32_t height, uint32_t channels);
 void vulkan_image_destroy(vulkan_image *image);
 
 void vulkan_image_make_resident(vulkan_image *image);
@@ -45,3 +46,6 @@ void vulkan_image_update(vulkan_image *image, vulkan_asset_texture *texture);
 void vulkan_image_send_to_device(vulkan_image *image);
 
 void vulkan_image_debug_print(vulkan_image *image, int indent);
+
+VkFormat vulkan_find_image_format(vulkan_device *vkd, vulkan_image_type imageType,
+                                  uint32_t channels);

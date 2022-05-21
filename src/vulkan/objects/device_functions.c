@@ -42,14 +42,6 @@ VkFormat vulkan_find_supported_format(vulkan_device *vkd, VkImageTiling tiling,
   return VK_FORMAT_UNDEFINED;
 }
 
-VkFormat vulkan_find_depth_format(vulkan_device *vkd) {
-  VkFormat formats[] = {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT,
-                        VK_FORMAT_D24_UNORM_S8_UINT};
-  return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
-                                      VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT, formats,
-                                      array_size(formats));
-}
-
 size_t vulkan_format_size(VkFormat format) {
   if (format == VK_FORMAT_R8_SRGB || format == VK_FORMAT_R8_UNORM) {
     return 1;

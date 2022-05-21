@@ -11,7 +11,6 @@ uint32_t vulkan_find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
 VkFormat vulkan_find_supported_format(vulkan_device *vkd, VkImageTiling tiling,
                                       VkFormatFeatureFlags features, VkFormat *candidates,
                                       size_t candidateCount);
-VkFormat vulkan_find_depth_format(vulkan_device *vkd);
 size_t vulkan_format_size(VkFormat format);
 VkIndexType vulkan_stride_to_index_type(size_t stride);
 

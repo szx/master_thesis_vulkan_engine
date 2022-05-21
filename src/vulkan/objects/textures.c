@@ -1,51 +1,18 @@
 #include "textures.h"
 
-VkFormat vulkan_find_texture_format(vulkan_device *vkd, vulkan_asset_texture *texture) {
-  size_t channels = texture->image->channels;
-  assert(channels > 0 && channels <= 4);
-  bool sRGB = texture->image->type == vulkan_image_type_material_base_color;
-  // HIRO Refactor move preferred format to vulkan_image_type decl.
-  bool useHighPrecision = texture->image->type >= vulkan_image_type_g_buffer_0 &&
-                          texture->image->type <= vulkan_image_type_g_buffer_count;
-  bool useFloat = texture->image->type >= vulkan_image_type_g_buffer_0 &&
-                  texture->image->type <= vulkan_image_type_g_buffer_count;
-
-  VkFormat r, rg, rgb, rgba;
-  if (!useHighPrecision) {
-    r = sRGB ? VK_FORMAT_R8_SRGB : VK_FORMAT_R8_UNORM;
-    rg = sRGB ? VK_FORMAT_R8G8_SRGB : VK_FORMAT_R8G8_UNORM;
-    rgb = sRGB ? VK_FORMAT_R8G8B8_SRGB : VK_FORMAT_R8G8B8_UNORM;
-    rgba = sRGB ? VK_FORMAT_R8G8B8A8_SRGB : VK_FORMAT_R8G8B8A8_UNORM;
-  } else {
-    r = useFloat ? VK_FORMAT_R16_SFLOAT : VK_FORMAT_R16_UNORM;
-    rg = useFloat ? VK_FORMAT_R16G16_SFLOAT : VK_FORMAT_R16G16_UNORM;
-    rgb = useFloat ? VK_FORMAT_R16G16B16_SFLOAT : VK_FORMAT_R16G16B16_UNORM;
-    rgba = useFloat ? VK_FORMAT_R16G16B16A16_SFLOAT : VK_FORMAT_R16G16B16A16_UNORM;
+VkFormat get_format_by_component_bits(char componentBits, VkFormat format8, VkFormat format16,
+                                      VkFormat format32) {
+  if (componentBits == 8) {
+    assert(format8 != VK_FORMAT_UNDEFINED);
+    return format8;
   }
-
-  if (channels == 1) {
-    VkFormat formats[] = {r, rg, rgb, rgba};
-    return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
-                                        VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
-                                        array_size(formats));
+  if (componentBits == 16) {
+    assert(format16 != VK_FORMAT_UNDEFINED);
+    return format16;
   }
-  if (channels == 2) {
-    VkFormat formats[] = {rg, rgb, rgba};
-    return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
-                                        VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
-                                        array_size(formats));
-  }
-  if (channels == 3) {
-    VkFormat formats[] = {rgb, rgba};
-    return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
-                                        VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
-                                        array_size(formats));
-  }
-  if (channels == 4) {
-    VkFormat formats[] = {rgba};
-    return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
-                                        VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
-                                        array_size(formats));
+  if (componentBits == 32) {
+    assert(format32 != VK_FORMAT_UNDEFINED);
+    return format32;
   }
   UNREACHABLE;
 }
@@ -57,9 +24,9 @@ vulkan_textures_texture_element_create(vulkan_asset_texture *texture, vulkan_dev
   element->texture = texture;
   vulkan_image_type type = element->texture->image->type;
 
-  element->image = vulkan_image_create(vkd, type, element->texture->image->width,
-                                       element->texture->image->height,
-                                       vulkan_find_texture_format(vkd, texture));
+  element->image =
+      vulkan_image_create(vkd, type, element->texture->image->width,
+                          element->texture->image->height, element->texture->image->channels);
   vulkan_image_update(element->image, element->texture);
 
   element->sampler = vulkan_create_sampler(vkd, element->image->mipLevelCount, "texture");

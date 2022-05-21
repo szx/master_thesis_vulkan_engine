@@ -1,5 +1,21 @@
 #include "common.h"
 
+// HIRO gBuffer config from #include "../codegen/descriptors.h"
+
+// clang-format off
+vulkan_image_type_info vulkanImageTypeInfo[] = {
+    [vulkan_image_type_depth_buffer] = {.depthFormat = true,},
+    [vulkan_image_type_material_base_color] = {.colorFormat = true, .sRGBEncoding = true, .componentBits=8},
+    [vulkan_image_type_material_parameters] = {.colorFormat = true, .uNormEncoding = true, .componentBits=8},
+    [vulkan_image_type_cubemap] = {.colorFormat = true, .uNormEncoding = true, .componentBits=8},
+    [vulkan_image_type_font_bitmap] = {.colorFormat = true, .uNormEncoding = true, .componentBits=8},
+    [vulkan_image_type_g_buffer_0] = {.colorFormat = true, .floatingPointEncoding = true, .componentBits=16},
+    [vulkan_image_type_g_buffer_1] = {.colorFormat = true, .floatingPointEncoding = true, .componentBits=16},
+    [vulkan_image_type_g_buffer_2] = {.colorFormat = true, .floatingPointEncoding = true, .componentBits=16},
+    [vulkan_image_type_g_buffer_3] = {.colorFormat = true, .floatingPointEncoding = true, .componentBits=16},
+};
+// clang-format on
+
 vulkan_aabb vulkan_aabb_default() {
   return (vulkan_aabb){{FLT_MAX, FLT_MAX, FLT_MAX}, {-FLT_MAX, -FLT_MAX, -FLT_MAX}};
 }

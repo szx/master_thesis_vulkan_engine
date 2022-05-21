@@ -11,7 +11,7 @@ void create_render_pass(vulkan_pipeline *pipeline) {
   VkFormat offscreenFormats[VLA(offscreenColorAttachmentCount)];
   vulkan_pipeline_info_get_offscreen_framebuffer_attachment_formats(pipelineInfo, pipeline,
                                                                     offscreenFormats);
-  VkFormat depthBufferImageFormat = vulkan_find_depth_format(pipeline->vks->vkd);
+  VkFormat depthBufferImageFormat = pipeline->pipelineState->sharedState.depthBufferImage->format;
 
   VkAttachmentDescription onscreenColorAttachmentDescription;
   VkAttachmentReference onscreenColorAttachmentReference;
