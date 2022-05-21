@@ -1,4 +1,5 @@
 #include "junk.h"
+#include "log.h"
 
 void strlstrip(char **str) {
   char *val = *str;
@@ -50,6 +51,7 @@ size_t _dl_count(size_t offsetofNext, void *dl) {
 }
 
 void *_dl_elt(size_t offsetofNext, void *dl, size_t i) {
+  assert(dl != NULL);
   void *it = dl;
   size_t count = 0;
   while (it != NULL) {
@@ -60,6 +62,5 @@ void *_dl_elt(size_t offsetofNext, void *dl, size_t i) {
     char *ptr = (char *)it + offsetofNext;
     it = *(void **)(ptr);
   }
-  assert(0);
-  return NULL;
+  UNREACHABLE;
 }

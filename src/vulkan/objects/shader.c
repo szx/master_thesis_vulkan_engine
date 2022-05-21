@@ -11,8 +11,7 @@ shaderc_shader_kind vulkan_shader_type_shaderc_kind(vulkan_shader_type type) {
   if (type == vulkan_shader_type_fragment) {
     return shaderc_glsl_fragment_shader;
   }
-  assert(0);
-  return 0;
+  UNREACHABLE;
 }
 
 VkShaderStageFlags vulkan_shader_type_to_stage_flag(vulkan_shader_type type) {
@@ -22,8 +21,7 @@ VkShaderStageFlags vulkan_shader_type_to_stage_flag(vulkan_shader_type type) {
   if (type == vulkan_shader_type_fragment) {
     return VK_SHADER_STAGE_FRAGMENT_BIT;
   }
-  assert(0);
-  return 0;
+  UNREACHABLE;
 }
 
 vulkan_shader *vulkan_shader_create_with_str(vulkan_device *vkd, vulkan_shader_type type,

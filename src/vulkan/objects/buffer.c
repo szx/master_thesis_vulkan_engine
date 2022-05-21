@@ -58,7 +58,7 @@ vulkan_buffer *vulkan_buffer_create(vulkan_device *vkd, vulkan_buffer_type type)
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
     buffer->name = "draw indirect buffer";
   } else {
-    assert(0);
+    UNREACHABLE;
   }
   buffer->buffer = VK_NULL_HANDLE;
   buffer->bufferMemory = VK_NULL_HANDLE;

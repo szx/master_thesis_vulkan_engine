@@ -30,7 +30,7 @@ void log_create();
 void log_destroy();
 
 /// Shows message dialog and exits.
-void panic(const char *format, ...);
+noreturn void panic(const char *format, ...);
 
 #define verify(cond)                                                                               \
   do {                                                                                             \

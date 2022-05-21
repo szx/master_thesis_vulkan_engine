@@ -237,8 +237,7 @@ vulkan_shader_reflect_binding_get_layout_binding(vulkan_shader_reflect_binding *
   } else if (binding->descriptorType == SPV_REFLECT_DESCRIPTOR_TYPE_INPUT_ATTACHMENT) {
     layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
   } else {
-    assert(0);
-    layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_MAX_ENUM;
+    UNREACHABLE;
   }
   layoutBinding.pImmutableSamplers = NULL;
   layoutBinding.stageFlags = vulkan_shader_type_to_stage_flag(shader->type);

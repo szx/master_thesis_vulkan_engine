@@ -54,7 +54,7 @@ void glsl_add_shader_type_defines(UT_string *s, vulkan_shader_type shaderType) {
   } else if (shaderType == vulkan_shader_type_fragment) {
     utstring_printf(s, "#define SHADER_FRAGMENT 1\n");
   } else {
-    assert(0);
+    UNREACHABLE;
   }
 }
 
@@ -170,7 +170,7 @@ void glsl_add_body(UT_string *s, vulkan_pipeline_type pipelineType, vulkan_shade
     } else if (shaderType == vulkan_shader_type_fragment) {                                        \
       filename = #_name "_fragment.glsl";                                                          \
     } else {                                                                                       \
-      assert(0);                                                                                   \
+      UNREACHABLE;                                                                                 \
     }                                                                                              \
   }
   VULKAN_PIPELINE_TYPES(x, )
@@ -205,8 +205,7 @@ vulkan_pipeline_shader_generator_get_shader(vulkan_pipeline_shader_generator *sh
         shaderGenerator->sourceCode,
         vulkan_pipeline_info_get_framebuffer_color_attachment_count(pipelineInfo));
   } else {
-    assert(0);
-    return NULL;
+    UNREACHABLE;
   }
 
   glsl_add_common_source(shaderGenerator->sourceCode);

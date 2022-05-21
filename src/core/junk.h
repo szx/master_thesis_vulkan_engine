@@ -91,12 +91,22 @@ typedef XXH64_hash_t hash_t;
 #define MACRO_FOREACH_15(_macro, _elem, ...) _macro(14, _elem) MACRO_FOREACH_14(_macro, __VA_ARGS__)
 #define MACRO_FOREACH_16(_macro, _elem, ...) _macro(15, _elem) MACRO_FOREACH_15(_macro, __VA_ARGS__)
 
-#define is_aligned(ptr, bytes) (((uintptr_t)(const void *)(ptr)) % (bytes) == 0)
 #define TYPEOF(x) __typeof__(x)
+#define VLA(_count) ((_count) > 0 ? (_count) : 1)
+#define PACKED_STRUCT __attribute__((packed))
+#if defined(DEBUG)
+#define UNREACHABLE                                                                                \
+  {                                                                                                \
+    log_fatal("this code should be unreachable");                                                  \
+    assert(0);                                                                                     \
+  }
+#else
+#define UNREACHABLE __buildin_unreachable()
+#endif
+
+/* additional container functions */
 #define member_size(type, member) sizeof(((type *)0)->member)
 #define array_size(array) (sizeof(array) / sizeof((array)[0]))
-#define VLA(_count) ((_count) > 0 ? (_count) : 1)
-#define packed_struct __attribute__((packed))
 #define utarray_size(array) ((array)->icd.sz * utarray_len((array)))
 #define utarray_eltsize(array) ((array)->icd.sz)
 

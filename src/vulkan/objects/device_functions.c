@@ -63,8 +63,7 @@ size_t vulkan_format_size(VkFormat format) {
   if (format == VK_FORMAT_R8G8B8A8_SRGB || format == VK_FORMAT_R8G8B8A8_UNORM) {
     return 4;
   }
-  assert(0);
-  return 0;
+  UNREACHABLE;
 }
 
 VkIndexType vulkan_stride_to_index_type(size_t stride) {
@@ -74,8 +73,7 @@ VkIndexType vulkan_stride_to_index_type(size_t stride) {
   if (stride == 4) {
     return VK_INDEX_TYPE_UINT32;
   }
-  assert(0);
-  return 0;
+  UNREACHABLE;
 }
 
 VkCommandPool vulkan_create_command_pool(vulkan_device *vkd, uint32_t queueFamilyIndex,
@@ -795,8 +793,7 @@ void vulkan_transition_image_layout(vulkan_device *vkd, VkImage image, VkFormat 
     sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
     destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
   } else {
-    assert(0);
-    return;
+    UNREACHABLE;
   }
 
   vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, NULL, 0, NULL, 1,

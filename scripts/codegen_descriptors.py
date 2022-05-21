@@ -97,7 +97,7 @@ def codegen_descriptors():
     # generate aligned _helper_element
     for struct_name, struct_fields in helper_structs.items():
         struct_name = struct_name + '_helper_element'
-        decls.append(f'typedef struct packed_struct {struct_name} {{')
+        decls.append(f'typedef struct PACKED_STRUCT {struct_name} {{')
         for field_name, field_type, field_info in struct_fields:
             alignment = get_std430_alignment(field_type, field_info, helper_structs)
             decls.append(f'  alignas({alignment}) {field_type} {field_name} {get_field_array_str(field_info)};')
@@ -106,7 +106,7 @@ def codegen_descriptors():
     # generate aligned _push_constant_element
     for struct_name, struct_fields in push_constant_structs.items():
         struct_name = struct_name + '_push_constant_element'
-        decls.append(f'typedef struct packed_struct {struct_name} {{')
+        decls.append(f'typedef struct PACKED_STRUCT {struct_name} {{')
         for field_name, field_type, field_info in struct_fields:
             alignment = get_std430_alignment(field_type, field_info, helper_structs)
             decls.append(f'  alignas({alignment}) {field_type} {field_name} {get_field_array_str(field_info)};')
@@ -115,7 +115,7 @@ def codegen_descriptors():
     # generate aligned _uniform_buffer_element
     for struct_name, struct_fields in uniform_buffer_structs.items():
         struct_name = struct_name + '_uniform_buffer_element'
-        decls.append(f'typedef struct packed_struct {struct_name} {{')
+        decls.append(f'typedef struct PACKED_STRUCT {struct_name} {{')
         for field_name, field_type, field_info in struct_fields:
             alignment = get_std430_alignment(field_type, field_info, helper_structs)
             decls.append(f'  alignas({alignment}) {field_type} {field_name} {get_field_array_str(field_info)};')

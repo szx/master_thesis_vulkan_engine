@@ -18,7 +18,7 @@ VkPrimitiveTopology cgltf_primitive_type_vulkan_topology(cgltf_primitive_type ty
     return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
   case cgltf_primitive_type_line_loop:
   default:
-    return VK_PRIMITIVE_TOPOLOGY_MAX_ENUM;
+    UNREACHABLE;
   }
 }
 
@@ -38,7 +38,7 @@ vulkan_attribute_type cgltf_to_vulkan_attribute_type(cgltf_attribute_type type) 
   case cgltf_attribute_type_weights:
   case cgltf_attribute_type_invalid:
   default:
-    return vulkan_attribute_type_unknown;
+    UNREACHABLE;
   }
 }
 
@@ -283,7 +283,7 @@ vulkan_asset_camera *parse_cgltf_camera(vulkan_scene_data *sceneData, cgltf_came
     camera->nearZ = cgltfCamera->data.orthographic.znear;
     camera->farZ = cgltfCamera->data.orthographic.zfar;
   } else {
-    assert(0);
+    UNREACHABLE;
   }
 
   camera->key = vulkan_asset_camera_calculate_key(camera);

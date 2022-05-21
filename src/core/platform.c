@@ -33,7 +33,7 @@ static void panic_on_activate_callback(GtkApplication *app, panic_args *panicArg
   gtk_widget_show(GTK_WIDGET(dialog));
 }
 
-void panic(const char *format, ...) {
+noreturn void panic(const char *format, ...) {
   static const size_t max_shown_chars = 2048;
   va_list args;
   va_start(args, format);
@@ -43,6 +43,8 @@ void panic(const char *format, ...) {
   va_end(args);
 
   log_fatal(panicArgs.msg);
+  log_destroy();
+
   GtkApplication *app = gtk_application_new("com.example.GtkApplication", G_APPLICATION_FLAGS_NONE);
   g_signal_connect(app, "activate", G_CALLBACK(panic_on_activate_callback), &panicArgs);
   g_application_run(G_APPLICATION(app), 0, NULL);

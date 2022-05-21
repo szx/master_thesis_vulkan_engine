@@ -188,8 +188,7 @@ vulkan_pipeline_info vulkan_pipeline_get_pipeline_info(vulkan_pipeline *pipeline
   }
   VULKAN_PIPELINE_TYPES(x, )
 #undef x
-  assert(0);
-  return (vulkan_pipeline_info){0};
+  UNREACHABLE;
 }
 
 void vulkan_pipeline_record_render_pass(vulkan_pipeline *pipeline, VkCommandBuffer commandBuffer,

@@ -95,7 +95,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
       image->name = "G-buffer image #3";
     }
   } else {
-    assert(0);
+    UNREACHABLE;
   }
 
   image->image = VK_NULL_HANDLE;

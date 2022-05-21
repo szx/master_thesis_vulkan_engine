@@ -47,8 +47,7 @@ VkFormat vulkan_find_texture_format(vulkan_device *vkd, vulkan_asset_texture *te
                                         VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
                                         array_size(formats));
   }
-  assert(0);
-  return VK_FORMAT_UNDEFINED;
+  UNREACHABLE;
 }
 
 vulkan_textures_texture_element *

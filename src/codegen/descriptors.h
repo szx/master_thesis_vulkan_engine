@@ -4,12 +4,12 @@
 #include "../vulkan/constants.h"
 #include "../core/junk.h"
 
-typedef struct packed_struct vulkan_directional_light_helper_element {
+typedef struct PACKED_STRUCT vulkan_directional_light_helper_element {
   alignas(4) vec3 direction ;
   alignas(4) vec3 color ;
 } vulkan_directional_light_helper_element;
 
-typedef struct packed_struct vulkan_font_helper_element {
+typedef struct PACKED_STRUCT vulkan_font_helper_element {
   alignas(4) uint fontTextureId ;
   alignas(4) uint characterSize ;
   alignas(4) uint fontTextureSize ;
@@ -17,13 +17,13 @@ typedef struct packed_struct vulkan_font_helper_element {
   alignas(4) uint text [MAX_TEXT_CHARACTER_COUNT];
 } vulkan_font_helper_element;
 
-typedef struct packed_struct vulkan_g_buffer_helper_element {
+typedef struct PACKED_STRUCT vulkan_g_buffer_helper_element {
   alignas(4) uint gBuffer0TextureId ;
   alignas(4) uint gBuffer1TextureId ;
   alignas(4) uint gBuffer2TextureId ;
 } vulkan_g_buffer_helper_element;
 
-typedef struct packed_struct vulkan_material_helper_element {
+typedef struct PACKED_STRUCT vulkan_material_helper_element {
   alignas(4) uint baseColorTextureId ;
   alignas(4) vec4 baseColorFactor ;
   alignas(4) uint metallicRoughnessTextureId ;
@@ -31,26 +31,26 @@ typedef struct packed_struct vulkan_material_helper_element {
   alignas(4) float roughnessFactor ;
 } vulkan_material_helper_element;
 
-typedef struct packed_struct vulkan_point_light_helper_element {
+typedef struct PACKED_STRUCT vulkan_point_light_helper_element {
   alignas(4) vec3 position ;
   alignas(4) vec3 color ;
   alignas(4) float radius ;
 } vulkan_point_light_helper_element;
 
-typedef struct packed_struct vulkan_skybox_helper_element {
+typedef struct PACKED_STRUCT vulkan_skybox_helper_element {
   alignas(4) uint skyboxCubemapTextureId ;
 } vulkan_skybox_helper_element;
 
-typedef struct packed_struct vulkan_viewport_helper_element {
+typedef struct PACKED_STRUCT vulkan_viewport_helper_element {
   alignas(4) uint width ;
   alignas(4) uint height ;
 } vulkan_viewport_helper_element;
 
-typedef struct packed_struct vulkan_draw_push_constant_element {
+typedef struct PACKED_STRUCT vulkan_draw_push_constant_element {
   alignas(4) uint currentFrameInFlight ;
 } vulkan_draw_push_constant_element;
 
-typedef struct packed_struct vulkan_global_uniform_buffer_element {
+typedef struct PACKED_STRUCT vulkan_global_uniform_buffer_element {
   alignas(4) mat4 viewMat ;
   alignas(4) mat4 projMat ;
   alignas(4) uint materialCount ;
@@ -65,7 +65,7 @@ typedef struct packed_struct vulkan_global_uniform_buffer_element {
   alignas(4) vulkan_g_buffer_helper_element gBuffer ;
 } vulkan_global_uniform_buffer_element;
 
-typedef struct packed_struct vulkan_instances_uniform_buffer_element {
+typedef struct PACKED_STRUCT vulkan_instances_uniform_buffer_element {
   alignas(4) mat4 modelMat ;
   alignas(4) uint materialId ;
 } vulkan_instances_uniform_buffer_element;

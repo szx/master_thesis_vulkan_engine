@@ -126,6 +126,5 @@ vulkan_image *vulkan_pipeline_shared_state_get_offscreen_framebuffer_attachment_
   if (type == vulkan_pipeline_offscreen_attachment_type_g_buffer_2) {
     return sharedState->gBuffer->gBuffer2TextureElement->image;
   }
-  assert(0);
-  return NULL;
+  UNREACHABLE;
 }
