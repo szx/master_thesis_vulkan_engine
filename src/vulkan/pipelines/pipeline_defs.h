@@ -42,6 +42,11 @@ typedef struct vulkan_pipeline_info {
   VkClearColorValue offscreenClearValue;
 
   bool useDepthAttachment;
+  bool depthAttachmentWriteEnable;
+  bool depthAttachmentTestEnable;
+  VkCompareOp depthAttachmentTestOp;
+  bool depthAttachmentLoadOp;
+  bool depthAttachmentStoreOp;
   VkClearDepthStencilValue depthClearValue;
 
   bool colorBlendingType;

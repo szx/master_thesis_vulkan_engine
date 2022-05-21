@@ -13,7 +13,7 @@ uint32_t vulkan_attribute_type_to_stride(vulkan_attribute_type vertexAttributes)
   if ((vertexAttributes & vulkan_attribute_type_position) != 0) {
     return offsetof(vulkan_vertex, position) + member_size(vulkan_vertex, position);
   }
-  panic("unsupported vertex attribute %d", vertexAttributes);
+  assert(0);
   return 0; // TODO: Unreachable.
 }
 

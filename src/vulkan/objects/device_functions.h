@@ -77,6 +77,8 @@ VkPipeline vulkan_create_graphics_pipeline(
 
     uint32_t colorAttachmentCount, vulkan_color_blending_type colorBlendingType,
 
+    bool depthWriteEnable, bool depthTestEnable, VkCompareOp depthTestOp,
+
     VkPipelineShaderStageCreateInfo *shaderStages, uint32_t shaderStageCount,
 
     const VkVertexInputBindingDescription *vertexInputBindingDescriptions,

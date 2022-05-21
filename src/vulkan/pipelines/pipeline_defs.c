@@ -204,15 +204,39 @@ void vulkan_pipeline_info_get_render_pass_create_info(
   }
 
   if (pipelineInfo.useDepthAttachment) {
+    bool prevUseDepthAttachment = false;
+    bool nextUseDepthAttachment = false;
+    ITERATE_INFO(
+        prev, if (info.useDepthAttachment) {
+          prevUseDepthAttachment = true;
+          break;
+        })
+    ITERATE_INFO(
+        next, if (info.useDepthAttachment) {
+          nextUseDepthAttachment = true;
+          break;
+        })
+    bool isFirstDepthAttachment = !prevUseDepthAttachment;
+    bool isLastDepthAttachment = !nextUseDepthAttachment;
+
+    VkImageLayout initialLayout;
+    if (isFirstDepthAttachment) {
+      initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    } else {
+      initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+    }
+
+    VkImageLayout finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
     *depthAttachmentDescription = (VkAttachmentDescription){
         .format = depthBufferImageFormat,
         .samples = VK_SAMPLE_COUNT_1_BIT,
-        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-        .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        .loadOp = pipelineInfo.depthAttachmentLoadOp,
+        .storeOp = pipelineInfo.depthAttachmentStoreOp,
         .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
         .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-        .finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+        .initialLayout = initialLayout,
+        .finalLayout = finalLayout,
     };
     *depthAttachmentReference = (VkAttachmentReference){
         .attachment = idx++,

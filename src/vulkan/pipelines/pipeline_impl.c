@@ -8,6 +8,11 @@ vulkan_pipeline_info vulkan_pipeline_impl_forward_get_pipeline_info(vulkan_pipel
                                 .onscreenClearValue = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}},
                                 .offscreenColorAttachmentCount = 0,
                                 .useDepthAttachment = true,
+                                .depthAttachmentWriteEnable = true,
+                                .depthAttachmentTestEnable = true,
+                                .depthAttachmentTestOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
+                                .depthAttachmentLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                .depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE,
                                 .depthClearValue = (VkClearDepthStencilValue){0.0f, 0},
                                 .colorBlendingType = vulkan_color_blending_type_none};
 }
@@ -58,6 +63,11 @@ vulkan_pipeline_impl_deferred_geometry_get_pipeline_info(vulkan_pipeline *pipeli
                                         vulkan_pipeline_offscreen_attachment_type_g_buffer_2,
                                     },
                                 .useDepthAttachment = true,
+                                .depthAttachmentWriteEnable = true,
+                                .depthAttachmentTestEnable = true,
+                                .depthAttachmentTestOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
+                                .depthAttachmentLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+                                .depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE,
                                 .depthClearValue = (VkClearDepthStencilValue){0.0f, 0},
                                 .colorBlendingType = vulkan_color_blending_type_none};
 }
@@ -97,7 +107,16 @@ void vulkan_pipeline_impl_deferred_geometry_record_render_pass(vulkan_pipeline *
 
 vulkan_pipeline_info
 vulkan_pipeline_impl_deferred_lighting_get_pipeline_info(vulkan_pipeline *pipeline) {
-  return (vulkan_pipeline_info){.useOnscreenColorAttachment = true};
+  return (vulkan_pipeline_info){
+      .useOnscreenColorAttachment = true,
+      // Use depth buffer to reject fragments with depth == 0 (no geometry rendered)
+      .useDepthAttachment = true,
+      .depthAttachmentWriteEnable = false,
+      .depthAttachmentTestEnable = true,
+      .depthAttachmentTestOp = VK_COMPARE_OP_LESS,
+      .depthAttachmentLoadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
+      .depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_NONE_EXT,
+  };
 }
 
 void vulkan_pipeline_impl_deferred_lighting_record_render_pass(vulkan_pipeline *pipeline,
@@ -139,10 +158,11 @@ void vulkan_pipeline_impl_deferred_lighting_record_render_pass(vulkan_pipeline *
 /* skybox */
 
 vulkan_pipeline_info vulkan_pipeline_impl_skybox_get_pipeline_info(vulkan_pipeline *pipeline) {
-  return (vulkan_pipeline_info){.useOnscreenColorAttachment = true,
-                                .onscreenClearValue = (VkClearColorValue){{0.5f, 0.5f, 0.5f, 1.0f}},
-                                .offscreenColorAttachmentCount = 0,
-                                .useDepthAttachment = false};
+  return (vulkan_pipeline_info){
+      .useOnscreenColorAttachment = true,
+      .onscreenClearValue = (VkClearColorValue){{0.5f, 0.5f, 0.5f, 1.0f}},
+      .offscreenColorAttachmentCount = 0,
+  };
 }
 
 void vulkan_pipeline_impl_skybox_record_render_pass(vulkan_pipeline *pipeline,

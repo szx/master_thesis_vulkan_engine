@@ -37,9 +37,15 @@ void create_render_pass(vulkan_pipeline *pipeline) {
 
 void create_graphics_pipeline(vulkan_pipeline *pipeline) {
   vulkan_pipeline_info pipelineInfo = vulkan_pipeline_get_pipeline_info(pipeline);
+
   uint32_t colorAttachmentCount =
       vulkan_pipeline_info_get_framebuffer_color_attachment_count(pipelineInfo);
   bool colorBlendingType = pipelineInfo.colorBlendingType;
+
+  bool depthWriteEnable =
+      pipelineInfo.useDepthAttachment && pipelineInfo.depthAttachmentWriteEnable;
+  bool depthTestEnable = pipelineInfo.useDepthAttachment && pipelineInfo.depthAttachmentTestEnable;
+  VkCompareOp depthTestOp = pipelineInfo.depthAttachmentTestOp;
 
   size_t shaderStageCount;
   VkPipelineShaderStageCreateInfo *shaderStages =
@@ -72,6 +78,8 @@ void create_graphics_pipeline(vulkan_pipeline *pipeline) {
       pipeline->vks->vkd,
 
       colorAttachmentCount, colorBlendingType,
+
+      depthWriteEnable, depthTestEnable, depthTestOp,
 
       shaderStages, shaderStageCount,
 

@@ -11,7 +11,7 @@ typedef struct vulkan_vertex {
   vec3 normal;
   vec3 color;
   vec2 texCoord;
-} vulkan_vertex; // TODO: packed attribute
+} vulkan_vertex;
 
 vulkan_vertex vulkan_vertex_default();
 

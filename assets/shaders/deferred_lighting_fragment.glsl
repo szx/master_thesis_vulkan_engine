@@ -2,24 +2,28 @@ uint globalIdx = getGlobalIdx();
 
 vec2 texCoord = (inWorldPosition.xy + 1) / 2;
 
+/* G-Buffer decoding */
 uint gBuffer0Id = global[globalIdx].gBuffer.gBuffer0TextureId;
 vec4 gBuffer0Texture = texture(textures2D[gBuffer0Id], texCoord);
+vec3 worldPosition = gBuffer0Texture.xyz;
+// Discard if deferred geometry pass didn't write anything to this pixel (alpha == 0).
+// See also: Nicolas Thibieroz?s talk "Deferred Shading Optimizations" (AMD Developer Central)
+//if (worldPosition.xyz == vec3(0)) discard;
+//assert(worldPosition.w == 1);
+float metallic = gBuffer0Texture.w;
+
 uint gBuffer1Id = global[globalIdx].gBuffer.gBuffer1TextureId;
 vec4 gBuffer1Texture = texture(textures2D[gBuffer1Id], texCoord);
+vec4 baseColor = gBuffer1Texture.xyzw;
+
 uint gBuffer2Id = global[globalIdx].gBuffer.gBuffer2TextureId;
 vec4 gBuffer2Texture = texture(textures2D[gBuffer2Id], texCoord);
-
-// HIRO G-Buffer decoding in shader
-vec3 worldPosition = gBuffer0Texture.xyz;
-float metallic = gBuffer0Texture.w;
-vec4 baseColor = gBuffer1Texture.xyzw;
 vec3 n = gBuffer2Texture.xyz;
 float perceptualRoughness = gBuffer2Texture.w;
 
 
 vec3 cameraPosition = (inverse(global[globalIdx].viewMat) * vec4(0, 0, 0, 1)).xyz; // PERF: Move to global[globalIdx].
 vec3 v = normalize(cameraPosition - worldPosition);
-
 vec3 fresnel0 = vec3(0.04);
 
 /* fill in PBR info */
