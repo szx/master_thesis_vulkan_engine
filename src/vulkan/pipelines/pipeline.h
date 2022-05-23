@@ -17,14 +17,17 @@ typedef struct vulkan_pipeline {
 
   vulkan_pipeline_type type;
   vulkan_pipeline_shader_program *shaderProgram;
-  VkRenderPass renderPass;
-  UT_array *framebuffers; // VkFramebuffer list
-  VkPipeline graphicsPipeline;
 
   /// Pipeline used by renderer before this pipeline (or NULL if first).
   struct vulkan_pipeline *prev;
   /// Pipeline used by renderer before this pipeline (or NULL if last).
   struct vulkan_pipeline *next;
+
+  /* cache */
+  UT_array *_renderPasses;      // VkRenderPass array
+  UT_array *_framebuffers;      // VkFramebuffer array
+  UT_array *_graphicsPipelines; // VkPipeline array
+
 } vulkan_pipeline;
 
 vulkan_pipeline *vulkan_pipeline_create_start(vulkan_pipeline_type type, vulkan_swap_chain *vks,

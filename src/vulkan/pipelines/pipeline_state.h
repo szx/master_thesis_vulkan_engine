@@ -27,6 +27,9 @@ void vulkan_pipeline_state_reinit_with_new_swap_chain(vulkan_pipeline_state *pip
 
 void vulkan_pipeline_state_update(vulkan_pipeline_state *pipelineState);
 
+void vulkan_pipeline_state_set_unified_uniform_buffer(vulkan_pipeline_state *pipelineState,
+                                                      vulkan_global_uniform_buffer_element *global);
+
 void vulkan_pipeline_state_send_to_device(vulkan_pipeline_state *pipelineState);
 
 void vulkan_pipeline_state_debug_print(vulkan_pipeline_state *pipelineState, int indent);

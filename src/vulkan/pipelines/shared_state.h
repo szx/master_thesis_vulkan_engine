@@ -7,7 +7,6 @@
 #include "../renderers/render_state.h"
 #include "camera_state.h"
 #include "font_state.h"
-#include "g_buffer_state.h"
 #include "light_state.h"
 #include "material_state.h"
 #include "pipeline_defs.h"
@@ -18,8 +17,9 @@
 typedef struct vulkan_pipeline_shared_state {
   vulkan_render_state *renderState; ///< Pointer.
 
-  /** CPU state used to update uniform buffers.
-   * Can (should) be changed only in main loop's updateFunc, which prevents synchronization
+  /** Pipeline state used to update uniform buffers and provide read-only textures.
+   * CPU state can (should) be changed only in main loop's updateFunc, which prevents
+   * synchronization issues. GPU state (textures) are read-only, which prevents synchronization
    * issues. */
   vulkan_pipeline_camera_state *camera;
   vulkan_pipeline_material_state *materials;
@@ -30,14 +30,6 @@ typedef struct vulkan_pipeline_shared_state {
   // HIRO: Maintain two batches for transparent and opaque objects
   // HIRO: in batches recording multiple commands controlled by sorting with multiple policies?
   vulkan_batches *rendererCacheBatches;
-
-  /// G-Buffer state.
-  /// We shared G-buffer images across frames in flight and sync them using barriers.
-  // HIRO HIRO HIRO actual syncing
-  vulkan_pipeline_g_buffer_state *gBuffer;
-  /// Depth buffer image.
-  /// We can share it between pipelines, because it is synchronized using pipeline barriers.
-  vulkan_image *depthBufferImage;
 
 } vulkan_pipeline_shared_state;
 
@@ -54,6 +46,3 @@ void vulkan_pipeline_shared_state_send_to_device(vulkan_pipeline_shared_state *s
 
 void vulkan_pipeline_shared_state_debug_print(vulkan_pipeline_shared_state *sharedState,
                                               int indent);
-
-vulkan_image *vulkan_pipeline_shared_state_get_offscreen_framebuffer_attachment_image(
-    vulkan_pipeline_shared_state *sharedState, vulkan_pipeline_offscreen_attachment_type type);

@@ -8,12 +8,10 @@
 typedef struct vulkan_pipeline_g_buffer_state {
   vulkan_render_state *renderState; ///< Pointer.
 
-  // HIRO Is G-Buffer in flight frame compatible? Add barrier.
   vulkan_textures_texture_element *gBuffer0TextureElement;
   vulkan_textures_texture_element *gBuffer1TextureElement;
   vulkan_textures_texture_element *gBuffer2TextureElement;
 
-  // HIRO Encoding G-Buffer pattern codegen. baseColor needs only 8*3 bits
 } vulkan_pipeline_g_buffer_state;
 
 vulkan_pipeline_g_buffer_state *

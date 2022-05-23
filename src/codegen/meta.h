@@ -284,7 +284,7 @@ const char *vulkan_buffer_type_debug_str(int value);
 const char *vulkan_camera_type_debug_str(int value);
 const char *vulkan_color_blending_type_debug_str(int value);
 const char *vulkan_image_type_debug_str(int value);
-const char *vulkan_pipeline_offscreen_attachment_type_debug_str(int value);
+const char *vulkan_pipeline_offscreen_texture_type_debug_str(int value);
 const char *vulkan_pipeline_type_debug_str(int value);
 const char *vulkan_renderer_cache_primitive_element_source_type_debug_str(int value);
 const char *vulkan_shader_reflect_binding_type_debug_str(int value);

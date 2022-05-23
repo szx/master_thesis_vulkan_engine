@@ -1,17 +1,48 @@
 #include "pipeline.h"
 
-void create_render_pass(vulkan_pipeline *pipeline) {
+size_t get_cache_len(vulkan_pipeline *pipeline) {
+  size_t frameInFlightCount = FRAMES_IN_FLIGHT;
+  size_t swapChainImageCount = utarray_len(pipeline->vks->swapChainImages);
+  return frameInFlightCount * swapChainImageCount;
+}
+
+size_t get_cache_index(vulkan_pipeline *pipeline, size_t currentFrameInFlight,
+                       size_t swapChainImageIdx) {
+  size_t frameInFlightCount = FRAMES_IN_FLIGHT;
+  size_t swapChainImageCount = utarray_len(pipeline->vks->swapChainImages);
+  if (frameInFlightCount < swapChainImageCount) {
+    return swapChainImageIdx * frameInFlightCount + currentFrameInFlight;
+  }
+  if (frameInFlightCount >= swapChainImageCount) {
+    return currentFrameInFlight * swapChainImageCount + swapChainImageIdx;
+  }
+  UNREACHABLE;
+}
+
+VkRenderPass get_render_pass(vulkan_pipeline *pipeline, size_t currentFrameInFlight,
+                             size_t swapChainImageIdx) {
+  size_t cacheIndex = get_cache_index(pipeline, currentFrameInFlight, swapChainImageIdx);
+  VkRenderPass *renderPass = utarray_eltptr(pipeline->_renderPasses, cacheIndex);
+  if (*renderPass != VK_NULL_HANDLE) {
+    return *renderPass;
+  }
+
   vulkan_pipeline_info pipelineInfo = vulkan_pipeline_get_pipeline_info(pipeline);
   bool useOnscreenColorAttachment = pipelineInfo.useOnscreenColorAttachment;
-  uint32_t offscreenColorAttachmentCount = pipelineInfo.offscreenColorAttachmentCount;
+  uint32_t offscreenColorAttachmentCount =
+      vulkan_pipeline_info_get_framebuffer_offscreen_color_attachment_count(pipelineInfo);
   bool useDepthAttachment = pipelineInfo.useDepthAttachment;
   assert(useOnscreenColorAttachment || offscreenColorAttachmentCount > 0);
 
+  vulkan_pipeline_frame_state *frameState =
+      utarray_eltptr(pipeline->pipelineState->frameStates, currentFrameInFlight);
+
   VkFormat swapChainImageFormat = pipeline->vks->swapChainImageFormat;
   VkFormat offscreenFormats[VLA(offscreenColorAttachmentCount)];
-  vulkan_pipeline_info_get_offscreen_framebuffer_attachment_formats(pipelineInfo, pipeline,
+  vulkan_pipeline_info_get_framebuffer_offscreen_attachment_formats(pipelineInfo, frameState,
                                                                     offscreenFormats);
-  VkFormat depthBufferImageFormat = pipeline->pipelineState->sharedState.depthBufferImage->format;
+  VkFormat depthBufferImageFormat =
+      vulkan_pipeline_info_get_framebuffer_depth_attachment_formats(pipelineInfo, frameState);
 
   VkAttachmentDescription onscreenColorAttachmentDescription;
   VkAttachmentReference onscreenColorAttachmentReference;
@@ -25,19 +56,71 @@ void create_render_pass(vulkan_pipeline *pipeline) {
       &onscreenColorAttachmentReference, offscreenColorAttachmentDescriptions,
       offscreenColorAttachmentReferences, &depthAttachmentDescription, &depthAttachmentReference);
 
-  pipeline->renderPass = vulkan_create_render_pass(
+  *renderPass = vulkan_create_render_pass(
       pipeline->vks->vkd, (useOnscreenColorAttachment ? &onscreenColorAttachmentDescription : NULL),
       (useOnscreenColorAttachment ? &onscreenColorAttachmentReference : NULL),
       offscreenColorAttachmentDescriptions, offscreenColorAttachmentCount,
       offscreenColorAttachmentReferences, offscreenColorAttachmentCount,
       (useDepthAttachment ? &depthAttachmentDescription : NULL),
-      (useDepthAttachment ? &depthAttachmentReference : NULL), "pipeline %s",
-      vulkan_pipeline_type_debug_str(pipeline->type));
+      (useDepthAttachment ? &depthAttachmentReference : NULL),
+      "pipeline %s (frameInFlight=#%u, swapChainImage=#%u)",
+      vulkan_pipeline_type_debug_str(pipeline->type), currentFrameInFlight, swapChainImageIdx);
+
+  return *renderPass;
 }
 
-void create_graphics_pipeline(vulkan_pipeline *pipeline) {
+VkFramebuffer get_framebuffer(vulkan_pipeline *pipeline, size_t currentFrameInFlight,
+                              size_t swapChainImageIdx) {
+  size_t cacheIndex = get_cache_index(pipeline, currentFrameInFlight, swapChainImageIdx);
+  VkFramebuffer *framebuffer = utarray_eltptr(pipeline->_framebuffers, cacheIndex);
+  if (*framebuffer != VK_NULL_HANDLE) {
+    return *framebuffer;
+  }
+
   vulkan_pipeline_info pipelineInfo = vulkan_pipeline_get_pipeline_info(pipeline);
 
+  uint32_t offscreenFramebufferAttachmentCount =
+      vulkan_pipeline_info_get_framebuffer_offscreen_color_attachment_count(pipelineInfo);
+
+  vulkan_pipeline_frame_state *frameState =
+      utarray_eltptr(pipeline->pipelineState->frameStates, currentFrameInFlight);
+
+  VkImageView swapChainImageView =
+      *(VkImageView *)utarray_eltptr(pipeline->vks->swapChainImageViews, swapChainImageIdx);
+  VkImageView depthBufferImageView =
+      vulkan_pipeline_info_get_framebuffer_depth_attachment_image_view(pipelineInfo, frameState);
+  VkImageView offscreenImageViews[VLA(offscreenFramebufferAttachmentCount)];
+  vulkan_pipeline_info_get_framebuffer_offscreen_attachment_image_views(pipelineInfo, frameState,
+                                                                        offscreenImageViews);
+
+  VkRenderPass renderPass = get_render_pass(pipeline, currentFrameInFlight, swapChainImageIdx);
+
+  uint32_t framebufferAttachmentCount =
+      vulkan_pipeline_info_get_framebuffer_attachment_count(pipelineInfo);
+  assert(framebufferAttachmentCount > 0);
+  VkImageView framebufferAttachments[framebufferAttachmentCount];
+  vulkan_pipeline_info_get_framebuffer_attachment_image_views(
+      pipelineInfo, swapChainImageView, offscreenImageViews, depthBufferImageView,
+      framebufferAttachments);
+
+  *framebuffer = vulkan_create_framebuffer(
+      pipeline->vks->vkd, renderPass, framebufferAttachmentCount, framebufferAttachments,
+      pipeline->vks->swapChainExtent.width, pipeline->vks->swapChainExtent.height,
+      "pipeline %s (frameInFlight=#%u, swapChainImage=#%u)",
+      vulkan_pipeline_type_debug_str(pipeline->type), currentFrameInFlight, swapChainImageIdx);
+
+  return *framebuffer;
+}
+
+VkPipeline get_graphics_pipeline(vulkan_pipeline *pipeline, size_t currentFrameInFlight,
+                                 size_t swapChainImageIdx) {
+  size_t cacheIndex = get_cache_index(pipeline, currentFrameInFlight, swapChainImageIdx);
+  VkPipeline *graphicsPipeline = utarray_eltptr(pipeline->_graphicsPipelines, cacheIndex);
+  if (*graphicsPipeline != VK_NULL_HANDLE) {
+    return *graphicsPipeline;
+  }
+
+  vulkan_pipeline_info pipelineInfo = vulkan_pipeline_get_pipeline_info(pipeline);
   uint32_t colorAttachmentCount =
       vulkan_pipeline_info_get_framebuffer_color_attachment_count(pipelineInfo);
   bool colorBlendingType = pipelineInfo.colorBlendingType;
@@ -74,7 +157,9 @@ void create_graphics_pipeline(vulkan_pipeline *pipeline) {
       vulkan_vertex_stream_get_vertex_attribute_descriptions(pipeline->renderState->vertexStream,
                                                              &vertexAttributeDescriptionsCount);
 
-  pipeline->graphicsPipeline = vulkan_create_graphics_pipeline(
+  VkRenderPass renderPass = get_render_pass(pipeline, currentFrameInFlight, swapChainImageIdx);
+
+  *graphicsPipeline = vulkan_create_graphics_pipeline(
       pipeline->vks->vkd,
 
       colorAttachmentCount, colorBlendingType,
@@ -89,45 +174,14 @@ void create_graphics_pipeline(vulkan_pipeline *pipeline) {
       pipeline->vks->swapChainExtent.width, pipeline->vks->swapChainExtent.height,
 
       descriptorSetLayouts, descriptorSetLayoutCount, pushConstantRanges, pushConstantRangeCount,
-      pipeline->renderPass, pipeline->renderState->descriptors->pipelineLayout, "pipeline %s",
-      vulkan_pipeline_type_debug_str(pipeline->type));
+      renderPass, pipeline->renderState->descriptors->pipelineLayout,
+      "pipeline %s (frameInFlight=#%u, swapChainImage=#%u)",
+      vulkan_pipeline_type_debug_str(pipeline->type), currentFrameInFlight, swapChainImageIdx);
 
   core_free(vertexAttributeDescriptions);
   core_free(descriptorSetLayouts);
-}
 
-void create_framebuffers(vulkan_pipeline *pipeline) {
-  vulkan_pipeline_info pipelineInfo = vulkan_pipeline_get_pipeline_info(pipeline);
-
-  uint32_t framebufferAttachmentCount =
-      vulkan_pipeline_info_get_framebuffer_attachment_count(pipelineInfo);
-  assert(framebufferAttachmentCount > 0);
-  uint32_t offscreenFramebufferAttachmentCount = pipelineInfo.offscreenColorAttachmentCount;
-
-  utarray_alloc(pipeline->framebuffers, sizeof(VkFramebuffer));
-  utarray_resize(pipeline->framebuffers, utarray_len(pipeline->vks->swapChainImageViews));
-  size_t swapChainImageIdx = 0;
-  utarray_foreach_elem_it (VkFramebuffer *, framebuffer, pipeline->framebuffers) {
-    VkImageView swapChainImageView =
-        *(VkImageView *)utarray_eltptr(pipeline->vks->swapChainImageViews, swapChainImageIdx);
-    VkImageView depthBufferImageView =
-        pipeline->pipelineState->sharedState.depthBufferImage->imageView;
-    VkImageView offscreenImageViews[VLA(offscreenFramebufferAttachmentCount)];
-    vulkan_pipeline_info_get_offscreen_framebuffer_attachment_image_views(pipelineInfo, pipeline,
-                                                                          offscreenImageViews);
-
-    VkImageView framebufferAttachments[framebufferAttachmentCount];
-    vulkan_pipeline_info_get_framebuffer_attachment_image_views(
-        pipelineInfo, swapChainImageView, offscreenImageViews, depthBufferImageView,
-        framebufferAttachments);
-
-    *framebuffer = vulkan_create_framebuffer(
-        pipeline->vks->vkd, pipeline->renderPass, framebufferAttachmentCount,
-        framebufferAttachments, pipeline->vks->swapChainExtent.width,
-        pipeline->vks->swapChainExtent.height, "pipeline framebuffer state #%d", swapChainImageIdx);
-
-    swapChainImageIdx++;
-  }
+  return *graphicsPipeline;
 }
 
 vulkan_pipeline *vulkan_pipeline_create_start(vulkan_pipeline_type type, vulkan_swap_chain *vks,
@@ -162,19 +216,35 @@ void vulkan_pipeline_init_prev_next(vulkan_pipeline *pipeline, vulkan_pipeline *
 }
 
 void vulkan_pipeline_init_finish(vulkan_pipeline *pipeline) {
-  create_render_pass(pipeline);
-  create_graphics_pipeline(pipeline);
-  create_framebuffers(pipeline);
+  utarray_alloc(pipeline->_renderPasses, sizeof(VkRenderPass));
+  utarray_resize(pipeline->_renderPasses, get_cache_len(pipeline));
+  utarray_foreach_elem_it (VkRenderPass *, renderPass, pipeline->_renderPasses) {
+    *renderPass = VK_NULL_HANDLE;
+  }
+
+  utarray_alloc(pipeline->_framebuffers, sizeof(VkFramebuffer));
+  utarray_resize(pipeline->_framebuffers, get_cache_len(pipeline));
+  utarray_foreach_elem_it (VkFramebuffer *, framebuffer, pipeline->_framebuffers) {
+    *framebuffer = VK_NULL_HANDLE;
+  }
+
+  utarray_alloc(pipeline->_graphicsPipelines, sizeof(VkPipeline));
+  utarray_resize(pipeline->_graphicsPipelines, get_cache_len(pipeline));
+  utarray_foreach_elem_it (VkPipeline *, graphicsPipeline, pipeline->_graphicsPipelines) {
+    *graphicsPipeline = VK_NULL_HANDLE;
+  }
 }
 
 void vulkan_pipeline_deinit(vulkan_pipeline *pipeline) {
-  utarray_foreach_elem_deref (VkFramebuffer, framebuffer, pipeline->framebuffers) {
-    vkDestroyFramebuffer(pipeline->vks->vkd->device, framebuffer, vka);
+  utarray_foreach_elem_it (VkPipeline *, graphicsPipeline, pipeline->_graphicsPipelines) {
+    vkDestroyPipeline(pipeline->vks->vkd->device, *graphicsPipeline, vka);
   }
-  utarray_free(pipeline->framebuffers);
-
-  vkDestroyPipeline(pipeline->vks->vkd->device, pipeline->graphicsPipeline, vka);
-  vkDestroyRenderPass(pipeline->vks->vkd->device, pipeline->renderPass, vka);
+  utarray_foreach_elem_it (VkRenderPass *, renderPass, pipeline->_renderPasses) {
+    vkDestroyRenderPass(pipeline->vks->vkd->device, *renderPass, vka);
+  }
+  utarray_foreach_elem_it (VkFramebuffer *, framebuffer, pipeline->_framebuffers) {
+    vkDestroyFramebuffer(pipeline->vks->vkd->device, *framebuffer, vka);
+  }
   vulkan_pipeline_shader_program_destroy(pipeline->shaderProgram);
 }
 
@@ -193,12 +263,42 @@ vulkan_pipeline_info vulkan_pipeline_get_pipeline_info(vulkan_pipeline *pipeline
 
 void vulkan_pipeline_record_render_pass(vulkan_pipeline *pipeline, VkCommandBuffer commandBuffer,
                                         size_t swapChainImageIdx) {
+  size_t currentFrameInFlight = pipeline->renderState->sync->currentFrameInFlight;
+  vulkan_pipeline_info pipelineInfo = vulkan_pipeline_get_pipeline_info(pipeline);
+
+  VkFramebuffer framebuffer = get_framebuffer(pipeline, currentFrameInFlight, swapChainImageIdx);
+  VkRenderPass renderPass = get_render_pass(pipeline, currentFrameInFlight, swapChainImageIdx);
+  VkPipeline graphicsPipeline =
+      get_graphics_pipeline(pipeline, currentFrameInFlight, swapChainImageIdx);
+
+  vulkan_pipeline_frame_state *frameState =
+      utarray_eltptr(pipeline->pipelineState->frameStates, currentFrameInFlight);
+
+  /* record new render pass into command buffer */
+  // HIRO pass render pass and framebuffer as argument, allocate if NULL
+  VkRenderPassBeginInfo renderPassInfo = {0};
+  renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+  renderPassInfo.renderPass = renderPass;
+  renderPassInfo.framebuffer = framebuffer;
+  renderPassInfo.renderArea.offset = (VkOffset2D){0, 0};
+  renderPassInfo.renderArea.extent = pipeline->vks->swapChainExtent;
+  uint32_t clearValueCount = vulkan_pipeline_info_get_framebuffer_attachment_count(pipelineInfo);
+  VkClearValue clearValues[clearValueCount];
+  vulkan_pipeline_info_get_framebuffer_attachment_clear_values(pipelineInfo, clearValues);
+  renderPassInfo.clearValueCount = array_size(clearValues);
+  renderPassInfo.pClearValues = clearValues;
+  vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+  vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+
 #define x(_name, ...)                                                                              \
   if (pipeline->type == vulkan_pipeline_type_##_name) {                                            \
-    vulkan_pipeline_impl_##_name##_record_render_pass(pipeline, commandBuffer, swapChainImageIdx); \
+    vulkan_pipeline_impl_##_name##_record_render_pass(pipeline, frameState, commandBuffer);        \
   }
   VULKAN_PIPELINE_TYPES(x, )
 #undef x
+
+  vkCmdEndRenderPass(commandBuffer);
 }
 
 void vulkan_pipeline_debug_print(vulkan_pipeline *pipeline) {

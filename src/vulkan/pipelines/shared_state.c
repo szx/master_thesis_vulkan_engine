@@ -9,42 +9,26 @@ void vulkan_pipeline_shared_state_init(vulkan_pipeline_shared_state *sharedState
   sharedState->lights = vulkan_pipeline_light_state_create(sharedState->renderState);
   sharedState->skybox = vulkan_pipeline_skybox_state_create(sharedState->renderState);
   sharedState->font = vulkan_pipeline_font_state_create(sharedState->renderState);
-  sharedState->gBuffer = vulkan_pipeline_g_buffer_state_create(sharedState->renderState);
   sharedState->rendererCacheBatches = vulkan_batches_create(sharedState->renderState->vkd);
-
-  sharedState->depthBufferImage =
-      vulkan_image_create(sharedState->renderState->vkd, vulkan_image_type_depth_buffer,
-                          sharedState->renderState->vks->swapChainExtent.width,
-                          sharedState->renderState->vks->swapChainExtent.height, 1);
 }
 
 void vulkan_pipeline_shared_state_deinit(vulkan_pipeline_shared_state *sharedState) {
   vulkan_batches_destroy(sharedState->rendererCacheBatches);
-  vulkan_pipeline_g_buffer_state_destroy(sharedState->gBuffer);
   vulkan_pipeline_font_state_destroy(sharedState->font);
   vulkan_pipeline_skybox_state_destroy(sharedState->skybox);
   vulkan_pipeline_light_state_destroy(sharedState->lights);
   vulkan_pipeline_material_state_destroy(sharedState->materials);
   vulkan_pipeline_camera_state_destroy(sharedState->camera);
-
-  vulkan_image_destroy(sharedState->depthBufferImage);
 }
 
 void vulkan_pipeline_shared_state_reinit_with_new_swap_chain(
     vulkan_pipeline_shared_state *sharedState) {
 
-  vulkan_pipeline_g_buffer_state_reinit_with_new_swap_chain(sharedState->gBuffer);
   vulkan_pipeline_font_state_reinit_with_new_swap_chain(sharedState->font);
   vulkan_pipeline_skybox_state_reinit_with_new_swap_chain(sharedState->skybox);
   vulkan_pipeline_light_state_reinit_with_new_swap_chain(sharedState->lights);
   vulkan_pipeline_material_state_reinit_with_new_swap_chain(sharedState->materials);
   vulkan_pipeline_camera_state_reinit_with_new_swap_chain(sharedState->camera);
-
-  vulkan_image_destroy(sharedState->depthBufferImage);
-  sharedState->depthBufferImage =
-      vulkan_image_create(sharedState->renderState->vkd, vulkan_image_type_depth_buffer,
-                          sharedState->renderState->vks->swapChainExtent.width,
-                          sharedState->renderState->vks->swapChainExtent.height, 1);
 }
 
 void vulkan_pipeline_shared_state_update(vulkan_pipeline_shared_state *sharedState) {
@@ -55,7 +39,6 @@ void vulkan_pipeline_shared_state_update(vulkan_pipeline_shared_state *sharedSta
   vulkan_pipeline_light_state_update(sharedState->lights);
   vulkan_pipeline_skybox_state_update(sharedState->skybox);
   vulkan_pipeline_font_state_update(sharedState->font);
-  vulkan_pipeline_g_buffer_state_update(sharedState->gBuffer);
 
   vulkan_renderer_cache_add_new_primitive_elements_to_batches(
       sharedState->renderState->rendererCache, sharedState->rendererCacheBatches,
@@ -68,8 +51,7 @@ void vulkan_pipeline_shared_state_update(vulkan_pipeline_shared_state *sharedSta
 }
 
 void vulkan_pipeline_shared_state_send_to_device(vulkan_pipeline_shared_state *sharedState) {
-  // HIRO Send to device for pipeline states? Or maybe remove?
-  vulkan_image_send_to_device(sharedState->depthBufferImage);
+  // No-op.
 }
 
 void vulkan_pipeline_shared_state_set_unified_uniform_buffer(
@@ -97,9 +79,6 @@ void vulkan_pipeline_shared_state_set_unified_uniform_buffer(
 
   global->viewport.width = sharedState->renderState->vks->swapChainExtent.width;
   global->viewport.height = sharedState->renderState->vks->swapChainExtent.height;
-
-  vulkan_pipeline_g_buffer_state *gBuffer = sharedState->gBuffer;
-  vulkan_pipeline_g_buffer_state_set_g_buffer_elements(gBuffer, &global->gBuffer);
 }
 
 void vulkan_pipeline_shared_state_debug_print(vulkan_pipeline_shared_state *sharedState,
@@ -111,20 +90,4 @@ void vulkan_pipeline_shared_state_debug_print(vulkan_pipeline_shared_state *shar
   vulkan_pipeline_light_state_debug_print(sharedState->lights, indent + 2);
   vulkan_pipeline_skybox_state_debug_print(sharedState->skybox, indent + 2);
   vulkan_pipeline_font_state_debug_print(sharedState->font, indent + 2);
-  vulkan_pipeline_g_buffer_state_debug_print(sharedState->gBuffer, indent + 2);
-  vulkan_image_debug_print(sharedState->depthBufferImage, indent + 2);
-}
-
-vulkan_image *vulkan_pipeline_shared_state_get_offscreen_framebuffer_attachment_image(
-    vulkan_pipeline_shared_state *sharedState, vulkan_pipeline_offscreen_attachment_type type) {
-  if (type == vulkan_pipeline_offscreen_attachment_type_g_buffer_0) {
-    return sharedState->gBuffer->gBuffer0TextureElement->image;
-  }
-  if (type == vulkan_pipeline_offscreen_attachment_type_g_buffer_1) {
-    return sharedState->gBuffer->gBuffer1TextureElement->image;
-  }
-  if (type == vulkan_pipeline_offscreen_attachment_type_g_buffer_2) {
-    return sharedState->gBuffer->gBuffer2TextureElement->image;
-  }
-  UNREACHABLE;
 }

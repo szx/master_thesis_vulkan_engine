@@ -49,8 +49,16 @@ void vulkan_pipeline_state_update(vulkan_pipeline_state *pipelineState) {
 
   vulkan_pipeline_frame_state *frameState = utarray_eltptr(
       pipelineState->frameStates, pipelineState->renderState->sync->currentFrameInFlight);
-
   vulkan_pipeline_frame_state_update(frameState);
+}
+
+void vulkan_pipeline_state_set_unified_uniform_buffer(
+    vulkan_pipeline_state *pipelineState, vulkan_global_uniform_buffer_element *global) {
+  vulkan_pipeline_shared_state_set_unified_uniform_buffer(&pipelineState->sharedState, global);
+
+  vulkan_pipeline_frame_state *frameState = utarray_eltptr(
+      pipelineState->frameStates, pipelineState->renderState->sync->currentFrameInFlight);
+  vulkan_pipeline_frame_state_set_unified_uniform_buffer(frameState, global);
 }
 
 void vulkan_pipeline_state_send_to_device(vulkan_pipeline_state *pipelineState) {
@@ -58,7 +66,6 @@ void vulkan_pipeline_state_send_to_device(vulkan_pipeline_state *pipelineState) 
 
   vulkan_pipeline_frame_state *frameState = utarray_eltptr(
       pipelineState->frameStates, pipelineState->renderState->sync->currentFrameInFlight);
-
   vulkan_pipeline_frame_state_send_to_device(frameState);
 }
 

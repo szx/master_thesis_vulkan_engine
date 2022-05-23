@@ -5108,12 +5108,12 @@ const char *vulkan_image_type_debug_str(int value) {
   if (value == 9) { return "vulkan_image_type_count"; }
   return "UNKNOWN vulkan_image_type";
 }
-const char *vulkan_pipeline_offscreen_attachment_type_debug_str(int value) {
-  if (value == 0) { return "vulkan_pipeline_offscreen_attachment_type_g_buffer_0"; }
-  if (value == 1) { return "vulkan_pipeline_offscreen_attachment_type_g_buffer_1"; }
-  if (value == 2) { return "vulkan_pipeline_offscreen_attachment_type_g_buffer_2"; }
-  if (value == 3) { return "vulkan_pipeline_offscreen_attachment_type_count"; }
-  return "UNKNOWN vulkan_pipeline_offscreen_attachment_type";
+const char *vulkan_pipeline_offscreen_texture_type_debug_str(int value) {
+  if (value == 0) { return "vulkan_pipeline_offscreen_texture_type_g_buffer_0"; }
+  if (value == 1) { return "vulkan_pipeline_offscreen_texture_type_g_buffer_1"; }
+  if (value == 2) { return "vulkan_pipeline_offscreen_texture_type_g_buffer_2"; }
+  if (value == 3) { return "vulkan_pipeline_offscreen_texture_type_count"; }
+  return "UNKNOWN vulkan_pipeline_offscreen_texture_type";
 }
 const char *vulkan_pipeline_type_debug_str(int value) {
   if (value == 0) { return "vulkan_pipeline_type_forward"; }

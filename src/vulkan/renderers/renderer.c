@@ -114,8 +114,7 @@ void vulkan_renderer_update_unified_uniform_buffer_callback(
   // globals
   vulkan_global_uniform_buffer_element *global =
       vulkan_global_uniform_buffer_data_get_element(globalData, 0, currentFrameInFlight);
-  vulkan_pipeline_shared_state_set_unified_uniform_buffer(&renderer->pipelineState->sharedState,
-                                                          global);
+  vulkan_pipeline_state_set_unified_uniform_buffer(renderer->pipelineState, global);
 
   // instances
   // HIRO move to batches
@@ -154,6 +153,7 @@ void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
       renderer->renderState->sync
           ->imageAvailableSemaphores[renderer->renderState->sync->currentFrameInFlight],
       VK_NULL_HANDLE, &swapChainImageIdx);
+  log_debug("acquired swap chain image #%u", swapChainImageIdx);
 
   if (result == VK_ERROR_OUT_OF_DATE_KHR) {
     vulkan_renderer_recreate_swap_chain(renderer);

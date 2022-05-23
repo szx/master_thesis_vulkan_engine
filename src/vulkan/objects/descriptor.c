@@ -187,6 +187,7 @@ void vulkan_update_descriptor_set(vulkan_device *vkd, VkDescriptorSet descriptor
         VkDescriptorImageInfo *imageInfo = &imageInfos[texturesDescriptorWriteIdx];
         imageInfo->sampler = textureElement->sampler;
         imageInfo->imageView = textureElement->image->imageView;
+        // NOTE: Images in textures descriptor should have VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL.
         imageInfo->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         descriptorWrite->pImageInfo = imageInfo;
 
