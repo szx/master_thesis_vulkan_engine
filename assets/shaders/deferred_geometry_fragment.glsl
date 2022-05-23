@@ -34,7 +34,7 @@ float metallic = metallicTexture * metallicFactor;
 float perceptualRoughness = roughnessTexture * roughnessFactor;
 
 // render to gBuffer0Texture
-outFragColor0 = vec4(inWorldPosition, metallic);
+outFragColor0 = vec4(inPosition, metallic);
 // render to baseColorTextureElement
 outFragColor1 = baseColor;
 // render to normalTextureElement

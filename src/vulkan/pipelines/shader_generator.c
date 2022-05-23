@@ -100,7 +100,7 @@ void glsl_add_vertex_shader_output_variables(UT_string *s) {
   uint32_t location = 0;
   utstring_printf(s, "layout(location = %u) out flat uint outInstanceId;\n", location);
   location++;
-  utstring_printf(s, "layout(location = %u) out vec3 outWorldPosition;\n", location);
+  utstring_printf(s, "layout(location = %u) out vec3 outPosition;\n", location);
   location++;
   utstring_printf(s, "#ifdef IN_COLOR\n");
   utstring_printf(s, "layout(location = %u) out vec3 outColor;\n", location);
@@ -123,7 +123,7 @@ void glsl_add_fragment_shader_input_variables(UT_string *s) {
   uint32_t location = 0;
   utstring_printf(s, "layout(location = %u) in flat uint inInstanceId;\n", location);
   location++;
-  utstring_printf(s, "layout(location = %u) in vec3 inWorldPosition;\n", location);
+  utstring_printf(s, "layout(location = %u) in vec3 inPosition;\n", location);
   location++;
   utstring_printf(s, "#ifdef IN_COLOR\n");
   utstring_printf(s, "layout(location = %u) in vec3 inColor;\n", location);

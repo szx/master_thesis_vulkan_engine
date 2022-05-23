@@ -1,15 +1,11 @@
 uint globalIdx = getGlobalIdx();
 
-vec2 texCoord = (inWorldPosition.xy + 1) / 2;
+vec2 texCoord = (inPosition.xy + 1) / 2;
 
 /* G-Buffer decoding */
 uint gBuffer0Id = global[globalIdx].gBuffer.gBuffer0TextureId;
 vec4 gBuffer0Texture = texture(textures2D[gBuffer0Id], texCoord);
 vec3 worldPosition = gBuffer0Texture.xyz;
-// Discard if deferred geometry pass didn't write anything to this pixel (alpha == 0).
-// See also: Nicolas Thibieroz?s talk "Deferred Shading Optimizations" (AMD Developer Central)
-//if (worldPosition.xyz == vec3(0)) discard;
-//assert(worldPosition.w == 1);
 float metallic = gBuffer0Texture.w;
 
 uint gBuffer1Id = global[globalIdx].gBuffer.gBuffer1TextureId;

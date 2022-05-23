@@ -6,8 +6,9 @@ vec4 baseColorFactor = global[globalIdx].materials[materialId].baseColorFactor;
 float metallicFactor = global[globalIdx].materials[materialId].metallicFactor;
 float roughnessFactor = global[globalIdx]. materials[materialId].roughnessFactor;
 
+vec3 worldPosition = inPosition;
 vec3 cameraPosition = (inverse(global[globalIdx].viewMat) * vec4(0, 0, 0, 1)).xyz; // PERF: Move to global[globalIdx].
-vec3 v = normalize(cameraPosition - inWorldPosition);
+vec3 v = normalize(cameraPosition - worldPosition);
 #if IN_NORMAL == 1
 vec3 n = normalize(inWorldNormal); // normalized world normal
 #else
@@ -91,7 +92,7 @@ for (int i = 0; i < min(global[globalIdx].pointLightCount, MAX_POINT_LIGHT_COUNT
   vec3 lightColor = global[globalIdx].pointLights[i].color;
   float lightRadius = global[globalIdx].pointLights[i].radius;
 
-  vec3 l = normalize(lightPosition - inWorldPosition); // normalized direction into light source
+  vec3 l = normalize(lightPosition - worldPosition); // normalized direction into light source
   fillPBRInputWithL(pbr, l);
 
   // Radiance is irradiance from a single direction.

@@ -1,4 +1,4 @@
 
 // fullscreen triangle directly into clip space
-outWorldPosition = inPosition;
+outPosition = inPosition;
 gl_Position = vec4(inPosition, 1.0);

@@ -1,6 +1,6 @@
 uint globalIdx = getGlobalIdx();
 
-vec2 clipPosition = inWorldPosition.xy;
+vec2 clipPosition = inPosition.xy;
 
 uint characterSize = global[globalIdx].font.characterSize;
 uint fontTextureSize = global[globalIdx].font.fontTextureSize;

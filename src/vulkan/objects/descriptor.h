@@ -72,8 +72,6 @@ typedef struct vulkan_instances_uniform_buffer_struct {
   uint materialId;
 } vulkan_instances_uniform_buffer_struct;
 
-// HIRO HIRO add glsl codegen from descriptors.h
-
 // *_uniform_element
 // VULKAN_UNIFORM_BUFFERS
 #include "../../codegen/descriptors.h"
