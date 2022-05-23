@@ -112,7 +112,7 @@ typedef XXH64_hash_t hash_t;
     assert(0);                                                                                     \
   }
 #else
-#define UNREACHABLE __buildin_unreachable()
+#define UNREACHABLE __builtin_unreachable()
 #endif
 
 /* additional container functions */

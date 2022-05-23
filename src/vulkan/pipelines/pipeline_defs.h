@@ -88,6 +88,8 @@ void vulkan_pipeline_info_get_framebuffer_attachment_image_views(
 void vulkan_pipeline_info_get_framebuffer_attachment_clear_values(vulkan_pipeline_info pipelineInfo,
                                                                   VkClearValue *clearValues);
 
+uint32_t vulkan_pipeline_info_get_dependency_count(vulkan_pipeline_info pipelineInfo);
+
 void vulkan_pipeline_info_get_render_pass_create_info(
     vulkan_pipeline_info pipelineInfo, vulkan_pipeline *prev, vulkan_pipeline *next,
     VkFormat swapChainImageFormat, VkFormat *offscreenImageFormats, VkFormat depthBufferImageFormat,
@@ -96,4 +98,4 @@ void vulkan_pipeline_info_get_render_pass_create_info(
     VkAttachmentDescription *offscreenColorAttachmentDescriptions,
     VkAttachmentReference *offscreenColorAttachmentReferences,
     VkAttachmentDescription *depthAttachmentDescription,
-    VkAttachmentReference *depthAttachmentReference);
+    VkAttachmentReference *depthAttachmentReference, VkSubpassDependency *dependencies);

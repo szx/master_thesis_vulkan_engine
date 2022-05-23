@@ -112,6 +112,8 @@ void vulkan_pipeline_info_get_framebuffer_attachment_clear_values(vulkan_pipelin
   }
 }
 
+uint32_t vulkan_pipeline_info_get_dependency_count(vulkan_pipeline_info pipelineInfo) { return 1; }
+
 void vulkan_pipeline_info_get_render_pass_create_info(
     vulkan_pipeline_info pipelineInfo, vulkan_pipeline *prev, vulkan_pipeline *next,
     VkFormat swapChainImageFormat, VkFormat *offscreenImageFormats, VkFormat depthBufferImageFormat,
@@ -120,7 +122,7 @@ void vulkan_pipeline_info_get_render_pass_create_info(
     VkAttachmentDescription *offscreenColorAttachmentDescriptions,
     VkAttachmentReference *offscreenColorAttachmentReferences,
     VkAttachmentDescription *depthAttachmentDescription,
-    VkAttachmentReference *depthAttachmentReference) {
+    VkAttachmentReference *depthAttachmentReference, VkSubpassDependency *dependencies) {
 
   /* analyze pipeline chain */
 #define ITERATE_INFO(_start, _body)                                                                \
@@ -132,7 +134,36 @@ void vulkan_pipeline_info_get_render_pass_create_info(
     }                                                                                              \
   }
 
-  /* prepare attachment info */
+  /* prepare attachment info and subpass dependency */
+  VkSubpassDependency dependency = {
+      // Explicit external subpass dependency.
+      // Same behaviour as VkImageMemoryBarrier before render pass.
+      // See also:
+      // https://www.lunarg.com/wp-content/uploads/2021/01/Final_Guide-to-Vulkan-Synchronization-Validation_Jan_21.pdf
+      // https://www.khronos.org/blog/understanding-vulkan-synchronization
+      // https://github.com/KhronosGroup/Vulkan-Docs/wiki/Synchronization-Examples#graphics-to-graphics-dependencies
+      .srcSubpass = VK_SUBPASS_EXTERNAL,
+      .dstSubpass = 0,
+  };
+
+  // Execution dependency - stages in dstStageMask (and later) will not start until all stages in
+  // srcStageMask (and earlier) are complete.
+#define ADD_EXECUTION_BARRIER(_dependency, _srcStageMask, _dstStageMask)                           \
+  do {                                                                                             \
+    (_dependency).srcStageMask |= (_srcStageMask);                                                 \
+    (_dependency).dstStageMask |= (_dstStageMask);                                                 \
+  } while (0)
+
+  // Memory dependency - source accesses defined by srcAccessMask are visible and available to
+  // destination accesses defined by dstAccessMask.
+  // NOTE: *_READ_BIT in srcAccessMask is unnecessary - source mask determine visibility of write
+  //       accesses (see https://github.com/KhronosGroup/Vulkan-Docs/issues/131).
+#define ADD_MEMORY_BARRIER(_dependency, _srcAccessMask, _dstAccessMask)                            \
+  do {                                                                                             \
+    (_dependency).srcAccessMask |= (_srcAccessMask);                                               \
+    (_dependency).dstAccessMask |= (_dstAccessMask);                                               \
+  } while (0)
+
   size_t idx = 0;
   if (pipelineInfo.useOnscreenColorAttachment) {
 
@@ -187,116 +218,135 @@ void vulkan_pipeline_info_get_render_pass_create_info(
         .attachment = idx++,
         .layout = layout,
     };
+
+    // Make sure that finished rendering to onscreen texture before sampling from them in
+    // fragment shader.
+    ADD_EXECUTION_BARRIER(dependency, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+    ADD_MEMORY_BARRIER(dependency, 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
   }
 
   for (size_t i = 0; i < pipelineInfo.offscreenTextureCount; i++) {
     vulkan_pipeline_offscreen_texture_info offscreenTextureInfo =
         pipelineInfo.offscreenTextureInfos[i];
-    if (offscreenTextureInfo.usage !=
-        vulkan_pipeline_offscreen_texture_usage_framebuffer_color_attachment) {
-      continue;
+
+    if (offscreenTextureInfo.usage ==
+        vulkan_pipeline_offscreen_texture_usage_fragment_shader_read) {
+      // Make sure that finished rendering to offscreen textures before sampling from them in
+      // fragment shader.
+      ADD_EXECUTION_BARRIER(dependency, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT,
+                            VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+      ADD_MEMORY_BARRIER(dependency, 0, VK_ACCESS_SHADER_READ_BIT);
     }
 
-    VkFormat offscreenImageFormat = offscreenImageFormats[i];
-
-    size_t prevOffscreenTextureInfoCount = 0;
-    size_t nextOffscreenTextureInfoCount = 0;
-    vulkan_pipeline_offscreen_texture_info nextOffscreenTextureInfo = {0};
-    ITERATE_INFO(
-        prev, if (info.offscreenTextureCount > 0) {
-          for (size_t typeIdx = 0; typeIdx < info.offscreenTextureCount; typeIdx++) {
-            vulkan_pipeline_offscreen_texture_info prevInfo = info.offscreenTextureInfos[typeIdx];
-            if (prevInfo.type == offscreenTextureInfo.type) {
-              prevOffscreenTextureInfoCount++;
-            }
-          }
-        })
-    ITERATE_INFO(
-        next, if (info.offscreenTextureCount > 0) {
-          for (size_t typeIdx = 0; typeIdx < info.offscreenTextureCount; typeIdx++) {
-            vulkan_pipeline_offscreen_texture_info nextInfo = info.offscreenTextureInfos[typeIdx];
-            if (nextInfo.type == offscreenTextureInfo.type) {
-              nextOffscreenTextureInfoCount++;
-              if (nextOffscreenTextureInfoCount == 1) {
-                nextOffscreenTextureInfo = nextInfo;
-              }
-            }
-          }
-        })
-
-    bool isFirstOffscreenPipeline = prevOffscreenTextureInfoCount == 0;
-    bool isLastOffscreenPipeline = nextOffscreenTextureInfoCount == 0;
-
-    VkAttachmentLoadOp loadOp;
-    if (isFirstOffscreenPipeline) {
-      loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    } else {
-      loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
-    }
-
-    // NOTE: Image layout of offscreen texture is either:
-    //        - VK_IMAGE_LAYOUT_UNDEFINED
-    //        - VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL (if used as framebuffer color attachment)
-    //        - VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL (if read from fragment shader)
-
-    VkImageLayout initialLayout;
-    if (isFirstOffscreenPipeline) {
-      initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    } else {
-      // NOTE: Current initial layout is equal to current layout, because appropriate image layout
-      //       transition occurred in previous render pass.
-      if (offscreenTextureInfo.usage ==
-          vulkan_pipeline_offscreen_texture_usage_framebuffer_color_attachment) {
-        initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-      } else if (offscreenTextureInfo.usage ==
-                 vulkan_pipeline_offscreen_texture_usage_fragment_shader_read) {
-        initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-      } else {
-        UNREACHABLE;
-      }
-    }
-
-    VkImageLayout layout;
     if (offscreenTextureInfo.usage ==
         vulkan_pipeline_offscreen_texture_usage_framebuffer_color_attachment) {
-      layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-    } else if (offscreenTextureInfo.usage ==
-               vulkan_pipeline_offscreen_texture_usage_fragment_shader_read) {
-      layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    } else {
-      UNREACHABLE;
-    }
 
-    VkImageLayout finalLayout;
-    if (isLastOffscreenPipeline) {
-      finalLayout = layout;
-    } else {
-      assert(nextOffscreenTextureInfoCount > 0);
-      if (nextOffscreenTextureInfo.usage ==
+      VkFormat offscreenImageFormat = offscreenImageFormats[i];
+
+      size_t prevOffscreenTextureInfoCount = 0;
+      size_t nextOffscreenTextureInfoCount = 0;
+      vulkan_pipeline_offscreen_texture_info nextOffscreenTextureInfo = {0};
+      ITERATE_INFO(
+          prev, if (info.offscreenTextureCount > 0) {
+            for (size_t typeIdx = 0; typeIdx < info.offscreenTextureCount; typeIdx++) {
+              vulkan_pipeline_offscreen_texture_info prevInfo = info.offscreenTextureInfos[typeIdx];
+              if (prevInfo.type == offscreenTextureInfo.type) {
+                prevOffscreenTextureInfoCount++;
+              }
+            }
+          })
+      ITERATE_INFO(
+          next, if (info.offscreenTextureCount > 0) {
+            for (size_t typeIdx = 0; typeIdx < info.offscreenTextureCount; typeIdx++) {
+              vulkan_pipeline_offscreen_texture_info nextInfo = info.offscreenTextureInfos[typeIdx];
+              if (nextInfo.type == offscreenTextureInfo.type) {
+                nextOffscreenTextureInfoCount++;
+                if (nextOffscreenTextureInfoCount == 1) {
+                  nextOffscreenTextureInfo = nextInfo;
+                }
+              }
+            }
+          })
+
+      bool isFirstOffscreenPipeline = prevOffscreenTextureInfoCount == 0;
+      bool isLastOffscreenPipeline = nextOffscreenTextureInfoCount == 0;
+
+      VkAttachmentLoadOp loadOp;
+      if (isFirstOffscreenPipeline) {
+        loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+      } else {
+        loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+      }
+
+      // NOTE: Image layout of offscreen texture is either:
+      //        - VK_IMAGE_LAYOUT_UNDEFINED
+      //        - VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL (if used as framebuffer color attachment)
+      //        - VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL (if read from fragment shader)
+
+      VkImageLayout initialLayout;
+      if (isFirstOffscreenPipeline) {
+        initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+      } else {
+        // NOTE: Current initial layout is equal to current layout, because appropriate image layout
+        //       transition occurred in previous render pass.
+        if (offscreenTextureInfo.usage ==
+            vulkan_pipeline_offscreen_texture_usage_framebuffer_color_attachment) {
+          initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        } else if (offscreenTextureInfo.usage ==
+                   vulkan_pipeline_offscreen_texture_usage_fragment_shader_read) {
+          initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        } else {
+          UNREACHABLE;
+        }
+      }
+
+      VkImageLayout layout;
+      if (offscreenTextureInfo.usage ==
           vulkan_pipeline_offscreen_texture_usage_framebuffer_color_attachment) {
-        finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-      } else if (nextOffscreenTextureInfo.usage ==
+        layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+      } else if (offscreenTextureInfo.usage ==
                  vulkan_pipeline_offscreen_texture_usage_fragment_shader_read) {
-        finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
       } else {
         UNREACHABLE;
       }
-    }
 
-    offscreenColorAttachmentDescriptions[i] = (VkAttachmentDescription){
-        .format = offscreenImageFormat,
-        .samples = VK_SAMPLE_COUNT_1_BIT,
-        .loadOp = loadOp,
-        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-        .initialLayout = initialLayout,
-        .finalLayout = finalLayout,
-    };
-    offscreenColorAttachmentReferences[i] = (VkAttachmentReference){
-        .attachment = idx++,
-        .layout = layout,
-    };
+      VkImageLayout finalLayout;
+      if (isLastOffscreenPipeline) {
+        finalLayout = layout;
+      } else {
+        assert(nextOffscreenTextureInfoCount > 0);
+        if (nextOffscreenTextureInfo.usage ==
+            vulkan_pipeline_offscreen_texture_usage_framebuffer_color_attachment) {
+          finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        } else if (nextOffscreenTextureInfo.usage ==
+                   vulkan_pipeline_offscreen_texture_usage_fragment_shader_read) {
+          finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        } else {
+          UNREACHABLE;
+        }
+      }
+
+      offscreenColorAttachmentDescriptions[i] = (VkAttachmentDescription){
+          .format = offscreenImageFormat,
+          .samples = VK_SAMPLE_COUNT_1_BIT,
+          .loadOp = loadOp,
+          .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+          .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+          .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+          .initialLayout = initialLayout,
+          .finalLayout = finalLayout,
+      };
+      offscreenColorAttachmentReferences[i] = (VkAttachmentReference){
+          .attachment = idx++,
+          .layout = layout,
+      };
+
+      ADD_EXECUTION_BARRIER(dependency, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+      ADD_MEMORY_BARRIER(dependency, 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
+    }
   }
 
   if (pipelineInfo.useDepthAttachment) {
@@ -338,7 +388,25 @@ void vulkan_pipeline_info_get_render_pass_create_info(
         .attachment = idx++,
         .layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
     };
+
+    // Make sure that finished previous use of depth buffer before reading and writing from it.
+    ADD_EXECUTION_BARRIER(
+        dependency,
+        VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
+        VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT);
+    ADD_MEMORY_BARRIER(dependency, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+                       VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT |
+                           VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT);
   }
+
+  // Full pipeline barrier (use for debugging).
+  /*
+  dependency.srcStageMask = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;
+  dependency.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT;
+  dependency.dstStageMask = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;
+  dependency.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT;
+  */
+  dependencies[0] = dependency;
 
 #undef ITERATE_INFO
 }

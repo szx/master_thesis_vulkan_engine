@@ -32,6 +32,7 @@ VkRenderPass get_render_pass(vulkan_pipeline *pipeline, size_t currentFrameInFli
   uint32_t offscreenColorAttachmentCount =
       vulkan_pipeline_info_get_framebuffer_offscreen_color_attachment_count(pipelineInfo);
   bool useDepthAttachment = pipelineInfo.useDepthAttachment;
+  uint32_t dependencyCount = vulkan_pipeline_info_get_dependency_count(pipelineInfo);
   assert(useOnscreenColorAttachment || offscreenColorAttachmentCount > 0);
 
   vulkan_pipeline_frame_state *frameState =
@@ -50,11 +51,14 @@ VkRenderPass get_render_pass(vulkan_pipeline *pipeline, size_t currentFrameInFli
   VkAttachmentReference offscreenColorAttachmentReferences[VLA(offscreenColorAttachmentCount)];
   VkAttachmentDescription depthAttachmentDescription;
   VkAttachmentReference depthAttachmentReference;
+  VkSubpassDependency dependencies[VLA(dependencyCount)];
+
   vulkan_pipeline_info_get_render_pass_create_info(
       pipelineInfo, pipeline->prev, pipeline->next, swapChainImageFormat, offscreenFormats,
       depthBufferImageFormat, &onscreenColorAttachmentDescription,
       &onscreenColorAttachmentReference, offscreenColorAttachmentDescriptions,
-      offscreenColorAttachmentReferences, &depthAttachmentDescription, &depthAttachmentReference);
+      offscreenColorAttachmentReferences, &depthAttachmentDescription, &depthAttachmentReference,
+      dependencies);
 
   *renderPass = vulkan_create_render_pass(
       pipeline->vks->vkd, (useOnscreenColorAttachment ? &onscreenColorAttachmentDescription : NULL),
@@ -62,7 +66,7 @@ VkRenderPass get_render_pass(vulkan_pipeline *pipeline, size_t currentFrameInFli
       offscreenColorAttachmentDescriptions, offscreenColorAttachmentCount,
       offscreenColorAttachmentReferences, offscreenColorAttachmentCount,
       (useDepthAttachment ? &depthAttachmentDescription : NULL),
-      (useDepthAttachment ? &depthAttachmentReference : NULL),
+      (useDepthAttachment ? &depthAttachmentReference : NULL), dependencies, dependencyCount,
       "pipeline %s (frameInFlight=#%u, swapChainImage=#%u)",
       vulkan_pipeline_type_debug_str(pipeline->type), currentFrameInFlight, swapChainImageIdx);
 

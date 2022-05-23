@@ -1,7 +1,5 @@
 #include "common.h"
 
-// HIRO gBuffer config from #include "../codegen/descriptors.h"
-
 // clang-format off
 vulkan_image_type_info vulkanImageTypeInfo[] = {
     [vulkan_image_type_depth_buffer] = {.depthFormat = true,},

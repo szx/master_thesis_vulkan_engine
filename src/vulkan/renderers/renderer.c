@@ -142,6 +142,9 @@ void vulkan_renderer_send_to_device(vulkan_renderer *renderer) {
 }
 
 void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
+  // NOTE: Synchronization:
+  //       https://www.intel.com/content/www/us/en/developer/articles/training/practical-approach-to-vulkan-part-1.html
+
   /* proceed to next frame */
   vulkan_sync_advance_to_next_frame(renderer->renderState->sync);
   vulkan_sync_wait_for_current_frame_fence(renderer->renderState->sync);
@@ -205,9 +208,8 @@ void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
   VkSemaphore waitSemaphores[] = {
       renderer->renderState->sync
           ->imageAvailableSemaphores[renderer->renderState->sync->currentFrameInFlight]};
-  // https://github.com/KhronosGroup/Vulkan-Docs/wiki/Synchronization-Examples#graphics-to-graphics-dependencies
-  // VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-  VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT};
+
+  VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
   submitInfo.waitSemaphoreCount = 1;
   submitInfo.pWaitSemaphores = waitSemaphores;
   submitInfo.pWaitDstStageMask = waitStages;
