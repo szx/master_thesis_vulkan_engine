@@ -4,6 +4,7 @@ const char *validationLayers[] = {"VK_LAYER_KHRONOS_validation"};
 
 VkValidationFeatureEnableEXT enabledValidationFeatures[] = {
     VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT,
+    // VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_EXT,
     VK_VALIDATION_FEATURE_ENABLE_BEST_PRACTICES_EXT,
 };
 

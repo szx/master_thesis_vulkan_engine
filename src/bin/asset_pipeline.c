@@ -81,7 +81,7 @@ void write_cubemap_to_assets(data_asset_db *assetDb, asset_pipeline_input *asset
   vulkan_asset_image_init(&cubemapImage, NULL);
   utarray_clear(cubemapImage.data);
 
-  const char *faceNames[] = {"right", "left", "top", "bottom", "back", "front"};
+  const char *faceNames[] = {"right", "left", "top", "bottom", "front", "back"};
   size_t faceCount = array_size(faceNames);
   for (size_t i = 0; i < faceCount; i++) {
     UT_string *imagePath;

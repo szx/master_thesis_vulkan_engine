@@ -134,8 +134,7 @@ void vulkan_pipeline_info_get_render_pass_create_info(
     }                                                                                              \
   }
 
-  /* prepare attachment info and subpass dependency */
-  VkSubpassDependency dependency = {
+  VkSubpassDependency dependency0 = {
       // Explicit external subpass dependency.
       // Same behaviour as VkImageMemoryBarrier before render pass.
       // See also:
@@ -144,6 +143,10 @@ void vulkan_pipeline_info_get_render_pass_create_info(
       // https://github.com/KhronosGroup/Vulkan-Docs/wiki/Synchronization-Examples#graphics-to-graphics-dependencies
       .srcSubpass = VK_SUBPASS_EXTERNAL,
       .dstSubpass = 0,
+  };
+  VkSubpassDependency dependency1 = {
+      .srcSubpass = 0,
+      .dstSubpass = VK_SUBPASS_EXTERNAL,
   };
 
   // Execution dependency - stages in dstStageMask (and later) will not start until all stages in
@@ -163,6 +166,8 @@ void vulkan_pipeline_info_get_render_pass_create_info(
     (_dependency).srcAccessMask |= (_srcAccessMask);                                               \
     (_dependency).dstAccessMask |= (_dstAccessMask);                                               \
   } while (0)
+
+  /* prepare attachment info and subpass dependency */
 
   size_t idx = 0;
   if (pipelineInfo.useOnscreenColorAttachment) {
@@ -221,9 +226,9 @@ void vulkan_pipeline_info_get_render_pass_create_info(
 
     // Make sure that finished rendering to onscreen texture before sampling from them in
     // fragment shader.
-    ADD_EXECUTION_BARRIER(dependency, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+    ADD_EXECUTION_BARRIER(dependency0, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
                           VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-    ADD_MEMORY_BARRIER(dependency, 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
+    ADD_MEMORY_BARRIER(dependency0, 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
   }
 
   for (size_t i = 0; i < pipelineInfo.offscreenTextureCount; i++) {
@@ -234,9 +239,9 @@ void vulkan_pipeline_info_get_render_pass_create_info(
         vulkan_pipeline_offscreen_texture_usage_fragment_shader_read) {
       // Make sure that finished rendering to offscreen textures before sampling from them in
       // fragment shader.
-      ADD_EXECUTION_BARRIER(dependency, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT,
+      ADD_EXECUTION_BARRIER(dependency0, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT,
                             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
-      ADD_MEMORY_BARRIER(dependency, 0, VK_ACCESS_SHADER_READ_BIT);
+      ADD_MEMORY_BARRIER(dependency0, 0, VK_ACCESS_SHADER_READ_BIT);
     }
 
     if (offscreenTextureInfo.usage ==
@@ -328,7 +333,7 @@ void vulkan_pipeline_info_get_render_pass_create_info(
         }
       }
 
-      offscreenColorAttachmentDescriptions[i] = (VkAttachmentDescription){
+      VkAttachmentDescription description = (VkAttachmentDescription){
           .format = offscreenImageFormat,
           .samples = VK_SAMPLE_COUNT_1_BIT,
           .loadOp = loadOp,
@@ -338,14 +343,15 @@ void vulkan_pipeline_info_get_render_pass_create_info(
           .initialLayout = initialLayout,
           .finalLayout = finalLayout,
       };
+      offscreenColorAttachmentDescriptions[i] = description;
       offscreenColorAttachmentReferences[i] = (VkAttachmentReference){
           .attachment = idx++,
           .layout = layout,
       };
 
-      ADD_EXECUTION_BARRIER(dependency, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+      ADD_EXECUTION_BARRIER(dependency0, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
                             VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-      ADD_MEMORY_BARRIER(dependency, 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
+      ADD_MEMORY_BARRIER(dependency0, 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
     }
   }
 
@@ -391,22 +397,23 @@ void vulkan_pipeline_info_get_render_pass_create_info(
 
     // Make sure that finished previous use of depth buffer before reading and writing from it.
     ADD_EXECUTION_BARRIER(
-        dependency,
+        dependency0,
         VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
         VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT);
-    ADD_MEMORY_BARRIER(dependency, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+    ADD_MEMORY_BARRIER(dependency0, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
                        VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT |
                            VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT);
   }
 
-  // Full pipeline barrier (use for debugging).
   /*
-  dependency.srcStageMask = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;
-  dependency.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT;
-  dependency.dstStageMask = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;
-  dependency.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT;
+  // Full pipeline barrier (use for debugging).
+  ADD_EXECUTION_BARRIER(dependency0, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+                        VK_PIPELINE_STAGE_VERTEX_INPUT_BIT);
+  ADD_MEMORY_BARRIER(dependency0, VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT,
+                     VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT);
   */
-  dependencies[0] = dependency;
+
+  dependencies[0] = dependency0;
 
 #undef ITERATE_INFO
 }

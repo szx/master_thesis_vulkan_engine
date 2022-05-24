@@ -5059,6 +5059,8 @@ const char *vulkan_asset_vertex_attribute_component_type_debug_str(int value) {
   if (value == 0) { return "vulkan_asset_vertex_attribute_component_uint32_t"; }
   if (value == 1) { return "vulkan_asset_vertex_attribute_component_vec2"; }
   if (value == 2) { return "vulkan_asset_vertex_attribute_component_vec3"; }
+  if (value == 3) { return "vulkan_asset_vertex_attribute_component_vec4"; }
+  if (value == 4) { return "vulkan_asset_vertex_attribute_component_count"; }
   return "UNKNOWN vulkan_asset_vertex_attribute_component_type";
 }
 void vulkan_attribute_type_debug_print(int flags, int indent) {
@@ -5104,8 +5106,9 @@ const char *vulkan_image_type_debug_str(int value) {
   if (value == 5) { return "vulkan_image_type_g_buffer_0"; }
   if (value == 6) { return "vulkan_image_type_g_buffer_1"; }
   if (value == 7) { return "vulkan_image_type_g_buffer_2"; }
-  if (value == 8) { return "vulkan_image_type_g_buffer_count"; }
-  if (value == 9) { return "vulkan_image_type_count"; }
+  if (value == 8) { return "vulkan_image_type_g_buffer_3"; }
+  if (value == 9) { return "vulkan_image_type_g_buffer_count"; }
+  if (value == 10) { return "vulkan_image_type_count"; }
   return "UNKNOWN vulkan_image_type";
 }
 const char *vulkan_pipeline_offscreen_texture_type_debug_str(int value) {
@@ -5114,6 +5117,12 @@ const char *vulkan_pipeline_offscreen_texture_type_debug_str(int value) {
   if (value == 2) { return "vulkan_pipeline_offscreen_texture_type_g_buffer_2"; }
   if (value == 3) { return "vulkan_pipeline_offscreen_texture_type_count"; }
   return "UNKNOWN vulkan_pipeline_offscreen_texture_type";
+}
+const char *vulkan_pipeline_offscreen_texture_usage_debug_str(int value) {
+  if (value == 0) { return "vulkan_pipeline_offscreen_texture_usage_framebuffer_color_attachment"; }
+  if (value == 1) { return "vulkan_pipeline_offscreen_texture_usage_fragment_shader_read"; }
+  if (value == 2) { return "vulkan_pipeline_offscreen_texture_usage_count"; }
+  return "UNKNOWN vulkan_pipeline_offscreen_texture_usage";
 }
 const char *vulkan_pipeline_type_debug_str(int value) {
   if (value == 0) { return "vulkan_pipeline_type_forward"; }
