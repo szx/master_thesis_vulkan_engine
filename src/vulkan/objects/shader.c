@@ -42,13 +42,26 @@ vulkan_shader *vulkan_shader_create_with_str(vulkan_device *vkd, vulkan_shader_t
   vulkanShaderCount += 1;
   shaderc_compile_options_t options = shaderc_compile_options_initialize();
   shaderc_compile_options_set_target_env(options, shaderc_target_env_vulkan, 0);
+  const char *inputFileName = "shader";
+  const char *entryPointName = "main";
   shaderc_compilation_result_t result = shaderc_compile_into_spv(
       compiler, utstring_body(shader->glslCode), utstring_len(shader->glslCode),
-      vulkan_shader_type_shaderc_kind(shader->type), "shader", "main", NULL);
+      vulkan_shader_type_shaderc_kind(shader->type), inputFileName, entryPointName, NULL);
   shaderc_compile_options_release(options);
   if (shaderc_result_get_num_errors(result)) {
-    log_debug("%s", utstring_body(shader->glslCode));
-    panic("compilation error: %s\n", shaderc_result_get_error_message(result));
+    // log GLSL source code with line numbers and compilation error message.
+    const char *errorMsg = shaderc_result_get_error_message(result);
+    const char *lineMsg = utstring_body(shader->glslCode);
+    size_t lineMsgIdx = 0;
+    size_t lineNum = 1;
+    while (lineMsgIdx < utstring_len(shader->glslCode)) {
+      const char *newLineMsg = strchr(lineMsg, '\n') + 1;
+      size_t lineMsgLen = newLineMsg - lineMsg;
+      log_fatal("%d:\t%.*s", lineNum++, lineMsgLen - 1, lineMsg);
+      lineMsg = newLineMsg;
+      lineMsgIdx += lineMsgLen;
+    }
+    panic("compilation error: %s\n", errorMsg);
   }
   shader->spvSize = shaderc_result_get_length(result);
   shader->spvCode = (uint32_t *)malloc(shader->spvSize);

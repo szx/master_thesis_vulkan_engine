@@ -30,6 +30,16 @@ uint getMaterialId(uint instanceId) {
 #endif
 
 #if SHADER_FRAGMENT == 1
+
+vec3 getWorldNormal() {
+  #if IN_NORMAL == 1
+  vec3 worldNormal = inWorldNormal;
+  #else
+  vec3 worldNormal = vec3(0, 0, -1); // global normal
+  #endif
+  return worldNormal;
+}
+
 // PBR: https://google.github.io/filament/Filament.html
 
 float D_GGX(float NoH, float a) {
@@ -74,7 +84,72 @@ struct PBRInput {
   vec3 f90; // reflectance color at grazing angle (1.0)
 };
 
-void fillPBRInputWithL(inout PBRInput pbr, vec3 l) {
+void fillMaterialParametersForMetallicRoughnessModel(
+  inout vec4 baseColor, inout float metallic, inout float perceptualRoughness,
+  uint globalIdx, uint materialId) {
+
+  vec4 baseColorFactor = global[globalIdx].materials[materialId].baseColorFactor;
+  float metallicFactor = global[globalIdx].materials[materialId].metallicFactor;
+  float roughnessFactor = global[globalIdx]. materials[materialId].roughnessFactor;
+
+  #if IN_COLOR == 1
+  vec4 baseColorLinearMultiplier = vec4(inColor, 1.0);
+  #else
+  vec4 baseColorLinearMultiplier = vec4(1.0);
+  #endif
+
+  #if IN_TEXCOORD == 1
+  uint baseColorTextureId = global[globalIdx].materials[materialId].baseColorTextureId;
+  vec4 baseColorTexture = texture(textures2D[baseColorTextureId], inTexCoord); // automatically converted from sRGB to linear
+  uint metallicRoughnessTextureId = global[globalIdx].materials[materialId].metallicRoughnessTextureId;
+  vec4 metallicRoughnessTexture = texture(textures2D[metallicRoughnessTextureId], inTexCoord);
+  float metallicTexture = metallicRoughnessTexture.b;
+  float roughnessTexture = metallicRoughnessTexture.g;
+  #else
+  vec4 baseColorTexture = vec4(1.0);
+  float metallicTexture = 1.0;
+  float roughnessTexture = 1.0;
+  #endif
+
+  baseColor = baseColorTexture * baseColorFactor * baseColorLinearMultiplier;
+  metallic = metallicTexture * metallicFactor;
+  perceptualRoughness = roughnessTexture * roughnessFactor;
+}
+
+void fillPBRInputForMetallicRoughnessModel(
+  inout PBRInput pbr,
+  vec3 worldPosition, vec3 cameraPosition, vec3 worldNormal,
+  vec4 baseColor, float metallic, float perceptualRoughness) {
+
+  vec3 v = normalize(cameraPosition - worldPosition);
+  vec3 n = normalize(worldNormal);
+  /*
+  //TODO: Support double-sided materials?
+   if (dot(n, v) < 0.0)
+      n = -n;
+  */
+  vec3 fresnel0 = vec3(0.04);
+  vec3 f0 = mix(fresnel0, baseColor.xyz, metallic); // HIRO comment
+  vec3 f90 = vec3(1.0);
+
+  /* fill in PBR info */
+  pbr.n = n;
+  pbr.v = v;
+  // pbr.l
+  // pbr.NoH;
+  pbr.NoV = saturate(dot(n, v)); // saturate() discards angles other that 0-90 deg.
+  // pbr.VoH;
+  // pbr.NoL;
+  // pbr.LoH;
+  pbr.baseColor = baseColor;
+  pbr.metallic = metallic;
+  pbr.perceptualRoughness = perceptualRoughness;
+  pbr.alphaRoughness = perceptualRoughness * perceptualRoughness;
+  pbr.f0 = f0;
+  pbr.f90 = f90;
+}
+
+void updatePBRInputWithL(inout PBRInput pbr, vec3 l) {
   pbr.l = l;
   // Half unit vector between incident light and surface normal.
   // According to microfacet theory only the microfacets  with normal oriented

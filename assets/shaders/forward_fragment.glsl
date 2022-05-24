@@ -1,69 +1,22 @@
-uint globalIdx = getGlobalIdx();
-uint instanceId = getInstanceId();
-uint materialId = getMaterialId(instanceId);
+const uint globalIdx = getGlobalIdx();
+const uint instanceId = getInstanceId();
+const uint materialId = getMaterialId(instanceId);
 
-vec4 baseColorFactor = global[globalIdx].materials[materialId].baseColorFactor;
-float metallicFactor = global[globalIdx].materials[materialId].metallicFactor;
-float roughnessFactor = global[globalIdx]. materials[materialId].roughnessFactor;
+/* fetch input parameters */
+vec4 baseColor;
+float metallic;
+float perceptualRoughness;
+fillMaterialParametersForMetallicRoughnessModel(baseColor, metallic, perceptualRoughness, globalIdx, materialId);
 
 vec3 worldPosition = inPosition;
-vec3 cameraPosition = (inverse(global[globalIdx].viewMat) * vec4(0, 0, 0, 1)).xyz; // PERF: Move to global[globalIdx].
-vec3 v = normalize(cameraPosition - worldPosition);
-#if IN_NORMAL == 1
-vec3 n = normalize(inWorldNormal); // normalized world normal
-#else
-vec3 n = vec3(0, 0, -1); // global normal
-#endif
+vec3 cameraPosition = (inverse(global[globalIdx].viewMat) * vec4(0, 0, 0, 1)).xyz; // PERF: Move cameraPosition to global[globalIdx].
+vec3 worldNormal = getWorldNormal();
 
-/*
-//TODO: double-sided material
- if (dot(n, v) < 0.0)
-    n = -n;
-*/
-
-#if IN_COLOR == 1
-vec4 baseColorLinearMultiplier = vec4(inColor, 1.0);
-#else
-vec4 baseColorLinearMultiplier = vec4(1.0);
-#endif
-#if IN_TEXCOORD == 1
-uint baseColorTextureId = global[globalIdx].materials[materialId].baseColorTextureId;
-vec4 baseColorTexture = texture(textures2D[baseColorTextureId], inTexCoord); // automatically converted from sRGB to linear
-uint metallicRoughnessTextureId = global[globalIdx].materials[materialId].metallicRoughnessTextureId;
-vec4 metallicRoughnessTexture = texture(textures2D[metallicRoughnessTextureId], inTexCoord);
-float metallicTexture = metallicRoughnessTexture.b;
-float roughnessTexture = metallicRoughnessTexture.g;
-#else
-vec4 baseColorTexture = vec4(1.0);
-float metallicTexture = 1.0;
-float roughnessTexture = 1.0;
-#endif
-vec4 baseColor = baseColorTexture * baseColorFactor * baseColorLinearMultiplier;
-float metallic = metallicTexture * metallicFactor;
-float perceptualRoughness = roughnessTexture * roughnessFactor;
-
-vec3 fresnel0 = vec3(0.04);
-
-/* fill in PBR info */
+/* fill in PRB input */
 PBRInput pbr;
-pbr.n = n;
-pbr.v = v;
-// pbr.l
-// pbr.NoH;
-pbr.NoV = saturate(dot(n, v)); // saturate() discards angles other that 0-90 deg.
-// pbr.VoH;
-// pbr.NoL;
-// pbr.LoH;
-pbr.baseColor = baseColor;
-pbr.n = n;
-pbr.metallic = metallic;
-pbr.perceptualRoughness = perceptualRoughness;
-pbr.alphaRoughness = perceptualRoughness * perceptualRoughness;
-pbr.f0 = mix(fresnel0, pbr.baseColor.xyz, pbr.metallic); // HIRO comment
-pbr.f90 = vec3(1.0);
+fillPBRInputForMetallicRoughnessModel(pbr, worldPosition, cameraPosition, worldNormal, baseColor, metallic, perceptualRoughness);
 
-// HIRO HIRO incorrect/small shines, check glTF spec implementation
-// HIRO HIRO comments about lighting
+/* calculate lighting contributions */
 vec3 lighting = vec3(0.0);
 
 // HIRO HIRO control lights using GUI
@@ -75,7 +28,7 @@ for (int i = 0; i < min(global[globalIdx].directionalLightCount, MAX_DIRECTIONAL
   vec3 lightColor = global[globalIdx].directionalLights[i].color;
 
   vec3 l = normalize(-lightDirection); // normalized direction into light source
-  fillPBRInputWithL(pbr, l);
+  updatePBRInputWithL(pbr, l);
 
   // Radiance is irradiance from a single direction.
   // HIRO irradiance vs radiance explanation
@@ -93,7 +46,7 @@ for (int i = 0; i < min(global[globalIdx].pointLightCount, MAX_POINT_LIGHT_COUNT
   float lightRadius = global[globalIdx].pointLights[i].radius;
 
   vec3 l = normalize(lightPosition - worldPosition); // normalized direction into light source
-  fillPBRInputWithL(pbr, l);
+  updatePBRInputWithL(pbr, l);
 
   // Radiance is irradiance from a single direction.
   // HIRO irradiance vs radiance explanation
@@ -105,5 +58,4 @@ for (int i = 0; i < min(global[globalIdx].pointLightCount, MAX_POINT_LIGHT_COUNT
   lighting += color;
 }
 
-// HIRO linear to srgb?
 outFragColor0 = vec4(lighting, 1.0);

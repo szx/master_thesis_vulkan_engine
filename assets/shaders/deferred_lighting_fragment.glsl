@@ -1,8 +1,11 @@
 uint globalIdx = getGlobalIdx();
 
+// G-Buffer texture coordinates for current fragment.
 vec2 texCoord = (inPosition.xy + 1) / 2;
 
-/* G-Buffer decoding */
+/* fetch input parameters */
+
+// Decode G-Buffer
 uint gBuffer0Id = global[globalIdx].gBuffer.gBuffer0TextureId;
 vec4 gBuffer0Texture = texture(textures2D[gBuffer0Id], texCoord);
 vec3 worldPosition = gBuffer0Texture.xyz;
@@ -14,34 +17,17 @@ vec4 baseColor = gBuffer1Texture.xyzw;
 
 uint gBuffer2Id = global[globalIdx].gBuffer.gBuffer2TextureId;
 vec4 gBuffer2Texture = texture(textures2D[gBuffer2Id], texCoord);
-vec3 n = gBuffer2Texture.xyz;
+vec3 worldNormal = gBuffer2Texture.xyz;
 float perceptualRoughness = gBuffer2Texture.w;
 
-
 vec3 cameraPosition = (inverse(global[globalIdx].viewMat) * vec4(0, 0, 0, 1)).xyz; // PERF: Move to global[globalIdx].
-vec3 v = normalize(cameraPosition - worldPosition);
 vec3 fresnel0 = vec3(0.04);
 
-/* fill in PBR info */
+/* fill in PRB input */
 PBRInput pbr;
-pbr.n = n;
-pbr.v = v;
-// pbr.l
-// pbr.NoH;
-pbr.NoV = saturate(dot(n, v)); // saturate() discards angles other that 0-90 deg.
-// pbr.VoH;
-// pbr.NoL;
-// pbr.LoH;
-pbr.baseColor = baseColor;
-pbr.n = n;
-pbr.metallic = metallic;
-pbr.perceptualRoughness = perceptualRoughness;
-pbr.alphaRoughness = perceptualRoughness * perceptualRoughness;
-pbr.f0 = mix(fresnel0, pbr.baseColor.xyz, pbr.metallic); // HIRO comment
-pbr.f90 = vec3(1.0);
+fillPBRInputForMetallicRoughnessModel(pbr, worldPosition, cameraPosition, worldNormal, baseColor, metallic, perceptualRoughness);
 
-// HIRO HIRO incorrect/small shines, check glTF spec implementation
-// HIRO HIRO comments about lighting
+/* calculate lighting contributions */
 vec3 lighting = vec3(0.0);
 
 // HIRO HIRO control lights using GUI
@@ -53,7 +39,7 @@ for (int i = 0; i < min(global[globalIdx].directionalLightCount, MAX_DIRECTIONAL
   vec3 lightColor = global[globalIdx].directionalLights[i].color;
 
   vec3 l = normalize(-lightDirection); // normalized direction into light source
-  fillPBRInputWithL(pbr, l);
+  updatePBRInputWithL(pbr, l);
 
   // Radiance is irradiance from a single direction.
   // HIRO irradiance vs radiance explanation
@@ -71,7 +57,7 @@ for (int i = 0; i < min(global[globalIdx].pointLightCount, MAX_POINT_LIGHT_COUNT
   float lightRadius = global[globalIdx].pointLights[i].radius;
 
   vec3 l = normalize(lightPosition - worldPosition); // normalized direction into light source
-  fillPBRInputWithL(pbr, l);
+  updatePBRInputWithL(pbr, l);
 
   // Radiance is irradiance from a single direction.
   // HIRO irradiance vs radiance explanation
