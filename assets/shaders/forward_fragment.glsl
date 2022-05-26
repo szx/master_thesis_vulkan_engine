@@ -12,9 +12,9 @@ fillMaterialParametersForMetallicRoughnessModel(baseColor, metallic, perceptualR
 vec3 worldPosition = inPosition;
 vec3 cameraPosition = (inverse(global[globalIdx].viewMat) * vec4(0, 0, 0, 1)).xyz; // PERF: Move cameraPosition to global[globalIdx].
 vec3 worldNormal = getNormal();
+// normal mapping
 vec3 worldTangent = getTangent();
 vec3 worldBitangent = getBitangent();
-// normal mapping
 worldNormal = bumpWorldNormal(worldNormal, worldTangent, worldBitangent, normalMapSample);
 
 /* fill in PRB input */
