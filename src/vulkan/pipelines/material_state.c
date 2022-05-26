@@ -39,6 +39,7 @@ void vulkan_pipeline_material_state_set_material_elements(
     glm_vec4_copy(materialElement->material->baseColorFactor, element->baseColorFactor);
     element->metallicRoughnessTextureId =
         materialElement->metallicRoughnessTextureElement->textureIdx;
+    element->normalMapTextureId = materialElement->normalMapTextureElement->textureIdx;
     element->metallicFactor = materialElement->material->metallicFactor;
     element->roughnessFactor = materialElement->material->roughnessFactor;
   }

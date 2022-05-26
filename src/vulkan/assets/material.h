@@ -13,6 +13,7 @@ typedef struct vulkan_asset_material {
   float roughnessFactor;
   vulkan_asset_texture *baseColorTexture;
   vulkan_asset_texture *metallicRoughnessTexture;
+  vulkan_asset_texture *normalMapTexture;
 
   VULKAN_ASSET_FIELD_DECLS(material)
 } vulkan_asset_material;

@@ -65,6 +65,7 @@ void glsl_add_vulkan_material_helper_element(UT_string *s) {
  utstring_printf(s, "  uint baseColorTextureId ;\n");
  utstring_printf(s, "  vec4 baseColorFactor ;\n");
  utstring_printf(s, "  uint metallicRoughnessTextureId ;\n");
+ utstring_printf(s, "  uint normalMapTextureId ;\n");
  utstring_printf(s, "  float metallicFactor ;\n");
  utstring_printf(s, "  float roughnessFactor ;\n");
   utstring_printf(s, "};\n");

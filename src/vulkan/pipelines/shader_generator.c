@@ -92,7 +92,7 @@ void glsl_add_vertex_shader_input_variables(UT_string *s, vulkan_vertex_stream *
     location++;
   }
   if ((attributes & vulkan_attribute_type_tangent) != 0) {
-    utstring_printf(s, "layout(location = %u) in vec2 inTangent;\n", location);
+    utstring_printf(s, "layout(location = %u) in vec4 inTangent;\n", location);
   }
 }
 
@@ -107,7 +107,7 @@ void glsl_add_vertex_shader_output_variables(UT_string *s) {
   utstring_printf(s, "#endif\n");
   location++;
   utstring_printf(s, "#ifdef IN_NORMAL\n");
-  utstring_printf(s, "layout(location = %u) out vec3 outWorldNormal;\n", location);
+  utstring_printf(s, "layout(location = %u) out vec3 outNormal;\n", location);
   utstring_printf(s, "#endif\n");
   location++;
   utstring_printf(s, "#ifdef IN_TEXCOORD\n");
@@ -115,7 +115,9 @@ void glsl_add_vertex_shader_output_variables(UT_string *s) {
   utstring_printf(s, "#endif\n");
   location++;
   utstring_printf(s, "#ifdef IN_TANGENT\n");
-  utstring_printf(s, "layout(location = %u) out vec4 outTangent;\n", location);
+  utstring_printf(s, "layout(location = %u) out vec3 outTangent;\n", location);
+  location++;
+  utstring_printf(s, "layout(location = %u) out vec3 outBitangent;\n", location);
   utstring_printf(s, "#endif\n");
 }
 
@@ -130,7 +132,7 @@ void glsl_add_fragment_shader_input_variables(UT_string *s) {
   utstring_printf(s, "#endif\n");
   location++;
   utstring_printf(s, "#ifdef IN_NORMAL\n");
-  utstring_printf(s, "layout(location = %u) in vec3 inWorldNormal;\n", location);
+  utstring_printf(s, "layout(location = %u) in vec3 inNormal;\n", location);
   utstring_printf(s, "#endif\n");
   location++;
   utstring_printf(s, "#ifdef IN_TEXCOORD\n");
@@ -138,7 +140,9 @@ void glsl_add_fragment_shader_input_variables(UT_string *s) {
   utstring_printf(s, "#endif\n");
   location++;
   utstring_printf(s, "#ifdef IN_TANGENT\n");
-  utstring_printf(s, "layout(location = %u) in vec2 inTangent;\n", location);
+  utstring_printf(s, "layout(location = %u) in vec3 inTangent;\n", location);
+  location++;
+  utstring_printf(s, "layout(location = %u) in vec3 inBitangent;\n", location);
   utstring_printf(s, "#endif\n");
 }
 

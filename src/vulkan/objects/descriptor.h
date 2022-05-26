@@ -14,6 +14,7 @@ typedef struct vulkan_material_helper_struct {
   uint baseColorTextureId;
   vec4 baseColorFactor;
   uint metallicRoughnessTextureId;
+  uint normalMapTextureId;
   float metallicFactor;
   float roughnessFactor;
 } vulkan_material_helper_struct;

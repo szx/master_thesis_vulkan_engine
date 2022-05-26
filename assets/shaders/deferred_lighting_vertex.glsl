@@ -2,8 +2,8 @@
 // fullscreen triangle directly into clip space
 // NOTE: fragment depth == 0 combined with depth test op VK_COMPARE_OP_LESS ensures, that fragment shader is
 // executed only for fragments written to by deferred geometry pipeline.
-// HIRO CONTINUE add normal mapping
 // HIRO Encoding and decoding G-Buffer pattern in common.gls. baseColor needs only 8*3 bits
-// HIRO CONTINUE combine pipeline states?
+
+// HIRO CONTINUE combine pipeline states for MRT, store texture ids in uniform buffer
 outPosition = inPosition;
 gl_Position = vec4(inPosition, 1.0);

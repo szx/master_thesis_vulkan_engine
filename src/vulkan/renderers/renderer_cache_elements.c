@@ -124,9 +124,11 @@ vulkan_renderer_cache_skybox_element_create(vulkan_asset_skybox *skybox) {
 
   element->skybox = skybox;
 
+  // HIRO remove material from skybox
   vulkan_asset_material_init(&element->cubemapMaterial, NULL);
   element->cubemapMaterial.baseColorTexture = element->skybox->cubemapTexture;
   element->cubemapMaterial.metallicRoughnessTexture = element->skybox->cubemapTexture;
+  element->cubemapMaterial.normalMapTexture = element->skybox->cubemapTexture;
 
   return element;
 }
@@ -154,9 +156,11 @@ vulkan_renderer_cache_font_element_create(vulkan_asset_font *font) {
 
   element->font = font;
 
+  // HIRO Remove material from font.
   vulkan_asset_material_init(&element->fontMaterial, NULL);
   element->fontMaterial.baseColorTexture = element->font->fontTexture;
   element->fontMaterial.metallicRoughnessTexture = element->font->fontTexture;
+  element->fontMaterial.normalMapTexture = element->font->fontTexture;
 
   return element;
 }

@@ -23,19 +23,21 @@ typedef struct vulkan_textures_material_element {
   vulkan_asset_material *material;                                  ///< Pointer. Key.
   vulkan_textures_texture_element *baseColorTextureElement;         ///< Pointer.
   vulkan_textures_texture_element *metallicRoughnessTextureElement; ///< Pointer.
+  vulkan_textures_texture_element *normalMapTextureElement;         ///< Pointer.
   uint32_t materialIdx; ///< Index in array of materials bound by descriptor set.
   UT_hash_handle hh;
 } vulkan_textures_material_element;
 
 vulkan_textures_material_element *vulkan_textures_material_element_create(
     vulkan_asset_material *material, vulkan_textures_texture_element *baseColorTextureElement,
-    vulkan_textures_texture_element *metallicRoughnessTextureElement);
+    vulkan_textures_texture_element *metallicRoughnessTextureElement,
+    vulkan_textures_texture_element *normalMapTextureElement);
 
 void vulkan_textures_material_element_destroy(vulkan_textures_material_element *element);
 
 typedef struct vulkan_textures {
   /* CPU state */
-  vulkan_device *vkd;                        ///< Pointer.
+  vulkan_device *vkd; ///< Pointer.
 
   /* GPU state */
   vulkan_textures_texture_element *textureElements;

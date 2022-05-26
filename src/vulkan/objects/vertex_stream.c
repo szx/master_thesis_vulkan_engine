@@ -25,7 +25,7 @@ vulkan_vertex vulkan_vertex_default() {
   glm_vec3_zero(element.normal);
   glm_vec3_zero(element.color);
   glm_vec2_zero(element.texCoord);
-  glm_vec2_zero(element.tangent);
+  glm_vec4_zero(element.tangent);
   return element;
 }
 

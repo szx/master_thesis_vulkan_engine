@@ -9,6 +9,7 @@ void vulkan_asset_material_init(vulkan_asset_material *material, vulkan_scene_da
   material->roughnessFactor = 1.0f;
   material->baseColorTexture = NULL;
   material->metallicRoughnessTexture = NULL;
+  material->normalMapTexture = NULL;
 
   VULKAN_ASSET_FIELD_DEFS(material, material)
 }
@@ -30,6 +31,10 @@ data_key vulkan_asset_material_calculate_key(vulkan_asset_material *material) {
     HASH_UPDATE(hashState, &material->metallicRoughnessTexture->key,
                 sizeof(material->metallicRoughnessTexture->key))
   }
+  if (material->normalMapTexture) {
+    HASH_UPDATE(hashState, &material->normalMapTexture->key,
+                sizeof(material->normalMapTexture->key))
+  }
   HASH_DIGEST(hashState, value)
   HASH_END(hashState)
   return (data_key){value};
@@ -45,6 +50,10 @@ void vulkan_asset_material_serialize(vulkan_asset_material *material, data_asset
   vulkan_asset_texture_serialize(material->metallicRoughnessTexture, assetDb);
   data_asset_db_insert_material_metallicRoughnessTexture_key(
       assetDb, material->key, material->metallicRoughnessTexture->key);
+
+  vulkan_asset_texture_serialize(material->normalMapTexture, assetDb);
+  data_asset_db_insert_material_normalMapTexture_key(assetDb, material->key,
+                                                     material->normalMapTexture->key);
 
   data_asset_db_insert_material_baseColorFactor_vec4(assetDb, material->key,
                                                      data_vec4_temp(material->baseColorFactor));
@@ -70,6 +79,9 @@ void vulkan_asset_material_deserialize(vulkan_asset_material *material, data_ass
   material->metallicRoughnessTexture = vulkan_scene_data_get_texture_by_key(
       material->sceneData, assetDb,
       data_asset_db_select_material_metallicRoughnessTexture_key(assetDb, material->key));
+  material->normalMapTexture = vulkan_scene_data_get_texture_by_key(
+      material->sceneData, assetDb,
+      data_asset_db_select_material_normalMapTexture_key(assetDb, material->key));
 }
 
 void vulkan_asset_material_debug_print(vulkan_asset_material *material, int indent) {

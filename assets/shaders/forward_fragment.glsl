@@ -6,11 +6,16 @@ const uint materialId = getMaterialId(instanceId);
 vec4 baseColor;
 float metallic;
 float perceptualRoughness;
-fillMaterialParametersForMetallicRoughnessModel(baseColor, metallic, perceptualRoughness, globalIdx, materialId);
+vec4 normalMapSample;
+fillMaterialParametersForMetallicRoughnessModel(baseColor, metallic, perceptualRoughness, normalMapSample, globalIdx, materialId);
 
 vec3 worldPosition = inPosition;
 vec3 cameraPosition = (inverse(global[globalIdx].viewMat) * vec4(0, 0, 0, 1)).xyz; // PERF: Move cameraPosition to global[globalIdx].
-vec3 worldNormal = getWorldNormal();
+vec3 worldNormal = getNormal();
+vec3 worldTangent = getTangent();
+vec3 worldBitangent = getBitangent();
+// normal mapping
+worldNormal = bumpWorldNormal(worldNormal, worldTangent, worldBitangent, normalMapSample);
 
 /* fill in PRB input */
 PBRInput pbr;

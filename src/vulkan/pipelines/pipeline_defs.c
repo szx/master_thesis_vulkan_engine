@@ -168,7 +168,7 @@ void vulkan_pipeline_info_get_render_pass_create_info(
   } while (0)
 
   /* prepare attachment info and subpass dependency */
-
+  // HIRO CONTINUE move to renderers/render_graph.h
   size_t idx = 0;
   if (pipelineInfo.useOnscreenColorAttachment) {
 

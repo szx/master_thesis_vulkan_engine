@@ -28,26 +28,39 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->format = vulkan_find_image_format(vkd, image->type, image->channels);
     image->tiling = VK_IMAGE_TILING_OPTIMAL;
     image->createFlags = 0;
-    image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
-                        VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+    image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+                        VK_IMAGE_USAGE_TRANSFER_DST_BIT;
     image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = true;
-    image->name = "material image";
+    image->name = "material base color image";
   } else if (image->type == vulkan_image_type_material_parameters) {
     image->mipLevelCount = 1;
     image->arrayLayers = 1;
     image->format = vulkan_find_image_format(vkd, image->type, image->channels);
     image->tiling = VK_IMAGE_TILING_OPTIMAL;
     image->createFlags = 0;
-    image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
-                        VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+    image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+                        VK_IMAGE_USAGE_TRANSFER_DST_BIT;
     image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = true;
-    image->name = "material image";
+    image->name = "material parameters image";
+  } else if (image->type == vulkan_image_type_material_normal_map) {
+    image->mipLevelCount = 1;
+    image->arrayLayers = 1;
+    image->format = vulkan_find_image_format(vkd, image->type, image->channels);
+    image->tiling = VK_IMAGE_TILING_OPTIMAL;
+    image->createFlags = 0;
+    image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+                        VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+    image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+    image->viewType = VK_IMAGE_VIEW_TYPE_2D;
+    image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    image->copyDataToDevice = true;
+    image->name = "material normal map image";
   } else if (image->type == vulkan_image_type_cubemap) {
     image->mipLevelCount = 1;
     image->arrayLayers = 6;

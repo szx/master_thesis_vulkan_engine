@@ -49,7 +49,7 @@ typedef struct vulkan_pipeline_info {
   VkClearColorValue onscreenClearValue;
 
   uint32_t offscreenTextureCount;
-  vulkan_pipeline_offscreen_texture_info offscreenTextureInfos[MAX_OFFSCREEN_ATTACHMENT_COUNT];
+  vulkan_pipeline_offscreen_texture_info offscreenTextureInfos[MAX_RENDER_TARGET_COUNT];
   VkClearColorValue offscreenClearValue;
 
   bool useDepthAttachment;

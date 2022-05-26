@@ -22,6 +22,7 @@ uint getMaterialId(uint instanceId) {
 #define PI 3.14159265359
 #define EPSILON 1e-5
 #define saturate(x) clamp(x, 0.0, 1.0)
+#define equal(x, y) (abs(x - y) < EPSILON)
 
 #if DEBUG_PRINTF == 1
 #define assert(cond) if (!(cond)) debugPrintfEXT("assert failed at line %d", __LINE__);
@@ -31,13 +32,48 @@ uint getMaterialId(uint instanceId) {
 
 #if SHADER_FRAGMENT == 1
 
-vec3 getWorldNormal() {
+vec3 getNormal() {
   #if IN_NORMAL == 1
-  vec3 worldNormal = inWorldNormal;
+  vec3 normal = inNormal;
   #else
-  vec3 worldNormal = vec3(0, 0, -1); // global normal
+  vec3 normal = vec3(0, 0, -1); // global normal
   #endif
-  return worldNormal;
+  return normal;
+}
+
+vec3 getTangent() {
+  #if IN_TANGENT == 1
+  vec3 tangent = inTangent;
+  #else
+  vec3 tangent = vec3(1, 0, 0); // global tangent
+  #endif
+  return tangent;
+}
+
+vec3 getBitangent() {
+  #if IN_TANGENT == 1
+  vec3 bitangent = inBitangent;
+  #else
+  vec3 bitangent = cross(getNormal(), getTangent());
+  #endif
+  return bitangent;
+}
+
+// NOTE: https://ogldev.org/www/tutorial26/tutorial26.html
+// NOTE: https://learnopengl.com/Advanced-Lighting/Normal-Mapping
+// NOTE: "Język CG."
+vec3 bumpWorldNormal(vec3 worldNormal, vec3 worldTangent, vec3 worldBitangent, vec4 normalMapSample) {
+    // Use world space normal, tangent and bitangent to construct normal map's tangent space (TBN matrix).
+    vec3 Normal = normalize(worldNormal);
+    vec3 Tangent = normalize(worldTangent);
+    vec3 Bitangent = normalize(worldBitangent);
+    assert(equal(dot(cross(Normal, Tangent), Bitangent), 1) || equal(dot(cross(Normal, Tangent), Bitangent), -1));
+    mat3 TBN = mat3(Tangent, Bitangent, Normal);
+    // Decode normal map sample.
+    vec3 normalMapNormal = normalMapSample.xyz;
+    normalMapNormal = 2.0 * normalMapNormal - vec3(1.0);
+    // Transform from normal map's tangent space normal to world space normal.
+    return normalize(TBN * normalMapNormal);
 }
 
 // PBR: https://google.github.io/filament/Filament.html
@@ -85,7 +121,7 @@ struct PBRInput {
 };
 
 void fillMaterialParametersForMetallicRoughnessModel(
-  inout vec4 baseColor, inout float metallic, inout float perceptualRoughness,
+  inout vec4 _baseColor, inout float _metallic, inout float _perceptualRoughness, inout vec4 _normalMapSample,
   uint globalIdx, uint materialId) {
 
   vec4 baseColorFactor = global[globalIdx].materials[materialId].baseColorFactor;
@@ -100,20 +136,24 @@ void fillMaterialParametersForMetallicRoughnessModel(
 
   #if IN_TEXCOORD == 1
   uint baseColorTextureId = global[globalIdx].materials[materialId].baseColorTextureId;
-  vec4 baseColorTexture = texture(textures2D[baseColorTextureId], inTexCoord); // automatically converted from sRGB to linear
+  vec4 baseColorSample = texture(textures2D[baseColorTextureId], inTexCoord); // automatically converted from sRGB to linear
   uint metallicRoughnessTextureId = global[globalIdx].materials[materialId].metallicRoughnessTextureId;
-  vec4 metallicRoughnessTexture = texture(textures2D[metallicRoughnessTextureId], inTexCoord);
-  float metallicTexture = metallicRoughnessTexture.b;
-  float roughnessTexture = metallicRoughnessTexture.g;
+  vec4 metallicRoughnessSample = texture(textures2D[metallicRoughnessTextureId], inTexCoord);
+  float metallicSample = metallicRoughnessSample.b;
+  float roughnessSample = metallicRoughnessSample.g;
+  uint normalMapTextureId = global[globalIdx].materials[materialId].normalMapTextureId;
+  vec4 normalMapSample = texture(textures2D[normalMapTextureId], inTexCoord);
   #else
-  vec4 baseColorTexture = vec4(1.0);
-  float metallicTexture = 1.0;
-  float roughnessTexture = 1.0;
+  vec4 baseColorSample = vec4(1.0);
+  float metallicSample = 1.0;
+  float roughnessSample = 1.0;
+  vec4 normalMapSample = vec4(1.0);
   #endif
 
-  baseColor = baseColorTexture * baseColorFactor * baseColorLinearMultiplier;
-  metallic = metallicTexture * metallicFactor;
-  perceptualRoughness = roughnessTexture * roughnessFactor;
+  _baseColor = baseColorSample * baseColorFactor * baseColorLinearMultiplier;
+  _metallic = metallicSample * metallicFactor;
+  _perceptualRoughness = roughnessSample * roughnessFactor;
+  _normalMapSample = normalMapSample;
 }
 
 void fillPBRInputForMetallicRoughnessModel(

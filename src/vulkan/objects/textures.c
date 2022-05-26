@@ -44,12 +44,14 @@ void vulkan_textures_texture_element_destroy(vulkan_textures_texture_element *el
 
 vulkan_textures_material_element *vulkan_textures_material_element_create(
     vulkan_asset_material *material, vulkan_textures_texture_element *baseColorTextureElement,
-    vulkan_textures_texture_element *metallicRoughnessTextureElement) {
+    vulkan_textures_texture_element *metallicRoughnessTextureElement,
+    vulkan_textures_texture_element *normalMapTextureElement) {
   vulkan_textures_material_element *element = core_alloc(sizeof(vulkan_textures_material_element));
 
   element->material = material;
   element->baseColorTextureElement = baseColorTextureElement;
   element->metallicRoughnessTextureElement = metallicRoughnessTextureElement;
+  element->normalMapTextureElement = normalMapTextureElement;
 
   static uint32_t materialIdx = 0;
   element->materialIdx = materialIdx++ % MAX_MATERIAL_COUNT; // FIXME: Can overwrite materials.
@@ -106,7 +108,8 @@ vulkan_textures_material_element *vulkan_textures_add_material(vulkan_textures *
   vulkan_asset_material_debug_print(material, 0);
   element = vulkan_textures_material_element_create(
       material, vulkan_textures_add_texture(textures, material->baseColorTexture),
-      vulkan_textures_add_texture(textures, material->metallicRoughnessTexture));
+      vulkan_textures_add_texture(textures, material->metallicRoughnessTexture),
+      vulkan_textures_add_texture(textures, material->normalMapTexture));
   HASH_ADD_PTR(textures->materialElements, material, element);
   return element;
 }

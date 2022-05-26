@@ -27,6 +27,7 @@ typedef struct PACKED_STRUCT vulkan_material_helper_element {
   alignas(4) uint baseColorTextureId ;
   alignas(4) vec4 baseColorFactor ;
   alignas(4) uint metallicRoughnessTextureId ;
+  alignas(4) uint normalMapTextureId ;
   alignas(4) float metallicFactor ;
   alignas(4) float roughnessFactor ;
 } vulkan_material_helper_element;

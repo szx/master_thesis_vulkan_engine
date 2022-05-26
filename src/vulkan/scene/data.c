@@ -140,6 +140,8 @@ vulkan_asset_material *parse_cgltf_material(vulkan_scene_data *sceneData,
     material->metallicRoughnessTexture = parse_cgltf_texture(
         sceneData, cgltfMaterial->pbr_metallic_roughness.metallic_roughness_texture.texture,
         vulkan_image_type_material_parameters);
+    material->normalMapTexture = parse_cgltf_texture(
+        sceneData, cgltfMaterial->normal_texture.texture, vulkan_image_type_material_normal_map);
   }
 
   return vulkan_scene_data_add_material(sceneData, material);
@@ -481,6 +483,7 @@ vulkan_scene_data *vulkan_scene_data_create(UT_string *name, data_config *assetC
   vulkan_asset_material_init(defaultMaterial, sceneData);
   defaultMaterial->baseColorTexture = defaultTexture;
   defaultMaterial->metallicRoughnessTexture = defaultTexture;
+  defaultMaterial->normalMapTexture = defaultTexture;
   defaultMaterial->key = vulkan_asset_material_calculate_key(defaultMaterial);
   DL_APPEND(sceneData->materials, defaultMaterial);
 
