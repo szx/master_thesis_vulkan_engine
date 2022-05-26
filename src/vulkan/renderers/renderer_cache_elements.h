@@ -96,11 +96,29 @@ void vulkan_renderer_cache_camera_element_destroy(vulkan_renderer_cache_camera_e
 void vulkan_renderer_cache_camera_element_debug_print(
     vulkan_renderer_cache_camera_element *element);
 
+/* direct light renderer cache element */
+
+typedef struct vulkan_renderer_cache_direct_light_element {
+  /* cache state accumulated from scene data */
+  vulkan_asset_direct_light *directLight; ///< Accumulated from scene data.
+
+  struct vulkan_renderer_cache_direct_light_element *prev, *next;
+} vulkan_renderer_cache_direct_light_element;
+
+vulkan_renderer_cache_direct_light_element *
+vulkan_renderer_cache_direct_light_element_create(vulkan_asset_direct_light *directLight);
+
+void vulkan_renderer_cache_direct_light_element_destroy(
+    vulkan_renderer_cache_direct_light_element *element);
+
+void vulkan_renderer_cache_direct_light_element_debug_print(
+    vulkan_renderer_cache_direct_light_element *element);
+
 /* skybox renderer cache element */
 
 typedef struct vulkan_renderer_cache_skybox_element {
   /* cache state accumulated from scene tree */
-  vulkan_asset_skybox *skybox; ///< Accumulated from scene data.
+  vulkan_asset_skybox *skybox;
   vulkan_asset_material cubemapMaterial;
 
   /* cache state set during texture update */

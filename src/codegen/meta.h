@@ -283,6 +283,7 @@ const char *vulkan_batch_instancing_policy_debug_str(int value);
 const char *vulkan_buffer_type_debug_str(int value);
 const char *vulkan_camera_type_debug_str(int value);
 const char *vulkan_color_blending_type_debug_str(int value);
+const char *vulkan_direct_light_type_debug_str(int value);
 const char *vulkan_image_type_debug_str(int value);
 const char *vulkan_pipeline_offscreen_texture_type_debug_str(int value);
 const char *vulkan_pipeline_offscreen_texture_usage_debug_str(int value);

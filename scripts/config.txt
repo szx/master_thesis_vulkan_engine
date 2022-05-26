@@ -24,6 +24,7 @@ primitive = "key KEY, material KEY, topology INT, indices KEY, positions KEY, no
 mesh = "key KEY, primitives KEY_ARRAY"
 object = "key KEY, transform MAT4, mesh KEY, camera KEY, children KEY_ARRAY"
 camera = "key KEY, type INT, fovY FLOAT, aspectRatio FLOAT, nearZ FLOAT, farZ FLOAT"
+directLight = "key KEY, type INT, position VEC3, innerConeAngle FLOAT, outerConeAngle FLOAT, intensity FLOAT, range FLOAT, color VEC3"
 skybox = "key KEY, name TEXT, cubemapTexture KEY"
 font = "key KEY, name TEXT, fontTexture KEY, characters TEXT, characterSize INT"
 scene = "key KEY, name TEXT, objects KEY_ARRAY, cameras KEY_ARRAY, skybox KEY"

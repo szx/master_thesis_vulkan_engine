@@ -51,6 +51,13 @@ typedef enum vulkan_camera_type {
   vulkan_camera_type_count
 } vulkan_camera_type;
 
+typedef enum vulkan_direct_light_type {
+  vulkan_direct_light_type_directional,
+  vulkan_direct_light_type_point,
+  vulkan_direct_light_type_spot,
+  vulkan_direct_light_type_count,
+} vulkan_direct_light_type;
+
 /// Axis-aligned bounding box.
 typedef struct vulkan_aabb {
   vec4 min;

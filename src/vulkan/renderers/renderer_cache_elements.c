@@ -113,6 +113,32 @@ void vulkan_renderer_cache_camera_element_debug_print(
   log_raw(stdout, "\"; ");
 }
 
+vulkan_renderer_cache_direct_light_element *
+vulkan_renderer_cache_direct_light_element_create(vulkan_asset_direct_light *directLight) {
+  assert(directLight != NULL);
+
+  vulkan_renderer_cache_direct_light_element *element =
+      core_alloc(sizeof(vulkan_renderer_cache_direct_light_element));
+
+  element->prev = NULL;
+  element->next = NULL;
+
+  element->directLight = directLight;
+
+  return element;
+}
+
+void vulkan_renderer_cache_direct_light_element_destroy(
+    vulkan_renderer_cache_direct_light_element *element) {
+  core_free(element);
+}
+
+void vulkan_renderer_cache_direct_light_element_debug_print(
+    vulkan_renderer_cache_direct_light_element *element) {
+  log_raw(stdout, "\"renderer cache direct light element\\n%p\\n", element);
+  log_raw(stdout, "\"; ");
+}
+
 /* skybox renderer cache element */
 
 vulkan_renderer_cache_skybox_element *

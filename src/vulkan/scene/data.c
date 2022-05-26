@@ -464,6 +464,12 @@ vulkan_scene_data *vulkan_scene_data_create(UT_string *name, data_config *assetC
   defaultTexture->key = vulkan_asset_texture_calculate_key(defaultTexture);
   DL_APPEND(sceneData->textures, defaultTexture);
 
+  sceneData->directLights = NULL; // NOTE: We use default direct light.
+  vulkan_asset_direct_light *defaultDirectLight = vulkan_asset_direct_light_create_point_light(
+      sceneData, (vec3){0, 0, 0}, 0, 0, (vec3){0, 0, 0});
+  defaultDirectLight->key = vulkan_asset_direct_light_calculate_key(defaultDirectLight);
+  DL_APPEND(sceneData->directLights, defaultDirectLight);
+
   sceneData->skyboxes = NULL; // NOTE: We use default skybox.
   vulkan_asset_skybox *defaultSkybox = core_alloc(sizeof(vulkan_asset_skybox));
   vulkan_asset_skybox_init(defaultSkybox, sceneData);
@@ -525,6 +531,11 @@ void vulkan_scene_data_destroy(vulkan_scene_data *sceneData) {
   dl_foreach_elem(vulkan_asset_texture *, texture, sceneData->textures) {
     vulkan_asset_texture_deinit(texture);
     core_free(texture);
+  }
+
+  dl_foreach_elem(vulkan_asset_direct_light *, directLight, sceneData->directLights) {
+    vulkan_asset_direct_light_deinit(directLight);
+    core_free(directLight);
   }
 
   dl_foreach_elem(vulkan_asset_skybox *, skybox, sceneData->skyboxes) {
@@ -613,6 +624,7 @@ void vulkan_scene_data_destroy(vulkan_scene_data *sceneData) {
 VULKAN_ASSET_FIELD_DEFS_FUNCS(image, images)
 VULKAN_ASSET_FIELD_DEFS_FUNCS(sampler, samplers)
 VULKAN_ASSET_FIELD_DEFS_FUNCS(texture, textures)
+VULKAN_ASSET_FIELD_DEFS_FUNCS(direct_light, directLights)
 VULKAN_ASSET_FIELD_DEFS_FUNCS(skybox, skyboxes)
 VULKAN_ASSET_FIELD_DEFS_FUNCS(font, fonts)
 VULKAN_ASSET_FIELD_DEFS_FUNCS(material, materials)

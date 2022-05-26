@@ -30,7 +30,7 @@ vulkan_pipeline_light_state_get_directional_light_element(vulkan_pipeline_light_
                                                           size_t lightIdx) {
   if (utarray_len(lights->directionalLightElements) == 0) {
     // NOTE: Default directional light.
-    vec3 direction = {0.0, 0.0, 1.0};
+    vec3 direction = {0.0, -1.0, 0.0};
     vec3 color = GLM_VEC3_ONE_INIT;
     vulkan_pipeline_light_state_add_directional_light(lights, direction, color);
     return vulkan_pipeline_light_state_get_directional_light_element(lights, lightIdx);

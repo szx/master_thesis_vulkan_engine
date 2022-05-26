@@ -8,6 +8,7 @@
 typedef struct vulkan_pipeline_light_state {
   vulkan_render_state *renderState; ///< Pointer.
 
+  // HIRO CONTINUE replace with vulkan_renderer_cache_add_direct_light_element
   UT_array *directionalLightElements; ///< vulkan_directional_light_helper_element list.
   UT_array *pointLightElements;       ///< vulkan_point_light_helper_element list.
 

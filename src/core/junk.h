@@ -36,6 +36,8 @@ typedef XXH64_hash_t hash_t;
 
 #define INDENT_FORMAT_STRING "%*s"
 #define INDENT_FORMAT_ARGS(_inc) (indent + _inc), ""
+#define VEC3_FORMAT_STRING() "%f %f %f"
+#define VEC3_FORMAT_ARGS(_prefix) _prefix[0], _prefix[1], _prefix[2]
 #define VEC4_FORMAT_STRING() "%f %f %f %f"
 #define VEC4_FORMAT_ARGS(_prefix) _prefix[0], _prefix[1], _prefix[2], _prefix[3]
 #define MAT4_FORMAT_STRING(_separator)                                                             \

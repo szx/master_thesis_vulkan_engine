@@ -89,6 +89,7 @@ vulkan_renderer_cache *vulkan_renderer_cache_create(vulkan_scene_data *sceneData
 
   rendererCache->defaultCameraElement = vulkan_renderer_cache_camera_element_create(
       &rendererCache->sceneData->defaultCamera, GLM_MAT4_IDENTITY);
+  rendererCache->directLightElements = NULL;
   rendererCache->skyboxElement = NULL;
   rendererCache->fontElement = NULL;
 
@@ -113,6 +114,12 @@ void vulkan_renderer_cache_destroy(vulkan_renderer_cache *rendererCache) {
   }
 
   vulkan_renderer_cache_camera_element_destroy(rendererCache->defaultCameraElement);
+
+  dl_foreach_elem(vulkan_renderer_cache_direct_light_element *, element,
+                  rendererCache->directLightElements) {
+    vulkan_renderer_cache_direct_light_element_destroy(element);
+  }
+
   vulkan_renderer_cache_skybox_element_destroy(rendererCache->skyboxElement);
   vulkan_renderer_cache_font_element_destroy(rendererCache->fontElement);
 
@@ -282,6 +289,12 @@ void vulkan_renderer_cache_calculate_aabb_for_primitive_elements(
 void vulkan_renderer_cache_add_camera_element(vulkan_renderer_cache *rendererCache,
                                               vulkan_renderer_cache_camera_element *cameraElement) {
   DL_APPEND(rendererCache->cameraElements, cameraElement);
+}
+
+void vulkan_renderer_cache_add_direct_light_element(
+    vulkan_renderer_cache *rendererCache,
+    vulkan_renderer_cache_direct_light_element *directLightElement) {
+  DL_APPEND(rendererCache->directLightElements, directLightElement);
 }
 
 void vulkan_renderer_cache_add_skybox(vulkan_renderer_cache *rendererCache,

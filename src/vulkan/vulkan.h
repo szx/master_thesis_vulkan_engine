@@ -3,6 +3,7 @@
 #include "assets/assets.h"
 #include "assets/camera.h"
 #include "assets/common.h"
+#include "assets/light.h"
 #include "assets/material.h"
 #include "assets/mesh.h"
 #include "assets/object.h"

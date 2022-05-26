@@ -4,7 +4,8 @@
  *  - scene tree
  *  - scene data
  *    - skybox
- *    - HIRO lights
+ *    - debug text
+ *    - lights
  * Used by renderer and pipelines to build draw calls.
  */
 #pragma once
@@ -32,6 +33,7 @@ typedef struct vulkan_renderer_cache {
 
   /* additional state accumulated from scene data */
   vulkan_renderer_cache_camera_element *defaultCameraElement;
+  vulkan_renderer_cache_direct_light_element *directLightElements;
   vulkan_renderer_cache_skybox_element *skyboxElement;
   vulkan_renderer_cache_font_element *fontElement;
 
@@ -67,6 +69,10 @@ void vulkan_renderer_cache_add_new_primitive_elements_to_batches(
 
 void vulkan_renderer_cache_add_camera_element(vulkan_renderer_cache *rendererCache,
                                               vulkan_renderer_cache_camera_element *cameraElement);
+
+void vulkan_renderer_cache_add_direct_light_element(
+    vulkan_renderer_cache *rendererCache,
+    vulkan_renderer_cache_direct_light_element *directLightElement);
 
 void vulkan_renderer_cache_add_skybox(vulkan_renderer_cache *rendererCache,
                                       vulkan_renderer_cache_skybox_element *skyboxElement);

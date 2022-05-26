@@ -17,6 +17,7 @@ typedef struct vulkan_scene_data {
   vulkan_asset_image *images;                      ///< List of all images used by scene.
   vulkan_asset_sampler *samplers;                  ///< List of all samplers used by scene.
   vulkan_asset_texture *textures;                  ///< List of all textures used by scene.
+  vulkan_asset_direct_light *directLights;         ///< List of all direct lights used by scene.
   vulkan_asset_skybox *skyboxes;                   ///< List of all skyboxes used by scene.
   vulkan_asset_font *fonts;                        ///< List of all fonts used by scene.
   vulkan_asset_material *materials;                ///< List of all materials used by scene.

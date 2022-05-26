@@ -5,8 +5,8 @@
 #define END_OF_DATA_ASSET_CONFIG_SECTION
 #define DATA_ASSET_CONFIG_SECTIONS(X, ...) \
   X(controls, __VA_ARGS__) \
-  X(settings, __VA_ARGS__) \
   X(graphics, __VA_ARGS__) \
+  X(settings, __VA_ARGS__) \
   END_OF_DATA_ASSET_CONFIG_SECTION
 
 #define END_OF_DATA_ASSET_CONFIG_INT_KEYS
@@ -20,9 +20,9 @@
 
 #define END_OF_DATA_ASSET_CONFIG_STR_KEYS
 #define DATA_ASSET_CONFIG_STR_KEYS(X, ...) \
-  X(settings, StartScene, "MetalRoughSpheresNoTextures", __VA_ARGS__) \
   X(graphics, WindowTitle, "cpptest", __VA_ARGS__) \
   X(graphics, Font, "Go-Mono", __VA_ARGS__) \
+  X(settings, StartScene, "MetalRoughSpheresNoTextures", __VA_ARGS__) \
   END_OF_DATA_ASSET_CONFIG_STR_KEYS
 
 #define END_OF_DATA_SCENE_CONFIG_SECTION
@@ -70,6 +70,7 @@
   X(mesh, key, key, primitives, key_array, __VA_ARGS__) \
   X(object, key, key, transform, mat4, mesh, key, camera, key, children, key_array, __VA_ARGS__) \
   X(camera, key, key, type, int, fovy, float, aspectratio, float, nearz, float, farz, float, __VA_ARGS__) \
+  X(directLight, key, key, type, int, position, vec3, innerconeangle, float, outerconeangle, float, intensity, float, range, float, color, vec3, __VA_ARGS__) \
   X(skybox, key, key, name, text, cubemaptexture, key, __VA_ARGS__) \
   X(font, key, key, name, text, fonttexture, key, characters, text, charactersize, int, __VA_ARGS__) \
   X(scene, key, key, name, text, objects, key_array, cameras, key_array, skybox, key, __VA_ARGS__) \
@@ -127,6 +128,14 @@
   X(camera, aspectRatio, float, __VA_ARGS__) \
   X(camera, nearZ, float, __VA_ARGS__) \
   X(camera, farZ, float, __VA_ARGS__) \
+  X(directLight, key, key, __VA_ARGS__) \
+  X(directLight, type, int, __VA_ARGS__) \
+  X(directLight, position, vec3, __VA_ARGS__) \
+  X(directLight, innerConeAngle, float, __VA_ARGS__) \
+  X(directLight, outerConeAngle, float, __VA_ARGS__) \
+  X(directLight, intensity, float, __VA_ARGS__) \
+  X(directLight, range, float, __VA_ARGS__) \
+  X(directLight, color, vec3, __VA_ARGS__) \
   X(skybox, key, key, __VA_ARGS__) \
   X(skybox, name, text, __VA_ARGS__) \
   X(skybox, cubemapTexture, key, __VA_ARGS__) \
