@@ -119,10 +119,9 @@ void vulkan_renderer_cache_direct_light_element_debug_print(
 typedef struct vulkan_renderer_cache_skybox_element {
   /* cache state accumulated from scene tree */
   vulkan_asset_skybox *skybox;
-  vulkan_asset_material cubemapMaterial;
 
   /* cache state set during texture update */
-  vulkan_textures_material_element *cubemapMaterialElement;
+  vulkan_textures_texture_element *skyboxTextureElement;
 
 } vulkan_renderer_cache_skybox_element;
 
@@ -139,10 +138,9 @@ void vulkan_renderer_cache_skybox_element_debug_print(
 typedef struct vulkan_renderer_cache_font_element {
   /* cache state accumulated from scene tree */
   vulkan_asset_font *font; ///< Accumulated from scene data.
-  vulkan_asset_material fontMaterial;
 
   /* cache state set during texture update */
-  vulkan_textures_material_element *fontMaterialElement;
+  vulkan_textures_texture_element *fontTextureElement;
 
 } vulkan_renderer_cache_font_element;
 

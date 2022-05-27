@@ -27,10 +27,8 @@ void vulkan_pipeline_skybox_state_update(vulkan_pipeline_skybox_state *skybox) {
 
 void vulkan_pipeline_skybox_state_set_skybox_elements(vulkan_pipeline_skybox_state *skybox,
                                                       vulkan_skybox_helper_element *skyboxElement) {
-  // HIRO use skybox as environment map
   skyboxElement->skyboxCubemapTextureId =
-      skybox->renderState->rendererCache->skyboxElement->cubemapMaterialElement
-          ->baseColorTextureElement->textureIdx;
+      skybox->renderState->rendererCache->skyboxElement->skyboxTextureElement->textureIdx;
 }
 
 void vulkan_pipeline_skybox_state_debug_print(vulkan_pipeline_skybox_state *skybox, int indent) {

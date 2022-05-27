@@ -149,18 +149,12 @@ vulkan_renderer_cache_skybox_element_create(vulkan_asset_skybox *skybox) {
       core_alloc(sizeof(vulkan_renderer_cache_skybox_element));
 
   element->skybox = skybox;
-
-  // HIRO remove material from skybox
-  vulkan_asset_material_init(&element->cubemapMaterial, NULL);
-  element->cubemapMaterial.baseColorTexture = element->skybox->cubemapTexture;
-  element->cubemapMaterial.metallicRoughnessTexture = element->skybox->cubemapTexture;
-  element->cubemapMaterial.normalMapTexture = element->skybox->cubemapTexture;
+  element->skyboxTextureElement = NULL;
 
   return element;
 }
 
 void vulkan_renderer_cache_skybox_element_destroy(vulkan_renderer_cache_skybox_element *element) {
-  vulkan_asset_material_deinit(&element->cubemapMaterial);
   core_free(element);
 }
 
@@ -181,18 +175,12 @@ vulkan_renderer_cache_font_element_create(vulkan_asset_font *font) {
       core_alloc(sizeof(vulkan_renderer_cache_font_element));
 
   element->font = font;
-
-  // HIRO Remove material from font.
-  vulkan_asset_material_init(&element->fontMaterial, NULL);
-  element->fontMaterial.baseColorTexture = element->font->fontTexture;
-  element->fontMaterial.metallicRoughnessTexture = element->font->fontTexture;
-  element->fontMaterial.normalMapTexture = element->font->fontTexture;
+  element->fontTextureElement = NULL;
 
   return element;
 }
 
 void vulkan_renderer_cache_font_element_destroy(vulkan_renderer_cache_font_element *element) {
-  vulkan_asset_material_deinit(&element->fontMaterial);
   core_free(element);
 }
 

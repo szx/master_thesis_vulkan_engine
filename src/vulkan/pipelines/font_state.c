@@ -26,8 +26,8 @@ void vulkan_pipeline_font_state_update(vulkan_pipeline_font_state *font) {
 
 void vulkan_pipeline_font_state_set_font_elements(vulkan_pipeline_font_state *font,
                                                   vulkan_font_helper_element *fontElement) {
-  fontElement->fontTextureId = font->renderState->rendererCache->fontElement->fontMaterialElement
-                                   ->baseColorTextureElement->textureIdx;
+  fontElement->fontTextureId =
+      font->renderState->rendererCache->fontElement->fontTextureElement->textureIdx;
   fontElement->characterSize = font->renderState->rendererCache->fontElement->font->characterSize;
   fontElement->fontTextureSize =
       font->renderState->rendererCache->fontElement->font->fontTexture->image->width;

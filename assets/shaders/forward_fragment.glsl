@@ -24,7 +24,6 @@ fillPBRInputForMetallicRoughnessModel(pbr, worldPosition, cameraPosition, worldN
 /* calculate lighting contributions */
 vec3 lighting = vec3(0.0);
 
-// HIRO HIRO control lights using GUI
 // HIRO ambient light
 
 // directional lights
