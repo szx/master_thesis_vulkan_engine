@@ -86,7 +86,7 @@ vulkan_pipeline_impl_deferred_lighting_get_pipeline_info(vulkan_pipeline *pipeli
       .depthAttachmentTestEnable = true,
       .depthAttachmentTestOp = VK_COMPARE_OP_LESS,
       .depthAttachmentLoadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
-      .depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_NONE_EXT,
+      .depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE,
   };
 }
 
@@ -111,6 +111,13 @@ vulkan_pipeline_info vulkan_pipeline_impl_skybox_get_pipeline_info(vulkan_pipeli
       .useOnscreenColorAttachment = true,
       .onscreenClearValue = (VkClearColorValue){{0.5f, 0.5f, 0.5f, 1.0f}},
       .offscreenTextureCount = 0,
+      // Use depth buffer to reject fragments with depth != 0
+      .useDepthAttachment = true,
+      .depthAttachmentWriteEnable = false,
+      .depthAttachmentTestEnable = true,
+      .depthAttachmentTestOp = VK_COMPARE_OP_EQUAL,
+      .depthAttachmentLoadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
+      .depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_NONE_EXT,
   };
 }
 
