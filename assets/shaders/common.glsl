@@ -120,6 +120,28 @@ struct PBRInput {
   vec3 f90; // reflectance color at grazing angle (1.0)
 };
 
+vec3 SpecularBRDFComponent(PBRInput pbr) {
+  float D = D_GGX(pbr.NoH, pbr.alphaRoughness);
+// HIRO HIRO F0 (specularColor?)     = mix(F0, albedo, metallic);
+  vec3 F = F_Schlick(pbr.VoH, pbr.f0, pbr.f90);
+  float V = V_SmithGGXCorrelated(pbr.NoV, pbr.NoL, pbr.perceptualRoughness);
+
+  return (D * V) * F;
+}
+
+vec3 DiffuseBRDFComponent(PBRInput pbr) {
+  vec3 diffuseColor = pbr.baseColor.xyz * (1.0 - pbr.metallic);
+  return diffuseColor * Fd_Lambert();
+}
+
+vec3 BRDF(PBRInput pbr) {
+  vec3 specularBrdf = SpecularBRDFComponent(pbr);
+  vec3 diffuseBrdf = DiffuseBRDFComponent(pbr);
+  assert(!any(isnan(specularBrdf)));
+  assert(!any(isnan(diffuseBrdf)));
+  return specularBrdf + diffuseBrdf;
+}
+
 void fillMaterialParametersForMetallicRoughnessModel(
   inout vec4 _baseColor, inout float _metallic, inout float _perceptualRoughness, inout vec4 _normalMapSample,
   uint globalIdx, uint materialId) {
@@ -204,26 +226,15 @@ void updatePBRInputWithL(inout PBRInput pbr, vec3 l) {
   pbr.LoH = saturate(dot(pbr.l, pbr.h));
 }
 
-vec3 SpecularBRDFComponent(PBRInput pbr) {
-  float D = D_GGX(pbr.NoH, pbr.alphaRoughness);
-// HIRO HIRO F0 (specularColor?)     = mix(F0, albedo, metallic);
-  vec3 F = F_Schlick(pbr.VoH, pbr.f0, pbr.f90);
-  float V = V_SmithGGXCorrelated(pbr.NoV, pbr.NoL, pbr.perceptualRoughness);
+vec3 calculatePBRLightContribution(inout PBRInput pbr, vec3 lightDirection, vec3 radiance) {
+  vec3 l = normalize(lightDirection); // normalized direction into light source
+  updatePBRInputWithL(pbr, l);
 
-  return (D * V) * F;
-}
+  // reflectance equation
+  vec3 color = radiance * pbr.NoL * BRDF(pbr);
 
-vec3 DiffuseBRDFComponent(PBRInput pbr) {
-  vec3 diffuseColor = pbr.baseColor.xyz * (1.0 - pbr.metallic);
-  return diffuseColor * Fd_Lambert();
-}
-
-vec3 BRDF(PBRInput pbr) {
-  vec3 specularBrdf = SpecularBRDFComponent(pbr);
-  vec3 diffuseBrdf = DiffuseBRDFComponent(pbr);
-  assert(!any(isnan(specularBrdf)));
-  assert(!any(isnan(diffuseBrdf)));
-  return specularBrdf + diffuseBrdf;
+  assert(!any(isnan(color)));
+  return color;
 }
 
 #endif
