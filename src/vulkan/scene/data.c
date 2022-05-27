@@ -400,8 +400,8 @@ vulkan_scene_data *parse_cgltf_scene(UT_string *name, UT_string *path, UT_string
       vulkan_asset_##_type *newObject = core_alloc(sizeof(vulkan_asset_##_type));                  \
       vulkan_asset_##_type##_init(newObject, sceneData);                                           \
       vulkan_asset_##_type##_deserialize(newObject, assetDb, key);                                 \
-      DL_PREPEND(sceneData->_var, newObject);                                                      \
-      entity = sceneData->_var;                                                                    \
+      DL_APPEND(sceneData->_var, newObject);                                                       \
+      entity = newObject;                                                                          \
     }                                                                                              \
     return entity;                                                                                 \
   }

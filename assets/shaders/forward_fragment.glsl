@@ -48,17 +48,18 @@ for (int i = 0; i < min(global[globalIdx].directionalLightCount, MAX_DIRECTIONAL
 for (int i = 0; i < min(global[globalIdx].pointLightCount, MAX_POINT_LIGHT_COUNT); i++) {
   vec3 lightPosition = global[globalIdx].pointLights[i].position;
   vec3 lightColor = global[globalIdx].pointLights[i].color;
-  float lightRadius = global[globalIdx].pointLights[i].range;
+  float lightRange = global[globalIdx].pointLights[i].range;
 
   vec3 l = normalize(lightPosition - worldPosition); // normalized direction into light source
   updatePBRInputWithL(pbr, l);
 
   // Radiance is irradiance from a single direction.
   // HIRO irradiance vs radiance explanation
-  // HIRO lightColor * attenuation * NOL
   // NOTE: https://github.com/KhronosGroup/glTF/blob/main/extensions/2.0/Khronos/KHR_lights_punctual/README.md
-  // HIRO attenuation = max( min( 1.0 - ( current_distance / range )4, 1 ), 0 ) / current_distance2
-  vec3 irradiance = lightColor * pbr.NoL; // irradiance for point light
+  float distance = length(lightPosition - worldPosition);
+  float attenuation = max( min(1.0 - pow(distance / lightRange, 4), 1), 0) / pow(distance, 2);
+
+  vec3 irradiance = attenuation * lightColor * pbr.NoL; // irradiance for point light
   vec3 color = irradiance * BRDF(pbr);
 
   assert(!any(isnan(color)));

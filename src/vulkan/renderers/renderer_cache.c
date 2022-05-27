@@ -133,6 +133,7 @@ void vulkan_renderer_cache_add_primitive_element(
 
   assert(primitiveElement != NULL);
   assert(primitiveElement->primitive != NULL);
+  assert(utarray_len(primitiveElement->primitive->indices->data) > 0);
   verify(dl_count(rendererCache->primitiveElements) < rendererCache->maxPrimitiveElementCount);
 
   DL_APPEND(rendererCache->primitiveElements, primitiveElement);

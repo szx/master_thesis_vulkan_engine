@@ -27,6 +27,7 @@ void vulkan_asset_mesh_serialize(vulkan_asset_mesh *mesh, data_asset_db *assetDb
   utarray_alloc(primitiveKeys, sizeof(data_key));
   utarray_foreach_elem_deref (vulkan_asset_primitive *, primitive, mesh->primitives) {
     vulkan_asset_primitive_serialize(primitive, assetDb);
+    assert(primitive->vertexCount > 0);
     utarray_push_back(primitiveKeys, &primitive->key);
   }
   data_asset_db_insert_mesh_primitives_key_array(assetDb, mesh->key,
@@ -42,6 +43,7 @@ void vulkan_asset_mesh_deserialize(vulkan_asset_mesh *mesh, data_asset_db *asset
   utarray_foreach_elem_deref (data_key, primitiveKey, primitiveHashArray.values) {
     vulkan_asset_primitive *primitive =
         vulkan_scene_data_get_primitive_by_key(mesh->sceneData, assetDb, primitiveKey);
+    assert(primitive->vertexCount > 0);
     utarray_push_back(mesh->primitives, &primitive);
   }
 

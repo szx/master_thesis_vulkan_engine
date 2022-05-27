@@ -15,6 +15,10 @@ void vulkan_pipeline_light_state_destroy(vulkan_pipeline_light_state *lights);
 void vulkan_pipeline_light_state_reinit_with_new_swap_chain(vulkan_pipeline_light_state *light);
 void vulkan_pipeline_light_state_update(vulkan_pipeline_light_state *light);
 
+vulkan_renderer_cache_direct_light_element *
+vulkan_pipeline_light_state_select(vulkan_pipeline_light_state *lights,
+                                   vulkan_direct_light_type type, size_t lightIdx);
+
 void vulkan_pipeline_light_state_set_direct_light_elements(
     vulkan_pipeline_light_state *lights, uint32_t *directionalLightCount,
     vulkan_directional_light_helper_element *directionalLightElements, uint32_t *pointLightCount,

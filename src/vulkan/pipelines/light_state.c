@@ -8,9 +8,7 @@ vulkan_pipeline_light_state *vulkan_pipeline_light_state_create(vulkan_render_st
   return lights;
 }
 
-void vulkan_pipeline_light_state_destroy(vulkan_pipeline_light_state *lights) {
-  core_free(lights);
-}
+void vulkan_pipeline_light_state_destroy(vulkan_pipeline_light_state *lights) { core_free(lights); }
 
 void vulkan_pipeline_light_state_reinit_with_new_swap_chain(vulkan_pipeline_light_state *light) {
   // No-op.
@@ -19,6 +17,28 @@ void vulkan_pipeline_light_state_reinit_with_new_swap_chain(vulkan_pipeline_ligh
 void vulkan_pipeline_light_state_update(vulkan_pipeline_light_state *light) {
   // No-op.
   // TODO: Oscillate light intensity using time?
+}
+
+vulkan_renderer_cache_direct_light_element *
+vulkan_pipeline_light_state_select(vulkan_pipeline_light_state *lights,
+                                   vulkan_direct_light_type type, size_t lightIdx) {
+  size_t idx = 0;
+loop_start:
+  dl_foreach_elem(vulkan_renderer_cache_direct_light_element *, directLightElement,
+                  lights->renderState->rendererCache->directLightElements) {
+    if (directLightElement->directLight->type == type) {
+      if (lightIdx == idx) {
+        return directLightElement;
+      }
+      idx++;
+    }
+  }
+  if (lightIdx >= idx && idx > 0) {
+    lightIdx = lightIdx % idx;
+    goto loop_start;
+  } else {
+    return NULL;
+  }
 }
 
 void vulkan_pipeline_light_state_set_direct_light_elements(

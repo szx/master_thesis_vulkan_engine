@@ -28,24 +28,17 @@ void update_func(vulkan_renderer *renderer, double fps, double dt) {
   }
 
   /* lights */
-  static vulkan_renderer_cache_direct_light_element *directionalLightElement = NULL;
-  if (directionalLightElement == NULL) {
-    dl_foreach_elem(vulkan_renderer_cache_direct_light_element *, directLightElement,
-                    renderState->rendererCache->directLightElements) {
-      if (directLightElement->directLight->type == vulkan_direct_light_type_directional) {
-        directionalLightElement = directLightElement;
-        break;
-      }
-    }
+  if (renderer->vkd->input.keyboard.release.p) {
+    vulkan_renderer_cache_direct_light_element *directionalLightElement =
+        vulkan_pipeline_light_state_select(lightState, vulkan_direct_light_type_directional, 0);
     if (directionalLightElement == NULL) {
       directionalLightElement = vulkan_renderer_cache_direct_light_element_create(
-          vulkan_asset_direct_light_create_directional_light(renderState->rendererCache->sceneData,
-                                                             (vec3){0, 0, 1}, 10, (vec3){1, 1, 1}));
-      vulkan_renderer_cache_add_direct_light_element(renderer->rendererCache,
+          vulkan_asset_direct_light_create_directional_light(
+              lightState->renderState->rendererCache->sceneData, (vec3){0, 0, 0}, 10,
+              (vec3){1, 1, 1}));
+      vulkan_renderer_cache_add_direct_light_element(lightState->renderState->rendererCache,
                                                      directionalLightElement);
     }
-  }
-  if (renderer->vkd->input.keyboard.release.l) {
     if (glm_vec3_eqv(directionalLightElement->directLight->direction, (vec3){0, -1, 0})) {
       glm_vec3_copy((vec3){0, 1, 0}, directionalLightElement->directLight->direction);
     } else if (glm_vec3_eqv(directionalLightElement->directLight->direction, (vec3){0, 1, 0})) {
@@ -54,6 +47,52 @@ void update_func(vulkan_renderer *renderer, double fps, double dt) {
       glm_vec3_copy((vec3){0, 0, 1}, directionalLightElement->directLight->direction);
     } else {
       glm_vec3_copy((vec3){0, -1, 0}, directionalLightElement->directLight->direction);
+    }
+  }
+  if (renderer->vkd->input.keyboard.release.i) {
+    vec3 position;
+    vulkan_pipeline_camera_state_set_position(cameraState, position);
+
+    vulkan_renderer_cache_direct_light_element *pointLightElement =
+        vulkan_renderer_cache_direct_light_element_create(
+            vulkan_asset_direct_light_create_point_light(
+                lightState->renderState->rendererCache->sceneData, position, 10, 10,
+                (vec3){1, 1, 1}));
+    vulkan_renderer_cache_add_direct_light_element(lightState->renderState->rendererCache,
+                                                   pointLightElement);
+  }
+  {
+    static size_t pointLightIdx = 0;
+    vulkan_renderer_cache_direct_light_element *pointLightElement =
+        vulkan_pipeline_light_state_select(lightState, vulkan_direct_light_type_point,
+                                           pointLightIdx);
+    if (pointLightElement != NULL) {
+      glm_vec3_copy((vec3){1, 0, 0}, pointLightElement->directLight->color);
+      if (renderer->vkd->input.keyboard.release.o) {
+        vulkan_pipeline_camera_state_set_position(cameraState,
+                                                  pointLightElement->directLight->position);
+      }
+      float rangeSpeed = 100.0f;
+      if (renderer->vkd->input.keyboard.press.num6) {
+        pointLightElement->directLight->range -= rangeSpeed * dt;
+      }
+      if (renderer->vkd->input.keyboard.press.num7) {
+        pointLightElement->directLight->range += rangeSpeed * dt;
+      }
+    } else {
+      pointLightIdx = 0;
+    }
+    if (pointLightIdx > 0 && renderer->vkd->input.keyboard.release.num8) {
+      if (pointLightElement != NULL) {
+        glm_vec3_copy((vec3){1, 1, 1}, pointLightElement->directLight->color);
+      }
+      pointLightIdx--;
+    }
+    if (renderer->vkd->input.keyboard.release.num9) {
+      if (pointLightElement != NULL) {
+        glm_vec3_copy((vec3){1, 1, 1}, pointLightElement->directLight->color);
+      }
+      pointLightIdx++;
     }
   }
 
