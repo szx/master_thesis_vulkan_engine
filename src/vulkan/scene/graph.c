@@ -157,6 +157,14 @@ void vulkan_scene_graph_create_with_scene_data(vulkan_scene_graph *sceneGraph,
     }
   }
 
+  dl_foreach_elem(vulkan_asset_direct_light *, directLight, sceneData->directLights) {
+    log_debug("adding renderer cache direct light element");
+    vulkan_renderer_cache_direct_light_element *directLightElement =
+        vulkan_renderer_cache_direct_light_element_create(directLight);
+    vulkan_renderer_cache_add_direct_light_element(sceneGraph->sceneTree->rendererCache,
+                                                   directLightElement);
+  }
+
   log_debug("adding renderer cache skybox element");
   vulkan_renderer_cache_skybox_element *skyboxElement =
       vulkan_renderer_cache_skybox_element_create(sceneData->skybox);

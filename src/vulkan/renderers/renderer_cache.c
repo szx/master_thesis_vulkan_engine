@@ -297,6 +297,12 @@ void vulkan_renderer_cache_add_direct_light_element(
   DL_APPEND(rendererCache->directLightElements, directLightElement);
 }
 
+void vulkan_renderer_cache_remove_direct_light_element(
+    vulkan_renderer_cache *rendererCache,
+    vulkan_renderer_cache_direct_light_element *directLightElement) {
+  DL_DELETE(rendererCache->directLightElements, directLightElement);
+}
+
 void vulkan_renderer_cache_add_skybox(vulkan_renderer_cache *rendererCache,
                                       vulkan_renderer_cache_skybox_element *skyboxElement) {
   rendererCache->skyboxElement = skyboxElement;

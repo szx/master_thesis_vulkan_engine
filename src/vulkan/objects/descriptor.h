@@ -22,13 +22,24 @@ typedef struct vulkan_material_helper_struct {
 typedef struct vulkan_directional_light_helper_struct {
   vec3 direction;
   vec3 color;
+  float intensity;
 } vulkan_directional_light_helper_struct;
 
 typedef struct vulkan_point_light_helper_struct {
   vec3 position;
   vec3 color;
-  float radius;
+  float range;
+  float intensity;
 } vulkan_point_light_helper_struct;
+
+typedef struct vulkan_spot_light_helper_struct {
+  vec3 position;
+  vec3 color;
+  float innerConeAngle;
+  float outerConeAngle;
+  float range;
+  float intensity;
+} vulkan_spot_light_helper_struct;
 
 typedef struct vulkan_skybox_helper_struct {
   uint skyboxCubemapTextureId;
@@ -62,6 +73,8 @@ typedef struct vulkan_global_uniform_buffer_struct {
   vulkan_directional_light_helper_struct directionalLights; ///< array=MAX_DIRECTIONAL_LIGHT_COUNT
   uint pointLightCount;
   vulkan_point_light_helper_struct pointLights; ///< array=MAX_POINT_LIGHT_COUNT
+  uint spotLightCount;
+  vulkan_spot_light_helper_struct spotLights; ///< array=MAX_SPOT_LIGHT_COUNT
   vulkan_skybox_helper_struct skybox;
   vulkan_font_helper_struct font;
   vulkan_viewport_helper_struct viewport;

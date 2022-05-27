@@ -5,8 +5,8 @@
 #define END_OF_DATA_ASSET_CONFIG_SECTION
 #define DATA_ASSET_CONFIG_SECTIONS(X, ...) \
   X(controls, __VA_ARGS__) \
-  X(graphics, __VA_ARGS__) \
   X(settings, __VA_ARGS__) \
+  X(graphics, __VA_ARGS__) \
   END_OF_DATA_ASSET_CONFIG_SECTION
 
 #define END_OF_DATA_ASSET_CONFIG_INT_KEYS
@@ -20,9 +20,9 @@
 
 #define END_OF_DATA_ASSET_CONFIG_STR_KEYS
 #define DATA_ASSET_CONFIG_STR_KEYS(X, ...) \
+  X(settings, StartScene, "MetalRoughSpheresNoTextures", __VA_ARGS__) \
   X(graphics, WindowTitle, "cpptest", __VA_ARGS__) \
   X(graphics, Font, "Go-Mono", __VA_ARGS__) \
-  X(settings, StartScene, "MetalRoughSpheresNoTextures", __VA_ARGS__) \
   END_OF_DATA_ASSET_CONFIG_STR_KEYS
 
 #define END_OF_DATA_SCENE_CONFIG_SECTION
@@ -73,7 +73,7 @@
   X(directLight, key, key, type, int, position, vec3, innerconeangle, float, outerconeangle, float, intensity, float, range, float, color, vec3, __VA_ARGS__) \
   X(skybox, key, key, name, text, cubemaptexture, key, __VA_ARGS__) \
   X(font, key, key, name, text, fonttexture, key, characters, text, charactersize, int, __VA_ARGS__) \
-  X(scene, key, key, name, text, objects, key_array, cameras, key_array, skybox, key, __VA_ARGS__) \
+  X(scene, key, key, name, text, objects, key_array, directlights, key_array, skybox, key, __VA_ARGS__) \
   END_OF_DATA_ASSET_DB_TABLES
 
 #define END_OF_DATA_ASSET_DB_COLUMNS
@@ -147,6 +147,6 @@
   X(scene, key, key, __VA_ARGS__) \
   X(scene, name, text, __VA_ARGS__) \
   X(scene, objects, key_array, __VA_ARGS__) \
-  X(scene, cameras, key_array, __VA_ARGS__) \
+  X(scene, directLights, key_array, __VA_ARGS__) \
   X(scene, skybox, key, __VA_ARGS__) \
   END_OF_DATA_ASSET_DB_COLUMNS

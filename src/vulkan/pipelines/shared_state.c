@@ -66,10 +66,9 @@ void vulkan_pipeline_shared_state_set_unified_uniform_buffer(
                                                        global->materials);
 
   vulkan_pipeline_light_state *lights = sharedState->lights;
-  vulkan_pipeline_light_state_set_directional_light_elements(lights, &global->directionalLightCount,
-                                                             global->directionalLights);
-  vulkan_pipeline_light_state_set_point_light_elements(lights, &global->pointLightCount,
-                                                       global->pointLights);
+  vulkan_pipeline_light_state_set_direct_light_elements(
+      lights, &global->directionalLightCount, global->directionalLights, &global->pointLightCount,
+      global->pointLights, &global->spotLightCount, global->spotLights);
 
   vulkan_pipeline_skybox_state *skybox = sharedState->skybox;
   vulkan_pipeline_skybox_state_set_skybox_elements(skybox, &global->skybox);

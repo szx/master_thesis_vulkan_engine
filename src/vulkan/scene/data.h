@@ -31,8 +31,6 @@ typedef struct vulkan_scene_data {
   vulkan_asset_skybox *skybox;
   /// Font.
   vulkan_asset_font *font;
-  // HIRO HIRO light data (ambientIntensity)?
-
   /// Default camera.
   vulkan_asset_camera defaultCamera;
 
@@ -64,6 +62,7 @@ void vulkan_scene_data_deserialize(vulkan_scene_data *scene, data_asset_db *asse
 VULKAN_SCENE_ASSETS_DECLS(image)
 VULKAN_SCENE_ASSETS_DECLS(sampler)
 VULKAN_SCENE_ASSETS_DECLS(texture)
+VULKAN_SCENE_ASSETS_DECLS(direct_light)
 VULKAN_SCENE_ASSETS_DECLS(skybox)
 VULKAN_SCENE_ASSETS_DECLS(font)
 VULKAN_SCENE_ASSETS_DECLS(material)

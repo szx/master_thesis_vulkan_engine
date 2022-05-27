@@ -18,6 +18,8 @@ void glsl_add_vulkan_global_uniform_buffer(UT_string *s, uint32_t set, uint32_t 
  utstring_printf(s, "  vulkan_directional_light_helper_element directionalLights [MAX_DIRECTIONAL_LIGHT_COUNT];\n");
  utstring_printf(s, "  uint pointLightCount ;\n");
  utstring_printf(s, "  vulkan_point_light_helper_element pointLights [MAX_POINT_LIGHT_COUNT];\n");
+ utstring_printf(s, "  uint spotLightCount ;\n");
+ utstring_printf(s, "  vulkan_spot_light_helper_element spotLights [MAX_SPOT_LIGHT_COUNT];\n");
  utstring_printf(s, "  vulkan_skybox_helper_element skybox ;\n");
  utstring_printf(s, "  vulkan_font_helper_element font ;\n");
  utstring_printf(s, "  vulkan_viewport_helper_element viewport ;\n");
@@ -42,6 +44,7 @@ void glsl_add_vulkan_directional_light_helper_element(UT_string *s) {
   utstring_printf(s, "struct vulkan_directional_light_helper_element {\n");
  utstring_printf(s, "  vec3 direction ;\n");
  utstring_printf(s, "  vec3 color ;\n");
+ utstring_printf(s, "  float intensity ;\n");
   utstring_printf(s, "};\n");
 }
 void glsl_add_vulkan_font_helper_element(UT_string *s) {
@@ -74,12 +77,23 @@ void glsl_add_vulkan_point_light_helper_element(UT_string *s) {
   utstring_printf(s, "struct vulkan_point_light_helper_element {\n");
  utstring_printf(s, "  vec3 position ;\n");
  utstring_printf(s, "  vec3 color ;\n");
- utstring_printf(s, "  float radius ;\n");
+ utstring_printf(s, "  float range ;\n");
+ utstring_printf(s, "  float intensity ;\n");
   utstring_printf(s, "};\n");
 }
 void glsl_add_vulkan_skybox_helper_element(UT_string *s) {
   utstring_printf(s, "struct vulkan_skybox_helper_element {\n");
  utstring_printf(s, "  uint skyboxCubemapTextureId ;\n");
+  utstring_printf(s, "};\n");
+}
+void glsl_add_vulkan_spot_light_helper_element(UT_string *s) {
+  utstring_printf(s, "struct vulkan_spot_light_helper_element {\n");
+ utstring_printf(s, "  vec3 position ;\n");
+ utstring_printf(s, "  vec3 color ;\n");
+ utstring_printf(s, "  float innerConeAngle ;\n");
+ utstring_printf(s, "  float outerConeAngle ;\n");
+ utstring_printf(s, "  float range ;\n");
+ utstring_printf(s, "  float intensity ;\n");
   utstring_printf(s, "};\n");
 }
 void glsl_add_vulkan_viewport_helper_element(UT_string *s) {

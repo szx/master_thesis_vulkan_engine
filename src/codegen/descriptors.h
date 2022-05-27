@@ -7,6 +7,7 @@
 typedef struct PACKED_STRUCT vulkan_directional_light_helper_element {
   alignas(4) vec3 direction ;
   alignas(4) vec3 color ;
+  alignas(4) float intensity ;
 } vulkan_directional_light_helper_element;
 
 typedef struct PACKED_STRUCT vulkan_font_helper_element {
@@ -35,12 +36,22 @@ typedef struct PACKED_STRUCT vulkan_material_helper_element {
 typedef struct PACKED_STRUCT vulkan_point_light_helper_element {
   alignas(4) vec3 position ;
   alignas(4) vec3 color ;
-  alignas(4) float radius ;
+  alignas(4) float range ;
+  alignas(4) float intensity ;
 } vulkan_point_light_helper_element;
 
 typedef struct PACKED_STRUCT vulkan_skybox_helper_element {
   alignas(4) uint skyboxCubemapTextureId ;
 } vulkan_skybox_helper_element;
+
+typedef struct PACKED_STRUCT vulkan_spot_light_helper_element {
+  alignas(4) vec3 position ;
+  alignas(4) vec3 color ;
+  alignas(4) float innerConeAngle ;
+  alignas(4) float outerConeAngle ;
+  alignas(4) float range ;
+  alignas(4) float intensity ;
+} vulkan_spot_light_helper_element;
 
 typedef struct PACKED_STRUCT vulkan_viewport_helper_element {
   alignas(4) uint width ;
@@ -60,6 +71,8 @@ typedef struct PACKED_STRUCT vulkan_global_uniform_buffer_element {
   alignas(4) vulkan_directional_light_helper_element directionalLights [MAX_DIRECTIONAL_LIGHT_COUNT];
   alignas(4) uint pointLightCount ;
   alignas(4) vulkan_point_light_helper_element pointLights [MAX_POINT_LIGHT_COUNT];
+  alignas(4) uint spotLightCount ;
+  alignas(4) vulkan_spot_light_helper_element spotLights [MAX_SPOT_LIGHT_COUNT];
   alignas(4) vulkan_skybox_helper_element skybox ;
   alignas(4) vulkan_font_helper_element font ;
   alignas(4) vulkan_viewport_helper_element viewport ;
@@ -80,6 +93,7 @@ void glsl_add_vulkan_g_buffer_helper_element(UT_string *s);
 void glsl_add_vulkan_material_helper_element(UT_string *s);
 void glsl_add_vulkan_point_light_helper_element(UT_string *s);
 void glsl_add_vulkan_skybox_helper_element(UT_string *s);
+void glsl_add_vulkan_spot_light_helper_element(UT_string *s);
 void glsl_add_vulkan_viewport_helper_element(UT_string *s);
 
 #define END_OF_VULKAN_PUSH_CONSTANTS
@@ -101,5 +115,6 @@ void glsl_add_vulkan_viewport_helper_element(UT_string *s);
   X(material, __VA_ARGS__) \
   X(point_light, __VA_ARGS__) \
   X(skybox, __VA_ARGS__) \
+  X(spot_light, __VA_ARGS__) \
   X(viewport, __VA_ARGS__) \
   END_OF_VULKAN_HELPER_STRUCTS

@@ -386,6 +386,66 @@ vulkan_scene_data *parse_cgltf_scene(UT_string *name, UT_string *path, UT_string
 
 /* scene data */
 
+#define DEF_GET_VULKAN_ASSET_BY_KEY(_type, _var)                                                   \
+  vulkan_asset_##_type *vulkan_scene_data_get_##_type##_by_key(                                    \
+      vulkan_scene_data *sceneData, data_asset_db *assetDb, data_key key) {                        \
+    vulkan_asset_##_type *entity = NULL;                                                           \
+    dl_foreach_elem(vulkan_asset_##_type *, existingEntity, sceneData->_var) {                     \
+      if (existingEntity->key.value == key.value) {                                                \
+        entity = existingEntity;                                                                   \
+        break;                                                                                     \
+      }                                                                                            \
+    }                                                                                              \
+    if (entity == NULL && assetDb != NULL) {                                                       \
+      vulkan_asset_##_type *newObject = core_alloc(sizeof(vulkan_asset_##_type));                  \
+      vulkan_asset_##_type##_init(newObject, sceneData);                                           \
+      vulkan_asset_##_type##_deserialize(newObject, assetDb, key);                                 \
+      DL_PREPEND(sceneData->_var, newObject);                                                      \
+      entity = sceneData->_var;                                                                    \
+    }                                                                                              \
+    return entity;                                                                                 \
+  }
+
+#define DEF_GET_VULKAN_DEFAULT_ASSET(_type, _var)                                                  \
+  vulkan_asset_##_type *vulkan_scene_data_get_default_##_type(vulkan_scene_data *sceneData) {      \
+    return sceneData->_var;                                                                        \
+  }
+
+#define DEF_ADD_VULKAN_ENTITY(_type, _var)                                                         \
+  vulkan_asset_##_type *vulkan_scene_data_add_##_type(vulkan_scene_data *sceneData,                \
+                                                      vulkan_asset_##_type *entity) {              \
+                                                                                                   \
+    entity->key = vulkan_asset_##_type##_calculate_key(entity);                                    \
+    vulkan_asset_##_type *existingEntity =                                                         \
+        vulkan_scene_data_get_##_type##_by_key(sceneData, NULL, entity->key);                      \
+    if (existingEntity != NULL) {                                                                  \
+      vulkan_asset_##_type##_deinit(entity);                                                       \
+      core_free(entity);                                                                           \
+      return existingEntity;                                                                       \
+    }                                                                                              \
+    log_debug("adding new " #_type);                                                               \
+    DL_APPEND(sceneData->_var, entity);                                                            \
+    return entity;                                                                                 \
+  }
+
+#define VULKAN_ASSET_FIELD_DEFS_FUNCS(_type, _var)                                                 \
+  DEF_GET_VULKAN_ASSET_BY_KEY(_type, _var)                                                         \
+  DEF_GET_VULKAN_DEFAULT_ASSET(_type, _var) DEF_ADD_VULKAN_ENTITY(_type, _var)
+
+VULKAN_ASSET_FIELD_DEFS_FUNCS(image, images)
+VULKAN_ASSET_FIELD_DEFS_FUNCS(sampler, samplers)
+VULKAN_ASSET_FIELD_DEFS_FUNCS(texture, textures)
+VULKAN_ASSET_FIELD_DEFS_FUNCS(direct_light, directLights)
+VULKAN_ASSET_FIELD_DEFS_FUNCS(skybox, skyboxes)
+VULKAN_ASSET_FIELD_DEFS_FUNCS(font, fonts)
+VULKAN_ASSET_FIELD_DEFS_FUNCS(material, materials)
+VULKAN_ASSET_FIELD_DEFS_FUNCS(vertex_attribute, vertexAttributes)
+VULKAN_ASSET_FIELD_DEFS_FUNCS(primitive, primitives)
+VULKAN_ASSET_FIELD_DEFS_FUNCS(object, objects)
+
+#undef DEF_GET_VULKAN_ASSET_BY_KEY
+#undef DEF_ADD_VULKAN_ENTITY
+#undef VULKAN_ASSET_FIELD_DEFS_FUNCS
 data_key vulkan_scene_data_calculate_key(vulkan_scene_data *sceneData) {
   hash_t value;
   HASH_START(hashState)
@@ -406,8 +466,22 @@ void vulkan_scene_data_serialize(vulkan_scene_data *sceneData, data_asset_db *as
   data_asset_db_insert_scene_name_text(assetDb, sceneData->key, (data_text){sceneData->name});
   data_asset_db_insert_scene_objects_key_array(assetDb, sceneData->key,
                                                data_key_array_temp(objectKeys));
-  data_asset_db_insert_scene_skybox_key(assetDb, sceneData->key, sceneData->skybox->key);
   utarray_free(objectKeys);
+
+  data_asset_db_insert_scene_skybox_key(assetDb, sceneData->key, sceneData->skybox->key);
+
+  UT_array *directLightKeys = NULL;
+  utarray_alloc(directLightKeys, sizeof(data_key));
+  dl_foreach_elem(vulkan_asset_direct_light *, directLight, sceneData->directLights) {
+    if (directLight == vulkan_scene_data_get_default_direct_light(sceneData)) {
+      continue;
+    }
+    vulkan_asset_direct_light_serialize(directLight, assetDb);
+    utarray_push_back(directLightKeys, &directLight->key);
+  }
+  data_asset_db_insert_scene_directLights_key_array(assetDb, sceneData->key,
+                                                    data_key_array_temp(directLightKeys));
+  utarray_free(directLightKeys);
 }
 
 void vulkan_scene_data_deserialize(vulkan_scene_data *sceneData, data_asset_db *assetDb,
@@ -417,7 +491,6 @@ void vulkan_scene_data_deserialize(vulkan_scene_data *sceneData, data_asset_db *
   data_key_array objectKeyArray =
       data_asset_db_select_scene_objects_key_array(assetDb, sceneData->key);
   utarray_foreach_elem_deref (data_key, objectKey, objectKeyArray.values) {
-    /* object data */
     vulkan_asset_object *object =
         vulkan_scene_data_get_object_by_key(sceneData, assetDb, objectKey);
     utarray_push_back(sceneData->rootObjects, &object);
@@ -434,6 +507,14 @@ void vulkan_scene_data_deserialize(vulkan_scene_data *sceneData, data_asset_db *
   data_key fontKey = vulkan_asset_font_calculate_key(&font);
   sceneData->font = vulkan_scene_data_get_font_by_key(sceneData, assetDb, fontKey);
   vulkan_asset_font_deinit(&font);
+
+  data_key_array directLightKeyArray =
+      data_asset_db_select_scene_directLights_key_array(assetDb, sceneData->key);
+  utarray_foreach_elem_deref (data_key, directLightKey, directLightKeyArray.values) {
+    vulkan_asset_direct_light *directLight =
+        vulkan_scene_data_get_direct_light_by_key(sceneData, assetDb, directLightKey);
+  }
+  data_key_array_deinit(&directLightKeyArray);
 }
 
 vulkan_scene_data *vulkan_scene_data_create(UT_string *name, data_config *assetConfig) {
@@ -574,67 +655,6 @@ void vulkan_scene_data_destroy(vulkan_scene_data *sceneData) {
 
   core_free(sceneData);
 }
-
-#define DEF_GET_VULKAN_ASSET_BY_KEY(_type, _var)                                                   \
-  vulkan_asset_##_type *vulkan_scene_data_get_##_type##_by_key(                                    \
-      vulkan_scene_data *sceneData, data_asset_db *assetDb, data_key key) {                        \
-    vulkan_asset_##_type *entity = NULL;                                                           \
-    dl_foreach_elem(vulkan_asset_##_type *, existingEntity, sceneData->_var) {                     \
-      if (existingEntity->key.value == key.value) {                                                \
-        entity = existingEntity;                                                                   \
-        break;                                                                                     \
-      }                                                                                            \
-    }                                                                                              \
-    if (entity == NULL && assetDb != NULL) {                                                       \
-      vulkan_asset_##_type *newObject = core_alloc(sizeof(vulkan_asset_##_type));                  \
-      vulkan_asset_##_type##_init(newObject, sceneData);                                           \
-      vulkan_asset_##_type##_deserialize(newObject, assetDb, key);                                 \
-      DL_PREPEND(sceneData->_var, newObject);                                                      \
-      entity = sceneData->_var;                                                                    \
-    }                                                                                              \
-    return entity;                                                                                 \
-  }
-
-#define DEF_GET_VULKAN_DEFAULT_ASSET(_type, _var)                                                  \
-  vulkan_asset_##_type *vulkan_scene_data_get_default_##_type(vulkan_scene_data *sceneData) {      \
-    return sceneData->_var;                                                                        \
-  }
-
-#define DEF_ADD_VULKAN_ENTITY(_type, _var)                                                         \
-  vulkan_asset_##_type *vulkan_scene_data_add_##_type(vulkan_scene_data *sceneData,                \
-                                                      vulkan_asset_##_type *entity) {              \
-                                                                                                   \
-    entity->key = vulkan_asset_##_type##_calculate_key(entity);                                    \
-    vulkan_asset_##_type *existingEntity =                                                         \
-        vulkan_scene_data_get_##_type##_by_key(sceneData, NULL, entity->key);                      \
-    if (existingEntity != NULL) {                                                                  \
-      vulkan_asset_##_type##_deinit(entity);                                                       \
-      core_free(entity);                                                                           \
-      return existingEntity;                                                                       \
-    }                                                                                              \
-    log_debug("adding new " #_type);                                                               \
-    DL_APPEND(sceneData->_var, entity);                                                            \
-    return entity;                                                                                 \
-  }
-
-#define VULKAN_ASSET_FIELD_DEFS_FUNCS(_type, _var)                                                 \
-  DEF_GET_VULKAN_ASSET_BY_KEY(_type, _var)                                                         \
-  DEF_GET_VULKAN_DEFAULT_ASSET(_type, _var) DEF_ADD_VULKAN_ENTITY(_type, _var)
-
-VULKAN_ASSET_FIELD_DEFS_FUNCS(image, images)
-VULKAN_ASSET_FIELD_DEFS_FUNCS(sampler, samplers)
-VULKAN_ASSET_FIELD_DEFS_FUNCS(texture, textures)
-VULKAN_ASSET_FIELD_DEFS_FUNCS(direct_light, directLights)
-VULKAN_ASSET_FIELD_DEFS_FUNCS(skybox, skyboxes)
-VULKAN_ASSET_FIELD_DEFS_FUNCS(font, fonts)
-VULKAN_ASSET_FIELD_DEFS_FUNCS(material, materials)
-VULKAN_ASSET_FIELD_DEFS_FUNCS(vertex_attribute, vertexAttributes)
-VULKAN_ASSET_FIELD_DEFS_FUNCS(primitive, primitives)
-VULKAN_ASSET_FIELD_DEFS_FUNCS(object, objects)
-
-#undef DEF_GET_VULKAN_ASSET_BY_KEY
-#undef DEF_ADD_VULKAN_ENTITY
-#undef VULKAN_ASSET_FIELD_DEFS_FUNCS
 
 vulkan_scene_data *vulkan_scene_data_create_with_gltf_file(UT_string *sceneName,
                                                            UT_string *gltfPath,

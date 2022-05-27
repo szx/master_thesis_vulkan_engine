@@ -3,7 +3,6 @@
 #include "../vulkan/vulkan.h"
 
 void update_func(vulkan_renderer *renderer, double fps, double dt) {
-  static bool firstFrame = true;
   vulkan_device *vkd = renderer->vkd;
   vulkan_render_state *renderState = renderer->renderState;
   vulkan_pipeline_state *pipelineState = renderer->pipelineState;
@@ -29,16 +28,33 @@ void update_func(vulkan_renderer *renderer, double fps, double dt) {
   }
 
   /* lights */
-  if (firstFrame) {
-    vulkan_directional_light_helper_element *defaultLight =
-        vulkan_pipeline_light_state_get_directional_light_element(lightState, 0);
-    assert(defaultLight != NULL);
+  static vulkan_renderer_cache_direct_light_element *directionalLightElement = NULL;
+  if (directionalLightElement == NULL) {
+    dl_foreach_elem(vulkan_renderer_cache_direct_light_element *, directLightElement,
+                    renderState->rendererCache->directLightElements) {
+      if (directLightElement->directLight->type == vulkan_direct_light_type_directional) {
+        directionalLightElement = directLightElement;
+        break;
+      }
+    }
+    if (directionalLightElement == NULL) {
+      directionalLightElement = vulkan_renderer_cache_direct_light_element_create(
+          vulkan_asset_direct_light_create_directional_light(renderState->rendererCache->sceneData,
+                                                             (vec3){0, 0, 1}, 10, (vec3){1, 1, 1}));
+      vulkan_renderer_cache_add_direct_light_element(renderer->rendererCache,
+                                                     directionalLightElement);
+    }
   }
   if (renderer->vkd->input.keyboard.release.l) {
-    vulkan_point_light_helper_element *defaultLight =
-        vulkan_pipeline_light_state_get_point_light_element(lightState, 0);
-    assert(defaultLight != NULL);
-    vulkan_pipeline_camera_state_set_position(cameraState, defaultLight->position);
+    if (glm_vec3_eqv(directionalLightElement->directLight->direction, (vec3){0, -1, 0})) {
+      glm_vec3_copy((vec3){0, 1, 0}, directionalLightElement->directLight->direction);
+    } else if (glm_vec3_eqv(directionalLightElement->directLight->direction, (vec3){0, 1, 0})) {
+      glm_vec3_copy((vec3){0, 0, -1}, directionalLightElement->directLight->direction);
+    } else if (glm_vec3_eqv(directionalLightElement->directLight->direction, (vec3){0, 0, -1})) {
+      glm_vec3_copy((vec3){0, 0, 1}, directionalLightElement->directLight->direction);
+    } else {
+      glm_vec3_copy((vec3){0, -1, 0}, directionalLightElement->directLight->direction);
+    }
   }
 
   /* camera */
@@ -84,8 +100,9 @@ void update_func(vulkan_renderer *renderer, double fps, double dt) {
     utstring_printf(fontState->text, "FPS: %.2f\ndt: %.2f", fps, dt);
   }
 
-  if (firstFrame) {
-    firstFrame = false;
+  /* save scane */
+  if (renderer->vkd->input.keyboard.release.tab) {
+    vulkan_scene_data_serialize(renderState->rendererCache->sceneData, renderer->assetDb);
   }
 }
 

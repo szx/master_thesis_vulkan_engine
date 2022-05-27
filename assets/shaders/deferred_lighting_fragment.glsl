@@ -54,7 +54,7 @@ for (int i = 0; i < min(global[globalIdx].directionalLightCount, MAX_DIRECTIONAL
 for (int i = 0; i < min(global[globalIdx].pointLightCount, MAX_POINT_LIGHT_COUNT); i++) {
   vec3 lightPosition = global[globalIdx].pointLights[i].position;
   vec3 lightColor = global[globalIdx].pointLights[i].color;
-  float lightRadius = global[globalIdx].pointLights[i].radius;
+  float lightRadius = global[globalIdx].pointLights[i].range;
 
   vec3 l = normalize(lightPosition - worldPosition); // normalized direction into light source
   updatePBRInputWithL(pbr, l);

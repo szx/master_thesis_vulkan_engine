@@ -12,10 +12,11 @@
   X(e, GLFW_KEY_E, __VA_ARGS__)                                                                    \
   X(l, GLFW_KEY_L, __VA_ARGS__)                                                                    \
   X(t, GLFW_KEY_T, __VA_ARGS__)                                                                    \
-  X(num1, GLFW_KEY_W, __VA_ARGS__)                                                                 \
-  X(num2, GLFW_KEY_W, __VA_ARGS__)                                                                 \
-  X(num3, GLFW_KEY_W, __VA_ARGS__)                                                                 \
-  X(num4, GLFW_KEY_W, __VA_ARGS__)                                                                 \
+  X(tab, GLFW_KEY_TAB, __VA_ARGS__)                                                                \
+  X(num1, GLFW_KEY_1, __VA_ARGS__)                                                                 \
+  X(num2, GLFW_KEY_2, __VA_ARGS__)                                                                 \
+  X(num3, GLFW_KEY_3, __VA_ARGS__)                                                                 \
+  X(num4, GLFW_KEY_4, __VA_ARGS__)                                                                 \
   X(esc, GLFW_KEY_ESCAPE, __VA_ARGS__)                                                             \
   X(leftBracket, GLFW_KEY_LEFT_BRACKET, __VA_ARGS__)                                               \
   X(rightBracket, GLFW_KEY_RIGHT_BRACKET, __VA_ARGS__)                                             \

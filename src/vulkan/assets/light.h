@@ -27,7 +27,7 @@ VULKAN_ASSET_FUNC_DECLS(direct_light)
 
 vulkan_asset_direct_light *
 vulkan_asset_direct_light_create_directional_light(vulkan_scene_data *sceneData, vec3 direction,
-                                                   float intensity, float range, vec3 color);
+                                                   float intensity, vec3 color);
 
 vulkan_asset_direct_light *
 vulkan_asset_direct_light_create_point_light(vulkan_scene_data *sceneData, vec3 position,

@@ -74,6 +74,10 @@ void vulkan_renderer_cache_add_direct_light_element(
     vulkan_renderer_cache *rendererCache,
     vulkan_renderer_cache_direct_light_element *directLightElement);
 
+void vulkan_renderer_cache_remove_direct_light_element(
+    vulkan_renderer_cache *rendererCache,
+    vulkan_renderer_cache_direct_light_element *directLightElement);
+
 void vulkan_renderer_cache_add_skybox(vulkan_renderer_cache *rendererCache,
                                       vulkan_renderer_cache_skybox_element *skyboxElement);
 
