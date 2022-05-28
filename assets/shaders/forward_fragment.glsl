@@ -25,6 +25,7 @@ fillPBRInputForMetallicRoughnessModel(pbr, worldPosition, cameraPosition, worldN
 vec3 lighting = vec3(0.0);
 
 // HIRO ambient light
+// HIRO environment map (calculatePBRInputsMetallicRoughness / IBL)
 
 // directional lights
 for (int i = 0; i < min(global[globalIdx].directionalLightCount, MAX_DIRECTIONAL_LIGHT_COUNT); i++) {

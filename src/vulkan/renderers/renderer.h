@@ -2,12 +2,11 @@
  */
 #pragma once
 
-#include "../pipelines/pipeline.h"
 #include "../scene/graph.h"
+#include "render_pass/render_pass.h"
 #include "render_state.h"
 
 /// Creates and destroys Vulkan objects used to draw scene described by scene graph.
-/// Maintains chaining of different pipelines.
 typedef struct vulkan_renderer {
   /* CPU state */
   data_config *config;    ///< Pointer.
@@ -20,13 +19,15 @@ typedef struct vulkan_renderer {
   vulkan_device *vkd;     ///< Pointer.
   vulkan_swap_chain *vks; ///< Pointer.
   vulkan_render_state *renderState;
-  vulkan_pipeline_state *pipelineState;
-  UT_array *pipelines; ///< vulkan_pipeline* array
+  vulkan_render_pass_state *renderPassState;
+  // HIRO CONTINUE replace with render graph
+  UT_array *renderPasss; ///< vulkan_render_pass* array
 } vulkan_renderer;
 
 vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *assetDb,
                                         vulkan_swap_chain *vks, UT_string *sceneName,
-                                        vulkan_pipeline_type *pipelines, size_t pipelineCount);
+                                        vulkan_render_pass_type *renderPasss,
+                                        size_t renderPassCount);
 void vulkan_renderer_destroy(vulkan_renderer *renderer);
 
 void vulkan_renderer_recreate_swap_chain(vulkan_renderer *renderer);

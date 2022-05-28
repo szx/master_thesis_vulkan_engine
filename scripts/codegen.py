@@ -10,7 +10,7 @@ from codegen_descriptors import codegen_descriptors
 def main():
     config = parse_config()
     # codegen_meta()
-    # codegen_headers()
+    codegen_headers()
     codegen_globals(config)
     codegen_macros(config)
     codegen_descriptors()

@@ -1,4 +1,7 @@
-/* Vulkan API helper objects. */
+/* Render graph.
+ */
+
+// HiRO CONTINUE Implement render graph.
 
 #pragma once
 
@@ -12,7 +15,7 @@
 
 /// Render state,
 /// Contains all CPU and GPU state that is completely independent of render passes.
-typedef struct vulkan_render_state {
+typedef struct vulkan_render_graph {
   vulkan_device *vkd;     ///< Pointer.
   vulkan_swap_chain *vks; ///< Pointer.
 
@@ -29,17 +32,17 @@ typedef struct vulkan_render_state {
   vulkan_descriptors *descriptors;
   vulkan_sync *sync;
 
-} vulkan_render_state;
+} vulkan_render_graph;
 
-vulkan_render_state *
-vulkan_render_state_create(vulkan_swap_chain *vks, vulkan_renderer_cache *rendererCache,
+vulkan_render_graph *
+vulkan_render_graph_create(vulkan_swap_chain *vks, vulkan_renderer_cache *rendererCache,
                            data_config *config,
                            vulkan_unified_uniform_buffer_update_func updateGlobalUniformBufferFunc);
 
-void vulkan_render_state_destroy(vulkan_render_state *renderState);
+void vulkan_render_graph_destroy(vulkan_render_graph *renderGraph);
 
-void vulkan_render_state_update(vulkan_render_state *renderState,
+void vulkan_render_graph_update(vulkan_render_graph *renderGraph,
                                 void *updateGlobalUniformBufferFuncData);
-void vulkan_render_state_send_to_device(vulkan_render_state *renderState);
+void vulkan_render_graph_send_to_device(vulkan_render_graph *renderGraph);
 
-void vulkan_render_state_debug_print(vulkan_render_state *renderState);
+void vulkan_render_graph_debug_print(vulkan_render_graph *renderGraph);

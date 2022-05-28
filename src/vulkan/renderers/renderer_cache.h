@@ -6,7 +6,7 @@
  *    - skybox
  *    - debug text
  *    - lights
- * Used by renderer and pipelines to build draw calls.
+ * Used by render graph to build draw calls.
  */
 #pragma once
 

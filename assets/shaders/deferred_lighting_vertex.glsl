@@ -4,6 +4,5 @@
 // executed only for fragments written to by deferred geometry pipeline.
 // HIRO Encoding and decoding G-Buffer pattern in common.gls. baseColor needs only 8*3 bits
 
-// HIRO CONTINUE combine pipeline states for MRT, store texture ids in uniform buffer
 outPosition = inPosition;
 gl_Position = vec4(inPosition, 1.0);

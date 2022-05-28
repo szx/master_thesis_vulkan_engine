@@ -101,14 +101,14 @@ TEST shaderc_compiling() {
 
   UT_string *sceneName;
   utstring_alloc(sceneName, GLTF_NAME);
-  vulkan_pipeline_type pipelines[] = {vulkan_pipeline_type_forward};
+  vulkan_render_pass_type pipelines[] = {vulkan_render_pass_type_forward};
   vulkan_renderer *renderer =
       vulkan_renderer_create(config, assetDb, vks, sceneName, pipelines, array_size(pipelines));
   utstring_free(sceneName);
 
   vulkan_renderer_debug_print(renderer);
 
-  vulkan_pipeline *pipeline = *(vulkan_pipeline **)utarray_front(renderer->pipelines);
+  vulkan_render_pass *pipeline = *(vulkan_render_pass **)utarray_front(renderer->pipelines);
   vulkan_shader *vertexShader = pipeline->shaderProgram->vertexShader;
   vulkan_shader *fragmentShader = pipeline->shaderProgram->fragmentShader;
 
@@ -229,7 +229,7 @@ TEST scene_graph_building() {
 
   log_info("Test scene renderer.");
   vulkan_swap_chain *vks = vulkan_swap_chain_create(vkd);
-  vulkan_pipeline_type pipelines[] = {vulkan_pipeline_type_forward};
+  vulkan_render_pass_type pipelines[] = {vulkan_render_pass_type_forward};
   vulkan_renderer *renderer =
       vulkan_renderer_create(config, assetDb, vks, sceneName, pipelines, array_size(pipelines));
   vulkan_renderer_update(renderer);

@@ -5100,7 +5100,8 @@ const char *vulkan_color_blending_type_debug_str(int value) {
 const char *vulkan_direct_light_type_debug_str(int value) {
   if (value == 0) { return "vulkan_direct_light_type_directional"; }
   if (value == 1) { return "vulkan_direct_light_type_point"; }
-  if (value == 2) { return "vulkan_direct_light_type_count"; }
+  if (value == 2) { return "vulkan_direct_light_type_spot"; }
+  if (value == 3) { return "vulkan_direct_light_type_count"; }
   return "UNKNOWN vulkan_direct_light_type";
 }
 const char *vulkan_image_type_debug_str(int value) {
@@ -5118,27 +5119,27 @@ const char *vulkan_image_type_debug_str(int value) {
   if (value == 11) { return "vulkan_image_type_count"; }
   return "UNKNOWN vulkan_image_type";
 }
-const char *vulkan_pipeline_offscreen_texture_type_debug_str(int value) {
-  if (value == 0) { return "vulkan_pipeline_offscreen_texture_type_g_buffer_0"; }
-  if (value == 1) { return "vulkan_pipeline_offscreen_texture_type_g_buffer_1"; }
-  if (value == 2) { return "vulkan_pipeline_offscreen_texture_type_g_buffer_2"; }
-  if (value == 3) { return "vulkan_pipeline_offscreen_texture_type_count"; }
-  return "UNKNOWN vulkan_pipeline_offscreen_texture_type";
+const char *vulkan_offscreen_texture_type_debug_str(int value) {
+  if (value == 0) { return "vulkan_offscreen_texture_type_g_buffer_0"; }
+  if (value == 1) { return "vulkan_offscreen_texture_type_g_buffer_1"; }
+  if (value == 2) { return "vulkan_offscreen_texture_type_g_buffer_2"; }
+  if (value == 3) { return "vulkan_offscreen_texture_type_count"; }
+  return "UNKNOWN vulkan_offscreen_texture_type";
 }
-const char *vulkan_pipeline_offscreen_texture_usage_debug_str(int value) {
-  if (value == 0) { return "vulkan_pipeline_offscreen_texture_usage_framebuffer_color_attachment"; }
-  if (value == 1) { return "vulkan_pipeline_offscreen_texture_usage_fragment_shader_read"; }
-  if (value == 2) { return "vulkan_pipeline_offscreen_texture_usage_count"; }
-  return "UNKNOWN vulkan_pipeline_offscreen_texture_usage";
+const char *vulkan_offscreen_texture_usage_debug_str(int value) {
+  if (value == 0) { return "vulkan_offscreen_texture_usage_framebuffer_color_attachment"; }
+  if (value == 1) { return "vulkan_offscreen_texture_usage_fragment_shader_read"; }
+  if (value == 2) { return "vulkan_offscreen_texture_usage_count"; }
+  return "UNKNOWN vulkan_offscreen_texture_usage";
 }
-const char *vulkan_pipeline_type_debug_str(int value) {
-  if (value == 0) { return "vulkan_pipeline_type_forward"; }
-  if (value == 1) { return "vulkan_pipeline_type_deferred_geometry"; }
-  if (value == 2) { return "vulkan_pipeline_type_deferred_lighting"; }
-  if (value == 3) { return "vulkan_pipeline_type_skybox"; }
-  if (value == 4) { return "vulkan_pipeline_type_debug_text"; }
-  if (value == 5) { return "vulkan_pipeline_type_count"; }
-  return "UNKNOWN vulkan_pipeline_type";
+const char *vulkan_render_pass_type_debug_str(int value) {
+  if (value == 0) { return "vulkan_render_pass_type_forward"; }
+  if (value == 1) { return "vulkan_render_pass_type_deferred_geometry"; }
+  if (value == 2) { return "vulkan_render_pass_type_deferred_lighting"; }
+  if (value == 3) { return "vulkan_render_pass_type_skybox"; }
+  if (value == 4) { return "vulkan_render_pass_type_debug_text"; }
+  if (value == 5) { return "vulkan_render_pass_type_count"; }
+  return "UNKNOWN vulkan_render_pass_type";
 }
 const char *vulkan_renderer_cache_primitive_element_source_type_debug_str(int value) {
   if (value == 0) { return "vulkan_renderer_cache_primitive_element_source_type_scene_tree"; }

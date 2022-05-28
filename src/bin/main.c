@@ -5,11 +5,11 @@
 void update_func(vulkan_renderer *renderer, double fps, double dt) {
   vulkan_device *vkd = renderer->vkd;
   vulkan_render_state *renderState = renderer->renderState;
-  vulkan_pipeline_state *pipelineState = renderer->pipelineState;
-  vulkan_pipeline_camera_state *cameraState = renderer->pipelineState->sharedState.camera;
-  vulkan_pipeline_light_state *lightState = renderer->pipelineState->sharedState.lights;
-  vulkan_pipeline_skybox_state *skyboxState = renderer->pipelineState->sharedState.skybox;
-  vulkan_pipeline_font_state *fontState = renderer->pipelineState->sharedState.font;
+  vulkan_render_pass_state *renderPassState = renderer->renderPassState;
+  vulkan_render_pass_camera_state *cameraState = renderer->renderPassState->sharedState.camera;
+  vulkan_render_pass_light_state *lightState = renderer->renderPassState->sharedState.lights;
+  vulkan_render_pass_skybox_state *skyboxState = renderer->renderPassState->sharedState.skybox;
+  vulkan_render_pass_font_state *fontState = renderer->renderPassState->sharedState.font;
 
   if (renderer->vkd->input.keyboard.release.esc) {
     vulkan_renderer_exit_main_loop(renderer);
@@ -21,16 +21,16 @@ void update_func(vulkan_renderer *renderer, double fps, double dt) {
     if (cameraState->cameraIdx == 0) {
       cameraIdx = dl_count(renderState->rendererCache->cameraElements) - 1;
     }
-    vulkan_pipeline_camera_state_select(cameraState, cameraIdx);
+    vulkan_render_pass_camera_state_select(cameraState, cameraIdx);
   }
   if (renderer->vkd->input.keyboard.release.rightBracket) {
-    vulkan_pipeline_camera_state_select(cameraState, cameraState->cameraIdx + 1);
+    vulkan_render_pass_camera_state_select(cameraState, cameraState->cameraIdx + 1);
   }
 
   /* lights */
   if (renderer->vkd->input.keyboard.release.p) {
     vulkan_renderer_cache_direct_light_element *directionalLightElement =
-        vulkan_pipeline_light_state_select(lightState, vulkan_direct_light_type_directional, 0);
+        vulkan_render_pass_light_state_select(lightState, vulkan_direct_light_type_directional, 0);
     if (directionalLightElement == NULL) {
       directionalLightElement = vulkan_renderer_cache_direct_light_element_create(
           vulkan_asset_direct_light_create_directional_light(
@@ -51,7 +51,7 @@ void update_func(vulkan_renderer *renderer, double fps, double dt) {
   }
   if (renderer->vkd->input.keyboard.release.i) {
     vec3 position;
-    vulkan_pipeline_camera_state_set_position(cameraState, position);
+    vulkan_render_pass_camera_state_set_position(cameraState, position);
 
     vulkan_renderer_cache_direct_light_element *pointLightElement =
         vulkan_renderer_cache_direct_light_element_create(
@@ -64,13 +64,13 @@ void update_func(vulkan_renderer *renderer, double fps, double dt) {
   {
     static size_t pointLightIdx = 0;
     vulkan_renderer_cache_direct_light_element *pointLightElement =
-        vulkan_pipeline_light_state_select(lightState, vulkan_direct_light_type_point,
-                                           pointLightIdx);
+        vulkan_render_pass_light_state_select(lightState, vulkan_direct_light_type_point,
+                                              pointLightIdx);
     if (pointLightElement != NULL) {
       glm_vec3_copy((vec3){1, 0, 0}, pointLightElement->directLight->color);
       if (renderer->vkd->input.keyboard.release.o) {
-        vulkan_pipeline_camera_state_set_position(cameraState,
-                                                  pointLightElement->directLight->position);
+        vulkan_render_pass_camera_state_set_position(cameraState,
+                                                     pointLightElement->directLight->position);
       }
       float rangeSpeed = 100.0f;
       if (renderer->vkd->input.keyboard.press.num6) {
@@ -102,22 +102,22 @@ void update_func(vulkan_renderer *renderer, double fps, double dt) {
     moveSpeed *= 10.0f;
   }
   if (renderer->vkd->input.keyboard.press.w) {
-    vulkan_pipeline_camera_state_move(cameraState, moveSpeed * dt, 0.0f, 0.0f);
+    vulkan_render_pass_camera_state_move(cameraState, moveSpeed * dt, 0.0f, 0.0f);
   }
   if (renderer->vkd->input.keyboard.press.s) {
-    vulkan_pipeline_camera_state_move(cameraState, -moveSpeed * dt, 0.0f, 0.0f);
+    vulkan_render_pass_camera_state_move(cameraState, -moveSpeed * dt, 0.0f, 0.0f);
   }
   if (renderer->vkd->input.keyboard.press.d) {
-    vulkan_pipeline_camera_state_move(cameraState, 0.0f, moveSpeed * dt, 0.0f);
+    vulkan_render_pass_camera_state_move(cameraState, 0.0f, moveSpeed * dt, 0.0f);
   }
   if (renderer->vkd->input.keyboard.press.a) {
-    vulkan_pipeline_camera_state_move(cameraState, 0.0f, -moveSpeed * dt, 0.0f);
+    vulkan_render_pass_camera_state_move(cameraState, 0.0f, -moveSpeed * dt, 0.0f);
   }
   if (renderer->vkd->input.keyboard.press.q) {
-    vulkan_pipeline_camera_state_move(cameraState, 0.0f, 0.0f, moveSpeed * dt);
+    vulkan_render_pass_camera_state_move(cameraState, 0.0f, 0.0f, moveSpeed * dt);
   }
   if (renderer->vkd->input.keyboard.press.e) {
-    vulkan_pipeline_camera_state_move(cameraState, 0.0f, 0.0f, -moveSpeed * dt);
+    vulkan_render_pass_camera_state_move(cameraState, 0.0f, 0.0f, -moveSpeed * dt);
   }
 
   float offsetX = vkd->input.mouse.x - vkd->input.mouse.lastX;
@@ -125,7 +125,7 @@ void update_func(vulkan_renderer *renderer, double fps, double dt) {
   if (offsetX != 0.0f || offsetY != 0.0f) {
     float yawDt = offsetX * vkd->input.mouse.sensitivity * cameraState->user.rotationSpeed * dt;
     float pitchDt = offsetY * vkd->input.mouse.sensitivity * cameraState->user.rotationSpeed * dt;
-    vulkan_pipeline_camera_state_rotate(cameraState, yawDt, pitchDt, 0.0f);
+    vulkan_render_pass_camera_state_rotate(cameraState, yawDt, pitchDt, 0.0f);
   }
   vkd->input.mouse.lastX = vkd->input.mouse.x;
   vkd->input.mouse.lastY = vkd->input.mouse.y;
@@ -151,10 +151,10 @@ int main(int argc, char *argv[]) {
   data_asset_db *assetDb = data_asset_db_create();
   vulkan_device *vkd = vulkan_device_create(config, assetDb);
   vulkan_swap_chain *vks = vulkan_swap_chain_create(vkd);
-  vulkan_pipeline_type pipelines[] = {vulkan_pipeline_type_deferred_geometry,
-                                      vulkan_pipeline_type_deferred_lighting,
-                                      // vulkan_pipeline_type_forward,
-                                      vulkan_pipeline_type_skybox, vulkan_pipeline_type_debug_text};
+  vulkan_render_pass_type pipelines[] = {
+      vulkan_render_pass_type_deferred_geometry, vulkan_render_pass_type_deferred_lighting,
+      // vulkan_render_pass_type_forward,
+      vulkan_render_pass_type_skybox, vulkan_render_pass_type_debug_text};
   vulkan_renderer *renderer = vulkan_renderer_create(
       config, assetDb, vks, config->asset.settingsStartScene, pipelines, array_size(pipelines));
 

@@ -174,20 +174,6 @@ void vulkan_update_descriptor_set(vulkan_device *vkd, VkDescriptorSet descriptor
       size_t texturesDescriptorWriteIdx = 0;
       for (vulkan_textures_texture_element *textureElement = textures->textureElements;
            textureElement != NULL; textureElement = textureElement->hh.next) {
-        if (textureElement->image->type >= vulkan_image_type_g_buffer_0 &&
-            textureElement->image->type < vulkan_image_type_g_buffer_count) {
-          // HIRO CONTINUE Refactor get_render_pass_create_info into frame graph
-          // HIRO hazard if offscreen SHADER_READ_ONLY vs COLOR_ATTACHMENT
-          // HIRO either
-          //    - > ignore and silence, better for IBL,
-          //    https://github.com/KhronosGroup/Vulkan-ValidationLayers/issues/2943
-          //    - VK_IMAGE_LAYOUT_GENERAL for read/write
-          //    - separate bindings before shader read only textures, just don't use binding in
-          //    shader (problem if both read from one offscreen and write to other)
-          // HIRO CONTINUE create renderTargets[MAX_RENDER_TARGET_COUNT] (like textures.h) and add
-          // to descriptors.
-          // HIRO use VK_KHR_imageless_framebuffer to remove caching.
-        }
 
         VkWriteDescriptorSet *descriptorWrite =
             &texturesDescriptorWrites[texturesDescriptorWriteIdx];

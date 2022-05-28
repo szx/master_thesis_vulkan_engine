@@ -2,7 +2,8 @@
 
 vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *assetDb,
                                         vulkan_swap_chain *vks, UT_string *sceneName,
-                                        vulkan_pipeline_type *pipelines, size_t pipelineCount) {
+                                        vulkan_render_pass_type *renderPasss,
+                                        size_t renderPassCount) {
   vulkan_renderer *renderer = core_alloc(sizeof(vulkan_renderer));
 
   renderer->config = config;
@@ -20,44 +21,45 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
       vulkan_render_state_create(renderer->vks, renderer->rendererCache, renderer->config,
                                  vulkan_renderer_update_unified_uniform_buffer_callback);
 
-  renderer->pipelineState = vulkan_pipeline_state_create(renderer->renderState);
+  renderer->renderPassState = vulkan_render_pass_state_create(renderer->renderState);
 
-  utarray_alloc(renderer->pipelines, sizeof(vulkan_pipeline *));
+  utarray_alloc(renderer->renderPasss, sizeof(vulkan_render_pass *));
 
-  for (size_t i = 0; i < pipelineCount; i++) {
-    vulkan_pipeline_type type = pipelines[i];
-    vulkan_pipeline *pipeline = vulkan_pipeline_create_start(
-        type, renderer->vks, renderer->renderState, renderer->pipelineState);
-    utarray_push_back(renderer->pipelines, &pipeline);
+  for (size_t i = 0; i < renderPassCount; i++) {
+    vulkan_render_pass_type type = renderPasss[i];
+    vulkan_render_pass *renderPass = vulkan_render_pass_create_start(
+        type, renderer->vks, renderer->renderState, renderer->renderPassState);
+    utarray_push_back(renderer->renderPasss, &renderPass);
   }
-  // HIRO screen-space postprocessing effects pipeline
+  // HIRO screen-space postprocessing effects render passes
 
-  for (size_t i = 0; i < utarray_len(renderer->pipelines); i++) {
-    vulkan_pipeline *pipeline = *(vulkan_pipeline **)utarray_eltptr(renderer->pipelines, i);
-    vulkan_pipeline *prevPipeline = NULL;
+  for (size_t i = 0; i < utarray_len(renderer->renderPasss); i++) {
+    vulkan_render_pass *renderPass =
+        *(vulkan_render_pass **)utarray_eltptr(renderer->renderPasss, i);
+    vulkan_render_pass *prevPipeline = NULL;
     if (i > 0) {
-      prevPipeline = *(vulkan_pipeline **)utarray_eltptr(renderer->pipelines, i - 1);
+      prevPipeline = *(vulkan_render_pass **)utarray_eltptr(renderer->renderPasss, i - 1);
     }
-    vulkan_pipeline *nextPipeline = NULL;
-    if (i + 1 < utarray_len(renderer->pipelines)) {
-      nextPipeline = *(vulkan_pipeline **)utarray_eltptr(renderer->pipelines, i + 1);
+    vulkan_render_pass *nextPipeline = NULL;
+    if (i + 1 < utarray_len(renderer->renderPasss)) {
+      nextPipeline = *(vulkan_render_pass **)utarray_eltptr(renderer->renderPasss, i + 1);
     }
-    vulkan_pipeline_init_prev_next(pipeline, prevPipeline, nextPipeline);
+    vulkan_render_pass_init_prev_next(renderPass, prevPipeline, nextPipeline);
   }
 
-  utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
-    vulkan_pipeline_init_finish(pipeline);
+  utarray_foreach_elem_deref (vulkan_render_pass *, renderPass, renderer->renderPasss) {
+    vulkan_render_pass_init_finish(renderPass);
   }
   return renderer;
 }
 
 void vulkan_renderer_destroy(vulkan_renderer *renderer) {
-  utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
-    vulkan_pipeline_destroy(pipeline);
+  utarray_foreach_elem_deref (vulkan_render_pass *, renderPass, renderer->renderPasss) {
+    vulkan_render_pass_destroy(renderPass);
   }
-  utarray_free(renderer->pipelines);
+  utarray_free(renderer->renderPasss);
 
-  vulkan_pipeline_state_destroy(renderer->pipelineState);
+  vulkan_render_pass_state_destroy(renderer->renderPassState);
 
   vulkan_render_state_destroy(renderer->renderState);
 
@@ -78,29 +80,29 @@ void vulkan_renderer_recreate_swap_chain(vulkan_renderer *renderer) {
 
   vkDeviceWaitIdle(renderer->vkd->device);
 
-  utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
-    vulkan_pipeline_deinit(pipeline);
+  utarray_foreach_elem_deref (vulkan_render_pass *, renderPass, renderer->renderPasss) {
+    vulkan_render_pass_deinit(renderPass);
   }
 
-  // vulkan_pipeline_state_deinit(renderer->pipelineState);
+  // vulkan_render_pass_state_deinit(renderer->renderPassState);
 
   vulkan_swap_chain_deinit(renderer->vks);
 
   vulkan_swap_chain_init(renderer->vks, renderer->vkd);
 
-  // vulkan_pipeline_state_init(renderer->pipelineState, renderer->renderState);
-  vulkan_pipeline_state_reinit_with_new_swap_chain(renderer->pipelineState);
+  // vulkan_render_pass_state_init(renderer->renderPassState, renderer->renderState);
+  vulkan_render_pass_state_reinit_with_new_swap_chain(renderer->renderPassState);
 
-  utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
-    vulkan_pipeline_init_start(pipeline, pipeline->type, renderer->vks, renderer->renderState,
-                               renderer->pipelineState);
-    vulkan_pipeline_init_prev_next(pipeline, pipeline->prev, pipeline->next);
-    vulkan_pipeline_init_finish(pipeline);
+  utarray_foreach_elem_deref (vulkan_render_pass *, renderPass, renderer->renderPasss) {
+    vulkan_render_pass_init_start(renderPass, renderPass->type, renderer->vks,
+                                  renderer->renderState, renderer->renderPassState);
+    vulkan_render_pass_init_prev_next(renderPass, renderPass->prev, renderPass->next);
+    vulkan_render_pass_init_finish(renderPass);
   }
 }
 
 void vulkan_renderer_update(vulkan_renderer *renderer) {
-  vulkan_pipeline_state_update(renderer->pipelineState);
+  vulkan_render_pass_state_update(renderer->renderPassState);
 
   vulkan_render_state_update(renderer->renderState, renderer);
 }
@@ -114,13 +116,13 @@ void vulkan_renderer_update_unified_uniform_buffer_callback(
   // globals
   vulkan_global_uniform_buffer_element *global =
       vulkan_global_uniform_buffer_data_get_element(globalData, 0, currentFrameInFlight);
-  vulkan_pipeline_state_set_unified_uniform_buffer(renderer->pipelineState, global);
+  vulkan_render_pass_state_set_unified_uniform_buffer(renderer->renderPassState, global);
 
   // instances
   // HIRO move to batches
   utarray_foreach_elem_deref (
       vulkan_renderer_cache_primitive_element *, primitiveElement,
-      renderer->pipelineState->sharedState.rendererCacheBatches->primitiveElements) {
+      renderer->renderPassState->sharedState.rendererCacheBatches->primitiveElements) {
 
     assert(vulkan_renderer_cache_primitive_is_valid(primitiveElement, instanceId));
     size_t instanceId = primitiveElement->instanceId;
@@ -137,7 +139,7 @@ void vulkan_renderer_update_unified_uniform_buffer_callback(
 }
 
 void vulkan_renderer_send_to_device(vulkan_renderer *renderer) {
-  vulkan_pipeline_state_send_to_device(renderer->pipelineState);
+  vulkan_render_pass_state_send_to_device(renderer->renderPassState);
   vulkan_render_state_send_to_device(renderer->renderState);
 }
 
@@ -187,8 +189,8 @@ void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
       (vulkan_draw_push_constant_element){.currentFrameInFlight =
                                               renderer->renderState->sync->currentFrameInFlight});
 
-  utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
-    vulkan_pipeline_record_render_pass(pipeline, commandBuffer, swapChainImageIdx);
+  utarray_foreach_elem_deref (vulkan_render_pass *, renderPass, renderer->renderPasss) {
+    vulkan_render_pass_record_commands(renderPass, commandBuffer, swapChainImageIdx);
   }
 
   // scene.updateScene(currentFrameInFlight);
@@ -277,8 +279,8 @@ void vulkan_renderer_debug_print(vulkan_renderer *renderer) {
   vulkan_renderer_cache_debug_print(renderer->rendererCache);
   vulkan_scene_graph_debug_print(renderer->sceneGraph);
   vulkan_render_state_debug_print(renderer->renderState);
-  vulkan_pipeline_state_debug_print(renderer->pipelineState, 2);
-  utarray_foreach_elem_deref (vulkan_pipeline *, pipeline, renderer->pipelines) {
-    vulkan_pipeline_debug_print(pipeline);
+  vulkan_render_pass_state_debug_print(renderer->renderPassState, 2);
+  utarray_foreach_elem_deref (vulkan_render_pass *, renderPass, renderer->renderPasss) {
+    vulkan_render_pass_debug_print(renderPass);
   }
 }
