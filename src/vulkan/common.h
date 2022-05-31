@@ -18,6 +18,7 @@ typedef enum vulkan_attribute_type {
 } vulkan_attribute_type;
 
 typedef enum vulkan_image_type {
+  vulkan_image_type_swap_chain,
   vulkan_image_type_depth_buffer,
   vulkan_image_type_material_base_color,
   vulkan_image_type_material_parameters,
@@ -32,19 +33,6 @@ typedef enum vulkan_image_type {
   vulkan_image_type_count
 } vulkan_image_type;
 
-typedef enum vulkan_offscreen_texture_type {
-  vulkan_offscreen_texture_type_g_buffer_0,
-  vulkan_offscreen_texture_type_g_buffer_1,
-  vulkan_offscreen_texture_type_g_buffer_2,
-  vulkan_offscreen_texture_type_count
-} vulkan_offscreen_texture_type;
-
-typedef enum vulkan_offscreen_texture_usage {
-  vulkan_offscreen_texture_usage_framebuffer_color_attachment,
-  vulkan_offscreen_texture_usage_fragment_shader_read,
-  vulkan_offscreen_texture_usage_count
-} vulkan_offscreen_texture_usage;
-
 typedef struct vulkan_image_type_info {
   bool depthFormat;
   bool colorFormat;
@@ -54,6 +42,7 @@ typedef struct vulkan_image_type_info {
   bool floatingPointEncoding;
 
   char componentBits;
+  uint32_t forcedChannels;
 } vulkan_image_type_info;
 
 extern vulkan_image_type_info vulkanImageTypeInfo[];

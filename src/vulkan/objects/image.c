@@ -20,7 +20,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-    image->copyDataToDevice = true;
+    image->copyDataToDevice = false;
     image->name = "depth buffer image";
   } else if (image->type == vulkan_image_type_material_base_color) {
     image->mipLevelCount = 1 + (uint32_t)floor(log2((double)MAX(image->width, image->height)));
@@ -243,9 +243,17 @@ void vulkan_image_debug_print(vulkan_image *image, int indent) {
 
 VkFormat vulkan_find_image_format(vulkan_device *vkd, vulkan_image_type imageType,
                                   uint32_t channels) {
-  assert(channels > 0 && channels <= 4);
+  if (imageType == vulkan_image_type_swap_chain) {
+    assert(vkd->swapChainImageFormat != VK_FORMAT_UNDEFINED);
+    return vkd->swapChainImageFormat;
+  }
 
   vulkan_image_type_info info = vulkanImageTypeInfo[imageType];
+
+  if (info.forcedChannels > 0) {
+    channels = info.forcedChannels;
+  }
+  assert(channels > 0 && channels <= 4);
 
   if (info.depthFormat) {
     assert(channels == 1);

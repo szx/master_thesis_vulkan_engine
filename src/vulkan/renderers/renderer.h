@@ -3,7 +3,7 @@
 #pragma once
 
 #include "../scene/graph.h"
-#include "render_pass/render_pass.h"
+#include "render_graph.h"
 #include "render_state.h"
 
 /// Creates and destroys Vulkan objects used to draw scene described by scene graph.
@@ -19,9 +19,8 @@ typedef struct vulkan_renderer {
   vulkan_device *vkd;     ///< Pointer.
   vulkan_swap_chain *vks; ///< Pointer.
   vulkan_render_state *renderState;
-  vulkan_render_pass_state *renderPassState;
-  // HIRO CONTINUE replace with render graph
-  UT_array *renderPasss; ///< vulkan_render_pass* array
+  vulkan_render_graph *renderGraph;
+
 } vulkan_renderer;
 
 vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *assetDb,

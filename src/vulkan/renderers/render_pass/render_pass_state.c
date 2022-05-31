@@ -74,10 +74,16 @@ void vulkan_render_pass_state_send_to_device(vulkan_render_pass_state *renderPas
 }
 
 void vulkan_render_pass_state_debug_print(vulkan_render_pass_state *renderPassState, int indent) {
-  log_debug(INDENT_FORMAT_STRING "renderPass state:", INDENT_FORMAT_ARGS(0));
+  log_debug(INDENT_FORMAT_STRING "render pass state:", INDENT_FORMAT_ARGS(0));
   vulkan_render_pass_shared_state_debug_print(&renderPassState->sharedState, indent + 2);
   utarray_foreach_elem_it (vulkan_render_pass_frame_state *, frameState,
                            renderPassState->frameStates) {
     vulkan_render_pass_frame_state_debug_print(frameState, indent + 2);
   }
+}
+
+vulkan_render_pass_frame_state *
+vulkan_render_pass_state_get_frame_state(vulkan_render_pass_state *renderPassState,
+                                         size_t frameInFlight) {
+  return utarray_eltptr(renderPassState->frameStates, frameInFlight);
 }

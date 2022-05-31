@@ -1,6 +1,9 @@
 #include "alloc.h"
 
 void *core_alloc(size_t size) {
+  if (size == 0) {
+    return NULL;
+  }
   void *memory = malloc(size);
   if (memory == NULL) {
     fprintf(stderr, "%s:%d: Out of memory (OOM)", __FILE__, __LINE__);

@@ -359,34 +359,17 @@ VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
   return pipelineLayout;
 }
 
-VkPipeline vulkan_create_graphics_pipeline(
-    vulkan_device *vkd,
-
-    uint32_t colorAttachmentCount, vulkan_color_blending_type colorBlendingType,
-
-    bool depthWriteEnable, bool depthTestEnable, VkCompareOp depthTestOp,
-
-    VkPipelineShaderStageCreateInfo *shaderStages, uint32_t shaderStageCount,
-
-    const VkVertexInputBindingDescription *vertexInputBindingDescriptions,
-    size_t vertexBindingDescriptionsCount,
-    const VkVertexInputAttributeDescription *vertexAttributeDescriptions,
-    size_t vertexAttributeDescriptionsCount,
-
-    uint32_t framebufferWidth, uint32_t framebufferHeight,
-
-    const VkDescriptorSetLayout *descriptorSetLayouts, size_t descriptorSetLayoutCount,
-    const VkPushConstantRange *pushConstantRanges, size_t pushConstantRangeCount,
-
-    VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const char *debugFormat, ...) {
+VkPipeline vulkan_create_graphics_pipeline(vulkan_device *vkd,
+                                           vulkan_graphics_pipeline_create_info createInfo,
+                                           const char *debugFormat, ...) {
 
   /* vertex input */
   VkPipelineVertexInputStateCreateInfo vertexInputInfo = {0};
   vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-  vertexInputInfo.vertexBindingDescriptionCount = vertexBindingDescriptionsCount;
-  vertexInputInfo.pVertexBindingDescriptions = vertexInputBindingDescriptions;
-  vertexInputInfo.vertexAttributeDescriptionCount = vertexAttributeDescriptionsCount;
-  vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions;
+  vertexInputInfo.vertexBindingDescriptionCount = createInfo.vertexBindingDescriptionsCount;
+  vertexInputInfo.pVertexBindingDescriptions = createInfo.vertexInputBindingDescriptions;
+  vertexInputInfo.vertexAttributeDescriptionCount = createInfo.vertexAttributeDescriptionsCount;
+  vertexInputInfo.pVertexAttributeDescriptions = createInfo.vertexAttributeDescriptions;
 
   VkPipelineInputAssemblyStateCreateInfo inputAssembly = {0};
   inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -397,15 +380,15 @@ VkPipeline vulkan_create_graphics_pipeline(
   VkViewport viewport = {0};
   viewport.x = 0.0f;
   viewport.y = 0.0f;
-  viewport.width = (float)framebufferWidth;
-  viewport.height = (float)framebufferHeight;
+  viewport.width = (float)createInfo.framebufferWidth;
+  viewport.height = (float)createInfo.framebufferHeight;
   viewport.minDepth = 0.0f;
   viewport.maxDepth = 1.0f;
   VkRect2D scissor = {0};
   scissor.offset.x = 0;
   scissor.offset.y = 0;
-  scissor.extent.width = framebufferWidth;
-  scissor.extent.height = framebufferHeight;
+  scissor.extent.width = createInfo.framebufferWidth;
+  scissor.extent.height = createInfo.framebufferHeight;
 
   VkPipelineViewportStateCreateInfo viewportState = {0};
   viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -432,20 +415,20 @@ VkPipeline vulkan_create_graphics_pipeline(
 
   VkPipelineDepthStencilStateCreateInfo depthStencil = {0};
   depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-  depthStencil.depthTestEnable = depthTestEnable;
-  depthStencil.depthWriteEnable = depthWriteEnable;
-  depthStencil.depthCompareOp = depthTestOp;
+  depthStencil.depthTestEnable = createInfo.depthTestEnable;
+  depthStencil.depthWriteEnable = createInfo.depthWriteEnable;
+  depthStencil.depthCompareOp = createInfo.depthTestOp;
   depthStencil.depthBoundsTestEnable = VK_FALSE;
   depthStencil.stencilTestEnable = VK_FALSE;
 
   // Blending options for framebuffer attachment.
-  VkPipelineColorBlendAttachmentState colorBlendAttachment[VLA(colorAttachmentCount)];
+  VkPipelineColorBlendAttachmentState colorBlendAttachment[VLA(createInfo.colorAttachmentCount)];
   for (size_t i = 0; i < array_size(colorBlendAttachment); i++) {
     // NOTE: Color write mask is applied even with blending disabled.
     colorBlendAttachment[i] = (VkPipelineColorBlendAttachmentState){
         .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
                           VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT};
-    if (colorBlendingType == vulkan_color_blending_type_alpha) {
+    if (createInfo.colorBlendingType == vulkan_color_blending_type_alpha) {
       colorBlendAttachment[i].blendEnable = VK_TRUE;
       colorBlendAttachment[i].srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
       colorBlendAttachment[i].dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
@@ -460,7 +443,7 @@ VkPipeline vulkan_create_graphics_pipeline(
   colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
   colorBlending.logicOpEnable = VK_FALSE;
   colorBlending.logicOp = VK_LOGIC_OP_COPY;
-  colorBlending.attachmentCount = colorAttachmentCount;
+  colorBlending.attachmentCount = createInfo.colorAttachmentCount;
   colorBlending.pAttachments = colorBlendAttachment;
   colorBlending.blendConstants[0] = 0.0f;
   colorBlending.blendConstants[1] = 0.0f;
@@ -469,8 +452,8 @@ VkPipeline vulkan_create_graphics_pipeline(
 
   VkGraphicsPipelineCreateInfo pipelineInfo = {0};
   pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-  pipelineInfo.stageCount = shaderStageCount;
-  pipelineInfo.pStages = shaderStages;
+  pipelineInfo.stageCount = createInfo.shaderStageCount;
+  pipelineInfo.pStages = createInfo.shaderStages;
   pipelineInfo.pVertexInputState = &vertexInputInfo;
   pipelineInfo.pInputAssemblyState = &inputAssembly;
   pipelineInfo.pViewportState = &viewportState;
@@ -478,8 +461,8 @@ VkPipeline vulkan_create_graphics_pipeline(
   pipelineInfo.pMultisampleState = &multisampling;
   pipelineInfo.pDepthStencilState = &depthStencil;
   pipelineInfo.pColorBlendState = &colorBlending;
-  pipelineInfo.layout = pipelineLayout;
-  pipelineInfo.renderPass = renderPass;
+  pipelineInfo.layout = createInfo.pipelineLayout;
+  pipelineInfo.renderPass = createInfo.renderPass;
   pipelineInfo.subpass = 0;
   pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
@@ -487,64 +470,53 @@ VkPipeline vulkan_create_graphics_pipeline(
   verify(vkCreateGraphicsPipelines(vkd->device, VK_NULL_HANDLE, 1, &pipelineInfo, vka,
                                    &graphicsPipeline) == VK_SUCCESS);
   DEBUG_NAME_FORMAT_START()
-  vulkan_debug_name_render_pass(vkd->debug, renderPass, "%s - graphics pipeline", debugName);
+  vulkan_debug_name_graphics_pipeline(vkd->debug, graphicsPipeline, "%s - graphics pipeline",
+                                      debugName);
   DEBUG_NAME_FORMAT_END();
 
-  core_free(shaderStages);
   return graphicsPipeline;
 }
 
-VkRenderPass
-vulkan_create_render_pass(vulkan_device *vkd,
-
-                          VkAttachmentDescription *onscreenColorAttachmentDescription,
-                          VkAttachmentReference *onscreenColorAttachmentReference,
-
-                          VkAttachmentDescription *offscreenColorAttachmentDescriptions,
-                          size_t offscreenAttachmentDescriptionCount,
-                          VkAttachmentReference *offscreenColorAttachmentReferences,
-                          size_t offscreenAttachmentReferenceCount,
-
-                          VkAttachmentDescription *depthAttachmentDescription,
-                          VkAttachmentReference *depthAttachmentReference,
-
-                          VkSubpassDependency *dependencies, size_t dependencyCount,
-
-                          const char *debugFormat, ...) {
-  assert(offscreenAttachmentDescriptionCount == offscreenAttachmentReferenceCount);
-  size_t onscreenColorAttachmentCount = (onscreenColorAttachmentReference != NULL ? 1 : 0);
-  size_t depthAttachmentDescriptionCount = (depthAttachmentDescription != NULL ? 1 : 0);
+VkRenderPass vulkan_create_render_pass(vulkan_device *vkd,
+                                       vulkan_render_pass_create_info createInfo,
+                                       const char *debugFormat, ...) {
+  assert(createInfo.offscreenColorAttachmentDescriptionCount ==
+         createInfo.offscreenColorAttachmentReferenceCount);
+  size_t onscreenColorAttachmentCount =
+      (createInfo.onscreenColorAttachmentReference != NULL ? 1 : 0);
+  size_t depthAttachmentDescriptionCount = (createInfo.depthAttachmentDescription != NULL ? 1 : 0);
 
   size_t attachmentDescriptionCount = onscreenColorAttachmentCount +
-                                      offscreenAttachmentDescriptionCount +
+                                      createInfo.offscreenColorAttachmentDescriptionCount +
                                       depthAttachmentDescriptionCount;
   VkAttachmentDescription attachmentDescriptions[attachmentDescriptionCount];
   size_t idx = 0;
   if (onscreenColorAttachmentCount > 0) {
-    attachmentDescriptions[idx++] = *onscreenColorAttachmentDescription;
+    attachmentDescriptions[idx++] = *createInfo.onscreenColorAttachmentDescription;
   }
-  core_memcpy(attachmentDescriptions + idx, offscreenColorAttachmentDescriptions,
-              offscreenAttachmentDescriptionCount * sizeof(VkAttachmentDescription));
-  idx += offscreenAttachmentReferenceCount;
+  core_memcpy(attachmentDescriptions + idx, createInfo.offscreenColorAttachmentDescriptions,
+              createInfo.offscreenColorAttachmentDescriptionCount *
+                  sizeof(VkAttachmentDescription));
+  idx += createInfo.offscreenColorAttachmentReferenceCount;
   if (depthAttachmentDescriptionCount > 0) {
-    attachmentDescriptions[idx++] = *depthAttachmentDescription;
+    attachmentDescriptions[idx++] = *createInfo.depthAttachmentDescription;
   }
 
   size_t colorAttachmentReferenceCount =
-      onscreenColorAttachmentCount + offscreenAttachmentReferenceCount;
+      onscreenColorAttachmentCount + createInfo.offscreenColorAttachmentReferenceCount;
   VkAttachmentReference colorAttachmentReferences[attachmentDescriptionCount];
   idx = 0;
   if (onscreenColorAttachmentCount > 0) {
-    colorAttachmentReferences[idx++] = *onscreenColorAttachmentReference;
+    colorAttachmentReferences[idx++] = *createInfo.onscreenColorAttachmentReference;
   }
-  core_memcpy(colorAttachmentReferences + idx, offscreenColorAttachmentReferences,
-              offscreenAttachmentReferenceCount * sizeof(VkAttachmentReference));
+  core_memcpy(colorAttachmentReferences + idx, createInfo.offscreenColorAttachmentReferences,
+              createInfo.offscreenColorAttachmentReferenceCount * sizeof(VkAttachmentReference));
 
   VkSubpassDescription subpass = {0};
   subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
   subpass.colorAttachmentCount = colorAttachmentReferenceCount;
   subpass.pColorAttachments = colorAttachmentReferences;
-  subpass.pDepthStencilAttachment = depthAttachmentReference;
+  subpass.pDepthStencilAttachment = createInfo.depthAttachmentReference;
   subpass.pResolveAttachments = NULL;
 
   VkRenderPassCreateInfo renderPassInfo = {0};
@@ -555,8 +527,8 @@ vulkan_create_render_pass(vulkan_device *vkd,
   // TODO: Support multiple subpasses.
   renderPassInfo.subpassCount = 1;
   renderPassInfo.pSubpasses = &subpass;
-  renderPassInfo.dependencyCount = dependencyCount;
-  renderPassInfo.pDependencies = dependencies;
+  renderPassInfo.dependencyCount = createInfo.dependencyCount;
+  renderPassInfo.pDependencies = createInfo.dependencies;
 
   VkRenderPass renderPass;
   verify(vkCreateRenderPass(vkd->device, &renderPassInfo, vka, &renderPass) == VK_SUCCESS);

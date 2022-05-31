@@ -36,6 +36,7 @@ void vulkan_swap_chain_info_deinit(vulkan_swap_chain_info *vksInfo) {
 vulkan_device *vulkan_device_create(data_config *config, data_asset_db *assetDb) {
   vulkan_device *vkd = core_alloc(sizeof(vulkan_device));
   vulkan_swap_chain_info_init(&vkd->swapChainInfo);
+  vkd->swapChainImageFormat = VK_FORMAT_UNDEFINED;
   create_window(vkd, config, assetDb);
   create_instance(vkd, config, assetDb);
   create_debug_utils(vkd);
@@ -341,6 +342,7 @@ bool physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevic
   // Scalar block layout allows us to use std430 memory layout for GLSL buffers, which corresponds
   // more directly to C struct alignment rules.
   log_info("scalarBlockLayout = %d", features12.scalarBlockLayout);
+  log_info("imagelessFramebuffer = %d", features12.imagelessFramebuffer);
   log_info("multiDrawIndirect = %d", features10.multiDrawIndirect);
   log_info("drawIndirectFirstInstance = %d", features10.drawIndirectFirstInstance);
   bool featuresSupported =
@@ -348,8 +350,8 @@ bool physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevic
       features10.shaderSampledImageArrayDynamicIndexing && featuresRobustness2.nullDescriptor &&
       features12.descriptorIndexing && features12.descriptorBindingVariableDescriptorCount &&
       features12.descriptorBindingPartiallyBound && features12.runtimeDescriptorArray &&
-      features12.scalarBlockLayout && features10.multiDrawIndirect &&
-      features10.drawIndirectFirstInstance;
+      features12.scalarBlockLayout && features12.imagelessFramebuffer &&
+      features10.multiDrawIndirect && features10.drawIndirectFirstInstance;
 
   return queueFamiliesComplete && extensionsSupported && swapChainAdequate && goodVulkanVersion &&
          featuresSupported;

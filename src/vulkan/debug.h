@@ -53,6 +53,7 @@ VULKAN_DEBUG_NAME_FUNC_DECL(descriptor_set_layout, VkDescriptorSetLayout)
 VULKAN_DEBUG_NAME_FUNC_DECL(descriptor_set, VkDescriptorSet)
 VULKAN_DEBUG_NAME_FUNC_DECL(pipeline_layout, VkPipelineLayout)
 VULKAN_DEBUG_NAME_FUNC_DECL(render_pass, VkRenderPass)
+VULKAN_DEBUG_NAME_FUNC_DECL(graphics_pipeline, VkPipeline)
 
 #undef VULKAN_DEBUG_NAME_FUNC_DECL
 

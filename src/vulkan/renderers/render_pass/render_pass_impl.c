@@ -3,12 +3,11 @@
 
 /* forward */
 
-vulkan_render_pass_info
-vulkan_render_pass_impl_forward_get_renderPass_info(vulkan_render_pass *renderPass) {
+vulkan_render_pass_info vulkan_render_pass_impl_forward_get_info(vulkan_render_pass *renderPass) {
   return (vulkan_render_pass_info){.useOnscreenColorAttachment = true,
                                    .onscreenClearValue =
                                        (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}},
-                                   .offscreenTextureCount = 0,
+                                   .offscreenColorAttachmentCount = 0,
                                    .useDepthAttachment = true,
                                    .depthAttachmentWriteEnable = true,
                                    .depthAttachmentTestEnable = true,
@@ -30,22 +29,18 @@ void vulkan_render_pass_impl_forward_record_commands(vulkan_render_pass *renderP
 /* deferred geometry */
 
 vulkan_render_pass_info
-vulkan_render_pass_impl_deferred_geometry_get_renderPass_info(vulkan_render_pass *renderPass) {
+vulkan_render_pass_impl_deferred_geometry_get_info(vulkan_render_pass *renderPass) {
   return (vulkan_render_pass_info){
       .useOnscreenColorAttachment = false,
       .onscreenClearValue = {{0.0f, 0.0f, 0.0f, 1.0f}},
 
-      .offscreenTextureCount = 3,
-      .offscreenTextureInfos =
+      .offscreenColorAttachmentCount = 3,
+      .offscreenColorAttachments =
           {
-              {.type = vulkan_offscreen_texture_type_g_buffer_0,
-               .usage = vulkan_offscreen_texture_usage_framebuffer_color_attachment},
-              {.type = vulkan_offscreen_texture_type_g_buffer_1,
-               .usage = vulkan_offscreen_texture_usage_framebuffer_color_attachment},
-              {.type = vulkan_offscreen_texture_type_g_buffer_2,
-               .usage = vulkan_offscreen_texture_usage_framebuffer_color_attachment},
+              {.type = vulkan_image_type_g_buffer_0, .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
+              {.type = vulkan_image_type_g_buffer_1, .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
+              {.type = vulkan_image_type_g_buffer_2, .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
           },
-      .offscreenClearValue = {{0.0f, 0.0f, 0.0f, 1.0f}},
 
       .useDepthAttachment = true,
       .depthAttachmentWriteEnable = true,
@@ -69,18 +64,15 @@ void vulkan_render_pass_impl_deferred_geometry_record_commands(
 /* deferred lighting */
 
 vulkan_render_pass_info
-vulkan_render_pass_impl_deferred_lighting_get_renderPass_info(vulkan_render_pass *renderPass) {
+vulkan_render_pass_impl_deferred_lighting_get_info(vulkan_render_pass *renderPass) {
   return (vulkan_render_pass_info){
       .useOnscreenColorAttachment = true,
-      .offscreenTextureCount = 3,
-      .offscreenTextureInfos =
+      .offscreenFragmentShaderInputCount = 3,
+      .offscreenFragmentShaderInputs =
           {
-              {.type = vulkan_offscreen_texture_type_g_buffer_0,
-               .usage = vulkan_offscreen_texture_usage_fragment_shader_read},
-              {.type = vulkan_offscreen_texture_type_g_buffer_1,
-               .usage = vulkan_offscreen_texture_usage_fragment_shader_read},
-              {.type = vulkan_offscreen_texture_type_g_buffer_2,
-               .usage = vulkan_offscreen_texture_usage_fragment_shader_read},
+              {.type = vulkan_image_type_g_buffer_0},
+              {.type = vulkan_image_type_g_buffer_1},
+              {.type = vulkan_image_type_g_buffer_2},
           },
       // Use depth buffer to reject fragments with depth == 0 (no geometry rendered)
       .useDepthAttachment = true,
@@ -109,12 +101,10 @@ void vulkan_render_pass_impl_deferred_lighting_record_commands(
 
 /* skybox */
 
-vulkan_render_pass_info
-vulkan_render_pass_impl_skybox_get_renderPass_info(vulkan_render_pass *renderPass) {
+vulkan_render_pass_info vulkan_render_pass_impl_skybox_get_info(vulkan_render_pass *renderPass) {
   return (vulkan_render_pass_info){
       .useOnscreenColorAttachment = true,
-      .onscreenClearValue = (VkClearColorValue){{0.5f, 0.5f, 0.5f, 1.0f}},
-      .offscreenTextureCount = 0,
+      .onscreenClearValue = {{0.5f, 0.5f, 0.5f, 1.0f}},
       // Use depth buffer to reject fragments with depth != 0
       .useDepthAttachment = true,
       .depthAttachmentWriteEnable = false,
@@ -140,7 +130,7 @@ void vulkan_render_pass_impl_skybox_record_commands(vulkan_render_pass *renderPa
 /* debug text */
 
 vulkan_render_pass_info
-vulkan_render_pass_impl_debug_text_get_renderPass_info(vulkan_render_pass *renderPass) {
+vulkan_render_pass_impl_debug_text_get_info(vulkan_render_pass *renderPass) {
   return (vulkan_render_pass_info){.useOnscreenColorAttachment = true,
                                    .colorBlendingType = vulkan_color_blending_type_alpha};
 }

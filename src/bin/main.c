@@ -5,11 +5,11 @@
 void update_func(vulkan_renderer *renderer, double fps, double dt) {
   vulkan_device *vkd = renderer->vkd;
   vulkan_render_state *renderState = renderer->renderState;
-  vulkan_render_pass_state *renderPassState = renderer->renderPassState;
-  vulkan_render_pass_camera_state *cameraState = renderer->renderPassState->sharedState.camera;
-  vulkan_render_pass_light_state *lightState = renderer->renderPassState->sharedState.lights;
-  vulkan_render_pass_skybox_state *skyboxState = renderer->renderPassState->sharedState.skybox;
-  vulkan_render_pass_font_state *fontState = renderer->renderPassState->sharedState.font;
+  vulkan_render_pass_state *renderPassState = renderer->renderGraph->renderPassState;
+  vulkan_render_pass_camera_state *cameraState = renderPassState->sharedState.camera;
+  vulkan_render_pass_light_state *lightState = renderPassState->sharedState.lights;
+  vulkan_render_pass_skybox_state *skyboxState = renderPassState->sharedState.skybox;
+  vulkan_render_pass_font_state *fontState = renderPassState->sharedState.font;
 
   if (renderer->vkd->input.keyboard.release.esc) {
     vulkan_renderer_exit_main_loop(renderer);

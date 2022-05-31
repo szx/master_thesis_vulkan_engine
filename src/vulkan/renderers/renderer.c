@@ -2,7 +2,7 @@
 
 vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *assetDb,
                                         vulkan_swap_chain *vks, UT_string *sceneName,
-                                        vulkan_render_pass_type *renderPasss,
+                                        vulkan_render_pass_type *renderPasses,
                                         size_t renderPassCount) {
   vulkan_renderer *renderer = core_alloc(sizeof(vulkan_renderer));
 
@@ -21,46 +21,20 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
       vulkan_render_state_create(renderer->vks, renderer->rendererCache, renderer->config,
                                  vulkan_renderer_update_unified_uniform_buffer_callback);
 
-  renderer->renderPassState = vulkan_render_pass_state_create(renderer->renderState);
+  renderer->renderGraph = vulkan_render_graph_create(renderer->renderState);
 
-  utarray_alloc(renderer->renderPasss, sizeof(vulkan_render_pass *));
-
-  for (size_t i = 0; i < renderPassCount; i++) {
-    vulkan_render_pass_type type = renderPasss[i];
-    vulkan_render_pass *renderPass = vulkan_render_pass_create_start(
-        type, renderer->vks, renderer->renderState, renderer->renderPassState);
-    utarray_push_back(renderer->renderPasss, &renderPass);
-  }
   // HIRO screen-space postprocessing effects render passes
-
-  for (size_t i = 0; i < utarray_len(renderer->renderPasss); i++) {
-    vulkan_render_pass *renderPass =
-        *(vulkan_render_pass **)utarray_eltptr(renderer->renderPasss, i);
-    vulkan_render_pass *prevPipeline = NULL;
-    if (i > 0) {
-      prevPipeline = *(vulkan_render_pass **)utarray_eltptr(renderer->renderPasss, i - 1);
-    }
-    vulkan_render_pass *nextPipeline = NULL;
-    if (i + 1 < utarray_len(renderer->renderPasss)) {
-      nextPipeline = *(vulkan_render_pass **)utarray_eltptr(renderer->renderPasss, i + 1);
-    }
-    vulkan_render_pass_init_prev_next(renderPass, prevPipeline, nextPipeline);
+  for (size_t i = 0; i < renderPassCount; i++) {
+    vulkan_render_pass_type type = renderPasses[i];
+    vulkan_render_graph_add_render_pass(renderer->renderGraph, type);
   }
+  vulkan_render_graph_compile(renderer->renderGraph);
 
-  utarray_foreach_elem_deref (vulkan_render_pass *, renderPass, renderer->renderPasss) {
-    vulkan_render_pass_init_finish(renderPass);
-  }
   return renderer;
 }
 
 void vulkan_renderer_destroy(vulkan_renderer *renderer) {
-  utarray_foreach_elem_deref (vulkan_render_pass *, renderPass, renderer->renderPasss) {
-    vulkan_render_pass_destroy(renderPass);
-  }
-  utarray_free(renderer->renderPasss);
-
-  vulkan_render_pass_state_destroy(renderer->renderPassState);
-
+  vulkan_render_graph_destroy(renderer->renderGraph);
   vulkan_render_state_destroy(renderer->renderState);
 
   vulkan_scene_graph_destroy(renderer->sceneGraph);
@@ -80,30 +54,15 @@ void vulkan_renderer_recreate_swap_chain(vulkan_renderer *renderer) {
 
   vkDeviceWaitIdle(renderer->vkd->device);
 
-  utarray_foreach_elem_deref (vulkan_render_pass *, renderPass, renderer->renderPasss) {
-    vulkan_render_pass_deinit(renderPass);
-  }
-
-  // vulkan_render_pass_state_deinit(renderer->renderPassState);
-
+  vulkan_render_graph_start_swap_chain_recreation(renderer->renderGraph);
   vulkan_swap_chain_deinit(renderer->vks);
 
   vulkan_swap_chain_init(renderer->vks, renderer->vkd);
-
-  // vulkan_render_pass_state_init(renderer->renderPassState, renderer->renderState);
-  vulkan_render_pass_state_reinit_with_new_swap_chain(renderer->renderPassState);
-
-  utarray_foreach_elem_deref (vulkan_render_pass *, renderPass, renderer->renderPasss) {
-    vulkan_render_pass_init_start(renderPass, renderPass->type, renderer->vks,
-                                  renderer->renderState, renderer->renderPassState);
-    vulkan_render_pass_init_prev_next(renderPass, renderPass->prev, renderPass->next);
-    vulkan_render_pass_init_finish(renderPass);
-  }
+  vulkan_render_graph_finish_swap_chain_recreation(renderer->renderGraph);
 }
 
 void vulkan_renderer_update(vulkan_renderer *renderer) {
-  vulkan_render_pass_state_update(renderer->renderPassState);
-
+  vulkan_render_graph_update(renderer->renderGraph);
   vulkan_render_state_update(renderer->renderState, renderer);
 }
 
@@ -116,13 +75,14 @@ void vulkan_renderer_update_unified_uniform_buffer_callback(
   // globals
   vulkan_global_uniform_buffer_element *global =
       vulkan_global_uniform_buffer_data_get_element(globalData, 0, currentFrameInFlight);
-  vulkan_render_pass_state_set_unified_uniform_buffer(renderer->renderPassState, global);
+  vulkan_render_pass_state_set_unified_uniform_buffer(renderer->renderGraph->renderPassState,
+                                                      global);
 
   // instances
   // HIRO move to batches
   utarray_foreach_elem_deref (
       vulkan_renderer_cache_primitive_element *, primitiveElement,
-      renderer->renderPassState->sharedState.rendererCacheBatches->primitiveElements) {
+      renderer->renderGraph->renderPassState->sharedState.rendererCacheBatches->primitiveElements) {
 
     assert(vulkan_renderer_cache_primitive_is_valid(primitiveElement, instanceId));
     size_t instanceId = primitiveElement->instanceId;
@@ -139,7 +99,7 @@ void vulkan_renderer_update_unified_uniform_buffer_callback(
 }
 
 void vulkan_renderer_send_to_device(vulkan_renderer *renderer) {
-  vulkan_render_pass_state_send_to_device(renderer->renderPassState);
+  vulkan_render_graph_send_to_device(renderer->renderGraph);
   vulkan_render_state_send_to_device(renderer->renderState);
 }
 
@@ -181,7 +141,7 @@ void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
   verify(vkBeginCommandBuffer(commandBuffer, &beginInfo) == VK_SUCCESS);
 
-  // Bind unified buffers and descriptors.
+  // Bind all render state.
   vulkan_unified_geometry_buffer_record_bind_command(renderer->renderState->unifiedGeometryBuffer,
                                                      commandBuffer);
   vulkan_descriptors_record_bind_commands(
@@ -189,16 +149,8 @@ void vulkan_renderer_draw_frame(vulkan_renderer *renderer) {
       (vulkan_draw_push_constant_element){.currentFrameInFlight =
                                               renderer->renderState->sync->currentFrameInFlight});
 
-  utarray_foreach_elem_deref (vulkan_render_pass *, renderPass, renderer->renderPasss) {
-    vulkan_render_pass_record_commands(renderPass, commandBuffer, swapChainImageIdx);
-  }
-
-  // scene.updateScene(currentFrameInFlight);
-  // scene.beginCommandBuffer(&framebuffers[swapChainImageIdx]);
-  // scene.recordCommandBuffer(currentFrameInFlight, &framebuffers[swapChainImageIdx]);
-  // gui.updateGUI(&scene);
-  // gui.recordCommandBuffer(&framebuffers[swapChainImageIdx]);
-  // scene.endCommandBuffer(&framebuffers[swapChainImageIdx]);
+  // Record render passes.
+  vulkan_render_graph_record_commands(renderer->renderGraph, commandBuffer, swapChainImageIdx);
 
   verify(vkEndCommandBuffer(commandBuffer) == VK_SUCCESS);
 
@@ -279,8 +231,5 @@ void vulkan_renderer_debug_print(vulkan_renderer *renderer) {
   vulkan_renderer_cache_debug_print(renderer->rendererCache);
   vulkan_scene_graph_debug_print(renderer->sceneGraph);
   vulkan_render_state_debug_print(renderer->renderState);
-  vulkan_render_pass_state_debug_print(renderer->renderPassState, 2);
-  utarray_foreach_elem_deref (vulkan_render_pass *, renderPass, renderer->renderPasss) {
-    vulkan_render_pass_debug_print(renderPass);
-  }
+  vulkan_render_graph_debug_print(renderer->renderGraph);
 }

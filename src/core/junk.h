@@ -70,6 +70,7 @@ typedef XXH64_hash_t hash_t;
 #define MACRO_ARG_N(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17,    \
                     _18, _19, _20, _21, _22, _23, _24, N, ...)                                     \
   N
+#define MACRO_NARGS_SEQ_N() 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
 
 // Returns name concatenated with number of variadic arguments.
 #define MACRO_OVERLOAD(_name, ...) MACRO_CONCAT(_name, MACRO_NARGS(__VA_ARGS__))
@@ -149,6 +150,17 @@ typedef XXH64_hash_t hash_t;
   MACRO_DECL_AS_FOR(_elem##i, _type _elem = {0})                                                   \
   MACRO_DECL_AS_FOR(_elem##i, _type _elem##Temp = {0})                                             \
   DL_FOREACH_SAFE(_dl, _elem, _elem##Temp)
+
+#define dl_reverse_foreach_elem(_type, _elem, _dl)                                                 \
+  MACRO_DECL_AS_FOR_NEW(_elem##i)                                                                  \
+  MACRO_DECL_AS_FOR(_elem##i, _type _elem##Head = _dl)                                             \
+  if (_elem##Head != NULL)                                                                         \
+    MACRO_DECL_AS_FOR(_elem##i, _type _elem##Tail = (_dl)->prev)                                   \
+  MACRO_DECL_AS_FOR(_elem##i, _type _elem = {0})                                                   \
+  MACRO_DECL_AS_FOR(_elem##i, _type _elem##Temp = {0})                                             \
+  for ((_elem) = (_elem##Tail);                                                                    \
+       (_elem) && ((_elem##Temp) = ((_elem) != _elem##Head ? (_elem)->prev : NULL), 1);            \
+       (_elem) = (_elem##Temp))
 
 // NOTE: Following linked list functions are not really speed demons.
 size_t _dl_count(size_t offsetofNext, void *dl);

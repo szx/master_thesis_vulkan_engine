@@ -71,44 +71,57 @@ typedef enum vulkan_color_blending_type {
   vulkan_color_blending_type_count,
 } vulkan_color_blending_type;
 
-VkPipeline vulkan_create_graphics_pipeline(
-    vulkan_device *vkd,
+typedef struct vulkan_graphics_pipeline_create_info {
+  uint32_t colorAttachmentCount;
+  vulkan_color_blending_type colorBlendingType;
 
-    uint32_t colorAttachmentCount, vulkan_color_blending_type colorBlendingType,
+  bool depthWriteEnable;
+  bool depthTestEnable;
+  VkCompareOp depthTestOp;
 
-    bool depthWriteEnable, bool depthTestEnable, VkCompareOp depthTestOp,
+  VkPipelineShaderStageCreateInfo *shaderStages;
+  uint32_t shaderStageCount;
 
-    VkPipelineShaderStageCreateInfo *shaderStages, uint32_t shaderStageCount,
+  const VkVertexInputBindingDescription *vertexInputBindingDescriptions;
+  size_t vertexBindingDescriptionsCount;
+  const VkVertexInputAttributeDescription *vertexAttributeDescriptions;
+  size_t vertexAttributeDescriptionsCount;
 
-    const VkVertexInputBindingDescription *vertexInputBindingDescriptions,
-    size_t vertexBindingDescriptionsCount,
-    const VkVertexInputAttributeDescription *vertexAttributeDescriptions,
-    size_t vertexAttributeDescriptionsCount,
+  uint32_t framebufferWidth;
+  uint32_t framebufferHeight;
 
-    uint32_t framebufferWidth, uint32_t framebufferHeight,
+  const VkDescriptorSetLayout *descriptorSetLayouts;
+  size_t descriptorSetLayoutCount;
+  const VkPushConstantRange *pushConstantRanges;
+  size_t pushConstantRangeCount;
 
-    const VkDescriptorSetLayout *descriptorSetLayouts, size_t descriptorSetLayoutCount,
-    const VkPushConstantRange *pushConstantRanges, size_t pushConstantRangeCount,
+  VkRenderPass renderPass;
+  VkPipelineLayout pipelineLayout;
+} vulkan_graphics_pipeline_create_info;
 
-    VkRenderPass renderPass, VkPipelineLayout pipelineLayout, const char *debugFormat, ...);
+VkPipeline vulkan_create_graphics_pipeline(vulkan_device *vkd,
+                                           vulkan_graphics_pipeline_create_info createInfo,
+                                           const char *debugFormat, ...);
 
-VkRenderPass
-vulkan_create_render_pass(vulkan_device *vkd,
+typedef struct vulkan_render_pass_create_info {
+  VkAttachmentDescription *onscreenColorAttachmentDescription;
+  VkAttachmentReference *onscreenColorAttachmentReference;
 
-                          VkAttachmentDescription *onscreenColorAttachmentDescription,
-                          VkAttachmentReference *onscreenColorAttachmentReference,
+  size_t offscreenColorAttachmentDescriptionCount;
+  VkAttachmentDescription *offscreenColorAttachmentDescriptions;
+  size_t offscreenColorAttachmentReferenceCount;
+  VkAttachmentReference *offscreenColorAttachmentReferences;
 
-                          VkAttachmentDescription *offscreenColorAttachmentDescriptions,
-                          size_t offscreenAttachmentDescriptionCount,
-                          VkAttachmentReference *offscreenColorAttachmentReferences,
-                          size_t offscreenAttachmentReferenceCount,
+  VkAttachmentDescription *depthAttachmentDescription;
+  VkAttachmentReference *depthAttachmentReference;
 
-                          VkAttachmentDescription *depthAttachmentDescription,
-                          VkAttachmentReference *depthAttachmentReference,
+  size_t dependencyCount;
+  VkSubpassDependency *dependencies;
+} vulkan_render_pass_create_info;
 
-                          VkSubpassDependency *dependencies, size_t dependencyCount,
-
-                          const char *debugFormat, ...);
+VkRenderPass vulkan_create_render_pass(vulkan_device *vkd,
+                                       vulkan_render_pass_create_info createInfo,
+                                       const char *debugFormat, ...);
 
 VkSemaphore vulkan_create_semaphore(vulkan_device *vkd, VkSemaphoreCreateFlags flags,
                                     const char *debugFormat, ...);

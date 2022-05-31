@@ -222,9 +222,8 @@ vulkan_render_pass_shader_generator_get_shader(vulkan_render_pass_shader_generat
     glsl_add_vertex_shader_output_variables(shaderGenerator->sourceCode);
   } else if (shaderType == vulkan_shader_type_fragment) {
     glsl_add_fragment_shader_input_variables(shaderGenerator->sourceCode);
-    glsl_add_fragment_shader_output_variables(
-        shaderGenerator->sourceCode,
-        vulkan_render_pass_info_get_framebuffer_color_attachment_count(renderPassInfo));
+    glsl_add_fragment_shader_output_variables(shaderGenerator->sourceCode,
+                                              renderPassInfo._framebufferColorAttachmentCount);
   } else {
     UNREACHABLE;
   }
@@ -232,7 +231,7 @@ vulkan_render_pass_shader_generator_get_shader(vulkan_render_pass_shader_generat
   glsl_add_common_source(shaderGenerator->sourceCode);
 
   glsl_add_entry_point_begin(shaderGenerator->sourceCode);
-  glsl_add_body(shaderGenerator->sourceCode, renderPassInfo.renderPassType, shaderType);
+  glsl_add_body(shaderGenerator->sourceCode, renderPassInfo._renderPassType, shaderType);
   glsl_add_entry_point_end(shaderGenerator->sourceCode);
 
   return vulkan_shader_create_with_str(shaderGenerator->renderState->vkd, shaderType,

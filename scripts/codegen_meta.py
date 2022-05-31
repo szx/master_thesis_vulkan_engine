@@ -58,23 +58,23 @@ def enum_helpers_decls_template(e):
     if not e.is_flags():
         return f"const char *{e.name}_debug_str(int value);"
     else:
-        return f"void {e.name}_debug_print(int flags, int indent);"
+        return f"const char *{e.name}_debug_str(int value);\nvoid {e.name}_debug_print(int flags, int indent);"
 
 
 def enum_helpers_defs_template(e):
     s = []
-    if not e.is_flags():
-        s.append(f'const char *{e.name}_debug_str(int value) {{')
-        for name, value in e.enumerators:
-            s.append(f'  if (value == {value}) {{ return "{name}"; }}')
-        s.append(f'  return "UNKNOWN {e.name}";')
-    else:
+    s.append(f'const char *{e.name}_debug_str(int value) {{')
+    for name, value in e.enumerators:
+        s.append(f'  if (value == {value}) {{ return "{name}"; }}')
+    s.append(f'  return "UNKNOWN {e.name}";')
+    s.append(f'}}')
+    if e.is_flags():
         s.append(f'void {e.name}_debug_print(int flags, int indent) {{')
         s.append(f'  log_debug(INDENT_FORMAT_STRING "{e.name}: ", INDENT_FORMAT_ARGS(0));')
         for name, value in e.enumerators:
             s.append(
                 f'  if ((flags & {value}) != 0) {{ log_debug(INDENT_FORMAT_STRING "{name}", INDENT_FORMAT_ARGS(2)); }}')
-    s.append(f'}}')
+        s.append(f'}}')
     return '\n'.join(s);
 
 

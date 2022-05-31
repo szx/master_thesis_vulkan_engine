@@ -7,7 +7,7 @@
 typedef struct vulkan_render_pass_frame_state vulkan_render_pass_frame_state;
 
 #define VULKAN_RENDER_PASS_FUNCTIONS_DECLS(_name)                                                  \
-  vulkan_render_pass_info vulkan_render_pass_impl_##_name##_get_renderPass_info(                   \
+  vulkan_render_pass_info vulkan_render_pass_impl_##_name##_get_info(                              \
       vulkan_render_pass *renderPass);                                                             \
                                                                                                    \
   void vulkan_render_pass_impl_##_name##_record_commands(                                          \

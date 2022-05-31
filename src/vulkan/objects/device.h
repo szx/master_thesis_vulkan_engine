@@ -66,6 +66,7 @@ typedef struct vulkan_device {
   VkQueue graphicsQueue;                ///< Graphical queue handle.
   VkQueue presentQueue;                 ///< Present queue handle.
   vulkan_swap_chain_info swapChainInfo; ///< Swap chain support details.
+  VkFormat swapChainImageFormat;        ///< Chooses swap chain image format.
   vulkan_limits limits;                 ///< Physical device limits.
   bool framebufferResized;              ///< True if GLFW framebuffer resize callback was triggered.
   VkCommandPool

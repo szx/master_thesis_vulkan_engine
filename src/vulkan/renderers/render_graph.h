@@ -1,48 +1,188 @@
 /* Render graph.
  */
 
-// HiRO CONTINUE Implement render graph.
+// NOTE: Information about render graphs:
+// https://ourmachinery.com/post/high-level-rendering-using-render-graphs/
+// https://docs.unity3d.com/Packages/com.unity.render-pipelines.core@10.2/manual/render-graph-system.html
+// https://andrewcjp.wordpress.com/2019/09/28/the-render-graph-architecture/
+// https://apoorvaj.io/render-graphs-1/
 
 #pragma once
 
-#include "../assets/object.h"
-#include "../objects/swap_chain.h"
-#include "../objects/sync.h"
-#include "../objects/textures.h"
-#include "../objects/unified_geometry_buffer.h"
-#include "../objects/unified_uniform_buffer.h"
-#include "renderer_cache.h"
+#include "render_pass/render_pass.h"
 
-/// Render state,
-/// Contains all CPU and GPU state that is completely independent of render passes.
+typedef struct vulkan_render_graph vulkan_render_graph;
+typedef struct vulkan_render_graph_render_pass_element vulkan_render_graph_render_pass_element;
+
+#define MAX_RENDER_PASS_COUNT 16
+
+/* render graph resource element */
+
+typedef enum vulkan_render_graph_resource_type {
+  vulkan_render_graph_resource_type_swap_chain_image,
+  vulkan_render_graph_resource_type_depth_buffer,
+  vulkan_render_graph_resource_type_offscreen_texture,
+  vulkan_render_graph_resource_type_count,
+} vulkan_render_graph_resource_type;
+
+typedef enum vulkan_render_graph_resource_usage {
+  vulkan_render_graph_resource_usage_read = (1 << 0),
+  vulkan_render_graph_resource_usage_write = (1 << 1),
+  vulkan_render_graph_resource_usage_read_write =
+      vulkan_render_graph_resource_usage_read | vulkan_render_graph_resource_usage_write,
+} vulkan_render_graph_resource_usage;
+
+typedef struct vulkan_render_graph_resource_usage_timeline {
+  vulkan_render_graph_resource_usage usages[MAX_RENDER_PASS_COUNT];
+  VkFormat formats[MAX_RENDER_PASS_COUNT];
+} vulkan_render_graph_resource_usage_timeline;
+
+void vulkan_render_graph_resource_usage_timeline_add_new_usage(
+    vulkan_render_graph_resource_usage_timeline *usageTimeline, size_t renderGraphIdx,
+    vulkan_render_graph_resource_usage usage);
+
+void vulkan_render_graph_resource_usage_timeline_add_new_format(
+    vulkan_render_graph_resource_usage_timeline *usageTimeline, size_t renderGraphIdx,
+    VkFormat format);
+
+void vulkan_render_graph_resource_usage_timeline_debug_print(
+    vulkan_render_graph_resource_usage_timeline *usageTimeline, int indent);
+
+typedef struct vulkan_render_graph_resource_usage_timeline_info {
+  vulkan_render_graph_resource_usage previousUsage;
+  vulkan_render_graph_resource_usage currentUsage;
+  vulkan_render_graph_resource_usage nextUsage;
+  VkFormat previousFormat;
+  VkFormat currentFormat;
+  VkFormat nextFormat;
+} vulkan_render_graph_resource_usage_timeline_info;
+
+vulkan_render_graph_resource_usage_timeline_info
+vulkan_render_graph_resource_usage_timeline_get_info(
+    vulkan_render_graph_resource_usage_timeline *usageTimeline, size_t renderGraphIdx);
+
+/// Edge of render graph.
+typedef struct vulkan_render_graph_resource {
+  vulkan_render_graph_resource_type type;
+  vulkan_image_type imageType;
+
+  /// Info collected before compilation.
+  vulkan_render_graph_resource_usage_timeline usageTimeline;
+
+  /// Mutable state used during compilation.
+  struct vulkan_render_graph_resource_state {
+    // HIRO CONTINUE Refactor out
+    bool isFramebufferAttachment;
+    VkFormat format;
+    VkImageLayout initialLayout;
+    VkAttachmentLoadOp loadOp;
+    VkAttachmentStoreOp storeOp;
+    VkImageLayout currentLayout;
+    VkImageLayout finalLayout;
+    uint32_t attachmentIdx;
+  } state;
+
+  struct vulkan_render_graph_resource *prev, *next;
+
+} vulkan_render_graph_resource;
+
+void vulkan_render_graph_resource_init(vulkan_render_graph_resource *element,
+                                       vulkan_render_graph_resource_type type,
+                                       vulkan_image_type imageType);
+
+void vulkan_render_graph_resource_deinit(vulkan_render_graph_resource *element);
+
+void vulkan_render_graph_resource_clear_compilation_state(vulkan_render_graph_resource *element);
+
+void vulkan_render_graph_resource_debug_print(vulkan_render_graph_resource *element);
+
+/* render graph render pass element */
+
+/// Render pass.
+/// Node of render graph.
+typedef struct vulkan_render_graph_render_pass_element {
+  /// Index between 0 and MAX_RENDER_PASS_COUNT.
+  size_t idx;
+
+  /// Render pass.
+  vulkan_render_pass *renderPass;
+
+  /// vulkan_render_graph_resource* array of offscreen textures that can be:
+  ///     - read from by render pass' fragment shader
+  ///     - written to by render pass via framebuffer color attachments
+  UT_array *offscreenTextures;
+
+  /// Swap chain image used as render target.
+  vulkan_render_graph_resource *swapChainImageResource;
+
+  /// Depth buffer used for:
+  /// - depth test
+  /// - depth write
+  vulkan_render_graph_resource *depthBufferResource;
+
+  /// State used during compilation.
+  struct vulkan_render_graph_render_pass_element_state {
+    vulkan_render_pass_create_info renderPassCreateInfo;
+  } state;
+
+  struct vulkan_render_graph_render_pass_element *prev, *next;
+
+} vulkan_render_graph_render_pass_element;
+
+vulkan_render_graph_render_pass_element *
+vulkan_render_graph_render_pass_element_create(size_t renderPassIdx, vulkan_render_pass *renderPass,
+                                               vulkan_render_graph *renderGraph);
+
+void vulkan_render_graph_render_pass_element_destroy(
+    vulkan_render_graph_render_pass_element *element);
+
+void vulkan_render_graph_render_pass_element_debug_print(
+    vulkan_render_graph_render_pass_element *element);
+
+/* render graph */
+
+/// Render graph,
 typedef struct vulkan_render_graph {
-  vulkan_device *vkd;     ///< Pointer.
-  vulkan_swap_chain *vks; ///< Pointer.
 
-  /* CPU state */
-  vulkan_renderer_cache *rendererCache;                                    ///< Pointer.
-  data_config *config;                                                     ///< Pointer.
-  vulkan_unified_uniform_buffer_update_func updateGlobalUniformBufferFunc; ///< Pointer.
-  vulkan_vertex_stream *vertexStream;
+  vulkan_render_state *renderState; ///< Pointer.
 
-  /* GPU state */
-  vulkan_unified_geometry_buffer *unifiedGeometryBuffer;
-  vulkan_textures *textures;
-  vulkan_unified_uniform_buffer *unifiedUniformBuffer;
-  vulkan_descriptors *descriptors;
-  vulkan_sync *sync;
+  /// Global state shared by all render passes.
+  vulkan_render_pass_state *renderPassState;
+
+  /// List of render graph render pass elements.
+  /// Ordered by execution order.
+  vulkan_render_graph_render_pass_element *renderPassElements;
+
+  /// List of unique render graph offscreen texture resource elements.
+  vulkan_render_graph_resource *resources;
+
+  size_t _renderPassIdx;
 
 } vulkan_render_graph;
 
-vulkan_render_graph *
-vulkan_render_graph_create(vulkan_swap_chain *vks, vulkan_renderer_cache *rendererCache,
-                           data_config *config,
-                           vulkan_unified_uniform_buffer_update_func updateGlobalUniformBufferFunc);
+vulkan_render_graph *vulkan_render_graph_create(vulkan_render_state *renderState);
 
 void vulkan_render_graph_destroy(vulkan_render_graph *renderGraph);
 
-void vulkan_render_graph_update(vulkan_render_graph *renderGraph,
-                                void *updateGlobalUniformBufferFuncData);
+void vulkan_render_graph_start_swap_chain_recreation(vulkan_render_graph *renderGraph);
+
+void vulkan_render_graph_finish_swap_chain_recreation(vulkan_render_graph *renderGraph);
+
+/// Adds render pass and it's resources.
+void vulkan_render_graph_add_render_pass(vulkan_render_graph *renderGraph,
+                                         vulkan_render_pass_type type);
+
+void vulkan_render_graph_compile(vulkan_render_graph *renderGraph);
+
+void vulkan_render_graph_record_commands(vulkan_render_graph *renderGraph,
+                                         VkCommandBuffer commandBuffer, size_t swapChainImageIdx);
+
+void vulkan_render_graph_update(vulkan_render_graph *renderGraph);
+
 void vulkan_render_graph_send_to_device(vulkan_render_graph *renderGraph);
 
 void vulkan_render_graph_debug_print(vulkan_render_graph *renderGraph);
+
+vulkan_render_graph_resource *
+vulkan_render_graph_add_image_resource(vulkan_render_graph *renderGraph,
+                                       vulkan_image_type imageType);

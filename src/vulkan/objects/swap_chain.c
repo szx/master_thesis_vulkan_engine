@@ -82,6 +82,7 @@ void create_swap_chain(vulkan_swap_chain *vks) {
   verify(vkCreateSwapchainKHR(vks->vkd->device, &createInfo, vka, &vks->swapChain) == VK_SUCCESS);
 
   vks->swapChainImageFormat = surfaceFormat.format;
+  vks->vkd->swapChainImageFormat = vks->swapChainImageFormat;
   vks->swapChainExtent = extent;
 }
 

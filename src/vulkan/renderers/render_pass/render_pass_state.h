@@ -33,3 +33,7 @@ void vulkan_render_pass_state_set_unified_uniform_buffer(
 void vulkan_render_pass_state_send_to_device(vulkan_render_pass_state *renderPassState);
 
 void vulkan_render_pass_state_debug_print(vulkan_render_pass_state *renderPassState, int indent);
+
+vulkan_render_pass_frame_state *
+vulkan_render_pass_state_get_frame_state(vulkan_render_pass_state *renderPassState,
+                                         size_t frameInFlight);

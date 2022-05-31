@@ -50,5 +50,7 @@ void vulkan_render_pass_frame_state_set_unified_uniform_buffer(
 void vulkan_render_pass_frame_state_debug_print(vulkan_render_pass_frame_state *frameState,
                                                 int indent);
 
-vulkan_image *vulkan_render_pass_frame_state_get_offscreen_framebuffer_attachment_image(
-    vulkan_render_pass_frame_state *frameState, vulkan_offscreen_texture_type type);
+// HIRO rename vulkan_textures_texture_element to vulkan_texture
+vulkan_textures_texture_element *
+vulkan_render_pass_frame_state_get_offscreen_texture(vulkan_render_pass_frame_state *frameState,
+                                                     vulkan_image_type type);

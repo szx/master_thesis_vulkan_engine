@@ -61,16 +61,17 @@ void vulkan_render_pass_frame_state_debug_print(vulkan_render_pass_frame_state *
   vulkan_image_debug_print(frameState->depthBufferImage, indent + 2);
 }
 
-vulkan_image *vulkan_render_pass_frame_state_get_offscreen_framebuffer_attachment_image(
-    vulkan_render_pass_frame_state *frameState, vulkan_offscreen_texture_type type) {
-  if (type == vulkan_offscreen_texture_type_g_buffer_0) {
-    return frameState->gBuffer->gBuffer0TextureElement->image;
+vulkan_textures_texture_element *
+vulkan_render_pass_frame_state_get_offscreen_texture(vulkan_render_pass_frame_state *frameState,
+                                                     vulkan_image_type type) {
+  if (type == vulkan_image_type_g_buffer_0) {
+    return frameState->gBuffer->gBuffer0TextureElement;
   }
-  if (type == vulkan_offscreen_texture_type_g_buffer_1) {
-    return frameState->gBuffer->gBuffer1TextureElement->image;
+  if (type == vulkan_image_type_g_buffer_1) {
+    return frameState->gBuffer->gBuffer1TextureElement;
   }
-  if (type == vulkan_offscreen_texture_type_g_buffer_2) {
-    return frameState->gBuffer->gBuffer2TextureElement->image;
+  if (type == vulkan_image_type_g_buffer_2) {
+    return frameState->gBuffer->gBuffer2TextureElement;
   }
   UNREACHABLE;
 }

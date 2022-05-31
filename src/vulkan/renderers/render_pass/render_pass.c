@@ -2,14 +2,14 @@
 
 size_t get_cache_len(vulkan_render_pass *renderPass) {
   size_t frameInFlightCount = FRAMES_IN_FLIGHT;
-  size_t swapChainImageCount = utarray_len(renderPass->vks->swapChainImages);
+  size_t swapChainImageCount = utarray_len(renderPass->renderState->vks->swapChainImages);
   return frameInFlightCount * swapChainImageCount;
 }
 
 size_t get_cache_index(vulkan_render_pass *renderPass, size_t currentFrameInFlight,
                        size_t swapChainImageIdx) {
   size_t frameInFlightCount = FRAMES_IN_FLIGHT;
-  size_t swapChainImageCount = utarray_len(renderPass->vks->swapChainImages);
+  size_t swapChainImageCount = utarray_len(renderPass->renderState->vks->swapChainImages);
   if (frameInFlightCount < swapChainImageCount) {
     return swapChainImageIdx * frameInFlightCount + currentFrameInFlight;
   }
@@ -20,122 +20,60 @@ size_t get_cache_index(vulkan_render_pass *renderPass, size_t currentFrameInFlig
 }
 
 VkRenderPass get_render_pass(vulkan_render_pass *renderPass, size_t currentFrameInFlight,
-                             size_t swapChainImageIdx) {
+                             size_t swapChainImageIdx, vulkan_render_pass_create_info createInfo) {
   size_t cacheIndex = get_cache_index(renderPass, currentFrameInFlight, swapChainImageIdx);
   VkRenderPass *_renderPass = utarray_eltptr(renderPass->_renderPasses, cacheIndex);
   if (*_renderPass != VK_NULL_HANDLE) {
     return *_renderPass;
   }
 
-  vulkan_render_pass_info renderPassInfo = vulkan_render_pass_get_renderPass_info(renderPass);
-  bool useOnscreenColorAttachment = renderPassInfo.useOnscreenColorAttachment;
-  uint32_t offscreenColorAttachmentCount =
-      vulkan_render_pass_info_get_framebuffer_offscreen_color_attachment_count(renderPassInfo);
-  bool useDepthAttachment = renderPassInfo.useDepthAttachment;
-  uint32_t dependencyCount = vulkan_render_pass_info_get_dependency_count(renderPassInfo);
-  assert(useOnscreenColorAttachment || offscreenColorAttachmentCount > 0);
-
-  vulkan_render_pass_frame_state *frameState =
-      utarray_eltptr(renderPass->renderPassState->frameStates, currentFrameInFlight);
-
-  VkFormat swapChainImageFormat = renderPass->vks->swapChainImageFormat;
-  VkFormat offscreenFormats[VLA(offscreenColorAttachmentCount)];
-  vulkan_render_pass_info_get_framebuffer_offscreen_attachment_formats(renderPassInfo, frameState,
-                                                                       offscreenFormats);
-  VkFormat depthBufferImageFormat =
-      vulkan_render_pass_info_get_framebuffer_depth_attachment_formats(renderPassInfo, frameState);
-
-  VkAttachmentDescription onscreenColorAttachmentDescription;
-  VkAttachmentReference onscreenColorAttachmentReference;
-  VkAttachmentDescription offscreenColorAttachmentDescriptions[VLA(offscreenColorAttachmentCount)];
-  VkAttachmentReference offscreenColorAttachmentReferences[VLA(offscreenColorAttachmentCount)];
-  VkAttachmentDescription depthAttachmentDescription;
-  VkAttachmentReference depthAttachmentReference;
-  VkSubpassDependency dependencies[VLA(dependencyCount)];
-
-  vulkan_render_pass_info_get_render_pass_create_info(
-      renderPassInfo, renderPass->prev, renderPass->next, swapChainImageFormat, offscreenFormats,
-      depthBufferImageFormat, &onscreenColorAttachmentDescription,
-      &onscreenColorAttachmentReference, offscreenColorAttachmentDescriptions,
-      offscreenColorAttachmentReferences, &depthAttachmentDescription, &depthAttachmentReference,
-      dependencies);
-
-  *_renderPass = vulkan_create_render_pass(
-      renderPass->vks->vkd,
-      (useOnscreenColorAttachment ? &onscreenColorAttachmentDescription : NULL),
-      (useOnscreenColorAttachment ? &onscreenColorAttachmentReference : NULL),
-      offscreenColorAttachmentDescriptions, offscreenColorAttachmentCount,
-      offscreenColorAttachmentReferences, offscreenColorAttachmentCount,
-      (useDepthAttachment ? &depthAttachmentDescription : NULL),
-      (useDepthAttachment ? &depthAttachmentReference : NULL), dependencies, dependencyCount,
-      "renderPass %s (frameInFlight=#%u, swapChainImage=#%u)",
-      vulkan_render_pass_type_debug_str(renderPass->type), currentFrameInFlight, swapChainImageIdx);
+  *_renderPass = vulkan_create_render_pass(renderPass->renderState->vkd, createInfo,
+                                           "renderPass %s (frameInFlight=#%u, swapChainImage=#%u)",
+                                           vulkan_render_pass_type_debug_str(renderPass->type),
+                                           currentFrameInFlight, swapChainImageIdx);
 
   return *_renderPass;
 }
 
 VkFramebuffer get_framebuffer(vulkan_render_pass *renderPass, size_t currentFrameInFlight,
-                              size_t swapChainImageIdx) {
+                              size_t swapChainImageIdx,
+
+                              uint32_t framebufferAttachmentCount,
+                              VkImageView *framebufferAttachments, VkRenderPass _renderPass) {
   size_t cacheIndex = get_cache_index(renderPass, currentFrameInFlight, swapChainImageIdx);
-  VkFramebuffer *framebuffer = utarray_eltptr(renderPass->_framebuffers, cacheIndex);
-  if (*framebuffer != VK_NULL_HANDLE) {
-    return *framebuffer;
+  VkFramebuffer *_framebuffer = utarray_eltptr(renderPass->_framebuffers, cacheIndex);
+  if (*_framebuffer != VK_NULL_HANDLE) {
+    return *_framebuffer;
   }
 
-  vulkan_render_pass_info renderPassInfo = vulkan_render_pass_get_renderPass_info(renderPass);
-
-  uint32_t offscreenFramebufferAttachmentCount =
-      vulkan_render_pass_info_get_framebuffer_offscreen_color_attachment_count(renderPassInfo);
-
-  vulkan_render_pass_frame_state *frameState =
-      utarray_eltptr(renderPass->renderPassState->frameStates, currentFrameInFlight);
-
-  VkImageView swapChainImageView =
-      *(VkImageView *)utarray_eltptr(renderPass->vks->swapChainImageViews, swapChainImageIdx);
-  VkImageView depthBufferImageView =
-      vulkan_render_pass_info_get_framebuffer_depth_attachment_image_view(renderPassInfo,
-                                                                          frameState);
-  VkImageView offscreenImageViews[VLA(offscreenFramebufferAttachmentCount)];
-  vulkan_render_pass_info_get_framebuffer_offscreen_attachment_image_views(
-      renderPassInfo, frameState, offscreenImageViews);
-
-  VkRenderPass _renderPass = get_render_pass(renderPass, currentFrameInFlight, swapChainImageIdx);
-
-  uint32_t framebufferAttachmentCount =
-      vulkan_render_pass_info_get_framebuffer_attachment_count(renderPassInfo);
   assert(framebufferAttachmentCount > 0);
-  VkImageView framebufferAttachments[framebufferAttachmentCount];
-  vulkan_render_pass_info_get_framebuffer_attachment_image_views(
-      renderPassInfo, swapChainImageView, offscreenImageViews, depthBufferImageView,
-      framebufferAttachments);
 
-  *framebuffer = vulkan_create_framebuffer(
-      renderPass->vks->vkd, _renderPass, framebufferAttachmentCount, framebufferAttachments,
-      renderPass->vks->swapChainExtent.width, renderPass->vks->swapChainExtent.height,
+  *_framebuffer = vulkan_create_framebuffer(
+      renderPass->renderState->vkd, _renderPass, framebufferAttachmentCount, framebufferAttachments,
+      renderPass->renderState->vks->swapChainExtent.width,
+      renderPass->renderState->vks->swapChainExtent.height,
       "renderPass %s (frameInFlight=#%u, swapChainImage=#%u)",
       vulkan_render_pass_type_debug_str(renderPass->type), currentFrameInFlight, swapChainImageIdx);
 
-  return *framebuffer;
+  return *_framebuffer;
 }
 
-VkPipeline get_graphics_renderPass(vulkan_render_pass *renderPass, size_t currentFrameInFlight,
-                                   size_t swapChainImageIdx) {
+VkPipeline get_graphics_pipeline(vulkan_render_pass *renderPass, size_t currentFrameInFlight,
+                                 size_t swapChainImageIdx, VkRenderPass _renderPass) {
   size_t cacheIndex = get_cache_index(renderPass, currentFrameInFlight, swapChainImageIdx);
   VkPipeline *graphicsPipeline = utarray_eltptr(renderPass->_graphicsPipelines, cacheIndex);
   if (*graphicsPipeline != VK_NULL_HANDLE) {
     return *graphicsPipeline;
   }
 
-  vulkan_render_pass_info renderPassInfo = vulkan_render_pass_get_renderPass_info(renderPass);
-  uint32_t colorAttachmentCount =
-      vulkan_render_pass_info_get_framebuffer_color_attachment_count(renderPassInfo);
-  bool colorBlendingType = renderPassInfo.colorBlendingType;
+  uint32_t colorAttachmentCount = renderPass->info._framebufferColorAttachmentCount;
+  bool colorBlendingType = renderPass->info.colorBlendingType;
 
   bool depthWriteEnable =
-      renderPassInfo.useDepthAttachment && renderPassInfo.depthAttachmentWriteEnable;
+      renderPass->info.useDepthAttachment && renderPass->info.depthAttachmentWriteEnable;
   bool depthTestEnable =
-      renderPassInfo.useDepthAttachment && renderPassInfo.depthAttachmentTestEnable;
-  VkCompareOp depthTestOp = renderPassInfo.depthAttachmentTestOp;
+      renderPass->info.useDepthAttachment && renderPass->info.depthAttachmentTestEnable;
+  VkCompareOp depthTestOp = renderPass->info.depthAttachmentTestOp;
 
   size_t shaderStageCount;
   VkPipelineShaderStageCreateInfo *shaderStages =
@@ -165,39 +103,51 @@ VkPipeline get_graphics_renderPass(vulkan_render_pass *renderPass, size_t curren
       vulkan_vertex_stream_get_vertex_attribute_descriptions(renderPass->renderState->vertexStream,
                                                              &vertexAttributeDescriptionsCount);
 
-  VkRenderPass _renderPass = get_render_pass(renderPass, currentFrameInFlight, swapChainImageIdx);
+  vulkan_graphics_pipeline_create_info createInfo = {
+      .colorAttachmentCount = colorAttachmentCount,
+      .colorBlendingType = colorBlendingType,
+
+      .depthWriteEnable = depthWriteEnable,
+      .depthTestEnable = depthTestEnable,
+      .depthTestOp = depthTestOp,
+
+      .shaderStages = shaderStages,
+      .shaderStageCount = shaderStageCount,
+
+      .vertexInputBindingDescriptions = &vertexInputBindingDescription,
+      .vertexBindingDescriptionsCount = vertexBindingDescriptionsCount,
+      .vertexAttributeDescriptions = vertexAttributeDescriptions,
+      .vertexAttributeDescriptionsCount = vertexAttributeDescriptionsCount,
+
+      .framebufferWidth = renderPass->renderState->vks->swapChainExtent.width,
+      .framebufferHeight = renderPass->renderState->vks->swapChainExtent.height,
+
+      .descriptorSetLayouts = descriptorSetLayouts,
+      .descriptorSetLayoutCount = descriptorSetLayoutCount,
+      .pushConstantRanges = pushConstantRanges,
+      .pushConstantRangeCount = pushConstantRangeCount,
+
+      .renderPass = _renderPass,
+      .pipelineLayout = renderPass->renderState->descriptors->pipelineLayout,
+  };
 
   *graphicsPipeline = vulkan_create_graphics_pipeline(
-      renderPass->vks->vkd,
-
-      colorAttachmentCount, colorBlendingType,
-
-      depthWriteEnable, depthTestEnable, depthTestOp,
-
-      shaderStages, shaderStageCount,
-
-      &vertexInputBindingDescription, vertexBindingDescriptionsCount, vertexAttributeDescriptions,
-      vertexAttributeDescriptionsCount,
-
-      renderPass->vks->swapChainExtent.width, renderPass->vks->swapChainExtent.height,
-
-      descriptorSetLayouts, descriptorSetLayoutCount, pushConstantRanges, pushConstantRangeCount,
-      _renderPass, renderPass->renderState->descriptors->pipelineLayout,
+      renderPass->renderState->vkd, createInfo,
       "renderPass %s (frameInFlight=#%u, swapChainImage=#%u)",
       vulkan_render_pass_type_debug_str(renderPass->type), currentFrameInFlight, swapChainImageIdx);
 
   core_free(vertexAttributeDescriptions);
   core_free(descriptorSetLayouts);
+  core_free(shaderStages);
 
   return *graphicsPipeline;
 }
 
-vulkan_render_pass *vulkan_render_pass_create_start(vulkan_render_pass_type type,
-                                                    vulkan_swap_chain *vks,
-                                                    vulkan_render_state *renderState,
-                                                    vulkan_render_pass_state *renderPassState) {
+vulkan_render_pass *vulkan_render_pass_create(vulkan_render_pass_type type,
+                                              vulkan_render_state *renderState,
+                                              vulkan_render_pass_state *renderPassState) {
   vulkan_render_pass *renderPass = core_alloc(sizeof(vulkan_render_pass));
-  vulkan_render_pass_init_start(renderPass, type, vks, renderState, renderPassState);
+  vulkan_render_pass_init(renderPass, type, renderState, renderPassState);
   return renderPass;
 }
 
@@ -206,29 +156,22 @@ void vulkan_render_pass_destroy(vulkan_render_pass *renderPass) {
   core_free(renderPass);
 }
 
-void vulkan_render_pass_init_start(vulkan_render_pass *renderPass, vulkan_render_pass_type type,
-                                   vulkan_swap_chain *vks, vulkan_render_state *renderState,
-                                   vulkan_render_pass_state *renderPassState) {
-  renderPass->vks = vks;
+void vulkan_render_pass_init(vulkan_render_pass *renderPass, vulkan_render_pass_type type,
+                             vulkan_render_state *renderState,
+                             vulkan_render_pass_state *renderPassState) {
   renderPass->renderState = renderState;
   renderPass->renderPassState = renderPassState;
 
   renderPass->type = type;
-  renderPass->shaderProgram = vulkan_render_pass_shader_program_create(
-      renderState, vulkan_render_pass_get_renderPass_info(renderPass));
-}
+  renderPass->info = vulkan_render_pass_get_info(renderPass);
+  renderPass->shaderProgram =
+      vulkan_render_pass_shader_program_create(renderState, renderPass->info);
 
-void vulkan_render_pass_init_prev_next(vulkan_render_pass *renderPass, vulkan_render_pass *prev,
-                                       vulkan_render_pass *next) {
-  renderPass->prev = prev;
-  renderPass->next = next;
-}
-
-void vulkan_render_pass_init_finish(vulkan_render_pass *renderPass) {
+  /* cache */
   utarray_alloc(renderPass->_renderPasses, sizeof(VkRenderPass));
   utarray_resize(renderPass->_renderPasses, get_cache_len(renderPass));
-  utarray_foreach_elem_it (VkRenderPass *, renderPass, renderPass->_renderPasses) {
-    *renderPass = VK_NULL_HANDLE;
+  utarray_foreach_elem_it (VkRenderPass *, _renderPass, renderPass->_renderPasses) {
+    *_renderPass = VK_NULL_HANDLE;
   }
 
   utarray_alloc(renderPass->_framebuffers, sizeof(VkFramebuffer));
@@ -246,23 +189,23 @@ void vulkan_render_pass_init_finish(vulkan_render_pass *renderPass) {
 
 void vulkan_render_pass_deinit(vulkan_render_pass *renderPass) {
   utarray_foreach_elem_it (VkPipeline *, graphicsPipeline, renderPass->_graphicsPipelines) {
-    vkDestroyPipeline(renderPass->vks->vkd->device, *graphicsPipeline, vka);
+    vkDestroyPipeline(renderPass->renderState->vkd->device, *graphicsPipeline, vka);
   }
   utarray_foreach_elem_it (VkRenderPass *, _renderPass, renderPass->_renderPasses) {
-    vkDestroyRenderPass(renderPass->vks->vkd->device, *_renderPass, vka);
+    vkDestroyRenderPass(renderPass->renderState->vkd->device, *_renderPass, vka);
   }
   utarray_foreach_elem_it (VkFramebuffer *, framebuffer, renderPass->_framebuffers) {
-    vkDestroyFramebuffer(renderPass->vks->vkd->device, *framebuffer, vka);
+    vkDestroyFramebuffer(renderPass->renderState->vkd->device, *framebuffer, vka);
   }
   vulkan_render_pass_shader_program_destroy(renderPass->shaderProgram);
 }
 
-vulkan_render_pass_info vulkan_render_pass_get_renderPass_info(vulkan_render_pass *renderPass) {
+vulkan_render_pass_info vulkan_render_pass_get_info(vulkan_render_pass *renderPass) {
 #define x(_name, ...)                                                                              \
   if (renderPass->type == vulkan_render_pass_type_##_name) {                                       \
     vulkan_render_pass_info renderPassInfo =                                                       \
-        vulkan_render_pass_impl_##_name##_get_renderPass_info(renderPass);                         \
-    renderPassInfo.renderPassType = renderPass->type;                                              \
+        vulkan_render_pass_impl_##_name##_get_info(renderPass);                                    \
+    vulkan_render_pass_info_calculate_additional_info(&renderPassInfo, renderPass);                \
     return renderPassInfo;                                                                         \
   }
   VULKAN_RENDER_PASS_TYPES(x, )
@@ -270,36 +213,71 @@ vulkan_render_pass_info vulkan_render_pass_get_renderPass_info(vulkan_render_pas
   UNREACHABLE;
 }
 
+void get_framebuffer_attachment_info(vulkan_render_pass *renderPass,
+                                     uint32_t *framebufferAttachmentCount,
+                                     VkClearValue **framebufferAttachmentClearValues) {
+  *framebufferAttachmentCount = renderPass->info._framebufferAttachmentCount;
+  *framebufferAttachmentClearValues = renderPass->info._framebufferAttachmentClearValues;
+}
+
+void get_framebuffer_attachment_image_views(vulkan_render_pass *renderPass,
+                                            vulkan_render_pass_frame_state *frameState,
+                                            size_t swapChainImageIdx,
+                                            VkImageView *framebufferAttachmentImageViews) {
+  size_t i = 0;
+  if (renderPass->info.useOnscreenColorAttachment) {
+    VkImageView swapChainImageView = *(VkImageView *)utarray_eltptr(
+        renderPass->renderState->vks->swapChainImageViews, swapChainImageIdx);
+    framebufferAttachmentImageViews[i++] = swapChainImageView;
+  }
+  for (size_t j = 0; j < renderPass->info.offscreenColorAttachmentCount; j++) {
+    framebufferAttachmentImageViews[i++] =
+        vulkan_render_pass_frame_state_get_offscreen_texture(
+            frameState, renderPass->info.offscreenColorAttachments[j].type)
+            ->image->imageView;
+  }
+  if (renderPass->info.useDepthAttachment) {
+    VkImageView depthBufferImageView = frameState->depthBufferImage->imageView;
+    framebufferAttachmentImageViews[i++] = depthBufferImageView;
+  }
+}
+
 void vulkan_render_pass_record_commands(vulkan_render_pass *renderPass,
-                                        VkCommandBuffer commandBuffer, size_t swapChainImageIdx) {
+                                        VkCommandBuffer commandBuffer, size_t swapChainImageIdx,
+                                        vulkan_render_pass_create_info renderPassCreateInfo) {
   size_t currentFrameInFlight = renderPass->renderState->sync->currentFrameInFlight;
-  vulkan_render_pass_info renderPassInfo = vulkan_render_pass_get_renderPass_info(renderPass);
-
-  VkFramebuffer framebuffer = get_framebuffer(renderPass, currentFrameInFlight, swapChainImageIdx);
-  VkRenderPass _renderPass = get_render_pass(renderPass, currentFrameInFlight, swapChainImageIdx);
-  VkPipeline graphicsPipeline =
-      get_graphics_renderPass(renderPass, currentFrameInFlight, swapChainImageIdx);
-
   vulkan_render_pass_frame_state *frameState =
-      utarray_eltptr(renderPass->renderPassState->frameStates, currentFrameInFlight);
+      vulkan_render_pass_state_get_frame_state(renderPass->renderPassState, currentFrameInFlight);
+
+  uint32_t framebufferAttachmentCount;
+  VkClearValue *framebufferAttachmentClearValues;
+  get_framebuffer_attachment_info(renderPass, &framebufferAttachmentCount,
+                                  &framebufferAttachmentClearValues);
+  VkImageView framebufferAttachmentImageViews[VLA(framebufferAttachmentCount)];
+  get_framebuffer_attachment_image_views(renderPass, frameState, swapChainImageIdx,
+                                         framebufferAttachmentImageViews);
+
+  VkRenderPass _renderPass =
+      get_render_pass(renderPass, currentFrameInFlight, swapChainImageIdx, renderPassCreateInfo);
+  VkFramebuffer _framebuffer =
+      get_framebuffer(renderPass, currentFrameInFlight, swapChainImageIdx,
+                      framebufferAttachmentCount, framebufferAttachmentImageViews, _renderPass);
+  VkPipeline _graphicsPipeline =
+      get_graphics_pipeline(renderPass, currentFrameInFlight, swapChainImageIdx, _renderPass);
 
   /* record new render pass into command buffer */
   // HIRO pass render pass and framebuffer as argument, allocate if NULL
   VkRenderPassBeginInfo renderPassBeginInfo = {0};
   renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
   renderPassBeginInfo.renderPass = _renderPass;
-  renderPassBeginInfo.framebuffer = framebuffer;
+  renderPassBeginInfo.framebuffer = _framebuffer;
   renderPassBeginInfo.renderArea.offset = (VkOffset2D){0, 0};
-  renderPassBeginInfo.renderArea.extent = renderPass->vks->swapChainExtent;
-  uint32_t clearValueCount =
-      vulkan_render_pass_info_get_framebuffer_attachment_count(renderPassInfo);
-  VkClearValue clearValues[clearValueCount];
-  vulkan_render_pass_info_get_framebuffer_attachment_clear_values(renderPassInfo, clearValues);
-  renderPassBeginInfo.clearValueCount = array_size(clearValues);
-  renderPassBeginInfo.pClearValues = clearValues;
+  renderPassBeginInfo.renderArea.extent = renderPass->renderState->vks->swapChainExtent;
+  renderPassBeginInfo.clearValueCount = framebufferAttachmentCount;
+  renderPassBeginInfo.pClearValues = framebufferAttachmentClearValues;
   vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-  vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+  vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline);
 
 #define x(_name, ...)                                                                              \
   if (renderPass->type == vulkan_render_pass_type_##_name) {                                       \

@@ -28,6 +28,7 @@
 #include "objects/unified_uniform_buffer.h"
 #include "objects/vertex_stream.h"
 #include "renderers/batch.h"
+#include "renderers/render_graph.h"
 #include "renderers/render_pass/frame_state/frame_state.h"
 #include "renderers/render_pass/frame_state/offscreen_texture_state.h"
 #include "renderers/render_pass/render_pass.h"
