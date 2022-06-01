@@ -45,14 +45,19 @@ vulkan_render_graph_resource_usage_timeline_get_info(
 
   bool foundUsage = false;
   bool foundFormat = false;
-  for (size_t i = 0; i < renderGraphIdx; i++) {
-    if (usageTimeline->usages[i] && !foundUsage) {
-      info.previousUsage = usageTimeline->usages[i];
-      foundUsage = true;
-    }
-    if (usageTimeline->formats[i] && !foundFormat) {
-      info.previousFormat = usageTimeline->formats[i];
-      foundFormat = true;
+  if (renderGraphIdx > 0) {
+    for (size_t i = renderGraphIdx - 1;; i--) {
+      if (usageTimeline->usages[i] && !foundUsage) {
+        info.previousUsage = usageTimeline->usages[i];
+        foundUsage = true;
+      }
+      if (usageTimeline->formats[i] && !foundFormat) {
+        info.previousFormat = usageTimeline->formats[i];
+        foundFormat = true;
+      }
+      if (i == 0 || (foundUsage && foundFormat)) {
+        break;
+      }
     }
   }
 
@@ -73,6 +78,9 @@ vulkan_render_graph_resource_usage_timeline_get_info(
     if (usageTimeline->formats[i] && !foundFormat) {
       info.nextFormat = usageTimeline->formats[i];
       foundFormat = true;
+    }
+    if (foundUsage && foundFormat) {
+      break;
     }
   }
 
@@ -297,14 +305,13 @@ void clear_compilation_state(vulkan_render_graph *renderGraph) {
   }
 }
 
-VkImageLayout get_image_layout_for_swap_chain_image(vulkan_render_graph_resource_usage usage,
-                                                    VkImageLayout unusedImageLayout) {
+VkImageLayout get_image_layout_for_swap_chain_image(vulkan_render_graph_resource_usage usage) {
   bool isWriteUsage = (usage & vulkan_render_graph_resource_usage_write) != 0;
   assert((usage & vulkan_render_graph_resource_usage_read) == 0);
   if (isWriteUsage) {
     return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
   }
-  return unusedImageLayout;
+  return VK_IMAGE_LAYOUT_UNDEFINED;
 }
 
 VkImageLayout get_image_layout_for_depth_buffer(vulkan_render_graph_resource_usage usage) {
@@ -360,7 +367,7 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
   uint32_t attachmentIdx = 0;
   bool swapChainImageResourceUsed = renderPassElement->swapChainImageResource != NULL;
   bool depthBufferResourceUsed = renderPassElement->depthBufferResource != NULL;
-  size_t writtenOffscreenTextureCount = 0;
+  size_t writtenOffscreenTextureCount = 0; // HIRO CONTINUE refactor out
 
   VkPipelineStageFlags srcStageMask = 0;
   VkPipelineStageFlags dstStageMask = 0;
@@ -398,9 +405,6 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
     struct vulkan_render_graph_resource_state *state =
         &renderPassElement->swapChainImageResource->state;
 
-    bool isFirstUsage = !resourceUsageTimelineInfo.previousUsage;
-    bool isLastUsage = !resourceUsageTimelineInfo.nextUsage;
-
     // Image layout of swap chain image is one of following:
     //  - VK_IMAGE_LAYOUT_UNDEFINED
     //  - VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
@@ -408,20 +412,29 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
 
     state->isFramebufferAttachment = true;
     state->format = resourceUsageTimelineInfo.currentFormat;
-    state->initialLayout = get_image_layout_for_swap_chain_image(
-        resourceUsageTimelineInfo.previousUsage, VK_IMAGE_LAYOUT_UNDEFINED);
-    if (isFirstUsage) {
-      log_debug("first use of swap chain image resource, clear");
-      state->loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+
+    if (resourceUsageTimelineInfo.previousUsage) {
+      // Image layout either undefined or already transitioned at the end of previous render pass.
+      state->initialLayout =
+          get_image_layout_for_swap_chain_image(resourceUsageTimelineInfo.currentUsage);
     } else {
-      log_debug("next use of swap chain image resource, load");
-      state->loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+      state->initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     }
+    state->currentLayout =
+        get_image_layout_for_swap_chain_image(resourceUsageTimelineInfo.currentUsage);
+    if (resourceUsageTimelineInfo.nextUsage) {
+      state->finalLayout =
+          get_image_layout_for_swap_chain_image(resourceUsageTimelineInfo.nextUsage);
+    } else {
+      // Vulkan spec: A swapchain’s image must be transitioned to VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+      // layout before calling vkQueuePresentKHR.
+      state->finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    }
+
+    state->loadOp = !resourceUsageTimelineInfo.previousUsage ? VK_ATTACHMENT_LOAD_OP_CLEAR
+                                                             : VK_ATTACHMENT_LOAD_OP_LOAD;
     state->storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-    state->currentLayout = get_image_layout_for_swap_chain_image(
-        resourceUsageTimelineInfo.currentUsage, VK_IMAGE_LAYOUT_UNDEFINED);
-    state->finalLayout = get_image_layout_for_swap_chain_image(resourceUsageTimelineInfo.nextUsage,
-                                                               VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+
     state->attachmentIdx = attachmentIdx++;
 
     // Make sure that finished previous rendering to onscreen texture before writing to color
@@ -442,7 +455,6 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
 
     struct vulkan_render_graph_resource_state *state = &offscreenTextureResource->state;
 
-    bool isFirstUsage = !resourceUsageTimelineInfo.previousUsage;
     bool isReadUsage =
         (resourceUsageTimelineInfo.currentUsage & vulkan_render_graph_resource_usage_read) != 0;
     bool isWriteUsage =
@@ -466,20 +478,29 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
 
       state->isFramebufferAttachment = true;
       state->format = resourceUsageTimelineInfo.currentFormat;
-      state->initialLayout =
-          get_image_layout_for_offscreen_texture(resourceUsageTimelineInfo.previousUsage);
-      if (isFirstUsage) {
-        log_debug("first use of offscreen texture resource, clear");
-        state->loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+
+      if (resourceUsageTimelineInfo.previousUsage) {
+        // Image layout either undefined or already transitioned at the end of previous render pass.
+        state->initialLayout =
+            get_image_layout_for_offscreen_texture(resourceUsageTimelineInfo.currentUsage);
       } else {
-        log_debug("next use of offscreen texture resource, load");
-        state->loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+        state->initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
       }
-      state->storeOp = VK_ATTACHMENT_STORE_OP_STORE;
       state->currentLayout =
           get_image_layout_for_offscreen_texture(resourceUsageTimelineInfo.currentUsage);
-      state->finalLayout =
-          get_image_layout_for_offscreen_texture(resourceUsageTimelineInfo.nextUsage);
+      if (resourceUsageTimelineInfo.nextUsage) {
+        state->finalLayout =
+            get_image_layout_for_offscreen_texture(resourceUsageTimelineInfo.nextUsage);
+      } else {
+        // Vulkan spec: finalLayout must not be VK_IMAGE_LAYOUT_UNDEFINED
+        state->finalLayout =
+            get_image_layout_for_offscreen_texture(resourceUsageTimelineInfo.currentUsage);
+      }
+
+      state->loadOp = !resourceUsageTimelineInfo.previousUsage ? VK_ATTACHMENT_LOAD_OP_CLEAR
+                                                               : VK_ATTACHMENT_LOAD_OP_LOAD;
+      state->storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+
       state->attachmentIdx = attachmentIdx++;
 
       // Make sure that finished previous rendering to offscreen texture before writing to color
@@ -501,8 +522,6 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
     struct vulkan_render_graph_resource_state *state =
         &renderPassElement->depthBufferResource->state;
 
-    bool isFirstUsage = !resourceUsageTimelineInfo.previousUsage;
-
     // Image layout of depth buffer is one of following:
     //  - VK_IMAGE_LAYOUT_UNDEFINED
     //  - VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
@@ -510,19 +529,28 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
 
     state->isFramebufferAttachment = true;
     state->format = resourceUsageTimelineInfo.currentFormat;
-    state->initialLayout =
-        get_image_layout_for_depth_buffer(resourceUsageTimelineInfo.previousUsage);
-    if (isFirstUsage) {
-      log_debug("first use of depth buffer resource, clear");
-      state->loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+
+    if (resourceUsageTimelineInfo.previousUsage) {
+      // Image layout either undefined or already transitioned at the end of previous render pass.
+      state->initialLayout =
+          get_image_layout_for_depth_buffer(resourceUsageTimelineInfo.currentUsage);
     } else {
-      log_debug("next use of depth buffer resource, load");
-      state->loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+      state->initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     }
-    state->storeOp = VK_ATTACHMENT_STORE_OP_STORE;
     state->currentLayout =
         get_image_layout_for_depth_buffer(resourceUsageTimelineInfo.currentUsage);
-    state->finalLayout = get_image_layout_for_depth_buffer(resourceUsageTimelineInfo.nextUsage);
+    if (resourceUsageTimelineInfo.nextUsage) {
+      state->finalLayout = get_image_layout_for_depth_buffer(resourceUsageTimelineInfo.nextUsage);
+    } else {
+      // Vulkan spec: finalLayout must not be VK_IMAGE_LAYOUT_UNDEFINED
+      state->finalLayout =
+          get_image_layout_for_depth_buffer(resourceUsageTimelineInfo.currentUsage);
+    }
+
+    state->loadOp = !resourceUsageTimelineInfo.previousUsage ? VK_ATTACHMENT_LOAD_OP_CLEAR
+                                                             : VK_ATTACHMENT_LOAD_OP_LOAD;
+    state->storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+
     state->attachmentIdx = attachmentIdx++;
 
     // Make sure that finished previous use of depth buffer before reading and writing from it.

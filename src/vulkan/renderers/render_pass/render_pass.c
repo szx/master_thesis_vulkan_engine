@@ -266,7 +266,7 @@ void vulkan_render_pass_record_commands(vulkan_render_pass *renderPass,
       get_graphics_pipeline(renderPass, currentFrameInFlight, swapChainImageIdx, _renderPass);
 
   /* record new render pass into command buffer */
-  // HIRO pass render pass and framebuffer as argument, allocate if NULL
+  // HIRO move to device_functions, get clear values from vulkan_render_pass_create_info
   VkRenderPassBeginInfo renderPassBeginInfo = {0};
   renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
   renderPassBeginInfo.renderPass = _renderPass;
