@@ -37,6 +37,7 @@ vulkan_device *vulkan_device_create(data_config *config, data_asset_db *assetDb)
   vulkan_device *vkd = core_alloc(sizeof(vulkan_device));
   vulkan_swap_chain_info_init(&vkd->swapChainInfo);
   vkd->swapChainImageFormat = VK_FORMAT_UNDEFINED;
+  vkd->swapChainExtent = (VkExtent2D){0};
   create_window(vkd, config, assetDb);
   create_instance(vkd, config, assetDb);
   create_debug_utils(vkd);

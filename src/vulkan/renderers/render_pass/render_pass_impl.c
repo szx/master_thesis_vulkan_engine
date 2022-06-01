@@ -3,8 +3,8 @@
 
 /* forward */
 
-vulkan_render_pass_info vulkan_render_pass_impl_forward_get_info(vulkan_render_pass *renderPass) {
-  return (vulkan_render_pass_info){.useOnscreenColorAttachment = true,
+vulkan_render_pass_desc vulkan_render_pass_impl_forward_get_info(vulkan_render_pass *renderPass) {
+  return (vulkan_render_pass_desc){.useOnscreenColorAttachment = true,
                                    .onscreenClearValue =
                                        (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}},
                                    .offscreenColorAttachmentCount = 0,
@@ -12,8 +12,6 @@ vulkan_render_pass_info vulkan_render_pass_impl_forward_get_info(vulkan_render_p
                                    .depthAttachmentWriteEnable = true,
                                    .depthAttachmentTestEnable = true,
                                    .depthAttachmentTestOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
-                                   .depthAttachmentLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-                                   .depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE,
                                    .depthClearValue = (VkClearDepthStencilValue){0.0f, 0},
                                    .colorBlendingType = vulkan_color_blending_type_none};
 }
@@ -28,9 +26,9 @@ void vulkan_render_pass_impl_forward_record_commands(vulkan_render_pass *renderP
 
 /* deferred geometry */
 
-vulkan_render_pass_info
+vulkan_render_pass_desc
 vulkan_render_pass_impl_deferred_geometry_get_info(vulkan_render_pass *renderPass) {
-  return (vulkan_render_pass_info){
+  return (vulkan_render_pass_desc){
       .useOnscreenColorAttachment = false,
       .onscreenClearValue = {{0.0f, 0.0f, 0.0f, 1.0f}},
 
@@ -46,8 +44,6 @@ vulkan_render_pass_impl_deferred_geometry_get_info(vulkan_render_pass *renderPas
       .depthAttachmentWriteEnable = true,
       .depthAttachmentTestEnable = true,
       .depthAttachmentTestOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
-      .depthAttachmentLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-      .depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE,
       .depthClearValue = {0.0f, 0},
 
       .colorBlendingType = vulkan_color_blending_type_none};
@@ -63,9 +59,9 @@ void vulkan_render_pass_impl_deferred_geometry_record_commands(
 
 /* deferred lighting */
 
-vulkan_render_pass_info
+vulkan_render_pass_desc
 vulkan_render_pass_impl_deferred_lighting_get_info(vulkan_render_pass *renderPass) {
-  return (vulkan_render_pass_info){
+  return (vulkan_render_pass_desc){
       .useOnscreenColorAttachment = true,
       .offscreenFragmentShaderInputCount = 3,
       .offscreenFragmentShaderInputs =
@@ -79,8 +75,6 @@ vulkan_render_pass_impl_deferred_lighting_get_info(vulkan_render_pass *renderPas
       .depthAttachmentWriteEnable = false,
       .depthAttachmentTestEnable = true,
       .depthAttachmentTestOp = VK_COMPARE_OP_LESS,
-      .depthAttachmentLoadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
-      .depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE,
   };
 }
 
@@ -101,8 +95,8 @@ void vulkan_render_pass_impl_deferred_lighting_record_commands(
 
 /* skybox */
 
-vulkan_render_pass_info vulkan_render_pass_impl_skybox_get_info(vulkan_render_pass *renderPass) {
-  return (vulkan_render_pass_info){
+vulkan_render_pass_desc vulkan_render_pass_impl_skybox_get_info(vulkan_render_pass *renderPass) {
+  return (vulkan_render_pass_desc){
       .useOnscreenColorAttachment = true,
       .onscreenClearValue = {{0.5f, 0.5f, 0.5f, 1.0f}},
       // Use depth buffer to reject fragments with depth != 0
@@ -110,8 +104,6 @@ vulkan_render_pass_info vulkan_render_pass_impl_skybox_get_info(vulkan_render_pa
       .depthAttachmentWriteEnable = false,
       .depthAttachmentTestEnable = true,
       .depthAttachmentTestOp = VK_COMPARE_OP_EQUAL,
-      .depthAttachmentLoadOp = VK_ATTACHMENT_LOAD_OP_LOAD,
-      .depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_NONE_EXT,
   };
 }
 
@@ -129,9 +121,9 @@ void vulkan_render_pass_impl_skybox_record_commands(vulkan_render_pass *renderPa
 
 /* debug text */
 
-vulkan_render_pass_info
+vulkan_render_pass_desc
 vulkan_render_pass_impl_debug_text_get_info(vulkan_render_pass *renderPass) {
-  return (vulkan_render_pass_info){.useOnscreenColorAttachment = true,
+  return (vulkan_render_pass_desc){.useOnscreenColorAttachment = true,
                                    .colorBlendingType = vulkan_color_blending_type_alpha};
 }
 

@@ -208,7 +208,7 @@ void glsl_add_body(UT_string *s, vulkan_render_pass_type renderPassType,
 
 vulkan_shader *
 vulkan_render_pass_shader_generator_get_shader(vulkan_render_pass_shader_generator *shaderGenerator,
-                                               vulkan_render_pass_info renderPassInfo,
+                                               vulkan_render_pass_desc renderPassDesc,
                                                vulkan_shader_type shaderType) {
   utstring_clear(shaderGenerator->sourceCode);
 
@@ -223,7 +223,7 @@ vulkan_render_pass_shader_generator_get_shader(vulkan_render_pass_shader_generat
   } else if (shaderType == vulkan_shader_type_fragment) {
     glsl_add_fragment_shader_input_variables(shaderGenerator->sourceCode);
     glsl_add_fragment_shader_output_variables(shaderGenerator->sourceCode,
-                                              renderPassInfo._framebufferColorAttachmentCount);
+                                              renderPassDesc.colorAttachmentCount);
   } else {
     UNREACHABLE;
   }
@@ -231,7 +231,7 @@ vulkan_render_pass_shader_generator_get_shader(vulkan_render_pass_shader_generat
   glsl_add_common_source(shaderGenerator->sourceCode);
 
   glsl_add_entry_point_begin(shaderGenerator->sourceCode);
-  glsl_add_body(shaderGenerator->sourceCode, renderPassInfo._renderPassType, shaderType);
+  glsl_add_body(shaderGenerator->sourceCode, renderPassDesc.renderPassType, shaderType);
   glsl_add_entry_point_end(shaderGenerator->sourceCode);
 
   return vulkan_shader_create_with_str(shaderGenerator->renderState->vkd, shaderType,

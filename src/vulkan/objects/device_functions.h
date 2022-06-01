@@ -103,19 +103,28 @@ VkPipeline vulkan_create_graphics_pipeline(vulkan_device *vkd,
                                            vulkan_graphics_pipeline_create_info createInfo,
                                            const char *debugFormat, ...);
 
-typedef struct vulkan_render_pass_create_info {
+typedef struct vulkan_render_pass_desc vulkan_render_pass_desc;
+
+/// Low-level render pass description.
+typedef struct vulkan_render_pass_info {
+  vulkan_render_pass_desc *desc;
+
   VkAttachmentDescription *onscreenColorAttachmentDescription;
   VkAttachmentReference *onscreenColorAttachmentReference;
+  VkClearColorValue onscreenColorAttachmentClearValue;
 
   UT_array *offscreenColorAttachmentDescriptions;
   UT_array *offscreenColorAttachmentReferences;
+  UT_array *offscreenColorAttachmentClearValues;
 
   VkAttachmentDescription *depthAttachmentDescription;
   VkAttachmentReference *depthAttachmentReference;
+  VkClearDepthStencilValue depthAttachmentClearValue;
 
   size_t dependencyCount;
   VkSubpassDependency *dependencies;
-} vulkan_render_pass_create_info;
+
+} vulkan_render_pass_info;
 
 typedef struct vulkan_render_pass_attachment_create_info {
   VkFormat format;
@@ -124,27 +133,36 @@ typedef struct vulkan_render_pass_attachment_create_info {
   VkImageLayout nextLayout;
   VkAttachmentLoadOp loadOp;
   VkAttachmentStoreOp storeOp;
+  VkClearValue clearValue;
 } vulkan_render_pass_attachment_create_info;
 
-void vulkan_render_pass_create_info_init(vulkan_render_pass_create_info *createInfo);
+void vulkan_render_pass_info_init(vulkan_render_pass_info *createInfo,
+                                  vulkan_render_pass_desc *desc);
 
-void vulkan_render_pass_create_info_deinit(vulkan_render_pass_create_info *createInfo);
+void vulkan_render_pass_info_deinit(vulkan_render_pass_info *createInfo);
+
+size_t vulkan_render_pass_info_get_attachment_count(vulkan_render_pass_info *createInfo);
+
+size_t vulkan_render_pass_info_get_color_attachment_count(vulkan_render_pass_info *createInfo);
+
+void vulkan_render_pass_info_get_attachment_clear_values(vulkan_render_pass_info *createInfo,
+                                                         VkClearValue *clearValues);
 
 void vulkan_render_pass_create_add_onscreen_color_attachment(
-    vulkan_render_pass_create_info *createInfo,
+    vulkan_render_pass_info *createInfo,
     vulkan_render_pass_attachment_create_info attachmentCreateInfo);
 
 void vulkan_render_pass_create_add_offscreen_color_attachment(
-    vulkan_render_pass_create_info *createInfo,
+    vulkan_render_pass_info *createInfo,
     vulkan_render_pass_attachment_create_info attachmentCreateInfo);
 
 void vulkan_render_pass_create_add_depth_attachment(
-    vulkan_render_pass_create_info *createInfo,
+    vulkan_render_pass_info *createInfo,
     vulkan_render_pass_attachment_create_info attachmentCreateInfo);
 
 /// Adds an execution dependency - stages in dstStageMask (and later) will not start until all
 /// stages in srcStageMask (and earlier) are complete.
-void vulkan_render_pass_create_add_execution_barrier(vulkan_render_pass_create_info *createInfo,
+void vulkan_render_pass_create_add_execution_barrier(vulkan_render_pass_info *createInfo,
                                                      VkPipelineStageFlags srcStageMask,
                                                      VkPipelineStageFlags dstStageMask);
 
@@ -152,13 +170,18 @@ void vulkan_render_pass_create_add_execution_barrier(vulkan_render_pass_create_i
 /// to destination accesses defined by dstAccessMask.
 //// NOTE: *_READ_BIT in srcAccessMask is unnecessary - source mask determine visibility of write
 ////       accesses (see https://github.com/KhronosGroup/Vulkan-Docs/issues/131).
-void vulkan_render_pass_create_add_memory_barrier(vulkan_render_pass_create_info *createInfo,
+void vulkan_render_pass_create_add_memory_barrier(vulkan_render_pass_info *createInfo,
                                                   VkAccessFlags srcAccessMask,
                                                   VkAccessFlags dstAccessMask);
 
-VkRenderPass vulkan_create_render_pass(vulkan_device *vkd,
-                                       vulkan_render_pass_create_info createInfo,
+VkRenderPass vulkan_create_render_pass(vulkan_device *vkd, vulkan_render_pass_info createInfo,
                                        const char *debugFormat, ...);
+
+void vulkan_begin_render_pass(vulkan_device *vkd, VkCommandBuffer commandBuffer,
+                              vulkan_render_pass_info createInfo, VkRenderPass renderPass,
+                              VkFramebuffer framebuffer);
+
+void vulkan_end_render_pass(vulkan_device *vkd, VkCommandBuffer commandBuffer);
 
 VkSemaphore vulkan_create_semaphore(vulkan_device *vkd, VkSemaphoreCreateFlags flags,
                                     const char *debugFormat, ...);

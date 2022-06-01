@@ -20,5 +20,5 @@ void vulkan_render_pass_shader_generator_deinit(
 
 vulkan_shader *
 vulkan_render_pass_shader_generator_get_shader(vulkan_render_pass_shader_generator *shaderGenerator,
-                                               vulkan_render_pass_info renderPassInfo,
+                                               vulkan_render_pass_desc renderPassDesc,
                                                vulkan_shader_type shaderType);

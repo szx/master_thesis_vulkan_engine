@@ -34,10 +34,9 @@ typedef struct vulkan_offscreen_fragment_shader_input_info {
   vulkan_image_type type;
 } vulkan_offscreen_fragment_shader_input_info;
 
-/// Describes render pass.
+/// Describes render pass on high-level.
 /// Used to create render pass and its corresponding render graph element.
-typedef struct vulkan_render_pass_info {
-
+typedef struct vulkan_render_pass_desc {
   bool useOnscreenColorAttachment;
   VkClearColorValue onscreenClearValue;
 
@@ -53,18 +52,15 @@ typedef struct vulkan_render_pass_info {
   bool depthAttachmentWriteEnable;
   bool depthAttachmentTestEnable;
   VkCompareOp depthAttachmentTestOp;
-  bool depthAttachmentLoadOp;
-  bool depthAttachmentStoreOp;
   VkClearDepthStencilValue depthClearValue;
 
   bool colorBlendingType;
 
   /* calculated additional info */
-  vulkan_render_pass_type _renderPassType;
-  uint32_t _framebufferColorAttachmentCount;
-  uint32_t _framebufferAttachmentCount;
-  VkClearValue _framebufferAttachmentClearValues[MAX_FRAMEBUFFER_ATTACHMENT_COUNT];
-} vulkan_render_pass_info;
+  vulkan_render_pass_type renderPassType;
+  size_t attachmentCount;
+  size_t colorAttachmentCount;
+} vulkan_render_pass_desc;
 
-void vulkan_render_pass_info_calculate_additional_info(vulkan_render_pass_info *renderPassInfo,
+void vulkan_render_pass_desc_calculate_additional_info(vulkan_render_pass_desc *renderPassDesc,
                                                        vulkan_render_pass *renderPass);

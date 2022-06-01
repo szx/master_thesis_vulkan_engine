@@ -2,16 +2,16 @@
 
 vulkan_render_pass_shader_program *
 vulkan_render_pass_shader_program_create(vulkan_render_state *renderState,
-                                         vulkan_render_pass_info renderPassInfo) {
+                                         vulkan_render_pass_desc renderPassDesc) {
   vulkan_render_pass_shader_program *shaderProgram =
       core_alloc(sizeof(vulkan_render_pass_shader_program));
 
   vulkan_render_pass_shader_generator_init(&shaderProgram->shaderGenerator, renderState);
 
   shaderProgram->vertexShader = vulkan_render_pass_shader_generator_get_shader(
-      &shaderProgram->shaderGenerator, renderPassInfo, vulkan_shader_type_vertex);
+      &shaderProgram->shaderGenerator, renderPassDesc, vulkan_shader_type_vertex);
   shaderProgram->fragmentShader = vulkan_render_pass_shader_generator_get_shader(
-      &shaderProgram->shaderGenerator, renderPassInfo, vulkan_shader_type_fragment);
+      &shaderProgram->shaderGenerator, renderPassDesc, vulkan_shader_type_fragment);
 
   return shaderProgram;
 }

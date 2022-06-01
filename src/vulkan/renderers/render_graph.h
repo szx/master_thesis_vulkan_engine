@@ -21,6 +21,7 @@ typedef struct vulkan_render_graph_render_pass_element vulkan_render_graph_rende
 typedef struct vulkan_image_render_pass_usage_timeline {
   vulkan_image_render_pass_usage usages[MAX_RENDER_PASS_COUNT];
   VkFormat formats[MAX_RENDER_PASS_COUNT];
+  VkClearValue clearValues[MAX_RENDER_PASS_COUNT];
 } vulkan_image_render_pass_usage_timeline;
 
 void vulkan_image_render_pass_usage_timeline_add_new_usage(
@@ -29,6 +30,10 @@ void vulkan_image_render_pass_usage_timeline_add_new_usage(
 
 void vulkan_image_render_pass_usage_timeline_add_new_format(
     vulkan_image_render_pass_usage_timeline *usageTimeline, size_t renderGraphIdx, VkFormat format);
+
+void vulkan_image_render_pass_usage_timeline_add_new_clear_value(
+    vulkan_image_render_pass_usage_timeline *usageTimeline, size_t renderGraphIdx,
+    VkClearValue clearValue);
 
 void vulkan_image_render_pass_usage_timeline_debug_print(
     vulkan_image_render_pass_usage_timeline *usageTimeline, int indent);
@@ -40,6 +45,7 @@ typedef struct vulkan_image_render_pass_usage_timeline_info {
   VkFormat previousFormat;
   VkFormat currentFormat;
   VkFormat nextFormat;
+  VkClearValue clearValue;
 } vulkan_image_render_pass_usage_timeline_info;
 
 vulkan_image_render_pass_usage_timeline_info vulkan_image_render_pass_usage_timeline_get_info(
@@ -89,7 +95,7 @@ typedef struct vulkan_render_graph_render_pass_element {
 
   /// State used during compilation.
   struct vulkan_render_graph_render_pass_element_state {
-    vulkan_render_pass_create_info renderPassCreateInfo;
+    vulkan_render_pass_info renderPassInfo;
   } state;
 
   struct vulkan_render_graph_render_pass_element *prev, *next;

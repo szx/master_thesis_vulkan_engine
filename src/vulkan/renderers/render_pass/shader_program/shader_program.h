@@ -20,7 +20,7 @@ typedef struct vulkan_render_pass_shader_program {
 
 vulkan_render_pass_shader_program *
 vulkan_render_pass_shader_program_create(vulkan_render_state *renderState,
-                                         vulkan_render_pass_info renderPassInfo);
+                                         vulkan_render_pass_desc renderPassDesc);
 void vulkan_render_pass_shader_program_destroy(vulkan_render_pass_shader_program *shaderProgram);
 
 VkPipelineShaderStageCreateInfo *vulkan_render_pass_shader_program_get_shader_stages(

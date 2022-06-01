@@ -84,6 +84,7 @@ void create_swap_chain(vulkan_swap_chain *vks) {
   vks->swapChainImageFormat = surfaceFormat.format;
   vks->vkd->swapChainImageFormat = vks->swapChainImageFormat;
   vks->swapChainExtent = extent;
+  vks->vkd->swapChainExtent = vks->swapChainExtent;
 }
 
 void get_swap_chain_images(vulkan_swap_chain *vks) {
