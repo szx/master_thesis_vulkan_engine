@@ -136,49 +136,49 @@ typedef struct vulkan_render_pass_attachment_create_info {
   VkClearValue clearValue;
 } vulkan_render_pass_attachment_create_info;
 
-void vulkan_render_pass_info_init(vulkan_render_pass_info *createInfo,
+void vulkan_render_pass_info_init(vulkan_render_pass_info *renderPassInfo,
                                   vulkan_render_pass_desc *desc);
 
-void vulkan_render_pass_info_deinit(vulkan_render_pass_info *createInfo);
+void vulkan_render_pass_info_deinit(vulkan_render_pass_info *renderPassInfo);
 
-size_t vulkan_render_pass_info_get_attachment_count(vulkan_render_pass_info *createInfo);
+size_t vulkan_render_pass_info_get_attachment_count(vulkan_render_pass_info *renderPassInfo);
 
-size_t vulkan_render_pass_info_get_color_attachment_count(vulkan_render_pass_info *createInfo);
+size_t vulkan_render_pass_info_get_color_attachment_count(vulkan_render_pass_info *renderPassInfo);
 
-void vulkan_render_pass_info_get_attachment_clear_values(vulkan_render_pass_info *createInfo,
+void vulkan_render_pass_info_get_attachment_clear_values(vulkan_render_pass_info *renderPassInfo,
                                                          VkClearValue *clearValues);
 
-void vulkan_render_pass_create_add_onscreen_color_attachment(
-    vulkan_render_pass_info *createInfo,
+void vulkan_render_pass_info_add_onscreen_color_attachment(
+    vulkan_render_pass_info *renderPassInfo,
     vulkan_render_pass_attachment_create_info attachmentCreateInfo);
 
-void vulkan_render_pass_create_add_offscreen_color_attachment(
-    vulkan_render_pass_info *createInfo,
+void vulkan_render_pass_info_add_offscreen_color_attachment(
+    vulkan_render_pass_info *renderPassInfo,
     vulkan_render_pass_attachment_create_info attachmentCreateInfo);
 
-void vulkan_render_pass_create_add_depth_attachment(
-    vulkan_render_pass_info *createInfo,
+void vulkan_render_pass_info_add_depth_attachment(
+    vulkan_render_pass_info *renderPassInfo,
     vulkan_render_pass_attachment_create_info attachmentCreateInfo);
 
 /// Adds an execution dependency - stages in dstStageMask (and later) will not start until all
 /// stages in srcStageMask (and earlier) are complete.
-void vulkan_render_pass_create_add_execution_barrier(vulkan_render_pass_info *createInfo,
-                                                     VkPipelineStageFlags srcStageMask,
-                                                     VkPipelineStageFlags dstStageMask);
+void vulkan_render_pass_info_add_execution_barrier(vulkan_render_pass_info *renderPassInfo,
+                                                   VkPipelineStageFlags srcStageMask,
+                                                   VkPipelineStageFlags dstStageMask);
 
 /// Adds an memory dependency - source accesses defined by srcAccessMask are visible and available
 /// to destination accesses defined by dstAccessMask.
 //// NOTE: *_READ_BIT in srcAccessMask is unnecessary - source mask determine visibility of write
 ////       accesses (see https://github.com/KhronosGroup/Vulkan-Docs/issues/131).
-void vulkan_render_pass_create_add_memory_barrier(vulkan_render_pass_info *createInfo,
-                                                  VkAccessFlags srcAccessMask,
-                                                  VkAccessFlags dstAccessMask);
+void vulkan_render_pass_info_add_memory_barrier(vulkan_render_pass_info *renderPassInfo,
+                                                VkAccessFlags srcAccessMask,
+                                                VkAccessFlags dstAccessMask);
 
-VkRenderPass vulkan_create_render_pass(vulkan_device *vkd, vulkan_render_pass_info createInfo,
+VkRenderPass vulkan_create_render_pass(vulkan_device *vkd, vulkan_render_pass_info renderPassInfo,
                                        const char *debugFormat, ...);
 
 void vulkan_begin_render_pass(vulkan_device *vkd, VkCommandBuffer commandBuffer,
-                              vulkan_render_pass_info createInfo, VkRenderPass renderPass,
+                              vulkan_render_pass_info renderPassInfo, VkRenderPass renderPass,
                               VkFramebuffer framebuffer);
 
 void vulkan_end_render_pass(vulkan_device *vkd, VkCommandBuffer commandBuffer);

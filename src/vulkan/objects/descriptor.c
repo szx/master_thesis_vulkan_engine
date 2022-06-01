@@ -295,6 +295,8 @@ vulkan_descriptors *vulkan_descriptors_create(vulkan_device *vkd,
       vulkan_create_pipeline_layout(vkd, 0, descriptorSetLayouts, descriptorSetLayoutCount,
                                     pushConstantRanges, pushConstantRangeCount, "descriptors");
 
+  core_free(descriptorSetLayouts);
+
   return descriptors;
 }
 

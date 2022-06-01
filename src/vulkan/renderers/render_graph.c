@@ -211,15 +211,9 @@ vulkan_render_graph_render_pass_element_create(size_t renderPassIdx, vulkan_rend
 
 void vulkan_render_graph_render_pass_element_destroy(
     vulkan_render_graph_render_pass_element *element) {
-
+  vulkan_render_pass_destroy(element->renderPass);
   utarray_free(element->offscreenTextures);
-  core_free(element->state.renderPassInfo.onscreenColorAttachmentDescription);
-  core_free(element->state.renderPassInfo.onscreenColorAttachmentReference);
-  core_free(element->state.renderPassInfo.offscreenColorAttachmentDescriptions);
-  core_free(element->state.renderPassInfo.offscreenColorAttachmentReferences);
-  core_free(element->state.renderPassInfo.depthAttachmentDescription);
-  core_free(element->state.renderPassInfo.depthAttachmentReference);
-  core_free(element->state.renderPassInfo.dependencies);
+  vulkan_render_pass_info_deinit(&element->state.renderPassInfo);
   core_free(element);
 }
 
@@ -389,16 +383,16 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
                                       : VK_ATTACHMENT_LOAD_OP_LOAD;
     attachmentCreateInfo.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
     attachmentCreateInfo.clearValue = resourceUsageTimelineInfo.clearValue;
-    vulkan_render_pass_create_add_onscreen_color_attachment(&state->renderPassInfo,
-                                                            attachmentCreateInfo);
+    vulkan_render_pass_info_add_onscreen_color_attachment(&state->renderPassInfo,
+                                                          attachmentCreateInfo);
 
     // Make sure that finished previous rendering to onscreen texture before writing to color
     // attachment.
-    vulkan_render_pass_create_add_execution_barrier(&state->renderPassInfo,
-                                                    VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-                                                    VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-    vulkan_render_pass_create_add_memory_barrier(&state->renderPassInfo, 0,
-                                                 VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
+    vulkan_render_pass_info_add_execution_barrier(&state->renderPassInfo,
+                                                  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                                                  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+    vulkan_render_pass_info_add_memory_barrier(&state->renderPassInfo, 0,
+                                               VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
   }
 
   utarray_foreach_elem_deref (vulkan_render_graph_resource *, offscreenTextureResource,
@@ -418,11 +412,11 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
     if (isReadUsage) {
       // Make sure that finished rendering to offscreen textures before sampling from them in
       // fragment shader.
-      vulkan_render_pass_create_add_execution_barrier(&state->renderPassInfo,
-                                                      VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT,
-                                                      VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
-      vulkan_render_pass_create_add_memory_barrier(&state->renderPassInfo, 0,
-                                                   VK_ACCESS_SHADER_READ_BIT);
+      vulkan_render_pass_info_add_execution_barrier(&state->renderPassInfo,
+                                                    VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT,
+                                                    VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+      vulkan_render_pass_info_add_memory_barrier(&state->renderPassInfo, 0,
+                                                 VK_ACCESS_SHADER_READ_BIT);
     }
 
     if (isWriteUsage) {
@@ -456,16 +450,16 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
                                         : VK_ATTACHMENT_LOAD_OP_LOAD;
       attachmentCreateInfo.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
       attachmentCreateInfo.clearValue = resourceUsageTimelineInfo.clearValue;
-      vulkan_render_pass_create_add_offscreen_color_attachment(&state->renderPassInfo,
-                                                               attachmentCreateInfo);
+      vulkan_render_pass_info_add_offscreen_color_attachment(&state->renderPassInfo,
+                                                             attachmentCreateInfo);
 
       // Make sure that finished previous rendering to offscreen texture before writing to color
       // attachment.
-      vulkan_render_pass_create_add_execution_barrier(
-          &state->renderPassInfo, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-      vulkan_render_pass_create_add_memory_barrier(&state->renderPassInfo, 0,
-                                                   VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
+      vulkan_render_pass_info_add_execution_barrier(&state->renderPassInfo,
+                                                    VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                                                    VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+      vulkan_render_pass_info_add_memory_barrier(&state->renderPassInfo, 0,
+                                                 VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
     }
   }
 
@@ -506,14 +500,14 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
                                       : VK_ATTACHMENT_LOAD_OP_LOAD;
     attachmentCreateInfo.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
     attachmentCreateInfo.clearValue = resourceUsageTimelineInfo.clearValue;
-    vulkan_render_pass_create_add_depth_attachment(&state->renderPassInfo, attachmentCreateInfo);
+    vulkan_render_pass_info_add_depth_attachment(&state->renderPassInfo, attachmentCreateInfo);
 
     // Make sure that finished previous use of depth buffer before reading and writing from it.
-    vulkan_render_pass_create_add_execution_barrier(
+    vulkan_render_pass_info_add_execution_barrier(
         &state->renderPassInfo,
         VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
         VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT);
-    vulkan_render_pass_create_add_memory_barrier(
+    vulkan_render_pass_info_add_memory_barrier(
         &state->renderPassInfo, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
         VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT);
   }

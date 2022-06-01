@@ -191,12 +191,15 @@ void vulkan_render_pass_deinit(vulkan_render_pass *renderPass) {
   utarray_foreach_elem_it (VkPipeline *, graphicsPipeline, renderPass->_graphicsPipelines) {
     vkDestroyPipeline(renderPass->renderState->vkd->device, *graphicsPipeline, vka);
   }
+  utarray_free(renderPass->_graphicsPipelines);
   utarray_foreach_elem_it (VkRenderPass *, _renderPass, renderPass->_renderPasses) {
     vkDestroyRenderPass(renderPass->renderState->vkd->device, *_renderPass, vka);
   }
+  utarray_free(renderPass->_renderPasses);
   utarray_foreach_elem_it (VkFramebuffer *, framebuffer, renderPass->_framebuffers) {
     vkDestroyFramebuffer(renderPass->renderState->vkd->device, *framebuffer, vka);
   }
+  utarray_free(renderPass->_framebuffers);
   vulkan_render_pass_shader_program_destroy(renderPass->shaderProgram);
 }
 
