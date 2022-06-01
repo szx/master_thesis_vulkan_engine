@@ -340,7 +340,7 @@ const char *vulkan_color_blending_type_debug_str(int value);
 const char *vulkan_direct_light_type_debug_str(int value);
 const char *vulkan_image_type_debug_str(int value);
 const char *vulkan_render_graph_resource_type_debug_str(int value);
-const char *vulkan_render_graph_resource_usage_debug_str(int value);
+const char *vulkan_image_render_pass_usage_debug_str(int value);
 const char *vulkan_render_pass_type_debug_str(int value);
 const char *vulkan_renderer_cache_primitive_element_source_type_debug_str(int value);
 const char *vulkan_shader_reflect_binding_type_debug_str(int value);

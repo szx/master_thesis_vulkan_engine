@@ -18,81 +18,48 @@ typedef struct vulkan_render_graph_render_pass_element vulkan_render_graph_rende
 
 /* render graph resource element */
 
-typedef enum vulkan_render_graph_resource_type {
-  vulkan_render_graph_resource_type_swap_chain_image,
-  vulkan_render_graph_resource_type_depth_buffer,
-  vulkan_render_graph_resource_type_offscreen_texture,
-  vulkan_render_graph_resource_type_count,
-} vulkan_render_graph_resource_type;
-
-typedef enum vulkan_render_graph_resource_usage {
-  vulkan_render_graph_resource_usage_read = (1 << 0),
-  vulkan_render_graph_resource_usage_write = (1 << 1),
-  vulkan_render_graph_resource_usage_read_write =
-      vulkan_render_graph_resource_usage_read | vulkan_render_graph_resource_usage_write,
-} vulkan_render_graph_resource_usage;
-
-typedef struct vulkan_render_graph_resource_usage_timeline {
-  vulkan_render_graph_resource_usage usages[MAX_RENDER_PASS_COUNT];
+typedef struct vulkan_image_render_pass_usage_timeline {
+  vulkan_image_render_pass_usage usages[MAX_RENDER_PASS_COUNT];
   VkFormat formats[MAX_RENDER_PASS_COUNT];
-} vulkan_render_graph_resource_usage_timeline;
+} vulkan_image_render_pass_usage_timeline;
 
-void vulkan_render_graph_resource_usage_timeline_add_new_usage(
-    vulkan_render_graph_resource_usage_timeline *usageTimeline, size_t renderGraphIdx,
-    vulkan_render_graph_resource_usage usage);
+void vulkan_image_render_pass_usage_timeline_add_new_usage(
+    vulkan_image_render_pass_usage_timeline *usageTimeline, size_t renderGraphIdx,
+    vulkan_image_render_pass_usage usage);
 
-void vulkan_render_graph_resource_usage_timeline_add_new_format(
-    vulkan_render_graph_resource_usage_timeline *usageTimeline, size_t renderGraphIdx,
-    VkFormat format);
+void vulkan_image_render_pass_usage_timeline_add_new_format(
+    vulkan_image_render_pass_usage_timeline *usageTimeline, size_t renderGraphIdx, VkFormat format);
 
-void vulkan_render_graph_resource_usage_timeline_debug_print(
-    vulkan_render_graph_resource_usage_timeline *usageTimeline, int indent);
+void vulkan_image_render_pass_usage_timeline_debug_print(
+    vulkan_image_render_pass_usage_timeline *usageTimeline, int indent);
 
-typedef struct vulkan_render_graph_resource_usage_timeline_info {
-  vulkan_render_graph_resource_usage previousUsage;
-  vulkan_render_graph_resource_usage currentUsage;
-  vulkan_render_graph_resource_usage nextUsage;
+typedef struct vulkan_image_render_pass_usage_timeline_info {
+  vulkan_image_render_pass_usage previousUsage;
+  vulkan_image_render_pass_usage currentUsage;
+  vulkan_image_render_pass_usage nextUsage;
   VkFormat previousFormat;
   VkFormat currentFormat;
   VkFormat nextFormat;
-} vulkan_render_graph_resource_usage_timeline_info;
+} vulkan_image_render_pass_usage_timeline_info;
 
-vulkan_render_graph_resource_usage_timeline_info
-vulkan_render_graph_resource_usage_timeline_get_info(
-    vulkan_render_graph_resource_usage_timeline *usageTimeline, size_t renderGraphIdx);
+vulkan_image_render_pass_usage_timeline_info vulkan_image_render_pass_usage_timeline_get_info(
+    vulkan_image_render_pass_usage_timeline *usageTimeline, size_t renderGraphIdx);
 
 /// Edge of render graph.
 typedef struct vulkan_render_graph_resource {
-  vulkan_render_graph_resource_type type;
   vulkan_image_type imageType;
 
   /// Info collected before compilation.
-  vulkan_render_graph_resource_usage_timeline usageTimeline;
-
-  /// Mutable state used during compilation.
-  struct vulkan_render_graph_resource_state {
-    // HIRO CONTINUE Refactor out
-    bool isFramebufferAttachment;
-    VkFormat format;
-    VkImageLayout initialLayout;
-    VkAttachmentLoadOp loadOp;
-    VkAttachmentStoreOp storeOp;
-    VkImageLayout currentLayout;
-    VkImageLayout finalLayout;
-    uint32_t attachmentIdx;
-  } state;
+  vulkan_image_render_pass_usage_timeline usageTimeline;
 
   struct vulkan_render_graph_resource *prev, *next;
 
 } vulkan_render_graph_resource;
 
 void vulkan_render_graph_resource_init(vulkan_render_graph_resource *element,
-                                       vulkan_render_graph_resource_type type,
                                        vulkan_image_type imageType);
 
 void vulkan_render_graph_resource_deinit(vulkan_render_graph_resource *element);
-
-void vulkan_render_graph_resource_clear_compilation_state(vulkan_render_graph_resource *element);
 
 void vulkan_render_graph_resource_debug_print(vulkan_render_graph_resource *element);
 

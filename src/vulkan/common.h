@@ -33,6 +33,13 @@ typedef enum vulkan_image_type {
   vulkan_image_type_count
 } vulkan_image_type;
 
+typedef enum vulkan_image_render_pass_usage {
+  vulkan_image_render_pass_usage_read = (1 << 0),
+  vulkan_image_render_pass_usage_write = (1 << 1),
+  vulkan_image_render_pass_usage_read_write =
+      vulkan_image_render_pass_usage_read | vulkan_image_render_pass_usage_write,
+} vulkan_image_render_pass_usage;
+
 typedef struct vulkan_image_type_info {
   bool depthFormat;
   bool colorFormat;

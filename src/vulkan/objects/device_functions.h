@@ -107,10 +107,8 @@ typedef struct vulkan_render_pass_create_info {
   VkAttachmentDescription *onscreenColorAttachmentDescription;
   VkAttachmentReference *onscreenColorAttachmentReference;
 
-  size_t offscreenColorAttachmentDescriptionCount;
-  VkAttachmentDescription *offscreenColorAttachmentDescriptions;
-  size_t offscreenColorAttachmentReferenceCount;
-  VkAttachmentReference *offscreenColorAttachmentReferences;
+  UT_array *offscreenColorAttachmentDescriptions;
+  UT_array *offscreenColorAttachmentReferences;
 
   VkAttachmentDescription *depthAttachmentDescription;
   VkAttachmentReference *depthAttachmentReference;
@@ -118,6 +116,45 @@ typedef struct vulkan_render_pass_create_info {
   size_t dependencyCount;
   VkSubpassDependency *dependencies;
 } vulkan_render_pass_create_info;
+
+typedef struct vulkan_render_pass_attachment_create_info {
+  VkFormat format;
+  VkImageLayout previousLayout;
+  VkImageLayout currentLayout;
+  VkImageLayout nextLayout;
+  VkAttachmentLoadOp loadOp;
+  VkAttachmentStoreOp storeOp;
+} vulkan_render_pass_attachment_create_info;
+
+void vulkan_render_pass_create_info_init(vulkan_render_pass_create_info *createInfo);
+
+void vulkan_render_pass_create_info_deinit(vulkan_render_pass_create_info *createInfo);
+
+void vulkan_render_pass_create_add_onscreen_color_attachment(
+    vulkan_render_pass_create_info *createInfo,
+    vulkan_render_pass_attachment_create_info attachmentCreateInfo);
+
+void vulkan_render_pass_create_add_offscreen_color_attachment(
+    vulkan_render_pass_create_info *createInfo,
+    vulkan_render_pass_attachment_create_info attachmentCreateInfo);
+
+void vulkan_render_pass_create_add_depth_attachment(
+    vulkan_render_pass_create_info *createInfo,
+    vulkan_render_pass_attachment_create_info attachmentCreateInfo);
+
+/// Adds an execution dependency - stages in dstStageMask (and later) will not start until all
+/// stages in srcStageMask (and earlier) are complete.
+void vulkan_render_pass_create_add_execution_barrier(vulkan_render_pass_create_info *createInfo,
+                                                     VkPipelineStageFlags srcStageMask,
+                                                     VkPipelineStageFlags dstStageMask);
+
+/// Adds an memory dependency - source accesses defined by srcAccessMask are visible and available
+/// to destination accesses defined by dstAccessMask.
+//// NOTE: *_READ_BIT in srcAccessMask is unnecessary - source mask determine visibility of write
+////       accesses (see https://github.com/KhronosGroup/Vulkan-Docs/issues/131).
+void vulkan_render_pass_create_add_memory_barrier(vulkan_render_pass_create_info *createInfo,
+                                                  VkAccessFlags srcAccessMask,
+                                                  VkAccessFlags dstAccessMask);
 
 VkRenderPass vulkan_create_render_pass(vulkan_device *vkd,
                                        vulkan_render_pass_create_info createInfo,

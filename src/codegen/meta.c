@@ -5901,11 +5901,11 @@ const char *vulkan_render_graph_resource_type_debug_str(int value) {
   if (value == 3) { return "vulkan_render_graph_resource_type_count"; }
   return "UNKNOWN vulkan_render_graph_resource_type";
 }
-const char *vulkan_render_graph_resource_usage_debug_str(int value) {
-  if (value == 1) { return "vulkan_render_graph_resource_usage_read"; }
-  if (value == 2) { return "vulkan_render_graph_resource_usage_write"; }
-  if (value == 3) { return "vulkan_render_graph_resource_usage_read_write"; }
-  return "UNKNOWN vulkan_render_graph_resource_usage";
+const char *vulkan_image_render_pass_usage_debug_str(int value) {
+  if (value == 1) { return "vulkan_image_render_pass_usage_read"; }
+  if (value == 2) { return "vulkan_image_render_pass_usage_write"; }
+  if (value == 3) { return "vulkan_image_render_pass_usage_read_write"; }
+  return "UNKNOWN vulkan_image_render_pass_usage";
 }
 const char *vulkan_render_pass_type_debug_str(int value) {
   if (value == 0) { return "vulkan_render_pass_type_forward"; }
