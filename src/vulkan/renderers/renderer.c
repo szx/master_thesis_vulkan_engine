@@ -1,9 +1,7 @@
 #include "renderer.h"
 
 vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *assetDb,
-                                        vulkan_swap_chain *vks, UT_string *sceneName,
-                                        vulkan_render_pass_type *renderPasses,
-                                        size_t renderPassCount) {
+                                        vulkan_swap_chain *vks, UT_string *sceneName) {
   vulkan_renderer *renderer = core_alloc(sizeof(vulkan_renderer));
 
   renderer->config = config;
@@ -22,13 +20,6 @@ vulkan_renderer *vulkan_renderer_create(data_config *config, data_asset_db *asse
                                  vulkan_renderer_update_unified_uniform_buffer_callback);
 
   renderer->renderGraph = vulkan_render_graph_create(renderer->renderState);
-
-  // HIRO screen-space postprocessing effects render passes
-  for (size_t i = 0; i < renderPassCount; i++) {
-    vulkan_render_pass_type type = renderPasses[i];
-    vulkan_render_graph_add_render_pass(renderer->renderGraph, type);
-  }
-  vulkan_render_graph_compile(renderer->renderGraph);
 
   return renderer;
 }

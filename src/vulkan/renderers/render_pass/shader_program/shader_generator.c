@@ -181,21 +181,16 @@ void glsl_add_entry_point_begin(UT_string *s) { utstring_printf(s, "%s\n", "void
 
 void glsl_add_entry_point_end(UT_string *s) { utstring_printf(s, "%s\n", "}"); }
 
-void glsl_add_body(UT_string *s, vulkan_render_pass_type renderPassType,
+void glsl_add_body(UT_string *s, vulkan_render_pass_desc renderPassDesc,
                    vulkan_shader_type shaderType) {
   const char *filename = NULL;
-#define x(_name, ...)                                                                              \
-  if (renderPassType == vulkan_render_pass_type_##_name) {                                         \
-    if (shaderType == vulkan_shader_type_vertex) {                                                 \
-      filename = #_name "_vertex.glsl";                                                            \
-    } else if (shaderType == vulkan_shader_type_fragment) {                                        \
-      filename = #_name "_fragment.glsl";                                                          \
-    } else {                                                                                       \
-      UNREACHABLE;                                                                                 \
-    }                                                                                              \
+  if (shaderType == vulkan_shader_type_vertex) {
+    filename = renderPassDesc.vertexShader;
+  } else if (shaderType == vulkan_shader_type_fragment) {
+    filename = renderPassDesc.fragmentShader;
+  } else {
+    UNREACHABLE;
   }
-  VULKAN_RENDER_PASS_TYPES(x, )
-#undef x
   assert(filename != NULL);
 
   UT_string *inputPath = get_asset_file_path("shaders", filename);
@@ -231,7 +226,7 @@ vulkan_render_pass_shader_generator_get_shader(vulkan_render_pass_shader_generat
   glsl_add_common_source(shaderGenerator->sourceCode);
 
   glsl_add_entry_point_begin(shaderGenerator->sourceCode);
-  glsl_add_body(shaderGenerator->sourceCode, renderPassDesc.renderPassType, shaderType);
+  glsl_add_body(shaderGenerator->sourceCode, renderPassDesc, shaderType);
   glsl_add_entry_point_end(shaderGenerator->sourceCode);
 
   return vulkan_shader_create_with_str(shaderGenerator->renderState->vkd, shaderType,

@@ -33,7 +33,6 @@
 #include "renderers/render_pass/frame_state/offscreen_texture_state.h"
 #include "renderers/render_pass/render_pass.h"
 #include "renderers/render_pass/render_pass_decls.h"
-#include "renderers/render_pass/render_pass_impl.h"
 #include "renderers/render_pass/render_pass_state.h"
 #include "renderers/render_pass/shader_program/shader_generator.h"
 #include "renderers/render_pass/shader_program/shader_program.h"

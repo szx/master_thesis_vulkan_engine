@@ -1,5 +1,4 @@
-/* Pipeline definitions.
- * First place to edit when adding new renderPass. */
+/* Render pass high-level description. */
 
 #pragma once
 
@@ -7,23 +6,6 @@
 
 typedef struct vulkan_render_pass vulkan_render_pass;
 typedef struct vulkan_render_pass_frame_state vulkan_render_pass_frame_state;
-
-// NOTE: Start adding render pass here!
-#define END_OF_VULKAN_RENDER_PASS_TYPES
-#define VULKAN_RENDER_PASS_TYPES(X, ...)                                                           \
-  X(forward, __VA_ARGS__)                                                                          \
-  X(deferred_geometry, __VA_ARGS__)                                                                \
-  X(deferred_lighting, __VA_ARGS__)                                                                \
-  X(skybox, __VA_ARGS__)                                                                           \
-  X(debug_text, __VA_ARGS__)                                                                       \
-  END_OF_VULKAN_RENDER_PASS_TYPES
-
-typedef enum vulkan_render_pass_type {
-#define x(_name, ...) vulkan_render_pass_type_##_name,
-  VULKAN_RENDER_PASS_TYPES(x, )
-#undef x
-      vulkan_render_pass_type_count
-} vulkan_render_pass_type;
 
 typedef struct vulkan_offscreen_framebuffer_color_attachment_info {
   vulkan_image_type type;
@@ -34,9 +16,16 @@ typedef struct vulkan_offscreen_fragment_shader_input_info {
   vulkan_image_type type;
 } vulkan_offscreen_fragment_shader_input_info;
 
+typedef void (*vulkan_render_pass_desc_record_func)(vulkan_render_pass *renderPass,
+                                                    vulkan_render_pass_frame_state *frameState,
+                                                    VkCommandBuffer commandBuffer);
+
 /// Describes render pass on high-level.
 /// Used to create render pass and its corresponding render graph element.
 typedef struct vulkan_render_pass_desc {
+  const char *vertexShader;
+  const char *fragmentShader;
+
   bool useOnscreenColorAttachment;
   VkClearColorValue onscreenClearValue;
 
@@ -56,8 +45,10 @@ typedef struct vulkan_render_pass_desc {
 
   bool colorBlendingType;
 
+  vulkan_render_pass_desc_record_func recordFunc;
+  void *recordFuncData;
+
   /* calculated additional info */
-  vulkan_render_pass_type renderPassType;
   size_t attachmentCount;
   size_t colorAttachmentCount;
 } vulkan_render_pass_desc;

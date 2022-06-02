@@ -477,10 +477,8 @@ VkPipeline vulkan_create_graphics_pipeline(vulkan_device *vkd,
   return graphicsPipeline;
 }
 
-void vulkan_render_pass_info_init(vulkan_render_pass_info *renderPassInfo,
-                                  vulkan_render_pass_desc *desc) {
+void vulkan_render_pass_info_init(vulkan_render_pass_info *renderPassInfo) {
   *renderPassInfo = (vulkan_render_pass_info){0};
-  renderPassInfo->desc = desc;
   utarray_alloc(renderPassInfo->offscreenColorAttachmentDescriptions,
                 sizeof(VkAttachmentDescription));
   utarray_alloc(renderPassInfo->offscreenColorAttachmentReferences, sizeof(VkAttachmentReference));

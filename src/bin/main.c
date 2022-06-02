@@ -145,19 +145,133 @@ void update_func(vulkan_renderer *renderer, double fps, double dt) {
   }
 }
 
+void render_pass_record_opaque_geometry_draws(vulkan_render_pass *renderPass,
+                                              vulkan_render_pass_frame_state *frameState,
+                                              VkCommandBuffer commandBuffer) {
+  vulkan_batches_record_draw_command(renderPass->renderPassState->sharedState.rendererCacheBatches,
+                                     commandBuffer, &frameState->rendererCacheBatchesData);
+}
+
+void render_pass_record_fullscreen_triangle_draw(vulkan_render_pass *renderPass,
+                                                 vulkan_render_pass_frame_state *frameState,
+                                                 VkCommandBuffer commandBuffer) {
+  // Draw full-screen triangle.
+  // See also:
+  // https://www.saschawillems.de/blog/2016/08/13/vulkan-tutorial-on-rendering-a-fullscreen-quad-without-buffers/
+  vulkan_renderer_cache_primitive_element *basicFullscreenTrianglePrimitiveElement =
+      renderPass->renderPassState->renderState->rendererCache
+          ->basicFullscreenTrianglePrimitiveElement;
+  vulkan_batch batch;
+  vulkan_batch_init(&batch, basicFullscreenTrianglePrimitiveElement, 0);
+  vulkan_batch_record_basic_draw_command(&batch, commandBuffer);
+  vulkan_batch_deinit(&batch);
+}
+
+void render_pass_record_skybox_draw(vulkan_render_pass *renderPass,
+                                    vulkan_render_pass_frame_state *frameState,
+                                    VkCommandBuffer commandBuffer) {
+  // Draw cube.
+  vulkan_renderer_cache_primitive_element *basicBoxPrimitiveElement =
+      renderPass->renderPassState->renderState->rendererCache->basicBoxPrimitiveElement;
+  vulkan_batch batch;
+  vulkan_batch_init(&batch, basicBoxPrimitiveElement, 0);
+  vulkan_batch_record_basic_draw_command(&batch, commandBuffer);
+  vulkan_batch_deinit(&batch);
+}
+
 int main(int argc, char *argv[]) {
   platform_create();
   data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_asset);
   data_asset_db *assetDb = data_asset_db_create();
   vulkan_device *vkd = vulkan_device_create(config, assetDb);
   vulkan_swap_chain *vks = vulkan_swap_chain_create(vkd);
-  vulkan_render_pass_type pipelines[] = {
-      vulkan_render_pass_type_deferred_geometry, vulkan_render_pass_type_deferred_lighting,
-      // vulkan_render_pass_type_forward,
-      vulkan_render_pass_type_skybox, vulkan_render_pass_type_debug_text};
-  vulkan_renderer *renderer = vulkan_renderer_create(
-      config, assetDb, vks, config->asset.settingsStartScene, pipelines, array_size(pipelines));
+  vulkan_renderer *renderer =
+      vulkan_renderer_create(config, assetDb, vks, config->asset.settingsStartScene);
 
+  // HIRO screen-space postprocessing effects render passes
+  // HIRO HDR rendering (requires support for loading floating-point skyboxes)
+
+  /*
+  vulkan_render_graph_add_render_pass(
+      renderer->renderGraph,
+      (vulkan_render_pass_desc){.vertexShader = "forward_vertex.glsl",
+                                .fragmentShader = "forward_fragment.glsl",
+                                .useOnscreenColorAttachment = true,
+                                .onscreenClearValue = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}},
+                                .offscreenColorAttachmentCount = 0,
+                                .useDepthAttachment = true,
+                                .depthAttachmentWriteEnable = true,
+                                .depthAttachmentTestEnable = true,
+                                .depthAttachmentTestOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
+                                .depthClearValue = (VkClearDepthStencilValue){0.0f, 0},
+                                .colorBlendingType = vulkan_color_blending_type_none,
+                                .recordFunc = render_pass_record_opaque_geometry_draws});
+  */
+
+  vulkan_render_graph_add_render_pass(
+      renderer->renderGraph,
+      (vulkan_render_pass_desc){
+          .vertexShader = "deferred_geometry_vertex.glsl",
+          .fragmentShader = "deferred_geometry_fragment.glsl",
+          .useOnscreenColorAttachment = false,
+          .onscreenClearValue = {{0.0f, 0.0f, 0.0f, 1.0f}},
+          .offscreenColorAttachmentCount = 3,
+          .offscreenColorAttachments =
+              {
+                  {.type = vulkan_image_type_g_buffer_0, .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
+                  {.type = vulkan_image_type_g_buffer_1, .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
+                  {.type = vulkan_image_type_g_buffer_2, .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
+              },
+          .useDepthAttachment = true,
+          .depthAttachmentWriteEnable = true,
+          .depthAttachmentTestEnable = true,
+          .depthAttachmentTestOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
+          .depthClearValue = {0.0f, 0},
+          .colorBlendingType = vulkan_color_blending_type_none,
+          .recordFunc = render_pass_record_opaque_geometry_draws});
+
+  vulkan_render_graph_add_render_pass(
+      renderer->renderGraph,
+      (vulkan_render_pass_desc){
+          .vertexShader = "deferred_lighting_vertex.glsl",
+          .fragmentShader = "deferred_lighting_fragment.glsl",
+          .useOnscreenColorAttachment = true,
+          .offscreenFragmentShaderInputCount = 3,
+          .offscreenFragmentShaderInputs =
+              {
+                  {.type = vulkan_image_type_g_buffer_0},
+                  {.type = vulkan_image_type_g_buffer_1},
+                  {.type = vulkan_image_type_g_buffer_2},
+              },
+          // Use depth buffer to reject fragments with depth == 0 (no geometry rendered)
+          .useDepthAttachment = true,
+          .depthAttachmentWriteEnable = false,
+          .depthAttachmentTestEnable = true,
+          .depthAttachmentTestOp = VK_COMPARE_OP_LESS,
+          .recordFunc = render_pass_record_fullscreen_triangle_draw});
+
+  vulkan_render_graph_add_render_pass(
+      renderer->renderGraph,
+      (vulkan_render_pass_desc){.vertexShader = "skybox_vertex.glsl",
+                                .fragmentShader = "skybox_fragment.glsl",
+                                .useOnscreenColorAttachment = true,
+                                .onscreenClearValue = {{0.5f, 0.5f, 0.5f, 1.0f}},
+                                // Use depth buffer to reject fragments with depth != 0
+                                .useDepthAttachment = true,
+                                .depthAttachmentWriteEnable = false,
+                                .depthAttachmentTestEnable = true,
+                                .depthAttachmentTestOp = VK_COMPARE_OP_EQUAL,
+                                .recordFunc = render_pass_record_skybox_draw});
+
+  vulkan_render_graph_add_render_pass(
+      renderer->renderGraph,
+      (vulkan_render_pass_desc){.vertexShader = "debug_text_vertex.glsl",
+                                .fragmentShader = "debug_text_fragment.glsl",
+                                .useOnscreenColorAttachment = true,
+                                .colorBlendingType = vulkan_color_blending_type_alpha,
+                                .recordFunc = render_pass_record_fullscreen_triangle_draw});
+
+  // HIRO refactor adding render graph (declare oll possible offscreen texture inputs and outputs).
   vulkan_renderer_run_main_loop(renderer, update_func);
 
   vulkan_renderer_destroy(renderer);

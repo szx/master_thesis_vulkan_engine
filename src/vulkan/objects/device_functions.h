@@ -103,11 +103,8 @@ VkPipeline vulkan_create_graphics_pipeline(vulkan_device *vkd,
                                            vulkan_graphics_pipeline_create_info createInfo,
                                            const char *debugFormat, ...);
 
-typedef struct vulkan_render_pass_desc vulkan_render_pass_desc;
-
 /// Low-level render pass description.
 typedef struct vulkan_render_pass_info {
-  vulkan_render_pass_desc *desc;
 
   VkAttachmentDescription *onscreenColorAttachmentDescription;
   VkAttachmentReference *onscreenColorAttachmentReference;
@@ -136,8 +133,7 @@ typedef struct vulkan_render_pass_attachment_create_info {
   VkClearValue clearValue;
 } vulkan_render_pass_attachment_create_info;
 
-void vulkan_render_pass_info_init(vulkan_render_pass_info *renderPassInfo,
-                                  vulkan_render_pass_desc *desc);
+void vulkan_render_pass_info_init(vulkan_render_pass_info *renderPassInfo);
 
 void vulkan_render_pass_info_deinit(vulkan_render_pass_info *renderPassInfo);
 

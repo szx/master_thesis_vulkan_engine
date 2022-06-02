@@ -130,6 +130,7 @@ typedef struct vulkan_render_graph {
   vulkan_render_graph_resource *resources;
 
   size_t _renderPassIdx;
+  bool _compiled;
 
 } vulkan_render_graph;
 
@@ -143,7 +144,7 @@ void vulkan_render_graph_finish_swap_chain_recreation(vulkan_render_graph *rende
 
 /// Adds render pass and it's resources.
 void vulkan_render_graph_add_render_pass(vulkan_render_graph *renderGraph,
-                                         vulkan_render_pass_type type);
+                                         vulkan_render_pass_desc desc);
 
 void vulkan_render_graph_compile(vulkan_render_graph *renderGraph);
 

@@ -221,7 +221,6 @@ void vulkan_render_graph_render_pass_element_debug_print(
     vulkan_render_graph_render_pass_element *element) {
   log_raw(stdout, "\"render graph render pass element\\n%p\\n", element);
   log_raw(stdout, "idx: %zu\\n", element->idx);
-  log_raw(stdout, "type: %s\\n", vulkan_render_pass_type_debug_str(element->renderPass->type));
   log_raw(stdout, "\" ");
 }
 
@@ -240,6 +239,7 @@ vulkan_render_graph *vulkan_render_graph_create(vulkan_render_state *renderState
   renderGraph->resources = NULL;
 
   renderGraph->_renderPassIdx = 0;
+  renderGraph->_compiled = false;
 
   return renderGraph;
 }
@@ -278,23 +278,25 @@ void vulkan_render_graph_finish_swap_chain_recreation(vulkan_render_graph *rende
 
   dl_foreach_elem(vulkan_render_graph_render_pass_element *, element,
                   renderGraph->renderPassElements) {
-    vulkan_render_pass_init(element->renderPass, element->renderPass->type,
+    vulkan_render_pass_init(element->renderPass, element->renderPass->desc,
                             element->renderPass->renderState, element->renderPass->renderPassState);
   }
 }
 
 void vulkan_render_graph_add_render_pass(vulkan_render_graph *renderGraph,
-                                         vulkan_render_pass_type type) {
+                                         vulkan_render_pass_desc desc) {
   assert(renderGraph->_renderPassIdx < MAX_RENDER_PASS_COUNT);
 
   vulkan_render_pass *renderPass =
-      vulkan_render_pass_create(type, renderGraph->renderState, renderGraph->renderPassState);
+      vulkan_render_pass_create(desc, renderGraph->renderState, renderGraph->renderPassState);
 
   vulkan_render_graph_render_pass_element *renderPassElement =
       vulkan_render_graph_render_pass_element_create(renderGraph->_renderPassIdx++, renderPass,
                                                      renderGraph);
 
   DL_APPEND(renderGraph->renderPassElements, renderPassElement);
+
+  renderGraph->_compiled = false;
 }
 
 VkImageLayout get_image_layout_for_swap_chain_image(vulkan_image_render_pass_usage usage) {
@@ -343,7 +345,7 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
   bool depthBufferResourceUsed = renderPassElement->depthBufferResource != NULL;
 
   struct vulkan_render_graph_render_pass_element_state *state = &renderPassElement->state;
-  vulkan_render_pass_info_init(&state->renderPassInfo, &renderPassElement->renderPass->desc);
+  vulkan_render_pass_info_init(&state->renderPassInfo);
 
   if (swapChainImageResourceUsed) {
     vulkan_image_render_pass_usage_timeline_debug_print(
@@ -514,18 +516,24 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
 }
 
 void vulkan_render_graph_compile(vulkan_render_graph *renderGraph) {
+  if (renderGraph->_compiled) {
+    return;
+  }
+
   vulkan_render_graph_debug_print(renderGraph);
   dl_foreach_elem(vulkan_render_graph_render_pass_element *, renderPassElement,
                   renderGraph->renderPassElements) {
     compile_render_pass(renderPassElement);
   }
+
+  renderGraph->_compiled = true;
 }
 
 void vulkan_render_graph_record_commands(vulkan_render_graph *renderGraph,
                                          VkCommandBuffer commandBuffer, size_t swapChainImageIdx) {
-  size_t currentFrameInFlight = renderGraph->renderState->sync->currentFrameInFlight;
-  vulkan_render_pass_frame_state *frameState =
-      vulkan_render_pass_state_get_frame_state(renderGraph->renderPassState, currentFrameInFlight);
+  if (!renderGraph->_compiled) {
+    vulkan_render_graph_compile(renderGraph);
+  }
 
   dl_foreach_elem(vulkan_render_graph_render_pass_element *, renderPassElement,
                   renderGraph->renderPassElements) {

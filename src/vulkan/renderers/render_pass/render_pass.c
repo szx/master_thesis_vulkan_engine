@@ -28,8 +28,7 @@ VkRenderPass get_render_pass(vulkan_render_pass *renderPass, size_t currentFrame
   }
 
   *_renderPass = vulkan_create_render_pass(renderPass->renderState->vkd, createInfo,
-                                           "renderPass %s (frameInFlight=#%u, swapChainImage=#%u)",
-                                           vulkan_render_pass_type_debug_str(renderPass->type),
+                                           "renderPass (frameInFlight=#%u, swapChainImage=#%u)",
                                            currentFrameInFlight, swapChainImageIdx);
 
   return *_renderPass;
@@ -48,12 +47,12 @@ VkFramebuffer get_framebuffer(vulkan_render_pass *renderPass, size_t currentFram
 
   assert(framebufferAttachmentCount > 0);
 
-  *_framebuffer = vulkan_create_framebuffer(
-      renderPass->renderState->vkd, _renderPass, framebufferAttachmentCount, framebufferAttachments,
-      renderPass->renderState->vks->swapChainExtent.width,
-      renderPass->renderState->vks->swapChainExtent.height,
-      "renderPass %s (frameInFlight=#%u, swapChainImage=#%u)",
-      vulkan_render_pass_type_debug_str(renderPass->type), currentFrameInFlight, swapChainImageIdx);
+  *_framebuffer = vulkan_create_framebuffer(renderPass->renderState->vkd, _renderPass,
+                                            framebufferAttachmentCount, framebufferAttachments,
+                                            renderPass->renderState->vks->swapChainExtent.width,
+                                            renderPass->renderState->vks->swapChainExtent.height,
+                                            "framebuffer (frameInFlight=#%u, swapChainImage=#%u)",
+                                            currentFrameInFlight, swapChainImageIdx);
 
   return *_framebuffer;
 }
@@ -131,10 +130,10 @@ VkPipeline get_graphics_pipeline(vulkan_render_pass *renderPass, size_t currentF
       .pipelineLayout = renderPass->renderState->descriptors->pipelineLayout,
   };
 
-  *graphicsPipeline = vulkan_create_graphics_pipeline(
-      renderPass->renderState->vkd, createInfo,
-      "renderPass %s (frameInFlight=#%u, swapChainImage=#%u)",
-      vulkan_render_pass_type_debug_str(renderPass->type), currentFrameInFlight, swapChainImageIdx);
+  *graphicsPipeline =
+      vulkan_create_graphics_pipeline(renderPass->renderState->vkd, createInfo,
+                                      "renderPass (frameInFlight=#%u, swapChainImage=#%u)",
+                                      currentFrameInFlight, swapChainImageIdx);
 
   core_free(vertexAttributeDescriptions);
   core_free(descriptorSetLayouts);
@@ -143,11 +142,11 @@ VkPipeline get_graphics_pipeline(vulkan_render_pass *renderPass, size_t currentF
   return *graphicsPipeline;
 }
 
-vulkan_render_pass *vulkan_render_pass_create(vulkan_render_pass_type type,
+vulkan_render_pass *vulkan_render_pass_create(vulkan_render_pass_desc desc,
                                               vulkan_render_state *renderState,
                                               vulkan_render_pass_state *renderPassState) {
   vulkan_render_pass *renderPass = core_alloc(sizeof(vulkan_render_pass));
-  vulkan_render_pass_init(renderPass, type, renderState, renderPassState);
+  vulkan_render_pass_init(renderPass, desc, renderState, renderPassState);
   return renderPass;
 }
 
@@ -156,14 +155,14 @@ void vulkan_render_pass_destroy(vulkan_render_pass *renderPass) {
   core_free(renderPass);
 }
 
-void vulkan_render_pass_init(vulkan_render_pass *renderPass, vulkan_render_pass_type type,
+void vulkan_render_pass_init(vulkan_render_pass *renderPass, vulkan_render_pass_desc desc,
                              vulkan_render_state *renderState,
                              vulkan_render_pass_state *renderPassState) {
   renderPass->renderState = renderState;
   renderPass->renderPassState = renderPassState;
 
-  renderPass->type = type;
-  renderPass->desc = vulkan_render_pass_get_info(renderPass);
+  renderPass->desc = desc;
+  vulkan_render_pass_desc_calculate_additional_info(&renderPass->desc, renderPass);
   renderPass->shaderProgram =
       vulkan_render_pass_shader_program_create(renderState, renderPass->desc);
 
@@ -201,19 +200,6 @@ void vulkan_render_pass_deinit(vulkan_render_pass *renderPass) {
   }
   utarray_free(renderPass->_framebuffers);
   vulkan_render_pass_shader_program_destroy(renderPass->shaderProgram);
-}
-
-vulkan_render_pass_desc vulkan_render_pass_get_info(vulkan_render_pass *renderPass) {
-#define x(_name, ...)                                                                              \
-  if (renderPass->type == vulkan_render_pass_type_##_name) {                                       \
-    vulkan_render_pass_desc renderPassInfo =                                                       \
-        vulkan_render_pass_impl_##_name##_get_info(renderPass);                                    \
-    vulkan_render_pass_desc_calculate_additional_info(&renderPassInfo, renderPass);                \
-    return renderPassInfo;                                                                         \
-  }
-  VULKAN_RENDER_PASS_TYPES(x, )
-#undef x
-  UNREACHABLE;
 }
 
 void get_framebuffer_attachment_image_views(vulkan_render_pass *renderPass,
@@ -265,12 +251,7 @@ void vulkan_render_pass_record_commands(vulkan_render_pass *renderPass,
 
   vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline);
 
-#define x(_name, ...)                                                                              \
-  if (renderPass->type == vulkan_render_pass_type_##_name) {                                       \
-    vulkan_render_pass_impl_##_name##_record_commands(renderPass, frameState, commandBuffer);      \
-  }
-  VULKAN_RENDER_PASS_TYPES(x, )
-#undef x
+  renderPass->desc.recordFunc(renderPass, frameState, commandBuffer);
 
   vulkan_end_render_pass(renderPass->renderState->vkd, commandBuffer);
 }
