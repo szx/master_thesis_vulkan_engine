@@ -8,12 +8,13 @@ typedef struct vulkan_render_pass vulkan_render_pass;
 typedef struct vulkan_render_pass_frame_state vulkan_render_pass_frame_state;
 
 typedef struct vulkan_offscreen_framebuffer_color_attachment_info {
-  vulkan_image_type type;
+  const char *name;
   VkClearColorValue clearValue;
 } vulkan_offscreen_framebuffer_color_attachment_info;
 
 typedef struct vulkan_offscreen_fragment_shader_input_info {
-  vulkan_image_type type;
+  const char *name;
+  uint32_t _offscreenTextureIdx;
 } vulkan_offscreen_fragment_shader_input_info;
 
 typedef void (*vulkan_render_pass_desc_record_func)(vulkan_render_pass *renderPass,
@@ -46,12 +47,10 @@ typedef struct vulkan_render_pass_desc {
   bool colorBlendingType;
 
   vulkan_render_pass_desc_record_func recordFunc;
-  void *recordFuncData;
 
   /* calculated additional info */
   size_t attachmentCount;
   size_t colorAttachmentCount;
 } vulkan_render_pass_desc;
 
-void vulkan_render_pass_desc_calculate_additional_info(vulkan_render_pass_desc *renderPassDesc,
-                                                       vulkan_render_pass *renderPass);
+void vulkan_render_pass_desc_calculate_additional_info(vulkan_render_pass_desc *renderPassDesc);

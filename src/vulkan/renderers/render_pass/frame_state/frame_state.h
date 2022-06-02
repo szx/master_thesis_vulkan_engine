@@ -23,8 +23,8 @@ typedef struct vulkan_render_pass_frame_state {
   // HIRO Maintain two batches for transparent and opaque objects.
   vulkan_batches_buffer rendererCacheBatchesData;
 
-  /// G-Buffer state.
-  vulkan_render_pass_offscreen_texture_state *gBuffer;
+  /// Offscreen texture state.
+  vulkan_render_pass_offscreen_texture_state *offscreenTextures;
 
   /// Depth buffer image.
   vulkan_image *depthBufferImage;
@@ -49,8 +49,3 @@ void vulkan_render_pass_frame_state_set_unified_uniform_buffer(
 
 void vulkan_render_pass_frame_state_debug_print(vulkan_render_pass_frame_state *frameState,
                                                 int indent);
-
-// HIRO rename vulkan_textures_texture_element to vulkan_texture
-vulkan_textures_texture_element *
-vulkan_render_pass_frame_state_get_offscreen_texture(vulkan_render_pass_frame_state *frameState,
-                                                     vulkan_image_type type);

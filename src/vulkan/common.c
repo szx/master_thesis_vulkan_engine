@@ -8,11 +8,8 @@ vulkan_image_type_info vulkanImageTypeInfo[] = {
     [vulkan_image_type_material_normal_map] = {.colorFormat = true, .uNormEncoding = true, .componentBits=8},
     [vulkan_image_type_cubemap] = {.colorFormat = true, .uNormEncoding = true, .componentBits=8},
     [vulkan_image_type_font_bitmap] = {.colorFormat = true, .uNormEncoding = true, .componentBits=8},
-    [vulkan_image_type_g_buffer_0] = {.colorFormat = true, .floatingPointEncoding = true, .componentBits=16, .forcedChannels = 4},
-    [vulkan_image_type_g_buffer_1] = {.colorFormat = true, .floatingPointEncoding = true, .componentBits=16, .forcedChannels = 4},
-    [vulkan_image_type_g_buffer_2] = {.colorFormat = true, .floatingPointEncoding = true, .componentBits=16, .forcedChannels = 4},
-    [vulkan_image_type_g_buffer_3] = {.colorFormat = true, .floatingPointEncoding = true, .componentBits=16, .forcedChannels = 4},
-};
+    [vulkan_image_type_offscreen_f16] = {.colorFormat = true, .floatingPointEncoding = true, .componentBits=16, .forcedChannels = 4},
+ };
 // clang-format on
 
 vulkan_aabb vulkan_aabb_default() {

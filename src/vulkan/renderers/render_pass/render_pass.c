@@ -162,7 +162,6 @@ void vulkan_render_pass_init(vulkan_render_pass *renderPass, vulkan_render_pass_
   renderPass->renderPassState = renderPassState;
 
   renderPass->desc = desc;
-  vulkan_render_pass_desc_calculate_additional_info(&renderPass->desc, renderPass);
   renderPass->shaderProgram =
       vulkan_render_pass_shader_program_create(renderState, renderPass->desc);
 
@@ -214,8 +213,8 @@ void get_framebuffer_attachment_image_views(vulkan_render_pass *renderPass,
   }
   for (size_t j = 0; j < renderPass->desc.offscreenColorAttachmentCount; j++) {
     framebufferAttachmentImageViews[i++] =
-        vulkan_render_pass_frame_state_get_offscreen_texture(
-            frameState, renderPass->desc.offscreenColorAttachments[j].type)
+        vulkan_render_pass_offscreen_texture_state_get_offscreen_texture(
+            frameState->offscreenTextures, renderPass->desc.offscreenColorAttachments[j].name)
             ->image->imageView;
   }
   if (renderPass->desc.useDepthAttachment) {

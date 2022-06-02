@@ -190,6 +190,12 @@ int main(int argc, char *argv[]) {
 
   // HIRO screen-space postprocessing effects render passes
   // HIRO HDR rendering (requires support for loading floating-point skyboxes)
+  vulkan_render_graph_add_image_resource(renderer->renderGraph, "gBuffer0",
+                                         vulkan_image_type_offscreen_f16);
+  vulkan_render_graph_add_image_resource(renderer->renderGraph, "gBuffer1",
+                                         vulkan_image_type_offscreen_f16);
+  vulkan_render_graph_add_image_resource(renderer->renderGraph, "gBuffer2",
+                                         vulkan_image_type_offscreen_f16);
 
   /*
   vulkan_render_graph_add_render_pass(
@@ -218,9 +224,9 @@ int main(int argc, char *argv[]) {
           .offscreenColorAttachmentCount = 3,
           .offscreenColorAttachments =
               {
-                  {.type = vulkan_image_type_g_buffer_0, .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
-                  {.type = vulkan_image_type_g_buffer_1, .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
-                  {.type = vulkan_image_type_g_buffer_2, .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
+                  {.name = "gBuffer0", .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
+                  {.name = "gBuffer1", .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
+                  {.name = "gBuffer2", .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
               },
           .useDepthAttachment = true,
           .depthAttachmentWriteEnable = true,
@@ -239,9 +245,9 @@ int main(int argc, char *argv[]) {
           .offscreenFragmentShaderInputCount = 3,
           .offscreenFragmentShaderInputs =
               {
-                  {.type = vulkan_image_type_g_buffer_0},
-                  {.type = vulkan_image_type_g_buffer_1},
-                  {.type = vulkan_image_type_g_buffer_2},
+                  {.name = "gBuffer0"},
+                  {.name = "gBuffer1"},
+                  {.name = "gBuffer2"},
               },
           // Use depth buffer to reject fragments with depth == 0 (no geometry rendered)
           .useDepthAttachment = true,
@@ -271,7 +277,8 @@ int main(int argc, char *argv[]) {
                                 .colorBlendingType = vulkan_color_blending_type_alpha,
                                 .recordFunc = render_pass_record_fullscreen_triangle_draw});
 
-  // HIRO refactor adding render graph (declare oll possible offscreen texture inputs and outputs).
+  // HIRO CONTINUE refactor adding render graph (declare oll possible offscreen texture inputs and
+  // outputs).
   vulkan_renderer_run_main_loop(renderer, update_func);
 
   vulkan_renderer_destroy(renderer);

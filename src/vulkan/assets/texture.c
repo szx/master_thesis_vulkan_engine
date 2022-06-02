@@ -186,27 +186,26 @@ void vulkan_asset_texture_debug_print(vulkan_asset_texture *texture, int indent)
   vulkan_asset_sampler_debug_print(texture->sampler, indent + 2);
 }
 
-vulkan_asset_texture *vulkan_asset_texture_create_from_params(vulkan_scene_data *sceneData,
-                                                              vulkan_image_type type,
+vulkan_asset_texture *vulkan_asset_texture_create_from_params(vulkan_image_type type,
                                                               uint32_t width, uint32_t height,
                                                               uint32_t depth, uint32_t channels) {
   vulkan_asset_texture *texture = core_alloc(sizeof(vulkan_asset_texture));
-  vulkan_asset_texture_init(texture, sceneData);
+  vulkan_asset_texture_init(texture, NULL);
 
   vulkan_asset_image *image = core_alloc(sizeof(vulkan_asset_image));
-  vulkan_asset_image_init(image, sceneData);
+  vulkan_asset_image_init(image, NULL);
   image->width = width;
   image->height = height;
   image->depth = depth;
   image->channels = channels;
   image->type = type;
-  texture->image = vulkan_scene_data_add_image(sceneData, image);
+  texture->image = image;
 
   vulkan_asset_sampler *sampler = core_alloc(sizeof(vulkan_asset_sampler));
-  vulkan_asset_sampler_init(sampler, sceneData);
-  texture->sampler = vulkan_scene_data_add_sampler(sceneData, sampler);
+  vulkan_asset_sampler_init(sampler, NULL);
+  texture->sampler = sampler;
 
-  return vulkan_scene_data_add_texture(sceneData, texture);
+  return texture;
 }
 
 /* skybox */

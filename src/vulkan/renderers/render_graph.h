@@ -53,7 +53,9 @@ vulkan_image_render_pass_usage_timeline_info vulkan_image_render_pass_usage_time
 
 /// Edge of render graph.
 typedef struct vulkan_render_graph_resource {
+  const char *name;
   vulkan_image_type imageType;
+  uint32_t offscreenTextureIdx;
 
   /// Info collected before compilation.
   vulkan_image_render_pass_usage_timeline usageTimeline;
@@ -62,7 +64,7 @@ typedef struct vulkan_render_graph_resource {
 
 } vulkan_render_graph_resource;
 
-void vulkan_render_graph_resource_init(vulkan_render_graph_resource *element,
+void vulkan_render_graph_resource_init(vulkan_render_graph_resource *element, const char *name,
                                        vulkan_image_type imageType);
 
 void vulkan_render_graph_resource_deinit(vulkan_render_graph_resource *element);
@@ -130,7 +132,8 @@ typedef struct vulkan_render_graph {
   vulkan_render_graph_resource *resources;
 
   size_t _renderPassIdx;
-  bool _compiled;
+  bool _compiledResources;
+  bool _compiledRenderPasses;
 
 } vulkan_render_graph;
 
@@ -158,5 +161,7 @@ void vulkan_render_graph_send_to_device(vulkan_render_graph *renderGraph);
 void vulkan_render_graph_debug_print(vulkan_render_graph *renderGraph);
 
 vulkan_render_graph_resource *
-vulkan_render_graph_add_image_resource(vulkan_render_graph *renderGraph,
+vulkan_render_graph_add_image_resource(vulkan_render_graph *renderGraph, const char *name,
                                        vulkan_image_type imageType);
+vulkan_render_graph_resource *
+vulkan_render_graph_get_image_resource(vulkan_render_graph *renderGraph, const char *name);

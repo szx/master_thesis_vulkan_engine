@@ -56,6 +56,22 @@ void vulkan_render_pass_state_update(vulkan_render_pass_state *renderPassState) 
   vulkan_render_pass_frame_state_update(frameState);
 }
 
+uint32_t vulkan_render_pass_state_add_offscreen_texture(vulkan_render_pass_state *renderPassState,
+                                                        const char *name,
+                                                        vulkan_image_type imageType) {
+  uint32_t offscreenTextureIdx = MAX_OFFSCREEN_TEXTURE_COUNT;
+  utarray_foreach_elem_it (vulkan_render_pass_frame_state *, frameState,
+                           renderPassState->frameStates) {
+    uint32_t newOffscreenTextureIdx =
+        vulkan_render_pass_offscreen_texture_state_add_offscreen_texture(
+            frameState->offscreenTextures, name, imageType);
+    assert(offscreenTextureIdx == MAX_OFFSCREEN_TEXTURE_COUNT ||
+           offscreenTextureIdx == newOffscreenTextureIdx);
+    offscreenTextureIdx = newOffscreenTextureIdx;
+  }
+  return offscreenTextureIdx;
+}
+
 void vulkan_render_pass_state_set_unified_uniform_buffer(
     vulkan_render_pass_state *renderPassState, vulkan_global_uniform_buffer_element *global) {
   vulkan_render_pass_shared_state_set_unified_uniform_buffer(&renderPassState->sharedState, global);

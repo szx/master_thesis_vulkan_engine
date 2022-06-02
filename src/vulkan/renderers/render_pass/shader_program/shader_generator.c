@@ -149,6 +149,7 @@ void glsl_add_fragment_shader_input_variables(UT_string *s) {
 
 void glsl_add_fragment_shader_output_variables(UT_string *s,
                                                uint32_t framebufferColorAttachmentCount) {
+  assert(framebufferColorAttachmentCount > 0);
   for (uint32_t i = 0; i < framebufferColorAttachmentCount; i++) {
     utstring_printf(s, "layout(location = %u) out vec4 outFragColor%u;\n", i, i);
   }
@@ -180,6 +181,16 @@ void glsl_add_descriptors(UT_string *s, vulkan_descriptors *descriptors) {
 void glsl_add_entry_point_begin(UT_string *s) { utstring_printf(s, "%s\n", "void main() {\n"); }
 
 void glsl_add_entry_point_end(UT_string *s) { utstring_printf(s, "%s\n", "}"); }
+
+void glsl_add_offscreen_texture_idxes(UT_string *s, vulkan_render_pass_desc renderPassDesc) {
+  for (size_t i = 0; i < renderPassDesc.offscreenFragmentShaderInputCount; i++) {
+    assert(renderPassDesc.offscreenFragmentShaderInputs[i]._offscreenTextureIdx !=
+           MAX_OFFSCREEN_TEXTURE_COUNT);
+    utstring_printf(s, "uint %sOffscreenTextureIdx = %u;\n",
+                    renderPassDesc.offscreenFragmentShaderInputs[i].name,
+                    renderPassDesc.offscreenFragmentShaderInputs[i]._offscreenTextureIdx);
+  }
+}
 
 void glsl_add_body(UT_string *s, vulkan_render_pass_desc renderPassDesc,
                    vulkan_shader_type shaderType) {
@@ -226,6 +237,7 @@ vulkan_render_pass_shader_generator_get_shader(vulkan_render_pass_shader_generat
   glsl_add_common_source(shaderGenerator->sourceCode);
 
   glsl_add_entry_point_begin(shaderGenerator->sourceCode);
+  glsl_add_offscreen_texture_idxes(shaderGenerator->sourceCode, renderPassDesc);
   glsl_add_body(shaderGenerator->sourceCode, renderPassDesc, shaderType);
   glsl_add_entry_point_end(shaderGenerator->sourceCode);
 

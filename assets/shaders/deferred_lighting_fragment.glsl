@@ -6,16 +6,16 @@ vec2 texCoord = (inPosition.xy + 1) / 2;
 /* fetch input parameters */
 
 // Decode G-Buffer
-uint gBuffer0Id = global[globalIdx].gBuffer.gBuffer0TextureId;
+uint gBuffer0Id = global[globalIdx].offscreenTextures.textureId[gBuffer0OffscreenTextureIdx];
 vec4 gBuffer0Texture = texture(textures2D[gBuffer0Id], texCoord);
 vec3 worldPosition = gBuffer0Texture.xyz;
 float metallic = gBuffer0Texture.w;
 
-uint gBuffer1Id = global[globalIdx].gBuffer.gBuffer1TextureId;
+uint gBuffer1Id = global[globalIdx].offscreenTextures.textureId[gBuffer1OffscreenTextureIdx];
 vec4 gBuffer1Texture = texture(textures2D[gBuffer1Id], texCoord);
 vec4 baseColor = gBuffer1Texture.xyzw;
 
-uint gBuffer2Id = global[globalIdx].gBuffer.gBuffer2TextureId;
+uint gBuffer2Id = global[globalIdx].offscreenTextures.textureId[gBuffer2OffscreenTextureIdx];
 vec4 gBuffer2Texture = texture(textures2D[gBuffer2Id], texCoord);
 vec3 worldNormal = gBuffer2Texture.xyz;
 float perceptualRoughness = gBuffer2Texture.w;

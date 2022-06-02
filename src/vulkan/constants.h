@@ -3,6 +3,7 @@
 #pragma once
 
 #define FRAMES_IN_FLIGHT 2
+#define MAX_OFFSCREEN_TEXTURE_COUNT 16
 #define MAX_RENDER_TARGET_COUNT 8
 #define MAX_FRAMEBUFFER_ATTACHMENT_COUNT (MAX_RENDER_TARGET_COUNT + 1 + 1)
 #define MAX_INDIRECT_DRAW_COMMAND_COUNT 1024
@@ -16,6 +17,7 @@
 #define END_OF_VULKAN_SHADER_CONSTANTS
 #define VULKAN_SHADER_CONSTANTS(X, ...)                                                            \
   X(FRAMES_IN_FLIGHT, __VA_ARGS__)                                                                 \
+  X(MAX_OFFSCREEN_TEXTURE_COUNT, __VA_ARGS__)                                                      \
   X(MAX_MATERIAL_COUNT, __VA_ARGS__)                                                               \
   X(MAX_DIRECTIONAL_LIGHT_COUNT, __VA_ARGS__)                                                      \
   X(MAX_POINT_LIGHT_COUNT, __VA_ARGS__)                                                            \

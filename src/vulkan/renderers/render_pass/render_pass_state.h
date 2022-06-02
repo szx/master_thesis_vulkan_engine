@@ -27,6 +27,10 @@ void vulkan_render_pass_state_reinit_with_new_swap_chain(vulkan_render_pass_stat
 
 void vulkan_render_pass_state_update(vulkan_render_pass_state *renderPassState);
 
+uint32_t vulkan_render_pass_state_add_offscreen_texture(vulkan_render_pass_state *renderPassState,
+                                                        const char *name,
+                                                        vulkan_image_type imageType);
+
 void vulkan_render_pass_state_set_unified_uniform_buffer(
     vulkan_render_pass_state *renderPassState, vulkan_global_uniform_buffer_element *global);
 

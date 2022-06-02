@@ -93,21 +93,24 @@ vulkan_image_render_pass_usage_timeline_info vulkan_image_render_pass_usage_time
   return info;
 }
 
-void vulkan_render_graph_resource_init(vulkan_render_graph_resource *element,
+void vulkan_render_graph_resource_init(vulkan_render_graph_resource *element, const char *name,
                                        vulkan_image_type imageType) {
+  element->name = core_strdup(name);
   element->imageType = imageType;
+  element->offscreenTextureIdx = MAX_OFFSCREEN_TEXTURE_COUNT;
   element->usageTimeline = (struct vulkan_image_render_pass_usage_timeline){0};
   element->prev = NULL;
   element->next = NULL;
 }
 
 void vulkan_render_graph_resource_deinit(vulkan_render_graph_resource *element) {
-  // No-op.
+  core_free((char *)element->name);
 }
 
 void vulkan_render_graph_resource_debug_print(vulkan_render_graph_resource *element) {
   log_raw(stdout, "\"render graph resource\\n%p\\n", element);
   log_raw(stdout, "state: \\n");
+  log_raw(stdout, "\tname: %s\\n", element->name);
   log_raw(stdout, "\timageType: %s\\n", vulkan_image_type_debug_str(element->imageType));
   log_raw(stdout, "\" ");
 }
@@ -132,7 +135,7 @@ vulkan_render_graph_render_pass_element_create(size_t renderPassIdx, vulkan_rend
         &renderPass->desc.offscreenFragmentShaderInputs[i];
 
     vulkan_render_graph_resource *offscreenTextureResource =
-        vulkan_render_graph_add_image_resource(renderGraph, offscreenFragmentShaderInputInfo->type);
+        vulkan_render_graph_get_image_resource(renderGraph, offscreenFragmentShaderInputInfo->name);
     utarray_push_back(element->offscreenTextures, &offscreenTextureResource);
 
     vulkan_image_render_pass_usage_timeline_add_new_usage(&offscreenTextureResource->usageTimeline,
@@ -149,7 +152,7 @@ vulkan_render_graph_render_pass_element_create(size_t renderPassIdx, vulkan_rend
         &renderPass->desc.offscreenColorAttachments[i];
 
     vulkan_render_graph_resource *offscreenTextureResource =
-        vulkan_render_graph_add_image_resource(renderGraph, offscreenColorAttachmentInfo->type);
+        vulkan_render_graph_get_image_resource(renderGraph, offscreenColorAttachmentInfo->name);
     utarray_push_back(element->offscreenTextures, &offscreenTextureResource);
 
     vulkan_image_render_pass_usage_timeline_add_new_usage(&offscreenTextureResource->usageTimeline,
@@ -166,7 +169,7 @@ vulkan_render_graph_render_pass_element_create(size_t renderPassIdx, vulkan_rend
 
   if (renderPass->desc.useOnscreenColorAttachment) {
     vulkan_render_graph_resource *swapChainImageResource =
-        vulkan_render_graph_add_image_resource(renderGraph, vulkan_image_type_swap_chain);
+        vulkan_render_graph_get_image_resource(renderGraph, "swap chain");
     element->swapChainImageResource = swapChainImageResource;
 
     vulkan_image_render_pass_usage_timeline_add_new_usage(
@@ -182,7 +185,7 @@ vulkan_render_graph_render_pass_element_create(size_t renderPassIdx, vulkan_rend
 
   if (renderPass->desc.useDepthAttachment) {
     vulkan_render_graph_resource *depthBufferResource =
-        vulkan_render_graph_add_image_resource(renderGraph, vulkan_image_type_depth_buffer);
+        vulkan_render_graph_get_image_resource(renderGraph, "depth buffer");
     element->depthBufferResource = depthBufferResource;
 
     if (renderPass->desc.depthAttachmentWriteEnable) {
@@ -239,7 +242,12 @@ vulkan_render_graph *vulkan_render_graph_create(vulkan_render_state *renderState
   renderGraph->resources = NULL;
 
   renderGraph->_renderPassIdx = 0;
-  renderGraph->_compiled = false;
+  renderGraph->_compiledResources = false;
+  renderGraph->_compiledRenderPasses = false;
+
+  vulkan_render_graph_add_image_resource(renderGraph, "swap chain", vulkan_image_type_swap_chain);
+  vulkan_render_graph_add_image_resource(renderGraph, "depth buffer",
+                                         vulkan_image_type_depth_buffer);
 
   return renderGraph;
 }
@@ -283,9 +291,47 @@ void vulkan_render_graph_finish_swap_chain_recreation(vulkan_render_graph *rende
   }
 }
 
+/// Add offscreen images to render pass state.
+void compile_offscreen_texture_resources(vulkan_render_graph *renderGraph) {
+  dl_foreach_elem(vulkan_render_graph_resource *, resource, renderGraph->resources) {
+    if (resource->imageType >= vulkan_image_type_offscreen_first &&
+        resource->imageType <= vulkan_image_type_offscreen_count) {
+      resource->offscreenTextureIdx = vulkan_render_pass_state_add_offscreen_texture(
+          renderGraph->renderPassState, resource->name, resource->imageType);
+    }
+  }
+}
+
+/// Add offscreen images to render pass state.
+void render_pass_desc_add_offscreen_texture_idxes(vulkan_render_graph *renderGraph,
+                                                  vulkan_render_pass_desc *desc) {
+  vulkan_render_pass_desc_calculate_additional_info(desc);
+
+  dl_foreach_elem(vulkan_render_graph_resource *, resource, renderGraph->resources) {
+    if (resource->imageType >= vulkan_image_type_offscreen_first &&
+        resource->imageType <= vulkan_image_type_offscreen_count) {
+      for (size_t i = 0; i < desc->offscreenFragmentShaderInputCount; i++) {
+        if (strcmp(desc->offscreenFragmentShaderInputs[i].name, resource->name) == 0) {
+          assert(resource->offscreenTextureIdx < MAX_OFFSCREEN_TEXTURE_COUNT);
+          desc->offscreenFragmentShaderInputs[i]._offscreenTextureIdx =
+              resource->offscreenTextureIdx;
+          break;
+        }
+      }
+    }
+  }
+}
+
 void vulkan_render_graph_add_render_pass(vulkan_render_graph *renderGraph,
                                          vulkan_render_pass_desc desc) {
+  assert(!renderGraph->_compiledRenderPasses);
+  if (!renderGraph->_compiledResources) {
+    compile_offscreen_texture_resources(renderGraph);
+    renderGraph->_compiledResources = true;
+  }
   assert(renderGraph->_renderPassIdx < MAX_RENDER_PASS_COUNT);
+
+  render_pass_desc_add_offscreen_texture_idxes(renderGraph, &desc);
 
   vulkan_render_pass *renderPass =
       vulkan_render_pass_create(desc, renderGraph->renderState, renderGraph->renderPassState);
@@ -296,7 +342,7 @@ void vulkan_render_graph_add_render_pass(vulkan_render_graph *renderGraph,
 
   DL_APPEND(renderGraph->renderPassElements, renderPassElement);
 
-  renderGraph->_compiled = false;
+  renderGraph->_compiledRenderPasses = false;
 }
 
 VkImageLayout get_image_layout_for_swap_chain_image(vulkan_image_render_pass_usage usage) {
@@ -516,7 +562,7 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
 }
 
 void vulkan_render_graph_compile(vulkan_render_graph *renderGraph) {
-  if (renderGraph->_compiled) {
+  if (renderGraph->_compiledRenderPasses) {
     return;
   }
 
@@ -526,14 +572,12 @@ void vulkan_render_graph_compile(vulkan_render_graph *renderGraph) {
     compile_render_pass(renderPassElement);
   }
 
-  renderGraph->_compiled = true;
+  renderGraph->_compiledRenderPasses = true;
 }
 
 void vulkan_render_graph_record_commands(vulkan_render_graph *renderGraph,
                                          VkCommandBuffer commandBuffer, size_t swapChainImageIdx) {
-  if (!renderGraph->_compiled) {
-    vulkan_render_graph_compile(renderGraph);
-  }
+  vulkan_render_graph_compile(renderGraph);
 
   dl_foreach_elem(vulkan_render_graph_render_pass_element *, renderPassElement,
                   renderGraph->renderPassElements) {
@@ -546,6 +590,7 @@ void vulkan_render_graph_record_commands(vulkan_render_graph *renderGraph,
 }
 
 void vulkan_render_graph_update(vulkan_render_graph *renderGraph) {
+  vulkan_render_graph_compile(renderGraph);
   vulkan_render_pass_state_update(renderGraph->renderPassState);
 }
 
@@ -587,16 +632,29 @@ void vulkan_render_graph_debug_print(vulkan_render_graph *renderGraph) {
 }
 
 vulkan_render_graph_resource *
-vulkan_render_graph_add_image_resource(vulkan_render_graph *renderGraph,
+vulkan_render_graph_add_image_resource(vulkan_render_graph *renderGraph, const char *name,
                                        vulkan_image_type imageType) {
+  assert(!renderGraph->_compiledResources);
+
   dl_foreach_elem(vulkan_render_graph_resource *, existingResourceElement, renderGraph->resources) {
-    if (existingResourceElement->imageType == imageType) {
+    if (strcmp(existingResourceElement->name, name) == 0) {
       return existingResourceElement;
     }
   }
 
+  assert(imageType != vulkan_image_type_undefined);
   vulkan_render_graph_resource *resourceElement = core_alloc(sizeof(vulkan_render_graph_resource));
-  vulkan_render_graph_resource_init(resourceElement, imageType);
+  vulkan_render_graph_resource_init(resourceElement, name, imageType);
   DL_APPEND(renderGraph->resources, resourceElement);
   return resourceElement;
+}
+
+vulkan_render_graph_resource *
+vulkan_render_graph_get_image_resource(vulkan_render_graph *renderGraph, const char *name) {
+  dl_foreach_elem(vulkan_render_graph_resource *, existingResourceElement, renderGraph->resources) {
+    if (strcmp(existingResourceElement->name, name) == 0) {
+      return existingResourceElement;
+    }
+  }
+  UNREACHABLE;
 }

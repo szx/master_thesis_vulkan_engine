@@ -87,8 +87,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = true;
     image->name = "font bitmap image";
-  } else if (image->type >= vulkan_image_type_g_buffer_0 &&
-             image->type <= vulkan_image_type_g_buffer_count) {
+  } else if (image->type == vulkan_image_type_offscreen_f16) {
     image->mipLevelCount = 1;
     image->arrayLayers = 1;
     image->format = vulkan_find_image_format(vkd, image->type, image->channels);
@@ -99,15 +98,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = false;
-    if (image->type == vulkan_image_type_g_buffer_0) {
-      image->name = "G-buffer image #0";
-    } else if (image->type == vulkan_image_type_g_buffer_1) {
-      image->name = "G-buffer image #1";
-    } else if (image->type == vulkan_image_type_g_buffer_2) {
-      image->name = "G-buffer image #2";
-    } else if (image->type == vulkan_image_type_g_buffer_count) {
-      image->name = "G-buffer image #3";
-    }
+    image->name = "offscreen image floating-point 16 bit";
   } else {
     UNREACHABLE;
   }

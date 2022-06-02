@@ -18,6 +18,7 @@ typedef enum vulkan_attribute_type {
 } vulkan_attribute_type;
 
 typedef enum vulkan_image_type {
+  vulkan_image_type_undefined,
   vulkan_image_type_swap_chain,
   vulkan_image_type_depth_buffer,
   vulkan_image_type_material_base_color,
@@ -25,11 +26,9 @@ typedef enum vulkan_image_type {
   vulkan_image_type_material_normal_map,
   vulkan_image_type_cubemap,
   vulkan_image_type_font_bitmap,
-  vulkan_image_type_g_buffer_0,
-  vulkan_image_type_g_buffer_1,
-  vulkan_image_type_g_buffer_2,
-  vulkan_image_type_g_buffer_3,
-  vulkan_image_type_g_buffer_count,
+  vulkan_image_type_offscreen_f16,
+  vulkan_image_type_offscreen_first = vulkan_image_type_offscreen_f16,
+  vulkan_image_type_offscreen_count,
   vulkan_image_type_count
 } vulkan_image_type;
 
