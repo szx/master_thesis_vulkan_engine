@@ -99,6 +99,18 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = false;
     image->name = "offscreen image floating-point 16 bit";
+  } else if (image->type == vulkan_image_type_offscreen_depth_buffer) {
+    image->mipLevelCount = 1;
+    image->arrayLayers = 1;
+    image->format = vulkan_find_image_format(vkd, image->type, image->channels);
+    image->tiling = VK_IMAGE_TILING_OPTIMAL;
+    image->createFlags = 0;
+    image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+    image->aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
+    image->viewType = VK_IMAGE_VIEW_TYPE_2D;
+    image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+    image->copyDataToDevice = false;
+    image->name = "offscreen depth buffer image";
   } else {
     UNREACHABLE;
   }

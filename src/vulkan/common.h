@@ -26,8 +26,9 @@ typedef enum vulkan_image_type {
   vulkan_image_type_material_normal_map,
   vulkan_image_type_cubemap,
   vulkan_image_type_font_bitmap,
-  vulkan_image_type_offscreen_f16,
-  vulkan_image_type_offscreen_first = vulkan_image_type_offscreen_f16,
+  vulkan_image_type_offscreen_first,
+  vulkan_image_type_offscreen_f16 = vulkan_image_type_offscreen_first,
+  vulkan_image_type_offscreen_depth_buffer,
   vulkan_image_type_offscreen_count,
   vulkan_image_type_count
 } vulkan_image_type;

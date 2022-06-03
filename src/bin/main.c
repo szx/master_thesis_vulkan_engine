@@ -145,9 +145,9 @@ void update_func(vulkan_renderer *renderer, double fps, double dt) {
   }
 }
 
-void render_pass_record_opaque_geometry_draws(vulkan_render_pass *renderPass,
-                                              vulkan_render_pass_frame_state *frameState,
-                                              VkCommandBuffer commandBuffer) {
+void render_pass_record_primitive_geometry_draws(vulkan_render_pass *renderPass,
+                                                 vulkan_render_pass_frame_state *frameState,
+                                                 VkCommandBuffer commandBuffer) {
   vulkan_batches_record_draw_command(renderPass->renderPassState->sharedState.rendererCacheBatches,
                                      commandBuffer, &frameState->rendererCacheBatchesData);
 }
@@ -196,6 +196,8 @@ int main(int argc, char *argv[]) {
                                          vulkan_image_type_offscreen_f16);
   vulkan_render_graph_add_image_resource(renderer->renderGraph, "gBuffer2",
                                          vulkan_image_type_offscreen_f16);
+  vulkan_render_graph_add_image_resource(renderer->renderGraph, "shadowMap",
+                                         vulkan_image_type_offscreen_depth_buffer);
 
   /*
   vulkan_render_graph_add_render_pass(
@@ -211,7 +213,7 @@ int main(int argc, char *argv[]) {
                                 .depthAttachmentTestOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
                                 .depthClearValue = (VkClearDepthStencilValue){0.0f, 0},
                                 .colorBlendingType = vulkan_color_blending_type_none,
-                                .recordFunc = render_pass_record_opaque_geometry_draws});
+                                .recordFunc = render_pass_record_primitive_geometry_draws});
   */
 
   vulkan_render_graph_add_render_pass(
@@ -234,7 +236,7 @@ int main(int argc, char *argv[]) {
           .depthAttachmentTestOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
           .depthClearValue = {0.0f, 0},
           .colorBlendingType = vulkan_color_blending_type_none,
-          .recordFunc = render_pass_record_opaque_geometry_draws});
+          .recordFunc = render_pass_record_primitive_geometry_draws});
 
   vulkan_render_graph_add_render_pass(
       renderer->renderGraph,
