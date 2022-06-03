@@ -15,7 +15,8 @@ typedef struct vulkan_textures_texture_element {
 } vulkan_textures_texture_element;
 
 vulkan_textures_texture_element *
-vulkan_textures_texture_element_create(vulkan_asset_texture *texture, vulkan_device *vkd);
+vulkan_textures_texture_element_create(vulkan_asset_texture *texture, vulkan_device *vkd,
+                                       const char *debugName);
 void vulkan_textures_texture_element_destroy(vulkan_textures_texture_element *element);
 
 /// Hash table for materials and their associated textures.
@@ -56,7 +57,8 @@ vulkan_textures_material_element *vulkan_textures_add_material(vulkan_textures *
                                                                vulkan_asset_material *material);
 
 vulkan_textures_texture_element *vulkan_textures_add_texture(vulkan_textures *textures,
-                                                             vulkan_asset_texture *texture);
+                                                             vulkan_asset_texture *texture,
+                                                             const char *debugName);
 
 void vulkan_textures_debug_print(vulkan_textures *textures, int indent);
 

@@ -18,15 +18,16 @@ VkFormat get_format_by_component_bits(char componentBits, VkFormat format8, VkFo
 }
 
 vulkan_textures_texture_element *
-vulkan_textures_texture_element_create(vulkan_asset_texture *texture, vulkan_device *vkd) {
+vulkan_textures_texture_element_create(vulkan_asset_texture *texture, vulkan_device *vkd,
+                                       const char *debugName) {
   vulkan_textures_texture_element *element = core_alloc(sizeof(vulkan_textures_texture_element));
 
   element->texture = texture;
   vulkan_image_type type = element->texture->image->type;
 
-  element->image =
-      vulkan_image_create(vkd, type, element->texture->image->width,
-                          element->texture->image->height, element->texture->image->channels);
+  element->image = vulkan_image_create(vkd, type, element->texture->image->width,
+                                       element->texture->image->height,
+                                       element->texture->image->channels, debugName);
   vulkan_image_update(element->image, element->texture);
 
   element->sampler = vulkan_create_sampler(vkd, element->image->mipLevelCount, "texture");
@@ -107,15 +108,16 @@ vulkan_textures_material_element *vulkan_textures_add_material(vulkan_textures *
   log_info("adding material");
   vulkan_asset_material_debug_print(material, 0);
   element = vulkan_textures_material_element_create(
-      material, vulkan_textures_add_texture(textures, material->baseColorTexture),
-      vulkan_textures_add_texture(textures, material->metallicRoughnessTexture),
-      vulkan_textures_add_texture(textures, material->normalMapTexture));
+      material, vulkan_textures_add_texture(textures, material->baseColorTexture, "material"),
+      vulkan_textures_add_texture(textures, material->metallicRoughnessTexture, "material"),
+      vulkan_textures_add_texture(textures, material->normalMapTexture, "material"));
   HASH_ADD_PTR(textures->materialElements, material, element);
   return element;
 }
 
 vulkan_textures_texture_element *vulkan_textures_add_texture(vulkan_textures *textures,
-                                                             vulkan_asset_texture *texture) {
+                                                             vulkan_asset_texture *texture,
+                                                             const char *debugName) {
   vulkan_textures_texture_element *element;
   HASH_FIND(hh, textures->textureElements, &texture, sizeof(texture), element);
   if (element != NULL) {
@@ -124,7 +126,7 @@ vulkan_textures_texture_element *vulkan_textures_add_texture(vulkan_textures *te
 
   log_info("adding texture");
   vulkan_asset_texture_debug_print(texture, 0);
-  element = vulkan_textures_texture_element_create(texture, textures->vkd);
+  element = vulkan_textures_texture_element_create(texture, textures->vkd, debugName);
   HASH_ADD_PTR(textures->textureElements, texture, element);
   return element;
 }

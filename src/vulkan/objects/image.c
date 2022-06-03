@@ -1,7 +1,7 @@
 #include "image.h"
 
 vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, uint32_t width,
-                                  uint32_t height, uint32_t channels) {
+                                  uint32_t height, uint32_t channels, const char *debugName) {
   vulkan_image *image = core_alloc(sizeof(vulkan_image));
 
   image->vkd = vkd;
@@ -10,6 +10,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
   image->height = height;
   image->channels = channels;
   image->sampleCount = VK_SAMPLE_COUNT_1_BIT;
+  image->name[0] = debugName;
   if (image->type == vulkan_image_type_depth_buffer) {
     image->mipLevelCount = 1;
     image->arrayLayers = 1;
@@ -21,7 +22,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = false;
-    image->name = "depth buffer image";
+    image->name[1] = "depth buffer image";
   } else if (image->type == vulkan_image_type_material_base_color) {
     image->mipLevelCount = 1 + (uint32_t)floor(log2((double)MAX(image->width, image->height)));
     image->arrayLayers = 1;
@@ -34,7 +35,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = true;
-    image->name = "material base color image";
+    image->name[1] = "material base color image";
   } else if (image->type == vulkan_image_type_material_parameters) {
     image->mipLevelCount = 1;
     image->arrayLayers = 1;
@@ -47,7 +48,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = true;
-    image->name = "material parameters image";
+    image->name[1] = "material parameters image";
   } else if (image->type == vulkan_image_type_material_normal_map) {
     image->mipLevelCount = 1;
     image->arrayLayers = 1;
@@ -60,7 +61,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = true;
-    image->name = "material normal map image";
+    image->name[1] = "material normal map image";
   } else if (image->type == vulkan_image_type_cubemap) {
     image->mipLevelCount = 1;
     image->arrayLayers = 6;
@@ -73,7 +74,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->viewType = VK_IMAGE_VIEW_TYPE_CUBE;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = true;
-    image->name = "cubemap image";
+    image->name[1] = "cubemap image";
   } else if (image->type == vulkan_image_type_font_bitmap) {
     image->mipLevelCount = 1;
     image->arrayLayers = 1;
@@ -86,7 +87,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = true;
-    image->name = "font bitmap image";
+    image->name[1] = "font bitmap image";
   } else if (image->type == vulkan_image_type_offscreen_f16) {
     image->mipLevelCount = 1;
     image->arrayLayers = 1;
@@ -98,7 +99,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = false;
-    image->name = "offscreen image floating-point 16 bit";
+    image->name[1] = "offscreen image floating-point 16 bit";
   } else if (image->type == vulkan_image_type_offscreen_depth_buffer) {
     image->mipLevelCount = 1;
     image->arrayLayers = 1;
@@ -110,7 +111,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = false;
-    image->name = "offscreen depth buffer image";
+    image->name[1] = "offscreen depth buffer image";
   } else {
     UNREACHABLE;
   }
@@ -148,23 +149,24 @@ void vulkan_image_make_resident(vulkan_image *image) {
     if (image->image != VK_NULL_HANDLE) {
       vkDestroyImage(image->vkd->device, image->image, vka);
     }
-    image->image =
-        vulkan_create_image(image->vkd, image->width, image->height, image->mipLevelCount,
-                            image->arrayLayers, image->sampleCount, image->format, image->tiling,
-                            image->createFlags, image->usageFlags, image->name);
+    image->image = vulkan_create_image(image->vkd, image->width, image->height,
+                                       image->mipLevelCount, image->arrayLayers, image->sampleCount,
+                                       image->format, image->tiling, image->createFlags,
+                                       image->usageFlags, "%s %s", image->name[0], image->name[1]);
 
     if (image->imageMemory != VK_NULL_HANDLE) {
       vkFreeMemory(image->vkd->device, image->imageMemory, vka);
     }
-    image->imageMemory = vulkan_create_image_memory(image->vkd, image->image,
-                                                    image->memoryPropertyFlags, image->name);
+    image->imageMemory =
+        vulkan_create_image_memory(image->vkd, image->image, image->memoryPropertyFlags, "%s %s",
+                                   image->name[0], image->name[1]);
 
     if (image->imageView != VK_NULL_HANDLE) {
       vkDestroyImageView(image->vkd->device, image->imageView, vka);
     }
     image->imageView = vulkan_create_image_view(
         image->vkd, image->image, image->viewType, image->format, image->aspectFlags,
-        image->mipLevelCount, image->arrayLayers, image->name);
+        image->mipLevelCount, image->arrayLayers, "%s %s", image->name[0], image->name[1]);
     image->resident = true;
   }
 }

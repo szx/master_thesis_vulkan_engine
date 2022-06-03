@@ -54,7 +54,8 @@ uint32_t vulkan_render_pass_offscreen_texture_state_add_offscreen_texture(
       gBuffer->renderState->vks->swapChainExtent.height, 1, 4);
 
   gBuffer->offscreenTextureElements[idx] = vulkan_textures_add_texture(
-      gBuffer->renderState->textures, gBuffer->offscreenTextureAssets[idx]);
+      gBuffer->renderState->textures, gBuffer->offscreenTextureAssets[idx],
+      gBuffer->offscreenTextureNames[idx]);
 
   return idx;
 }

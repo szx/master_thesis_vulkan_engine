@@ -254,11 +254,11 @@ void vulkan_renderer_cache_update_textures(vulkan_renderer_cache *rendererCache,
     // TODO: Unload unneeded textures.
   }
 
-  rendererCache->skyboxElement->skyboxTextureElement =
-      vulkan_textures_add_texture(textures, rendererCache->skyboxElement->skybox->cubemapTexture);
+  rendererCache->skyboxElement->skyboxTextureElement = vulkan_textures_add_texture(
+      textures, rendererCache->skyboxElement->skybox->cubemapTexture, "skybox");
 
   rendererCache->fontElement->fontTextureElement =
-      vulkan_textures_add_texture(textures, rendererCache->fontElement->font->fontTexture);
+      vulkan_textures_add_texture(textures, rendererCache->fontElement->font->fontTexture, "font");
 }
 
 void vulkan_renderer_cache_add_new_primitive_elements_to_batches(

@@ -24,7 +24,7 @@ typedef struct vulkan_image {
   VkImageAspectFlags aspectFlags;
   VkImageViewType viewType;
   bool copyDataToDevice;
-  const char *name;
+  const char *name[2];
 
   VkImage image;
   VkDeviceMemory imageMemory;
@@ -36,7 +36,7 @@ typedef struct vulkan_image {
 } vulkan_image;
 
 vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, uint32_t width,
-                                  uint32_t height, uint32_t channels);
+                                  uint32_t height, uint32_t channels, const char *debugName);
 void vulkan_image_destroy(vulkan_image *image);
 
 void vulkan_image_make_resident(vulkan_image *image);

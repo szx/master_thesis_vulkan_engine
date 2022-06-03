@@ -16,7 +16,7 @@ void vulkan_render_pass_frame_state_init(vulkan_render_pass_frame_state *frameSt
   frameState->depthBufferImage = vulkan_image_create(
       frameState->renderPassState->renderState->vkd, vulkan_image_type_depth_buffer,
       frameState->renderPassState->renderState->vks->swapChainExtent.width,
-      frameState->renderPassState->renderState->vks->swapChainExtent.height, 1);
+      frameState->renderPassState->renderState->vks->swapChainExtent.height, 1, "depth buffer");
 }
 
 void vulkan_render_pass_frame_state_deinit(vulkan_render_pass_frame_state *frameState) {
@@ -34,7 +34,7 @@ void vulkan_render_pass_frame_state_reinit_with_new_swap_chain(
   frameState->depthBufferImage = vulkan_image_create(
       frameState->renderPassState->renderState->vkd, vulkan_image_type_depth_buffer,
       frameState->renderPassState->renderState->vks->swapChainExtent.width,
-      frameState->renderPassState->renderState->vks->swapChainExtent.height, 1);
+      frameState->renderPassState->renderState->vks->swapChainExtent.height, 1, "depth buffer");
 }
 
 void vulkan_render_pass_frame_state_update(vulkan_render_pass_frame_state *frameState) {
