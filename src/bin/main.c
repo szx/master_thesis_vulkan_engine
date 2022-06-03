@@ -190,6 +190,8 @@ int main(int argc, char *argv[]) {
 
   // HIRO screen-space postprocessing effects render passes
   // HIRO HDR rendering (requires support for loading floating-point skyboxes)
+  vulkan_render_graph_add_image_resource(renderer->renderGraph, "depthBuffer",
+                                         vulkan_image_type_offscreen_depth_buffer);
   vulkan_render_graph_add_image_resource(renderer->renderGraph, "gBuffer0",
                                          vulkan_image_type_offscreen_f16);
   vulkan_render_graph_add_image_resource(renderer->renderGraph, "gBuffer1",
@@ -230,11 +232,14 @@ int main(int argc, char *argv[]) {
                   {.name = "gBuffer1", .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
                   {.name = "gBuffer2", .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
               },
-          .useDepthAttachment = true,
-          .depthAttachmentWriteEnable = true,
-          .depthAttachmentTestEnable = true,
-          .depthAttachmentTestOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
-          .depthClearValue = {0.0f, 0},
+          .offscreenDepthAttachment =
+              {
+                  .name = "depthBuffer",
+                  .depthWriteEnable = true,
+                  .depthTestEnable = true,
+                  .depthTestOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
+                  .clearValue = {0.0f, 0},
+              },
           .colorBlendingType = vulkan_color_blending_type_none,
           .recordFunc = render_pass_record_primitive_geometry_draws});
 
@@ -251,11 +256,14 @@ int main(int argc, char *argv[]) {
                   {.name = "gBuffer1"},
                   {.name = "gBuffer2"},
               },
-          // Use depth buffer to reject fragments with depth == 0 (no geometry rendered)
-          .useDepthAttachment = true,
-          .depthAttachmentWriteEnable = false,
-          .depthAttachmentTestEnable = true,
-          .depthAttachmentTestOp = VK_COMPARE_OP_LESS,
+          .offscreenDepthAttachment =
+              {
+                  // Use depth buffer to reject fragments with depth == 0 (no geometry rendered)
+                  .name = "depthBuffer",
+                  .depthWriteEnable = false,
+                  .depthTestEnable = true,
+                  .depthTestOp = VK_COMPARE_OP_LESS,
+              },
           .recordFunc = render_pass_record_fullscreen_triangle_draw});
 
   vulkan_render_graph_add_render_pass(
@@ -264,11 +272,14 @@ int main(int argc, char *argv[]) {
                                 .fragmentShader = "skybox_fragment.glsl",
                                 .useOnscreenColorAttachment = true,
                                 .onscreenClearValue = {{0.5f, 0.5f, 0.5f, 1.0f}},
-                                // Use depth buffer to reject fragments with depth != 0
-                                .useDepthAttachment = true,
-                                .depthAttachmentWriteEnable = false,
-                                .depthAttachmentTestEnable = true,
-                                .depthAttachmentTestOp = VK_COMPARE_OP_EQUAL,
+                                .offscreenDepthAttachment =
+                                    {
+                                        // Use depth buffer to reject fragments with depth != 0
+                                        .name = "depthBuffer",
+                                        .depthWriteEnable = false,
+                                        .depthTestEnable = true,
+                                        .depthTestOp = VK_COMPARE_OP_EQUAL,
+                                    },
                                 .recordFunc = render_pass_record_skybox_draw});
 
   vulkan_render_graph_add_render_pass(

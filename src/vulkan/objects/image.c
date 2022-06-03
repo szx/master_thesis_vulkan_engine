@@ -11,19 +11,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
   image->channels = channels;
   image->sampleCount = VK_SAMPLE_COUNT_1_BIT;
   image->name[0] = debugName;
-  if (image->type == vulkan_image_type_depth_buffer) {
-    image->mipLevelCount = 1;
-    image->arrayLayers = 1;
-    image->format = vulkan_find_image_format(vkd, image->type, image->channels);
-    image->tiling = VK_IMAGE_TILING_OPTIMAL;
-    image->createFlags = 0;
-    image->usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-    image->aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
-    image->viewType = VK_IMAGE_VIEW_TYPE_2D;
-    image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-    image->copyDataToDevice = false;
-    image->name[1] = "depth buffer image";
-  } else if (image->type == vulkan_image_type_material_base_color) {
+  if (image->type == vulkan_image_type_material_base_color) {
     image->mipLevelCount = 1 + (uint32_t)floor(log2((double)MAX(image->width, image->height)));
     image->arrayLayers = 1;
     image->format = vulkan_find_image_format(vkd, image->type, image->channels);
@@ -31,7 +19,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->createFlags = 0;
     image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                         VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-    image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+    image->aspectFlags = vulkan_find_image_aspects(image->type);
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = true;
@@ -44,7 +32,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->createFlags = 0;
     image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                         VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-    image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+    image->aspectFlags = vulkan_find_image_aspects(image->type);
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = true;
@@ -57,7 +45,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->createFlags = 0;
     image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                         VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-    image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+    image->aspectFlags = vulkan_find_image_aspects(image->type);
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = true;
@@ -70,7 +58,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->createFlags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
     image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                         VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-    image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+    image->aspectFlags = vulkan_find_image_aspects(image->type);
     image->viewType = VK_IMAGE_VIEW_TYPE_CUBE;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = true;
@@ -83,7 +71,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->createFlags = 0;
     image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
                         VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-    image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+    image->aspectFlags = vulkan_find_image_aspects(image->type);
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = true;
@@ -95,7 +83,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->tiling = VK_IMAGE_TILING_OPTIMAL;
     image->createFlags = 0;
     image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-    image->aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+    image->aspectFlags = vulkan_find_image_aspects(image->type);
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = false;
@@ -107,7 +95,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
     image->tiling = VK_IMAGE_TILING_OPTIMAL;
     image->createFlags = 0;
     image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-    image->aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
+    image->aspectFlags = vulkan_find_image_aspects(image->type);
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = false;
@@ -339,4 +327,14 @@ VkFormat vulkan_find_image_format(vulkan_device *vkd, vulkan_image_type imageTyp
   }
 
   UNREACHABLE;
+}
+
+VkImageAspectFlags vulkan_find_image_aspects(vulkan_image_type imageType) {
+  assert(imageType != vulkan_image_type_swap_chain);
+
+  vulkan_image_type_info info = vulkanImageTypeInfo[imageType];
+  if (info.depthFormat) {
+    return VK_IMAGE_ASPECT_DEPTH_BIT;
+  }
+  return VK_IMAGE_ASPECT_COLOR_BIT;
 }

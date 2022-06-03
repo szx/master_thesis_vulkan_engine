@@ -2,7 +2,6 @@
 
 // clang-format off
 vulkan_image_type_info vulkanImageTypeInfo[] = {
-    [vulkan_image_type_depth_buffer] = {.depthFormat = true, .forcedChannels = 1},
     [vulkan_image_type_material_base_color] = {.colorFormat = true, .sRGBEncoding = true, .componentBits=8},
     [vulkan_image_type_material_parameters] = {.colorFormat = true, .uNormEncoding = true, .componentBits=8},
     [vulkan_image_type_material_normal_map] = {.colorFormat = true, .uNormEncoding = true, .componentBits=8},

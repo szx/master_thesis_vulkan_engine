@@ -17,6 +17,14 @@ typedef struct vulkan_offscreen_fragment_shader_input_info {
   uint32_t _offscreenTextureIdx;
 } vulkan_offscreen_fragment_shader_input_info;
 
+typedef struct vulkan_offscreen_framebuffer_depth_attachment_info {
+  const char *name;
+  bool depthWriteEnable;
+  bool depthTestEnable;
+  VkCompareOp depthTestOp;
+  VkClearDepthStencilValue clearValue;
+} vulkan_offscreen_framebuffer_depth_attachment_info;
+
 typedef void (*vulkan_render_pass_desc_record_func)(vulkan_render_pass *renderPass,
                                                     vulkan_render_pass_frame_state *frameState,
                                                     VkCommandBuffer commandBuffer);
@@ -38,11 +46,7 @@ typedef struct vulkan_render_pass_desc {
   vulkan_offscreen_fragment_shader_input_info
       offscreenFragmentShaderInputs[MAX_RENDER_TARGET_COUNT];
 
-  bool useDepthAttachment;
-  bool depthAttachmentWriteEnable;
-  bool depthAttachmentTestEnable;
-  VkCompareOp depthAttachmentTestOp;
-  VkClearDepthStencilValue depthClearValue;
+  vulkan_offscreen_framebuffer_depth_attachment_info offscreenDepthAttachment;
 
   bool colorBlendingType;
 

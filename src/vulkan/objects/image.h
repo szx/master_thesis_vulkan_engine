@@ -49,3 +49,5 @@ void vulkan_image_debug_print(vulkan_image *image, int indent);
 
 VkFormat vulkan_find_image_format(vulkan_device *vkd, vulkan_image_type imageType,
                                   uint32_t channels);
+
+VkImageAspectFlags vulkan_find_image_aspects(vulkan_image_type imageType);

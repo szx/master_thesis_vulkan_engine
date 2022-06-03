@@ -188,8 +188,17 @@ void vulkan_update_descriptor_set(vulkan_device *vkd, VkDescriptorSet descriptor
         VkDescriptorImageInfo *imageInfo = &imageInfos[texturesDescriptorWriteIdx];
         imageInfo->sampler = textureElement->sampler;
         imageInfo->imageView = textureElement->image->imageView;
-        // NOTE: Images in textures descriptor should have VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL.
-        imageInfo->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        // NOTE: Images in textures descriptor should be in either
+        //       VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL or
+        //       VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL
+        //       depending on image aspect flags.
+        if (textureElement->image->aspectFlags == VK_IMAGE_ASPECT_COLOR_BIT) {
+          imageInfo->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        } else if (textureElement->image->aspectFlags == VK_IMAGE_ASPECT_DEPTH_BIT) {
+          imageInfo->imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+        } else {
+          UNREACHABLE;
+        }
         descriptorWrite->pImageInfo = imageInfo;
 
         texturesDescriptorWriteIdx++;

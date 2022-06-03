@@ -68,11 +68,11 @@ VkPipeline get_graphics_pipeline(vulkan_render_pass *renderPass, size_t currentF
   uint32_t colorAttachmentCount = renderPass->desc.colorAttachmentCount;
   bool colorBlendingType = renderPass->desc.colorBlendingType;
 
-  bool depthWriteEnable =
-      renderPass->desc.useDepthAttachment && renderPass->desc.depthAttachmentWriteEnable;
-  bool depthTestEnable =
-      renderPass->desc.useDepthAttachment && renderPass->desc.depthAttachmentTestEnable;
-  VkCompareOp depthTestOp = renderPass->desc.depthAttachmentTestOp;
+  bool depthWriteEnable = renderPass->desc.offscreenDepthAttachment.name &&
+                          renderPass->desc.offscreenDepthAttachment.depthWriteEnable;
+  bool depthTestEnable = renderPass->desc.offscreenDepthAttachment.name &&
+                         renderPass->desc.offscreenDepthAttachment.depthTestEnable;
+  VkCompareOp depthTestOp = renderPass->desc.offscreenDepthAttachment.depthTestOp;
 
   size_t shaderStageCount;
   VkPipelineShaderStageCreateInfo *shaderStages =
@@ -217,9 +217,11 @@ void get_framebuffer_attachment_image_views(vulkan_render_pass *renderPass,
             frameState->offscreenTextures, renderPass->desc.offscreenColorAttachments[j].name)
             ->image->imageView;
   }
-  if (renderPass->desc.useDepthAttachment) {
-    VkImageView depthBufferImageView = frameState->depthBufferImage->imageView;
-    framebufferAttachmentImageViews[i++] = depthBufferImageView;
+  if (renderPass->desc.offscreenDepthAttachment.name) {
+    framebufferAttachmentImageViews[i++] =
+        vulkan_render_pass_offscreen_texture_state_get_offscreen_texture(
+            frameState->offscreenTextures, renderPass->desc.offscreenDepthAttachment.name)
+            ->image->imageView;
   }
 }
 

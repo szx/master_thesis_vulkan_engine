@@ -26,9 +26,6 @@ typedef struct vulkan_render_pass_frame_state {
   /// Offscreen texture state.
   vulkan_render_pass_offscreen_texture_state *offscreenTextures;
 
-  /// Depth buffer image.
-  vulkan_image *depthBufferImage;
-
 } vulkan_render_pass_frame_state;
 
 void vulkan_render_pass_frame_state_init(vulkan_render_pass_frame_state *frameState,
