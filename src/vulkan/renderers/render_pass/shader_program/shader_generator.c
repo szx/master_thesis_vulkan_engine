@@ -149,7 +149,6 @@ void glsl_add_fragment_shader_input_variables(UT_string *s) {
 
 void glsl_add_fragment_shader_output_variables(UT_string *s,
                                                uint32_t framebufferColorAttachmentCount) {
-  assert(framebufferColorAttachmentCount > 0);
   for (uint32_t i = 0; i < framebufferColorAttachmentCount; i++) {
     utstring_printf(s, "layout(location = %u) out vec4 outFragColor%u;\n", i, i);
   }

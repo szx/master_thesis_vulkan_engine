@@ -13,6 +13,8 @@
 #define MAX_SPOT_LIGHT_COUNT 8
 #define MAX_TEXT_CHARACTER_COUNT 256
 #define MIN_DELTA_TIME (1.0 / 60.0)
+#define WORLD_UP                                                                                   \
+  (vec3) { 0, 1, 0 }
 
 #define END_OF_VULKAN_SHADER_CONSTANTS
 #define VULKAN_SHADER_CONSTANTS(X, ...)                                                            \

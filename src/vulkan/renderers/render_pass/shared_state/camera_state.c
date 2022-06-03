@@ -116,7 +116,7 @@ void vulkan_render_pass_camera_state_reset(vulkan_render_pass_camera_state *came
   vec3 distance = {center[0], center[1], -glm_vec3_max(extentAbs)};
   glm_vec3_copy(distance, camera->user.position);
   glm_vec3_copy((vec3){0, 0, 1}, camera->user.front);
-  glm_vec3_copy((vec3){0, 1, 0}, camera->user.up);
+  glm_vec3_copy(WORLD_UP, camera->user.up);
   camera->user.yaw = 0;
   camera->user.pitch = 0;
   camera->user.roll = 0;
@@ -154,55 +154,18 @@ void vulkan_render_pass_camera_state_set_view_matrix(vulkan_render_pass_camera_s
   glm_mat4_inv(transform, viewMatrix);
 }
 
-/// Calculates perspective projection matrix for left handed world/view-space to right-handed
-/// flipped Vulkan clip space.
-void get_perspective_matrix(float fovy, float aspect, float nearZ, float farZ, mat4 dest) {
-  glm_mat4_zero(dest);
-
-  // https://vincent-p.github.io/posts/vulkan_perspective_matrix/
-  float f;
-  f = 1.0f / tanf(fovy * 0.5f);
-  float x = f / aspect;
-  float y = -f;
-  float A = nearZ / (farZ - nearZ);
-  float B = (nearZ * farZ) / (farZ - nearZ);
-
-  dest[0][0] = x;
-  dest[1][1] = y;
-  dest[2][2] = A;
-  dest[2][3] = -1.0f;
-  dest[3][2] = B;
-}
-
-/// Calculates orthographic projection matrix for left handed world/view-space to right-handed
-/// flipped Vulkan clip space.
-void get_orthographic_matrix(float r, float t, float nearZ, float farZ, mat4 dest) {
-  glm_mat4_zero(dest);
-
-  // https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#orthographic-projection
-  // https://dev.theomader.com/depth-precision/
-  dest[0][0] = r;
-  dest[1][1] = -t;
-  dest[2][2] = 2.0f / (nearZ - farZ);
-  dest[3][2] = (farZ + nearZ) / (nearZ - farZ);
-  dest[3][3] = 1.0f;
-
-  // Reverse Z:
-  dest[2][2] = -dest[2][2];
-  dest[3][2] = -dest[3][2];
-}
-
 void vulkan_render_pass_camera_state_set_projection_matrix(vulkan_render_pass_camera_state *camera,
                                                            mat4 projectionMatrix) {
   vulkan_asset_camera *cameraData = camera->cameraElement->camera;
   if (cameraData->type == vulkan_camera_type_perspective) {
     float viewportAspectRatio = vulkan_swap_chain_get_aspect_ratio(camera->renderState->vks);
-    get_perspective_matrix(cameraData->fovY, viewportAspectRatio, cameraData->nearZ,
-                           cameraData->farZ, projectionMatrix);
+    vulkan_get_perspective_matrix(cameraData->fovY, viewportAspectRatio, cameraData->nearZ,
+                                  cameraData->farZ, projectionMatrix);
   } else if (cameraData->type == vulkan_camera_type_orthographic) {
     // TODO: Adjust magX and magY using vks.
-    get_orthographic_matrix(cameraData->magX, cameraData->magY, cameraData->nearZ, cameraData->farZ,
-                            projectionMatrix);
+    vulkan_get_orthographic_matrix(-cameraData->magX, cameraData->magX, -cameraData->magY,
+                                   cameraData->magY, cameraData->nearZ, cameraData->farZ,
+                                   projectionMatrix);
   }
 }
 

@@ -77,3 +77,12 @@ void vulkan_aabb_add_vec3(vulkan_aabb *aabb, vec3 other);
 void vulkan_aabb_add_aabb(vulkan_aabb *aabb, vulkan_aabb *other);
 void vulkan_aabb_mul_mat4(vulkan_aabb *aabb, mat4 transform);
 void vulkan_aabb_debug_print(vulkan_aabb *aabb, int indent);
+
+/// Calculates perspective projection matrix for left handed world/view-space to right-handed
+/// flipped Vulkan clip space.
+void vulkan_get_perspective_matrix(float fovy, float aspect, float nearZ, float farZ, mat4 dest);
+
+/// Calculates orthographic projection matrix for left handed world/view-space to right-handed
+/// flipped Vulkan clip space.
+void vulkan_get_orthographic_matrix(float left, float right, float bottom, float top, float nearZ,
+                                    float farZ, mat4 dest);

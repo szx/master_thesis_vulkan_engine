@@ -50,3 +50,41 @@ void vulkan_aabb_debug_print(vulkan_aabb *aabb, int indent) {
   log_debug(INDENT_FORMAT_STRING "max=(%f,%f,%f,%f)", INDENT_FORMAT_ARGS(2), aabb->max[0],
             aabb->max[1], aabb->max[2], aabb->max[3]);
 }
+
+void vulkan_get_perspective_matrix(float fovy, float aspect, float nearZ, float farZ, mat4 dest) {
+  glm_mat4_zero(dest);
+
+  // https://vincent-p.github.io/posts/vulkan_perspective_matrix/
+  float f;
+  f = 1.0f / tanf(fovy * 0.5f);
+  float x = f / aspect;
+  float y = -f;
+  float A = nearZ / (farZ - nearZ);
+  float B = (nearZ * farZ) / (farZ - nearZ);
+
+  dest[0][0] = x;
+  dest[1][1] = y;
+  dest[2][2] = A;
+  dest[2][3] = -1.0f;
+  dest[3][2] = B;
+}
+
+void vulkan_get_orthographic_matrix(float left, float right, float bottom, float top, float nearZ,
+                                    float farZ, mat4 dest) {
+  glm_mat4_zero(dest);
+
+  // https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#orthographic-projection
+  // https://dev.theomader.com/depth-precision/
+  dest[0][0] = 1.0 / (right - left);
+  dest[1][1] = 1.0 / (top - bottom);
+  dest[2][2] = 2.0f / (nearZ - farZ);
+  dest[3][2] = (farZ + nearZ) / (nearZ - farZ);
+  dest[3][3] = 1.0f;
+
+  // Flip Y:
+  dest[1][1] = -dest[1][1];
+
+  // Reverse Z:
+  dest[2][2] = -dest[2][2];
+  dest[3][2] = -dest[3][2];
+}
