@@ -277,8 +277,6 @@ int main(int argc, char *argv[]) {
                                 .colorBlendingType = vulkan_color_blending_type_alpha,
                                 .recordFunc = render_pass_record_fullscreen_triangle_draw});
 
-  // HIRO CONTINUE refactor adding render graph (declare oll possible offscreen texture inputs and
-  // outputs).
   vulkan_renderer_run_main_loop(renderer, update_func);
 
   vulkan_renderer_destroy(renderer);

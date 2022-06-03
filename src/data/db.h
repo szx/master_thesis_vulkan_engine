@@ -21,7 +21,6 @@ void data_db_destroy(data_db *db);
     _value value;                                                                                  \
   } data_##_type;                                                                                  \
   void data_##_type##_init(data_##_type *data, _value value);                                      \
-  void data_##_type##_deinit(data_##_type *data);                                                  \
   data_##_type data_##_type##_temp(_value value); /* NOTE: can leak memory */                      \
   size_t data_##_type##_size(_value value);                                                        \
   void data_##_type##_serialize(uint8_t *memory, _value value);                                    \
@@ -30,9 +29,8 @@ void data_db_destroy(data_db *db);
   typedef struct data##_##_type##_array {                                                          \
     UT_array *values;                                                                              \
   } data##_##_type##_array;                                                                        \
-  void data_##_type##_array_init(data_##_type##_array *array);                                     \
+  void data_##_type##_array_init(data_##_type##_array *array, size_t count);                       \
   void data_##_type##_array_deinit(data_##_type##_array *array);                                   \
-  void data_##_type##_array_push_back(data_##_type##_array *array, _value value);                  \
   data_##_type##_array data_##_type##_array_temp(UT_array *values);
 DATA_DB_TYPES(decl_data_type, )
 #undef decl_data_type

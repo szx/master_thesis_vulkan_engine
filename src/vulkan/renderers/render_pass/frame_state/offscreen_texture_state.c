@@ -15,6 +15,10 @@ vulkan_render_pass_offscreen_texture_state_create(vulkan_render_state *renderSta
 void vulkan_render_pass_offscreen_texture_state_destroy(
     vulkan_render_pass_offscreen_texture_state *gBuffer) {
   for (size_t i = 0; i < gBuffer->offscreenTextureElementCount; i++) {
+    vulkan_asset_image_deinit(gBuffer->offscreenTextureAssets[i]->image);
+    core_free(gBuffer->offscreenTextureAssets[i]->image);
+    vulkan_asset_sampler_deinit(gBuffer->offscreenTextureAssets[i]->sampler);
+    core_free(gBuffer->offscreenTextureAssets[i]->sampler);
     vulkan_asset_texture_deinit(gBuffer->offscreenTextureAssets[i]);
     core_free(gBuffer->offscreenTextureAssets[i]);
   }
