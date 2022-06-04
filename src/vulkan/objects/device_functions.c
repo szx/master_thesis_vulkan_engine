@@ -427,6 +427,9 @@ void add_image_transition_cmd(vulkan_device *vkd, VkCommandBuffer commandBuffer,
 
 void vulkan_begin_rendering(vulkan_device *vkd, VkCommandBuffer commandBuffer,
                             vulkan_rendering_info renderPassInfo) {
+
+  // HIRO CONTINUE depth WAR fixed with add_general_memory_barrier(vkd, commandBuffer);
+
   uint32_t onscreenColorAttachmentCount = renderPassInfo.onscreenColorAttachment ? 1 : 0;
   uint32_t offscreenColorAttachmentCount = utarray_len(renderPassInfo.offscreenColorAttachments);
   uint32_t colorAttachmentCount = onscreenColorAttachmentCount + offscreenColorAttachmentCount;
@@ -480,7 +483,6 @@ void vulkan_begin_rendering(vulkan_device *vkd, VkCommandBuffer commandBuffer,
                              renderPassInfo.depthAttachment->currentLayout);
   }
 
-  // add_general_memory_barrier(vkd, commandBuffer);
 
   VkRenderingInfoKHR renderingInfo = {.sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR,
                                       .renderArea.offset = {0, 0},
@@ -504,18 +506,6 @@ void vulkan_end_rendering(vulkan_device *vkd, VkCommandBuffer commandBuffer,
                              renderPassInfo.onscreenColorAttachment->imageAspectFlags,
                              renderPassInfo.onscreenColorAttachment->currentLayout,
                              renderPassInfo.onscreenColorAttachment->nextLayout);
-  }
-  utarray_foreach_elem_it (vulkan_rendering_attachment_info *, attachmentInfo,
-                           renderPassInfo.offscreenColorAttachments) {
-    add_image_transition_cmd(vkd, commandBuffer, attachmentInfo->image,
-                             attachmentInfo->imageAspectFlags, attachmentInfo->currentLayout,
-                             attachmentInfo->nextLayout);
-  }
-  if (renderPassInfo.depthAttachment) {
-    add_image_transition_cmd(vkd, commandBuffer, renderPassInfo.depthAttachment->image,
-                             renderPassInfo.depthAttachment->imageAspectFlags,
-                             renderPassInfo.depthAttachment->currentLayout,
-                             renderPassInfo.depthAttachment->nextLayout);
   }
 }
 

@@ -422,13 +422,8 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
     vulkan_rendering_attachment_info attachmentCreateInfo = {0};
     attachmentCreateInfo.name = renderPassElement->swapChainImageResource->name;
     attachmentCreateInfo.currentFormat = resourceUsageTimelineInfo.currentFormat;
-    if (resourceUsageTimelineInfo.previousUsage) {
-      // Image layout either undefined or already transitioned at the end of previous render pass.
-      attachmentCreateInfo.previousLayout =
-          get_image_layout_for_swap_chain_image(resourceUsageTimelineInfo.currentUsage);
-    } else {
-      attachmentCreateInfo.previousLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    }
+    attachmentCreateInfo.previousLayout =
+        get_image_layout_for_swap_chain_image(resourceUsageTimelineInfo.previousUsage);
     attachmentCreateInfo.currentLayout =
         get_image_layout_for_swap_chain_image(resourceUsageTimelineInfo.currentUsage);
     if (resourceUsageTimelineInfo.nextUsage) {
@@ -503,13 +498,8 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
       vulkan_rendering_attachment_info attachmentCreateInfo = {0};
       attachmentCreateInfo.name = offscreenTextureResource->name;
       attachmentCreateInfo.currentFormat = resourceUsageTimelineInfo.currentFormat;
-      if (resourceUsageTimelineInfo.previousUsage) {
-        // Image layout either undefined or already transitioned at the end of previous render pass.
-        attachmentCreateInfo.previousLayout = get_image_layout_for_offscreen_texture(
-            resourceUsageTimelineInfo.currentUsage, aspectFlags);
-      } else {
-        attachmentCreateInfo.previousLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-      }
+      attachmentCreateInfo.previousLayout = get_image_layout_for_offscreen_texture(
+          resourceUsageTimelineInfo.previousUsage, aspectFlags);
       attachmentCreateInfo.currentLayout = get_image_layout_for_offscreen_texture(
           resourceUsageTimelineInfo.currentUsage, aspectFlags);
       if (resourceUsageTimelineInfo.nextUsage) {
@@ -568,13 +558,8 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
     vulkan_rendering_attachment_info attachmentCreateInfo = {0};
     attachmentCreateInfo.name = renderPassElement->depthBufferResource->name;
     attachmentCreateInfo.currentFormat = resourceUsageTimelineInfo.currentFormat;
-    if (resourceUsageTimelineInfo.previousUsage) {
-      // Image layout either undefined or already transitioned at the end of previous render pass.
-      attachmentCreateInfo.previousLayout =
-          get_image_layout_for_depth_buffer(resourceUsageTimelineInfo.currentUsage);
-    } else {
-      attachmentCreateInfo.previousLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    }
+    attachmentCreateInfo.previousLayout =
+        get_image_layout_for_depth_buffer(resourceUsageTimelineInfo.previousUsage);
     attachmentCreateInfo.currentLayout =
         get_image_layout_for_depth_buffer(resourceUsageTimelineInfo.currentUsage);
     if (resourceUsageTimelineInfo.nextUsage) {
