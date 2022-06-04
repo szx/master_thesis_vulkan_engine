@@ -97,7 +97,7 @@ typedef struct vulkan_render_graph_render_pass_element {
 
   /// State used during compilation.
   struct vulkan_render_graph_render_pass_element_state {
-    vulkan_render_pass_info renderPassInfo;
+    vulkan_rendering_info renderPassInfo;
   } state;
 
   struct vulkan_render_graph_render_pass_element *prev, *next;

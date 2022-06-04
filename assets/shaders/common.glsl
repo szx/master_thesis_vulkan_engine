@@ -30,6 +30,11 @@ uint getMaterialId(uint instanceId) {
 #define assert(cond)
 #endif
 
+// NOTE: https://thebookofshaders.com/10/
+float random (vec2 st) {
+  return fract(sin(dot(st.xy, vec2(12.9898,78.233)))*43758.5453123);
+}
+
 #if SHADER_FRAGMENT == 1
 
 vec3 getNormal() {

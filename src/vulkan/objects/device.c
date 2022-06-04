@@ -11,7 +11,7 @@ VkValidationFeatureEnableEXT enabledValidationFeatures[] = {
 const char *instanceExtensions[] = {VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME};
 
 const char *deviceExtensions[] = {
-    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME,
 #if defined(DEBUG)
     VK_KHR_SHADER_NON_SEMANTIC_INFO_EXTENSION_NAME, // NOTE: Required by debugPrintf.
 #endif
@@ -322,9 +322,12 @@ bool physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevic
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES};
   VkPhysicalDeviceRobustness2FeaturesEXT featuresRobustness2 = {
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT};
+  VkPhysicalDeviceDynamicRenderingFeaturesKHR featuresDynamicRendering = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR};
   physicalDeviceFeatures2.pNext = &features11;
   features11.pNext = &features12;
   features12.pNext = &featuresRobustness2;
+  featuresRobustness2.pNext = &featuresDynamicRendering;
   vkGetPhysicalDeviceFeatures2(physicalDevice, &physicalDeviceFeatures2);
   VkPhysicalDeviceFeatures features10 = physicalDeviceFeatures2.features;
   log_info("samplerAnisotropy = %d", features10.samplerAnisotropy);
@@ -333,6 +336,7 @@ bool physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevic
   log_info("shaderSampledImageArrayDynamicIndexing = %d",
            features10.shaderSampledImageArrayDynamicIndexing);
   log_info("nullDescriptor = %d", featuresRobustness2.nullDescriptor);
+  log_info("dynamicRendering = %d", featuresDynamicRendering.dynamicRendering);
   log_info("descriptorIndexing = %d", features12.descriptorIndexing);
   log_info("shaderSampledImageArrayNonUniformIndexing = %d",
            features12.shaderSampledImageArrayNonUniformIndexing);
@@ -343,7 +347,6 @@ bool physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevic
   // Scalar block layout allows us to use std430 memory layout for GLSL buffers, which corresponds
   // more directly to C struct alignment rules.
   log_info("scalarBlockLayout = %d", features12.scalarBlockLayout);
-  log_info("imagelessFramebuffer = %d", features12.imagelessFramebuffer);
   log_info("multiDrawIndirect = %d", features10.multiDrawIndirect);
   log_info("drawIndirectFirstInstance = %d", features10.drawIndirectFirstInstance);
   bool featuresSupported =
@@ -351,7 +354,7 @@ bool physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevic
       features10.shaderSampledImageArrayDynamicIndexing && featuresRobustness2.nullDescriptor &&
       features12.descriptorIndexing && features12.descriptorBindingVariableDescriptorCount &&
       features12.descriptorBindingPartiallyBound && features12.runtimeDescriptorArray &&
-      features12.scalarBlockLayout && features12.imagelessFramebuffer &&
+      features12.scalarBlockLayout && featuresDynamicRendering.dynamicRendering &&
       features10.multiDrawIndirect && features10.drawIndirectFirstInstance;
 
   return queueFamiliesComplete && extensionsSupported && swapChainAdequate && goodVulkanVersion &&
@@ -540,11 +543,16 @@ void create_logical_device(vulkan_device *vkd) {
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES,
       .scalarBlockLayout = VK_TRUE,
   };
+  VkPhysicalDeviceDynamicRenderingFeaturesKHR dynamicRenderingFeatures = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR,
+      .dynamicRendering = true,
+  };
   VkPhysicalDeviceFeatures2 deviceFeatures2 = {.sType =
                                                    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
                                                .features = deviceFeatures,
                                                .pNext = &descriptorIndexingFeatures};
   descriptorIndexingFeatures.pNext = &scalarBlockLayoutFeatures;
+  scalarBlockLayoutFeatures.pNext = &dynamicRenderingFeatures;
 
   VkDeviceCreateInfo createInfo = {0};
   createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -566,6 +574,13 @@ void create_logical_device(vulkan_device *vkd) {
 
   vkGetDeviceQueue(vkd->device, queueFamilies.graphicsFamily, 0, &vkd->graphicsQueue);
   vkGetDeviceQueue(vkd->device, queueFamilies.presentFamily, 0, &vkd->presentQueue);
+
+  vkd->cmdBeginRendering =
+      (PFN_vkCmdBeginRenderingKHR)vkGetInstanceProcAddr(vkd->instance, "vkCmdBeginRenderingKHR");
+  vkd->cmdEndRendering =
+      (PFN_vkCmdEndRenderingKHR)vkGetInstanceProcAddr(vkd->instance, "vkCmdEndRenderingKHR");
+  verify(vkd->cmdBeginRendering);
+  verify(vkd->cmdEndRendering);
 }
 
 void create_one_shot_command_pool(vulkan_device *vkd) {

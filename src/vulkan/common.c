@@ -9,6 +9,7 @@ vulkan_image_type_info vulkanImageTypeInfo[] = {
     [vulkan_image_type_font_bitmap] = {.colorFormat = true, .uNormEncoding = true, .componentBits=8},
     [vulkan_image_type_offscreen_f16] = {.colorFormat = true, .floatingPointEncoding = true, .componentBits=16, .forcedChannels = 4},
     [vulkan_image_type_offscreen_depth_buffer] = {.depthFormat= true, .forcedChannels = 1},
+    [vulkan_image_type_offscreen_r8] = {.colorFormat = true, .uNormEncoding = true, .componentBits=8, .forcedChannels = 1},
 };
 // clang-format on
 

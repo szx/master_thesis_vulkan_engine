@@ -197,10 +197,10 @@ int main(int argc, char *argv[]) {
                                          vulkan_image_type_offscreen_f16);
   vulkan_render_graph_add_image_resource(renderer->renderGraph, "gBuffer2",
                                          vulkan_image_type_offscreen_f16);
-  vulkan_render_graph_add_image_resource(renderer->renderGraph, "ssaoOcclusion",
-                                         vulkan_image_type_offscreen_depth_buffer);
-  vulkan_render_graph_add_image_resource(renderer->renderGraph, "ssaoOcclusionBlur",
-                                         vulkan_image_type_offscreen_depth_buffer);
+  vulkan_render_graph_add_image_resource(renderer->renderGraph, "ssaoRaw",
+                                         vulkan_image_type_offscreen_r8);
+  vulkan_render_graph_add_image_resource(renderer->renderGraph, "ssaoBlurred",
+                                         vulkan_image_type_offscreen_r8);
 
   /*
   vulkan_render_graph_add_render_pass(
@@ -244,6 +244,35 @@ int main(int argc, char *argv[]) {
           .colorBlendingType = vulkan_color_blending_type_none,
           .recordFunc = render_pass_record_primitive_geometry_draws});
 
+  /*
+    vulkan_render_graph_add_render_pass(
+        renderer->renderGraph,
+        (vulkan_render_pass_desc){
+            .vertexShader = "ssao_vertex.glsl",
+            .fragmentShader = "ssao_fragment.glsl",
+            .offscreenFragmentShaderInputCount = 2,
+            .offscreenFragmentShaderInputs =
+                {
+                    {.name = "gBuffer0"},
+                    {.name = "gBuffer2"},
+                },
+            .offscreenColorAttachmentCount = 1,
+            .offscreenColorAttachments =
+                {
+                    {.name = "ssaoRaw", .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
+                },
+            .offscreenDepthAttachment =
+                {
+                    // Use depth buffer to reject fragments with depth == 0 (no geometry rendered)
+                    .name = "depthBuffer",
+                    .depthWriteEnable = false,
+                    .depthTestEnable = true,
+                    .depthTestOp = VK_COMPARE_OP_LESS,
+                },
+            .colorBlendingType = vulkan_color_blending_type_none,
+            .recordFunc = render_pass_record_fullscreen_triangle_draw});
+   */
+
   vulkan_render_graph_add_render_pass(
       renderer->renderGraph,
       (vulkan_render_pass_desc){
@@ -266,27 +295,6 @@ int main(int argc, char *argv[]) {
                   .depthTestOp = VK_COMPARE_OP_LESS,
               },
           .recordFunc = render_pass_record_fullscreen_triangle_draw});
-
-  // HIRO CONTINUE SSAO
-  vulkan_render_graph_add_render_pass(
-      renderer->renderGraph,
-      (vulkan_render_pass_desc){
-          .vertexShader = "ssao_vertex.glsl",
-          .fragmentShader = "ssao_fragment.glsl",
-          .offscreenFragmentShaderInputCount = 3,
-          .offscreenFragmentShaderInputs =
-              {
-                  {.name = "gBuffer0"},
-                  {.name = "gBuffer1"},
-                  {.name = "gBuffer2"},
-              },
-          .offscreenColorAttachmentCount = 1,
-          .offscreenColorAttachments =
-              {
-                  {.name = "ssaoOcclusion", .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
-              },
-          .colorBlendingType = vulkan_color_blending_type_none,
-          .recordFunc = render_pass_record_primitive_geometry_draws});
 
   vulkan_render_graph_add_render_pass(
       renderer->renderGraph,

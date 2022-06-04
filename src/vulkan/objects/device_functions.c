@@ -359,8 +359,169 @@ VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
   return pipelineLayout;
 }
 
+void vulkan_rendering_info_init(vulkan_rendering_info *renderPassInfo) {
+  *renderPassInfo = (vulkan_rendering_info){0};
+  utarray_alloc(renderPassInfo->offscreenColorAttachments,
+                sizeof(vulkan_rendering_attachment_info));
+}
+
+void vulkan_rendering_info_deinit(vulkan_rendering_info *renderPassInfo) {
+  core_free(renderPassInfo->onscreenColorAttachment);
+  utarray_free(renderPassInfo->offscreenColorAttachments);
+  core_free(renderPassInfo->depthAttachment);
+}
+
+void vulkan_rendering_info_add_onscreen_color_attachment(
+    vulkan_rendering_info *renderPassInfo, vulkan_rendering_attachment_info attachmentCreateInfo) {
+  assert(renderPassInfo->onscreenColorAttachment == NULL);
+
+  renderPassInfo->onscreenColorAttachment = core_alloc(sizeof(vulkan_rendering_attachment_info));
+  *renderPassInfo->onscreenColorAttachment = attachmentCreateInfo;
+}
+
+void vulkan_rendering_info_add_offscreen_color_attachment(
+    vulkan_rendering_info *renderPassInfo, vulkan_rendering_attachment_info attachmentCreateInfo) {
+  utarray_push_back(renderPassInfo->offscreenColorAttachments, &attachmentCreateInfo);
+}
+
+void vulkan_rendering_info_add_depth_attachment(
+    vulkan_rendering_info *renderPassInfo, vulkan_rendering_attachment_info attachmentCreateInfo) {
+  assert(renderPassInfo->depthAttachment == NULL);
+
+  renderPassInfo->depthAttachment = core_alloc(sizeof(vulkan_rendering_attachment_info));
+  *renderPassInfo->depthAttachment = attachmentCreateInfo;
+}
+
+void add_general_memory_barrier(vulkan_device *vkd, VkCommandBuffer commandBuffer) {
+  VkMemoryBarrier generalMemoryBarrier = {
+      .sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER,
+      .srcAccessMask = VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT,
+      .dstAccessMask = VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT,
+  };
+  vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+                       VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 1, &generalMemoryBarrier, 0, NULL, 0,
+                       NULL);
+}
+
+void add_image_transition_cmd(vulkan_device *vkd, VkCommandBuffer commandBuffer, VkImage image,
+                              VkImageAspectFlags aspectFlags, VkImageLayout oldLayout,
+                              VkImageLayout newLayout) {
+  // HIRO CONTINUE barriers (transitions)
+
+  VkImageMemoryBarrier barrier = {
+      .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+      .image = image,
+      .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      .srcAccessMask = VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT,
+      .dstAccessMask = VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT,
+      .oldLayout = oldLayout,
+      .newLayout = newLayout,
+      .subresourceRange.aspectMask = aspectFlags,
+      .subresourceRange.levelCount = VK_REMAINING_MIP_LEVELS,
+      .subresourceRange.layerCount = VK_REMAINING_ARRAY_LAYERS,
+  };
+  vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT,
+                       VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, NULL, 0, NULL, 1, &barrier);
+}
+
+void vulkan_begin_rendering(vulkan_device *vkd, VkCommandBuffer commandBuffer,
+                            vulkan_rendering_info renderPassInfo) {
+  uint32_t onscreenColorAttachmentCount = renderPassInfo.onscreenColorAttachment ? 1 : 0;
+  uint32_t offscreenColorAttachmentCount = utarray_len(renderPassInfo.offscreenColorAttachments);
+  uint32_t colorAttachmentCount = onscreenColorAttachmentCount + offscreenColorAttachmentCount;
+  uint32_t depthAttachmentCount = renderPassInfo.depthAttachment ? 1 : 0;
+
+  VkRenderingAttachmentInfoKHR colorAttachments[VLA(colorAttachmentCount)];
+  VkRenderingAttachmentInfoKHR depthAttachment;
+  if (onscreenColorAttachmentCount > 0) {
+    assert(onscreenColorAttachmentCount == 1);
+    colorAttachments[0] = (VkRenderingAttachmentInfoKHR){
+        .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR,
+        .imageView = renderPassInfo.onscreenColorAttachment->imageView,
+        .imageLayout = renderPassInfo.onscreenColorAttachment->currentLayout,
+        .loadOp = renderPassInfo.onscreenColorAttachment->loadOp,
+        .storeOp = renderPassInfo.onscreenColorAttachment->storeOp,
+        .clearValue = renderPassInfo.onscreenColorAttachment->clearValue,
+    };
+    add_image_transition_cmd(vkd, commandBuffer, renderPassInfo.onscreenColorAttachment->image,
+                             renderPassInfo.onscreenColorAttachment->imageAspectFlags,
+                             renderPassInfo.onscreenColorAttachment->previousLayout,
+                             renderPassInfo.onscreenColorAttachment->currentLayout);
+  }
+  for (size_t i = 0; i < offscreenColorAttachmentCount; i++) {
+    vulkan_rendering_attachment_info *attachmentInfo =
+        utarray_eltptr(renderPassInfo.offscreenColorAttachments, i);
+    colorAttachments[onscreenColorAttachmentCount + i] = (VkRenderingAttachmentInfoKHR){
+        .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR,
+        .imageView = attachmentInfo->imageView,
+        .imageLayout = attachmentInfo->currentLayout,
+        .loadOp = attachmentInfo->loadOp,
+        .storeOp = attachmentInfo->storeOp,
+        .clearValue = attachmentInfo->clearValue,
+    };
+    add_image_transition_cmd(vkd, commandBuffer, attachmentInfo->image,
+                             attachmentInfo->imageAspectFlags, attachmentInfo->previousLayout,
+                             attachmentInfo->currentLayout);
+  }
+  if (depthAttachmentCount > 0) {
+    assert(depthAttachmentCount == 1);
+    depthAttachment = (VkRenderingAttachmentInfoKHR){
+        .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR,
+        .imageView = renderPassInfo.depthAttachment->imageView,
+        .imageLayout = renderPassInfo.depthAttachment->currentLayout,
+        .loadOp = renderPassInfo.depthAttachment->loadOp,
+        .storeOp = renderPassInfo.depthAttachment->storeOp,
+        .clearValue = renderPassInfo.depthAttachment->clearValue,
+    };
+    add_image_transition_cmd(vkd, commandBuffer, renderPassInfo.depthAttachment->image,
+                             renderPassInfo.depthAttachment->imageAspectFlags,
+                             renderPassInfo.depthAttachment->previousLayout,
+                             renderPassInfo.depthAttachment->currentLayout);
+  }
+
+  // add_general_memory_barrier(vkd, commandBuffer);
+
+  VkRenderingInfoKHR renderingInfo = {.sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR,
+                                      .renderArea.offset = {0, 0},
+                                      .renderArea.extent = vkd->swapChainExtent,
+                                      .layerCount = 1,
+                                      .colorAttachmentCount = colorAttachmentCount,
+                                      .pColorAttachments = colorAttachments,
+                                      .pDepthAttachment =
+                                          (depthAttachmentCount > 0 ? &depthAttachment : NULL)};
+  vkd->cmdBeginRendering(commandBuffer, &renderingInfo);
+}
+
+void vulkan_end_rendering(vulkan_device *vkd, VkCommandBuffer commandBuffer,
+                          vulkan_rendering_info renderPassInfo) {
+  vkd->cmdEndRendering(commandBuffer);
+
+  // add_general_memory_barrier(vkd, commandBuffer);
+
+  if (renderPassInfo.onscreenColorAttachment) {
+    add_image_transition_cmd(vkd, commandBuffer, renderPassInfo.onscreenColorAttachment->image,
+                             renderPassInfo.onscreenColorAttachment->imageAspectFlags,
+                             renderPassInfo.onscreenColorAttachment->currentLayout,
+                             renderPassInfo.onscreenColorAttachment->nextLayout);
+  }
+  utarray_foreach_elem_it (vulkan_rendering_attachment_info *, attachmentInfo,
+                           renderPassInfo.offscreenColorAttachments) {
+    add_image_transition_cmd(vkd, commandBuffer, attachmentInfo->image,
+                             attachmentInfo->imageAspectFlags, attachmentInfo->currentLayout,
+                             attachmentInfo->nextLayout);
+  }
+  if (renderPassInfo.depthAttachment) {
+    add_image_transition_cmd(vkd, commandBuffer, renderPassInfo.depthAttachment->image,
+                             renderPassInfo.depthAttachment->imageAspectFlags,
+                             renderPassInfo.depthAttachment->currentLayout,
+                             renderPassInfo.depthAttachment->nextLayout);
+  }
+}
+
 VkPipeline vulkan_create_graphics_pipeline(vulkan_device *vkd,
                                            vulkan_graphics_pipeline_create_info createInfo,
+                                           vulkan_rendering_info renderingInfo,
                                            const char *debugFormat, ...) {
 
   /* vertex input */
@@ -450,8 +611,35 @@ VkPipeline vulkan_create_graphics_pipeline(vulkan_device *vkd,
   colorBlending.blendConstants[2] = 0.0f;
   colorBlending.blendConstants[3] = 0.0f;
 
+  /* dynamic rendering */
+  uint32_t onscreenColorAttachmentCount = renderingInfo.onscreenColorAttachment ? 1 : 0;
+  uint32_t offscreenColorAttachmentCount = utarray_len(renderingInfo.offscreenColorAttachments);
+  uint32_t colorAttachmentCount = onscreenColorAttachmentCount + offscreenColorAttachmentCount;
+  VkFormat colorAttachmentsFormats[VLA(colorAttachmentCount)];
+  if (renderingInfo.onscreenColorAttachment) {
+    colorAttachmentsFormats[0] = renderingInfo.onscreenColorAttachment->currentFormat;
+  }
+  for (size_t i = 0; i < offscreenColorAttachmentCount; i++) {
+    vulkan_rendering_attachment_info *attachmentInfo =
+        utarray_eltptr(renderingInfo.offscreenColorAttachments, i);
+    colorAttachmentsFormats[onscreenColorAttachmentCount + i] = attachmentInfo->currentFormat;
+  }
+
+  VkFormat depthAttachmentFormat = VK_FORMAT_UNDEFINED;
+  if (renderingInfo.depthAttachment) {
+    depthAttachmentFormat = renderingInfo.depthAttachment->currentFormat;
+  }
+
+  VkPipelineRenderingCreateInfoKHR pipelineRendering = {
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR,
+      .colorAttachmentCount = colorAttachmentCount,
+      .pColorAttachmentFormats = colorAttachmentsFormats,
+      .depthAttachmentFormat = depthAttachmentFormat,
+  };
+
   VkGraphicsPipelineCreateInfo pipelineInfo = {0};
   pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+  pipelineInfo.pNext = &pipelineRendering;
   pipelineInfo.stageCount = createInfo.shaderStageCount;
   pipelineInfo.pStages = createInfo.shaderStages;
   pipelineInfo.pVertexInputState = &vertexInputInfo;
@@ -476,266 +664,6 @@ VkPipeline vulkan_create_graphics_pipeline(vulkan_device *vkd,
 
   return graphicsPipeline;
 }
-
-void vulkan_render_pass_info_init(vulkan_render_pass_info *renderPassInfo) {
-  *renderPassInfo = (vulkan_render_pass_info){0};
-  utarray_alloc(renderPassInfo->offscreenColorAttachmentDescriptions,
-                sizeof(VkAttachmentDescription));
-  utarray_alloc(renderPassInfo->offscreenColorAttachmentReferences, sizeof(VkAttachmentReference));
-  utarray_alloc(renderPassInfo->offscreenColorAttachmentClearValues, sizeof(VkClearColorValue));
-  renderPassInfo->dependencyCount = 1;
-  renderPassInfo->dependencies =
-      core_alloc(renderPassInfo->dependencyCount * sizeof(VkSubpassDependency));
-  renderPassInfo->dependencies[0] = (VkSubpassDependency){
-      // Explicit external subpass dependency.
-      // Same behaviour as VkImageMemoryBarrier before render pass.
-      // See also:
-      // https://www.lunarg.com/wp-content/uploads/2021/01/Final_Guide-to-Vulkan-Synchronization-Validation_Jan_21.pdf
-      // https://www.khronos.org/blog/understanding-vulkan-synchronization
-      // https://github.com/KhronosGroup/Vulkan-Docs/wiki/Synchronization-Examples#graphics-to-graphics-dependencies
-      .srcSubpass = VK_SUBPASS_EXTERNAL,
-      .dstSubpass = 0,
-  };
-}
-
-void vulkan_render_pass_info_deinit(vulkan_render_pass_info *renderPassInfo) {
-  core_free(renderPassInfo->onscreenColorAttachmentDescription);
-  core_free(renderPassInfo->onscreenColorAttachmentReference);
-  utarray_free(renderPassInfo->offscreenColorAttachmentDescriptions);
-  utarray_free(renderPassInfo->offscreenColorAttachmentReferences);
-  utarray_free(renderPassInfo->offscreenColorAttachmentClearValues);
-  core_free(renderPassInfo->depthAttachmentDescription);
-  core_free(renderPassInfo->depthAttachmentReference);
-  core_free(renderPassInfo->dependencies);
-}
-
-size_t vulkan_render_pass_info_get_attachment_count(vulkan_render_pass_info *renderPassInfo) {
-  return (renderPassInfo->onscreenColorAttachmentDescription != NULL ? 1 : 0) +
-         utarray_len(renderPassInfo->offscreenColorAttachmentDescriptions) +
-         (renderPassInfo->depthAttachmentDescription != NULL ? 1 : 0);
-}
-
-size_t vulkan_render_pass_info_get_color_attachment_count(vulkan_render_pass_info *renderPassInfo) {
-  return (renderPassInfo->onscreenColorAttachmentDescription != NULL ? 1 : 0) +
-         utarray_len(renderPassInfo->offscreenColorAttachmentDescriptions);
-}
-
-void vulkan_render_pass_info_get_attachment_clear_values(vulkan_render_pass_info *renderPassInfo,
-                                                         VkClearValue *clearValues) {
-  size_t i = 0;
-  if (renderPassInfo->onscreenColorAttachmentReference != NULL) {
-    clearValues[i++].color = renderPassInfo->onscreenColorAttachmentClearValue;
-  }
-  utarray_foreach_elem_deref (VkClearColorValue, onscreenColorAttachmentClearValue,
-                              renderPassInfo->offscreenColorAttachmentClearValues) {
-    clearValues[i++].color = onscreenColorAttachmentClearValue;
-  }
-  if (renderPassInfo->depthAttachmentReference != NULL) {
-    clearValues[i++].depthStencil = renderPassInfo->depthAttachmentClearValue;
-  }
-}
-
-void vulkan_render_pass_info_recalculate_attachment_idxes(vulkan_render_pass_info *renderPassInfo) {
-  uint32_t attachmentIdx = 0;
-  if (renderPassInfo->onscreenColorAttachmentReference != NULL) {
-    renderPassInfo->onscreenColorAttachmentReference->attachment = attachmentIdx++;
-  }
-  utarray_foreach_elem_it (VkAttachmentReference *, onscreenColorAttachmentReference,
-                           renderPassInfo->offscreenColorAttachmentReferences) {
-    onscreenColorAttachmentReference->attachment = attachmentIdx++;
-  }
-  if (renderPassInfo->depthAttachmentReference != NULL) {
-    renderPassInfo->depthAttachmentReference->attachment = attachmentIdx++;
-  }
-}
-
-void vulkan_render_pass_info_add_onscreen_color_attachment(
-    vulkan_render_pass_info *renderPassInfo,
-    vulkan_render_pass_attachment_create_info attachmentCreateInfo) {
-  assert(renderPassInfo->onscreenColorAttachmentDescription == NULL &&
-         renderPassInfo->onscreenColorAttachmentReference == NULL);
-
-  renderPassInfo->onscreenColorAttachmentDescription = core_alloc(sizeof(VkAttachmentDescription));
-  *renderPassInfo->onscreenColorAttachmentDescription =
-      (VkAttachmentDescription){.flags = 0,
-                                .format = attachmentCreateInfo.format,
-                                .samples = VK_SAMPLE_COUNT_1_BIT,
-                                .initialLayout = attachmentCreateInfo.previousLayout,
-                                .finalLayout = attachmentCreateInfo.nextLayout,
-                                .loadOp = attachmentCreateInfo.loadOp,
-                                .storeOp = attachmentCreateInfo.storeOp,
-                                .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE};
-
-  renderPassInfo->onscreenColorAttachmentReference = core_alloc(sizeof(VkAttachmentReference));
-  *renderPassInfo->onscreenColorAttachmentReference = (VkAttachmentReference){
-      .attachment = -1,
-      .layout = attachmentCreateInfo.currentLayout,
-  };
-  vulkan_render_pass_info_recalculate_attachment_idxes(renderPassInfo);
-
-  renderPassInfo->onscreenColorAttachmentClearValue = attachmentCreateInfo.clearValue.color;
-}
-
-void vulkan_render_pass_info_add_offscreen_color_attachment(
-    vulkan_render_pass_info *renderPassInfo,
-    vulkan_render_pass_attachment_create_info attachmentCreateInfo) {
-
-  VkAttachmentDescription offscreenColorAttachmentDescription =
-      (VkAttachmentDescription){.flags = 0,
-                                .format = attachmentCreateInfo.format,
-                                .samples = VK_SAMPLE_COUNT_1_BIT,
-                                .initialLayout = attachmentCreateInfo.previousLayout,
-                                .finalLayout = attachmentCreateInfo.nextLayout,
-                                .loadOp = attachmentCreateInfo.loadOp,
-                                .storeOp = attachmentCreateInfo.storeOp,
-                                .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE};
-  utarray_push_back(renderPassInfo->offscreenColorAttachmentDescriptions,
-                    &offscreenColorAttachmentDescription);
-
-  VkAttachmentReference offscreenColorAttachmentReference = (VkAttachmentReference){
-      .attachment = -1,
-      .layout = attachmentCreateInfo.currentLayout,
-  };
-  utarray_push_back(renderPassInfo->offscreenColorAttachmentReferences,
-                    &offscreenColorAttachmentReference);
-  vulkan_render_pass_info_recalculate_attachment_idxes(renderPassInfo);
-
-  utarray_push_back(renderPassInfo->offscreenColorAttachmentClearValues,
-                    &attachmentCreateInfo.clearValue.color);
-}
-
-void vulkan_render_pass_info_add_depth_attachment(
-    vulkan_render_pass_info *renderPassInfo,
-    vulkan_render_pass_attachment_create_info attachmentCreateInfo) {
-  assert(renderPassInfo->depthAttachmentDescription == NULL &&
-         renderPassInfo->depthAttachmentReference == NULL);
-
-  renderPassInfo->depthAttachmentDescription = core_alloc(sizeof(VkAttachmentDescription));
-  *renderPassInfo->depthAttachmentDescription =
-      (VkAttachmentDescription){.flags = 0,
-                                .format = attachmentCreateInfo.format,
-                                .samples = VK_SAMPLE_COUNT_1_BIT,
-                                .initialLayout = attachmentCreateInfo.previousLayout,
-                                .finalLayout = attachmentCreateInfo.nextLayout,
-                                .loadOp = attachmentCreateInfo.loadOp,
-                                .storeOp = attachmentCreateInfo.storeOp,
-                                .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                                .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE};
-
-  renderPassInfo->depthAttachmentReference = core_alloc(sizeof(VkAttachmentReference));
-  *renderPassInfo->depthAttachmentReference = (VkAttachmentReference){
-      .attachment = -1,
-      .layout = attachmentCreateInfo.currentLayout,
-  };
-  vulkan_render_pass_info_recalculate_attachment_idxes(renderPassInfo);
-
-  renderPassInfo->depthAttachmentClearValue = attachmentCreateInfo.clearValue.depthStencil;
-}
-
-void vulkan_render_pass_info_add_execution_barrier(vulkan_render_pass_info *renderPassInfo,
-                                                   VkPipelineStageFlags srcStageMask,
-                                                   VkPipelineStageFlags dstStageMask) {
-  renderPassInfo->dependencies[0].srcStageMask |= srcStageMask;
-  renderPassInfo->dependencies[0].dstStageMask |= dstStageMask;
-}
-
-void vulkan_render_pass_info_add_memory_barrier(vulkan_render_pass_info *renderPassInfo,
-                                                VkAccessFlags srcAccessMask,
-                                                VkAccessFlags dstAccessMask) {
-  renderPassInfo->dependencies[0].srcAccessMask |= srcAccessMask;
-  renderPassInfo->dependencies[0].dstAccessMask |= dstAccessMask;
-}
-
-VkRenderPass vulkan_create_render_pass(vulkan_device *vkd, vulkan_render_pass_info renderPassInfo,
-                                       const char *debugFormat, ...) {
-  size_t onscreenColorAttachmentCount =
-      (renderPassInfo.onscreenColorAttachmentReference != NULL ? 1 : 0);
-  size_t depthAttachmentDescriptionCount =
-      (renderPassInfo.depthAttachmentDescription != NULL ? 1 : 0);
-
-  size_t attachmentDescriptionCount =
-      onscreenColorAttachmentCount +
-      utarray_len(renderPassInfo.offscreenColorAttachmentDescriptions) +
-      depthAttachmentDescriptionCount;
-  VkAttachmentDescription attachmentDescriptions[attachmentDescriptionCount];
-  size_t idx = 0;
-  if (onscreenColorAttachmentCount > 0) {
-    attachmentDescriptions[idx++] = *renderPassInfo.onscreenColorAttachmentDescription;
-  }
-  core_memcpy(attachmentDescriptions + idx,
-              utarray_front(renderPassInfo.offscreenColorAttachmentDescriptions),
-              utarray_len(renderPassInfo.offscreenColorAttachmentDescriptions) *
-                  sizeof(VkAttachmentDescription));
-  idx += utarray_len(renderPassInfo.offscreenColorAttachmentDescriptions);
-  if (depthAttachmentDescriptionCount > 0) {
-    attachmentDescriptions[idx++] = *renderPassInfo.depthAttachmentDescription;
-  }
-
-  size_t colorAttachmentReferenceCount =
-      onscreenColorAttachmentCount +
-      utarray_len(renderPassInfo.offscreenColorAttachmentDescriptions);
-  VkAttachmentReference colorAttachmentReferences[attachmentDescriptionCount];
-  idx = 0;
-  if (onscreenColorAttachmentCount > 0) {
-    colorAttachmentReferences[idx++] = *renderPassInfo.onscreenColorAttachmentReference;
-  }
-  core_memcpy(colorAttachmentReferences + idx,
-              utarray_front(renderPassInfo.offscreenColorAttachmentReferences),
-              utarray_len(renderPassInfo.offscreenColorAttachmentReferences) *
-                  sizeof(VkAttachmentReference));
-
-  VkSubpassDescription subpass = {0};
-  subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-  subpass.colorAttachmentCount = colorAttachmentReferenceCount;
-  subpass.pColorAttachments = colorAttachmentReferences;
-  subpass.pDepthStencilAttachment = renderPassInfo.depthAttachmentReference;
-  subpass.pResolveAttachments = NULL;
-
-  VkRenderPassCreateInfo createInfo = {0};
-  createInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-  createInfo.attachmentCount = attachmentDescriptionCount;
-  createInfo.pAttachments = attachmentDescriptions;
-
-  // TODO: Support multiple subpasses.
-  createInfo.subpassCount = 1;
-  createInfo.pSubpasses = &subpass;
-  createInfo.dependencyCount = renderPassInfo.dependencyCount;
-  createInfo.pDependencies = renderPassInfo.dependencies;
-
-  VkRenderPass renderPass;
-  verify(vkCreateRenderPass(vkd->device, &createInfo, vka, &renderPass) == VK_SUCCESS);
-
-  DEBUG_NAME_FORMAT_START()
-  vulkan_debug_name_render_pass(vkd->debug, renderPass, "%s - render pass", debugName);
-  DEBUG_NAME_FORMAT_END();
-
-  return renderPass;
-}
-
-void vulkan_begin_render_pass(vulkan_device *vkd, VkCommandBuffer commandBuffer,
-                              vulkan_render_pass_info renderPassInfo, VkRenderPass renderPass,
-                              VkFramebuffer framebuffer) {
-  size_t clearValueCount = vulkan_render_pass_info_get_attachment_count(&renderPassInfo);
-  VkClearValue clearValues[VLA(clearValueCount)];
-  vulkan_render_pass_info_get_attachment_clear_values(&renderPassInfo, clearValues);
-
-  VkRenderPassBeginInfo renderPassBeginInfo = {0};
-  renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-  renderPassBeginInfo.renderPass = renderPass;
-  renderPassBeginInfo.framebuffer = framebuffer;
-  renderPassBeginInfo.renderArea.offset = (VkOffset2D){0, 0};
-  renderPassBeginInfo.renderArea.extent = vkd->swapChainExtent;
-  renderPassBeginInfo.clearValueCount = clearValueCount;
-  renderPassBeginInfo.pClearValues = clearValues;
-  vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-}
-
-void vulkan_end_render_pass(vulkan_device *vkd, VkCommandBuffer commandBuffer) {
-  vkCmdEndRenderPass(commandBuffer);
-}
-
 VkSemaphore vulkan_create_semaphore(vulkan_device *vkd, VkSemaphoreCreateFlags flags,
                                     const char *debugFormat, ...) {
   VkSemaphoreCreateInfo semaphoreInfo = {0};

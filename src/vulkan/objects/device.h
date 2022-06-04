@@ -57,14 +57,18 @@ typedef struct vulkan_limits {
 } vulkan_limits;
 
 typedef struct vulkan_device {
-  GLFWwindow *window;                   ///< GLFW window
-  VkInstance instance;                  ///< Vulkan instance.
-  VkSurfaceKHR surface;                 ///< Vulkan window surface.
-  vulkan_debug *debug;                  ///< Vulkan debug utils.
-  VkPhysicalDevice physicalDevice;      ///< Physical device.
-  VkDevice device;                      ///< Vulkan logical device.
-  VkQueue graphicsQueue;                ///< Graphical queue handle.
-  VkQueue presentQueue;                 ///< Present queue handle.
+  GLFWwindow *window;              ///< GLFW window
+  VkInstance instance;             ///< Vulkan instance.
+  VkSurfaceKHR surface;            ///< Vulkan window surface.
+  vulkan_debug *debug;             ///< Vulkan debug utils.
+  VkPhysicalDevice physicalDevice; ///< Physical device.
+
+  VkDevice device;       ///< Vulkan logical device.
+  VkQueue graphicsQueue; ///< Graphical queue handle.
+  VkQueue presentQueue;  ///< Present queue handle.
+  PFN_vkCmdBeginRenderingKHR cmdBeginRendering;
+  PFN_vkCmdEndRenderingKHR cmdEndRendering;
+
   vulkan_swap_chain_info swapChainInfo; ///< Swap chain support details.
   VkFormat swapChainImageFormat;        ///< Chosen swap chain image format.
   VkExtent2D swapChainExtent;           ///< Chosen swap chain image format.
@@ -73,6 +77,7 @@ typedef struct vulkan_device {
   VkCommandPool
       oneShotCommandPool; ///< Command pool used for one-shot copy and image transition commands.
   vulkan_input input;     ///< GLFW keyboard and mouse input.
+
 } vulkan_device;
 
 vulkan_device *vulkan_device_create(data_config *config, data_asset_db *assetDb);

@@ -5878,43 +5878,27 @@ const char *vulkan_direct_light_type_debug_str(int value) {
   if (value == 3) { return "vulkan_direct_light_type_count"; }
   return "UNKNOWN vulkan_direct_light_type";
 }
-const char *vulkan_image_type_debug_str(int value) {
-  if (value == 0) { return "vulkan_image_type_swap_chain"; }
-  if (value == 1) { return "vulkan_image_type_depth_buffer"; }
-  if (value == 2) { return "vulkan_image_type_material_base_color"; }
-  if (value == 3) { return "vulkan_image_type_material_parameters"; }
-  if (value == 4) { return "vulkan_image_type_material_normal_map"; }
-  if (value == 5) { return "vulkan_image_type_cubemap"; }
-  if (value == 6) { return "vulkan_image_type_font_bitmap"; }
-  if (value == 7) { return "vulkan_image_type_g_buffer_0"; }
-  if (value == 8) { return "vulkan_image_type_g_buffer_1"; }
-  if (value == 9) { return "vulkan_image_type_g_buffer_2"; }
-  if (value == 10) { return "vulkan_image_type_g_buffer_3"; }
-  if (value == 11) { return "vulkan_image_type_g_buffer_count"; }
-  if (value == 12) { return "vulkan_image_type_count"; }
-  return "UNKNOWN vulkan_image_type";
-}
-const char *vulkan_render_graph_resource_type_debug_str(int value) {
-  if (value == 0) { return "vulkan_render_graph_resource_type_offscreen_texture"; }
-  if (value == 1) { return "vulkan_render_graph_resource_type_swap_chain_image"; }
-  if (value == 2) { return "vulkan_render_graph_resource_type_depth_buffer"; }
-  if (value == 3) { return "vulkan_render_graph_resource_type_count"; }
-  return "UNKNOWN vulkan_render_graph_resource_type";
-}
 const char *vulkan_image_render_pass_usage_debug_str(int value) {
   if (value == 1) { return "vulkan_image_render_pass_usage_read"; }
   if (value == 2) { return "vulkan_image_render_pass_usage_write"; }
   if (value == 3) { return "vulkan_image_render_pass_usage_read_write"; }
   return "UNKNOWN vulkan_image_render_pass_usage";
 }
-const char *vulkan_render_pass_type_debug_str(int value) {
-  if (value == 0) { return "vulkan_render_pass_type_forward"; }
-  if (value == 1) { return "vulkan_render_pass_type_deferred_geometry"; }
-  if (value == 2) { return "vulkan_render_pass_type_deferred_lighting"; }
-  if (value == 3) { return "vulkan_render_pass_type_skybox"; }
-  if (value == 4) { return "vulkan_render_pass_type_debug_text"; }
-  if (value == 5) { return "vulkan_render_pass_type_count"; }
-  return "UNKNOWN vulkan_render_pass_type";
+const char *vulkan_image_type_debug_str(int value) {
+  if (value == 0) { return "vulkan_image_type_undefined"; }
+  if (value == 1) { return "vulkan_image_type_swap_chain"; }
+  if (value == 2) { return "vulkan_image_type_material_base_color"; }
+  if (value == 3) { return "vulkan_image_type_material_parameters"; }
+  if (value == 4) { return "vulkan_image_type_material_normal_map"; }
+  if (value == 5) { return "vulkan_image_type_cubemap"; }
+  if (value == 6) { return "vulkan_image_type_font_bitmap"; }
+  if (value == 7) { return "vulkan_image_type_offscreen_first"; }
+  if (value == 7) { return "vulkan_image_type_offscreen_f16"; }
+  if (value == 8) { return "vulkan_image_type_offscreen_depth_buffer"; }
+  if (value == 9) { return "vulkan_image_type_offscreen_r8"; }
+  if (value == 10) { return "vulkan_image_type_offscreen_count"; }
+  if (value == 11) { return "vulkan_image_type_count"; }
+  return "UNKNOWN vulkan_image_type";
 }
 const char *vulkan_renderer_cache_primitive_element_source_type_debug_str(int value) {
   if (value == 0) { return "vulkan_renderer_cache_primitive_element_source_type_scene_tree"; }

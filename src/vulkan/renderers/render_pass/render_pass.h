@@ -16,9 +16,6 @@ typedef struct vulkan_render_pass {
   vulkan_render_pass_shader_program *shaderProgram;
 
   /* cache */
-  // HIRO refactor cache using imageless framebuffer
-  UT_array *_renderPasses;      // VkRenderPass array
-  UT_array *_framebuffers;      // VkFramebuffer array
   UT_array *_graphicsPipelines; // VkPipeline array
 
 } vulkan_render_pass;
@@ -35,6 +32,6 @@ void vulkan_render_pass_deinit(vulkan_render_pass *renderPass);
 
 void vulkan_render_pass_record_commands(vulkan_render_pass *renderPass,
                                         VkCommandBuffer commandBuffer, size_t swapChainImageIdx,
-                                        vulkan_render_pass_info renderPassInfo);
+                                        vulkan_rendering_info renderPassInfo);
 
 void vulkan_render_pass_debug_print(vulkan_render_pass *renderPass);
