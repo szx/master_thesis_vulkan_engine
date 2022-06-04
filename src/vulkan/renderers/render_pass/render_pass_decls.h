@@ -34,6 +34,7 @@ typedef void (*vulkan_render_pass_desc_record_func)(vulkan_render_pass *renderPa
 typedef struct vulkan_render_pass_desc {
   const char *vertexShader;
   const char *fragmentShader;
+  bool forceEarlyFragmentTests;
 
   bool useOnscreenColorAttachment;
   VkClearColorValue onscreenClearValue;

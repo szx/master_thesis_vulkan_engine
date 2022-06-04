@@ -62,13 +62,22 @@ void glsl_add_shader_type_defines(UT_string *s, vulkan_shader_type shaderType) {
   }
 }
 
-void glsl_add_defines(UT_string *s, vulkan_shader_type shaderType,
-                      vulkan_render_state *renderState) {
+void glsl_add_offscreen_texture_defines(UT_string *s, vulkan_render_pass_desc renderPassDesc) {
+  for (size_t i = 0; i < renderPassDesc.offscreenFragmentShaderInputCount; i++) {
+    assert(renderPassDesc.offscreenFragmentShaderInputs[i].name != NULL);
+    utstring_printf(s, "#define OFFSCREEN_TEXTURE_%s 1\n",
+                    renderPassDesc.offscreenFragmentShaderInputs[i].name);
+  }
+}
+
+void glsl_add_defines(UT_string *s, vulkan_render_pass_desc renderPassDesc,
+                      vulkan_shader_type shaderType, vulkan_render_state *renderState) {
   glsl_add_vertex_shader_input_variables_defines(s, renderState->vertexStream);
   glsl_add_shader_type_defines(s, shaderType);
 #define x(_name, ...) utstring_printf(s, "#define " #_name " %d\n", _name);
   VULKAN_SHADER_CONSTANTS(x, )
 #undef x
+  glsl_add_offscreen_texture_defines(s, renderPassDesc);
 }
 
 void glsl_add_vertex_shader_input_variables(UT_string *s, vulkan_vertex_stream *stream) {
@@ -120,6 +129,12 @@ void glsl_add_vertex_shader_output_variables(UT_string *s) {
   location++;
   utstring_printf(s, "layout(location = %u) out vec3 outBitangent;\n", location);
   utstring_printf(s, "#endif\n");
+}
+
+void glsl_add_fragment_shader_early_fragment_tests(UT_string *s, bool forceEarlyFragmentTests) {
+  if (forceEarlyFragmentTests) {
+    utstring_printf(s, "layout(early_fragment_tests) in;\n");
+  }
 }
 
 void glsl_add_fragment_shader_input_variables(UT_string *s) {
@@ -218,7 +233,8 @@ vulkan_render_pass_shader_generator_get_shader(vulkan_render_pass_shader_generat
   utstring_clear(shaderGenerator->sourceCode);
 
   glsl_add_header(shaderGenerator->sourceCode);
-  glsl_add_defines(shaderGenerator->sourceCode, shaderType, shaderGenerator->renderState);
+  glsl_add_defines(shaderGenerator->sourceCode, renderPassDesc, shaderType,
+                   shaderGenerator->renderState);
   glsl_add_descriptors(shaderGenerator->sourceCode, shaderGenerator->renderState->descriptors);
 
   if (shaderType == vulkan_shader_type_vertex) {
@@ -226,6 +242,8 @@ vulkan_render_pass_shader_generator_get_shader(vulkan_render_pass_shader_generat
                                            shaderGenerator->renderState->vertexStream);
     glsl_add_vertex_shader_output_variables(shaderGenerator->sourceCode);
   } else if (shaderType == vulkan_shader_type_fragment) {
+    glsl_add_fragment_shader_early_fragment_tests(shaderGenerator->sourceCode,
+                                                  renderPassDesc.forceEarlyFragmentTests);
     glsl_add_fragment_shader_input_variables(shaderGenerator->sourceCode);
     glsl_add_fragment_shader_output_variables(shaderGenerator->sourceCode,
                                               renderPassDesc.colorAttachmentCount);

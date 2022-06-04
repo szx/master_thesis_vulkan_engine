@@ -13,15 +13,26 @@ vec4 gBuffer2Texture = texture(textures2D[gBuffer2Id], texCoord);
 vec3 worldNormal = gBuffer2Texture.xyz;
 
 // Go to view space
-vec4 viewPosition = global[globalIdx].viewMat * vec4(worldPosition, 1.0);
-vec4 viewNormal = global[globalIdx].viewMat * vec4(worldNormal, 1.0);
+vec3 viewPosition = (global[globalIdx].viewMat * vec4(worldPosition, 1.0)).xyz;
+vec3 viewNormal = (global[globalIdx].viewMat * vec4(worldNormal, 1.0)).xyz;
 
-vec4 projPosition = global[globalIdx].projMat * viewPosition;
-debugPrintfEXT("worldPosition: %v3f, viewPosition: %v4f, projPosition: %v4f", worldPosition, viewPosition, projPosition);
+assert(worldPosition != vec3(0));
+debugPrintfEXT("worldPosition: %v3f, viewPosition: %v3f, projPosition: %v4f", worldPosition, viewPosition, global[globalIdx].projMat * vec4(viewPosition, 1.0));
 
 // NOTE: https://theorangeduck.com/page/pure-depth-ssao
-const int samples = 16;
-vec3 sampleSphere[samples] = {
+// NOTE: https://github.com/SaschaWillems/Vulkan/blob/master/data/shaders/glsl/ssao/ssao.frag
+// NOTE: https://learnopengl.com/Advanced-Lighting/SSAO
+// HIRO CONTINUE more samples, better noise
+// HIRO CONTINUE SSAO blur
+
+vec3 randomVec = vec3(noise2(texCoord), 0);
+
+vec3 tangent = normalize(randomVec - (viewNormal * dot(randomVec, viewNormal)));
+vec3 bitangent = cross(tangent, viewNormal);
+mat3 TBN = getTBN(tangent, bitangent, viewNormal);
+
+const int sampleCount = 16;
+vec3 sampleSphere[sampleCount] = {
   vec3( 0.5381, 0.1856,-0.4319), vec3( 0.1379, 0.2486, 0.4430),
   vec3( 0.3371, 0.5679,-0.0057), vec3(-0.6999,-0.0451,-0.0019),
   vec3( 0.0689,-0.1598,-0.8547), vec3( 0.0560, 0.0069,-0.1843),
@@ -31,19 +42,26 @@ vec3 sampleSphere[samples] = {
   vec3( 0.7119,-0.0154,-0.0918), vec3(-0.0533, 0.0596,-0.5411),
   vec3( 0.0352,-0.0631, 0.5460), vec3(-0.4776, 0.2847,-0.0271)
 };
-float sampleRadius = 0.02;
+float sampleRadius = 0.03;
+float sampleBias = 0.025;
 
-// Occlusion factor.
-float occlusion = 0;
+float occlusion = 0.0;
+for (int i = 0; i < sampleCount; i++)
+{
+    vec3 samplePos = TBN * sampleSphere[i];
+    samplePos = viewPosition + (samplePos * sampleRadius);
 
-for (int i = 0; i < samples; i++) {
-    vec4 sampleViewPosition = viewPosition + vec4(sampleRadius*sampleSphere[i], 0.0);
-    vec4 sampleProjPosition = global[globalIdx].projMat * sampleViewPosition;
-    sampleProjPosition.xyz /= sampleProjPosition.w;
+    vec4 offset = vec4(samplePos, 1.0);
+    offset      = global[globalIdx].projMat * offset; // view space to clip space
+    offset.xyz /= offset.w; // clip space to screen space
+    offset.xyz  = offset.xyz * 0.5 + 0.5; // from screen space to texture coordinate
 
-    //float noise = random(texCoord);
-    occlusion = sampleViewPosition.z;
+    vec3 sampleWorldPosition = texture(textures2D[gBuffer0Id], offset.xy).xyz;
+    vec3 sampleViewPosition = (global[globalIdx].viewMat * vec4(sampleWorldPosition, 1.0)).xyz;
+
+    occlusion += (sampleViewPosition.z >= samplePos.z + sampleBias ? 1.0 : 0.0);
+    //float rangeCheck = smoothstep(0.0, 1.0, sampleRadius / abs(viewPosition.z - sampleViewPosition.z));
+    //occlusion += (float(sampleDepth >= (samplePos.z + sampleBias)) * rangeCheck;
 }
-
-assert(worldPosition != vec3(0));
-outFragColor0.x = worldPosition.z;
+occlusion = 1.0 - (occlusion / sampleCount);
+outFragColor0.x = occlusion;

@@ -249,6 +249,7 @@ int main(int argc, char *argv[]) {
       (vulkan_render_pass_desc){
           .vertexShader = "ssao_vertex.glsl",
           .fragmentShader = "ssao_fragment.glsl",
+          .forceEarlyFragmentTests = true,
           .offscreenFragmentShaderInputCount = 2,
           .offscreenFragmentShaderInputs =
               {
@@ -258,7 +259,7 @@ int main(int argc, char *argv[]) {
           .offscreenColorAttachmentCount = 1,
           .offscreenColorAttachments =
               {
-                  {.name = "ssaoRaw", .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
+                  {.name = "ssaoRaw", .clearValue = {{1.0f, 0.0f, 0.0f, 1.0f}}},
               },
           .offscreenDepthAttachment =
               {
@@ -276,13 +277,15 @@ int main(int argc, char *argv[]) {
       (vulkan_render_pass_desc){
           .vertexShader = "deferred_lighting_vertex.glsl",
           .fragmentShader = "deferred_lighting_fragment.glsl",
+          .forceEarlyFragmentTests = true,
           .useOnscreenColorAttachment = true,
-          .offscreenFragmentShaderInputCount = 3,
+          .offscreenFragmentShaderInputCount = 4,
           .offscreenFragmentShaderInputs =
               {
                   {.name = "gBuffer0"},
                   {.name = "gBuffer1"},
                   {.name = "gBuffer2"},
+                  {.name = "ssaoRaw"},
               },
           .offscreenDepthAttachment =
               {

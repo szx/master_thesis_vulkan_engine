@@ -20,6 +20,13 @@ vec4 gBuffer2Texture = texture(textures2D[gBuffer2Id], texCoord);
 vec3 worldNormal = gBuffer2Texture.xyz;
 float perceptualRoughness = gBuffer2Texture.w;
 
+float ambientOcclusion = 1.0;
+#if OFFSCREEN_TEXTURE_ssaoRaw == 1
+uint ssaoRawId = global[globalIdx].offscreenTextures.textureId[ssaoRawOffscreenTextureIdx];
+vec4 ssaoRawIdTexture = texture(textures2D[ssaoRawId], texCoord);
+ambientOcclusion = ssaoRawIdTexture.x;
+#endif
+
 vec3 cameraPosition = (inverse(global[globalIdx].viewMat) * vec4(0, 0, 0, 1)).xyz; // PERF: Move to global[globalIdx].
 vec3 fresnel0 = vec3(0.04);
 
@@ -53,5 +60,8 @@ for (int i = 0; i < min(global[globalIdx].pointLightCount, MAX_POINT_LIGHT_COUNT
 
   lighting += calculatePBRLightContribution(pbr, lightPosition - worldPosition, attenuation * lightColor);
 }
+
+// ambient occlusion
+lighting *= ambientOcclusion;
 
 outFragColor0 = vec4(lighting, 1.0);

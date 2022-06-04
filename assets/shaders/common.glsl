@@ -30,9 +30,9 @@ uint getMaterialId(uint instanceId) {
 #define assert(cond)
 #endif
 
-// NOTE: https://thebookofshaders.com/10/
-float random (vec2 st) {
-  return fract(sin(dot(st.xy, vec2(12.9898,78.233)))*43758.5453123);
+vec2 noise2(vec2 texCoord) {
+    // No-op.
+    return texCoord;
 }
 
 #if SHADER_FRAGMENT == 1
@@ -67,13 +67,17 @@ vec3 getBitangent() {
 // NOTE: https://ogldev.org/www/tutorial26/tutorial26.html
 // NOTE: https://learnopengl.com/Advanced-Lighting/Normal-Mapping
 // NOTE: "Język CG."
+mat3 getTBN(vec3 tangent, vec3 bitangent, vec3 normal) {
+  vec3 N = normalize(normal);
+  vec3 T = normalize(tangent);
+  vec3 B = normalize(bitangent);
+  assert(equal(dot(cross(N, T), B), 1) || equal(dot(cross(N, T), B), -1));
+  return mat3(T, B, N);
+}
+
 vec3 bumpWorldNormal(vec3 worldNormal, vec3 worldTangent, vec3 worldBitangent, vec4 normalMapSample) {
     // Use world space normal, tangent and bitangent to construct normal map's tangent space (TBN matrix).
-    vec3 Normal = normalize(worldNormal);
-    vec3 Tangent = normalize(worldTangent);
-    vec3 Bitangent = normalize(worldBitangent);
-    assert(equal(dot(cross(Normal, Tangent), Bitangent), 1) || equal(dot(cross(Normal, Tangent), Bitangent), -1));
-    mat3 TBN = mat3(Tangent, Bitangent, Normal);
+    mat3 TBN = getTBN(worldTangent, worldBitangent, worldNormal);
     // Decode normal map sample.
     vec3 normalMapNormal = normalMapSample.xyz;
     normalMapNormal = 2.0 * normalMapNormal - vec3(1.0);
