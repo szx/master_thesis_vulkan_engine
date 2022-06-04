@@ -146,13 +146,9 @@ void vulkan_render_pass_deinit(vulkan_render_pass *renderPass) {
 void set_rendering_info_images(vulkan_render_pass_frame_state *frameState, size_t swapChainImageIdx,
                                vulkan_rendering_info *renderPassInfo) {
   if (renderPassInfo->onscreenColorAttachment) {
-    VkImage swapChainImage = *(VkImage *)utarray_eltptr(
-        frameState->renderPassState->renderState->vks->swapChainImages, swapChainImageIdx);
-    renderPassInfo->onscreenColorAttachment->image = swapChainImage;
     VkImageView swapChainImageView = *(VkImageView *)utarray_eltptr(
         frameState->renderPassState->renderState->vks->swapChainImageViews, swapChainImageIdx);
     renderPassInfo->onscreenColorAttachment->imageView = swapChainImageView;
-    renderPassInfo->onscreenColorAttachment->imageAspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
   }
   for (size_t i = 0; i < utarray_len(renderPassInfo->offscreenColorAttachments); i++) {
     vulkan_rendering_attachment_info *attachmentInfo =
@@ -160,17 +156,45 @@ void set_rendering_info_images(vulkan_render_pass_frame_state *frameState, size_
     vulkan_image *image = vulkan_render_pass_offscreen_texture_state_get_offscreen_texture(
                               frameState->offscreenTextures, attachmentInfo->name)
                               ->image;
-    attachmentInfo->image = image->image;
     attachmentInfo->imageView = image->imageView;
-    attachmentInfo->imageAspectFlags = image->aspectFlags;
   }
   if (renderPassInfo->depthAttachment) {
     vulkan_image *image = vulkan_render_pass_offscreen_texture_state_get_offscreen_texture(
                               frameState->offscreenTextures, renderPassInfo->depthAttachment->name)
                               ->image;
-    renderPassInfo->depthAttachment->image = image->image;
     renderPassInfo->depthAttachment->imageView = image->imageView;
-    renderPassInfo->depthAttachment->imageAspectFlags = image->aspectFlags;
+  }
+
+  utarray_foreach_elem_it (vulkan_rendering_image_layout_transition_info *,
+                           imageLayoutTransitionInfo, renderPassInfo->preImageLayoutTransition) {
+    if (strcmp(imageLayoutTransitionInfo->name, "swap chain") == 0) {
+      VkImage swapChainImage = *(VkImage *)utarray_eltptr(
+          frameState->renderPassState->renderState->vks->swapChainImages, swapChainImageIdx);
+      imageLayoutTransitionInfo->image = swapChainImage;
+      imageLayoutTransitionInfo->imageAspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+    } else {
+      vulkan_image *image = vulkan_render_pass_offscreen_texture_state_get_offscreen_texture(
+                                frameState->offscreenTextures, imageLayoutTransitionInfo->name)
+                                ->image;
+      imageLayoutTransitionInfo->image = image->image;
+      imageLayoutTransitionInfo->imageAspectFlags = image->aspectFlags;
+    }
+  }
+
+  utarray_foreach_elem_it (vulkan_rendering_image_layout_transition_info *,
+                           imageLayoutTransitionInfo, renderPassInfo->postImageLayoutTransition) {
+    if (strcmp(imageLayoutTransitionInfo->name, "swap chain") == 0) {
+      VkImage swapChainImage = *(VkImage *)utarray_eltptr(
+          frameState->renderPassState->renderState->vks->swapChainImages, swapChainImageIdx);
+      imageLayoutTransitionInfo->image = swapChainImage;
+      imageLayoutTransitionInfo->imageAspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
+    } else {
+      vulkan_image *image = vulkan_render_pass_offscreen_texture_state_get_offscreen_texture(
+                                frameState->offscreenTextures, imageLayoutTransitionInfo->name)
+                                ->image;
+      imageLayoutTransitionInfo->image = image->image;
+      imageLayoutTransitionInfo->imageAspectFlags = image->aspectFlags;
+    }
   }
 }
 

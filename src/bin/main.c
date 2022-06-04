@@ -244,34 +244,32 @@ int main(int argc, char *argv[]) {
           .colorBlendingType = vulkan_color_blending_type_none,
           .recordFunc = render_pass_record_primitive_geometry_draws});
 
-  /*
-    vulkan_render_graph_add_render_pass(
-        renderer->renderGraph,
-        (vulkan_render_pass_desc){
-            .vertexShader = "ssao_vertex.glsl",
-            .fragmentShader = "ssao_fragment.glsl",
-            .offscreenFragmentShaderInputCount = 2,
-            .offscreenFragmentShaderInputs =
-                {
-                    {.name = "gBuffer0"},
-                    {.name = "gBuffer2"},
-                },
-            .offscreenColorAttachmentCount = 1,
-            .offscreenColorAttachments =
-                {
-                    {.name = "ssaoRaw", .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
-                },
-            .offscreenDepthAttachment =
-                {
-                    // Use depth buffer to reject fragments with depth == 0 (no geometry rendered)
-                    .name = "depthBuffer",
-                    .depthWriteEnable = false,
-                    .depthTestEnable = true,
-                    .depthTestOp = VK_COMPARE_OP_LESS,
-                },
-            .colorBlendingType = vulkan_color_blending_type_none,
-            .recordFunc = render_pass_record_fullscreen_triangle_draw});
-   */
+  vulkan_render_graph_add_render_pass(
+      renderer->renderGraph,
+      (vulkan_render_pass_desc){
+          .vertexShader = "ssao_vertex.glsl",
+          .fragmentShader = "ssao_fragment.glsl",
+          .offscreenFragmentShaderInputCount = 2,
+          .offscreenFragmentShaderInputs =
+              {
+                  {.name = "gBuffer0"},
+                  {.name = "gBuffer2"},
+              },
+          .offscreenColorAttachmentCount = 1,
+          .offscreenColorAttachments =
+              {
+                  {.name = "ssaoRaw", .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
+              },
+          .offscreenDepthAttachment =
+              {
+                  // Use depth buffer to reject fragments with depth == 0 (no geometry rendered)
+                  .name = "depthBuffer",
+                  .depthWriteEnable = false,
+                  .depthTestEnable = true,
+                  .depthTestOp = VK_COMPARE_OP_LESS,
+              },
+          .colorBlendingType = vulkan_color_blending_type_none,
+          .recordFunc = render_pass_record_fullscreen_triangle_draw});
 
   vulkan_render_graph_add_render_pass(
       renderer->renderGraph,

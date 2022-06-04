@@ -422,18 +422,8 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
     vulkan_rendering_attachment_info attachmentCreateInfo = {0};
     attachmentCreateInfo.name = renderPassElement->swapChainImageResource->name;
     attachmentCreateInfo.currentFormat = resourceUsageTimelineInfo.currentFormat;
-    attachmentCreateInfo.previousLayout =
-        get_image_layout_for_swap_chain_image(resourceUsageTimelineInfo.previousUsage);
     attachmentCreateInfo.currentLayout =
         get_image_layout_for_swap_chain_image(resourceUsageTimelineInfo.currentUsage);
-    if (resourceUsageTimelineInfo.nextUsage) {
-      attachmentCreateInfo.nextLayout =
-          get_image_layout_for_swap_chain_image(resourceUsageTimelineInfo.nextUsage);
-    } else {
-      // Vulkan spec: A swapchain’s image must be transitioned to VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
-      // layout before calling vkQueuePresentKHR.
-      attachmentCreateInfo.nextLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-    }
     attachmentCreateInfo.loadOp = !resourceUsageTimelineInfo.previousUsage
                                       ? VK_ATTACHMENT_LOAD_OP_CLEAR
                                       : VK_ATTACHMENT_LOAD_OP_LOAD;
@@ -442,15 +432,25 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
     vulkan_rendering_info_add_onscreen_color_attachment(&state->renderPassInfo,
                                                         attachmentCreateInfo);
 
-    // Make sure that finished previous rendering to onscreen texture before writing to color
-    // attachment.
-    /*
-    vulkan_rendering_info_add_execution_barrier(&state->renderPassInfo,
-                                                VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-                                                VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-    vulkan_rendering_info_add_memory_barrier(&state->renderPassInfo, 0,
-                                             VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
-                                             */
+    vulkan_rendering_info_pre_image_layout_transition(
+        &state->renderPassInfo,
+        (vulkan_rendering_image_layout_transition_info){
+            .name = renderPassElement->swapChainImageResource->name,
+            .oldLayout =
+                get_image_layout_for_swap_chain_image(resourceUsageTimelineInfo.previousUsage),
+            .newLayout =
+                get_image_layout_for_swap_chain_image(resourceUsageTimelineInfo.currentUsage),
+        });
+    if (!resourceUsageTimelineInfo.nextUsage) {
+      // Vulkan spec: A swapchain’s image must be transitioned to VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+      // layout before calling vkQueuePresentKHR.
+      vulkan_rendering_info_post_image_layout_transition(
+          &state->renderPassInfo, (vulkan_rendering_image_layout_transition_info){
+                                      .name = renderPassElement->swapChainImageResource->name,
+                                      .oldLayout = get_image_layout_for_swap_chain_image(
+                                          resourceUsageTimelineInfo.currentUsage),
+                                      .newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR});
+    }
   }
 
   utarray_foreach_elem_deref (vulkan_render_graph_resource *, offscreenTextureResource,
@@ -471,45 +471,33 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
     //       stuff that can be done using textureBarrier()).
     assert(!(isReadUsage && isWriteUsage));
 
+    VkImageAspectFlags aspectFlags = vulkan_find_image_aspects(offscreenTextureResource->imageType);
+
     if (isReadUsage) {
       // Make sure that finished rendering to offscreen textures before sampling from them in
       // fragment shader.
-      // HIRO CONTINUE Better add barrier
-      /*
-            vulkan_rendering_info_add_execution_barrier(&state->renderPassInfo,
-                                                          VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT,
-                                                          VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
-            vulkan_rendering_info_add_memory_barrier(&state->renderPassInfo,
-         VK_ACCESS_MEMORY_WRITE_BIT, VK_ACCESS_MEMORY_WRITE_BIT | VK_ACCESS_MEMORY_READ_BIT);
-                                                           */
+      vulkan_rendering_info_pre_image_layout_transition(
+          &state->renderPassInfo, (vulkan_rendering_image_layout_transition_info){
+                                      .name = offscreenTextureResource->name,
+                                      .oldLayout = get_image_layout_for_offscreen_texture(
+                                          resourceUsageTimelineInfo.previousUsage, aspectFlags),
+                                      .newLayout = get_image_layout_for_offscreen_texture(
+                                          resourceUsageTimelineInfo.currentUsage, aspectFlags),
+                                  });
     }
-
     if (isWriteUsage) {
-
       // Image layout of offscreen texture is one of following:
       //  - VK_IMAGE_LAYOUT_UNDEFINED
       //  - VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL (if used as color attachment)
       //  - VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL (if used as depth attachment )
       //  - VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL (if color read from fragment shader)
       //  - VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL (if depth read from fragment shader)
-      VkImageAspectFlags aspectFlags =
-          vulkan_find_image_aspects(offscreenTextureResource->imageType);
 
       vulkan_rendering_attachment_info attachmentCreateInfo = {0};
       attachmentCreateInfo.name = offscreenTextureResource->name;
       attachmentCreateInfo.currentFormat = resourceUsageTimelineInfo.currentFormat;
-      attachmentCreateInfo.previousLayout = get_image_layout_for_offscreen_texture(
-          resourceUsageTimelineInfo.previousUsage, aspectFlags);
       attachmentCreateInfo.currentLayout = get_image_layout_for_offscreen_texture(
           resourceUsageTimelineInfo.currentUsage, aspectFlags);
-      if (resourceUsageTimelineInfo.nextUsage) {
-        attachmentCreateInfo.nextLayout = get_image_layout_for_offscreen_texture(
-            resourceUsageTimelineInfo.nextUsage, aspectFlags);
-      } else {
-        // Vulkan spec: finalLayout must not be VK_IMAGE_LAYOUT_UNDEFINED
-        attachmentCreateInfo.nextLayout = get_image_layout_for_offscreen_texture(
-            resourceUsageTimelineInfo.currentUsage, aspectFlags);
-      }
       attachmentCreateInfo.loadOp = !resourceUsageTimelineInfo.previousUsage
                                         ? VK_ATTACHMENT_LOAD_OP_CLEAR
                                         : VK_ATTACHMENT_LOAD_OP_LOAD;
@@ -518,27 +506,14 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
       vulkan_rendering_info_add_offscreen_color_attachment(&state->renderPassInfo,
                                                            attachmentCreateInfo);
 
-      // Make sure that finished previous rendering to offscreen texture before writing to color or
-      // depth attachment.
-      /*
-      if ((aspectFlags & VK_IMAGE_ASPECT_COLOR_BIT) != 0) {
-        vulkan_rendering_info_add_execution_barrier(&state->renderPassInfo,
-                                                    VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-                                                    VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-        vulkan_rendering_info_add_memory_barrier(&state->renderPassInfo,
-                                                 VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-                                                 VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
-      }
-      if ((aspectFlags & VK_IMAGE_ASPECT_DEPTH_BIT) != 0) {
-        vulkan_rendering_info_add_execution_barrier(
-            &state->renderPassInfo,
-            VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
-            VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT);
-        vulkan_rendering_info_add_memory_barrier(&state->renderPassInfo,
-                                                 VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
-                                                 VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT);
-      }
-       */
+      vulkan_rendering_info_pre_image_layout_transition(
+          &state->renderPassInfo, (vulkan_rendering_image_layout_transition_info){
+                                      .name = offscreenTextureResource->name,
+                                      .oldLayout = get_image_layout_for_offscreen_texture(
+                                          resourceUsageTimelineInfo.previousUsage, aspectFlags),
+                                      .newLayout = get_image_layout_for_offscreen_texture(
+                                          resourceUsageTimelineInfo.currentUsage, aspectFlags),
+                                  });
     }
   }
 
@@ -558,18 +533,8 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
     vulkan_rendering_attachment_info attachmentCreateInfo = {0};
     attachmentCreateInfo.name = renderPassElement->depthBufferResource->name;
     attachmentCreateInfo.currentFormat = resourceUsageTimelineInfo.currentFormat;
-    attachmentCreateInfo.previousLayout =
-        get_image_layout_for_depth_buffer(resourceUsageTimelineInfo.previousUsage);
     attachmentCreateInfo.currentLayout =
         get_image_layout_for_depth_buffer(resourceUsageTimelineInfo.currentUsage);
-    if (resourceUsageTimelineInfo.nextUsage) {
-      attachmentCreateInfo.nextLayout =
-          get_image_layout_for_depth_buffer(resourceUsageTimelineInfo.nextUsage);
-    } else {
-      // Vulkan spec: finalLayout must not be VK_IMAGE_LAYOUT_UNDEFINED
-      attachmentCreateInfo.nextLayout =
-          get_image_layout_for_depth_buffer(resourceUsageTimelineInfo.currentUsage);
-    }
     attachmentCreateInfo.loadOp = !resourceUsageTimelineInfo.previousUsage
                                       ? VK_ATTACHMENT_LOAD_OP_CLEAR
                                       : VK_ATTACHMENT_LOAD_OP_LOAD;
@@ -577,16 +542,13 @@ void compile_render_pass(vulkan_render_graph_render_pass_element *renderPassElem
     attachmentCreateInfo.clearValue = resourceUsageTimelineInfo.clearValue;
     vulkan_rendering_info_add_depth_attachment(&state->renderPassInfo, attachmentCreateInfo);
 
-    // Make sure that finished previous use of depth buffer before reading and writing from it.
-    /*
-    vulkan_rendering_info_add_execution_barrier(
+    vulkan_rendering_info_pre_image_layout_transition(
         &state->renderPassInfo,
-        VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
-        VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT);
-    vulkan_rendering_info_add_memory_barrier(
-        &state->renderPassInfo, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
-        VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT);
-  */
+        (vulkan_rendering_image_layout_transition_info){
+            .name = renderPassElement->depthBufferResource->name,
+            .oldLayout = get_image_layout_for_depth_buffer(resourceUsageTimelineInfo.previousUsage),
+            .newLayout = get_image_layout_for_depth_buffer(resourceUsageTimelineInfo.currentUsage),
+        });
   }
 }
 

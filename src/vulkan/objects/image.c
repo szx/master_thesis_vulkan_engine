@@ -183,9 +183,10 @@ void vulkan_image_send_to_device(vulkan_image *image) {
     return;
   }
   if (image->texture != NULL && image->copyDataToDevice) {
-    vulkan_transition_image_layout(image->vkd, image->image, image->format,
-                                   VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                                   image->mipLevelCount, image->arrayLayers);
+    VkCommandBuffer commandBuffer = vulkan_begin_one_shot_commands(image->vkd);
+    vulkan_transition_image_layout(image->vkd, commandBuffer, image->image, image->aspectFlags,
+                                   VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    vulkan_end_one_shot_commands(image->vkd, commandBuffer);
 
     size_t pixelSize = image->texture->image->channels;
     size_t texelSize = vulkan_format_size(image->format);

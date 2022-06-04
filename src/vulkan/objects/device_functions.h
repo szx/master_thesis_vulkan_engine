@@ -67,23 +67,31 @@ VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
 
 typedef struct vulkan_rendering_attachment_info {
   const char *name;
-  VkImage image;
   VkImageView imageView;
-  VkImageAspectFlags imageAspectFlags;
 
   VkFormat currentFormat;
-  VkImageLayout previousLayout;
   VkImageLayout currentLayout;
-  VkImageLayout nextLayout;
   VkAttachmentLoadOp loadOp;
   VkAttachmentStoreOp storeOp;
   VkClearValue clearValue;
 } vulkan_rendering_attachment_info;
 
+typedef struct vulkan_rendering_image_layout_transition_info {
+  const char *name;
+  VkImage image;
+  VkImageAspectFlags imageAspectFlags;
+
+  VkImageLayout oldLayout;
+  VkImageLayout newLayout;
+} vulkan_rendering_image_layout_transition_info;
+
 typedef struct vulkan_rendering_info {
   vulkan_rendering_attachment_info *onscreenColorAttachment;
   vulkan_rendering_attachment_info *depthAttachment;
   UT_array *offscreenColorAttachments;
+
+  UT_array *preImageLayoutTransition;
+  UT_array *postImageLayoutTransition;
 } vulkan_rendering_info;
 
 void vulkan_rendering_info_init(vulkan_rendering_info *renderPassInfo);
@@ -98,6 +106,14 @@ void vulkan_rendering_info_add_offscreen_color_attachment(
 
 void vulkan_rendering_info_add_depth_attachment(
     vulkan_rendering_info *renderPassInfo, vulkan_rendering_attachment_info attachmentCreateInfo);
+
+void vulkan_rendering_info_pre_image_layout_transition(
+    vulkan_rendering_info *renderPassInfo,
+    vulkan_rendering_image_layout_transition_info imageLayoutTransitionInfo);
+
+void vulkan_rendering_info_post_image_layout_transition(
+    vulkan_rendering_info *renderPassInfo,
+    vulkan_rendering_image_layout_transition_info imageLayoutTransitionInfo);
 
 void vulkan_begin_rendering(vulkan_device *vkd, VkCommandBuffer commandBuffer,
                             vulkan_rendering_info renderPassInfo);
@@ -163,6 +179,6 @@ void vulkan_copy_buffer_to_image(vulkan_device *vkd, VkBuffer buffer, VkImage im
 void vulkan_generate_mipmaps(vulkan_device *vkd, VkImage image, VkFormat format, uint32_t width,
                              uint32_t height, uint32_t mipLevelCount);
 
-void vulkan_transition_image_layout(vulkan_device *vkd, VkImage image, VkFormat format,
-                                    VkImageLayout oldLayout, VkImageLayout newLayout,
-                                    uint32_t mipLevels, uint32_t arrayLayers);
+void vulkan_transition_image_layout(vulkan_device *vkd, VkCommandBuffer commandBuffer,
+                                    VkImage image, VkImageAspectFlags imageAspectFlags,
+                                    VkImageLayout oldLayout, VkImageLayout newLayout);

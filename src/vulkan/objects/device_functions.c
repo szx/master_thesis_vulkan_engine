@@ -363,12 +363,18 @@ void vulkan_rendering_info_init(vulkan_rendering_info *renderPassInfo) {
   *renderPassInfo = (vulkan_rendering_info){0};
   utarray_alloc(renderPassInfo->offscreenColorAttachments,
                 sizeof(vulkan_rendering_attachment_info));
+  utarray_alloc(renderPassInfo->preImageLayoutTransition,
+                sizeof(vulkan_rendering_image_layout_transition_info));
+  utarray_alloc(renderPassInfo->postImageLayoutTransition,
+                sizeof(vulkan_rendering_image_layout_transition_info));
 }
 
 void vulkan_rendering_info_deinit(vulkan_rendering_info *renderPassInfo) {
   core_free(renderPassInfo->onscreenColorAttachment);
   utarray_free(renderPassInfo->offscreenColorAttachments);
   core_free(renderPassInfo->depthAttachment);
+  utarray_free(renderPassInfo->preImageLayoutTransition);
+  utarray_free(renderPassInfo->postImageLayoutTransition);
 }
 
 void vulkan_rendering_info_add_onscreen_color_attachment(
@@ -392,6 +398,18 @@ void vulkan_rendering_info_add_depth_attachment(
   *renderPassInfo->depthAttachment = attachmentCreateInfo;
 }
 
+void vulkan_rendering_info_pre_image_layout_transition(
+    vulkan_rendering_info *renderPassInfo,
+    vulkan_rendering_image_layout_transition_info imageLayoutTransitionInfo) {
+  utarray_push_back(renderPassInfo->preImageLayoutTransition, &imageLayoutTransitionInfo);
+}
+
+void vulkan_rendering_info_post_image_layout_transition(
+    vulkan_rendering_info *renderPassInfo,
+    vulkan_rendering_image_layout_transition_info imageLayoutTransitionInfo) {
+  utarray_push_back(renderPassInfo->postImageLayoutTransition, &imageLayoutTransitionInfo);
+}
+
 void add_general_memory_barrier(vulkan_device *vkd, VkCommandBuffer commandBuffer) {
   VkMemoryBarrier generalMemoryBarrier = {
       .sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER,
@@ -403,32 +421,17 @@ void add_general_memory_barrier(vulkan_device *vkd, VkCommandBuffer commandBuffe
                        NULL);
 }
 
-void add_image_transition_cmd(vulkan_device *vkd, VkCommandBuffer commandBuffer, VkImage image,
-                              VkImageAspectFlags aspectFlags, VkImageLayout oldLayout,
-                              VkImageLayout newLayout) {
-  // HIRO CONTINUE barriers (transitions)
-
-  VkImageMemoryBarrier barrier = {
-      .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-      .image = image,
-      .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-      .srcAccessMask = VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT,
-      .dstAccessMask = VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT,
-      .oldLayout = oldLayout,
-      .newLayout = newLayout,
-      .subresourceRange.aspectMask = aspectFlags,
-      .subresourceRange.levelCount = VK_REMAINING_MIP_LEVELS,
-      .subresourceRange.layerCount = VK_REMAINING_ARRAY_LAYERS,
-  };
-  vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT,
-                       VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, NULL, 0, NULL, 1, &barrier);
-}
-
 void vulkan_begin_rendering(vulkan_device *vkd, VkCommandBuffer commandBuffer,
                             vulkan_rendering_info renderPassInfo) {
 
-  // HIRO CONTINUE depth WAR fixed with add_general_memory_barrier(vkd, commandBuffer);
+  // add_general_memory_barrier(vkd, commandBuffer);
+  utarray_foreach_elem_it (vulkan_rendering_image_layout_transition_info *,
+                           imageLayoutTransitionInfo, renderPassInfo.preImageLayoutTransition) {
+    vulkan_transition_image_layout(vkd, commandBuffer, imageLayoutTransitionInfo->image,
+                                   imageLayoutTransitionInfo->imageAspectFlags,
+                                   imageLayoutTransitionInfo->oldLayout,
+                                   imageLayoutTransitionInfo->newLayout);
+  }
 
   uint32_t onscreenColorAttachmentCount = renderPassInfo.onscreenColorAttachment ? 1 : 0;
   uint32_t offscreenColorAttachmentCount = utarray_len(renderPassInfo.offscreenColorAttachments);
@@ -447,10 +450,6 @@ void vulkan_begin_rendering(vulkan_device *vkd, VkCommandBuffer commandBuffer,
         .storeOp = renderPassInfo.onscreenColorAttachment->storeOp,
         .clearValue = renderPassInfo.onscreenColorAttachment->clearValue,
     };
-    add_image_transition_cmd(vkd, commandBuffer, renderPassInfo.onscreenColorAttachment->image,
-                             renderPassInfo.onscreenColorAttachment->imageAspectFlags,
-                             renderPassInfo.onscreenColorAttachment->previousLayout,
-                             renderPassInfo.onscreenColorAttachment->currentLayout);
   }
   for (size_t i = 0; i < offscreenColorAttachmentCount; i++) {
     vulkan_rendering_attachment_info *attachmentInfo =
@@ -463,9 +462,6 @@ void vulkan_begin_rendering(vulkan_device *vkd, VkCommandBuffer commandBuffer,
         .storeOp = attachmentInfo->storeOp,
         .clearValue = attachmentInfo->clearValue,
     };
-    add_image_transition_cmd(vkd, commandBuffer, attachmentInfo->image,
-                             attachmentInfo->imageAspectFlags, attachmentInfo->previousLayout,
-                             attachmentInfo->currentLayout);
   }
   if (depthAttachmentCount > 0) {
     assert(depthAttachmentCount == 1);
@@ -477,12 +473,7 @@ void vulkan_begin_rendering(vulkan_device *vkd, VkCommandBuffer commandBuffer,
         .storeOp = renderPassInfo.depthAttachment->storeOp,
         .clearValue = renderPassInfo.depthAttachment->clearValue,
     };
-    add_image_transition_cmd(vkd, commandBuffer, renderPassInfo.depthAttachment->image,
-                             renderPassInfo.depthAttachment->imageAspectFlags,
-                             renderPassInfo.depthAttachment->previousLayout,
-                             renderPassInfo.depthAttachment->currentLayout);
   }
-
 
   VkRenderingInfoKHR renderingInfo = {.sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR,
                                       .renderArea.offset = {0, 0},
@@ -500,12 +491,12 @@ void vulkan_end_rendering(vulkan_device *vkd, VkCommandBuffer commandBuffer,
   vkd->cmdEndRendering(commandBuffer);
 
   // add_general_memory_barrier(vkd, commandBuffer);
-
-  if (renderPassInfo.onscreenColorAttachment) {
-    add_image_transition_cmd(vkd, commandBuffer, renderPassInfo.onscreenColorAttachment->image,
-                             renderPassInfo.onscreenColorAttachment->imageAspectFlags,
-                             renderPassInfo.onscreenColorAttachment->currentLayout,
-                             renderPassInfo.onscreenColorAttachment->nextLayout);
+  utarray_foreach_elem_it (vulkan_rendering_image_layout_transition_info *,
+                           imageLayoutTransitionInfo, renderPassInfo.postImageLayoutTransition) {
+    vulkan_transition_image_layout(vkd, commandBuffer, imageLayoutTransitionInfo->image,
+                                   imageLayoutTransitionInfo->imageAspectFlags,
+                                   imageLayoutTransitionInfo->oldLayout,
+                                   imageLayoutTransitionInfo->newLayout);
   }
 }
 
@@ -817,10 +808,9 @@ void vulkan_generate_mipmaps(vulkan_device *vkd, VkImage image, VkFormat format,
   vulkan_end_one_shot_commands(vkd, commandBuffer);
 }
 
-void vulkan_transition_image_layout(vulkan_device *vkd, VkImage image, VkFormat format,
-                                    VkImageLayout oldLayout, VkImageLayout newLayout,
-                                    uint32_t mipLevels, uint32_t arrayLayers) {
-  VkCommandBuffer commandBuffer = vulkan_begin_one_shot_commands(vkd);
+void vulkan_transition_image_layout(vulkan_device *vkd, VkCommandBuffer commandBuffer,
+                                    VkImage image, VkImageAspectFlags imageAspectFlags,
+                                    VkImageLayout oldLayout, VkImageLayout newLayout) {
 
   VkImageMemoryBarrier barrier = {.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
                                   .oldLayout = oldLayout,
@@ -828,34 +818,95 @@ void vulkan_transition_image_layout(vulkan_device *vkd, VkImage image, VkFormat 
                                   .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
                                   .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
                                   .image = image,
-                                  .subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                                  .subresourceRange.aspectMask = imageAspectFlags,
                                   .subresourceRange.baseMipLevel = 0,
-                                  .subresourceRange.levelCount = mipLevels,
+                                  .subresourceRange.levelCount = VK_REMAINING_MIP_LEVELS,
                                   .subresourceRange.baseArrayLayer = 0,
-                                  .subresourceRange.layerCount = arrayLayers};
+                                  .subresourceRange.layerCount = VK_REMAINING_ARRAY_LAYERS};
 
-  VkPipelineStageFlags sourceStage;
-  VkPipelineStageFlags destinationStage;
+  VkPipelineStageFlags srcStageMask = 0;
+  VkPipelineStageFlags dstStageMask = 0;
 
   if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
     barrier.srcAccessMask = 0;
     barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-    sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-    destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+    srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+    dstStageMask = VK_PIPELINE_STAGE_TRANSFER_BIT;
   } else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
              newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
     barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
     barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-    sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-    destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+    srcStageMask = VK_PIPELINE_STAGE_TRANSFER_BIT;
+    dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+  } else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED &&
+             newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) {
+    // memory dependency:
+    barrier.srcAccessMask = 0;
+    barrier.dstAccessMask =
+        VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    // execution dependency:
+    srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+    dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+  } else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED &&
+             newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) {
+    // memory dependency:
+    barrier.srcAccessMask = 0;
+    barrier.dstAccessMask =
+        VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+    // execution dependency:
+    srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+    dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+  } else if (oldLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL &&
+             newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL) {
+    // memory dependency: depth writes are read during depth tests of from shader
+    barrier.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+    barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_SHADER_READ_BIT;
+    // execution dependency: depth tests are completed before fragment shader
+    srcStageMask =
+        VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+    dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT |
+                   VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT |
+                   VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+  } else if (oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL &&
+             newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+    // memory dependency: color attachment writes are read in fragment shader
+    barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+    // execution dependency: color attachment output is completed before fragment shader
+    srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+  } else if (oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL &&
+             newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) {
+    // memory dependency: none
+    barrier.srcAccessMask = 0;
+    barrier.dstAccessMask = 0;
+    // execution dependency: color attachment output is completed before fragment shader
+    srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+  } else if (oldLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL &&
+             newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL) {
+    // memory dependency: none
+    // execution dependency: none
+    return;
+  } else if (oldLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL &&
+             newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+    // memory dependency: none
+    barrier.srcAccessMask = 0;
+    barrier.dstAccessMask = 0;
+    // execution dependency: color attachment output is completed before fragment shader
+    srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+  } else if (oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL &&
+             newLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) {
+    // memory dependency: color attachment writes are read by swap chain
+    barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    barrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+    // execution dependency: color attachment output is completed before end of command buffer
+    srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
   } else {
     UNREACHABLE;
   }
 
-  vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, NULL, 0, NULL, 1,
-                       &barrier);
-
-  vulkan_end_one_shot_commands(vkd, commandBuffer);
+  vkCmdPipelineBarrier(commandBuffer, srcStageMask, dstStageMask, 0, 0, NULL, 0, NULL, 1, &barrier);
 }
