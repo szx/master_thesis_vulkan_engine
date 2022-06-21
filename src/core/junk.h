@@ -124,6 +124,14 @@ typedef XXH64_hash_t hash_t;
 #define utarray_size(array) ((array)->icd.sz * utarray_len((array)))
 #define utarray_eltsize(array) ((array)->icd.sz)
 
+#ifndef MIN
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#endif
+
+#ifndef MAX
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#endif
+
 #define utarray_foreach_elem_it(_type, _elem, _utarray)                                            \
   MACRO_DECL_AS_FOR_NEW(i)                                                                         \
   MACRO_DECL_AS_FOR(i, UT_array *_elem##_array = _utarray)                                         \

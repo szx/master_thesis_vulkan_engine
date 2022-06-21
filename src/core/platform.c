@@ -1,6 +1,45 @@
 #include "platform.h"
 
-void platform_create() {
+static UT_string *executableDirPath;
+#if defined(PLATFORM_LINUX)
+#include <libgen.h>
+#include <limits.h>
+#include <unistd.h>
+#elif defined(PLATFORM_WINDOWS)
+#include <windows.h>
+#else
+#error "plaform.c does not support current platform"
+#endif
+
+void set_executable_dir_path(int argc, char *argv[]) {
+#if defined(PLATFORM_LINUX)
+  char exePath[PATH_MAX];
+  ssize_t exePathLen = readlink("/proc/self/exe", exePath, sizeof(exePath));
+  verify(exePathLen != -1);
+  char *exeDir = dirname(exePath);
+
+  UT_string *path;
+  utstring_new(path);
+  utstring_printf(path, "%s", exeDir);
+  executableDirPath = path;
+  return;
+#elif defined(PLATFORM_WINDOWS)
+  char exePath[PATH_MAX];
+  DWORD result = GetModuleFileNameA(NULL, exePath, sizeof(exePath));
+  verify(result != 0);
+  PathRemoveFileSpecA(exePath);
+
+  UT_string *path;
+  utstring_new(path);
+  utstring_printf(path, "%s", exeDir);
+  executableDirPath = path;
+  return;
+#endif
+  UNREACHABLE;
+}
+
+void platform_create(int argc, char *argv[]) {
+  set_executable_dir_path(argc, argv);
   globals_create();
   log_create();
 }
@@ -39,35 +78,36 @@ noreturn void panic(const char *format, ...) {
 
 bool path_ext_equal(UT_string *path, const char *ext) {
   const char *data = utstring_body(path) + utstring_len(path) - strlen(ext);
-  return g_strcmp0(data, ext) == 0;
+  return strcmp(data, ext) == 0;
 }
 
 UT_string *get_executable_dir_path() {
-#if defined(PLATFORM_LINUX)
-  char *exePath = g_file_read_link("/proc/self/exe", NULL);
-  char *exeDir = g_path_get_dirname(exePath);
   UT_string *path;
-  utstring_new(path);
-  utstring_printf(path, "%s", exeDir);
-  g_free(exePath);
-  g_free(exeDir);
+  utstring_alloc(path, utstring_body(executableDirPath));
   return path;
-#else
-#error "plaform.c does not support current platform"
-#endif
 }
 
 UT_string *get_path_dirname(UT_string *path) {
 #if defined(PLATFORM_LINUX)
-  char *dirPath = g_path_get_dirname(utstring_body(path));
+  char *pathDup = core_strdup(utstring_body(path));
+  char *dir = dirname(pathDup);
+
   UT_string *newPath;
   utstring_new(newPath);
-  utstring_printf(newPath, "%s", dirPath);
-  g_free(dirPath);
+  utstring_printf(newPath, "%s", dir);
+  core_free(pathDup);
   return newPath;
-#else
-#error "plaform.c does not support current platform"
+#elif defined(PLATFORM_WINDOWS)
+  char dir[MAX_PATH];
+  PathRemoveFileSpecA(lstrcpyA(dir, utstring_body(path)));
+
+  UT_string *newPath;
+  utstring_new(newPath);
+  utstring_printf(newPath, "%s", dir);
+  core_free(pathDup);
+  return newPath;
 #endif
+  UNREACHABLE;
 }
 
 void append_to_path(UT_string *path, const char *name) { utstring_printf(path, "/%s", name); }

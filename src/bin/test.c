@@ -296,7 +296,7 @@ void scene_graph_building() {
 }
 
 int main(int argc, char *argv[]) {
-  platform_create();
+  platform_create(argc, argv);
   log_info("starting tests");
 
   shaderc_compiling();

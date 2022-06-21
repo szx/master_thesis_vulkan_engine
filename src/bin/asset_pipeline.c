@@ -225,7 +225,7 @@ void write_font_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetInp
 }
 
 int main(int argc, char *argv[]) {
-  platform_create();
+  platform_create(argc, argv);
   log_info("parsing arguments");
   asset_pipeline_input *input = NULL;
   parse_arguments(argc, argv, &input);

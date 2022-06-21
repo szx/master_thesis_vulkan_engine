@@ -18,25 +18,25 @@ vulkan_aabb vulkan_aabb_default() {
 }
 
 void vulkan_aabb_add_vec3(vulkan_aabb *aabb, vec3 other) {
-  aabb->min[0] = MIN(aabb->min[0], other[0]);
-  aabb->min[1] = MIN(aabb->min[1], other[1]);
-  aabb->min[2] = MIN(aabb->min[2], other[2]);
+  aabb->min[0] = glm_min(aabb->min[0], other[0]);
+  aabb->min[1] = glm_min(aabb->min[1], other[1]);
+  aabb->min[2] = glm_min(aabb->min[2], other[2]);
   aabb->min[3] = 1.0f; // Homogenous coordinates.
-  aabb->max[0] = MAX(aabb->max[0], other[0]);
-  aabb->max[1] = MAX(aabb->max[1], other[1]);
-  aabb->max[2] = MAX(aabb->max[2], other[2]);
+  aabb->max[0] = glm_max(aabb->max[0], other[0]);
+  aabb->max[1] = glm_max(aabb->max[1], other[1]);
+  aabb->max[2] = glm_max(aabb->max[2], other[2]);
   aabb->max[3] = 1.0f; // Homogenous coordinates.
 }
 
 void vulkan_aabb_add_aabb(vulkan_aabb *aabb, vulkan_aabb *other) {
-  aabb->min[0] = MIN(aabb->min[0], other->min[0]);
-  aabb->min[1] = MIN(aabb->min[1], other->min[1]);
-  aabb->min[2] = MIN(aabb->min[2], other->min[2]);
-  aabb->min[3] = MIN(aabb->min[3], other->min[3]);
-  aabb->max[0] = MAX(aabb->max[0], other->max[0]);
-  aabb->max[1] = MAX(aabb->max[1], other->max[1]);
-  aabb->max[2] = MAX(aabb->max[2], other->max[2]);
-  aabb->max[3] = MAX(aabb->max[3], other->max[3]);
+  aabb->min[0] = glm_min(aabb->min[0], other->min[0]);
+  aabb->min[1] = glm_min(aabb->min[1], other->min[1]);
+  aabb->min[2] = glm_min(aabb->min[2], other->min[2]);
+  aabb->min[3] = glm_min(aabb->min[3], other->min[3]);
+  aabb->max[0] = glm_max(aabb->max[0], other->max[0]);
+  aabb->max[1] = glm_max(aabb->max[1], other->max[1]);
+  aabb->max[2] = glm_max(aabb->max[2], other->max[2]);
+  aabb->max[3] = glm_max(aabb->max[3], other->max[3]);
 }
 
 void vulkan_aabb_mul_mat4(vulkan_aabb *aabb, mat4 transform) {

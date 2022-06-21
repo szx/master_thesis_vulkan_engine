@@ -18,7 +18,7 @@
 #include "../codegen/meta.h"
 
 /// Allocates and initializes all global state used by functions below.
-void platform_create();
+void platform_create(int argc, char *argv[]);
 
 /// Frees all global state used by functions below.
 void platform_destroy();

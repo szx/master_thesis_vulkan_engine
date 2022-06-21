@@ -180,7 +180,7 @@ void render_pass_record_skybox_draw(vulkan_render_pass *renderPass,
 }
 
 int main(int argc, char *argv[]) {
-  platform_create();
+  platform_create(argc, argv);
   data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_asset);
   data_asset_db *assetDb = data_asset_db_create();
   vulkan_device *vkd = vulkan_device_create(config, assetDb);
