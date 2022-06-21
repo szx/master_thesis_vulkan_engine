@@ -25,9 +25,6 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(thirdparty/glfw)
 
-# add external library greatest
-set(GREATEST_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/greatest")
-
 # add external library uthash
 set(UTHASH_INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/uthash/src")
 
@@ -53,10 +50,6 @@ add_subdirectory(thirdparty/meshoptimizer)
 pkg_check_modules(glib REQUIRED IMPORTED_TARGET glib-2.0)
 
 message("CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
-#if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-# add external library gtk4
-pkg_check_modules(GTK4 REQUIRED IMPORTED_TARGET gtk4)
-#endif()
 
 # add external library sqlite
 pkg_check_modules(SQLITE3 REQUIRED IMPORTED_TARGET sqlite3)

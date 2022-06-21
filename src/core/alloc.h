@@ -16,8 +16,9 @@ void *core_memset(void *dest, int value, size_t size);
 
 void *core_strdup(const char *dest);
 
-/// Returns copy of memory.
 void *core_memdup(const void *src, size_t size);
+
+int core_memcmp(const void *s1, const void *s2, size_t size);
 
 #define utstring_alloc(_s, _str)                                                                   \
   do {                                                                                             \

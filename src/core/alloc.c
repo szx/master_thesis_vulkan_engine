@@ -40,3 +40,19 @@ void *core_strdup(const char *dest) {
   }
   return strdup(dest);
 }
+
+int core_memcmp(const void *s1, const void *s2, size_t size) {
+  if (size == 0) {
+    return 0;
+  }
+  if (s1 == NULL && s2 == NULL) {
+    return 0;
+  }
+  if (s1 == NULL) {
+    return -size;
+  }
+  if (s2 == NULL) {
+    return size;
+  }
+  return memcmp(s1, s2, size);
+}

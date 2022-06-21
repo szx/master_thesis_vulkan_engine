@@ -1,1 +1,1 @@
-libclang
+libclang == 12.0.0

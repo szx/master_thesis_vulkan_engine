@@ -22,17 +22,6 @@ typedef struct panic_args {
   char *msg;
 } panic_args;
 
-static void panic_on_activate_callback(GtkApplication *app, panic_args *panicArgs) {
-  GtkWidget *window = gtk_application_window_new(app);
-  GtkWidget *dialog =
-      gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL,
-                             GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "%s", panicArgs->msg);
-  gtk_window_set_title(GTK_WINDOW(dialog), "Fatal error");
-  g_signal_connect(dialog, "response", G_CALLBACK(gtk_window_destroy), NULL);
-  g_signal_connect_swapped(dialog, "response", G_CALLBACK(g_application_quit), app);
-  gtk_widget_show(GTK_WIDGET(dialog));
-}
-
 noreturn void panic(const char *format, ...) {
   static const size_t max_shown_chars = 2048;
   va_list args;
@@ -44,11 +33,6 @@ noreturn void panic(const char *format, ...) {
 
   log_fatal(panicArgs.msg);
   log_destroy();
-
-  GtkApplication *app = gtk_application_new("com.example.GtkApplication", G_APPLICATION_FLAGS_NONE);
-  g_signal_connect(app, "activate", G_CALLBACK(panic_on_activate_callback), &panicArgs);
-  g_application_run(G_APPLICATION(app), 0, NULL);
-  g_object_unref(app);
 
   exit(EXIT_FAILURE);
 }
