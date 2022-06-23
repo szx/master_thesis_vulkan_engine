@@ -82,9 +82,10 @@ message(STATUS "PIP3_EXECUTABLE: ${PIP3_EXECUTABLE}")
 execute_process(COMMAND ${PIP3_EXECUTABLE} install -r ${SCRIPTS_PATH}/requirements.txt)
 
 # define source files
-file(GLOB_RECURSE C_SOURCES "src/*.c") # without bin/ and codegen/
-file(GLOB_RECURSE C_BIN_SOURCES "src/bin/*.c")
-file(GLOB_RECURSE C_CODEGEN_SOURCES "src/codegen/*.c")
+set(C_SRC_DIR "src")
+file(GLOB_RECURSE C_SOURCES "${C_SRC_DIR}/*.c") # without bin/ and codegen/
+file(GLOB_RECURSE C_BIN_SOURCES "${C_SRC_DIR}/bin/*.c")
+file(GLOB_RECURSE C_CODEGEN_SOURCES "${C_SRC_DIR}/codegen/*.c")
 foreach (C_BIN_SOURCE_PATH ${C_BIN_SOURCES})
     list(REMOVE_ITEM C_SOURCES "${C_BIN_SOURCE_PATH}")
 endforeach ()
@@ -92,8 +93,8 @@ foreach (C_CODEGEN_SOURCE_PATH ${C_CODEGEN_SOURCES})
     list(REMOVE_ITEM C_SOURCES "${C_CODEGEN_SOURCE_PATH}")
 endforeach ()
 
-file(GLOB_RECURSE C_HEADERS "src/*.h")
-file(GLOB_RECURSE C_CODEGEN_HEADERS "src/codegen/*.h")
+file(GLOB_RECURSE C_HEADERS "${C_SRC_DIR}/*.h")
+file(GLOB_RECURSE C_CODEGEN_HEADERS "${C_SRC_DIR}/codegen/*.h")
 foreach (C_CODEGEN_HEADER_PATH ${C_CODEGEN_HEADERS})
     list(REMOVE_ITEM C_HEADERS "${C_CODEGEN_HEADER_PATH}")
 endforeach ()
@@ -112,7 +113,7 @@ add_custom_command(
 
 
 # copy unprocessed assets to directory with executables
-file(GLOB_RECURSE C_PRECOMPILED_HEADERS "src/core/thirdparty.h")
+file(GLOB_RECURSE C_PRECOMPILED_HEADERS "${C_SRC_DIR}/core/thirdparty.h")
 file(GLOB ASSETS_FILES_DIR "assets")
 file(GLOB ASSETS_SHADER_DIR "${ASSETS_FILES_DIR}/shaders")
 file(GLOB ASSETS_GLTF_DIR "${ASSETS_FILES_DIR}/gltf")
@@ -127,7 +128,7 @@ add_custom_command(
         COMMENT "Copy assets.")
 
 # run asset pipeline
-file(GLOB_RECURSE C_BIN_ASSET_PIPELINE_SOURCE "src/bin/asset_pipeline.c")
+file(GLOB_RECURSE C_BIN_ASSET_PIPELINE_SOURCE "${C_SRC_DIR}/bin/asset_pipeline.c")
 file(GLOB_RECURSE PYTHON_ASSET_SCRIPTS "${SCRIPTS_PATH}/asset_*.py")
 add_custom_command(
         OUTPUT asset_pipeline.stamp
@@ -140,7 +141,7 @@ add_dependencies(run_asset_pipeline copy_assets asset_pipeline)
 
 # add preprocessor definitions
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
-ADD_DEFINITIONS(-DSRC_PATH="${CMAKE_CURRENT_SOURCE_DIR}/src")
+ADD_DEFINITIONS(-DSRC_PATH="${CMAKE_CURRENT_SOURCE_DIR}/${C_SRC_DIR}")
 ADD_DEFINITIONS(-DVULKAN_HEADER_PATH="${VULKAN_INCLUDE_PATH}/vulkan/vulkan_core.h")
 
 # Compiler and linker flags for ASAN.
@@ -148,7 +149,7 @@ set(ASAN_FLAGS "$<$<CONFIG:DEBUG>:-static-libstdc++>" "$<$<CONFIG:DEBUG>:-static
 # Compiler and linker flags for hardening.
 set(HARDENING_FLAGS "-fstack-protector-all")
 
-# define executables
+# define targets
 message(STATUS "PYTHON_CODEGEN_SCRIPTS: ${PYTHON_CODEGEN_SCRIPTS}")
 message(STATUS "PYTHON_ASSET_SCRIPTS: ${PYTHON_ASSET_SCRIPTS}")
 message(STATUS "ASSETS_SHADER_FILES: ${ASSETS_SHADER_FILES}")
@@ -160,6 +161,42 @@ message(STATUS "C_SOURCES: ${C_SOURCES}")
 message(STATUS "C_BIN_SOURCES: ${C_BIN_SOURCES}")
 message(STATUS "C_PRECOMPILED_HEADERS: ${C_PRECOMPILED_HEADERS}")
 message(STATUS "C_CODEGEN_SOURCES: ${C_CODEGEN_SOURCES}")
+
+function(my_add_compiler_options target)
+    if ((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
+        target_compile_options(${target} PUBLIC ${ASAN_FLAGS})
+        target_link_options(${target} PUBLIC ${ASAN_FLAGS})
+    endif ()
+    if ((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
+        target_compile_options(${target} PUBLIC
+                -Wall -Wextra -pedantic
+                -Werror
+                ${HARDENING_FLAGS}
+                -Wno-unused-parameter -Wno-unused-variable)
+        target_link_options(${target} PUBLIC
+                ${HARDENING_FLAGS})
+    elseif (CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+        add_compile_options(/W4 /WX)
+    else ()
+        message(FATAL_ERROR "unsupported compiler")
+    endif ()
+endfunction()
+
+# library
+set(ENGINE_NAME engine)
+
+add_library(${ENGINE_NAME})
+my_add_compiler_options(${ENGINE_NAME})
+
+target_sources(${ENGINE_NAME} PUBLIC ${EXTERNAL_ADDITIONAL_SOURCES})
+target_link_directories(${ENGINE_NAME} PUBLIC ${EXTERNAL_LIBRARY_PATHS})
+target_link_libraries(${ENGINE_NAME} PUBLIC ${EXTERNAL_LIBRARIES})
+
+target_precompile_headers(${ENGINE_NAME} PUBLIC ${C_PRECOMPILED_HEADERS})
+target_include_directories(${ENGINE_NAME} PUBLIC ${C_SRC_DIR} PUBLIC ${EXTERNAL_INCLUDE_PATHS})
+target_sources(${ENGINE_NAME} PUBLIC ${C_SOURCES} ${C_HEADERS} ${C_CODEGEN_HEADERS} ${C_CODEGEN_SOURCES})
+
+# executables
 foreach (C_BIN_SOURCE_PATH ${C_BIN_SOURCES})
     get_filename_component(EXECUTABLE_NAME ${C_BIN_SOURCE_PATH} NAME_WE)
     add_executable(${EXECUTABLE_NAME} ${C_BIN_SOURCE_PATH})
@@ -167,30 +204,8 @@ foreach (C_BIN_SOURCE_PATH ${C_BIN_SOURCES})
     if (NOT ${EXECUTABLE_NAME} STREQUAL "asset_pipeline")
         add_dependencies(${EXECUTABLE_NAME} run_asset_pipeline)
     endif ()
-    target_include_directories(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_INCLUDE_PATHS})
-    if ((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
-        target_compile_options(${EXECUTABLE_NAME} PUBLIC ${ASAN_FLAGS})
-        target_link_options(${EXECUTABLE_NAME} PUBLIC ${ASAN_FLAGS})
-    endif ()
-    target_precompile_headers(${EXECUTABLE_NAME} PRIVATE ${C_PRECOMPILED_HEADERS})
-    target_sources(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_ADDITIONAL_SOURCES})
-    target_sources(${EXECUTABLE_NAME} PUBLIC ${C_SOURCES} ${C_HEADERS} ${C_CODEGEN_HEADERS} ${C_CODEGEN_SOURCES})
-    target_link_directories(${EXECUTABLE_NAME} PUBLIC ${EXTERNAL_LIBRARY_PATHS})
-    target_link_libraries(${EXECUTABLE_NAME} LINK_PUBLIC ${EXTERNAL_LIBRARIES})
-    # add compiler options
-    if ((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR (CMAKE_C_COMPILER_ID STREQUAL "Clang"))
-        target_compile_options(${EXECUTABLE_NAME} PUBLIC
-                -Wall -Wextra -pedantic
-                -Werror
-                ${HARDENING_FLAGS}
-                -Wno-unused-parameter -Wno-unused-variable)
-        target_link_options(${EXECUTABLE_NAME} PUBLIC
-                ${HARDENING_FLAGS})
-    elseif (CMAKE_C_COMPILER_ID STREQUAL "MSVC")
-        add_compile_options(/W4 /WX)
-    else ()
-        message(FATAL_ERROR "unsupported compiler")
-    endif ()
+    my_add_compiler_options(${EXECUTABLE_NAME})
+    target_link_libraries(${EXECUTABLE_NAME} engine)
 endforeach ()
 
 

@@ -11,6 +11,8 @@ def codegen_headers():
         filename = get_relative_path(src_path / dirname, header)
         if dirname == filename.strip('.h'):
             continue
+        if "thirdparty.h" in filename:
+            continue
         src[dirname].append(filename)
 
     for dirname, headers in src.items():

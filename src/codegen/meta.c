@@ -98,7 +98,9 @@ const char *SpvBuiltIn__debug_str(int value) {
   if (value == 5279) { return "SpvBuiltInLayerPerViewNV"; }
   if (value == 5280) { return "SpvBuiltInMeshViewCountNV"; }
   if (value == 5281) { return "SpvBuiltInMeshViewIndicesNV"; }
+  if (value == 5286) { return "SpvBuiltInBaryCoordKHR"; }
   if (value == 5286) { return "SpvBuiltInBaryCoordNV"; }
+  if (value == 5287) { return "SpvBuiltInBaryCoordNoPerspKHR"; }
   if (value == 5287) { return "SpvBuiltInBaryCoordNoPerspNV"; }
   if (value == 5292) { return "SpvBuiltInFragSizeEXT"; }
   if (value == 5292) { return "SpvBuiltInFragmentSizeNV"; }
@@ -129,6 +131,7 @@ const char *SpvBuiltIn__debug_str(int value) {
   if (value == 5332) { return "SpvBuiltInHitTNV"; }
   if (value == 5333) { return "SpvBuiltInHitKindKHR"; }
   if (value == 5333) { return "SpvBuiltInHitKindNV"; }
+  if (value == 5334) { return "SpvBuiltInCurrentRayTimeNV"; }
   if (value == 5351) { return "SpvBuiltInIncomingRayFlagsKHR"; }
   if (value == 5351) { return "SpvBuiltInIncomingRayFlagsNV"; }
   if (value == 5352) { return "SpvBuiltInRayGeometryIndexKHR"; }
@@ -209,9 +212,13 @@ const char *SpvCapability__debug_str(int value) {
   if (value == 68) { return "SpvCapabilityGroupNonUniformQuad"; }
   if (value == 69) { return "SpvCapabilityShaderLayer"; }
   if (value == 70) { return "SpvCapabilityShaderViewportIndex"; }
+  if (value == 71) { return "SpvCapabilityUniformDecoration"; }
   if (value == 4422) { return "SpvCapabilityFragmentShadingRateKHR"; }
   if (value == 4423) { return "SpvCapabilitySubgroupBallotKHR"; }
   if (value == 4427) { return "SpvCapabilityDrawParameters"; }
+  if (value == 4428) { return "SpvCapabilityWorkgroupMemoryExplicitLayoutKHR"; }
+  if (value == 4429) { return "SpvCapabilityWorkgroupMemoryExplicitLayout8BitAccessKHR"; }
+  if (value == 4430) { return "SpvCapabilityWorkgroupMemoryExplicitLayout16BitAccessKHR"; }
   if (value == 4431) { return "SpvCapabilitySubgroupVoteKHR"; }
   if (value == 4433) { return "SpvCapabilityStorageBuffer16BitAccess"; }
   if (value == 4433) { return "SpvCapabilityStorageUniformBufferBlock16"; }
@@ -254,6 +261,7 @@ const char *SpvCapability__debug_str(int value) {
   if (value == 5265) { return "SpvCapabilityFragmentFullyCoveredEXT"; }
   if (value == 5266) { return "SpvCapabilityMeshShadingNV"; }
   if (value == 5282) { return "SpvCapabilityImageFootprintNV"; }
+  if (value == 5284) { return "SpvCapabilityFragmentBarycentricKHR"; }
   if (value == 5284) { return "SpvCapabilityFragmentBarycentricNV"; }
   if (value == 5288) { return "SpvCapabilityComputeDerivativeGroupQuadsNV"; }
   if (value == 5291) { return "SpvCapabilityFragmentDensityEXT"; }
@@ -284,6 +292,7 @@ const char *SpvCapability__debug_str(int value) {
   if (value == 5312) { return "SpvCapabilityStorageTexelBufferArrayNonUniformIndexing"; }
   if (value == 5312) { return "SpvCapabilityStorageTexelBufferArrayNonUniformIndexingEXT"; }
   if (value == 5340) { return "SpvCapabilityRayTracingNV"; }
+  if (value == 5341) { return "SpvCapabilityRayTracingMotionBlurNV"; }
   if (value == 5345) { return "SpvCapabilityVulkanMemoryModel"; }
   if (value == 5345) { return "SpvCapabilityVulkanMemoryModelKHR"; }
   if (value == 5346) { return "SpvCapabilityVulkanMemoryModelDeviceScope"; }
@@ -297,26 +306,62 @@ const char *SpvCapability__debug_str(int value) {
   if (value == 5372) { return "SpvCapabilityFragmentShaderShadingRateInterlockEXT"; }
   if (value == 5373) { return "SpvCapabilityShaderSMBuiltinsNV"; }
   if (value == 5378) { return "SpvCapabilityFragmentShaderPixelInterlockEXT"; }
+  if (value == 5379) { return "SpvCapabilityDemoteToHelperInvocation"; }
   if (value == 5379) { return "SpvCapabilityDemoteToHelperInvocationEXT"; }
+  if (value == 5390) { return "SpvCapabilityBindlessTextureNV"; }
   if (value == 5568) { return "SpvCapabilitySubgroupShuffleINTEL"; }
   if (value == 5569) { return "SpvCapabilitySubgroupBufferBlockIOINTEL"; }
   if (value == 5570) { return "SpvCapabilitySubgroupImageBlockIOINTEL"; }
   if (value == 5579) { return "SpvCapabilitySubgroupImageMediaBlockIOINTEL"; }
+  if (value == 5582) { return "SpvCapabilityRoundToInfinityINTEL"; }
+  if (value == 5583) { return "SpvCapabilityFloatingPointModeINTEL"; }
   if (value == 5584) { return "SpvCapabilityIntegerFunctions2INTEL"; }
   if (value == 5603) { return "SpvCapabilityFunctionPointersINTEL"; }
   if (value == 5604) { return "SpvCapabilityIndirectReferencesINTEL"; }
+  if (value == 5606) { return "SpvCapabilityAsmINTEL"; }
+  if (value == 5612) { return "SpvCapabilityAtomicFloat32MinMaxEXT"; }
+  if (value == 5613) { return "SpvCapabilityAtomicFloat64MinMaxEXT"; }
+  if (value == 5616) { return "SpvCapabilityAtomicFloat16MinMaxEXT"; }
+  if (value == 5617) { return "SpvCapabilityVectorComputeINTEL"; }
+  if (value == 5619) { return "SpvCapabilityVectorAnyINTEL"; }
+  if (value == 5629) { return "SpvCapabilityExpectAssumeKHR"; }
   if (value == 5696) { return "SpvCapabilitySubgroupAvcMotionEstimationINTEL"; }
   if (value == 5697) { return "SpvCapabilitySubgroupAvcMotionEstimationIntraINTEL"; }
   if (value == 5698) { return "SpvCapabilitySubgroupAvcMotionEstimationChromaINTEL"; }
+  if (value == 5817) { return "SpvCapabilityVariableLengthArrayINTEL"; }
+  if (value == 5821) { return "SpvCapabilityFunctionFloatControlINTEL"; }
   if (value == 5824) { return "SpvCapabilityFPGAMemoryAttributesINTEL"; }
+  if (value == 5837) { return "SpvCapabilityFPFastMathModeINTEL"; }
+  if (value == 5844) { return "SpvCapabilityArbitraryPrecisionIntegersINTEL"; }
+  if (value == 5845) { return "SpvCapabilityArbitraryPrecisionFloatingPointINTEL"; }
   if (value == 5886) { return "SpvCapabilityUnstructuredLoopControlsINTEL"; }
   if (value == 5888) { return "SpvCapabilityFPGALoopControlsINTEL"; }
   if (value == 5892) { return "SpvCapabilityKernelAttributesINTEL"; }
   if (value == 5897) { return "SpvCapabilityFPGAKernelAttributesINTEL"; }
+  if (value == 5898) { return "SpvCapabilityFPGAMemoryAccessesINTEL"; }
+  if (value == 5904) { return "SpvCapabilityFPGAClusterAttributesINTEL"; }
+  if (value == 5906) { return "SpvCapabilityLoopFuseINTEL"; }
+  if (value == 5920) { return "SpvCapabilityFPGABufferLocationINTEL"; }
+  if (value == 5922) { return "SpvCapabilityArbitraryPrecisionFixedPointINTEL"; }
+  if (value == 5935) { return "SpvCapabilityUSMStorageClassesINTEL"; }
+  if (value == 5943) { return "SpvCapabilityIOPipesINTEL"; }
   if (value == 5945) { return "SpvCapabilityBlockingPipesINTEL"; }
   if (value == 5948) { return "SpvCapabilityFPGARegINTEL"; }
+  if (value == 6016) { return "SpvCapabilityDotProductInputAll"; }
+  if (value == 6016) { return "SpvCapabilityDotProductInputAllKHR"; }
+  if (value == 6017) { return "SpvCapabilityDotProductInput4x8Bit"; }
+  if (value == 6017) { return "SpvCapabilityDotProductInput4x8BitKHR"; }
+  if (value == 6018) { return "SpvCapabilityDotProductInput4x8BitPacked"; }
+  if (value == 6018) { return "SpvCapabilityDotProductInput4x8BitPackedKHR"; }
+  if (value == 6019) { return "SpvCapabilityDotProduct"; }
+  if (value == 6019) { return "SpvCapabilityDotProductKHR"; }
+  if (value == 6025) { return "SpvCapabilityBitInstructions"; }
   if (value == 6033) { return "SpvCapabilityAtomicFloat32AddEXT"; }
   if (value == 6034) { return "SpvCapabilityAtomicFloat64AddEXT"; }
+  if (value == 6089) { return "SpvCapabilityLongConstantCompositeINTEL"; }
+  if (value == 6094) { return "SpvCapabilityOptNoneINTEL"; }
+  if (value == 6095) { return "SpvCapabilityAtomicFloat16AddEXT"; }
+  if (value == 6114) { return "SpvCapabilityDebugInfoModuleINTEL"; }
   if (value == 2147483647) { return "SpvCapabilityMax"; }
   return "UNKNOWN SpvCapability_";
 }
@@ -378,6 +423,7 @@ const char *SpvDecoration__debug_str(int value) {
   if (value == 5271) { return "SpvDecorationPerPrimitiveNV"; }
   if (value == 5272) { return "SpvDecorationPerViewNV"; }
   if (value == 5273) { return "SpvDecorationPerTaskNV"; }
+  if (value == 5285) { return "SpvDecorationPerVertexKHR"; }
   if (value == 5285) { return "SpvDecorationPerVertexNV"; }
   if (value == 5300) { return "SpvDecorationNonUniform"; }
   if (value == 5300) { return "SpvDecorationNonUniformEXT"; }
@@ -385,12 +431,26 @@ const char *SpvDecoration__debug_str(int value) {
   if (value == 5355) { return "SpvDecorationRestrictPointerEXT"; }
   if (value == 5356) { return "SpvDecorationAliasedPointer"; }
   if (value == 5356) { return "SpvDecorationAliasedPointerEXT"; }
+  if (value == 5398) { return "SpvDecorationBindlessSamplerNV"; }
+  if (value == 5399) { return "SpvDecorationBindlessImageNV"; }
+  if (value == 5400) { return "SpvDecorationBoundSamplerNV"; }
+  if (value == 5401) { return "SpvDecorationBoundImageNV"; }
+  if (value == 5599) { return "SpvDecorationSIMTCallINTEL"; }
   if (value == 5602) { return "SpvDecorationReferencedIndirectlyINTEL"; }
+  if (value == 5607) { return "SpvDecorationClobberINTEL"; }
+  if (value == 5608) { return "SpvDecorationSideEffectsINTEL"; }
+  if (value == 5624) { return "SpvDecorationVectorComputeVariableINTEL"; }
+  if (value == 5625) { return "SpvDecorationFuncParamIOKindINTEL"; }
+  if (value == 5626) { return "SpvDecorationVectorComputeFunctionINTEL"; }
+  if (value == 5627) { return "SpvDecorationStackCallINTEL"; }
+  if (value == 5628) { return "SpvDecorationGlobalVariableOffsetINTEL"; }
   if (value == 5634) { return "SpvDecorationCounterBuffer"; }
   if (value == 5634) { return "SpvDecorationHlslCounterBufferGOOGLE"; }
   if (value == 5635) { return "SpvDecorationHlslSemanticGOOGLE"; }
   if (value == 5635) { return "SpvDecorationUserSemantic"; }
   if (value == 5636) { return "SpvDecorationUserTypeGOOGLE"; }
+  if (value == 5822) { return "SpvDecorationFunctionRoundingModeINTEL"; }
+  if (value == 5823) { return "SpvDecorationFunctionDenormModeINTEL"; }
   if (value == 5825) { return "SpvDecorationRegisterINTEL"; }
   if (value == 5826) { return "SpvDecorationMemoryINTEL"; }
   if (value == 5827) { return "SpvDecorationNumbanksINTEL"; }
@@ -403,6 +463,18 @@ const char *SpvDecoration__debug_str(int value) {
   if (value == 5834) { return "SpvDecorationMergeINTEL"; }
   if (value == 5835) { return "SpvDecorationBankBitsINTEL"; }
   if (value == 5836) { return "SpvDecorationForcePow2DepthINTEL"; }
+  if (value == 5899) { return "SpvDecorationBurstCoalesceINTEL"; }
+  if (value == 5900) { return "SpvDecorationCacheSizeINTEL"; }
+  if (value == 5901) { return "SpvDecorationDontStaticallyCoalesceINTEL"; }
+  if (value == 5902) { return "SpvDecorationPrefetchINTEL"; }
+  if (value == 5905) { return "SpvDecorationStallEnableINTEL"; }
+  if (value == 5907) { return "SpvDecorationFuseLoopsInFunctionINTEL"; }
+  if (value == 5921) { return "SpvDecorationBufferLocationINTEL"; }
+  if (value == 5944) { return "SpvDecorationIOPipeStorageINTEL"; }
+  if (value == 6080) { return "SpvDecorationFunctionFloatingPointModeINTEL"; }
+  if (value == 6085) { return "SpvDecorationSingleElementVectorINTEL"; }
+  if (value == 6087) { return "SpvDecorationVectorComputeCallableFunctionINTEL"; }
+  if (value == 6140) { return "SpvDecorationMediaBlockIOINTEL"; }
   if (value == 2147483647) { return "SpvDecorationMax"; }
   return "UNKNOWN SpvDecoration_";
 }
@@ -456,6 +528,7 @@ const char *SpvExecutionMode__debug_str(int value) {
   if (value == 37) { return "SpvExecutionModeSubgroupsPerWorkgroupId"; }
   if (value == 38) { return "SpvExecutionModeLocalSizeId"; }
   if (value == 39) { return "SpvExecutionModeLocalSizeHintId"; }
+  if (value == 4421) { return "SpvExecutionModeSubgroupUniformControlFlowKHR"; }
   if (value == 4446) { return "SpvExecutionModePostDepthCoverage"; }
   if (value == 4459) { return "SpvExecutionModeDenormPreserve"; }
   if (value == 4460) { return "SpvExecutionModeDenormFlushToZero"; }
@@ -474,10 +547,16 @@ const char *SpvExecutionMode__debug_str(int value) {
   if (value == 5369) { return "SpvExecutionModeSampleInterlockUnorderedEXT"; }
   if (value == 5370) { return "SpvExecutionModeShadingRateInterlockOrderedEXT"; }
   if (value == 5371) { return "SpvExecutionModeShadingRateInterlockUnorderedEXT"; }
+  if (value == 5618) { return "SpvExecutionModeSharedLocalMemorySizeINTEL"; }
+  if (value == 5620) { return "SpvExecutionModeRoundingModeRTPINTEL"; }
+  if (value == 5621) { return "SpvExecutionModeRoundingModeRTNINTEL"; }
+  if (value == 5622) { return "SpvExecutionModeFloatingPointModeALTINTEL"; }
+  if (value == 5623) { return "SpvExecutionModeFloatingPointModeIEEEINTEL"; }
   if (value == 5893) { return "SpvExecutionModeMaxWorkgroupSizeINTEL"; }
   if (value == 5894) { return "SpvExecutionModeMaxWorkDimINTEL"; }
   if (value == 5895) { return "SpvExecutionModeNoGlobalOffsetINTEL"; }
   if (value == 5896) { return "SpvExecutionModeNumSIMDWorkitemsINTEL"; }
+  if (value == 5903) { return "SpvExecutionModeSchedulerTargetFmaxMhzINTEL"; }
   if (value == 2147483647) { return "SpvExecutionModeMax"; }
   return "UNKNOWN SpvExecutionMode_";
 }
@@ -506,6 +585,12 @@ const char *SpvExecutionModel__debug_str(int value) {
   if (value == 2147483647) { return "SpvExecutionModelMax"; }
   return "UNKNOWN SpvExecutionModel_";
 }
+const char *SpvFPDenormMode__debug_str(int value) {
+  if (value == 0) { return "SpvFPDenormModePreserve"; }
+  if (value == 1) { return "SpvFPDenormModeFlushToZero"; }
+  if (value == 2147483647) { return "SpvFPDenormModeMax"; }
+  return "UNKNOWN SpvFPDenormMode_";
+}
 const char *SpvFPFastMathModeMask__debug_str(int value) {
   if (value == 0) { return "SpvFPFastMathModeMaskNone"; }
   if (value == 1) { return "SpvFPFastMathModeNotNaNMask"; }
@@ -513,6 +598,8 @@ const char *SpvFPFastMathModeMask__debug_str(int value) {
   if (value == 4) { return "SpvFPFastMathModeNSZMask"; }
   if (value == 8) { return "SpvFPFastMathModeAllowRecipMask"; }
   if (value == 16) { return "SpvFPFastMathModeFastMask"; }
+  if (value == 65536) { return "SpvFPFastMathModeAllowContractFastINTELMask"; }
+  if (value == 131072) { return "SpvFPFastMathModeAllowReassocINTELMask"; }
   return "UNKNOWN SpvFPFastMathModeMask_";
 }
 void SpvFPFastMathModeMask__debug_print(int flags, int indent) {
@@ -523,6 +610,8 @@ void SpvFPFastMathModeMask__debug_print(int flags, int indent) {
   if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFPFastMathModeNSZMask", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFPFastMathModeAllowRecipMask", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFPFastMathModeFastMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFPFastMathModeAllowContractFastINTELMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFPFastMathModeAllowReassocINTELMask", INDENT_FORMAT_ARGS(2)); }
 }
 const char *SpvFPFastMathModeShift__debug_str(int value) {
   if (value == 0) { return "SpvFPFastMathModeNotNaNShift"; }
@@ -530,8 +619,16 @@ const char *SpvFPFastMathModeShift__debug_str(int value) {
   if (value == 2) { return "SpvFPFastMathModeNSZShift"; }
   if (value == 3) { return "SpvFPFastMathModeAllowRecipShift"; }
   if (value == 4) { return "SpvFPFastMathModeFastShift"; }
+  if (value == 16) { return "SpvFPFastMathModeAllowContractFastINTELShift"; }
+  if (value == 17) { return "SpvFPFastMathModeAllowReassocINTELShift"; }
   if (value == 2147483647) { return "SpvFPFastMathModeMax"; }
   return "UNKNOWN SpvFPFastMathModeShift_";
+}
+const char *SpvFPOperationMode__debug_str(int value) {
+  if (value == 0) { return "SpvFPOperationModeIEEE"; }
+  if (value == 1) { return "SpvFPOperationModeALT"; }
+  if (value == 2147483647) { return "SpvFPOperationModeMax"; }
+  return "UNKNOWN SpvFPOperationMode_";
 }
 const char *SpvFPRoundingMode__debug_str(int value) {
   if (value == 0) { return "SpvFPRoundingModeRTE"; }
@@ -571,6 +668,7 @@ const char *SpvFunctionControlMask__debug_str(int value) {
   if (value == 2) { return "SpvFunctionControlDontInlineMask"; }
   if (value == 4) { return "SpvFunctionControlPureMask"; }
   if (value == 8) { return "SpvFunctionControlConstMask"; }
+  if (value == 65536) { return "SpvFunctionControlOptNoneINTELMask"; }
   return "UNKNOWN SpvFunctionControlMask_";
 }
 void SpvFunctionControlMask__debug_print(int flags, int indent) {
@@ -580,12 +678,14 @@ void SpvFunctionControlMask__debug_print(int flags, int indent) {
   if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFunctionControlDontInlineMask", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFunctionControlPureMask", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFunctionControlConstMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "SpvFunctionControlOptNoneINTELMask", INDENT_FORMAT_ARGS(2)); }
 }
 const char *SpvFunctionControlShift__debug_str(int value) {
   if (value == 0) { return "SpvFunctionControlInlineShift"; }
   if (value == 1) { return "SpvFunctionControlDontInlineShift"; }
   if (value == 2) { return "SpvFunctionControlPureShift"; }
   if (value == 3) { return "SpvFunctionControlConstShift"; }
+  if (value == 16) { return "SpvFunctionControlOptNoneINTELShift"; }
   if (value == 2147483647) { return "SpvFunctionControlMax"; }
   return "UNKNOWN SpvFunctionControlShift_";
 }
@@ -723,6 +823,8 @@ const char *SpvImageOperandsMask__debug_str(int value) {
   if (value == 2048) { return "SpvImageOperandsVolatileTexelKHRMask"; }
   if (value == 4096) { return "SpvImageOperandsSignExtendMask"; }
   if (value == 8192) { return "SpvImageOperandsZeroExtendMask"; }
+  if (value == 16384) { return "SpvImageOperandsNontemporalMask"; }
+  if (value == 65536) { return "SpvImageOperandsOffsetsMask"; }
   return "UNKNOWN SpvImageOperandsMask_";
 }
 void SpvImageOperandsMask__debug_print(int flags, int indent) {
@@ -746,6 +848,8 @@ void SpvImageOperandsMask__debug_print(int flags, int indent) {
   if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsVolatileTexelKHRMask", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsSignExtendMask", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsZeroExtendMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsNontemporalMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "SpvImageOperandsOffsetsMask", INDENT_FORMAT_ARGS(2)); }
 }
 const char *SpvImageOperandsShift__debug_str(int value) {
   if (value == 0) { return "SpvImageOperandsBiasShift"; }
@@ -766,6 +870,8 @@ const char *SpvImageOperandsShift__debug_str(int value) {
   if (value == 11) { return "SpvImageOperandsVolatileTexelKHRShift"; }
   if (value == 12) { return "SpvImageOperandsSignExtendShift"; }
   if (value == 13) { return "SpvImageOperandsZeroExtendShift"; }
+  if (value == 14) { return "SpvImageOperandsNontemporalShift"; }
+  if (value == 16) { return "SpvImageOperandsOffsetsShift"; }
   if (value == 2147483647) { return "SpvImageOperandsMax"; }
   return "UNKNOWN SpvImageOperandsShift_";
 }
@@ -789,6 +895,7 @@ const char *SpvKernelProfilingInfoShift__debug_str(int value) {
 const char *SpvLinkageType__debug_str(int value) {
   if (value == 0) { return "SpvLinkageTypeExport"; }
   if (value == 1) { return "SpvLinkageTypeImport"; }
+  if (value == 2) { return "SpvLinkageTypeLinkOnceODR"; }
   if (value == 2147483647) { return "SpvLinkageTypeMax"; }
   return "UNKNOWN SpvLinkageType_";
 }
@@ -810,6 +917,7 @@ const char *SpvLoopControlMask__debug_str(int value) {
   if (value == 1048576) { return "SpvLoopControlLoopCoalesceINTELMask"; }
   if (value == 2097152) { return "SpvLoopControlMaxInterleavingINTELMask"; }
   if (value == 4194304) { return "SpvLoopControlSpeculatedIterationsINTELMask"; }
+  if (value == 8388608) { return "SpvLoopControlNoFusionINTELMask"; }
   return "UNKNOWN SpvLoopControlMask_";
 }
 void SpvLoopControlMask__debug_print(int flags, int indent) {
@@ -831,6 +939,7 @@ void SpvLoopControlMask__debug_print(int flags, int indent) {
   if ((flags & 1048576) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlLoopCoalesceINTELMask", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlMaxInterleavingINTELMask", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlSpeculatedIterationsINTELMask", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8388608) != 0) { log_debug(INDENT_FORMAT_STRING "SpvLoopControlNoFusionINTELMask", INDENT_FORMAT_ARGS(2)); }
 }
 const char *SpvLoopControlShift__debug_str(int value) {
   if (value == 0) { return "SpvLoopControlUnrollShift"; }
@@ -849,6 +958,7 @@ const char *SpvLoopControlShift__debug_str(int value) {
   if (value == 20) { return "SpvLoopControlLoopCoalesceINTELShift"; }
   if (value == 21) { return "SpvLoopControlMaxInterleavingINTELShift"; }
   if (value == 22) { return "SpvLoopControlSpeculatedIterationsINTELShift"; }
+  if (value == 23) { return "SpvLoopControlNoFusionINTELShift"; }
   if (value == 2147483647) { return "SpvLoopControlMax"; }
   return "UNKNOWN SpvLoopControlShift_";
 }
@@ -1320,6 +1430,18 @@ const char *SpvOp__debug_str(int value) {
   if (value == 4447) { return "SpvOpConvertUToAccelerationStructureKHR"; }
   if (value == 4448) { return "SpvOpIgnoreIntersectionKHR"; }
   if (value == 4449) { return "SpvOpTerminateRayKHR"; }
+  if (value == 4450) { return "SpvOpSDot"; }
+  if (value == 4450) { return "SpvOpSDotKHR"; }
+  if (value == 4451) { return "SpvOpUDot"; }
+  if (value == 4451) { return "SpvOpUDotKHR"; }
+  if (value == 4452) { return "SpvOpSUDot"; }
+  if (value == 4452) { return "SpvOpSUDotKHR"; }
+  if (value == 4453) { return "SpvOpSDotAccSat"; }
+  if (value == 4453) { return "SpvOpSDotAccSatKHR"; }
+  if (value == 4454) { return "SpvOpUDotAccSat"; }
+  if (value == 4454) { return "SpvOpUDotAccSatKHR"; }
+  if (value == 4455) { return "SpvOpSUDotAccSat"; }
+  if (value == 4455) { return "SpvOpSUDotAccSatKHR"; }
   if (value == 4472) { return "SpvOpTypeRayQueryKHR"; }
   if (value == 4473) { return "SpvOpRayQueryInitializeKHR"; }
   if (value == 4474) { return "SpvOpRayQueryTerminateKHR"; }
@@ -1346,6 +1468,8 @@ const char *SpvOp__debug_str(int value) {
   if (value == 5335) { return "SpvOpIgnoreIntersectionNV"; }
   if (value == 5336) { return "SpvOpTerminateRayNV"; }
   if (value == 5337) { return "SpvOpTraceNV"; }
+  if (value == 5338) { return "SpvOpTraceMotionNV"; }
+  if (value == 5339) { return "SpvOpTraceRayMotionNV"; }
   if (value == 5341) { return "SpvOpTypeAccelerationStructureKHR"; }
   if (value == 5341) { return "SpvOpTypeAccelerationStructureNV"; }
   if (value == 5344) { return "SpvOpExecuteCallableNV"; }
@@ -1356,8 +1480,16 @@ const char *SpvOp__debug_str(int value) {
   if (value == 5362) { return "SpvOpCooperativeMatrixLengthNV"; }
   if (value == 5364) { return "SpvOpBeginInvocationInterlockEXT"; }
   if (value == 5365) { return "SpvOpEndInvocationInterlockEXT"; }
+  if (value == 5380) { return "SpvOpDemoteToHelperInvocation"; }
   if (value == 5380) { return "SpvOpDemoteToHelperInvocationEXT"; }
   if (value == 5381) { return "SpvOpIsHelperInvocationEXT"; }
+  if (value == 5391) { return "SpvOpConvertUToImageNV"; }
+  if (value == 5392) { return "SpvOpConvertUToSamplerNV"; }
+  if (value == 5393) { return "SpvOpConvertImageToUNV"; }
+  if (value == 5394) { return "SpvOpConvertSamplerToUNV"; }
+  if (value == 5395) { return "SpvOpConvertUToSampledImageNV"; }
+  if (value == 5396) { return "SpvOpConvertSampledImageToUNV"; }
+  if (value == 5397) { return "SpvOpSamplerImageAddressingModeNV"; }
   if (value == 5571) { return "SpvOpSubgroupShuffleINTEL"; }
   if (value == 5572) { return "SpvOpSubgroupShuffleDownINTEL"; }
   if (value == 5573) { return "SpvOpSubgroupShuffleUpINTEL"; }
@@ -1382,8 +1514,15 @@ const char *SpvOp__debug_str(int value) {
   if (value == 5596) { return "SpvOpUSubSatINTEL"; }
   if (value == 5597) { return "SpvOpIMul32x16INTEL"; }
   if (value == 5598) { return "SpvOpUMul32x16INTEL"; }
-  if (value == 5600) { return "SpvOpFunctionPointerINTEL"; }
+  if (value == 5600) { return "SpvOpConstantFunctionPointerINTEL"; }
   if (value == 5601) { return "SpvOpFunctionPointerCallINTEL"; }
+  if (value == 5609) { return "SpvOpAsmTargetINTEL"; }
+  if (value == 5610) { return "SpvOpAsmINTEL"; }
+  if (value == 5611) { return "SpvOpAsmCallINTEL"; }
+  if (value == 5614) { return "SpvOpAtomicFMinEXT"; }
+  if (value == 5615) { return "SpvOpAtomicFMaxEXT"; }
+  if (value == 5630) { return "SpvOpAssumeTrueKHR"; }
+  if (value == 5631) { return "SpvOpExpectKHR"; }
   if (value == 5632) { return "SpvOpDecorateString"; }
   if (value == 5632) { return "SpvOpDecorateStringGOOGLE"; }
   if (value == 5633) { return "SpvOpMemberDecorateString"; }
@@ -1506,7 +1645,64 @@ const char *SpvOp__debug_str(int value) {
   if (value == 5814) { return "SpvOpSubgroupAvcSicGetPackedSkcLumaCountThresholdINTEL"; }
   if (value == 5815) { return "SpvOpSubgroupAvcSicGetPackedSkcLumaSumThresholdINTEL"; }
   if (value == 5816) { return "SpvOpSubgroupAvcSicGetInterRawSadsINTEL"; }
+  if (value == 5818) { return "SpvOpVariableLengthArrayINTEL"; }
+  if (value == 5819) { return "SpvOpSaveMemoryINTEL"; }
+  if (value == 5820) { return "SpvOpRestoreMemoryINTEL"; }
+  if (value == 5840) { return "SpvOpArbitraryFloatSinCosPiINTEL"; }
+  if (value == 5841) { return "SpvOpArbitraryFloatCastINTEL"; }
+  if (value == 5842) { return "SpvOpArbitraryFloatCastFromIntINTEL"; }
+  if (value == 5843) { return "SpvOpArbitraryFloatCastToIntINTEL"; }
+  if (value == 5846) { return "SpvOpArbitraryFloatAddINTEL"; }
+  if (value == 5847) { return "SpvOpArbitraryFloatSubINTEL"; }
+  if (value == 5848) { return "SpvOpArbitraryFloatMulINTEL"; }
+  if (value == 5849) { return "SpvOpArbitraryFloatDivINTEL"; }
+  if (value == 5850) { return "SpvOpArbitraryFloatGTINTEL"; }
+  if (value == 5851) { return "SpvOpArbitraryFloatGEINTEL"; }
+  if (value == 5852) { return "SpvOpArbitraryFloatLTINTEL"; }
+  if (value == 5853) { return "SpvOpArbitraryFloatLEINTEL"; }
+  if (value == 5854) { return "SpvOpArbitraryFloatEQINTEL"; }
+  if (value == 5855) { return "SpvOpArbitraryFloatRecipINTEL"; }
+  if (value == 5856) { return "SpvOpArbitraryFloatRSqrtINTEL"; }
+  if (value == 5857) { return "SpvOpArbitraryFloatCbrtINTEL"; }
+  if (value == 5858) { return "SpvOpArbitraryFloatHypotINTEL"; }
+  if (value == 5859) { return "SpvOpArbitraryFloatSqrtINTEL"; }
+  if (value == 5860) { return "SpvOpArbitraryFloatLogINTEL"; }
+  if (value == 5861) { return "SpvOpArbitraryFloatLog2INTEL"; }
+  if (value == 5862) { return "SpvOpArbitraryFloatLog10INTEL"; }
+  if (value == 5863) { return "SpvOpArbitraryFloatLog1pINTEL"; }
+  if (value == 5864) { return "SpvOpArbitraryFloatExpINTEL"; }
+  if (value == 5865) { return "SpvOpArbitraryFloatExp2INTEL"; }
+  if (value == 5866) { return "SpvOpArbitraryFloatExp10INTEL"; }
+  if (value == 5867) { return "SpvOpArbitraryFloatExpm1INTEL"; }
+  if (value == 5868) { return "SpvOpArbitraryFloatSinINTEL"; }
+  if (value == 5869) { return "SpvOpArbitraryFloatCosINTEL"; }
+  if (value == 5870) { return "SpvOpArbitraryFloatSinCosINTEL"; }
+  if (value == 5871) { return "SpvOpArbitraryFloatSinPiINTEL"; }
+  if (value == 5872) { return "SpvOpArbitraryFloatCosPiINTEL"; }
+  if (value == 5873) { return "SpvOpArbitraryFloatASinINTEL"; }
+  if (value == 5874) { return "SpvOpArbitraryFloatASinPiINTEL"; }
+  if (value == 5875) { return "SpvOpArbitraryFloatACosINTEL"; }
+  if (value == 5876) { return "SpvOpArbitraryFloatACosPiINTEL"; }
+  if (value == 5877) { return "SpvOpArbitraryFloatATanINTEL"; }
+  if (value == 5878) { return "SpvOpArbitraryFloatATanPiINTEL"; }
+  if (value == 5879) { return "SpvOpArbitraryFloatATan2INTEL"; }
+  if (value == 5880) { return "SpvOpArbitraryFloatPowINTEL"; }
+  if (value == 5881) { return "SpvOpArbitraryFloatPowRINTEL"; }
+  if (value == 5882) { return "SpvOpArbitraryFloatPowNINTEL"; }
   if (value == 5887) { return "SpvOpLoopControlINTEL"; }
+  if (value == 5923) { return "SpvOpFixedSqrtINTEL"; }
+  if (value == 5924) { return "SpvOpFixedRecipINTEL"; }
+  if (value == 5925) { return "SpvOpFixedRsqrtINTEL"; }
+  if (value == 5926) { return "SpvOpFixedSinINTEL"; }
+  if (value == 5927) { return "SpvOpFixedCosINTEL"; }
+  if (value == 5928) { return "SpvOpFixedSinCosINTEL"; }
+  if (value == 5929) { return "SpvOpFixedSinPiINTEL"; }
+  if (value == 5930) { return "SpvOpFixedCosPiINTEL"; }
+  if (value == 5931) { return "SpvOpFixedSinCosPiINTEL"; }
+  if (value == 5932) { return "SpvOpFixedLogINTEL"; }
+  if (value == 5933) { return "SpvOpFixedExpINTEL"; }
+  if (value == 5934) { return "SpvOpPtrCastToCrossWorkgroupINTEL"; }
+  if (value == 5938) { return "SpvOpCrossWorkgroupCastToPtrINTEL"; }
   if (value == 5946) { return "SpvOpReadPipeBlockingINTEL"; }
   if (value == 5947) { return "SpvOpWritePipeBlockingINTEL"; }
   if (value == 5949) { return "SpvOpFPGARegINTEL"; }
@@ -1528,8 +1724,38 @@ const char *SpvOp__debug_str(int value) {
   if (value == 6031) { return "SpvOpRayQueryGetIntersectionObjectToWorldKHR"; }
   if (value == 6032) { return "SpvOpRayQueryGetIntersectionWorldToObjectKHR"; }
   if (value == 6035) { return "SpvOpAtomicFAddEXT"; }
+  if (value == 6086) { return "SpvOpTypeBufferSurfaceINTEL"; }
+  if (value == 6090) { return "SpvOpTypeStructContinuedINTEL"; }
+  if (value == 6091) { return "SpvOpConstantCompositeContinuedINTEL"; }
+  if (value == 6092) { return "SpvOpSpecConstantCompositeContinuedINTEL"; }
   if (value == 2147483647) { return "SpvOpMax"; }
   return "UNKNOWN SpvOp_";
+}
+const char *SpvOverflowModes__debug_str(int value) {
+  if (value == 0) { return "SpvOverflowModesWRAP"; }
+  if (value == 1) { return "SpvOverflowModesSAT"; }
+  if (value == 2) { return "SpvOverflowModesSAT_ZERO"; }
+  if (value == 3) { return "SpvOverflowModesSAT_SYM"; }
+  if (value == 2147483647) { return "SpvOverflowModesMax"; }
+  return "UNKNOWN SpvOverflowModes_";
+}
+const char *SpvPackedVectorFormat__debug_str(int value) {
+  if (value == 0) { return "SpvPackedVectorFormatPackedVectorFormat4x8Bit"; }
+  if (value == 0) { return "SpvPackedVectorFormatPackedVectorFormat4x8BitKHR"; }
+  if (value == 2147483647) { return "SpvPackedVectorFormatMax"; }
+  return "UNKNOWN SpvPackedVectorFormat_";
+}
+const char *SpvQuantizationModes__debug_str(int value) {
+  if (value == 0) { return "SpvQuantizationModesTRN"; }
+  if (value == 1) { return "SpvQuantizationModesTRN_ZERO"; }
+  if (value == 2) { return "SpvQuantizationModesRND"; }
+  if (value == 3) { return "SpvQuantizationModesRND_ZERO"; }
+  if (value == 4) { return "SpvQuantizationModesRND_INF"; }
+  if (value == 5) { return "SpvQuantizationModesRND_MIN_INF"; }
+  if (value == 6) { return "SpvQuantizationModesRND_CONV"; }
+  if (value == 7) { return "SpvQuantizationModesRND_CONV_ODD"; }
+  if (value == 2147483647) { return "SpvQuantizationModesMax"; }
+  return "UNKNOWN SpvQuantizationModes_";
 }
 const char *SpvRayFlagsMask__debug_str(int value) {
   if (value == 0) { return "SpvRayFlagsMaskNone"; }
@@ -1602,6 +1828,7 @@ const char *SpvReflectDecorationFlagBits_debug_str(int value) {
   if (value == 32) { return "SPV_REFLECT_DECORATION_NOPERSPECTIVE"; }
   if (value == 64) { return "SPV_REFLECT_DECORATION_FLAT"; }
   if (value == 128) { return "SPV_REFLECT_DECORATION_NON_WRITABLE"; }
+  if (value == 256) { return "SPV_REFLECT_DECORATION_RELAXED_PRECISION"; }
   return "UNKNOWN SpvReflectDecorationFlagBits";
 }
 void SpvReflectDecorationFlagBits_debug_print(int flags, int indent) {
@@ -1615,6 +1842,7 @@ void SpvReflectDecorationFlagBits_debug_print(int flags, int indent) {
   if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_NOPERSPECTIVE", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_FLAT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_NON_WRITABLE", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "SPV_REFLECT_DECORATION_RELAXED_PRECISION", INDENT_FORMAT_ARGS(2)); }
 }
 const char *SpvReflectDescriptorType_debug_str(int value) {
   if (value == 0) { return "SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLER"; }
@@ -1671,6 +1899,11 @@ const char *SpvReflectGenerator_debug_str(int value) {
   if (value == 18) { return "SPV_REFLECT_GENERATOR_WINE_VKD3D_SHADER_COMPILER"; }
   if (value == 19) { return "SPV_REFLECT_GENERATOR_CLAY_CLAY_SHADER_COMPILER"; }
   return "UNKNOWN SpvReflectGenerator";
+}
+const char *SpvReflectModuleFlagBits_debug_str(int value) {
+  if (value == 0) { return "SPV_REFLECT_MODULE_FLAG_NONE"; }
+  if (value == 1) { return "SPV_REFLECT_MODULE_FLAG_NO_COPY"; }
+  return "UNKNOWN SpvReflectModuleFlagBits";
 }
 const char *SpvReflectResourceType_debug_str(int value) {
   if (value == 0) { return "SPV_REFLECT_RESOURCE_FLAG_UNDEFINED"; }
@@ -1815,6 +2048,7 @@ const char *SpvSourceLanguage__debug_str(int value) {
   if (value == 3) { return "SpvSourceLanguageOpenCL_C"; }
   if (value == 4) { return "SpvSourceLanguageOpenCL_CPP"; }
   if (value == 5) { return "SpvSourceLanguageHLSL"; }
+  if (value == 6) { return "SpvSourceLanguageCPP_for_OpenCL"; }
   if (value == 2147483647) { return "SpvSourceLanguageMax"; }
   return "UNKNOWN SpvSourceLanguage_";
 }
@@ -1847,14 +2081,16 @@ const char *SpvStorageClass__debug_str(int value) {
   if (value == 5349) { return "SpvStorageClassPhysicalStorageBuffer"; }
   if (value == 5349) { return "SpvStorageClassPhysicalStorageBufferEXT"; }
   if (value == 5605) { return "SpvStorageClassCodeSectionINTEL"; }
+  if (value == 5936) { return "SpvStorageClassDeviceOnlyINTEL"; }
+  if (value == 5937) { return "SpvStorageClassHostOnlyINTEL"; }
   if (value == 2147483647) { return "SpvStorageClassMax"; }
   return "UNKNOWN SpvStorageClass_";
 }
 const char *StdVideoDecodeH264FieldOrderCount_debug_str(int value) {
   if (value == 0) { return "STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_TOP"; }
   if (value == 1) { return "STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_BOTTOM"; }
-  if (value == 2) { return "STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_LIST_SIZE"; }
   if (value == 2147483647) { return "STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_INVALID"; }
+  if (value == 2147483647) { return "STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_MAX_ENUM"; }
   return "UNKNOWN StdVideoDecodeH264FieldOrderCount";
 }
 const char *StdVideoH264AspectRatioIdc_debug_str(int value) {
@@ -1877,6 +2113,7 @@ const char *StdVideoH264AspectRatioIdc_debug_str(int value) {
   if (value == 16) { return "STD_VIDEO_H264_ASPECT_RATIO_IDC_2_1"; }
   if (value == 255) { return "STD_VIDEO_H264_ASPECT_RATIO_IDC_EXTENDED_SAR"; }
   if (value == 2147483647) { return "STD_VIDEO_H264_ASPECT_RATIO_IDC_INVALID"; }
+  if (value == 2147483647) { return "STD_VIDEO_H264_ASPECT_RATIO_IDC_MAX_ENUM"; }
   return "UNKNOWN StdVideoH264AspectRatioIdc";
 }
 const char *StdVideoH264CabacInitIdc_debug_str(int value) {
@@ -1884,6 +2121,7 @@ const char *StdVideoH264CabacInitIdc_debug_str(int value) {
   if (value == 1) { return "STD_VIDEO_H264_CABAC_INIT_IDC_1"; }
   if (value == 2) { return "STD_VIDEO_H264_CABAC_INIT_IDC_2"; }
   if (value == 2147483647) { return "STD_VIDEO_H264_CABAC_INIT_IDC_INVALID"; }
+  if (value == 2147483647) { return "STD_VIDEO_H264_CABAC_INIT_IDC_MAX_ENUM"; }
   return "UNKNOWN StdVideoH264CabacInitIdc";
 }
 const char *StdVideoH264ChromaFormatIdc_debug_str(int value) {
@@ -1892,6 +2130,7 @@ const char *StdVideoH264ChromaFormatIdc_debug_str(int value) {
   if (value == 2) { return "STD_VIDEO_H264_CHROMA_FORMAT_IDC_422"; }
   if (value == 3) { return "STD_VIDEO_H264_CHROMA_FORMAT_IDC_444"; }
   if (value == 2147483647) { return "STD_VIDEO_H264_CHROMA_FORMAT_IDC_INVALID"; }
+  if (value == 2147483647) { return "STD_VIDEO_H264_CHROMA_FORMAT_IDC_MAX_ENUM"; }
   return "UNKNOWN StdVideoH264ChromaFormatIdc";
 }
 const char *StdVideoH264DisableDeblockingFilterIdc_debug_str(int value) {
@@ -1899,6 +2138,7 @@ const char *StdVideoH264DisableDeblockingFilterIdc_debug_str(int value) {
   if (value == 1) { return "STD_VIDEO_H264_DISABLE_DEBLOCKING_FILTER_IDC_ENABLED"; }
   if (value == 2) { return "STD_VIDEO_H264_DISABLE_DEBLOCKING_FILTER_IDC_PARTIAL"; }
   if (value == 2147483647) { return "STD_VIDEO_H264_DISABLE_DEBLOCKING_FILTER_IDC_INVALID"; }
+  if (value == 2147483647) { return "STD_VIDEO_H264_DISABLE_DEBLOCKING_FILTER_IDC_MAX_ENUM"; }
   return "UNKNOWN StdVideoH264DisableDeblockingFilterIdc";
 }
 const char *StdVideoH264Level_debug_str(int value) {
@@ -1922,6 +2162,7 @@ const char *StdVideoH264Level_debug_str(int value) {
   if (value == 17) { return "STD_VIDEO_H264_LEVEL_6_1"; }
   if (value == 18) { return "STD_VIDEO_H264_LEVEL_6_2"; }
   if (value == 2147483647) { return "STD_VIDEO_H264_LEVEL_INVALID"; }
+  if (value == 2147483647) { return "STD_VIDEO_H264_LEVEL_MAX_ENUM"; }
   return "UNKNOWN StdVideoH264Level";
 }
 const char *StdVideoH264MemMgmtControlOp_debug_str(int value) {
@@ -1933,6 +2174,7 @@ const char *StdVideoH264MemMgmtControlOp_debug_str(int value) {
   if (value == 5) { return "STD_VIDEO_H264_MEM_MGMT_CONTROL_OP_UNMARK_ALL"; }
   if (value == 6) { return "STD_VIDEO_H264_MEM_MGMT_CONTROL_OP_MARK_CURRENT_AS_LONG_TERM"; }
   if (value == 2147483647) { return "STD_VIDEO_H264_MEM_MGMT_CONTROL_OP_INVALID"; }
+  if (value == 2147483647) { return "STD_VIDEO_H264_MEM_MGMT_CONTROL_OP_MAX_ENUM"; }
   return "UNKNOWN StdVideoH264MemMgmtControlOp";
 }
 const char *StdVideoH264ModificationOfPicNumsIdc_debug_str(int value) {
@@ -1941,6 +2183,7 @@ const char *StdVideoH264ModificationOfPicNumsIdc_debug_str(int value) {
   if (value == 2) { return "STD_VIDEO_H264_MODIFICATION_OF_PIC_NUMS_IDC_LONG_TERM"; }
   if (value == 3) { return "STD_VIDEO_H264_MODIFICATION_OF_PIC_NUMS_IDC_END"; }
   if (value == 2147483647) { return "STD_VIDEO_H264_MODIFICATION_OF_PIC_NUMS_IDC_INVALID"; }
+  if (value == 2147483647) { return "STD_VIDEO_H264_MODIFICATION_OF_PIC_NUMS_IDC_MAX_ENUM"; }
   return "UNKNOWN StdVideoH264ModificationOfPicNumsIdc";
 }
 const char *StdVideoH264NonVclNaluType_debug_str(int value) {
@@ -1952,6 +2195,7 @@ const char *StdVideoH264NonVclNaluType_debug_str(int value) {
   if (value == 5) { return "STD_VIDEO_H264_NON_VCL_NALU_TYPE_END_OF_STREAM"; }
   if (value == 6) { return "STD_VIDEO_H264_NON_VCL_NALU_TYPE_PRECODED"; }
   if (value == 2147483647) { return "STD_VIDEO_H264_NON_VCL_NALU_TYPE_INVALID"; }
+  if (value == 2147483647) { return "STD_VIDEO_H264_NON_VCL_NALU_TYPE_MAX_ENUM"; }
   return "UNKNOWN StdVideoH264NonVclNaluType";
 }
 const char *StdVideoH264PictureType_debug_str(int value) {
@@ -1960,6 +2204,7 @@ const char *StdVideoH264PictureType_debug_str(int value) {
   if (value == 2) { return "STD_VIDEO_H264_PICTURE_TYPE_I"; }
   if (value == 5) { return "STD_VIDEO_H264_PICTURE_TYPE_IDR"; }
   if (value == 2147483647) { return "STD_VIDEO_H264_PICTURE_TYPE_INVALID"; }
+  if (value == 2147483647) { return "STD_VIDEO_H264_PICTURE_TYPE_MAX_ENUM"; }
   return "UNKNOWN StdVideoH264PictureType";
 }
 const char *StdVideoH264PocType_debug_str(int value) {
@@ -1967,6 +2212,7 @@ const char *StdVideoH264PocType_debug_str(int value) {
   if (value == 1) { return "STD_VIDEO_H264_POC_TYPE_1"; }
   if (value == 2) { return "STD_VIDEO_H264_POC_TYPE_2"; }
   if (value == 2147483647) { return "STD_VIDEO_H264_POC_TYPE_INVALID"; }
+  if (value == 2147483647) { return "STD_VIDEO_H264_POC_TYPE_MAX_ENUM"; }
   return "UNKNOWN StdVideoH264PocType";
 }
 const char *StdVideoH264ProfileIdc_debug_str(int value) {
@@ -1975,6 +2221,7 @@ const char *StdVideoH264ProfileIdc_debug_str(int value) {
   if (value == 100) { return "STD_VIDEO_H264_PROFILE_IDC_HIGH"; }
   if (value == 244) { return "STD_VIDEO_H264_PROFILE_IDC_HIGH_444_PREDICTIVE"; }
   if (value == 2147483647) { return "STD_VIDEO_H264_PROFILE_IDC_INVALID"; }
+  if (value == 2147483647) { return "STD_VIDEO_H264_PROFILE_IDC_MAX_ENUM"; }
   return "UNKNOWN StdVideoH264ProfileIdc";
 }
 const char *StdVideoH264SliceType_debug_str(int value) {
@@ -1982,6 +2229,7 @@ const char *StdVideoH264SliceType_debug_str(int value) {
   if (value == 1) { return "STD_VIDEO_H264_SLICE_TYPE_B"; }
   if (value == 2) { return "STD_VIDEO_H264_SLICE_TYPE_I"; }
   if (value == 2147483647) { return "STD_VIDEO_H264_SLICE_TYPE_INVALID"; }
+  if (value == 2147483647) { return "STD_VIDEO_H264_SLICE_TYPE_MAX_ENUM"; }
   return "UNKNOWN StdVideoH264SliceType";
 }
 const char *StdVideoH264WeightedBipredIdc_debug_str(int value) {
@@ -1989,6 +2237,7 @@ const char *StdVideoH264WeightedBipredIdc_debug_str(int value) {
   if (value == 1) { return "STD_VIDEO_H264_WEIGHTED_BIPRED_IDC_EXPLICIT"; }
   if (value == 2) { return "STD_VIDEO_H264_WEIGHTED_BIPRED_IDC_IMPLICIT"; }
   if (value == 2147483647) { return "STD_VIDEO_H264_WEIGHTED_BIPRED_IDC_INVALID"; }
+  if (value == 2147483647) { return "STD_VIDEO_H264_WEIGHTED_BIPRED_IDC_MAX_ENUM"; }
   return "UNKNOWN StdVideoH264WeightedBipredIdc";
 }
 const char *StdVideoH265ChromaFormatIdc_debug_str(int value) {
@@ -1997,6 +2246,7 @@ const char *StdVideoH265ChromaFormatIdc_debug_str(int value) {
   if (value == 2) { return "STD_VIDEO_H265_CHROMA_FORMAT_IDC_422"; }
   if (value == 3) { return "STD_VIDEO_H265_CHROMA_FORMAT_IDC_444"; }
   if (value == 2147483647) { return "STD_VIDEO_H265_CHROMA_FORMAT_IDC_INVALID"; }
+  if (value == 2147483647) { return "STD_VIDEO_H265_CHROMA_FORMAT_IDC_MAX_ENUM"; }
   return "UNKNOWN StdVideoH265ChromaFormatIdc";
 }
 const char *StdVideoH265Level_debug_str(int value) {
@@ -2014,6 +2264,7 @@ const char *StdVideoH265Level_debug_str(int value) {
   if (value == 11) { return "STD_VIDEO_H265_LEVEL_6_1"; }
   if (value == 12) { return "STD_VIDEO_H265_LEVEL_6_2"; }
   if (value == 2147483647) { return "STD_VIDEO_H265_LEVEL_INVALID"; }
+  if (value == 2147483647) { return "STD_VIDEO_H265_LEVEL_MAX_ENUM"; }
   return "UNKNOWN StdVideoH265Level";
 }
 const char *StdVideoH265PictureType_debug_str(int value) {
@@ -2022,6 +2273,7 @@ const char *StdVideoH265PictureType_debug_str(int value) {
   if (value == 2) { return "STD_VIDEO_H265_PICTURE_TYPE_I"; }
   if (value == 3) { return "STD_VIDEO_H265_PICTURE_TYPE_IDR"; }
   if (value == 2147483647) { return "STD_VIDEO_H265_PICTURE_TYPE_INVALID"; }
+  if (value == 2147483647) { return "STD_VIDEO_H265_PICTURE_TYPE_MAX_ENUM"; }
   return "UNKNOWN StdVideoH265PictureType";
 }
 const char *StdVideoH265ProfileIdc_debug_str(int value) {
@@ -2031,6 +2283,7 @@ const char *StdVideoH265ProfileIdc_debug_str(int value) {
   if (value == 4) { return "STD_VIDEO_H265_PROFILE_IDC_FORMAT_RANGE_EXTENSIONS"; }
   if (value == 9) { return "STD_VIDEO_H265_PROFILE_IDC_SCC_EXTENSIONS"; }
   if (value == 2147483647) { return "STD_VIDEO_H265_PROFILE_IDC_INVALID"; }
+  if (value == 2147483647) { return "STD_VIDEO_H265_PROFILE_IDC_MAX_ENUM"; }
   return "UNKNOWN StdVideoH265ProfileIdc";
 }
 const char *StdVideoH265SliceType_debug_str(int value) {
@@ -2038,6 +2291,7 @@ const char *StdVideoH265SliceType_debug_str(int value) {
   if (value == 1) { return "STD_VIDEO_H265_SLICE_TYPE_P"; }
   if (value == 2) { return "STD_VIDEO_H265_SLICE_TYPE_I"; }
   if (value == 2147483647) { return "STD_VIDEO_H265_SLICE_TYPE_INVALID"; }
+  if (value == 2147483647) { return "STD_VIDEO_H265_SLICE_TYPE_MAX_ENUM"; }
   return "UNKNOWN StdVideoH265SliceType";
 }
 const char *VkAccelerationStructureBuildTypeKHR_debug_str(int value) {
@@ -2100,6 +2354,7 @@ const char *VkAccessFlagBits_debug_str(int value) {
   if (value == 16384) { return "VK_ACCESS_HOST_WRITE_BIT"; }
   if (value == 32768) { return "VK_ACCESS_MEMORY_READ_BIT"; }
   if (value == 65536) { return "VK_ACCESS_MEMORY_WRITE_BIT"; }
+  if (value == 0) { return "VK_ACCESS_NONE"; }
   if (value == 33554432) { return "VK_ACCESS_TRANSFORM_FEEDBACK_WRITE_BIT_EXT"; }
   if (value == 67108864) { return "VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT"; }
   if (value == 134217728) { return "VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT"; }
@@ -2111,10 +2366,10 @@ const char *VkAccessFlagBits_debug_str(int value) {
   if (value == 8388608) { return "VK_ACCESS_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR"; }
   if (value == 131072) { return "VK_ACCESS_COMMAND_PREPROCESS_READ_BIT_NV"; }
   if (value == 262144) { return "VK_ACCESS_COMMAND_PREPROCESS_WRITE_BIT_NV"; }
-  if (value == 0) { return "VK_ACCESS_NONE_KHR"; }
   if (value == 8388608) { return "VK_ACCESS_SHADING_RATE_IMAGE_READ_BIT_NV"; }
   if (value == 2097152) { return "VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_NV"; }
   if (value == 4194304) { return "VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_NV"; }
+  if (value == 0) { return "VK_ACCESS_NONE_KHR"; }
   if (value == 2147483647) { return "VK_ACCESS_FLAG_BITS_MAX_ENUM"; }
   return "UNKNOWN VkAccessFlagBits";
 }
@@ -2137,6 +2392,7 @@ void VkAccessFlagBits_debug_print(int flags, int indent) {
   if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_HOST_WRITE_BIT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_MEMORY_READ_BIT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_MEMORY_WRITE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_NONE", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 33554432) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_TRANSFORM_FEEDBACK_WRITE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 67108864) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 134217728) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
@@ -2148,10 +2404,10 @@ void VkAccessFlagBits_debug_print(int flags, int indent) {
   if ((flags & 8388608) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_COMMAND_PREPROCESS_READ_BIT_NV", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 262144) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_COMMAND_PREPROCESS_WRITE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_NONE_KHR", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 8388608) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_SHADING_RATE_IMAGE_READ_BIT_NV", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_NV", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_NONE_KHR", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_ACCESS_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkAcquireProfilingLockFlagBitsKHR_debug_str(int value) {
@@ -2174,6 +2430,7 @@ const char *VkAttachmentLoadOp_debug_str(int value) {
 const char *VkAttachmentStoreOp_debug_str(int value) {
   if (value == 0) { return "VK_ATTACHMENT_STORE_OP_STORE"; }
   if (value == 1) { return "VK_ATTACHMENT_STORE_OP_DONT_CARE"; }
+  if (value == 1000301000) { return "VK_ATTACHMENT_STORE_OP_NONE"; }
   if (value == 1000301000) { return "VK_ATTACHMENT_STORE_OP_NONE_KHR"; }
   if (value == 1000301000) { return "VK_ATTACHMENT_STORE_OP_NONE_QCOM"; }
   if (value == 1000301000) { return "VK_ATTACHMENT_STORE_OP_NONE_EXT"; }
@@ -2729,10 +2986,11 @@ const char *VkDescriptorType_debug_str(int value) {
   if (value == 8) { return "VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC"; }
   if (value == 9) { return "VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC"; }
   if (value == 10) { return "VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT"; }
-  if (value == 1000138000) { return "VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT"; }
+  if (value == 1000138000) { return "VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK"; }
   if (value == 1000150000) { return "VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR"; }
   if (value == 1000165000) { return "VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV"; }
   if (value == 1000351000) { return "VK_DESCRIPTOR_TYPE_MUTABLE_VALVE"; }
+  if (value == 1000138000) { return "VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT"; }
   if (value == 2147483647) { return "VK_DESCRIPTOR_TYPE_MAX_ENUM"; }
   return "UNKNOWN VkDescriptorType";
 }
@@ -2840,6 +3098,8 @@ const char *VkDriverId_debug_str(int value) {
   if (value == 18) { return "VK_DRIVER_ID_MESA_TURNIP"; }
   if (value == 19) { return "VK_DRIVER_ID_MESA_V3DV"; }
   if (value == 20) { return "VK_DRIVER_ID_MESA_PANVK"; }
+  if (value == 21) { return "VK_DRIVER_ID_SAMSUNG_PROPRIETARY"; }
+  if (value == 22) { return "VK_DRIVER_ID_MESA_VENUS"; }
   if (value == 1) { return "VK_DRIVER_ID_AMD_PROPRIETARY_KHR"; }
   if (value == 2) { return "VK_DRIVER_ID_AMD_OPEN_SOURCE_KHR"; }
   if (value == 3) { return "VK_DRIVER_ID_MESA_RADV_KHR"; }
@@ -2865,6 +3125,21 @@ const char *VkDynamicState_debug_str(int value) {
   if (value == 6) { return "VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK"; }
   if (value == 7) { return "VK_DYNAMIC_STATE_STENCIL_WRITE_MASK"; }
   if (value == 8) { return "VK_DYNAMIC_STATE_STENCIL_REFERENCE"; }
+  if (value == 1000267000) { return "VK_DYNAMIC_STATE_CULL_MODE"; }
+  if (value == 1000267001) { return "VK_DYNAMIC_STATE_FRONT_FACE"; }
+  if (value == 1000267002) { return "VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY"; }
+  if (value == 1000267003) { return "VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT"; }
+  if (value == 1000267004) { return "VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT"; }
+  if (value == 1000267005) { return "VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE"; }
+  if (value == 1000267006) { return "VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE"; }
+  if (value == 1000267007) { return "VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE"; }
+  if (value == 1000267008) { return "VK_DYNAMIC_STATE_DEPTH_COMPARE_OP"; }
+  if (value == 1000267009) { return "VK_DYNAMIC_STATE_DEPTH_BOUNDS_TEST_ENABLE"; }
+  if (value == 1000267010) { return "VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE"; }
+  if (value == 1000267011) { return "VK_DYNAMIC_STATE_STENCIL_OP"; }
+  if (value == 1000377001) { return "VK_DYNAMIC_STATE_RASTERIZER_DISCARD_ENABLE"; }
+  if (value == 1000377002) { return "VK_DYNAMIC_STATE_DEPTH_BIAS_ENABLE"; }
+  if (value == 1000377004) { return "VK_DYNAMIC_STATE_PRIMITIVE_RESTART_ENABLE"; }
   if (value == 1000087000) { return "VK_DYNAMIC_STATE_VIEWPORT_W_SCALING_NV"; }
   if (value == 1000099000) { return "VK_DYNAMIC_STATE_DISCARD_RECTANGLE_EXT"; }
   if (value == 1000143000) { return "VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_EXT"; }
@@ -2874,6 +3149,10 @@ const char *VkDynamicState_debug_str(int value) {
   if (value == 1000205001) { return "VK_DYNAMIC_STATE_EXCLUSIVE_SCISSOR_NV"; }
   if (value == 1000226000) { return "VK_DYNAMIC_STATE_FRAGMENT_SHADING_RATE_KHR"; }
   if (value == 1000259000) { return "VK_DYNAMIC_STATE_LINE_STIPPLE_EXT"; }
+  if (value == 1000352000) { return "VK_DYNAMIC_STATE_VERTEX_INPUT_EXT"; }
+  if (value == 1000377000) { return "VK_DYNAMIC_STATE_PATCH_CONTROL_POINTS_EXT"; }
+  if (value == 1000377003) { return "VK_DYNAMIC_STATE_LOGIC_OP_EXT"; }
+  if (value == 1000381000) { return "VK_DYNAMIC_STATE_COLOR_WRITE_ENABLE_EXT"; }
   if (value == 1000267000) { return "VK_DYNAMIC_STATE_CULL_MODE_EXT"; }
   if (value == 1000267001) { return "VK_DYNAMIC_STATE_FRONT_FACE_EXT"; }
   if (value == 1000267002) { return "VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY_EXT"; }
@@ -2886,17 +3165,14 @@ const char *VkDynamicState_debug_str(int value) {
   if (value == 1000267009) { return "VK_DYNAMIC_STATE_DEPTH_BOUNDS_TEST_ENABLE_EXT"; }
   if (value == 1000267010) { return "VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE_EXT"; }
   if (value == 1000267011) { return "VK_DYNAMIC_STATE_STENCIL_OP_EXT"; }
-  if (value == 1000352000) { return "VK_DYNAMIC_STATE_VERTEX_INPUT_EXT"; }
-  if (value == 1000377000) { return "VK_DYNAMIC_STATE_PATCH_CONTROL_POINTS_EXT"; }
   if (value == 1000377001) { return "VK_DYNAMIC_STATE_RASTERIZER_DISCARD_ENABLE_EXT"; }
   if (value == 1000377002) { return "VK_DYNAMIC_STATE_DEPTH_BIAS_ENABLE_EXT"; }
-  if (value == 1000377003) { return "VK_DYNAMIC_STATE_LOGIC_OP_EXT"; }
   if (value == 1000377004) { return "VK_DYNAMIC_STATE_PRIMITIVE_RESTART_ENABLE_EXT"; }
-  if (value == 1000381000) { return "VK_DYNAMIC_STATE_COLOR_WRITE_ENABLE_EXT"; }
   if (value == 2147483647) { return "VK_DYNAMIC_STATE_MAX_ENUM"; }
   return "UNKNOWN VkDynamicState";
 }
 const char *VkEventCreateFlagBits_debug_str(int value) {
+  if (value == 1) { return "VK_EVENT_CREATE_DEVICE_ONLY_BIT"; }
   if (value == 1) { return "VK_EVENT_CREATE_DEVICE_ONLY_BIT_KHR"; }
   if (value == 2147483647) { return "VK_EVENT_CREATE_FLAG_BITS_MAX_ENUM"; }
   return "UNKNOWN VkEventCreateFlagBits";
@@ -3303,6 +3579,26 @@ const char *VkFormat_debug_str(int value) {
   if (value == 1000156031) { return "VK_FORMAT_G16_B16_R16_3PLANE_422_UNORM"; }
   if (value == 1000156032) { return "VK_FORMAT_G16_B16R16_2PLANE_422_UNORM"; }
   if (value == 1000156033) { return "VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM"; }
+  if (value == 1000330000) { return "VK_FORMAT_G8_B8R8_2PLANE_444_UNORM"; }
+  if (value == 1000330001) { return "VK_FORMAT_G10X6_B10X6R10X6_2PLANE_444_UNORM_3PACK16"; }
+  if (value == 1000330002) { return "VK_FORMAT_G12X4_B12X4R12X4_2PLANE_444_UNORM_3PACK16"; }
+  if (value == 1000330003) { return "VK_FORMAT_G16_B16R16_2PLANE_444_UNORM"; }
+  if (value == 1000340000) { return "VK_FORMAT_A4R4G4B4_UNORM_PACK16"; }
+  if (value == 1000340001) { return "VK_FORMAT_A4B4G4R4_UNORM_PACK16"; }
+  if (value == 1000066000) { return "VK_FORMAT_ASTC_4x4_SFLOAT_BLOCK"; }
+  if (value == 1000066001) { return "VK_FORMAT_ASTC_5x4_SFLOAT_BLOCK"; }
+  if (value == 1000066002) { return "VK_FORMAT_ASTC_5x5_SFLOAT_BLOCK"; }
+  if (value == 1000066003) { return "VK_FORMAT_ASTC_6x5_SFLOAT_BLOCK"; }
+  if (value == 1000066004) { return "VK_FORMAT_ASTC_6x6_SFLOAT_BLOCK"; }
+  if (value == 1000066005) { return "VK_FORMAT_ASTC_8x5_SFLOAT_BLOCK"; }
+  if (value == 1000066006) { return "VK_FORMAT_ASTC_8x6_SFLOAT_BLOCK"; }
+  if (value == 1000066007) { return "VK_FORMAT_ASTC_8x8_SFLOAT_BLOCK"; }
+  if (value == 1000066008) { return "VK_FORMAT_ASTC_10x5_SFLOAT_BLOCK"; }
+  if (value == 1000066009) { return "VK_FORMAT_ASTC_10x6_SFLOAT_BLOCK"; }
+  if (value == 1000066010) { return "VK_FORMAT_ASTC_10x8_SFLOAT_BLOCK"; }
+  if (value == 1000066011) { return "VK_FORMAT_ASTC_10x10_SFLOAT_BLOCK"; }
+  if (value == 1000066012) { return "VK_FORMAT_ASTC_12x10_SFLOAT_BLOCK"; }
+  if (value == 1000066013) { return "VK_FORMAT_ASTC_12x12_SFLOAT_BLOCK"; }
   if (value == 1000054000) { return "VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG"; }
   if (value == 1000054001) { return "VK_FORMAT_PVRTC1_4BPP_UNORM_BLOCK_IMG"; }
   if (value == 1000054002) { return "VK_FORMAT_PVRTC2_2BPP_UNORM_BLOCK_IMG"; }
@@ -3325,12 +3621,6 @@ const char *VkFormat_debug_str(int value) {
   if (value == 1000066011) { return "VK_FORMAT_ASTC_10x10_SFLOAT_BLOCK_EXT"; }
   if (value == 1000066012) { return "VK_FORMAT_ASTC_12x10_SFLOAT_BLOCK_EXT"; }
   if (value == 1000066013) { return "VK_FORMAT_ASTC_12x12_SFLOAT_BLOCK_EXT"; }
-  if (value == 1000330000) { return "VK_FORMAT_G8_B8R8_2PLANE_444_UNORM_EXT"; }
-  if (value == 1000330001) { return "VK_FORMAT_G10X6_B10X6R10X6_2PLANE_444_UNORM_3PACK16_EXT"; }
-  if (value == 1000330002) { return "VK_FORMAT_G12X4_B12X4R12X4_2PLANE_444_UNORM_3PACK16_EXT"; }
-  if (value == 1000330003) { return "VK_FORMAT_G16_B16R16_2PLANE_444_UNORM_EXT"; }
-  if (value == 1000340000) { return "VK_FORMAT_A4R4G4B4_UNORM_PACK16_EXT"; }
-  if (value == 1000340001) { return "VK_FORMAT_A4B4G4R4_UNORM_PACK16_EXT"; }
   if (value == 1000156000) { return "VK_FORMAT_G8B8G8R8_422_UNORM_KHR"; }
   if (value == 1000156001) { return "VK_FORMAT_B8G8R8G8_422_UNORM_KHR"; }
   if (value == 1000156002) { return "VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM_KHR"; }
@@ -3365,6 +3655,12 @@ const char *VkFormat_debug_str(int value) {
   if (value == 1000156031) { return "VK_FORMAT_G16_B16_R16_3PLANE_422_UNORM_KHR"; }
   if (value == 1000156032) { return "VK_FORMAT_G16_B16R16_2PLANE_422_UNORM_KHR"; }
   if (value == 1000156033) { return "VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM_KHR"; }
+  if (value == 1000330000) { return "VK_FORMAT_G8_B8R8_2PLANE_444_UNORM_EXT"; }
+  if (value == 1000330001) { return "VK_FORMAT_G10X6_B10X6R10X6_2PLANE_444_UNORM_3PACK16_EXT"; }
+  if (value == 1000330002) { return "VK_FORMAT_G12X4_B12X4R12X4_2PLANE_444_UNORM_3PACK16_EXT"; }
+  if (value == 1000330003) { return "VK_FORMAT_G16_B16R16_2PLANE_444_UNORM_EXT"; }
+  if (value == 1000340000) { return "VK_FORMAT_A4R4G4B4_UNORM_PACK16_EXT"; }
+  if (value == 1000340001) { return "VK_FORMAT_A4B4G4R4_UNORM_PACK16_EXT"; }
   if (value == 2147483647) { return "VK_FORMAT_MAX_ENUM"; }
   return "UNKNOWN VkFormat";
 }
@@ -3546,6 +3842,22 @@ const char *VkGeometryTypeKHR_debug_str(int value) {
   if (value == 2147483647) { return "VK_GEOMETRY_TYPE_MAX_ENUM_KHR"; }
   return "UNKNOWN VkGeometryTypeKHR";
 }
+const char *VkGraphicsPipelineLibraryFlagBitsEXT_debug_str(int value) {
+  if (value == 1) { return "VK_GRAPHICS_PIPELINE_LIBRARY_VERTEX_INPUT_INTERFACE_BIT_EXT"; }
+  if (value == 2) { return "VK_GRAPHICS_PIPELINE_LIBRARY_PRE_RASTERIZATION_SHADERS_BIT_EXT"; }
+  if (value == 4) { return "VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_SHADER_BIT_EXT"; }
+  if (value == 8) { return "VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_OUTPUT_INTERFACE_BIT_EXT"; }
+  if (value == 2147483647) { return "VK_GRAPHICS_PIPELINE_LIBRARY_FLAG_BITS_MAX_ENUM_EXT"; }
+  return "UNKNOWN VkGraphicsPipelineLibraryFlagBitsEXT";
+}
+void VkGraphicsPipelineLibraryFlagBitsEXT_debug_print(int flags, int indent) {
+  log_debug(INDENT_FORMAT_STRING "VkGraphicsPipelineLibraryFlagBitsEXT: ", INDENT_FORMAT_ARGS(0));
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GRAPHICS_PIPELINE_LIBRARY_VERTEX_INPUT_INTERFACE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GRAPHICS_PIPELINE_LIBRARY_PRE_RASTERIZATION_SHADERS_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_SHADER_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_OUTPUT_INTERFACE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_GRAPHICS_PIPELINE_LIBRARY_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
+}
 const char *VkImageAspectFlagBits_debug_str(int value) {
   if (value == 1) { return "VK_IMAGE_ASPECT_COLOR_BIT"; }
   if (value == 2) { return "VK_IMAGE_ASPECT_DEPTH_BIT"; }
@@ -3554,6 +3866,7 @@ const char *VkImageAspectFlagBits_debug_str(int value) {
   if (value == 16) { return "VK_IMAGE_ASPECT_PLANE_0_BIT"; }
   if (value == 32) { return "VK_IMAGE_ASPECT_PLANE_1_BIT"; }
   if (value == 64) { return "VK_IMAGE_ASPECT_PLANE_2_BIT"; }
+  if (value == 0) { return "VK_IMAGE_ASPECT_NONE"; }
   if (value == 128) { return "VK_IMAGE_ASPECT_MEMORY_PLANE_0_BIT_EXT"; }
   if (value == 256) { return "VK_IMAGE_ASPECT_MEMORY_PLANE_1_BIT_EXT"; }
   if (value == 512) { return "VK_IMAGE_ASPECT_MEMORY_PLANE_2_BIT_EXT"; }
@@ -3561,6 +3874,7 @@ const char *VkImageAspectFlagBits_debug_str(int value) {
   if (value == 16) { return "VK_IMAGE_ASPECT_PLANE_0_BIT_KHR"; }
   if (value == 32) { return "VK_IMAGE_ASPECT_PLANE_1_BIT_KHR"; }
   if (value == 64) { return "VK_IMAGE_ASPECT_PLANE_2_BIT_KHR"; }
+  if (value == 0) { return "VK_IMAGE_ASPECT_NONE_KHR"; }
   if (value == 2147483647) { return "VK_IMAGE_ASPECT_FLAG_BITS_MAX_ENUM"; }
   return "UNKNOWN VkImageAspectFlagBits";
 }
@@ -3573,6 +3887,7 @@ void VkImageAspectFlagBits_debug_print(int flags, int indent) {
   if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_PLANE_0_BIT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_PLANE_1_BIT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_PLANE_2_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_NONE", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_MEMORY_PLANE_0_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_MEMORY_PLANE_1_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_MEMORY_PLANE_2_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
@@ -3580,6 +3895,7 @@ void VkImageAspectFlagBits_debug_print(int flags, int indent) {
   if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_PLANE_0_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_PLANE_1_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_PLANE_2_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_NONE_KHR", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_ASPECT_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkImageCreateFlagBits_debug_str(int value) {
@@ -3598,6 +3914,8 @@ const char *VkImageCreateFlagBits_debug_str(int value) {
   if (value == 8192) { return "VK_IMAGE_CREATE_CORNER_SAMPLED_BIT_NV"; }
   if (value == 4096) { return "VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT"; }
   if (value == 16384) { return "VK_IMAGE_CREATE_SUBSAMPLED_BIT_EXT"; }
+  if (value == 131072) { return "VK_IMAGE_CREATE_2D_VIEW_COMPATIBLE_BIT_EXT"; }
+  if (value == 32768) { return "VK_IMAGE_CREATE_FRAGMENT_DENSITY_MAP_OFFSET_BIT_QCOM"; }
   if (value == 64) { return "VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT_KHR"; }
   if (value == 32) { return "VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT_KHR"; }
   if (value == 128) { return "VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT_KHR"; }
@@ -3624,6 +3942,8 @@ void VkImageCreateFlagBits_debug_print(int flags, int indent) {
   if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_CORNER_SAMPLED_BIT_NV", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_SUBSAMPLED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_2D_VIEW_COMPATIBLE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_FRAGMENT_DENSITY_MAP_OFFSET_BIT_QCOM", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
@@ -3648,6 +3968,8 @@ const char *VkImageLayout_debug_str(int value) {
   if (value == 1000241001) { return "VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL"; }
   if (value == 1000241002) { return "VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL"; }
   if (value == 1000241003) { return "VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL"; }
+  if (value == 1000314000) { return "VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL"; }
+  if (value == 1000314001) { return "VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL"; }
   if (value == 1000001002) { return "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR"; }
   if (value == 1000024000) { return "VK_IMAGE_LAYOUT_VIDEO_DECODE_DST_KHR"; }
   if (value == 1000024001) { return "VK_IMAGE_LAYOUT_VIDEO_DECODE_SRC_KHR"; }
@@ -3658,8 +3980,6 @@ const char *VkImageLayout_debug_str(int value) {
   if (value == 1000299000) { return "VK_IMAGE_LAYOUT_VIDEO_ENCODE_DST_KHR"; }
   if (value == 1000299001) { return "VK_IMAGE_LAYOUT_VIDEO_ENCODE_SRC_KHR"; }
   if (value == 1000299002) { return "VK_IMAGE_LAYOUT_VIDEO_ENCODE_DPB_KHR"; }
-  if (value == 1000314000) { return "VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL_KHR"; }
-  if (value == 1000314001) { return "VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL_KHR"; }
   if (value == 1000117000) { return "VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL_KHR"; }
   if (value == 1000117001) { return "VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL_KHR"; }
   if (value == 1000164003) { return "VK_IMAGE_LAYOUT_SHADING_RATE_OPTIMAL_NV"; }
@@ -3667,6 +3987,8 @@ const char *VkImageLayout_debug_str(int value) {
   if (value == 1000241001) { return "VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL_KHR"; }
   if (value == 1000241002) { return "VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL_KHR"; }
   if (value == 1000241003) { return "VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL_KHR"; }
+  if (value == 1000314000) { return "VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL_KHR"; }
+  if (value == 1000314001) { return "VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL_KHR"; }
   if (value == 2147483647) { return "VK_IMAGE_LAYOUT_MAX_ENUM"; }
   return "UNKNOWN VkImageLayout";
 }
@@ -3777,6 +4099,11 @@ const char *VkIndirectStateFlagBitsNV_debug_str(int value) {
   if (value == 1) { return "VK_INDIRECT_STATE_FLAG_FRONTFACE_BIT_NV"; }
   if (value == 2147483647) { return "VK_INDIRECT_STATE_FLAG_BITS_MAX_ENUM_NV"; }
   return "UNKNOWN VkIndirectStateFlagBitsNV";
+}
+const char *VkInstanceCreateFlagBits_debug_str(int value) {
+  if (value == 1) { return "VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR"; }
+  if (value == 2147483647) { return "VK_INSTANCE_CREATE_FLAG_BITS_MAX_ENUM"; }
+  return "UNKNOWN VkInstanceCreateFlagBits";
 }
 const char *VkInternalAllocationType_debug_str(int value) {
   if (value == 0) { return "VK_INTERNAL_ALLOCATION_TYPE_EXECUTABLE"; }
@@ -3900,6 +4227,7 @@ const char *VkObjectType_debug_str(int value) {
   if (value == 25) { return "VK_OBJECT_TYPE_COMMAND_POOL"; }
   if (value == 1000156000) { return "VK_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION"; }
   if (value == 1000085000) { return "VK_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE"; }
+  if (value == 1000295000) { return "VK_OBJECT_TYPE_PRIVATE_DATA_SLOT"; }
   if (value == 1000000000) { return "VK_OBJECT_TYPE_SURFACE_KHR"; }
   if (value == 1000001000) { return "VK_OBJECT_TYPE_SWAPCHAIN_KHR"; }
   if (value == 1000002000) { return "VK_OBJECT_TYPE_DISPLAY_KHR"; }
@@ -3916,10 +4244,10 @@ const char *VkObjectType_debug_str(int value) {
   if (value == 1000210000) { return "VK_OBJECT_TYPE_PERFORMANCE_CONFIGURATION_INTEL"; }
   if (value == 1000268000) { return "VK_OBJECT_TYPE_DEFERRED_OPERATION_KHR"; }
   if (value == 1000277000) { return "VK_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NV"; }
-  if (value == 1000295000) { return "VK_OBJECT_TYPE_PRIVATE_DATA_SLOT_EXT"; }
   if (value == 1000366000) { return "VK_OBJECT_TYPE_BUFFER_COLLECTION_FUCHSIA"; }
   if (value == 1000085000) { return "VK_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_KHR"; }
   if (value == 1000156000) { return "VK_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION_KHR"; }
+  if (value == 1000295000) { return "VK_OBJECT_TYPE_PRIVATE_DATA_SLOT_EXT"; }
   if (value == 2147483647) { return "VK_OBJECT_TYPE_MAX_ENUM"; }
   return "UNKNOWN VkObjectType";
 }
@@ -4035,6 +4363,7 @@ const char *VkPipelineBindPoint_debug_str(int value) {
   return "UNKNOWN VkPipelineBindPoint";
 }
 const char *VkPipelineCacheCreateFlagBits_debug_str(int value) {
+  if (value == 1) { return "VK_PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT"; }
   if (value == 1) { return "VK_PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT_EXT"; }
   if (value == 2147483647) { return "VK_PIPELINE_CACHE_CREATE_FLAG_BITS_MAX_ENUM"; }
   return "UNKNOWN VkPipelineCacheCreateFlagBits";
@@ -4043,6 +4372,11 @@ const char *VkPipelineCacheHeaderVersion_debug_str(int value) {
   if (value == 1) { return "VK_PIPELINE_CACHE_HEADER_VERSION_ONE"; }
   if (value == 2147483647) { return "VK_PIPELINE_CACHE_HEADER_VERSION_MAX_ENUM"; }
   return "UNKNOWN VkPipelineCacheHeaderVersion";
+}
+const char *VkPipelineColorBlendStateCreateFlagBits_debug_str(int value) {
+  if (value == 1) { return "VK_PIPELINE_COLOR_BLEND_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_BIT_ARM"; }
+  if (value == 2147483647) { return "VK_PIPELINE_COLOR_BLEND_STATE_CREATE_FLAG_BITS_MAX_ENUM"; }
+  return "UNKNOWN VkPipelineColorBlendStateCreateFlagBits";
 }
 const char *VkPipelineCompilerControlFlagBitsAMD_debug_str(int value) {
   if (value == 2147483647) { return "VK_PIPELINE_COMPILER_CONTROL_FLAG_BITS_MAX_ENUM_AMD"; }
@@ -4054,8 +4388,10 @@ const char *VkPipelineCreateFlagBits_debug_str(int value) {
   if (value == 4) { return "VK_PIPELINE_CREATE_DERIVATIVE_BIT"; }
   if (value == 8) { return "VK_PIPELINE_CREATE_VIEW_INDEX_FROM_DEVICE_INDEX_BIT"; }
   if (value == 16) { return "VK_PIPELINE_CREATE_DISPATCH_BASE_BIT"; }
-  if (value == 2097152) { return "VK_PIPELINE_RASTERIZATION_STATE_CREATE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR"; }
-  if (value == 4194304) { return "VK_PIPELINE_RASTERIZATION_STATE_CREATE_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT"; }
+  if (value == 256) { return "VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT"; }
+  if (value == 512) { return "VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT"; }
+  if (value == 2097152) { return "VK_PIPELINE_CREATE_RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR"; }
+  if (value == 4194304) { return "VK_PIPELINE_CREATE_RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT"; }
   if (value == 16384) { return "VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS_BIT_KHR"; }
   if (value == 32768) { return "VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR"; }
   if (value == 65536) { return "VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_MISS_SHADERS_BIT_KHR"; }
@@ -4068,12 +4404,16 @@ const char *VkPipelineCreateFlagBits_debug_str(int value) {
   if (value == 128) { return "VK_PIPELINE_CREATE_CAPTURE_INTERNAL_REPRESENTATIONS_BIT_KHR"; }
   if (value == 262144) { return "VK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV"; }
   if (value == 2048) { return "VK_PIPELINE_CREATE_LIBRARY_BIT_KHR"; }
-  if (value == 256) { return "VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT_EXT"; }
-  if (value == 512) { return "VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT_EXT"; }
+  if (value == 8388608) { return "VK_PIPELINE_CREATE_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_EXT"; }
+  if (value == 1024) { return "VK_PIPELINE_CREATE_LINK_TIME_OPTIMIZATION_BIT_EXT"; }
   if (value == 1048576) { return "VK_PIPELINE_CREATE_RAY_TRACING_ALLOW_MOTION_BIT_NV"; }
   if (value == 16) { return "VK_PIPELINE_CREATE_DISPATCH_BASE"; }
+  if (value == 2097152) { return "VK_PIPELINE_RASTERIZATION_STATE_CREATE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR"; }
+  if (value == 4194304) { return "VK_PIPELINE_RASTERIZATION_STATE_CREATE_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT"; }
   if (value == 8) { return "VK_PIPELINE_CREATE_VIEW_INDEX_FROM_DEVICE_INDEX_BIT_KHR"; }
   if (value == 16) { return "VK_PIPELINE_CREATE_DISPATCH_BASE_KHR"; }
+  if (value == 256) { return "VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT_EXT"; }
+  if (value == 512) { return "VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT_EXT"; }
   if (value == 2147483647) { return "VK_PIPELINE_CREATE_FLAG_BITS_MAX_ENUM"; }
   return "UNKNOWN VkPipelineCreateFlagBits";
 }
@@ -4084,8 +4424,10 @@ void VkPipelineCreateFlagBits_debug_print(int flags, int indent) {
   if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_DERIVATIVE_BIT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_VIEW_INDEX_FROM_DEVICE_INDEX_BIT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_DISPATCH_BASE_BIT", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_RASTERIZATION_STATE_CREATE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_RASTERIZATION_STATE_CREATE_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_MISS_SHADERS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
@@ -4098,20 +4440,43 @@ void VkPipelineCreateFlagBits_debug_print(int flags, int indent) {
   if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_CAPTURE_INTERNAL_REPRESENTATIONS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 262144) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_LIBRARY_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8388608) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_LINK_TIME_OPTIMIZATION_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 1048576) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_RAY_TRACING_ALLOW_MOTION_BIT_NV", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_DISPATCH_BASE", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_RASTERIZATION_STATE_CREATE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_RASTERIZATION_STATE_CREATE_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_VIEW_INDEX_FROM_DEVICE_INDEX_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_DISPATCH_BASE_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
-const char *VkPipelineCreationFeedbackFlagBitsEXT_debug_str(int value) {
+const char *VkPipelineCreationFeedbackFlagBits_debug_str(int value) {
+  if (value == 1) { return "VK_PIPELINE_CREATION_FEEDBACK_VALID_BIT"; }
+  if (value == 2) { return "VK_PIPELINE_CREATION_FEEDBACK_APPLICATION_PIPELINE_CACHE_HIT_BIT"; }
+  if (value == 4) { return "VK_PIPELINE_CREATION_FEEDBACK_BASE_PIPELINE_ACCELERATION_BIT"; }
   if (value == 1) { return "VK_PIPELINE_CREATION_FEEDBACK_VALID_BIT_EXT"; }
   if (value == 2) { return "VK_PIPELINE_CREATION_FEEDBACK_APPLICATION_PIPELINE_CACHE_HIT_BIT_EXT"; }
   if (value == 4) { return "VK_PIPELINE_CREATION_FEEDBACK_BASE_PIPELINE_ACCELERATION_BIT_EXT"; }
-  if (value == 2147483647) { return "VK_PIPELINE_CREATION_FEEDBACK_FLAG_BITS_MAX_ENUM_EXT"; }
-  return "UNKNOWN VkPipelineCreationFeedbackFlagBitsEXT";
+  if (value == 2147483647) { return "VK_PIPELINE_CREATION_FEEDBACK_FLAG_BITS_MAX_ENUM"; }
+  return "UNKNOWN VkPipelineCreationFeedbackFlagBits";
+}
+void VkPipelineCreationFeedbackFlagBits_debug_print(int flags, int indent) {
+  log_debug(INDENT_FORMAT_STRING "VkPipelineCreationFeedbackFlagBits: ", INDENT_FORMAT_ARGS(0));
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATION_FEEDBACK_VALID_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATION_FEEDBACK_APPLICATION_PIPELINE_CACHE_HIT_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATION_FEEDBACK_BASE_PIPELINE_ACCELERATION_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATION_FEEDBACK_VALID_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATION_FEEDBACK_APPLICATION_PIPELINE_CACHE_HIT_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATION_FEEDBACK_BASE_PIPELINE_ACCELERATION_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_CREATION_FEEDBACK_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
+}
+const char *VkPipelineDepthStencilStateCreateFlagBits_debug_str(int value) {
+  if (value == 1) { return "VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_ARM"; }
+  if (value == 2) { return "VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_ARM"; }
+  if (value == 2147483647) { return "VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_FLAG_BITS_MAX_ENUM"; }
+  return "UNKNOWN VkPipelineDepthStencilStateCreateFlagBits";
 }
 const char *VkPipelineExecutableStatisticFormatKHR_debug_str(int value) {
   if (value == 0) { return "VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_BOOL32_KHR"; }
@@ -4121,7 +4486,14 @@ const char *VkPipelineExecutableStatisticFormatKHR_debug_str(int value) {
   if (value == 2147483647) { return "VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_MAX_ENUM_KHR"; }
   return "UNKNOWN VkPipelineExecutableStatisticFormatKHR";
 }
+const char *VkPipelineLayoutCreateFlagBits_debug_str(int value) {
+  if (value == 2) { return "VK_PIPELINE_LAYOUT_CREATE_INDEPENDENT_SETS_BIT_EXT"; }
+  if (value == 2147483647) { return "VK_PIPELINE_LAYOUT_CREATE_FLAG_BITS_MAX_ENUM"; }
+  return "UNKNOWN VkPipelineLayoutCreateFlagBits";
+}
 const char *VkPipelineShaderStageCreateFlagBits_debug_str(int value) {
+  if (value == 1) { return "VK_PIPELINE_SHADER_STAGE_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT"; }
+  if (value == 2) { return "VK_PIPELINE_SHADER_STAGE_CREATE_REQUIRE_FULL_SUBGROUPS_BIT"; }
   if (value == 1) { return "VK_PIPELINE_SHADER_STAGE_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT_EXT"; }
   if (value == 2) { return "VK_PIPELINE_SHADER_STAGE_CREATE_REQUIRE_FULL_SUBGROUPS_BIT_EXT"; }
   if (value == 2147483647) { return "VK_PIPELINE_SHADER_STAGE_CREATE_FLAG_BITS_MAX_ENUM"; }
@@ -4145,6 +4517,7 @@ const char *VkPipelineStageFlagBits_debug_str(int value) {
   if (value == 16384) { return "VK_PIPELINE_STAGE_HOST_BIT"; }
   if (value == 32768) { return "VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT"; }
   if (value == 65536) { return "VK_PIPELINE_STAGE_ALL_COMMANDS_BIT"; }
+  if (value == 0) { return "VK_PIPELINE_STAGE_NONE"; }
   if (value == 16777216) { return "VK_PIPELINE_STAGE_TRANSFORM_FEEDBACK_BIT_EXT"; }
   if (value == 262144) { return "VK_PIPELINE_STAGE_CONDITIONAL_RENDERING_BIT_EXT"; }
   if (value == 33554432) { return "VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR"; }
@@ -4154,10 +4527,10 @@ const char *VkPipelineStageFlagBits_debug_str(int value) {
   if (value == 8388608) { return "VK_PIPELINE_STAGE_FRAGMENT_DENSITY_PROCESS_BIT_EXT"; }
   if (value == 4194304) { return "VK_PIPELINE_STAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR"; }
   if (value == 131072) { return "VK_PIPELINE_STAGE_COMMAND_PREPROCESS_BIT_NV"; }
-  if (value == 0) { return "VK_PIPELINE_STAGE_NONE_KHR"; }
   if (value == 4194304) { return "VK_PIPELINE_STAGE_SHADING_RATE_IMAGE_BIT_NV"; }
   if (value == 2097152) { return "VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_NV"; }
   if (value == 33554432) { return "VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_NV"; }
+  if (value == 0) { return "VK_PIPELINE_STAGE_NONE_KHR"; }
   if (value == 2147483647) { return "VK_PIPELINE_STAGE_FLAG_BITS_MAX_ENUM"; }
   return "UNKNOWN VkPipelineStageFlagBits";
 }
@@ -4180,6 +4553,7 @@ void VkPipelineStageFlagBits_debug_print(int flags, int indent) {
   if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_HOST_BIT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_ALL_COMMANDS_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_NONE", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 16777216) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_TRANSFORM_FEEDBACK_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 262144) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_CONDITIONAL_RENDERING_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 33554432) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
@@ -4189,10 +4563,10 @@ void VkPipelineStageFlagBits_debug_print(int flags, int indent) {
   if ((flags & 8388608) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_FRAGMENT_DENSITY_PROCESS_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_COMMAND_PREPROCESS_BIT_NV", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_NONE_KHR", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_SHADING_RATE_IMAGE_BIT_NV", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_NV", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 33554432) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_NV", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_NONE_KHR", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_PIPELINE_STAGE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkPointClippingBehavior_debug_str(int value) {
@@ -4235,10 +4609,6 @@ const char *VkPrimitiveTopology_debug_str(int value) {
   if (value == 10) { return "VK_PRIMITIVE_TOPOLOGY_PATCH_LIST"; }
   if (value == 2147483647) { return "VK_PRIMITIVE_TOPOLOGY_MAX_ENUM"; }
   return "UNKNOWN VkPrimitiveTopology";
-}
-const char *VkPrivateDataSlotCreateFlagBitsEXT_debug_str(int value) {
-  if (value == 2147483647) { return "VK_PRIVATE_DATA_SLOT_CREATE_FLAG_BITS_MAX_ENUM_EXT"; }
-  return "UNKNOWN VkPrivateDataSlotCreateFlagBitsEXT";
 }
 const char *VkProvokingVertexModeEXT_debug_str(int value) {
   if (value == 0) { return "VK_PROVOKING_VERTEX_MODE_FIRST_VERTEX_EXT"; }
@@ -4323,6 +4693,7 @@ const char *VkQueryType_debug_str(int value) {
   if (value == 1000165000) { return "VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_NV"; }
   if (value == 1000210000) { return "VK_QUERY_TYPE_PERFORMANCE_QUERY_INTEL"; }
   if (value == 1000299000) { return "VK_QUERY_TYPE_VIDEO_ENCODE_BITSTREAM_BUFFER_RANGE_KHR"; }
+  if (value == 1000382000) { return "VK_QUERY_TYPE_PRIMITIVES_GENERATED_EXT"; }
   if (value == 2147483647) { return "VK_QUERY_TYPE_MAX_ENUM"; }
   return "UNKNOWN VkQueryType";
 }
@@ -4348,21 +4719,29 @@ void VkQueueFlagBits_debug_print(int flags, int indent) {
   if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_VIDEO_ENCODE_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
-const char *VkQueueGlobalPriorityEXT_debug_str(int value) {
+const char *VkQueueGlobalPriorityKHR_debug_str(int value) {
+  if (value == 128) { return "VK_QUEUE_GLOBAL_PRIORITY_LOW_KHR"; }
+  if (value == 256) { return "VK_QUEUE_GLOBAL_PRIORITY_MEDIUM_KHR"; }
+  if (value == 512) { return "VK_QUEUE_GLOBAL_PRIORITY_HIGH_KHR"; }
+  if (value == 1024) { return "VK_QUEUE_GLOBAL_PRIORITY_REALTIME_KHR"; }
   if (value == 128) { return "VK_QUEUE_GLOBAL_PRIORITY_LOW_EXT"; }
   if (value == 256) { return "VK_QUEUE_GLOBAL_PRIORITY_MEDIUM_EXT"; }
   if (value == 512) { return "VK_QUEUE_GLOBAL_PRIORITY_HIGH_EXT"; }
   if (value == 1024) { return "VK_QUEUE_GLOBAL_PRIORITY_REALTIME_EXT"; }
-  if (value == 2147483647) { return "VK_QUEUE_GLOBAL_PRIORITY_MAX_ENUM_EXT"; }
-  return "UNKNOWN VkQueueGlobalPriorityEXT";
+  if (value == 2147483647) { return "VK_QUEUE_GLOBAL_PRIORITY_MAX_ENUM_KHR"; }
+  return "UNKNOWN VkQueueGlobalPriorityKHR";
 }
-void VkQueueGlobalPriorityEXT_debug_print(int flags, int indent) {
-  log_debug(INDENT_FORMAT_STRING "VkQueueGlobalPriorityEXT: ", INDENT_FORMAT_ARGS(0));
+void VkQueueGlobalPriorityKHR_debug_print(int flags, int indent) {
+  log_debug(INDENT_FORMAT_STRING "VkQueueGlobalPriorityKHR: ", INDENT_FORMAT_ARGS(0));
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GLOBAL_PRIORITY_LOW_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GLOBAL_PRIORITY_MEDIUM_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GLOBAL_PRIORITY_HIGH_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GLOBAL_PRIORITY_REALTIME_KHR", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GLOBAL_PRIORITY_LOW_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GLOBAL_PRIORITY_MEDIUM_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GLOBAL_PRIORITY_HIGH_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GLOBAL_PRIORITY_REALTIME_EXT", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GLOBAL_PRIORITY_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_QUEUE_GLOBAL_PRIORITY_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkRasterizationOrderAMD_debug_str(int value) {
   if (value == 0) { return "VK_RASTERIZATION_ORDER_STRICT_AMD"; }
@@ -4385,12 +4764,25 @@ const char *VkRenderPassCreateFlagBits_debug_str(int value) {
   if (value == 2147483647) { return "VK_RENDER_PASS_CREATE_FLAG_BITS_MAX_ENUM"; }
   return "UNKNOWN VkRenderPassCreateFlagBits";
 }
-const char *VkRenderingFlagBitsKHR_debug_str(int value) {
+const char *VkRenderingFlagBits_debug_str(int value) {
+  if (value == 1) { return "VK_RENDERING_CONTENTS_SECONDARY_COMMAND_BUFFERS_BIT"; }
+  if (value == 2) { return "VK_RENDERING_SUSPENDING_BIT"; }
+  if (value == 4) { return "VK_RENDERING_RESUMING_BIT"; }
   if (value == 1) { return "VK_RENDERING_CONTENTS_SECONDARY_COMMAND_BUFFERS_BIT_KHR"; }
   if (value == 2) { return "VK_RENDERING_SUSPENDING_BIT_KHR"; }
   if (value == 4) { return "VK_RENDERING_RESUMING_BIT_KHR"; }
-  if (value == 2147483647) { return "VK_RENDERING_FLAG_BITS_MAX_ENUM_KHR"; }
-  return "UNKNOWN VkRenderingFlagBitsKHR";
+  if (value == 2147483647) { return "VK_RENDERING_FLAG_BITS_MAX_ENUM"; }
+  return "UNKNOWN VkRenderingFlagBits";
+}
+void VkRenderingFlagBits_debug_print(int flags, int indent) {
+  log_debug(INDENT_FORMAT_STRING "VkRenderingFlagBits: ", INDENT_FORMAT_ARGS(0));
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RENDERING_CONTENTS_SECONDARY_COMMAND_BUFFERS_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RENDERING_SUSPENDING_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RENDERING_RESUMING_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RENDERING_CONTENTS_SECONDARY_COMMAND_BUFFERS_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RENDERING_SUSPENDING_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RENDERING_RESUMING_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_RENDERING_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkResolveModeFlagBits_debug_str(int value) {
   if (value == 0) { return "VK_RESOLVE_MODE_NONE"; }
@@ -4444,6 +4836,7 @@ const char *VkResult_debug_str(int value) {
   if (value == -1000072003) { return "VK_ERROR_INVALID_EXTERNAL_HANDLE"; }
   if (value == -1000161000) { return "VK_ERROR_FRAGMENTATION"; }
   if (value == -1000257000) { return "VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS"; }
+  if (value == 1000297000) { return "VK_PIPELINE_COMPILE_REQUIRED"; }
   if (value == -1000000000) { return "VK_ERROR_SURFACE_LOST_KHR"; }
   if (value == -1000000001) { return "VK_ERROR_NATIVE_WINDOW_IN_USE_KHR"; }
   if (value == 1000001003) { return "VK_SUBOPTIMAL_KHR"; }
@@ -4452,18 +4845,19 @@ const char *VkResult_debug_str(int value) {
   if (value == -1000011001) { return "VK_ERROR_VALIDATION_FAILED_EXT"; }
   if (value == -1000012000) { return "VK_ERROR_INVALID_SHADER_NV"; }
   if (value == -1000158000) { return "VK_ERROR_INVALID_DRM_FORMAT_MODIFIER_PLANE_LAYOUT_EXT"; }
-  if (value == -1000174001) { return "VK_ERROR_NOT_PERMITTED_EXT"; }
+  if (value == -1000174001) { return "VK_ERROR_NOT_PERMITTED_KHR"; }
   if (value == -1000255000) { return "VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT"; }
   if (value == 1000268000) { return "VK_THREAD_IDLE_KHR"; }
   if (value == 1000268001) { return "VK_THREAD_DONE_KHR"; }
   if (value == 1000268002) { return "VK_OPERATION_DEFERRED_KHR"; }
   if (value == 1000268003) { return "VK_OPERATION_NOT_DEFERRED_KHR"; }
-  if (value == 1000297000) { return "VK_PIPELINE_COMPILE_REQUIRED_EXT"; }
   if (value == -1000069000) { return "VK_ERROR_OUT_OF_POOL_MEMORY_KHR"; }
   if (value == -1000072003) { return "VK_ERROR_INVALID_EXTERNAL_HANDLE_KHR"; }
   if (value == -1000161000) { return "VK_ERROR_FRAGMENTATION_EXT"; }
+  if (value == -1000174001) { return "VK_ERROR_NOT_PERMITTED_EXT"; }
   if (value == -1000257000) { return "VK_ERROR_INVALID_DEVICE_ADDRESS_EXT"; }
   if (value == -1000257000) { return "VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS_KHR"; }
+  if (value == 1000297000) { return "VK_PIPELINE_COMPILE_REQUIRED_EXT"; }
   if (value == 1000297000) { return "VK_ERROR_PIPELINE_COMPILE_REQUIRED_EXT"; }
   if (value == 2147483647) { return "VK_RESULT_MAX_ENUM"; }
   return "UNKNOWN VkResult";
@@ -4847,6 +5241,58 @@ const char *VkStructureType_debug_str(int value) {
   if (value == 1000257002) { return "VK_STRUCTURE_TYPE_BUFFER_OPAQUE_CAPTURE_ADDRESS_CREATE_INFO"; }
   if (value == 1000257003) { return "VK_STRUCTURE_TYPE_MEMORY_OPAQUE_CAPTURE_ADDRESS_ALLOCATE_INFO"; }
   if (value == 1000257004) { return "VK_STRUCTURE_TYPE_DEVICE_MEMORY_OPAQUE_CAPTURE_ADDRESS_INFO"; }
+  if (value == 53) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES"; }
+  if (value == 54) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_PROPERTIES"; }
+  if (value == 1000192000) { return "VK_STRUCTURE_TYPE_PIPELINE_CREATION_FEEDBACK_CREATE_INFO"; }
+  if (value == 1000215000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_TERMINATE_INVOCATION_FEATURES"; }
+  if (value == 1000245000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TOOL_PROPERTIES"; }
+  if (value == 1000276000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DEMOTE_TO_HELPER_INVOCATION_FEATURES"; }
+  if (value == 1000295000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRIVATE_DATA_FEATURES"; }
+  if (value == 1000295001) { return "VK_STRUCTURE_TYPE_DEVICE_PRIVATE_DATA_CREATE_INFO"; }
+  if (value == 1000295002) { return "VK_STRUCTURE_TYPE_PRIVATE_DATA_SLOT_CREATE_INFO"; }
+  if (value == 1000297000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_CREATION_CACHE_CONTROL_FEATURES"; }
+  if (value == 1000314000) { return "VK_STRUCTURE_TYPE_MEMORY_BARRIER_2"; }
+  if (value == 1000314001) { return "VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER_2"; }
+  if (value == 1000314002) { return "VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2"; }
+  if (value == 1000314003) { return "VK_STRUCTURE_TYPE_DEPENDENCY_INFO"; }
+  if (value == 1000314004) { return "VK_STRUCTURE_TYPE_SUBMIT_INFO_2"; }
+  if (value == 1000314005) { return "VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO"; }
+  if (value == 1000314006) { return "VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO"; }
+  if (value == 1000314007) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES"; }
+  if (value == 1000325000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ZERO_INITIALIZE_WORKGROUP_MEMORY_FEATURES"; }
+  if (value == 1000335000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_ROBUSTNESS_FEATURES"; }
+  if (value == 1000337000) { return "VK_STRUCTURE_TYPE_COPY_BUFFER_INFO_2"; }
+  if (value == 1000337001) { return "VK_STRUCTURE_TYPE_COPY_IMAGE_INFO_2"; }
+  if (value == 1000337002) { return "VK_STRUCTURE_TYPE_COPY_BUFFER_TO_IMAGE_INFO_2"; }
+  if (value == 1000337003) { return "VK_STRUCTURE_TYPE_COPY_IMAGE_TO_BUFFER_INFO_2"; }
+  if (value == 1000337004) { return "VK_STRUCTURE_TYPE_BLIT_IMAGE_INFO_2"; }
+  if (value == 1000337005) { return "VK_STRUCTURE_TYPE_RESOLVE_IMAGE_INFO_2"; }
+  if (value == 1000337006) { return "VK_STRUCTURE_TYPE_BUFFER_COPY_2"; }
+  if (value == 1000337007) { return "VK_STRUCTURE_TYPE_IMAGE_COPY_2"; }
+  if (value == 1000337008) { return "VK_STRUCTURE_TYPE_IMAGE_BLIT_2"; }
+  if (value == 1000337009) { return "VK_STRUCTURE_TYPE_BUFFER_IMAGE_COPY_2"; }
+  if (value == 1000337010) { return "VK_STRUCTURE_TYPE_IMAGE_RESOLVE_2"; }
+  if (value == 1000225000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_SIZE_CONTROL_PROPERTIES"; }
+  if (value == 1000225001) { return "VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_REQUIRED_SUBGROUP_SIZE_CREATE_INFO"; }
+  if (value == 1000225002) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_SIZE_CONTROL_FEATURES"; }
+  if (value == 1000138000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_FEATURES"; }
+  if (value == 1000138001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_PROPERTIES"; }
+  if (value == 1000138002) { return "VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_INLINE_UNIFORM_BLOCK"; }
+  if (value == 1000138003) { return "VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_INLINE_UNIFORM_BLOCK_CREATE_INFO"; }
+  if (value == 1000066000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXTURE_COMPRESSION_ASTC_HDR_FEATURES"; }
+  if (value == 1000044000) { return "VK_STRUCTURE_TYPE_RENDERING_INFO"; }
+  if (value == 1000044001) { return "VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO"; }
+  if (value == 1000044002) { return "VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO"; }
+  if (value == 1000044003) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES"; }
+  if (value == 1000044004) { return "VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_RENDERING_INFO"; }
+  if (value == 1000280000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_INTEGER_DOT_PRODUCT_FEATURES"; }
+  if (value == 1000280001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_INTEGER_DOT_PRODUCT_PROPERTIES"; }
+  if (value == 1000281001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXEL_BUFFER_ALIGNMENT_PROPERTIES"; }
+  if (value == 1000360000) { return "VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_3"; }
+  if (value == 1000413000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_4_FEATURES"; }
+  if (value == 1000413001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_4_PROPERTIES"; }
+  if (value == 1000413002) { return "VK_STRUCTURE_TYPE_DEVICE_BUFFER_MEMORY_REQUIREMENTS"; }
+  if (value == 1000413003) { return "VK_STRUCTURE_TYPE_DEVICE_IMAGE_MEMORY_REQUIREMENTS"; }
   if (value == 1000001000) { return "VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR"; }
   if (value == 1000001001) { return "VK_STRUCTURE_TYPE_PRESENT_INFO_KHR"; }
   if (value == 1000060007) { return "VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_CAPABILITIES_KHR"; }
@@ -4884,7 +5330,9 @@ const char *VkStructureType_debug_str(int value) {
   if (value == 1000023013) { return "VK_STRUCTURE_TYPE_VIDEO_PROFILES_KHR"; }
   if (value == 1000023014) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_FORMAT_INFO_KHR"; }
   if (value == 1000023015) { return "VK_STRUCTURE_TYPE_VIDEO_FORMAT_PROPERTIES_KHR"; }
+  if (value == 1000023016) { return "VK_STRUCTURE_TYPE_QUEUE_FAMILY_QUERY_RESULT_STATUS_PROPERTIES_2_KHR"; }
   if (value == 1000024000) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_INFO_KHR"; }
+  if (value == 1000024001) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_CAPABILITIES_KHR"; }
   if (value == 1000026000) { return "VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_IMAGE_CREATE_INFO_NV"; }
   if (value == 1000026001) { return "VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_BUFFER_CREATE_INFO_NV"; }
   if (value == 1000026002) { return "VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV"; }
@@ -4897,38 +5345,35 @@ const char *VkStructureType_debug_str(int value) {
   if (value == 1000030000) { return "VK_STRUCTURE_TYPE_IMAGE_VIEW_HANDLE_INFO_NVX"; }
   if (value == 1000030001) { return "VK_STRUCTURE_TYPE_IMAGE_VIEW_ADDRESS_PROPERTIES_NVX"; }
   if (value == 1000038000) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_CAPABILITIES_EXT"; }
-  if (value == 1000038001) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_CREATE_INFO_EXT"; }
-  if (value == 1000038002) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_PARAMETERS_CREATE_INFO_EXT"; }
-  if (value == 1000038003) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_PARAMETERS_ADD_INFO_EXT"; }
-  if (value == 1000038004) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_VCL_FRAME_INFO_EXT"; }
-  if (value == 1000038005) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_DPB_SLOT_INFO_EXT"; }
-  if (value == 1000038006) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_NALU_SLICE_EXT"; }
-  if (value == 1000038007) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_EMIT_PICTURE_PARAMETERS_EXT"; }
-  if (value == 1000038008) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_PROFILE_EXT"; }
+  if (value == 1000038001) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_PARAMETERS_CREATE_INFO_EXT"; }
+  if (value == 1000038002) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_PARAMETERS_ADD_INFO_EXT"; }
+  if (value == 1000038003) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_VCL_FRAME_INFO_EXT"; }
+  if (value == 1000038004) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_DPB_SLOT_INFO_EXT"; }
+  if (value == 1000038005) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_NALU_SLICE_EXT"; }
+  if (value == 1000038006) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_EMIT_PICTURE_PARAMETERS_EXT"; }
+  if (value == 1000038007) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_PROFILE_EXT"; }
+  if (value == 1000038008) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_RATE_CONTROL_INFO_EXT"; }
+  if (value == 1000038009) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_RATE_CONTROL_LAYER_INFO_EXT"; }
+  if (value == 1000038010) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_REFERENCE_LISTS_EXT"; }
   if (value == 1000039000) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_CAPABILITIES_EXT"; }
-  if (value == 1000039001) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_SESSION_CREATE_INFO_EXT"; }
-  if (value == 1000039002) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_SESSION_PARAMETERS_CREATE_INFO_EXT"; }
-  if (value == 1000039003) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_SESSION_PARAMETERS_ADD_INFO_EXT"; }
-  if (value == 1000039004) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_VCL_FRAME_INFO_EXT"; }
-  if (value == 1000039005) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_DPB_SLOT_INFO_EXT"; }
-  if (value == 1000039006) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_NALU_SLICE_EXT"; }
-  if (value == 1000039007) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_EMIT_PICTURE_PARAMETERS_EXT"; }
-  if (value == 1000039008) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_PROFILE_EXT"; }
-  if (value == 1000039009) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_REFERENCE_LISTS_EXT"; }
+  if (value == 1000039001) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_SESSION_PARAMETERS_CREATE_INFO_EXT"; }
+  if (value == 1000039002) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_SESSION_PARAMETERS_ADD_INFO_EXT"; }
+  if (value == 1000039003) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_VCL_FRAME_INFO_EXT"; }
+  if (value == 1000039004) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_DPB_SLOT_INFO_EXT"; }
+  if (value == 1000039005) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_NALU_SLICE_SEGMENT_EXT"; }
+  if (value == 1000039006) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_EMIT_PICTURE_PARAMETERS_EXT"; }
+  if (value == 1000039007) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_PROFILE_EXT"; }
+  if (value == 1000039008) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_REFERENCE_LISTS_EXT"; }
+  if (value == 1000039009) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_RATE_CONTROL_INFO_EXT"; }
+  if (value == 1000039010) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_RATE_CONTROL_LAYER_INFO_EXT"; }
   if (value == 1000040000) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_CAPABILITIES_EXT"; }
-  if (value == 1000040001) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_CREATE_INFO_EXT"; }
-  if (value == 1000040002) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PICTURE_INFO_EXT"; }
-  if (value == 1000040003) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_MVC_EXT"; }
-  if (value == 1000040004) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PROFILE_EXT"; }
-  if (value == 1000040005) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_CREATE_INFO_EXT"; }
-  if (value == 1000040006) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_ADD_INFO_EXT"; }
-  if (value == 1000040007) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_DPB_SLOT_INFO_EXT"; }
+  if (value == 1000040001) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PICTURE_INFO_EXT"; }
+  if (value == 1000040002) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_MVC_EXT"; }
+  if (value == 1000040003) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PROFILE_EXT"; }
+  if (value == 1000040004) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_CREATE_INFO_EXT"; }
+  if (value == 1000040005) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_ADD_INFO_EXT"; }
+  if (value == 1000040006) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_DPB_SLOT_INFO_EXT"; }
   if (value == 1000041000) { return "VK_STRUCTURE_TYPE_TEXTURE_LOD_GATHER_FORMAT_PROPERTIES_AMD"; }
-  if (value == 1000044000) { return "VK_STRUCTURE_TYPE_RENDERING_INFO_KHR"; }
-  if (value == 1000044001) { return "VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR"; }
-  if (value == 1000044002) { return "VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR"; }
-  if (value == 1000044003) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR"; }
-  if (value == 1000044004) { return "VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_RENDERING_INFO_KHR"; }
   if (value == 1000044006) { return "VK_STRUCTURE_TYPE_RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT_INFO_KHR"; }
   if (value == 1000044007) { return "VK_STRUCTURE_TYPE_RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT_INFO_EXT"; }
   if (value == 1000044008) { return "VK_STRUCTURE_TYPE_ATTACHMENT_SAMPLE_COUNT_INFO_AMD"; }
@@ -4942,7 +5387,6 @@ const char *VkStructureType_debug_str(int value) {
   if (value == 1000058000) { return "VK_STRUCTURE_TYPE_WIN32_KEYED_MUTEX_ACQUIRE_RELEASE_INFO_NV"; }
   if (value == 1000061000) { return "VK_STRUCTURE_TYPE_VALIDATION_FLAGS_EXT"; }
   if (value == 1000062000) { return "VK_STRUCTURE_TYPE_VI_SURFACE_CREATE_INFO_NN"; }
-  if (value == 1000066000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXTURE_COMPRESSION_ASTC_HDR_FEATURES_EXT"; }
   if (value == 1000067000) { return "VK_STRUCTURE_TYPE_IMAGE_VIEW_ASTC_DECODE_MODE_EXT"; }
   if (value == 1000067001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ASTC_DECODE_FEATURES_EXT"; }
   if (value == 1000073000) { return "VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_KHR"; }
@@ -5015,10 +5459,6 @@ const char *VkStructureType_debug_str(int value) {
   if (value == 1000129004) { return "VK_STRUCTURE_TYPE_MEMORY_GET_ANDROID_HARDWARE_BUFFER_INFO_ANDROID"; }
   if (value == 1000129005) { return "VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_ANDROID"; }
   if (value == 1000129006) { return "VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_FORMAT_PROPERTIES_2_ANDROID"; }
-  if (value == 1000138000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_FEATURES_EXT"; }
-  if (value == 1000138001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_PROPERTIES_EXT"; }
-  if (value == 1000138002) { return "VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_INLINE_UNIFORM_BLOCK_EXT"; }
-  if (value == 1000138003) { return "VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_INLINE_UNIFORM_BLOCK_CREATE_INFO_EXT"; }
   if (value == 1000143000) { return "VK_STRUCTURE_TYPE_SAMPLE_LOCATIONS_INFO_EXT"; }
   if (value == 1000143001) { return "VK_STRUCTURE_TYPE_RENDER_PASS_SAMPLE_LOCATIONS_BEGIN_INFO_EXT"; }
   if (value == 1000143002) { return "VK_STRUCTURE_TYPE_PIPELINE_SAMPLE_LOCATIONS_STATE_CREATE_INFO_EXT"; }
@@ -5081,7 +5521,6 @@ const char *VkStructureType_debug_str(int value) {
   if (value == 1000166001) { return "VK_STRUCTURE_TYPE_PIPELINE_REPRESENTATIVE_FRAGMENT_TEST_STATE_CREATE_INFO_NV"; }
   if (value == 1000170000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_VIEW_IMAGE_FORMAT_INFO_EXT"; }
   if (value == 1000170001) { return "VK_STRUCTURE_TYPE_FILTER_CUBIC_IMAGE_VIEW_IMAGE_FORMAT_PROPERTIES_EXT"; }
-  if (value == 1000174000) { return "VK_STRUCTURE_TYPE_DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_EXT"; }
   if (value == 1000178000) { return "VK_STRUCTURE_TYPE_IMPORT_MEMORY_HOST_POINTER_INFO_EXT"; }
   if (value == 1000178001) { return "VK_STRUCTURE_TYPE_MEMORY_HOST_POINTER_PROPERTIES_EXT"; }
   if (value == 1000178002) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_HOST_PROPERTIES_EXT"; }
@@ -5090,18 +5529,19 @@ const char *VkStructureType_debug_str(int value) {
   if (value == 1000184000) { return "VK_STRUCTURE_TYPE_CALIBRATED_TIMESTAMP_INFO_EXT"; }
   if (value == 1000185000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_AMD"; }
   if (value == 1000187000) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_CAPABILITIES_EXT"; }
-  if (value == 1000187001) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_SESSION_CREATE_INFO_EXT"; }
-  if (value == 1000187002) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_SESSION_PARAMETERS_CREATE_INFO_EXT"; }
-  if (value == 1000187003) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_SESSION_PARAMETERS_ADD_INFO_EXT"; }
-  if (value == 1000187004) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_PROFILE_EXT"; }
-  if (value == 1000187005) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_PICTURE_INFO_EXT"; }
-  if (value == 1000187006) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_DPB_SLOT_INFO_EXT"; }
+  if (value == 1000187001) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_SESSION_PARAMETERS_CREATE_INFO_EXT"; }
+  if (value == 1000187002) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_SESSION_PARAMETERS_ADD_INFO_EXT"; }
+  if (value == 1000187003) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_PROFILE_EXT"; }
+  if (value == 1000187004) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_PICTURE_INFO_EXT"; }
+  if (value == 1000187005) { return "VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_DPB_SLOT_INFO_EXT"; }
+  if (value == 1000174000) { return "VK_STRUCTURE_TYPE_DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_KHR"; }
+  if (value == 1000388000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GLOBAL_PRIORITY_QUERY_FEATURES_KHR"; }
+  if (value == 1000388001) { return "VK_STRUCTURE_TYPE_QUEUE_FAMILY_GLOBAL_PRIORITY_PROPERTIES_KHR"; }
   if (value == 1000189000) { return "VK_STRUCTURE_TYPE_DEVICE_MEMORY_OVERALLOCATION_CREATE_INFO_AMD"; }
   if (value == 1000190000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_PROPERTIES_EXT"; }
   if (value == 1000190001) { return "VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_DIVISOR_STATE_CREATE_INFO_EXT"; }
   if (value == 1000190002) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT"; }
   if (value == 1000191000) { return "VK_STRUCTURE_TYPE_PRESENT_FRAME_TOKEN_GGP"; }
-  if (value == 1000192000) { return "VK_STRUCTURE_TYPE_PIPELINE_CREATION_FEEDBACK_CREATE_INFO_EXT"; }
   if (value == 1000201000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMPUTE_SHADER_DERIVATIVES_FEATURES_NV"; }
   if (value == 1000202000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV"; }
   if (value == 1000202001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_NV"; }
@@ -5122,14 +5562,10 @@ const char *VkStructureType_debug_str(int value) {
   if (value == 1000213000) { return "VK_STRUCTURE_TYPE_DISPLAY_NATIVE_HDR_SURFACE_CAPABILITIES_AMD"; }
   if (value == 1000213001) { return "VK_STRUCTURE_TYPE_SWAPCHAIN_DISPLAY_NATIVE_HDR_CREATE_INFO_AMD"; }
   if (value == 1000214000) { return "VK_STRUCTURE_TYPE_IMAGEPIPE_SURFACE_CREATE_INFO_FUCHSIA"; }
-  if (value == 1000215000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_TERMINATE_INVOCATION_FEATURES_KHR"; }
   if (value == 1000217000) { return "VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT"; }
   if (value == 1000218000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_FEATURES_EXT"; }
   if (value == 1000218001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_PROPERTIES_EXT"; }
   if (value == 1000218002) { return "VK_STRUCTURE_TYPE_RENDER_PASS_FRAGMENT_DENSITY_MAP_CREATE_INFO_EXT"; }
-  if (value == 1000225000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_SIZE_CONTROL_PROPERTIES_EXT"; }
-  if (value == 1000225001) { return "VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_REQUIRED_SUBGROUP_SIZE_CREATE_INFO_EXT"; }
-  if (value == 1000225002) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_SIZE_CONTROL_FEATURES_EXT"; }
   if (value == 1000226000) { return "VK_STRUCTURE_TYPE_FRAGMENT_SHADING_RATE_ATTACHMENT_INFO_KHR"; }
   if (value == 1000226001) { return "VK_STRUCTURE_TYPE_PIPELINE_FRAGMENT_SHADING_RATE_STATE_CREATE_INFO_KHR"; }
   if (value == 1000226002) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_PROPERTIES_KHR"; }
@@ -5145,7 +5581,6 @@ const char *VkStructureType_debug_str(int value) {
   if (value == 1000240000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEDICATED_ALLOCATION_IMAGE_ALIASING_FEATURES_NV"; }
   if (value == 1000244000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES_EXT"; }
   if (value == 1000244002) { return "VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_CREATE_INFO_EXT"; }
-  if (value == 1000245000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TOOL_PROPERTIES_EXT"; }
   if (value == 1000247000) { return "VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT"; }
   if (value == 1000248000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_WAIT_FEATURES_KHR"; }
   if (value == 1000249000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_MATRIX_FEATURES_NV"; }
@@ -5176,7 +5611,6 @@ const char *VkStructureType_debug_str(int value) {
   if (value == 1000269004) { return "VK_STRUCTURE_TYPE_PIPELINE_EXECUTABLE_STATISTIC_KHR"; }
   if (value == 1000269005) { return "VK_STRUCTURE_TYPE_PIPELINE_EXECUTABLE_INTERNAL_REPRESENTATION_KHR"; }
   if (value == 1000273000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_FLOAT_2_FEATURES_EXT"; }
-  if (value == 1000276000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DEMOTE_TO_HELPER_INVOCATION_FEATURES_EXT"; }
   if (value == 1000277000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEVICE_GENERATED_COMMANDS_PROPERTIES_NV"; }
   if (value == 1000277001) { return "VK_STRUCTURE_TYPE_GRAPHICS_SHADER_GROUP_CREATE_INFO_NV"; }
   if (value == 1000277002) { return "VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_SHADER_GROUPS_CREATE_INFO_NV"; }
@@ -5187,10 +5621,7 @@ const char *VkStructureType_debug_str(int value) {
   if (value == 1000277007) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEVICE_GENERATED_COMMANDS_FEATURES_NV"; }
   if (value == 1000278000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INHERITED_VIEWPORT_SCISSOR_FEATURES_NV"; }
   if (value == 1000278001) { return "VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_VIEWPORT_SCISSOR_INFO_NV"; }
-  if (value == 1000280000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_INTEGER_DOT_PRODUCT_FEATURES_KHR"; }
-  if (value == 1000280001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_INTEGER_DOT_PRODUCT_PROPERTIES_KHR"; }
   if (value == 1000281000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXEL_BUFFER_ALIGNMENT_FEATURES_EXT"; }
-  if (value == 1000281001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXEL_BUFFER_ALIGNMENT_PROPERTIES_EXT"; }
   if (value == 1000282000) { return "VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_RENDER_PASS_TRANSFORM_INFO_QCOM"; }
   if (value == 1000282001) { return "VK_STRUCTURE_TYPE_RENDER_PASS_TRANSFORM_BEGIN_INFO_QCOM"; }
   if (value == 1000284000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEVICE_MEMORY_REPORT_FEATURES_EXT"; }
@@ -5204,26 +5635,18 @@ const char *VkStructureType_debug_str(int value) {
   if (value == 1000290000) { return "VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR"; }
   if (value == 1000294000) { return "VK_STRUCTURE_TYPE_PRESENT_ID_KHR"; }
   if (value == 1000294001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_ID_FEATURES_KHR"; }
-  if (value == 1000295000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRIVATE_DATA_FEATURES_EXT"; }
-  if (value == 1000295001) { return "VK_STRUCTURE_TYPE_DEVICE_PRIVATE_DATA_CREATE_INFO_EXT"; }
-  if (value == 1000295002) { return "VK_STRUCTURE_TYPE_PRIVATE_DATA_SLOT_CREATE_INFO_EXT"; }
-  if (value == 1000297000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_CREATION_CACHE_CONTROL_FEATURES_EXT"; }
   if (value == 1000299000) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_INFO_KHR"; }
   if (value == 1000299001) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_RATE_CONTROL_INFO_KHR"; }
+  if (value == 1000299002) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_RATE_CONTROL_LAYER_INFO_KHR"; }
+  if (value == 1000299003) { return "VK_STRUCTURE_TYPE_VIDEO_ENCODE_CAPABILITIES_KHR"; }
   if (value == 1000300000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DIAGNOSTICS_CONFIG_FEATURES_NV"; }
   if (value == 1000300001) { return "VK_STRUCTURE_TYPE_DEVICE_DIAGNOSTICS_CONFIG_CREATE_INFO_NV"; }
-  if (value == 1000314000) { return "VK_STRUCTURE_TYPE_MEMORY_BARRIER_2_KHR"; }
-  if (value == 1000314001) { return "VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER_2_KHR"; }
-  if (value == 1000314002) { return "VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2_KHR"; }
-  if (value == 1000314003) { return "VK_STRUCTURE_TYPE_DEPENDENCY_INFO_KHR"; }
-  if (value == 1000314004) { return "VK_STRUCTURE_TYPE_SUBMIT_INFO_2_KHR"; }
-  if (value == 1000314005) { return "VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO_KHR"; }
-  if (value == 1000314006) { return "VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO_KHR"; }
-  if (value == 1000314007) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES_KHR"; }
   if (value == 1000314008) { return "VK_STRUCTURE_TYPE_QUEUE_FAMILY_CHECKPOINT_PROPERTIES_2_NV"; }
   if (value == 1000314009) { return "VK_STRUCTURE_TYPE_CHECKPOINT_DATA_2_NV"; }
+  if (value == 1000320000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GRAPHICS_PIPELINE_LIBRARY_FEATURES_EXT"; }
+  if (value == 1000320001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GRAPHICS_PIPELINE_LIBRARY_PROPERTIES_EXT"; }
+  if (value == 1000320002) { return "VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_LIBRARY_CREATE_INFO_EXT"; }
   if (value == 1000323000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_SUBGROUP_UNIFORM_CONTROL_FLOW_FEATURES_KHR"; }
-  if (value == 1000325000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ZERO_INITIALIZE_WORKGROUP_MEMORY_FEATURES_KHR"; }
   if (value == 1000326000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_ENUMS_PROPERTIES_NV"; }
   if (value == 1000326001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_ENUMS_FEATURES_NV"; }
   if (value == 1000326002) { return "VK_STRUCTURE_TYPE_PIPELINE_FRAGMENT_SHADING_RATE_ENUM_STATE_CREATE_INFO_NV"; }
@@ -5234,20 +5657,9 @@ const char *VkStructureType_debug_str(int value) {
   if (value == 1000332000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_2_FEATURES_EXT"; }
   if (value == 1000332001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_2_PROPERTIES_EXT"; }
   if (value == 1000333000) { return "VK_STRUCTURE_TYPE_COPY_COMMAND_TRANSFORM_INFO_QCOM"; }
-  if (value == 1000335000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_ROBUSTNESS_FEATURES_EXT"; }
   if (value == 1000336000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_WORKGROUP_MEMORY_EXPLICIT_LAYOUT_FEATURES_KHR"; }
-  if (value == 1000337000) { return "VK_STRUCTURE_TYPE_COPY_BUFFER_INFO_2_KHR"; }
-  if (value == 1000337001) { return "VK_STRUCTURE_TYPE_COPY_IMAGE_INFO_2_KHR"; }
-  if (value == 1000337002) { return "VK_STRUCTURE_TYPE_COPY_BUFFER_TO_IMAGE_INFO_2_KHR"; }
-  if (value == 1000337003) { return "VK_STRUCTURE_TYPE_COPY_IMAGE_TO_BUFFER_INFO_2_KHR"; }
-  if (value == 1000337004) { return "VK_STRUCTURE_TYPE_BLIT_IMAGE_INFO_2_KHR"; }
-  if (value == 1000337005) { return "VK_STRUCTURE_TYPE_RESOLVE_IMAGE_INFO_2_KHR"; }
-  if (value == 1000337006) { return "VK_STRUCTURE_TYPE_BUFFER_COPY_2_KHR"; }
-  if (value == 1000337007) { return "VK_STRUCTURE_TYPE_IMAGE_COPY_2_KHR"; }
-  if (value == 1000337008) { return "VK_STRUCTURE_TYPE_IMAGE_BLIT_2_KHR"; }
-  if (value == 1000337009) { return "VK_STRUCTURE_TYPE_BUFFER_IMAGE_COPY_2_KHR"; }
-  if (value == 1000337010) { return "VK_STRUCTURE_TYPE_IMAGE_RESOLVE_2_KHR"; }
   if (value == 1000340000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_4444_FORMATS_FEATURES_EXT"; }
+  if (value == 1000342000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_FEATURES_ARM"; }
   if (value == 1000344000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RGBA10X6_FORMATS_FEATURES_EXT"; }
   if (value == 1000346000) { return "VK_STRUCTURE_TYPE_DIRECTFB_SURFACE_CREATE_INFO_EXT"; }
   if (value == 1000351000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MUTABLE_DESCRIPTOR_TYPE_FEATURES_VALVE"; }
@@ -5256,8 +5668,9 @@ const char *VkStructureType_debug_str(int value) {
   if (value == 1000352001) { return "VK_STRUCTURE_TYPE_VERTEX_INPUT_BINDING_DESCRIPTION_2_EXT"; }
   if (value == 1000352002) { return "VK_STRUCTURE_TYPE_VERTEX_INPUT_ATTRIBUTE_DESCRIPTION_2_EXT"; }
   if (value == 1000353000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRM_PROPERTIES_EXT"; }
+  if (value == 1000355000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLIP_CONTROL_FEATURES_EXT"; }
+  if (value == 1000355001) { return "VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_DEPTH_CLIP_CONTROL_CREATE_INFO_EXT"; }
   if (value == 1000356000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRIMITIVE_TOPOLOGY_LIST_RESTART_FEATURES_EXT"; }
-  if (value == 1000360000) { return "VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_3_KHR"; }
   if (value == 1000364000) { return "VK_STRUCTURE_TYPE_IMPORT_MEMORY_ZIRCON_HANDLE_INFO_FUCHSIA"; }
   if (value == 1000364001) { return "VK_STRUCTURE_TYPE_MEMORY_ZIRCON_HANDLE_PROPERTIES_FUCHSIA"; }
   if (value == 1000364002) { return "VK_STRUCTURE_TYPE_MEMORY_GET_ZIRCON_HANDLE_INFO_FUCHSIA"; }
@@ -5283,20 +5696,30 @@ const char *VkStructureType_debug_str(int value) {
   if (value == 1000378000) { return "VK_STRUCTURE_TYPE_SCREEN_SURFACE_CREATE_INFO_QNX"; }
   if (value == 1000381000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COLOR_WRITE_ENABLE_FEATURES_EXT"; }
   if (value == 1000381001) { return "VK_STRUCTURE_TYPE_PIPELINE_COLOR_WRITE_CREATE_INFO_EXT"; }
-  if (value == 1000388000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GLOBAL_PRIORITY_QUERY_FEATURES_EXT"; }
-  if (value == 1000388001) { return "VK_STRUCTURE_TYPE_QUEUE_FAMILY_GLOBAL_PRIORITY_PROPERTIES_EXT"; }
+  if (value == 1000382000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRIMITIVES_GENERATED_QUERY_FEATURES_EXT"; }
+  if (value == 1000391000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_VIEW_MIN_LOD_FEATURES_EXT"; }
+  if (value == 1000391001) { return "VK_STRUCTURE_TYPE_IMAGE_VIEW_MIN_LOD_CREATE_INFO_EXT"; }
   if (value == 1000392000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTI_DRAW_FEATURES_EXT"; }
   if (value == 1000392001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTI_DRAW_PROPERTIES_EXT"; }
+  if (value == 1000393000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_2D_VIEW_OF_3D_FEATURES_EXT"; }
   if (value == 1000411000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BORDER_COLOR_SWIZZLE_FEATURES_EXT"; }
   if (value == 1000411001) { return "VK_STRUCTURE_TYPE_SAMPLER_BORDER_COLOR_COMPONENT_MAPPING_CREATE_INFO_EXT"; }
   if (value == 1000412000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PAGEABLE_DEVICE_LOCAL_MEMORY_FEATURES_EXT"; }
-  if (value == 1000413000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_4_FEATURES_KHR"; }
-  if (value == 1000413001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_4_PROPERTIES_KHR"; }
-  if (value == 1000413002) { return "VK_STRUCTURE_TYPE_DEVICE_BUFFER_MEMORY_REQUIREMENTS_KHR"; }
-  if (value == 1000413003) { return "VK_STRUCTURE_TYPE_DEVICE_IMAGE_MEMORY_REQUIREMENTS_KHR"; }
+  if (value == 1000420000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_SET_HOST_MAPPING_FEATURES_VALVE"; }
+  if (value == 1000420001) { return "VK_STRUCTURE_TYPE_DESCRIPTOR_SET_BINDING_REFERENCE_VALVE"; }
+  if (value == 1000420002) { return "VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_HOST_MAPPING_INFO_VALVE"; }
+  if (value == 1000425000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_OFFSET_FEATURES_QCOM"; }
+  if (value == 1000425001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_OFFSET_PROPERTIES_QCOM"; }
+  if (value == 1000425002) { return "VK_STRUCTURE_TYPE_SUBPASS_FRAGMENT_DENSITY_MAP_OFFSET_END_INFO_QCOM"; }
+  if (value == 1000430000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LINEAR_COLOR_ATTACHMENT_FEATURES_NV"; }
   if (value == 1000120000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES"; }
   if (value == 1000063000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETER_FEATURES"; }
   if (value == 1000011000) { return "VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT"; }
+  if (value == 1000044000) { return "VK_STRUCTURE_TYPE_RENDERING_INFO_KHR"; }
+  if (value == 1000044001) { return "VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR"; }
+  if (value == 1000044002) { return "VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR"; }
+  if (value == 1000044003) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR"; }
+  if (value == 1000044004) { return "VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_RENDERING_INFO_KHR"; }
   if (value == 1000044008) { return "VK_STRUCTURE_TYPE_ATTACHMENT_SAMPLE_COUNT_INFO_NV"; }
   if (value == 1000053000) { return "VK_STRUCTURE_TYPE_RENDER_PASS_MULTIVIEW_CREATE_INFO_KHR"; }
   if (value == 1000053001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHR"; }
@@ -5317,6 +5740,7 @@ const char *VkStructureType_debug_str(int value) {
   if (value == 1000060006) { return "VK_STRUCTURE_TYPE_DEVICE_GROUP_BIND_SPARSE_INFO_KHR"; }
   if (value == 1000060013) { return "VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_DEVICE_GROUP_INFO_KHR"; }
   if (value == 1000060014) { return "VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_DEVICE_GROUP_INFO_KHR"; }
+  if (value == 1000066000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXTURE_COMPRESSION_ASTC_HDR_FEATURES_EXT"; }
   if (value == 1000070000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GROUP_PROPERTIES_KHR"; }
   if (value == 1000070001) { return "VK_STRUCTURE_TYPE_DEVICE_GROUP_DEVICE_CREATE_INFO_KHR"; }
   if (value == 1000071000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_IMAGE_FORMAT_INFO_KHR"; }
@@ -5359,6 +5783,10 @@ const char *VkStructureType_debug_str(int value) {
   if (value == 1000127001) { return "VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO_KHR"; }
   if (value == 1000130000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_FILTER_MINMAX_PROPERTIES_EXT"; }
   if (value == 1000130001) { return "VK_STRUCTURE_TYPE_SAMPLER_REDUCTION_MODE_CREATE_INFO_EXT"; }
+  if (value == 1000138000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_FEATURES_EXT"; }
+  if (value == 1000138001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_PROPERTIES_EXT"; }
+  if (value == 1000138002) { return "VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_INLINE_UNIFORM_BLOCK_EXT"; }
+  if (value == 1000138003) { return "VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_INLINE_UNIFORM_BLOCK_CREATE_INFO_EXT"; }
   if (value == 1000146000) { return "VK_STRUCTURE_TYPE_BUFFER_MEMORY_REQUIREMENTS_INFO_2_KHR"; }
   if (value == 1000146001) { return "VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2_KHR"; }
   if (value == 1000146002) { return "VK_STRUCTURE_TYPE_IMAGE_SPARSE_MEMORY_REQUIREMENTS_INFO_2_KHR"; }
@@ -5380,9 +5808,11 @@ const char *VkStructureType_debug_str(int value) {
   if (value == 1000161004) { return "VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_LAYOUT_SUPPORT_EXT"; }
   if (value == 1000168000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_3_PROPERTIES_KHR"; }
   if (value == 1000168001) { return "VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_SUPPORT_KHR"; }
+  if (value == 1000174000) { return "VK_STRUCTURE_TYPE_DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_EXT"; }
   if (value == 1000175000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_SUBGROUP_EXTENDED_TYPES_FEATURES_KHR"; }
   if (value == 1000177000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR"; }
   if (value == 1000180000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES_KHR"; }
+  if (value == 1000192000) { return "VK_STRUCTURE_TYPE_PIPELINE_CREATION_FEEDBACK_CREATE_INFO_EXT"; }
   if (value == 1000196000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES_KHR"; }
   if (value == 1000197000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT_CONTROLS_PROPERTIES_KHR"; }
   if (value == 1000199000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_STENCIL_RESOLVE_PROPERTIES_KHR"; }
@@ -5395,12 +5825,17 @@ const char *VkStructureType_debug_str(int value) {
   if (value == 1000207005) { return "VK_STRUCTURE_TYPE_SEMAPHORE_SIGNAL_INFO_KHR"; }
   if (value == 1000210000) { return "VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO_INTEL"; }
   if (value == 1000211000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES_KHR"; }
+  if (value == 1000215000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_TERMINATE_INVOCATION_FEATURES_KHR"; }
   if (value == 1000221000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT"; }
+  if (value == 1000225000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_SIZE_CONTROL_PROPERTIES_EXT"; }
+  if (value == 1000225001) { return "VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_REQUIRED_SUBGROUP_SIZE_CREATE_INFO_EXT"; }
+  if (value == 1000225002) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_SIZE_CONTROL_FEATURES_EXT"; }
   if (value == 1000241000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SEPARATE_DEPTH_STENCIL_LAYOUTS_FEATURES_KHR"; }
   if (value == 1000241001) { return "VK_STRUCTURE_TYPE_ATTACHMENT_REFERENCE_STENCIL_LAYOUT_KHR"; }
   if (value == 1000241002) { return "VK_STRUCTURE_TYPE_ATTACHMENT_DESCRIPTION_STENCIL_LAYOUT_KHR"; }
   if (value == 1000244000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_ADDRESS_FEATURES_EXT"; }
   if (value == 1000244001) { return "VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO_EXT"; }
+  if (value == 1000245000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TOOL_PROPERTIES_EXT"; }
   if (value == 1000246000) { return "VK_STRUCTURE_TYPE_IMAGE_STENCIL_USAGE_CREATE_INFO_EXT"; }
   if (value == 1000253000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_UNIFORM_BUFFER_STANDARD_LAYOUT_FEATURES_KHR"; }
   if (value == 1000257000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES_KHR"; }
@@ -5409,6 +5844,42 @@ const char *VkStructureType_debug_str(int value) {
   if (value == 1000257003) { return "VK_STRUCTURE_TYPE_MEMORY_OPAQUE_CAPTURE_ADDRESS_ALLOCATE_INFO_KHR"; }
   if (value == 1000257004) { return "VK_STRUCTURE_TYPE_DEVICE_MEMORY_OPAQUE_CAPTURE_ADDRESS_INFO_KHR"; }
   if (value == 1000261000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_HOST_QUERY_RESET_FEATURES_EXT"; }
+  if (value == 1000276000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DEMOTE_TO_HELPER_INVOCATION_FEATURES_EXT"; }
+  if (value == 1000280000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_INTEGER_DOT_PRODUCT_FEATURES_KHR"; }
+  if (value == 1000280001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_INTEGER_DOT_PRODUCT_PROPERTIES_KHR"; }
+  if (value == 1000281001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXEL_BUFFER_ALIGNMENT_PROPERTIES_EXT"; }
+  if (value == 1000295000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRIVATE_DATA_FEATURES_EXT"; }
+  if (value == 1000295001) { return "VK_STRUCTURE_TYPE_DEVICE_PRIVATE_DATA_CREATE_INFO_EXT"; }
+  if (value == 1000295002) { return "VK_STRUCTURE_TYPE_PRIVATE_DATA_SLOT_CREATE_INFO_EXT"; }
+  if (value == 1000297000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_CREATION_CACHE_CONTROL_FEATURES_EXT"; }
+  if (value == 1000314000) { return "VK_STRUCTURE_TYPE_MEMORY_BARRIER_2_KHR"; }
+  if (value == 1000314001) { return "VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER_2_KHR"; }
+  if (value == 1000314002) { return "VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2_KHR"; }
+  if (value == 1000314003) { return "VK_STRUCTURE_TYPE_DEPENDENCY_INFO_KHR"; }
+  if (value == 1000314004) { return "VK_STRUCTURE_TYPE_SUBMIT_INFO_2_KHR"; }
+  if (value == 1000314005) { return "VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO_KHR"; }
+  if (value == 1000314006) { return "VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO_KHR"; }
+  if (value == 1000314007) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES_KHR"; }
+  if (value == 1000325000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ZERO_INITIALIZE_WORKGROUP_MEMORY_FEATURES_KHR"; }
+  if (value == 1000335000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_ROBUSTNESS_FEATURES_EXT"; }
+  if (value == 1000337000) { return "VK_STRUCTURE_TYPE_COPY_BUFFER_INFO_2_KHR"; }
+  if (value == 1000337001) { return "VK_STRUCTURE_TYPE_COPY_IMAGE_INFO_2_KHR"; }
+  if (value == 1000337002) { return "VK_STRUCTURE_TYPE_COPY_BUFFER_TO_IMAGE_INFO_2_KHR"; }
+  if (value == 1000337003) { return "VK_STRUCTURE_TYPE_COPY_IMAGE_TO_BUFFER_INFO_2_KHR"; }
+  if (value == 1000337004) { return "VK_STRUCTURE_TYPE_BLIT_IMAGE_INFO_2_KHR"; }
+  if (value == 1000337005) { return "VK_STRUCTURE_TYPE_RESOLVE_IMAGE_INFO_2_KHR"; }
+  if (value == 1000337006) { return "VK_STRUCTURE_TYPE_BUFFER_COPY_2_KHR"; }
+  if (value == 1000337007) { return "VK_STRUCTURE_TYPE_IMAGE_COPY_2_KHR"; }
+  if (value == 1000337008) { return "VK_STRUCTURE_TYPE_IMAGE_BLIT_2_KHR"; }
+  if (value == 1000337009) { return "VK_STRUCTURE_TYPE_BUFFER_IMAGE_COPY_2_KHR"; }
+  if (value == 1000337010) { return "VK_STRUCTURE_TYPE_IMAGE_RESOLVE_2_KHR"; }
+  if (value == 1000360000) { return "VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_3_KHR"; }
+  if (value == 1000388000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GLOBAL_PRIORITY_QUERY_FEATURES_EXT"; }
+  if (value == 1000388001) { return "VK_STRUCTURE_TYPE_QUEUE_FAMILY_GLOBAL_PRIORITY_PROPERTIES_EXT"; }
+  if (value == 1000413000) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_4_FEATURES_KHR"; }
+  if (value == 1000413001) { return "VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_4_PROPERTIES_KHR"; }
+  if (value == 1000413002) { return "VK_STRUCTURE_TYPE_DEVICE_BUFFER_MEMORY_REQUIREMENTS_KHR"; }
+  if (value == 1000413003) { return "VK_STRUCTURE_TYPE_DEVICE_IMAGE_MEMORY_REQUIREMENTS_KHR"; }
   if (value == 2147483647) { return "VK_STRUCTURE_TYPE_MAX_ENUM"; }
   return "UNKNOWN VkStructureType";
 }
@@ -5438,10 +5909,11 @@ void VkSubgroupFeatureFlagBits_debug_print(int flags, int indent) {
   if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_PARTITIONED_BIT_NV", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBGROUP_FEATURE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
-const char *VkSubmitFlagBitsKHR_debug_str(int value) {
+const char *VkSubmitFlagBits_debug_str(int value) {
+  if (value == 1) { return "VK_SUBMIT_PROTECTED_BIT"; }
   if (value == 1) { return "VK_SUBMIT_PROTECTED_BIT_KHR"; }
-  if (value == 2147483647) { return "VK_SUBMIT_FLAG_BITS_MAX_ENUM_KHR"; }
-  return "UNKNOWN VkSubmitFlagBitsKHR";
+  if (value == 2147483647) { return "VK_SUBMIT_FLAG_BITS_MAX_ENUM"; }
+  return "UNKNOWN VkSubmitFlagBits";
 }
 const char *VkSubpassContents_debug_str(int value) {
   if (value == 0) { return "VK_SUBPASS_CONTENTS_INLINE"; }
@@ -5454,6 +5926,9 @@ const char *VkSubpassDescriptionFlagBits_debug_str(int value) {
   if (value == 2) { return "VK_SUBPASS_DESCRIPTION_PER_VIEW_POSITION_X_ONLY_BIT_NVX"; }
   if (value == 4) { return "VK_SUBPASS_DESCRIPTION_FRAGMENT_REGION_BIT_QCOM"; }
   if (value == 8) { return "VK_SUBPASS_DESCRIPTION_SHADER_RESOLVE_BIT_QCOM"; }
+  if (value == 16) { return "VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_COLOR_ACCESS_BIT_ARM"; }
+  if (value == 32) { return "VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_ARM"; }
+  if (value == 64) { return "VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_ARM"; }
   if (value == 2147483647) { return "VK_SUBPASS_DESCRIPTION_FLAG_BITS_MAX_ENUM"; }
   return "UNKNOWN VkSubpassDescriptionFlagBits";
 }
@@ -5463,6 +5938,9 @@ void VkSubpassDescriptionFlagBits_debug_print(int flags, int indent) {
   if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBPASS_DESCRIPTION_PER_VIEW_POSITION_X_ONLY_BIT_NVX", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBPASS_DESCRIPTION_FRAGMENT_REGION_BIT_QCOM", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBPASS_DESCRIPTION_SHADER_RESOLVE_BIT_QCOM", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_COLOR_ACCESS_BIT_ARM", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_ARM", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_ARM", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_SUBPASS_DESCRIPTION_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkSurfaceCounterFlagBitsEXT_debug_str(int value) {
@@ -5529,27 +6007,37 @@ const char *VkTimeDomainEXT_debug_str(int value) {
   if (value == 2147483647) { return "VK_TIME_DOMAIN_MAX_ENUM_EXT"; }
   return "UNKNOWN VkTimeDomainEXT";
 }
-const char *VkToolPurposeFlagBitsEXT_debug_str(int value) {
+const char *VkToolPurposeFlagBits_debug_str(int value) {
+  if (value == 1) { return "VK_TOOL_PURPOSE_VALIDATION_BIT"; }
+  if (value == 2) { return "VK_TOOL_PURPOSE_PROFILING_BIT"; }
+  if (value == 4) { return "VK_TOOL_PURPOSE_TRACING_BIT"; }
+  if (value == 8) { return "VK_TOOL_PURPOSE_ADDITIONAL_FEATURES_BIT"; }
+  if (value == 16) { return "VK_TOOL_PURPOSE_MODIFYING_FEATURES_BIT"; }
+  if (value == 32) { return "VK_TOOL_PURPOSE_DEBUG_REPORTING_BIT_EXT"; }
+  if (value == 64) { return "VK_TOOL_PURPOSE_DEBUG_MARKERS_BIT_EXT"; }
   if (value == 1) { return "VK_TOOL_PURPOSE_VALIDATION_BIT_EXT"; }
   if (value == 2) { return "VK_TOOL_PURPOSE_PROFILING_BIT_EXT"; }
   if (value == 4) { return "VK_TOOL_PURPOSE_TRACING_BIT_EXT"; }
   if (value == 8) { return "VK_TOOL_PURPOSE_ADDITIONAL_FEATURES_BIT_EXT"; }
   if (value == 16) { return "VK_TOOL_PURPOSE_MODIFYING_FEATURES_BIT_EXT"; }
-  if (value == 32) { return "VK_TOOL_PURPOSE_DEBUG_REPORTING_BIT_EXT"; }
-  if (value == 64) { return "VK_TOOL_PURPOSE_DEBUG_MARKERS_BIT_EXT"; }
-  if (value == 2147483647) { return "VK_TOOL_PURPOSE_FLAG_BITS_MAX_ENUM_EXT"; }
-  return "UNKNOWN VkToolPurposeFlagBitsEXT";
+  if (value == 2147483647) { return "VK_TOOL_PURPOSE_FLAG_BITS_MAX_ENUM"; }
+  return "UNKNOWN VkToolPurposeFlagBits";
 }
-void VkToolPurposeFlagBitsEXT_debug_print(int flags, int indent) {
-  log_debug(INDENT_FORMAT_STRING "VkToolPurposeFlagBitsEXT: ", INDENT_FORMAT_ARGS(0));
+void VkToolPurposeFlagBits_debug_print(int flags, int indent) {
+  log_debug(INDENT_FORMAT_STRING "VkToolPurposeFlagBits: ", INDENT_FORMAT_ARGS(0));
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_VALIDATION_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_PROFILING_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_TRACING_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_ADDITIONAL_FEATURES_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_MODIFYING_FEATURES_BIT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_DEBUG_REPORTING_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_DEBUG_MARKERS_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_VALIDATION_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_PROFILING_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_TRACING_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_ADDITIONAL_FEATURES_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_MODIFYING_FEATURES_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_DEBUG_REPORTING_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_DEBUG_MARKERS_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_TOOL_PURPOSE_FLAG_BITS_MAX_ENUM", INDENT_FORMAT_ARGS(2)); }
 }
 const char *VkValidationCacheHeaderVersionEXT_debug_str(int value) {
   if (value == 1) { return "VK_VALIDATION_CACHE_HEADER_VERSION_ONE_EXT"; }
@@ -5670,6 +6158,13 @@ void VkVideoComponentBitDepthFlagBitsKHR_debug_print(int flags, int indent) {
   if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_COMPONENT_BIT_DEPTH_12_BIT_KHR", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_COMPONENT_BIT_DEPTH_FLAG_BITS_MAX_ENUM_KHR", INDENT_FORMAT_ARGS(2)); }
 }
+const char *VkVideoDecodeCapabilityFlagBitsKHR_debug_str(int value) {
+  if (value == 0) { return "VK_VIDEO_DECODE_CAPABILITY_DEFAULT_KHR"; }
+  if (value == 1) { return "VK_VIDEO_DECODE_CAPABILITY_DPB_AND_OUTPUT_COINCIDE_BIT_KHR"; }
+  if (value == 2) { return "VK_VIDEO_DECODE_CAPABILITY_DPB_AND_OUTPUT_DISTINCT_BIT_KHR"; }
+  if (value == 2147483647) { return "VK_VIDEO_DECODE_CAPABILITY_FLAG_BITS_MAX_ENUM_KHR"; }
+  return "UNKNOWN VkVideoDecodeCapabilityFlagBitsKHR";
+}
 const char *VkVideoDecodeFlagBitsKHR_debug_str(int value) {
   if (value == 0) { return "VK_VIDEO_DECODE_DEFAULT_KHR"; }
   if (value == 1) { return "VK_VIDEO_DECODE_RESERVED_0_BIT_KHR"; }
@@ -5683,6 +6178,12 @@ const char *VkVideoDecodeH264PictureLayoutFlagBitsEXT_debug_str(int value) {
   if (value == 2147483647) { return "VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_FLAG_BITS_MAX_ENUM_EXT"; }
   return "UNKNOWN VkVideoDecodeH264PictureLayoutFlagBitsEXT";
 }
+const char *VkVideoEncodeCapabilityFlagBitsKHR_debug_str(int value) {
+  if (value == 0) { return "VK_VIDEO_ENCODE_CAPABILITY_DEFAULT_KHR"; }
+  if (value == 1) { return "VK_VIDEO_ENCODE_CAPABILITY_PRECEDING_EXTERNALLY_ENCODED_BYTES_BIT_KHR"; }
+  if (value == 2147483647) { return "VK_VIDEO_ENCODE_CAPABILITY_FLAG_BITS_MAX_ENUM_KHR"; }
+  return "UNKNOWN VkVideoEncodeCapabilityFlagBitsKHR";
+}
 const char *VkVideoEncodeFlagBitsKHR_debug_str(int value) {
   if (value == 0) { return "VK_VIDEO_ENCODE_DEFAULT_KHR"; }
   if (value == 1) { return "VK_VIDEO_ENCODE_RESERVED_0_BIT_KHR"; }
@@ -5690,40 +6191,58 @@ const char *VkVideoEncodeFlagBitsKHR_debug_str(int value) {
   return "UNKNOWN VkVideoEncodeFlagBitsKHR";
 }
 const char *VkVideoEncodeH264CapabilityFlagBitsEXT_debug_str(int value) {
-  if (value == 1) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_CABAC_BIT_EXT"; }
-  if (value == 2) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_CAVLC_BIT_EXT"; }
-  if (value == 4) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_WEIGHTED_BI_PRED_IMPLICIT_BIT_EXT"; }
-  if (value == 8) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_TRANSFORM_8X8_BIT_EXT"; }
-  if (value == 16) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_CHROMA_QP_OFFSET_BIT_EXT"; }
-  if (value == 32) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_SECOND_CHROMA_QP_OFFSET_BIT_EXT"; }
-  if (value == 64) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_DISABLED_BIT_EXT"; }
-  if (value == 128) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_ENABLED_BIT_EXT"; }
-  if (value == 256) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_PARTIAL_BIT_EXT"; }
-  if (value == 512) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_MULTIPLE_SLICE_PER_FRAME_BIT_EXT"; }
-  if (value == 1024) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_EVENLY_DISTRIBUTED_SLICE_SIZE_BIT_EXT"; }
+  if (value == 1) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_DIRECT_8X8_INFERENCE_BIT_EXT"; }
+  if (value == 2) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_SEPARATE_COLOUR_PLANE_BIT_EXT"; }
+  if (value == 4) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_QPPRIME_Y_ZERO_TRANSFORM_BYPASS_BIT_EXT"; }
+  if (value == 8) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_SCALING_LISTS_BIT_EXT"; }
+  if (value == 16) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_HRD_COMPLIANCE_BIT_EXT"; }
+  if (value == 32) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_CHROMA_QP_OFFSET_BIT_EXT"; }
+  if (value == 64) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_SECOND_CHROMA_QP_OFFSET_BIT_EXT"; }
+  if (value == 128) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_PIC_INIT_QP_MINUS26_BIT_EXT"; }
+  if (value == 256) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_WEIGHTED_PRED_BIT_EXT"; }
+  if (value == 512) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_WEIGHTED_BIPRED_EXPLICIT_BIT_EXT"; }
+  if (value == 1024) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_WEIGHTED_BIPRED_IMPLICIT_BIT_EXT"; }
+  if (value == 2048) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_WEIGHTED_PRED_NO_TABLE_BIT_EXT"; }
+  if (value == 4096) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_TRANSFORM_8X8_BIT_EXT"; }
+  if (value == 8192) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_CABAC_BIT_EXT"; }
+  if (value == 16384) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_CAVLC_BIT_EXT"; }
+  if (value == 32768) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_DISABLED_BIT_EXT"; }
+  if (value == 65536) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_ENABLED_BIT_EXT"; }
+  if (value == 131072) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_PARTIAL_BIT_EXT"; }
+  if (value == 262144) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_DISABLE_DIRECT_SPATIAL_MV_PRED_BIT_EXT"; }
+  if (value == 524288) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_MULTIPLE_SLICE_PER_FRAME_BIT_EXT"; }
+  if (value == 1048576) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_SLICE_MB_COUNT_BIT_EXT"; }
+  if (value == 2097152) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_ROW_UNALIGNED_SLICE_BIT_EXT"; }
+  if (value == 4194304) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_DIFFERENT_SLICE_TYPE_BIT_EXT"; }
   if (value == 2147483647) { return "VK_VIDEO_ENCODE_H264_CAPABILITY_FLAG_BITS_MAX_ENUM_EXT"; }
   return "UNKNOWN VkVideoEncodeH264CapabilityFlagBitsEXT";
 }
 void VkVideoEncodeH264CapabilityFlagBitsEXT_debug_print(int flags, int indent) {
   log_debug(INDENT_FORMAT_STRING "VkVideoEncodeH264CapabilityFlagBitsEXT: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_CABAC_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_CAVLC_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_WEIGHTED_BI_PRED_IMPLICIT_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_TRANSFORM_8X8_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_CHROMA_QP_OFFSET_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_SECOND_CHROMA_QP_OFFSET_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_DISABLED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_ENABLED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_PARTIAL_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_MULTIPLE_SLICE_PER_FRAME_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_EVENLY_DISTRIBUTED_SLICE_SIZE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_DIRECT_8X8_INFERENCE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_SEPARATE_COLOUR_PLANE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_QPPRIME_Y_ZERO_TRANSFORM_BYPASS_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_SCALING_LISTS_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_HRD_COMPLIANCE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_CHROMA_QP_OFFSET_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_SECOND_CHROMA_QP_OFFSET_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_PIC_INIT_QP_MINUS26_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_WEIGHTED_PRED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_WEIGHTED_BIPRED_EXPLICIT_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_WEIGHTED_BIPRED_IMPLICIT_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_WEIGHTED_PRED_NO_TABLE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_TRANSFORM_8X8_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_CABAC_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_CAVLC_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_DISABLED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_ENABLED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_PARTIAL_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 262144) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_DISABLE_DIRECT_SPATIAL_MV_PRED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 524288) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_MULTIPLE_SLICE_PER_FRAME_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1048576) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_SLICE_MB_COUNT_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_ROW_UNALIGNED_SLICE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_DIFFERENT_SLICE_TYPE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
   if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H264_CAPABILITY_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
-}
-const char *VkVideoEncodeH264CreateFlagBitsEXT_debug_str(int value) {
-  if (value == 0) { return "VK_VIDEO_ENCODE_H264_CREATE_DEFAULT_EXT"; }
-  if (value == 1) { return "VK_VIDEO_ENCODE_H264_CREATE_RESERVED_0_BIT_EXT"; }
-  if (value == 2147483647) { return "VK_VIDEO_ENCODE_H264_CREATE_FLAG_BITS_MAX_ENUM_EXT"; }
-  return "UNKNOWN VkVideoEncodeH264CreateFlagBitsEXT";
 }
 const char *VkVideoEncodeH264InputModeFlagBitsEXT_debug_str(int value) {
   if (value == 1) { return "VK_VIDEO_ENCODE_H264_INPUT_MODE_FRAME_BIT_EXT"; }
@@ -5739,39 +6258,120 @@ const char *VkVideoEncodeH264OutputModeFlagBitsEXT_debug_str(int value) {
   if (value == 2147483647) { return "VK_VIDEO_ENCODE_H264_OUTPUT_MODE_FLAG_BITS_MAX_ENUM_EXT"; }
   return "UNKNOWN VkVideoEncodeH264OutputModeFlagBitsEXT";
 }
+const char *VkVideoEncodeH264RateControlStructureFlagBitsEXT_debug_str(int value) {
+  if (value == 0) { return "VK_VIDEO_ENCODE_H264_RATE_CONTROL_STRUCTURE_UNKNOWN_EXT"; }
+  if (value == 1) { return "VK_VIDEO_ENCODE_H264_RATE_CONTROL_STRUCTURE_FLAT_BIT_EXT"; }
+  if (value == 2) { return "VK_VIDEO_ENCODE_H264_RATE_CONTROL_STRUCTURE_DYADIC_BIT_EXT"; }
+  if (value == 2147483647) { return "VK_VIDEO_ENCODE_H264_RATE_CONTROL_STRUCTURE_FLAG_BITS_MAX_ENUM_EXT"; }
+  return "UNKNOWN VkVideoEncodeH264RateControlStructureFlagBitsEXT";
+}
+const char *VkVideoEncodeH265CapabilityFlagBitsEXT_debug_str(int value) {
+  if (value == 1) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_SEPARATE_COLOUR_PLANE_BIT_EXT"; }
+  if (value == 2) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_SCALING_LISTS_BIT_EXT"; }
+  if (value == 4) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_SAMPLE_ADAPTIVE_OFFSET_ENABLED_BIT_EXT"; }
+  if (value == 8) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_PCM_ENABLE_BIT_EXT"; }
+  if (value == 16) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_SPS_TEMPORAL_MVP_ENABLED_BIT_EXT"; }
+  if (value == 32) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_HRD_COMPLIANCE_BIT_EXT"; }
+  if (value == 64) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_INIT_QP_MINUS26_BIT_EXT"; }
+  if (value == 128) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_LOG2_PARALLEL_MERGE_LEVEL_MINUS2_BIT_EXT"; }
+  if (value == 256) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_SIGN_DATA_HIDING_ENABLED_BIT_EXT"; }
+  if (value == 512) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_TRANSFORM_SKIP_ENABLED_BIT_EXT"; }
+  if (value == 1024) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_TRANSFORM_SKIP_DISABLED_BIT_EXT"; }
+  if (value == 2048) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT_BIT_EXT"; }
+  if (value == 4096) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_WEIGHTED_PRED_BIT_EXT"; }
+  if (value == 8192) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_WEIGHTED_BIPRED_BIT_EXT"; }
+  if (value == 16384) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_WEIGHTED_PRED_NO_TABLE_BIT_EXT"; }
+  if (value == 32768) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_TRANSQUANT_BYPASS_ENABLED_BIT_EXT"; }
+  if (value == 65536) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_ENTROPY_CODING_SYNC_ENABLED_BIT_EXT"; }
+  if (value == 131072) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_DEBLOCKING_FILTER_OVERRIDE_ENABLED_BIT_EXT"; }
+  if (value == 262144) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_MULTIPLE_TILE_PER_FRAME_BIT_EXT"; }
+  if (value == 524288) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_MULTIPLE_SLICE_PER_TILE_BIT_EXT"; }
+  if (value == 1048576) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_MULTIPLE_TILE_PER_SLICE_BIT_EXT"; }
+  if (value == 2097152) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_SLICE_SEGMENT_CTB_COUNT_BIT_EXT"; }
+  if (value == 4194304) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_ROW_UNALIGNED_SLICE_SEGMENT_BIT_EXT"; }
+  if (value == 8388608) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_DEPENDENT_SLICE_SEGMENT_BIT_EXT"; }
+  if (value == 16777216) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_DIFFERENT_SLICE_TYPE_BIT_EXT"; }
+  if (value == 33554432) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_B_FRAME_IN_L1_LIST_BIT_EXT"; }
+  if (value == 2147483647) { return "VK_VIDEO_ENCODE_H265_CAPABILITY_FLAG_BITS_MAX_ENUM_EXT"; }
+  return "UNKNOWN VkVideoEncodeH265CapabilityFlagBitsEXT";
+}
+void VkVideoEncodeH265CapabilityFlagBitsEXT_debug_print(int flags, int indent) {
+  log_debug(INDENT_FORMAT_STRING "VkVideoEncodeH265CapabilityFlagBitsEXT: ", INDENT_FORMAT_ARGS(0));
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_SEPARATE_COLOUR_PLANE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_SCALING_LISTS_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_SAMPLE_ADAPTIVE_OFFSET_ENABLED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_PCM_ENABLE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_SPS_TEMPORAL_MVP_ENABLED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_HRD_COMPLIANCE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 64) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_INIT_QP_MINUS26_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 128) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_LOG2_PARALLEL_MERGE_LEVEL_MINUS2_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 256) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_SIGN_DATA_HIDING_ENABLED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 512) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_TRANSFORM_SKIP_ENABLED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1024) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_TRANSFORM_SKIP_DISABLED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2048) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4096) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_WEIGHTED_PRED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8192) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_WEIGHTED_BIPRED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16384) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_WEIGHTED_PRED_NO_TABLE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 32768) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_TRANSQUANT_BYPASS_ENABLED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 65536) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_ENTROPY_CODING_SYNC_ENABLED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 131072) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_DEBLOCKING_FILTER_OVERRIDE_ENABLED_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 262144) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_MULTIPLE_TILE_PER_FRAME_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 524288) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_MULTIPLE_SLICE_PER_TILE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1048576) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_MULTIPLE_TILE_PER_SLICE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2097152) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_SLICE_SEGMENT_CTB_COUNT_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4194304) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_ROW_UNALIGNED_SLICE_SEGMENT_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8388608) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_DEPENDENT_SLICE_SEGMENT_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16777216) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_DIFFERENT_SLICE_TYPE_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 33554432) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_B_FRAME_IN_L1_LIST_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CAPABILITY_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
+}
 const char *VkVideoEncodeH265CtbSizeFlagBitsEXT_debug_str(int value) {
-  if (value == 1) { return "VK_VIDEO_ENCODE_H265_CTB_SIZE_8_BIT_EXT"; }
-  if (value == 2) { return "VK_VIDEO_ENCODE_H265_CTB_SIZE_16_BIT_EXT"; }
-  if (value == 4) { return "VK_VIDEO_ENCODE_H265_CTB_SIZE_32_BIT_EXT"; }
-  if (value == 8) { return "VK_VIDEO_ENCODE_H265_CTB_SIZE_64_BIT_EXT"; }
+  if (value == 1) { return "VK_VIDEO_ENCODE_H265_CTB_SIZE_16_BIT_EXT"; }
+  if (value == 2) { return "VK_VIDEO_ENCODE_H265_CTB_SIZE_32_BIT_EXT"; }
+  if (value == 4) { return "VK_VIDEO_ENCODE_H265_CTB_SIZE_64_BIT_EXT"; }
   if (value == 2147483647) { return "VK_VIDEO_ENCODE_H265_CTB_SIZE_FLAG_BITS_MAX_ENUM_EXT"; }
   return "UNKNOWN VkVideoEncodeH265CtbSizeFlagBitsEXT";
 }
-void VkVideoEncodeH265CtbSizeFlagBitsEXT_debug_print(int flags, int indent) {
-  log_debug(INDENT_FORMAT_STRING "VkVideoEncodeH265CtbSizeFlagBitsEXT: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CTB_SIZE_8_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CTB_SIZE_16_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CTB_SIZE_32_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CTB_SIZE_64_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_CTB_SIZE_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
-}
 const char *VkVideoEncodeH265InputModeFlagBitsEXT_debug_str(int value) {
   if (value == 1) { return "VK_VIDEO_ENCODE_H265_INPUT_MODE_FRAME_BIT_EXT"; }
-  if (value == 2) { return "VK_VIDEO_ENCODE_H265_INPUT_MODE_SLICE_BIT_EXT"; }
+  if (value == 2) { return "VK_VIDEO_ENCODE_H265_INPUT_MODE_SLICE_SEGMENT_BIT_EXT"; }
   if (value == 4) { return "VK_VIDEO_ENCODE_H265_INPUT_MODE_NON_VCL_BIT_EXT"; }
   if (value == 2147483647) { return "VK_VIDEO_ENCODE_H265_INPUT_MODE_FLAG_BITS_MAX_ENUM_EXT"; }
   return "UNKNOWN VkVideoEncodeH265InputModeFlagBitsEXT";
 }
 const char *VkVideoEncodeH265OutputModeFlagBitsEXT_debug_str(int value) {
   if (value == 1) { return "VK_VIDEO_ENCODE_H265_OUTPUT_MODE_FRAME_BIT_EXT"; }
-  if (value == 2) { return "VK_VIDEO_ENCODE_H265_OUTPUT_MODE_SLICE_BIT_EXT"; }
+  if (value == 2) { return "VK_VIDEO_ENCODE_H265_OUTPUT_MODE_SLICE_SEGMENT_BIT_EXT"; }
   if (value == 4) { return "VK_VIDEO_ENCODE_H265_OUTPUT_MODE_NON_VCL_BIT_EXT"; }
   if (value == 2147483647) { return "VK_VIDEO_ENCODE_H265_OUTPUT_MODE_FLAG_BITS_MAX_ENUM_EXT"; }
   return "UNKNOWN VkVideoEncodeH265OutputModeFlagBitsEXT";
 }
+const char *VkVideoEncodeH265RateControlStructureFlagBitsEXT_debug_str(int value) {
+  if (value == 0) { return "VK_VIDEO_ENCODE_H265_RATE_CONTROL_STRUCTURE_UNKNOWN_EXT"; }
+  if (value == 1) { return "VK_VIDEO_ENCODE_H265_RATE_CONTROL_STRUCTURE_FLAT_BIT_EXT"; }
+  if (value == 2) { return "VK_VIDEO_ENCODE_H265_RATE_CONTROL_STRUCTURE_DYADIC_BIT_EXT"; }
+  if (value == 2147483647) { return "VK_VIDEO_ENCODE_H265_RATE_CONTROL_STRUCTURE_FLAG_BITS_MAX_ENUM_EXT"; }
+  return "UNKNOWN VkVideoEncodeH265RateControlStructureFlagBitsEXT";
+}
+const char *VkVideoEncodeH265TransformBlockSizeFlagBitsEXT_debug_str(int value) {
+  if (value == 1) { return "VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_4_BIT_EXT"; }
+  if (value == 2) { return "VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_8_BIT_EXT"; }
+  if (value == 4) { return "VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_16_BIT_EXT"; }
+  if (value == 8) { return "VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_32_BIT_EXT"; }
+  if (value == 2147483647) { return "VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_FLAG_BITS_MAX_ENUM_EXT"; }
+  return "UNKNOWN VkVideoEncodeH265TransformBlockSizeFlagBitsEXT";
+}
+void VkVideoEncodeH265TransformBlockSizeFlagBitsEXT_debug_print(int flags, int indent) {
+  log_debug(INDENT_FORMAT_STRING "VkVideoEncodeH265TransformBlockSizeFlagBitsEXT: ", INDENT_FORMAT_ARGS(0));
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_4_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_8_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_16_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_32_BIT_EXT", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2147483647) != 0) { log_debug(INDENT_FORMAT_STRING "VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_FLAG_BITS_MAX_ENUM_EXT", INDENT_FORMAT_ARGS(2)); }
+}
 const char *VkVideoEncodeRateControlFlagBitsKHR_debug_str(int value) {
   if (value == 0) { return "VK_VIDEO_ENCODE_RATE_CONTROL_DEFAULT_KHR"; }
-  if (value == 1) { return "VK_VIDEO_ENCODE_RATE_CONTROL_RESET_BIT_KHR"; }
+  if (value == 1) { return "VK_VIDEO_ENCODE_RATE_CONTROL_RESERVED_0_BIT_KHR"; }
   if (value == 2147483647) { return "VK_VIDEO_ENCODE_RATE_CONTROL_FLAG_BITS_MAX_ENUM_KHR"; }
   return "UNKNOWN VkVideoEncodeRateControlFlagBitsKHR";
 }

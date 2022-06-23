@@ -1,7 +1,7 @@
 /* Precompiled header for third-party libraries. */
 
 #define VK_ENABLE_BETA_EXTENSIONS
-#include "vulkan/vulkan.h"
+#include "../include/vulkan/vulkan.h"
 
 #include "SPIRV-Reflect/spirv_reflect.h"
 #include "meshoptimizer.h"
