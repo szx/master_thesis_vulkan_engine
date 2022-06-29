@@ -226,9 +226,14 @@ void write_font_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetInp
 
 int main(int argc, char *argv[]) {
   platform_create(argc, argv);
-  log_info("parsing arguments");
+
   asset_pipeline_input *input = NULL;
   parse_arguments(argc, argv, &input);
+  log_info("asset pipeline arguments: '%s', '%s', '%s', '%s'",
+           utstring_body(input->sourceAssetName), utstring_body(input->sourceAssetPath),
+           utstring_body(input->sourceAssetType), utstring_body(input->sourceAssetExt));
+  log_set_use_default_file(false);
+
   log_info("source asset type: '%s'", utstring_body(input->sourceAssetType));
   if (strcmp("empty_config", utstring_body(input->sourceAssetType)) == 0) {
     log_info("write default config");

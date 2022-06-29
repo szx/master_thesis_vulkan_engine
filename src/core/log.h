@@ -32,3 +32,5 @@ void log_pretty(log_level level, const char *func, const char *file, size_t line
 
 void log_set_file(UT_string *path);
 void log_close_file();
+
+void log_set_use_default_file(bool use);

@@ -32,6 +32,7 @@ void data_config_load(data_config *config) {
   UT_string *s = read_text_file(config->path);
   if (utstring_len(s) == 0) {
     log_error("failed to read config file '%s'", utstring_body(config->path));
+    utstring_free(s);
     return;
   }
   data_config_parse(config, s);

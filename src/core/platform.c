@@ -53,6 +53,7 @@ void log_create() {
   UT_string *path = get_executable_dir_file_path("", "log.txt");
   log_set_file(path);
   utstring_free(path);
+  log_set_use_default_file(true);
 }
 
 void log_destroy() { log_close_file(); }

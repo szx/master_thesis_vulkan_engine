@@ -130,11 +130,16 @@ add_custom_command(
 # run asset pipeline
 file(GLOB_RECURSE C_BIN_ASSET_PIPELINE_SOURCE "${C_SRC_DIR}/bin/asset_pipeline.c")
 file(GLOB_RECURSE PYTHON_ASSET_SCRIPTS "${SCRIPTS_PATH}/asset_*.py")
+
+set(ASSET_PIPELINE_STAMP_DIR "stamps")
+set(ASSET_PIPELINE_STAMP ${ASSET_PIPELINE_STAMP_DIR}/"asset_pipeline")
 add_custom_command(
         OUTPUT asset_pipeline.stamp
         DEPENDS ${ASSETS_GLTF_FILES} ${ASSETS_CUBEMAP_FILES} ${C_BIN_ASSET_PIPELINE_SOURCE} ${PYTHON_ASSET_SCRIPTS}
         COMMAND ${Python3_EXECUTABLE} ${SCRIPTS_PATH}/asset_pipeline.py ${CMAKE_CURRENT_BINARY_DIR}
         COMMAND ${CMAKE_COMMAND} -E touch asset_pipeline.stamp
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${ASSET_PIPELINE_STAMP_DIR}
+        COMMAND ${CMAKE_COMMAND} -E touch ${ASSET_PIPELINE_STAMP}
         COMMENT "Run asset pipeline.")
 add_custom_target(run_asset_pipeline DEPENDS asset_pipeline.stamp)
 add_dependencies(run_asset_pipeline copy_assets asset_pipeline)
