@@ -1,8 +1,9 @@
 *build*/
 CMakeLists.txt.user
 .idea/
-assets/gltf
-assets/cubemap
+assets/
+!assets/shaders/
+!assets/.clang-format
 venv/
 
 # This file is used to ignore files which are generated
