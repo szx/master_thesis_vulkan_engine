@@ -10,15 +10,14 @@
 void gltf_loading() {
   data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_asset);
   data_asset_db *assetDb = data_asset_db_create();
-  vulkan_device *vkd = vulkan_device_create(config, assetDb);
+  device *vkd = device_create(config, assetDb);
   UT_string *sceneName;
   utstring_alloc(sceneName, GLTF_NAME);
   UT_string *gltfPath = get_asset_file_path("gltf/" GLTF_NAME, GLTF_NAME ".gltf");
   UT_string *sceneConfigPath = get_asset_file_path("gltf/" GLTF_NAME, GLTF_NAME ".ini");
-  vulkan_scene_data *gltfSceneData = vulkan_scene_data_create_with_gltf_file(
-      sceneName, gltfPath, sceneConfigPath, config, assetDb);
-  vulkan_scene_data *assetDbSceneData =
-      vulkan_scene_data_create_with_asset_db(config, assetDb, sceneName);
+  scene_data *gltfSceneData =
+      scene_data_create_with_gltf_file(sceneName, gltfPath, sceneConfigPath, config, assetDb);
+  scene_data *assetDbSceneData = scene_data_create_with_asset_db(config, assetDb, sceneName);
 
   verify(strcmp(utstring_body(gltfSceneData->name), utstring_body(assetDbSceneData->name)) == 0);
   verify(gltfSceneData->key.value == assetDbSceneData->key.value);
@@ -30,10 +29,10 @@ void gltf_loading() {
                        utarray_front(assetDbPrimitive->_name->data),                               \
                        utarray_size(gltfPrimitive->_name->data)) == 0);
 
-  dl_foreach_elem(vulkan_asset_object *, assetDbNode, assetDbSceneData->objects) {
+  dl_foreach_elem(asset_object *, assetDbNode, assetDbSceneData->objects) {
     bool foundCorrespondingNode = false;
-    vulkan_asset_object *gltfNode;
-    dl_foreach_elem(vulkan_asset_object *, nodeIter, gltfSceneData->objects) {
+    asset_object *gltfNode;
+    dl_foreach_elem(asset_object *, nodeIter, gltfSceneData->objects) {
       if (nodeIter->key.value == assetDbNode->key.value) {
         foundCorrespondingNode = true;
         gltfNode = nodeIter;
@@ -43,19 +42,19 @@ void gltf_loading() {
     verify(foundCorrespondingNode == true);
     verify(core_memcmp(gltfNode->transform, assetDbNode->transform, sizeof(mat4)) == 0);
     verify(utarray_len(gltfNode->children) == utarray_len(assetDbNode->children));
-    vulkan_asset_mesh *gltfMesh = gltfNode->mesh;
-    vulkan_asset_mesh *assetDbMesh = assetDbNode->mesh;
+    asset_mesh *gltfMesh = gltfNode->mesh;
+    asset_mesh *assetDbMesh = assetDbNode->mesh;
     verify((gltfMesh == NULL && assetDbMesh == NULL) ||
            (gltfMesh->key.value == assetDbMesh->key.value));
-    vulkan_asset_camera *gltfCamera = gltfNode->camera;
-    vulkan_asset_camera *assetDbCamera = assetDbNode->camera;
+    asset_camera *gltfCamera = gltfNode->camera;
+    asset_camera *assetDbCamera = assetDbNode->camera;
     verify((gltfCamera == NULL && assetDbCamera == NULL) ||
            (gltfCamera->key.value == assetDbCamera->key.value));
 
     bool foundCorrespondingPrimitive = false;
-    dl_foreach_elem(vulkan_asset_primitive *, gltfPrimitive, gltfSceneData->primitives) {
-      vulkan_asset_primitive *assetDbPrimitive;
-      dl_foreach_elem(vulkan_asset_primitive *, primitiveIter, assetDbSceneData->primitives) {
+    dl_foreach_elem(asset_primitive *, gltfPrimitive, gltfSceneData->primitives) {
+      asset_primitive *assetDbPrimitive;
+      dl_foreach_elem(asset_primitive *, primitiveIter, assetDbSceneData->primitives) {
         if (gltfPrimitive->key.value == primitiveIter->key.value) {
           foundCorrespondingPrimitive = true;
           assetDbPrimitive = primitiveIter;
@@ -83,15 +82,14 @@ void gltf_loading() {
   utstring_free(gltfPath);
   utstring_free(sceneConfigPath);
   utstring_free(sceneName);
-  vulkan_scene_data_destroy(assetDbSceneData);
-  vulkan_scene_data_destroy(gltfSceneData);
-  vulkan_device_destroy(vkd);
+  scene_data_destroy(assetDbSceneData);
+  scene_data_destroy(gltfSceneData);
+  device_destroy(vkd);
   data_asset_db_destroy(assetDb);
   data_config_destroy(config);
 }
 
-void render_pass_record_no_op(vulkan_render_pass *renderPass,
-                              vulkan_render_pass_frame_state *frameState,
+void render_pass_record_no_op(render_pass *renderPass, render_pass_frame_state *frameState,
                               VkCommandBuffer commandBuffer) {
   // No-op.
 }
@@ -99,44 +97,44 @@ void render_pass_record_no_op(vulkan_render_pass *renderPass,
 void shaderc_compiling() {
   data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_asset);
   data_asset_db *assetDb = data_asset_db_create();
-  vulkan_device *vkd = vulkan_device_create(config, assetDb);
-  vulkan_swap_chain *vks = vulkan_swap_chain_create(vkd);
+  device *vkd = device_create(config, assetDb);
+  swap_chain *vks = swap_chain_create(vkd);
 
   UT_string *sceneName;
   utstring_alloc(sceneName, GLTF_NAME);
-  vulkan_renderer *renderer = vulkan_renderer_create(config, assetDb, vks, sceneName);
+  renderer *renderer = renderer_create(config, assetDb, vks, sceneName);
   utstring_free(sceneName);
 
-  vulkan_render_graph_add_image_resource(renderer->renderGraph, "depthBuffer",
-                                         vulkan_image_type_offscreen_depth_buffer);
+  render_graph_add_image_resource(renderer->renderGraph, "depthBuffer",
+                                  image_type_offscreen_depth_buffer);
 
-  vulkan_render_graph_add_render_pass(
+  render_graph_add_render_pass(
       renderer->renderGraph,
-      (vulkan_render_pass_desc){.vertexShader = "forward_vertex.glsl",
-                                .fragmentShader = "forward_fragment.glsl",
-                                .useOnscreenColorAttachment = true,
-                                .onscreenClearValue = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}},
-                                .offscreenColorAttachmentCount = 0,
-                                .offscreenDepthAttachment =
-                                    {
-                                        .name = "depthBuffer",
-                                        .depthWriteEnable = true,
-                                        .depthTestEnable = true,
-                                        .depthTestOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
-                                        .clearValue = {0.0f, 0},
-                                    },
-                                .colorBlendingType = vulkan_color_blending_type_none,
-                                .recordFunc = render_pass_record_no_op});
-  vulkan_render_graph_compile(renderer->renderGraph);
-  vulkan_renderer_debug_print(renderer);
+      (render_pass_desc){.vertexShader = "forward_vertex.glsl",
+                         .fragmentShader = "forward_fragment.glsl",
+                         .useOnscreenColorAttachment = true,
+                         .onscreenClearValue = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}},
+                         .offscreenColorAttachmentCount = 0,
+                         .offscreenDepthAttachment =
+                             {
+                                 .name = "depthBuffer",
+                                 .depthWriteEnable = true,
+                                 .depthTestEnable = true,
+                                 .depthTestOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
+                                 .clearValue = {0.0f, 0},
+                             },
+                         .colorBlendingType = color_blending_type_none,
+                         .recordFunc = render_pass_record_no_op});
+  render_graph_compile(renderer->renderGraph);
+  renderer_debug_print(renderer);
 
-  vulkan_render_pass *renderPass = renderer->renderGraph->renderPassElements->renderPass;
-  vulkan_shader *vertexShader = renderPass->shaderProgram->vertexShader;
-  vulkan_shader *fragmentShader = renderPass->shaderProgram->fragmentShader;
+  render_pass *renderPass = renderer->renderGraph->renderPassElements->renderPass;
+  shader *vertexShader = renderPass->shaderProgram->vertexShader;
+  shader *fragmentShader = renderPass->shaderProgram->fragmentShader;
 
   // verify shader
-  verify(vertexShader->type == vulkan_shader_type_vertex);
-  verify(fragmentShader->type == vulkan_shader_type_fragment);
+  verify(vertexShader->type == shader_type_vertex);
+  verify(fragmentShader->type == shader_type_fragment);
   verify(vertexShader->spvSize > 0);
   verify(fragmentShader->spvSize > 0);
   verify(vertexShader->module != VK_NULL_HANDLE);
@@ -149,20 +147,20 @@ void shaderc_compiling() {
   verify(utarray_len(fragmentShader->reflect->outputVariables) > 0);
   // TODO: check in vertex output variables match fragment input variables
 
-  vulkan_renderer_destroy(renderer);
-  vulkan_swap_chain_destroy(vks);
-  vulkan_device_destroy(vkd);
+  renderer_destroy(renderer);
+  swap_chain_destroy(vks);
+  device_destroy(vkd);
   data_asset_db_destroy(assetDb);
   data_config_destroy(config);
 }
 
-void assert_graph(vulkan_scene_graph *sceneGraph) {
+void assert_graph(scene_graph *sceneGraph) {
 
-  vulkan_scene_graph_debug_print(sceneGraph); /* scene tree */
-  vulkan_scene_tree *sceneTree = sceneGraph->sceneTree;
+  scene_graph_debug_print(sceneGraph); /* scene tree */
+  scene_tree *sceneTree = sceneGraph->sceneTree;
   verify(utarray_len(sceneTree->dirtyNodes) == 0);
   size_t primitiveNodeNum = 0;
-  dl_foreach_elem(vulkan_scene_tree_node *, sceneNode,
+  dl_foreach_elem(scene_tree_node *, sceneNode,
                   sceneTree->nodes) { /*log_debug("tree node: %p", sceneNode);*/
     if (sceneNode->object != NULL) {
       verify(utarray_len(sceneNode->childNodes) > 0 || sceneNode->object->camera != NULL);
@@ -174,12 +172,11 @@ void assert_graph(vulkan_scene_graph *sceneGraph) {
     verify(!sceneNode->dirty);
   }
   /* renderer cache */
-  vulkan_renderer_cache *rendererCache = sceneTree->rendererCache;
+  renderer_cache *rendererCache = sceneTree->rendererCache;
   size_t primitiveElementNum = 0;
-  dl_foreach_elem(vulkan_renderer_cache_primitive_element *, primitiveElement,
+  dl_foreach_elem(renderer_cache_primitive_element *, primitiveElement,
                   rendererCache->primitiveElements) {
-    if (primitiveElement->sourceType ==
-        vulkan_renderer_cache_primitive_element_source_type_scene_tree) {
+    if (primitiveElement->sourceType == renderer_cache_primitive_element_source_type_scene_tree) {
       primitiveElementNum++;
     }
   }
@@ -190,107 +187,105 @@ void assert_graph(vulkan_scene_graph *sceneGraph) {
 void scene_graph_building() {
   data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_asset);
   data_asset_db *assetDb = data_asset_db_create();
-  vulkan_device *vkd = vulkan_device_create(config, assetDb);
+  device *vkd = device_create(config, assetDb);
 
   UT_string *sceneName;
   utstring_alloc(sceneName, GLTF_NAME);
-  vulkan_scene_data *assetDbSceneData =
-      vulkan_scene_data_create_with_asset_db(config, assetDb, sceneName);
-  // vulkan_scene_data_debug_print(assetDbSceneData);
-  vulkan_renderer_cache *rendererCache = vulkan_renderer_cache_create(
-      assetDbSceneData, config->asset.graphicsMaxPrimitiveElementCount);
+  scene_data *assetDbSceneData = scene_data_create_with_asset_db(config, assetDb, sceneName);
+  // scene_data_debug_print(assetDbSceneData);
+  renderer_cache *rendererCache =
+      renderer_cache_create(assetDbSceneData, config->asset.graphicsMaxPrimitiveElementCount);
 
-  vulkan_scene_graph *sceneGraph = vulkan_scene_graph_create(assetDbSceneData, rendererCache);
+  scene_graph *sceneGraph = scene_graph_create(assetDbSceneData, rendererCache);
 
   log_info("Verify cache accumulation.");
-  vulkan_scene_graph_node *firstObjectNode =
-      *(vulkan_scene_graph_node **)utarray_front(sceneGraph->root->childNodes);
+  scene_graph_node *firstObjectNode =
+      *(scene_graph_node **)utarray_front(sceneGraph->root->childNodes);
   verify(firstObjectNode != NULL);
   verify(firstObjectNode->object != NULL);
   firstObjectNode->object->transform[0][0] = 2;
-  vulkan_scene_graph_set_dirty(sceneGraph, firstObjectNode);
-  vulkan_scene_tree_validate(sceneGraph->sceneTree);
+  scene_graph_set_dirty(sceneGraph, firstObjectNode);
+  scene_tree_validate(sceneGraph->sceneTree);
   assert_graph(sceneGraph);
 
-  vulkan_scene_tree_node *sceneTreeNode =
-      *(vulkan_scene_tree_node **)utarray_front(firstObjectNode->observers);
+  scene_tree_node *sceneTreeNode = *(scene_tree_node **)utarray_front(firstObjectNode->observers);
   while (sceneTreeNode != NULL) {
     if (utarray_len(sceneTreeNode->childNodes) > 0) {
-      sceneTreeNode = *(vulkan_scene_tree_node **)utarray_front(sceneTreeNode->childNodes);
+      sceneTreeNode = *(scene_tree_node **)utarray_front(sceneTreeNode->childNodes);
     } else {
       sceneTreeNode = NULL;
     }
   }
 
   // Verify adding new objects.
-  // FIXME: Rethink and refactor vulkan_scene_graph_add_object.
+  // FIXME: Rethink and refactor scene_graph_add_object.
   /*
-  vulkan_asset_object *secondObject = assetDbSceneData->objects;
+  asset_object *secondObject = assetDbSceneData->objects;
   ASSERT_NEQ(secondObject, NULL);
-  vulkan_scene_node *firstAddedNode =
-      vulkan_scene_graph_add_object(sceneGraph, firstObjectNode, secondObject);
-  vulkan_scene_graph_add_object(sceneGraph, firstObjectNode, secondObject);
-  vulkan_scene_tree_debug_print(sceneGraph->sceneTree);
-  vulkan_scene_tree_validate(sceneGraph->sceneTree);
+  scene_node *firstAddedNode =
+      scene_graph_add_object(sceneGraph, firstObjectNode, secondObject);
+  scene_graph_add_object(sceneGraph, firstObjectNode, secondObject);
+  scene_tree_debug_print(sceneGraph->sceneTree);
+  scene_tree_validate(sceneGraph->sceneTree);
   assert_graph(sceneGraph);
   ASSERT_EQ(utarray_len(firstObjectNode->childObjectNodes), 2);
-  vulkan_scene_graph_remove_object(sceneGraph, firstAddedNode);
-  vulkan_scene_graph_debug_print(sceneGraph);
+  scene_graph_remove_object(sceneGraph, firstAddedNode);
+  scene_graph_debug_print(sceneGraph);
   assert_graph(sceneGraph);
   ASSERT_EQ(utarray_len(firstObjectNode->childObjectNodes), 0);
 */
 
   log_info("Test batching.");
-  vulkan_batches *batches = vulkan_batches_create(vkd);
+  batches *batches = batches_create(vkd);
 
-  vulkan_batches_update(batches, vulkan_batch_instancing_policy_no_instancing);
-  vulkan_batches_debug_print(batches);
+  batches_update(batches, batch_instancing_policy_no_instancing);
+  batches_debug_print(batches);
   size_t batchNoInstancingLen = utarray_len(batches->array);
 
-  vulkan_batches_update(batches, vulkan_batch_instancing_policy_matching_vertex_attributes);
-  vulkan_batches_debug_print(batches);
+  batches_update(batches, batch_instancing_policy_matching_vertex_attributes);
+  batches_debug_print(batches);
   size_t batchVertexAttributesLen = utarray_len(batches->array);
   verify(batchVertexAttributesLen <= batchNoInstancingLen);
 
-  vulkan_batches_destroy(batches);
+  batches_destroy(batches);
 
   log_info("Test scene renderer.");
-  vulkan_swap_chain *vks = vulkan_swap_chain_create(vkd);
-  vulkan_renderer *renderer = vulkan_renderer_create(config, assetDb, vks, sceneName);
-  vulkan_render_graph_add_image_resource(renderer->renderGraph, "depthBuffer",
-                                         vulkan_image_type_offscreen_depth_buffer);
-  vulkan_render_graph_add_render_pass(
+  swap_chain *vks = swap_chain_create(vkd);
+  renderer *renderer = renderer_create(config, assetDb, vks, sceneName);
+  render_graph_add_image_resource(renderer->renderGraph, "depthBuffer",
+                                  image_type_offscreen_depth_buffer);
+  render_graph_add_render_pass(
       renderer->renderGraph,
-      (vulkan_render_pass_desc){.vertexShader = "forward_vertex.glsl",
-                                .fragmentShader = "forward_fragment.glsl",
-                                .useOnscreenColorAttachment = true,
-                                .onscreenClearValue = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}},
-                                .offscreenColorAttachmentCount = 0,
-                                .offscreenDepthAttachment =
-                                    {
-                                        .name = "depthBuffer",
-                                        .depthWriteEnable = true,
-                                        .depthTestEnable = true,
-                                        .depthTestOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
-                                        .clearValue = {0.0f, 0},
-                                    },
-                                .colorBlendingType = vulkan_color_blending_type_none,
-                                .recordFunc = render_pass_record_no_op});
+      (render_pass_desc){.vertexShader = "forward_vertex.glsl",
+                         .fragmentShader = "forward_fragment.glsl",
+                         .useOnscreenColorAttachment = true,
+                         .onscreenClearValue = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}},
+                         .offscreenColorAttachmentCount = 0,
+                         .offscreenDepthAttachment =
+                             {
+                                 .name = "depthBuffer",
+                                 .depthWriteEnable = true,
+                                 .depthTestEnable = true,
+                                 .depthTestOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
+                                 .clearValue = {0.0f, 0},
+                             },
+                         .colorBlendingType = color_blending_type_none,
+                         .recordFunc = render_pass_record_no_op});
 
-  vulkan_renderer_update(renderer);
-  vulkan_renderer_send_to_device(renderer);
-  vulkan_renderer_debug_print(renderer);
+  renderer_update(renderer);
+  renderer_send_to_device(renderer);
+  renderer_debug_print(renderer);
   // TODO: more renderer tests
   verify(renderer->renderState->unifiedGeometryBuffer->indexBuffer->totalSize > 0);
   verify(renderer->renderState->unifiedGeometryBuffer->vertexBuffer->totalSize > 0);
 
-  vulkan_renderer_destroy(renderer);
-  vulkan_swap_chain_destroy(vks);
-  vulkan_renderer_cache_destroy(rendererCache);
-  vulkan_scene_graph_destroy(sceneGraph);
-  vulkan_scene_data_destroy(assetDbSceneData);
+  renderer_destroy(renderer);
+  swap_chain_destroy(vks);
+  renderer_cache_destroy(rendererCache);
+  scene_graph_destroy(sceneGraph);
+  scene_data_destroy(assetDbSceneData);
   utstring_free(sceneName);
-  vulkan_device_destroy(vkd);
+  device_destroy(vkd);
   data_asset_db_destroy(assetDb);
   data_config_destroy(config);
 }

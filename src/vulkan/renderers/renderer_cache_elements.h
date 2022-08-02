@@ -11,30 +11,30 @@
 /* primitive renderer cache element */
 
 /// Describes which object has added a particular renderer cache primitive element.
-typedef enum vulkan_renderer_cache_primitive_element_source_type {
-  vulkan_renderer_cache_primitive_element_source_type_scene_tree,
-  vulkan_renderer_cache_primitive_element_source_type_basic,
-  vulkan_renderer_cache_primitive_element_source_type_count,
-} vulkan_renderer_cache_primitive_element_source_type;
+typedef enum renderer_cache_primitive_element_source_type {
+  renderer_cache_primitive_element_source_type_scene_tree,
+  renderer_cache_primitive_element_source_type_basic,
+  renderer_cache_primitive_element_source_type_count,
+} renderer_cache_primitive_element_source_type;
 
-typedef struct vulkan_renderer_cache_primitive_element {
-  vulkan_renderer_cache_primitive_element_source_type sourceType;
+typedef struct renderer_cache_primitive_element {
+  renderer_cache_primitive_element_source_type sourceType;
 
   /* cache state set by scene tree (or manually) */
   bool visible;
-  mat4 transform;                    ///< Accumulated from object node.
-  vulkan_asset_primitive *primitive; ///< Accumulated from primitive node.
-  vulkan_aabb aabb;                  ///< Accumulated from primitive node.
+  mat4 transform;             ///< Accumulated from object node.
+  asset_primitive *primitive; ///< Accumulated from primitive node.
+  aabb aabb;                  ///< Accumulated from primitive node.
 
   /* cache state set by vertex stream */
-  vulkan_vertex_stream_element vertexStreamElement;
+  vertex_stream_element vertexStreamElement;
 
   /* cache state set during draw call batching. */
   size_t instanceId; ///< Index in renderer cache, equals gl_InstanceIndex in shader thanks to
                      ///< draw call batching.
 
   /* cache state set during unified uniform buffer update */
-  vulkan_textures_material_element
+  textures_material_element
       *materialElement; ///< Contains index of material in materials array in textures.
 
 #if defined(DEBUG)
@@ -47,106 +47,97 @@ typedef struct vulkan_renderer_cache_primitive_element {
   bool _materialElementSet;
 #endif
 
-  struct vulkan_renderer_cache_primitive_element *prev, *next;
+  struct renderer_cache_primitive_element *prev, *next;
 
-} vulkan_renderer_cache_primitive_element;
+} renderer_cache_primitive_element;
 
-vulkan_renderer_cache_primitive_element *vulkan_renderer_cache_primitive_element_create(
-    vulkan_renderer_cache_primitive_element_source_type sourceType, bool visible, mat4 transform,
-    vulkan_asset_primitive *primitive, vulkan_aabb aabb);
+renderer_cache_primitive_element *
+renderer_cache_primitive_element_create(renderer_cache_primitive_element_source_type sourceType,
+                                        bool visible, mat4 transform, asset_primitive *primitive,
+                                        aabb aabb);
 
-void vulkan_renderer_cache_primitive_element_destroy(
-    vulkan_renderer_cache_primitive_element *element);
+void renderer_cache_primitive_element_destroy(renderer_cache_primitive_element *element);
 
-void vulkan_renderer_cache_primitive_set_vulkan_vertex_stream_element(
-    vulkan_renderer_cache_primitive_element *element,
-    vulkan_vertex_stream_element vertexStreamElement);
+void renderer_cache_primitive_set_vertex_stream_element(renderer_cache_primitive_element *element,
+                                                        vertex_stream_element vertexStreamElement);
 
-void vulkan_renderer_cache_primitive_set_instance_id(
-    vulkan_renderer_cache_primitive_element *element, size_t instanceId);
+void renderer_cache_primitive_set_instance_id(renderer_cache_primitive_element *element,
+                                              size_t instanceId);
 
-void vulkan_renderer_cache_primitive_set_material_element(
-    vulkan_renderer_cache_primitive_element *element,
-    vulkan_textures_material_element *materialElement);
+void renderer_cache_primitive_set_material_element(renderer_cache_primitive_element *element,
+                                                   textures_material_element *materialElement);
 
 #if defined(DEBUG)
-#define vulkan_renderer_cache_primitive_is_valid(_element, _field) (_element)->_##_field##Set
+#define renderer_cache_primitive_is_valid(_element, _field) (_element)->_##_field##Set
 #else
-#define vulkan_renderer_cache_primitive_is_valid(_element, _field) true
+#define renderer_cache_primitive_is_valid(_element, _field) true
 #endif
 
-void vulkan_renderer_cache_primitive_element_debug_print(
-    vulkan_renderer_cache_primitive_element *element);
+void renderer_cache_primitive_element_debug_print(renderer_cache_primitive_element *element);
 
 /* camera renderer cache element */
 
-typedef struct vulkan_renderer_cache_camera_element {
+typedef struct renderer_cache_camera_element {
   /* cache state accumulated from scene tree */
-  mat4 transform;              ///< Accumulated from object node.
-  vulkan_asset_camera *camera; ///< Accumulated from object node.
+  mat4 transform;       ///< Accumulated from object node.
+  asset_camera *camera; ///< Accumulated from object node.
 
-  struct vulkan_renderer_cache_camera_element *prev, *next;
-} vulkan_renderer_cache_camera_element;
+  struct renderer_cache_camera_element *prev, *next;
+} renderer_cache_camera_element;
 
-vulkan_renderer_cache_camera_element *
-vulkan_renderer_cache_camera_element_create(vulkan_asset_camera *camera, mat4 transform);
+renderer_cache_camera_element *renderer_cache_camera_element_create(asset_camera *camera,
+                                                                    mat4 transform);
 
-void vulkan_renderer_cache_camera_element_destroy(vulkan_renderer_cache_camera_element *element);
+void renderer_cache_camera_element_destroy(renderer_cache_camera_element *element);
 
-void vulkan_renderer_cache_camera_element_debug_print(
-    vulkan_renderer_cache_camera_element *element);
+void renderer_cache_camera_element_debug_print(renderer_cache_camera_element *element);
 
 /* direct light renderer cache element */
 
-typedef struct vulkan_renderer_cache_direct_light_element {
+typedef struct renderer_cache_direct_light_element {
   /* cache state accumulated from scene data */
-  vulkan_asset_direct_light *directLight; ///< Accumulated from scene data.
+  asset_direct_light *directLight; ///< Accumulated from scene data.
 
-  struct vulkan_renderer_cache_direct_light_element *prev, *next;
-} vulkan_renderer_cache_direct_light_element;
+  struct renderer_cache_direct_light_element *prev, *next;
+} renderer_cache_direct_light_element;
 
-vulkan_renderer_cache_direct_light_element *
-vulkan_renderer_cache_direct_light_element_create(vulkan_asset_direct_light *directLight);
+renderer_cache_direct_light_element *
+renderer_cache_direct_light_element_create(asset_direct_light *directLight);
 
-void vulkan_renderer_cache_direct_light_element_destroy(
-    vulkan_renderer_cache_direct_light_element *element);
+void renderer_cache_direct_light_element_destroy(renderer_cache_direct_light_element *element);
 
-void vulkan_renderer_cache_direct_light_element_debug_print(
-    vulkan_renderer_cache_direct_light_element *element);
+void renderer_cache_direct_light_element_debug_print(renderer_cache_direct_light_element *element);
 
 /* skybox renderer cache element */
 
-typedef struct vulkan_renderer_cache_skybox_element {
+typedef struct renderer_cache_skybox_element {
   /* cache state accumulated from scene tree */
-  vulkan_asset_skybox *skybox;
+  asset_skybox *skybox;
 
   /* cache state set during texture update */
-  vulkan_textures_texture_element *skyboxTextureElement;
+  textures_texture_element *skyboxTextureElement;
 
-} vulkan_renderer_cache_skybox_element;
+} renderer_cache_skybox_element;
 
-vulkan_renderer_cache_skybox_element *
-vulkan_renderer_cache_skybox_element_create(vulkan_asset_skybox *skybox);
+renderer_cache_skybox_element *renderer_cache_skybox_element_create(asset_skybox *skybox);
 
-void vulkan_renderer_cache_skybox_element_destroy(vulkan_renderer_cache_skybox_element *element);
+void renderer_cache_skybox_element_destroy(renderer_cache_skybox_element *element);
 
-void vulkan_renderer_cache_skybox_element_debug_print(
-    vulkan_renderer_cache_skybox_element *element);
+void renderer_cache_skybox_element_debug_print(renderer_cache_skybox_element *element);
 
 /* font renderer cache element */
 
-typedef struct vulkan_renderer_cache_font_element {
+typedef struct renderer_cache_font_element {
   /* cache state accumulated from scene tree */
-  vulkan_asset_font *font; ///< Accumulated from scene data.
+  asset_font *font; ///< Accumulated from scene data.
 
   /* cache state set during texture update */
-  vulkan_textures_texture_element *fontTextureElement;
+  textures_texture_element *fontTextureElement;
 
-} vulkan_renderer_cache_font_element;
+} renderer_cache_font_element;
 
-vulkan_renderer_cache_font_element *
-vulkan_renderer_cache_font_element_create(vulkan_asset_font *font);
+renderer_cache_font_element *renderer_cache_font_element_create(asset_font *font);
 
-void vulkan_renderer_cache_font_element_destroy(vulkan_renderer_cache_font_element *element);
+void renderer_cache_font_element_destroy(renderer_cache_font_element *element);
 
-void vulkan_renderer_cache_font_element_debug_print(vulkan_renderer_cache_font_element *element);
+void renderer_cache_font_element_debug_print(renderer_cache_font_element *element);

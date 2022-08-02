@@ -6,8 +6,8 @@
 
 #include "common.h"
 
-typedef struct vulkan_asset_camera {
-  vulkan_camera_type type;
+typedef struct asset_camera {
+  camera_type type;
   union {
     float fovY;        ///< Vertical field of view (radians).
     float aspectRatio; ///< Aspect ratio.
@@ -21,7 +21,7 @@ typedef struct vulkan_asset_camera {
 
   bool dirty; ///< True if camera state updated.
   VULKAN_ASSET_FIELD_DECLS(camera)
-} vulkan_asset_camera;
+} asset_camera;
 
 VULKAN_ASSET_FUNC_DECLS(camera)
-void vulkan_asset_camera_copy(vulkan_asset_camera *dst, vulkan_asset_camera *src);
+void asset_camera_copy(asset_camera *dst, asset_camera *src);

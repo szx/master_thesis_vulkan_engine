@@ -6,60 +6,58 @@
 #include "image.h"
 
 /// Hash table for textures and their associated images and samplers.
-typedef struct vulkan_textures_texture_element {
-  vulkan_asset_texture *texture; ///< Pointer. Key.
-  vulkan_image *image;           ///< GPU image
-  VkSampler sampler;             ///< Sampler used to read images.
-  uint32_t textureIdx;           ///< Index in array of textures bound by descriptor set.
+typedef struct textures_texture_element {
+  asset_texture *texture; ///< Pointer. Key.
+  image *image;           ///< GPU image
+  VkSampler sampler;      ///< Sampler used to read images.
+  uint32_t textureIdx;    ///< Index in array of textures bound by descriptor set.
   UT_hash_handle hh;
-} vulkan_textures_texture_element;
+} textures_texture_element;
 
-vulkan_textures_texture_element *
-vulkan_textures_texture_element_create(vulkan_asset_texture *texture, vulkan_device *vkd,
-                                       const char *debugName);
-void vulkan_textures_texture_element_destroy(vulkan_textures_texture_element *element);
+textures_texture_element *textures_texture_element_create(asset_texture *texture, device *vkd,
+                                                          const char *debugName);
+void textures_texture_element_destroy(textures_texture_element *element);
 
 /// Hash table for materials and their associated textures.
-typedef struct vulkan_textures_material_element {
-  vulkan_asset_material *material;                                  ///< Pointer. Key.
-  vulkan_textures_texture_element *baseColorTextureElement;         ///< Pointer.
-  vulkan_textures_texture_element *metallicRoughnessTextureElement; ///< Pointer.
-  vulkan_textures_texture_element *normalMapTextureElement;         ///< Pointer.
+typedef struct textures_material_element {
+  asset_material *material;                                  ///< Pointer. Key.
+  textures_texture_element *baseColorTextureElement;         ///< Pointer.
+  textures_texture_element *metallicRoughnessTextureElement; ///< Pointer.
+  textures_texture_element *normalMapTextureElement;         ///< Pointer.
   uint32_t materialIdx; ///< Index in array of materials bound by descriptor set.
   UT_hash_handle hh;
-} vulkan_textures_material_element;
+} textures_material_element;
 
-vulkan_textures_material_element *vulkan_textures_material_element_create(
-    vulkan_asset_material *material, vulkan_textures_texture_element *baseColorTextureElement,
-    vulkan_textures_texture_element *metallicRoughnessTextureElement,
-    vulkan_textures_texture_element *normalMapTextureElement);
+textures_material_element *
+textures_material_element_create(asset_material *material,
+                                 textures_texture_element *baseColorTextureElement,
+                                 textures_texture_element *metallicRoughnessTextureElement,
+                                 textures_texture_element *normalMapTextureElement);
 
-void vulkan_textures_material_element_destroy(vulkan_textures_material_element *element);
+void textures_material_element_destroy(textures_material_element *element);
 
-typedef struct vulkan_textures {
+typedef struct textures {
   /* CPU state */
-  vulkan_device *vkd; ///< Pointer.
+  device *vkd; ///< Pointer.
 
   /* GPU state */
-  vulkan_textures_texture_element *textureElements;
-  vulkan_textures_material_element *materialElements;
+  textures_texture_element *textureElements;
+  textures_material_element *materialElements;
 
-} vulkan_textures;
+} textures;
 
-vulkan_textures *vulkan_textures_create(vulkan_device *vkd);
-void vulkan_textures_destroy(vulkan_textures *textures);
+textures *textures_create(device *vkd);
+void textures_destroy(textures *textures);
 
-void vulkan_textures_update(vulkan_textures *textures);
+void textures_update(textures *textures);
 
-void vulkan_textures_send_to_device(vulkan_textures *textures);
+void textures_send_to_device(textures *textures);
 
-vulkan_textures_material_element *vulkan_textures_add_material(vulkan_textures *textures,
-                                                               vulkan_asset_material *material);
+textures_material_element *textures_add_material(textures *textures, asset_material *material);
 
-vulkan_textures_texture_element *vulkan_textures_add_texture(vulkan_textures *textures,
-                                                             vulkan_asset_texture *texture,
-                                                             const char *debugName);
+textures_texture_element *textures_add_texture(textures *textures, asset_texture *texture,
+                                               const char *debugName);
 
-void vulkan_textures_debug_print(vulkan_textures *textures, int indent);
+void textures_debug_print(textures *textures, int indent);
 
-void glsl_add_textures(UT_string *s, uint32_t set, uint32_t binding, vulkan_textures *textures);
+void glsl_add_textures(UT_string *s, uint32_t set, uint32_t binding, textures *textures);

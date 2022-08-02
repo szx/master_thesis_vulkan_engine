@@ -1,8 +1,8 @@
 #include "image.h"
 
-vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, uint32_t width,
-                                  uint32_t height, uint32_t channels, const char *debugName) {
-  vulkan_image *image = core_alloc(sizeof(vulkan_image));
+image *image_create(device *vkd, image_type type, uint32_t width, uint32_t height,
+                    uint32_t channels, const char *debugName) {
+  image *image = core_alloc(sizeof(struct image));
 
   image->vkd = vkd;
   image->type = type;
@@ -11,103 +11,103 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
   image->channels = channels;
   image->sampleCount = VK_SAMPLE_COUNT_1_BIT;
   image->name[0] = debugName;
-  if (image->type == vulkan_image_type_material_base_color) {
+  if (image->type == image_type_material_base_color) {
     image->mipLevelCount = 1 + (uint32_t)floor(log2((double)MAX(image->width, image->height)));
     image->arrayLayers = 1;
-    image->format = vulkan_find_image_format(vkd, image->type, image->channels);
+    image->format = find_image_format(vkd, image->type, image->channels);
     image->tiling = VK_IMAGE_TILING_OPTIMAL;
     image->createFlags = 0;
     image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                         VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-    image->aspectFlags = vulkan_find_image_aspects(image->type);
+    image->aspectFlags = find_image_aspects(image->type);
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = true;
     image->name[1] = "material base color image";
-  } else if (image->type == vulkan_image_type_material_parameters) {
+  } else if (image->type == image_type_material_parameters) {
     image->mipLevelCount = 1;
     image->arrayLayers = 1;
-    image->format = vulkan_find_image_format(vkd, image->type, image->channels);
+    image->format = find_image_format(vkd, image->type, image->channels);
     image->tiling = VK_IMAGE_TILING_OPTIMAL;
     image->createFlags = 0;
     image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                         VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-    image->aspectFlags = vulkan_find_image_aspects(image->type);
+    image->aspectFlags = find_image_aspects(image->type);
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = true;
     image->name[1] = "material parameters image";
-  } else if (image->type == vulkan_image_type_material_normal_map) {
+  } else if (image->type == image_type_material_normal_map) {
     image->mipLevelCount = 1;
     image->arrayLayers = 1;
-    image->format = vulkan_find_image_format(vkd, image->type, image->channels);
+    image->format = find_image_format(vkd, image->type, image->channels);
     image->tiling = VK_IMAGE_TILING_OPTIMAL;
     image->createFlags = 0;
     image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                         VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-    image->aspectFlags = vulkan_find_image_aspects(image->type);
+    image->aspectFlags = find_image_aspects(image->type);
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = true;
     image->name[1] = "material normal map image";
-  } else if (image->type == vulkan_image_type_cubemap) {
+  } else if (image->type == image_type_cubemap) {
     image->mipLevelCount = 1;
     image->arrayLayers = 6;
-    image->format = vulkan_find_image_format(vkd, image->type, image->channels);
+    image->format = find_image_format(vkd, image->type, image->channels);
     image->tiling = VK_IMAGE_TILING_OPTIMAL;
     image->createFlags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
     image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                         VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-    image->aspectFlags = vulkan_find_image_aspects(image->type);
+    image->aspectFlags = find_image_aspects(image->type);
     image->viewType = VK_IMAGE_VIEW_TYPE_CUBE;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = true;
     image->name[1] = "cubemap image";
-  } else if (image->type == vulkan_image_type_font_bitmap) {
+  } else if (image->type == image_type_font_bitmap) {
     image->mipLevelCount = 1;
     image->arrayLayers = 1;
-    image->format = vulkan_find_image_format(vkd, image->type, image->channels);
+    image->format = find_image_format(vkd, image->type, image->channels);
     image->tiling = VK_IMAGE_TILING_OPTIMAL;
     image->createFlags = 0;
     image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
                         VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-    image->aspectFlags = vulkan_find_image_aspects(image->type);
+    image->aspectFlags = find_image_aspects(image->type);
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = true;
     image->name[1] = "font bitmap image";
-  } else if (image->type == vulkan_image_type_offscreen_f16) {
+  } else if (image->type == image_type_offscreen_f16) {
     image->mipLevelCount = 1;
     image->arrayLayers = 1;
-    image->format = vulkan_find_image_format(vkd, image->type, image->channels);
+    image->format = find_image_format(vkd, image->type, image->channels);
     image->tiling = VK_IMAGE_TILING_OPTIMAL;
     image->createFlags = 0;
     image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-    image->aspectFlags = vulkan_find_image_aspects(image->type);
+    image->aspectFlags = find_image_aspects(image->type);
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = false;
     image->name[1] = "offscreen image floating-point 16 bit";
-  } else if (image->type == vulkan_image_type_offscreen_depth_buffer) {
+  } else if (image->type == image_type_offscreen_depth_buffer) {
     image->mipLevelCount = 1;
     image->arrayLayers = 1;
-    image->format = vulkan_find_image_format(vkd, image->type, image->channels);
+    image->format = find_image_format(vkd, image->type, image->channels);
     image->tiling = VK_IMAGE_TILING_OPTIMAL;
     image->createFlags = 0;
     image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-    image->aspectFlags = vulkan_find_image_aspects(image->type);
+    image->aspectFlags = find_image_aspects(image->type);
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = false;
     image->name[1] = "offscreen depth buffer image";
-  } else if (image->type == vulkan_image_type_offscreen_r8) {
+  } else if (image->type == image_type_offscreen_r8) {
     image->mipLevelCount = 1;
     image->arrayLayers = 1;
-    image->format = vulkan_find_image_format(vkd, image->type, image->channels);
+    image->format = find_image_format(vkd, image->type, image->channels);
     image->tiling = VK_IMAGE_TILING_OPTIMAL;
     image->createFlags = 0;
     image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-    image->aspectFlags = vulkan_find_image_aspects(image->type);
+    image->aspectFlags = find_image_aspects(image->type);
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     image->copyDataToDevice = false;
@@ -124,7 +124,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
   image->dirty = true;
   image->texture = NULL;
 
-  vulkan_image_make_resident(image);
+  image_make_resident(image);
 
   assert(image->image != VK_NULL_HANDLE);
   assert(image->imageMemory != VK_NULL_HANDLE);
@@ -133,7 +133,7 @@ vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, ui
   return image;
 }
 
-void vulkan_image_destroy(vulkan_image *image) {
+void image_destroy(image *image) {
   if (image->resident) {
     vkDestroyImageView(image->vkd->device, image->imageView, vka);
     vkDestroyImage(image->vkd->device, image->image, vka);
@@ -143,53 +143,52 @@ void vulkan_image_destroy(vulkan_image *image) {
   core_free(image);
 }
 
-void vulkan_image_make_resident(vulkan_image *image) {
+void image_make_resident(image *image) {
   if (!image->resident) {
     verify(image->width > 0 && image->height > 0);
     if (image->image != VK_NULL_HANDLE) {
       vkDestroyImage(image->vkd->device, image->image, vka);
     }
-    image->image = vulkan_create_image(image->vkd, image->width, image->height,
-                                       image->mipLevelCount, image->arrayLayers, image->sampleCount,
-                                       image->format, image->tiling, image->createFlags,
-                                       image->usageFlags, "%s %s", image->name[0], image->name[1]);
+    image->image = create_image(image->vkd, image->width, image->height, image->mipLevelCount,
+                                image->arrayLayers, image->sampleCount, image->format,
+                                image->tiling, image->createFlags, image->usageFlags, "%s %s",
+                                image->name[0], image->name[1]);
 
     if (image->imageMemory != VK_NULL_HANDLE) {
       vkFreeMemory(image->vkd->device, image->imageMemory, vka);
     }
-    image->imageMemory =
-        vulkan_create_image_memory(image->vkd, image->image, image->memoryPropertyFlags, "%s %s",
-                                   image->name[0], image->name[1]);
+    image->imageMemory = create_image_memory(image->vkd, image->image, image->memoryPropertyFlags,
+                                             "%s %s", image->name[0], image->name[1]);
 
     if (image->imageView != VK_NULL_HANDLE) {
       vkDestroyImageView(image->vkd->device, image->imageView, vka);
     }
-    image->imageView = vulkan_create_image_view(
+    image->imageView = create_image_view(
         image->vkd, image->image, image->viewType, image->format, image->aspectFlags,
         image->mipLevelCount, image->arrayLayers, "%s %s", image->name[0], image->name[1]);
     image->resident = true;
   }
 }
 
-void vulkan_image_update(vulkan_image *image, vulkan_asset_texture *texture) {
+void image_update(image *image, asset_texture *texture) {
   image->texture = texture;
   image->dirty = true;
 }
 
-void vulkan_image_send_to_device(vulkan_image *image) {
-  vulkan_image_make_resident(image);
+void image_send_to_device(image *image) {
+  image_make_resident(image);
 
   if (!image->dirty) {
     return;
   }
   if (image->texture != NULL && image->copyDataToDevice) {
-    VkCommandBuffer commandBuffer = vulkan_begin_one_shot_commands(image->vkd);
-    vulkan_transition_image_layout(image->vkd, commandBuffer, image->image, image->aspectFlags,
-                                   VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    vulkan_end_one_shot_commands(image->vkd, commandBuffer);
+    VkCommandBuffer commandBuffer = begin_one_shot_commands(image->vkd);
+    transition_image_layout(image->vkd, commandBuffer, image->image, image->aspectFlags,
+                            VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    end_one_shot_commands(image->vkd, commandBuffer);
 
     size_t pixelSize = image->texture->image->channels;
-    size_t texelSize = vulkan_format_size(image->format);
+    size_t texelSize = format_size(image->format);
     assert(pixelSize <= texelSize);
     size_t emptyComponents = texelSize - pixelSize;
     size_t texelNum = image->width * image->height;
@@ -198,9 +197,9 @@ void vulkan_image_send_to_device(vulkan_image *image) {
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
-    vulkan_create_buffer(image->vkd, totalLayerTexelSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-                         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                         &stagingBuffer, &stagingBufferMemory, "staging buffer for image");
+    create_buffer(image->vkd, totalLayerTexelSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                  &stagingBuffer, &stagingBufferMemory, "staging buffer for image");
     for (size_t layerIdx = 0; layerIdx < image->arrayLayers; layerIdx++) {
       void *data;
       vkMapMemory(image->vkd->device, stagingBufferMemory, 0, totalLayerTexelSize, 0, &data);
@@ -216,21 +215,21 @@ void vulkan_image_send_to_device(vulkan_image *image) {
       }
       vkUnmapMemory(image->vkd->device, stagingBufferMemory);
 
-      vulkan_copy_buffer_to_image(image->vkd, stagingBuffer, image->image, image->width,
-                                  image->height, layerIdx);
+      copy_buffer_to_image(image->vkd, stagingBuffer, image->image, image->width, image->height,
+                           layerIdx);
     }
     vkDestroyBuffer(image->vkd->device, stagingBuffer, vka);
     vkFreeMemory(image->vkd->device, stagingBufferMemory, vka);
 
-    vulkan_generate_mipmaps(image->vkd, image->image, image->format, image->width, image->height,
-                            image->mipLevelCount);
+    generate_mipmaps(image->vkd, image->image, image->format, image->width, image->height,
+                     image->mipLevelCount);
 
     image->texture = NULL;
   }
   image->dirty = false;
 }
 
-void vulkan_image_debug_print(vulkan_image *image, int indent) {
+void image_debug_print(image *image, int indent) {
   log_debug(INDENT_FORMAT_STRING "image '%s':", INDENT_FORMAT_ARGS(0), image->name);
   log_debug(INDENT_FORMAT_STRING "width=%zu", INDENT_FORMAT_ARGS(2), image->width);
   log_debug(INDENT_FORMAT_STRING "height=%zu", INDENT_FORMAT_ARGS(2), image->height);
@@ -247,14 +246,13 @@ void vulkan_image_debug_print(vulkan_image *image, int indent) {
   VkImageAspectFlagBits_debug_print(image->aspectFlags, indent + 2);
 }
 
-VkFormat vulkan_find_image_format(vulkan_device *vkd, vulkan_image_type imageType,
-                                  uint32_t channels) {
-  if (imageType == vulkan_image_type_swap_chain) {
+VkFormat find_image_format(device *vkd, image_type imageType, uint32_t channels) {
+  if (imageType == image_type_swap_chain) {
     assert(vkd->swapChainImageFormat != VK_FORMAT_UNDEFINED);
     return vkd->swapChainImageFormat;
   }
 
-  vulkan_image_type_info info = vulkanImageTypeInfo[imageType];
+  image_type_info info = vulkanImageTypeInfo[imageType];
 
   if (info.forcedChannels > 0) {
     channels = info.forcedChannels;
@@ -265,9 +263,9 @@ VkFormat vulkan_find_image_format(vulkan_device *vkd, vulkan_image_type imageTyp
     assert(channels == 1);
     VkFormat formats[] = {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT,
                           VK_FORMAT_D24_UNORM_S8_UINT};
-    return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
-                                        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT, formats,
-                                        array_size(formats));
+    return find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
+                                 VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT, formats,
+                                 array_size(formats));
   }
 
   if (info.colorFormat) {
@@ -315,37 +313,37 @@ VkFormat vulkan_find_image_format(vulkan_device *vkd, vulkan_image_type imageTyp
 
     if (channels == 1) {
       VkFormat formats[] = {r, rg, rgb, rgba};
-      return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
-                                          VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
-                                          array_size(formats));
+      return find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
+                                   VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
+                                   array_size(formats));
     }
     if (channels == 2) {
       VkFormat formats[] = {rg, rgb, rgba};
-      return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
-                                          VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
-                                          array_size(formats));
+      return find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
+                                   VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
+                                   array_size(formats));
     }
     if (channels == 3) {
       VkFormat formats[] = {rgb, rgba};
-      return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
-                                          VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
-                                          array_size(formats));
+      return find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
+                                   VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
+                                   array_size(formats));
     }
     if (channels == 4) {
       VkFormat formats[] = {rgba};
-      return vulkan_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
-                                          VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
-                                          array_size(formats));
+      return find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
+                                   VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
+                                   array_size(formats));
     }
   }
 
   UNREACHABLE;
 }
 
-VkImageAspectFlags vulkan_find_image_aspects(vulkan_image_type imageType) {
-  assert(imageType != vulkan_image_type_swap_chain);
+VkImageAspectFlags find_image_aspects(image_type imageType) {
+  assert(imageType != image_type_swap_chain);
 
-  vulkan_image_type_info info = vulkanImageTypeInfo[imageType];
+  image_type_info info = vulkanImageTypeInfo[imageType];
   if (info.depthFormat) {
     return VK_IMAGE_ASPECT_DEPTH_BIT;
   }

@@ -10,89 +10,83 @@
 #include "../assets/assets.h"
 #include "../renderers/renderer_cache_elements.h"
 
-typedef struct vulkan_scene_graph vulkan_scene_graph;
-typedef struct vulkan_scene_tree vulkan_scene_tree;
+typedef struct scene_graph scene_graph;
+typedef struct scene_tree scene_tree;
 
 /* scene graph node */
 
-typedef struct vulkan_scene_tree_node vulkan_scene_tree_node;
+typedef struct scene_tree_node scene_tree_node;
 
-typedef struct vulkan_scene_graph_node {
-  vulkan_scene_graph *sceneGraph; ///< Pointer
+typedef struct scene_graph_node {
+  scene_graph *sceneGraph; ///< Pointer
 
-  vulkan_asset_object *object;       ///< Pointer.
-  vulkan_asset_primitive *primitive; ///< Pointer.
+  asset_object *object;       ///< Pointer.
+  asset_primitive *primitive; ///< Pointer.
 
-  UT_array *childNodes; ///< vulkan_scene_graph_node* list
+  UT_array *childNodes; ///< scene_graph_node* list
 
-  struct vulkan_scene_graph_node *prev, *next; ///< List of all nodes in scene graph.
+  struct scene_graph_node *prev, *next; ///< List of all nodes in scene graph.
 
-  UT_array *observers; ///< vulkan_scene_tree_node* list of dependent scene tree nodes
-} vulkan_scene_graph_node;
+  UT_array *observers; ///< scene_tree_node* list of dependent scene tree nodes
+} scene_graph_node;
 
-vulkan_scene_graph_node *vulkan_scene_graph_node_create(vulkan_scene_graph *sceneGraph,
-                                                        vulkan_asset_object *object,
-                                                        vulkan_asset_primitive *primitive);
+scene_graph_node *scene_graph_node_create(scene_graph *sceneGraph, asset_object *object,
+                                          asset_primitive *primitive);
 
-void vulkan_scene_graph_node_destroy(vulkan_scene_graph_node *sceneGraphNode);
+void scene_graph_node_destroy(scene_graph_node *sceneGraphNode);
 
-void vulkan_scene_graph_node_add_observer(vulkan_scene_graph_node *sceneGraphNode,
-                                          vulkan_scene_tree_node *sceneTreeNode);
+void scene_graph_node_add_observer(scene_graph_node *sceneGraphNode,
+                                   scene_tree_node *sceneTreeNode);
 
-void vulkan_scene_graph_node_add_child(vulkan_scene_graph_node *sceneGraphNode,
-                                       vulkan_scene_graph_node *childNode);
+void scene_graph_node_add_child(scene_graph_node *sceneGraphNode, scene_graph_node *childNode);
 
-void vulkan_scene_graph_node_debug_print(vulkan_scene_graph_node *sceneGraphNode);
+void scene_graph_node_debug_print(scene_graph_node *sceneGraphNode);
 
 /* scene tree node */
 
-typedef struct vulkan_scene_tree_node_accumulated {
+typedef struct scene_tree_node_accumulated {
   /* accumulated from object */
   size_t distanceFromRoot;
   bool visible;
   mat4 transform;
 
   /* accumulated from primitive */
-  vulkan_asset_primitive *primitive;
-  vulkan_aabb aabb;
+  asset_primitive *primitive;
+  aabb aabb;
 
   /* accumulated from camera */
-  vulkan_asset_camera *camera;
-} vulkan_scene_tree_node_accumulated;
+  asset_camera *camera;
+} scene_tree_node_accumulated;
 
-void vulkan_scene_tree_node_accumulated_init(vulkan_scene_tree_node_accumulated *accumulated);
-void vulkan_scene_tree_node_accumulated_deinit(vulkan_scene_tree_node_accumulated *accumulated);
-void vulkan_scene_tree_node_accumulated_debug_print(
-    vulkan_scene_tree_node_accumulated *accumulated);
+void scene_tree_node_accumulated_init(scene_tree_node_accumulated *accumulated);
+void scene_tree_node_accumulated_deinit(scene_tree_node_accumulated *accumulated);
+void scene_tree_node_accumulated_debug_print(scene_tree_node_accumulated *accumulated);
 
-typedef struct vulkan_scene_tree_node {
-  vulkan_scene_tree *sceneTree; ///< Pointer
+typedef struct scene_tree_node {
+  scene_tree *sceneTree; ///< Pointer
 
-  vulkan_asset_object *object;       ///< Pointer.
-  vulkan_asset_primitive *primitive; ///< Pointer.
+  asset_object *object;       ///< Pointer.
+  asset_primitive *primitive; ///< Pointer.
 
-  struct vulkan_scene_tree_node *parentNode;
-  UT_array *childNodes; ///< vulkan_scene_tree_node* list
+  struct scene_tree_node *parentNode;
+  UT_array *childNodes; ///< scene_tree_node* list
 
-  struct vulkan_scene_tree_node *prev, *next; ///< List of all nodes in scene tree.
+  struct scene_tree_node *prev, *next; ///< List of all nodes in scene tree.
 
-  vulkan_scene_tree_node_accumulated accumulated;
+  scene_tree_node_accumulated accumulated;
 
   bool dirty; ///< True if scene node state changed and cache is out of sync.
-} vulkan_scene_tree_node;
+} scene_tree_node;
 
-vulkan_scene_tree_node *vulkan_scene_tree_node_create(vulkan_scene_tree *sceneTree,
-                                                      vulkan_scene_graph_node *sceneGraphNode);
+scene_tree_node *scene_tree_node_create(scene_tree *sceneTree, scene_graph_node *sceneGraphNode);
 
-void vulkan_scene_tree_node_destroy(vulkan_scene_tree_node *sceneTreeNode);
+void scene_tree_node_destroy(scene_tree_node *sceneTreeNode);
 
-void vulkan_scene_tree_node_add_parent(vulkan_scene_tree_node *sceneTreeNode,
-                                       vulkan_scene_tree_node *parentNode);
+void scene_tree_node_add_parent(scene_tree_node *sceneTreeNode, scene_tree_node *parentNode);
 
-void vulkan_scene_tree_node_add_child(vulkan_scene_tree_node *sceneTreeNode,
-                                      vulkan_scene_tree_node *childNode);
+void scene_tree_node_add_child(scene_tree_node *sceneTreeNode, scene_tree_node *childNode);
 
-void vulkan_scene_tree_node_reset_accumulated(vulkan_scene_tree_node *sceneTreeNode);
-void vulkan_scene_tree_node_accumulate_from_parent(vulkan_scene_tree_node *sceneTreeNode);
+void scene_tree_node_reset_accumulated(scene_tree_node *sceneTreeNode);
+void scene_tree_node_accumulate_from_parent(scene_tree_node *sceneTreeNode);
 
-void vulkan_scene_tree_node_debug_print(vulkan_scene_tree_node *sceneTreeNode);
+void scene_tree_node_debug_print(scene_tree_node *sceneTreeNode);

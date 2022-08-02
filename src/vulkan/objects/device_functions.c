@@ -2,8 +2,7 @@
 
 #include "device.h"
 
-uint32_t vulkan_find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
-                                 VkMemoryPropertyFlags properties) {
+uint32_t find_memory_type(device *vkd, uint32_t typeFilter, VkMemoryPropertyFlags properties) {
   VkPhysicalDeviceMemoryProperties memProperties;
   vkGetPhysicalDeviceMemoryProperties(vkd->physicalDevice, &memProperties);
   for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
@@ -15,9 +14,8 @@ uint32_t vulkan_find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
   return 0;
 }
 
-VkFormat vulkan_find_supported_format(vulkan_device *vkd, VkImageTiling tiling,
-                                      VkFormatFeatureFlags features, VkFormat *candidates,
-                                      size_t candidateCount) {
+VkFormat find_supported_format(device *vkd, VkImageTiling tiling, VkFormatFeatureFlags features,
+                               VkFormat *candidates, size_t candidateCount) {
   assert(candidateCount > 0);
 
   for (size_t i = 0; i < candidateCount; i++) {
@@ -42,7 +40,7 @@ VkFormat vulkan_find_supported_format(vulkan_device *vkd, VkImageTiling tiling,
   return VK_FORMAT_UNDEFINED;
 }
 
-size_t vulkan_format_size(VkFormat format) {
+size_t format_size(VkFormat format) {
   if (format == VK_FORMAT_R8_SRGB || format == VK_FORMAT_R8_UNORM) {
     return 1;
   }
@@ -58,7 +56,7 @@ size_t vulkan_format_size(VkFormat format) {
   UNREACHABLE;
 }
 
-VkIndexType vulkan_stride_to_index_type(size_t stride) {
+VkIndexType stride_to_index_type(size_t stride) {
   if (stride == 2) {
     return VK_INDEX_TYPE_UINT16;
   }
@@ -68,9 +66,8 @@ VkIndexType vulkan_stride_to_index_type(size_t stride) {
   UNREACHABLE;
 }
 
-VkCommandPool vulkan_create_command_pool(vulkan_device *vkd, uint32_t queueFamilyIndex,
-                                         VkCommandPoolCreateFlags flags, const char *debugFormat,
-                                         ...) {
+VkCommandPool create_command_pool(device *vkd, uint32_t queueFamilyIndex,
+                                  VkCommandPoolCreateFlags flags, const char *debugFormat, ...) {
   VkCommandPoolCreateInfo poolInfo = {0};
   poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
   poolInfo.queueFamilyIndex = queueFamilyIndex;
@@ -80,14 +77,14 @@ VkCommandPool vulkan_create_command_pool(vulkan_device *vkd, uint32_t queueFamil
   verify(vkCreateCommandPool(vkd->device, &poolInfo, vka, &commandPool) == VK_SUCCESS);
 
   DEBUG_NAME_FORMAT_START();
-  vulkan_debug_name_command_pool(vkd->debug, commandPool, "%s - command pool", debugName);
+  debug_name_command_pool(vkd->debug, commandPool, "%s - command pool", debugName);
   DEBUG_NAME_FORMAT_END();
 
   return commandPool;
 }
 
-VkCommandBuffer vulkan_create_command_buffer(vulkan_device *vkd, VkCommandPool commandPool,
-                                             const char *debugFormat, ...) {
+VkCommandBuffer create_command_buffer(device *vkd, VkCommandPool commandPool,
+                                      const char *debugFormat, ...) {
   VkCommandBufferAllocateInfo allocInfo = {0};
   allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
   allocInfo.commandPool = commandPool;
@@ -98,16 +95,15 @@ VkCommandBuffer vulkan_create_command_buffer(vulkan_device *vkd, VkCommandPool c
   verify(vkAllocateCommandBuffers(vkd->device, &allocInfo, &commandBuffer) == VK_SUCCESS);
 
   DEBUG_NAME_FORMAT_START();
-  vulkan_debug_name_command_buffer(vkd->debug, commandBuffer, "%s - command buffer", debugName);
+  debug_name_command_buffer(vkd->debug, commandBuffer, "%s - command buffer", debugName);
   DEBUG_NAME_FORMAT_END();
 
   return commandBuffer;
 }
 
-VkFramebuffer vulkan_create_framebuffer(vulkan_device *vkd, VkRenderPass renderPass,
-                                        uint32_t attachmentCount, const VkImageView *attachments,
-                                        uint32_t width, uint32_t height, const char *debugFormat,
-                                        ...) {
+VkFramebuffer create_framebuffer(device *vkd, VkRenderPass renderPass, uint32_t attachmentCount,
+                                 const VkImageView *attachments, uint32_t width, uint32_t height,
+                                 const char *debugFormat, ...) {
   assert(renderPass != VK_NULL_HANDLE);
 
   VkFramebufferCreateInfo framebufferInfo = {0};
@@ -124,16 +120,16 @@ VkFramebuffer vulkan_create_framebuffer(vulkan_device *vkd, VkRenderPass renderP
   verify(vkCreateFramebuffer(vkd->device, &framebufferInfo, vka, &framebuffer) == VK_SUCCESS);
 
   DEBUG_NAME_FORMAT_START();
-  vulkan_debug_name_framebuffer(vkd->debug, framebuffer, "%s - framebuffer", debugName);
+  debug_name_framebuffer(vkd->debug, framebuffer, "%s - framebuffer", debugName);
   DEBUG_NAME_FORMAT_END();
 
   return framebuffer;
 }
 
-VkImage vulkan_create_image(vulkan_device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
-                            uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
-                            VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,
-                            const char *debugFormat, ...) {
+VkImage create_image(device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
+                     uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
+                     VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,
+                     const char *debugFormat, ...) {
   VkImageCreateInfo imageInfo = {0};
   imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
   imageInfo.flags = flags;
@@ -154,32 +150,30 @@ VkImage vulkan_create_image(vulkan_device *vkd, uint32_t width, uint32_t height,
   verify(vkCreateImage(vkd->device, &imageInfo, vka, &image) == VK_SUCCESS);
 
   DEBUG_NAME_FORMAT_START();
-  vulkan_debug_name_image(vkd->debug, image, "%s - image (%s, %s)", debugName,
-                          VkImageViewType_debug_str(imageInfo.imageType),
-                          VkFormat_debug_str(imageInfo.format));
+  debug_name_image(vkd->debug, image, "%s - image (%s, %s)", debugName,
+                   VkImageViewType_debug_str(imageInfo.imageType),
+                   VkFormat_debug_str(imageInfo.format));
   DEBUG_NAME_FORMAT_END();
 
   return image;
 }
 
-VkDeviceMemory vulkan_create_image_memory(vulkan_device *vkd, VkImage image,
-                                          VkMemoryPropertyFlags properties, const char *debugFormat,
-                                          ...) {
+VkDeviceMemory create_image_memory(device *vkd, VkImage image, VkMemoryPropertyFlags properties,
+                                   const char *debugFormat, ...) {
   VkMemoryRequirements memRequirements;
   vkGetImageMemoryRequirements(vkd->device, image, &memRequirements);
 
   VkMemoryAllocateInfo allocInfo = {0};
   allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
   allocInfo.allocationSize = memRequirements.size;
-  allocInfo.memoryTypeIndex =
-      vulkan_find_memory_type(vkd, memRequirements.memoryTypeBits, properties);
+  allocInfo.memoryTypeIndex = find_memory_type(vkd, memRequirements.memoryTypeBits, properties);
 
   VkDeviceMemory imageMemory;
   verify(vkAllocateMemory(vkd->device, &allocInfo, vka, &imageMemory) == VK_SUCCESS);
 
   DEBUG_NAME_FORMAT_START();
-  vulkan_debug_name_device_memory(vkd->debug, imageMemory, "%s - image memory (%zu bytes)",
-                                  debugName, allocInfo.allocationSize);
+  debug_name_device_memory(vkd->debug, imageMemory, "%s - image memory (%zu bytes)", debugName,
+                           allocInfo.allocationSize);
   DEBUG_NAME_FORMAT_END();
 
   vkBindImageMemory(vkd->device, image, imageMemory, 0);
@@ -187,10 +181,9 @@ VkDeviceMemory vulkan_create_image_memory(vulkan_device *vkd, VkImage image,
   return imageMemory;
 }
 
-VkImageView vulkan_create_image_view(vulkan_device *vkd, VkImage image, VkImageViewType type,
-                                     VkFormat format, VkImageAspectFlags aspectFlags,
-                                     uint32_t mipLevels, uint32_t arrayLayers,
-                                     const char *debugFormat, ...) {
+VkImageView create_image_view(device *vkd, VkImage image, VkImageViewType type, VkFormat format,
+                              VkImageAspectFlags aspectFlags, uint32_t mipLevels,
+                              uint32_t arrayLayers, const char *debugFormat, ...) {
   VkImageViewCreateInfo viewInfo = {0};
   viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
   viewInfo.image = image;
@@ -206,15 +199,14 @@ VkImageView vulkan_create_image_view(vulkan_device *vkd, VkImage image, VkImageV
   verify(vkCreateImageView(vkd->device, &viewInfo, vka, &imageView) == VK_SUCCESS);
 
   DEBUG_NAME_FORMAT_START();
-  vulkan_debug_name_image_view(vkd->debug, imageView, "%s - image view (%s)", debugName,
-                               VkImageViewType_debug_str(viewInfo.viewType));
+  debug_name_image_view(vkd->debug, imageView, "%s - image view (%s)", debugName,
+                        VkImageViewType_debug_str(viewInfo.viewType));
   DEBUG_NAME_FORMAT_END();
 
   return imageView;
 }
 
-VkSampler vulkan_create_sampler(vulkan_device *vkd, uint32_t mipLevelCount, const char *debugFormat,
-                                ...) {
+VkSampler create_sampler(device *vkd, uint32_t mipLevelCount, const char *debugFormat, ...) {
   // TODO: Share sampler with same parameters.
   VkSamplerCreateInfo samplerInfo = {0};
   samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -238,16 +230,16 @@ VkSampler vulkan_create_sampler(vulkan_device *vkd, uint32_t mipLevelCount, cons
   verify(vkCreateSampler(vkd->device, &samplerInfo, vka, &sampler) == VK_SUCCESS);
 
   DEBUG_NAME_FORMAT_START();
-  vulkan_debug_name_sampler(vkd->debug, sampler, "%s - sampler (maxLod = %f)", debugName,
-                            samplerInfo.maxLod);
+  debug_name_sampler(vkd->debug, sampler, "%s - sampler (maxLod = %f)", debugName,
+                     samplerInfo.maxLod);
   DEBUG_NAME_FORMAT_END();
 
   return sampler;
 }
 
-void vulkan_create_buffer(vulkan_device *vkd, VkDeviceSize size, VkBufferUsageFlags usage,
-                          VkMemoryPropertyFlags properties, VkBuffer *buffer,
-                          VkDeviceMemory *bufferMemory, const char *debugFormat, ...) {
+void create_buffer(device *vkd, VkDeviceSize size, VkBufferUsageFlags usage,
+                   VkMemoryPropertyFlags properties, VkBuffer *buffer, VkDeviceMemory *bufferMemory,
+                   const char *debugFormat, ...) {
   VkBufferCreateInfo bufferInfo = {0};
   bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
   bufferInfo.size = size;
@@ -256,26 +248,25 @@ void vulkan_create_buffer(vulkan_device *vkd, VkDeviceSize size, VkBufferUsageFl
 
   DEBUG_NAME_FORMAT_START();
   verify(vkCreateBuffer(vkd->device, &bufferInfo, vka, buffer) == VK_SUCCESS);
-  vulkan_debug_name_buffer(vkd->debug, *buffer, "%s - buffer (%zu B)", debugName, bufferInfo.size);
+  debug_name_buffer(vkd->debug, *buffer, "%s - buffer (%zu B)", debugName, bufferInfo.size);
 
   VkMemoryRequirements memRequirements;
   vkGetBufferMemoryRequirements(vkd->device, *buffer, &memRequirements);
   VkMemoryAllocateInfo allocInfo = {0};
   allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
   allocInfo.allocationSize = memRequirements.size;
-  allocInfo.memoryTypeIndex =
-      vulkan_find_memory_type(vkd, memRequirements.memoryTypeBits, properties);
+  allocInfo.memoryTypeIndex = find_memory_type(vkd, memRequirements.memoryTypeBits, properties);
   verify(vkAllocateMemory(vkd->device, &allocInfo, vka, bufferMemory) == VK_SUCCESS);
 
-  vulkan_debug_name_device_memory(vkd->debug, *bufferMemory, "%s - device memory (%zu B)",
-                                  debugName, memRequirements.size);
+  debug_name_device_memory(vkd->debug, *bufferMemory, "%s - device memory (%zu B)", debugName,
+                           memRequirements.size);
   DEBUG_NAME_FORMAT_END();
 
   vkBindBufferMemory(vkd->device, *buffer, *bufferMemory, 0);
 }
 
-VkShaderModule vulkan_create_shader_module(vulkan_device *vkd, const uint32_t *code, size_t size,
-                                           const char *debugFormat, ...) {
+VkShaderModule create_shader_module(device *vkd, const uint32_t *code, size_t size,
+                                    const char *debugFormat, ...) {
   VkShaderModuleCreateInfo createInfo = {0};
   createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
   createInfo.codeSize = size * sizeof(char);
@@ -285,16 +276,16 @@ VkShaderModule vulkan_create_shader_module(vulkan_device *vkd, const uint32_t *c
   verify(vkCreateShaderModule(vkd->device, &createInfo, vka, &shaderModule) == VK_SUCCESS);
 
   DEBUG_NAME_FORMAT_START()
-  vulkan_debug_name_shader_module(vkd->debug, shaderModule, "%s - shader module", debugName);
+  debug_name_shader_module(vkd->debug, shaderModule, "%s - shader module", debugName);
   DEBUG_NAME_FORMAT_END();
 
   return shaderModule;
 }
 
-VkDescriptorPool vulkan_create_descriptor_pool(vulkan_device *vkd, size_t totalUniformBufferCount,
-                                               size_t totalCombinedImageSamplerCount,
-                                               size_t maxAllocatedDescriptorSetsCount,
-                                               bool bindless, const char *debugFormat, ...) {
+VkDescriptorPool create_descriptor_pool(device *vkd, size_t totalUniformBufferCount,
+                                        size_t totalCombinedImageSamplerCount,
+                                        size_t maxAllocatedDescriptorSetsCount, bool bindless,
+                                        const char *debugFormat, ...) {
   VkDescriptorPoolSize poolSizes[2] = {0};
   poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
   poolSizes[0].descriptorCount = totalUniformBufferCount;
@@ -325,7 +316,7 @@ VkDescriptorPool vulkan_create_descriptor_pool(vulkan_device *vkd, size_t totalU
   verify(vkCreateDescriptorPool(vkd->device, &poolInfo, vka, &descriptorPool) == VK_SUCCESS);
 
   DEBUG_NAME_FORMAT_START()
-  vulkan_debug_name_descriptor_pool(
+  debug_name_descriptor_pool(
       vkd->debug, descriptorPool,
       "%s - descriptor pool (%zu uniforms, %zu combined, max %zu descriptor sets)", debugName,
       totalUniformBufferCount, totalCombinedImageSamplerCount, maxAllocatedDescriptorSetsCount);
@@ -334,13 +325,12 @@ VkDescriptorPool vulkan_create_descriptor_pool(vulkan_device *vkd, size_t totalU
   return descriptorPool;
 }
 
-VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
-                                               VkPipelineLayoutCreateFlags flags,
-                                               const VkDescriptorSetLayout *descriptorSetLayouts,
-                                               size_t descriptorSetLayoutCount,
-                                               const VkPushConstantRange *pushConstantRanges,
-                                               size_t pushConstantRangeCount,
-                                               const char *debugFormat, ...) {
+VkPipelineLayout create_pipeline_layout(device *vkd, VkPipelineLayoutCreateFlags flags,
+                                        const VkDescriptorSetLayout *descriptorSetLayouts,
+                                        size_t descriptorSetLayoutCount,
+                                        const VkPushConstantRange *pushConstantRanges,
+                                        size_t pushConstantRangeCount, const char *debugFormat,
+                                        ...) {
   VkPipelineLayoutCreateInfo pipelineLayoutInfo = {0};
   pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
   pipelineLayoutInfo.setLayoutCount = descriptorSetLayoutCount;
@@ -353,23 +343,22 @@ VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
          VK_SUCCESS);
 
   DEBUG_NAME_FORMAT_START()
-  vulkan_debug_name_pipeline_layout(vkd->debug, pipelineLayout, "%s - pipeline layout", debugName);
+  debug_name_pipeline_layout(vkd->debug, pipelineLayout, "%s - pipeline layout", debugName);
   DEBUG_NAME_FORMAT_END();
 
   return pipelineLayout;
 }
 
-void vulkan_rendering_info_init(vulkan_rendering_info *renderPassInfo) {
-  *renderPassInfo = (vulkan_rendering_info){0};
-  utarray_alloc(renderPassInfo->offscreenColorAttachments,
-                sizeof(vulkan_rendering_attachment_info));
+void rendering_info_init(rendering_info *renderPassInfo) {
+  *renderPassInfo = (rendering_info){0};
+  utarray_alloc(renderPassInfo->offscreenColorAttachments, sizeof(rendering_attachment_info));
   utarray_alloc(renderPassInfo->preImageLayoutTransition,
-                sizeof(vulkan_rendering_image_layout_transition_info));
+                sizeof(rendering_image_layout_transition_info));
   utarray_alloc(renderPassInfo->postImageLayoutTransition,
-                sizeof(vulkan_rendering_image_layout_transition_info));
+                sizeof(rendering_image_layout_transition_info));
 }
 
-void vulkan_rendering_info_deinit(vulkan_rendering_info *renderPassInfo) {
+void rendering_info_deinit(rendering_info *renderPassInfo) {
   core_free(renderPassInfo->onscreenColorAttachment);
   utarray_free(renderPassInfo->offscreenColorAttachments);
   core_free(renderPassInfo->depthAttachment);
@@ -377,40 +366,40 @@ void vulkan_rendering_info_deinit(vulkan_rendering_info *renderPassInfo) {
   utarray_free(renderPassInfo->postImageLayoutTransition);
 }
 
-void vulkan_rendering_info_add_onscreen_color_attachment(
-    vulkan_rendering_info *renderPassInfo, vulkan_rendering_attachment_info attachmentCreateInfo) {
+void rendering_info_add_onscreen_color_attachment(rendering_info *renderPassInfo,
+                                                  rendering_attachment_info attachmentCreateInfo) {
   assert(renderPassInfo->onscreenColorAttachment == NULL);
 
-  renderPassInfo->onscreenColorAttachment = core_alloc(sizeof(vulkan_rendering_attachment_info));
+  renderPassInfo->onscreenColorAttachment = core_alloc(sizeof(rendering_attachment_info));
   *renderPassInfo->onscreenColorAttachment = attachmentCreateInfo;
 }
 
-void vulkan_rendering_info_add_offscreen_color_attachment(
-    vulkan_rendering_info *renderPassInfo, vulkan_rendering_attachment_info attachmentCreateInfo) {
+void rendering_info_add_offscreen_color_attachment(rendering_info *renderPassInfo,
+                                                   rendering_attachment_info attachmentCreateInfo) {
   utarray_push_back(renderPassInfo->offscreenColorAttachments, &attachmentCreateInfo);
 }
 
-void vulkan_rendering_info_add_depth_attachment(
-    vulkan_rendering_info *renderPassInfo, vulkan_rendering_attachment_info attachmentCreateInfo) {
+void rendering_info_add_depth_attachment(rendering_info *renderPassInfo,
+                                         rendering_attachment_info attachmentCreateInfo) {
   assert(renderPassInfo->depthAttachment == NULL);
 
-  renderPassInfo->depthAttachment = core_alloc(sizeof(vulkan_rendering_attachment_info));
+  renderPassInfo->depthAttachment = core_alloc(sizeof(rendering_attachment_info));
   *renderPassInfo->depthAttachment = attachmentCreateInfo;
 }
 
-void vulkan_rendering_info_pre_image_layout_transition(
-    vulkan_rendering_info *renderPassInfo,
-    vulkan_rendering_image_layout_transition_info imageLayoutTransitionInfo) {
+void rendering_info_pre_image_layout_transition(
+    rendering_info *renderPassInfo,
+    rendering_image_layout_transition_info imageLayoutTransitionInfo) {
   utarray_push_back(renderPassInfo->preImageLayoutTransition, &imageLayoutTransitionInfo);
 }
 
-void vulkan_rendering_info_post_image_layout_transition(
-    vulkan_rendering_info *renderPassInfo,
-    vulkan_rendering_image_layout_transition_info imageLayoutTransitionInfo) {
+void rendering_info_post_image_layout_transition(
+    rendering_info *renderPassInfo,
+    rendering_image_layout_transition_info imageLayoutTransitionInfo) {
   utarray_push_back(renderPassInfo->postImageLayoutTransition, &imageLayoutTransitionInfo);
 }
 
-void add_general_memory_barrier(vulkan_device *vkd, VkCommandBuffer commandBuffer) {
+void add_general_memory_barrier(device *vkd, VkCommandBuffer commandBuffer) {
   VkMemoryBarrier generalMemoryBarrier = {
       .sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER,
       .srcAccessMask = VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT,
@@ -421,16 +410,15 @@ void add_general_memory_barrier(vulkan_device *vkd, VkCommandBuffer commandBuffe
                        NULL);
 }
 
-void vulkan_begin_rendering(vulkan_device *vkd, VkCommandBuffer commandBuffer,
-                            vulkan_rendering_info renderPassInfo) {
+void begin_rendering(device *vkd, VkCommandBuffer commandBuffer, rendering_info renderPassInfo) {
 
   // add_general_memory_barrier(vkd, commandBuffer);
-  utarray_foreach_elem_it (vulkan_rendering_image_layout_transition_info *,
-                           imageLayoutTransitionInfo, renderPassInfo.preImageLayoutTransition) {
-    vulkan_transition_image_layout(vkd, commandBuffer, imageLayoutTransitionInfo->image,
-                                   imageLayoutTransitionInfo->imageAspectFlags,
-                                   imageLayoutTransitionInfo->oldLayout,
-                                   imageLayoutTransitionInfo->newLayout);
+  utarray_foreach_elem_it (rendering_image_layout_transition_info *, imageLayoutTransitionInfo,
+                           renderPassInfo.preImageLayoutTransition) {
+    transition_image_layout(vkd, commandBuffer, imageLayoutTransitionInfo->image,
+                            imageLayoutTransitionInfo->imageAspectFlags,
+                            imageLayoutTransitionInfo->oldLayout,
+                            imageLayoutTransitionInfo->newLayout);
   }
 
   uint32_t onscreenColorAttachmentCount = renderPassInfo.onscreenColorAttachment ? 1 : 0;
@@ -452,7 +440,7 @@ void vulkan_begin_rendering(vulkan_device *vkd, VkCommandBuffer commandBuffer,
     };
   }
   for (size_t i = 0; i < offscreenColorAttachmentCount; i++) {
-    vulkan_rendering_attachment_info *attachmentInfo =
+    rendering_attachment_info *attachmentInfo =
         utarray_eltptr(renderPassInfo.offscreenColorAttachments, i);
     colorAttachments[onscreenColorAttachmentCount + i] = (VkRenderingAttachmentInfoKHR){
         .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR,
@@ -486,24 +474,21 @@ void vulkan_begin_rendering(vulkan_device *vkd, VkCommandBuffer commandBuffer,
   vkd->cmdBeginRendering(commandBuffer, &renderingInfo);
 }
 
-void vulkan_end_rendering(vulkan_device *vkd, VkCommandBuffer commandBuffer,
-                          vulkan_rendering_info renderPassInfo) {
+void end_rendering(device *vkd, VkCommandBuffer commandBuffer, rendering_info renderPassInfo) {
   vkd->cmdEndRendering(commandBuffer);
 
   // add_general_memory_barrier(vkd, commandBuffer);
-  utarray_foreach_elem_it (vulkan_rendering_image_layout_transition_info *,
-                           imageLayoutTransitionInfo, renderPassInfo.postImageLayoutTransition) {
-    vulkan_transition_image_layout(vkd, commandBuffer, imageLayoutTransitionInfo->image,
-                                   imageLayoutTransitionInfo->imageAspectFlags,
-                                   imageLayoutTransitionInfo->oldLayout,
-                                   imageLayoutTransitionInfo->newLayout);
+  utarray_foreach_elem_it (rendering_image_layout_transition_info *, imageLayoutTransitionInfo,
+                           renderPassInfo.postImageLayoutTransition) {
+    transition_image_layout(vkd, commandBuffer, imageLayoutTransitionInfo->image,
+                            imageLayoutTransitionInfo->imageAspectFlags,
+                            imageLayoutTransitionInfo->oldLayout,
+                            imageLayoutTransitionInfo->newLayout);
   }
 }
 
-VkPipeline vulkan_create_graphics_pipeline(vulkan_device *vkd,
-                                           vulkan_graphics_pipeline_create_info createInfo,
-                                           vulkan_rendering_info renderingInfo,
-                                           const char *debugFormat, ...) {
+VkPipeline create_graphics_pipeline(device *vkd, graphics_pipeline_create_info createInfo,
+                                    rendering_info renderingInfo, const char *debugFormat, ...) {
 
   /* vertex input */
   VkPipelineVertexInputStateCreateInfo vertexInputInfo = {0};
@@ -570,7 +555,7 @@ VkPipeline vulkan_create_graphics_pipeline(vulkan_device *vkd,
     colorBlendAttachment[i] = (VkPipelineColorBlendAttachmentState){
         .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
                           VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT};
-    if (createInfo.colorBlendingType == vulkan_color_blending_type_alpha) {
+    if (createInfo.colorBlendingType == color_blending_type_alpha) {
       colorBlendAttachment[i].blendEnable = VK_TRUE;
       colorBlendAttachment[i].srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
       colorBlendAttachment[i].dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
@@ -601,7 +586,7 @@ VkPipeline vulkan_create_graphics_pipeline(vulkan_device *vkd,
     colorAttachmentsFormats[0] = renderingInfo.onscreenColorAttachment->currentFormat;
   }
   for (size_t i = 0; i < offscreenColorAttachmentCount; i++) {
-    vulkan_rendering_attachment_info *attachmentInfo =
+    rendering_attachment_info *attachmentInfo =
         utarray_eltptr(renderingInfo.offscreenColorAttachments, i);
     colorAttachmentsFormats[onscreenColorAttachmentCount + i] = attachmentInfo->currentFormat;
   }
@@ -639,14 +624,13 @@ VkPipeline vulkan_create_graphics_pipeline(vulkan_device *vkd,
   verify(vkCreateGraphicsPipelines(vkd->device, VK_NULL_HANDLE, 1, &pipelineInfo, vka,
                                    &graphicsPipeline) == VK_SUCCESS);
   DEBUG_NAME_FORMAT_START()
-  vulkan_debug_name_graphics_pipeline(vkd->debug, graphicsPipeline, "%s - graphics pipeline",
-                                      debugName);
+  debug_name_graphics_pipeline(vkd->debug, graphicsPipeline, "%s - graphics pipeline", debugName);
   DEBUG_NAME_FORMAT_END();
 
   return graphicsPipeline;
 }
-VkSemaphore vulkan_create_semaphore(vulkan_device *vkd, VkSemaphoreCreateFlags flags,
-                                    const char *debugFormat, ...) {
+VkSemaphore create_semaphore(device *vkd, VkSemaphoreCreateFlags flags, const char *debugFormat,
+                             ...) {
   VkSemaphoreCreateInfo semaphoreInfo = {0};
   semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
   semaphoreInfo.flags = flags;
@@ -655,14 +639,13 @@ VkSemaphore vulkan_create_semaphore(vulkan_device *vkd, VkSemaphoreCreateFlags f
   verify(vkCreateSemaphore(vkd->device, &semaphoreInfo, vka, &semaphore) == VK_SUCCESS);
 
   DEBUG_NAME_FORMAT_START()
-  vulkan_debug_name_semaphore(vkd->debug, semaphore, "%s - semaphore", debugName);
+  debug_name_semaphore(vkd->debug, semaphore, "%s - semaphore", debugName);
   DEBUG_NAME_FORMAT_END();
 
   return semaphore;
 }
 
-VkFence vulkan_create_fence(vulkan_device *vkd, VkFenceCreateFlags flags, const char *debugFormat,
-                            ...) {
+VkFence create_fence(device *vkd, VkFenceCreateFlags flags, const char *debugFormat, ...) {
   VkFenceCreateInfo fenceInfo = {0};
   fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
   fenceInfo.flags = flags;
@@ -671,7 +654,7 @@ VkFence vulkan_create_fence(vulkan_device *vkd, VkFenceCreateFlags flags, const 
   verify(vkCreateFence(vkd->device, &fenceInfo, vka, &fence) == VK_SUCCESS);
 
   DEBUG_NAME_FORMAT_START()
-  vulkan_debug_name_fence(vkd->debug, fence, "%s - fence", debugName);
+  debug_name_fence(vkd->debug, fence, "%s - fence", debugName);
   DEBUG_NAME_FORMAT_END();
 
   return fence;
@@ -680,9 +663,9 @@ VkFence vulkan_create_fence(vulkan_device *vkd, VkFenceCreateFlags flags, const 
 #undef DEBUG_NAME_FORMAT_START
 #undef DEBUG_NAME_FORMAT_END
 
-VkCommandBuffer vulkan_begin_one_shot_commands(vulkan_device *vkd) {
+VkCommandBuffer begin_one_shot_commands(device *vkd) {
   VkCommandBuffer commandBuffer;
-  commandBuffer = vulkan_create_command_buffer(vkd, vkd->oneShotCommandPool, "one-shot");
+  commandBuffer = create_command_buffer(vkd, vkd->oneShotCommandPool, "one-shot");
 
   VkCommandBufferBeginInfo beginInfo = {0};
   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -692,7 +675,7 @@ VkCommandBuffer vulkan_begin_one_shot_commands(vulkan_device *vkd) {
   return commandBuffer;
 }
 
-void vulkan_end_one_shot_commands(vulkan_device *vkd, VkCommandBuffer commandBuffer) {
+void end_one_shot_commands(device *vkd, VkCommandBuffer commandBuffer) {
   vkEndCommandBuffer(commandBuffer);
 
   VkSubmitInfo submitInfo = {0};
@@ -706,20 +689,19 @@ void vulkan_end_one_shot_commands(vulkan_device *vkd, VkCommandBuffer commandBuf
   vkFreeCommandBuffers(vkd->device, vkd->oneShotCommandPool, 1, &commandBuffer);
 }
 
-void vulkan_copy_buffer_to_buffer(vulkan_device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer,
-                                  VkDeviceSize size) {
-  VkCommandBuffer commandBuffer = vulkan_begin_one_shot_commands(vkd);
+void copy_buffer_to_buffer(device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+  VkCommandBuffer commandBuffer = begin_one_shot_commands(vkd);
 
   VkBufferCopy copyRegion = {0};
   copyRegion.size = size;
   vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
 
-  vulkan_end_one_shot_commands(vkd, commandBuffer);
+  end_one_shot_commands(vkd, commandBuffer);
 }
 
-void vulkan_copy_buffer_to_image(vulkan_device *vkd, VkBuffer buffer, VkImage image, uint32_t width,
-                                 uint32_t height, uint32_t baseArrayLayer) {
-  VkCommandBuffer commandBuffer = vulkan_begin_one_shot_commands(vkd);
+void copy_buffer_to_image(device *vkd, VkBuffer buffer, VkImage image, uint32_t width,
+                          uint32_t height, uint32_t baseArrayLayer) {
+  VkCommandBuffer commandBuffer = begin_one_shot_commands(vkd);
 
   VkBufferImageCopy copyRegion = {.bufferOffset = 0,
                                   .bufferRowLength = 0,
@@ -733,11 +715,11 @@ void vulkan_copy_buffer_to_image(vulkan_device *vkd, VkBuffer buffer, VkImage im
   vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1,
                          &copyRegion);
 
-  vulkan_end_one_shot_commands(vkd, commandBuffer);
+  end_one_shot_commands(vkd, commandBuffer);
 }
 
-void vulkan_generate_mipmaps(vulkan_device *vkd, VkImage image, VkFormat format, uint32_t width,
-                             uint32_t height, uint32_t mipLevelCount) {
+void generate_mipmaps(device *vkd, VkImage image, VkFormat format, uint32_t width, uint32_t height,
+                      uint32_t mipLevelCount) {
 
   // Format needs to support linear filtering (vkCmdBlitImage)
   VkFormatProperties formatProperties;
@@ -745,7 +727,7 @@ void vulkan_generate_mipmaps(vulkan_device *vkd, VkImage image, VkFormat format,
   verify((formatProperties.optimalTilingFeatures &
           VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT) != 0);
 
-  VkCommandBuffer commandBuffer = vulkan_begin_one_shot_commands(vkd);
+  VkCommandBuffer commandBuffer = begin_one_shot_commands(vkd);
 
   VkImageMemoryBarrier barrier = {.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
                                   .image = image,
@@ -805,12 +787,12 @@ void vulkan_generate_mipmaps(vulkan_device *vkd, VkImage image, VkFormat format,
   vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT,
                        VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, NULL, 0, NULL, 1, &barrier);
 
-  vulkan_end_one_shot_commands(vkd, commandBuffer);
+  end_one_shot_commands(vkd, commandBuffer);
 }
 
-void vulkan_transition_image_layout(vulkan_device *vkd, VkCommandBuffer commandBuffer,
-                                    VkImage image, VkImageAspectFlags imageAspectFlags,
-                                    VkImageLayout oldLayout, VkImageLayout newLayout) {
+void transition_image_layout(device *vkd, VkCommandBuffer commandBuffer, VkImage image,
+                             VkImageAspectFlags imageAspectFlags, VkImageLayout oldLayout,
+                             VkImageLayout newLayout) {
 
   VkImageMemoryBarrier barrier = {.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
                                   .oldLayout = oldLayout,

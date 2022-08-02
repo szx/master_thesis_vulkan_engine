@@ -1,7 +1,7 @@
 #include "shader_reflect.h"
 
-vulkan_shader_reflect *vulkan_shader_reflect_create(uint32_t *spvCode, size_t spvSize) {
-  vulkan_shader_reflect *reflect = core_alloc(sizeof(vulkan_shader_reflect));
+shader_reflect *shader_reflect_create(uint32_t *spvCode, size_t spvSize) {
+  shader_reflect *reflect = core_alloc(sizeof(shader_reflect));
 
   /* reflection */
   SpvReflectShaderModule reflectModule;
@@ -16,12 +16,12 @@ vulkan_shader_reflect *vulkan_shader_reflect_create(uint32_t *spvCode, size_t sp
       inputVariableCount * sizeof(SpvReflectInterfaceVariable *));
   verify(spvReflectEnumerateInputVariables(&reflectModule, &inputVariableCount, inputVariables) ==
          SPV_REFLECT_RESULT_SUCCESS);
-  utarray_alloc(reflect->inputVariables, sizeof(vulkan_shader_reflect_variable *));
+  utarray_alloc(reflect->inputVariables, sizeof(shader_reflect_variable *));
   utarray_resize(reflect->inputVariables, inputVariableCount);
   for (size_t idx = 0; idx < inputVariableCount; idx++) {
     SpvReflectInterfaceVariable *spvReflect = inputVariables[idx];
-    vulkan_shader_reflect_variable **variable = utarray_eltptr(reflect->inputVariables, idx);
-    *variable = vulkan_shader_reflect_variable_create(spvReflect);
+    shader_reflect_variable **variable = utarray_eltptr(reflect->inputVariables, idx);
+    *variable = shader_reflect_variable_create(spvReflect);
   }
   core_free(inputVariables);
 
@@ -33,12 +33,12 @@ vulkan_shader_reflect *vulkan_shader_reflect_create(uint32_t *spvCode, size_t sp
       outputVariableCount * sizeof(SpvReflectInterfaceVariable *));
   verify(spvReflectEnumerateOutputVariables(&reflectModule, &outputVariableCount,
                                             outputVariables) == SPV_REFLECT_RESULT_SUCCESS);
-  utarray_alloc(reflect->outputVariables, sizeof(vulkan_shader_reflect_variable *));
+  utarray_alloc(reflect->outputVariables, sizeof(shader_reflect_variable *));
   utarray_resize(reflect->outputVariables, outputVariableCount);
   for (size_t idx = 0; idx < outputVariableCount; idx++) {
     SpvReflectInterfaceVariable *spvReflect = outputVariables[idx];
-    vulkan_shader_reflect_variable **variable = utarray_eltptr(reflect->outputVariables, idx);
-    *variable = vulkan_shader_reflect_variable_create(spvReflect);
+    shader_reflect_variable **variable = utarray_eltptr(reflect->outputVariables, idx);
+    *variable = shader_reflect_variable_create(spvReflect);
   }
   core_free(outputVariables);
 
@@ -51,12 +51,12 @@ vulkan_shader_reflect *vulkan_shader_reflect_create(uint32_t *spvCode, size_t sp
       descriptorBindingCount * sizeof(SpvReflectDescriptorBinding *));
   verify(spvReflectEnumerateDescriptorBindings(&reflectModule, &descriptorBindingCount,
                                                descriptorBindings) == SPV_REFLECT_RESULT_SUCCESS);
-  utarray_alloc(reflect->descriptorBindings, sizeof(vulkan_shader_reflect_variable *));
+  utarray_alloc(reflect->descriptorBindings, sizeof(shader_reflect_variable *));
   utarray_resize(reflect->descriptorBindings, descriptorBindingCount);
   for (size_t idx = 0; idx < descriptorBindingCount; idx++) {
     SpvReflectDescriptorBinding *spvReflect = descriptorBindings[idx];
-    vulkan_shader_reflect_binding **binding = utarray_eltptr(reflect->descriptorBindings, idx);
-    *binding = vulkan_shader_reflect_binding_create(spvReflect);
+    shader_reflect_binding **binding = utarray_eltptr(reflect->descriptorBindings, idx);
+    *binding = shader_reflect_binding_create(spvReflect);
     reflect->maxDescriptorSetNumber = MAX(reflect->maxDescriptorSetNumber, (*binding)->setNumber);
   }
   core_free(descriptorBindings);
@@ -66,59 +66,52 @@ vulkan_shader_reflect *vulkan_shader_reflect_create(uint32_t *spvCode, size_t sp
   return reflect;
 }
 
-void vulkan_shader_reflect_destroy(vulkan_shader_reflect *reflect) {
+void shader_reflect_destroy(shader_reflect *reflect) {
 
-  utarray_foreach_elem_deref (vulkan_shader_reflect_variable *, inputVariable,
-                              reflect->inputVariables) {
-    vulkan_shader_reflect_variable_destroy(inputVariable);
+  utarray_foreach_elem_deref (shader_reflect_variable *, inputVariable, reflect->inputVariables) {
+    shader_reflect_variable_destroy(inputVariable);
   }
   utarray_free(reflect->inputVariables);
 
-  utarray_foreach_elem_deref (vulkan_shader_reflect_variable *, outputVariable,
-                              reflect->outputVariables) {
-    vulkan_shader_reflect_variable_destroy(outputVariable);
+  utarray_foreach_elem_deref (shader_reflect_variable *, outputVariable, reflect->outputVariables) {
+    shader_reflect_variable_destroy(outputVariable);
   }
   utarray_free(reflect->outputVariables);
 
-  utarray_foreach_elem_deref (vulkan_shader_reflect_binding *, binding,
-                              reflect->descriptorBindings) {
-    vulkan_shader_reflect_binding_destroy(binding);
+  utarray_foreach_elem_deref (shader_reflect_binding *, binding, reflect->descriptorBindings) {
+    shader_reflect_binding_destroy(binding);
   }
   utarray_free(reflect->descriptorBindings);
 
   core_free(reflect);
 }
 
-void vulkan_shader_reflect_debug_print(vulkan_shader_reflect *reflect, int indent) {
+void shader_reflect_debug_print(shader_reflect *reflect, int indent) {
   log_debug(INDENT_FORMAT_STRING "shader reflection:", INDENT_FORMAT_ARGS(0));
 
   log_debug(INDENT_FORMAT_STRING "input variables count=%zu:", INDENT_FORMAT_ARGS(2),
             utarray_len(reflect->inputVariables));
-  utarray_foreach_elem_deref (vulkan_shader_reflect_variable *, inputVariable,
-                              reflect->inputVariables) {
-    vulkan_shader_reflect_variable_debug_print(inputVariable, indent + 4);
+  utarray_foreach_elem_deref (shader_reflect_variable *, inputVariable, reflect->inputVariables) {
+    shader_reflect_variable_debug_print(inputVariable, indent + 4);
   }
 
   log_debug(INDENT_FORMAT_STRING "output variables count=%zu:", INDENT_FORMAT_ARGS(2),
             utarray_len(reflect->outputVariables));
-  utarray_foreach_elem_deref (vulkan_shader_reflect_variable *, outputVariable,
-                              reflect->outputVariables) {
-    vulkan_shader_reflect_variable_debug_print(outputVariable, indent + 4);
+  utarray_foreach_elem_deref (shader_reflect_variable *, outputVariable, reflect->outputVariables) {
+    shader_reflect_variable_debug_print(outputVariable, indent + 4);
   }
 
   log_debug(INDENT_FORMAT_STRING "descriptor binding count=%zu:", INDENT_FORMAT_ARGS(2),
             utarray_len(reflect->descriptorBindings));
-  utarray_foreach_elem_deref (vulkan_shader_reflect_binding *, binding,
-                              reflect->descriptorBindings) {
-    vulkan_shader_reflect_binding_debug_print(binding, indent + 4);
+  utarray_foreach_elem_deref (shader_reflect_binding *, binding, reflect->descriptorBindings) {
+    shader_reflect_binding_debug_print(binding, indent + 4);
   }
   log_debug(INDENT_FORMAT_STRING "maxDescriptorSetNumber=%u:", INDENT_FORMAT_ARGS(2),
             reflect->maxDescriptorSetNumber);
 }
 
-vulkan_shader_reflect_variable *
-vulkan_shader_reflect_variable_create(SpvReflectInterfaceVariable *reflect) {
-  vulkan_shader_reflect_variable *variable = core_alloc(sizeof(vulkan_shader_reflect_variable));
+shader_reflect_variable *shader_reflect_variable_create(SpvReflectInterfaceVariable *reflect) {
+  shader_reflect_variable *variable = core_alloc(sizeof(shader_reflect_variable));
   variable->name = core_strdup(reflect->name);
   variable->location = reflect->location;
   variable->storageClass = reflect->storage_class;
@@ -126,31 +119,30 @@ vulkan_shader_reflect_variable_create(SpvReflectInterfaceVariable *reflect) {
   variable->numeric = reflect->numeric;
   variable->array = reflect->array;
 
-  utarray_alloc(variable->members, sizeof(vulkan_shader_reflect_variable *));
+  utarray_alloc(variable->members, sizeof(shader_reflect_variable *));
   utarray_resize(variable->members, reflect->member_count);
   for (size_t idx = 0; idx < utarray_len(variable->members); idx++) {
-    vulkan_shader_reflect_variable **member = utarray_eltptr(variable->members, idx);
-    *member = vulkan_shader_reflect_variable_create(&reflect->members[idx]);
+    shader_reflect_variable **member = utarray_eltptr(variable->members, idx);
+    *member = shader_reflect_variable_create(&reflect->members[idx]);
   }
 
   variable->format = reflect->format;
 
-  variable->typeDesc = vulkan_shader_reflect_type_desc_create(reflect->type_description);
+  variable->typeDesc = shader_reflect_type_desc_create(reflect->type_description);
   return variable;
 }
 
-void vulkan_shader_reflect_variable_destroy(vulkan_shader_reflect_variable *variable) {
+void shader_reflect_variable_destroy(shader_reflect_variable *variable) {
   core_free((char *)variable->name);
-  utarray_foreach_elem_deref (vulkan_shader_reflect_variable *, member, variable->members) {
-    vulkan_shader_reflect_variable_destroy(member);
+  utarray_foreach_elem_deref (shader_reflect_variable *, member, variable->members) {
+    shader_reflect_variable_destroy(member);
   }
   utarray_free(variable->members);
-  vulkan_shader_reflect_type_desc_destroy(variable->typeDesc);
+  shader_reflect_type_desc_destroy(variable->typeDesc);
   core_free(variable);
 }
 
-void vulkan_shader_reflect_variable_debug_print(vulkan_shader_reflect_variable *variable,
-                                                int indent) {
+void shader_reflect_variable_debug_print(shader_reflect_variable *variable, int indent) {
   log_debug(INDENT_FORMAT_STRING "variable:", INDENT_FORMAT_ARGS(0));
   log_debug(INDENT_FORMAT_STRING "name: %s", INDENT_FORMAT_ARGS(2), variable->name);
   log_debug(INDENT_FORMAT_STRING "location: %d", INDENT_FORMAT_ARGS(2), variable->location);
@@ -166,25 +158,24 @@ void vulkan_shader_reflect_variable_debug_print(vulkan_shader_reflect_variable *
             variable->array.dims_count);
   log_debug(INDENT_FORMAT_STRING "format: %s", INDENT_FORMAT_ARGS(2),
             SpvReflectFormat_debug_str(variable->format));
-  vulkan_shader_reflect_type_desc_debug_print(variable->typeDesc, indent + 2);
+  shader_reflect_type_desc_debug_print(variable->typeDesc, indent + 2);
 }
 
-vulkan_shader_reflect_binding *
-vulkan_shader_reflect_binding_create(SpvReflectDescriptorBinding *reflect) {
-  vulkan_shader_reflect_binding *binding = core_alloc(sizeof(vulkan_shader_reflect_binding));
+shader_reflect_binding *shader_reflect_binding_create(SpvReflectDescriptorBinding *reflect) {
+  shader_reflect_binding *binding = core_alloc(sizeof(shader_reflect_binding));
 
-  binding->type = vulkan_shader_reflect_binding_type_unknown;
+  binding->type = shader_reflect_binding_type_unknown;
 #define strcmp_uniform_buffer(_name, ...)                                                          \
   if (reflect->type_description->type_name != NULL &&                                              \
       strcmp(reflect->type_description->type_name, #_name "Block") == 0)                           \
-    binding->type = vulkan_shader_reflect_binding_type_##_name##_uniform_buffer;
+    binding->type = shader_reflect_binding_type_##_name##_uniform_buffer;
   VULKAN_UNIFORM_BUFFERS(strcmp_uniform_buffer, )
 #undef strcmp_uniform_buffer
   if (reflect->name != NULL && strncmp(reflect->name, "textures", strlen("textures")) == 0) {
-    binding->type = vulkan_shader_reflect_binding_type_textures;
+    binding->type = shader_reflect_binding_type_textures;
   }
-  verify(binding->type != vulkan_shader_reflect_binding_type_unknown &&
-         binding->type < vulkan_shader_reflect_binding_type_count);
+  verify(binding->type != shader_reflect_binding_type_unknown &&
+         binding->type < shader_reflect_binding_type_count);
 
   binding->binding = reflect->binding;
   binding->inputAttachmentIndex = reflect->input_attachment_index;
@@ -194,7 +185,7 @@ vulkan_shader_reflect_binding_create(SpvReflectDescriptorBinding *reflect) {
   binding->resourceType = reflect->resource_type;
 
   binding->image = reflect->image;
-  binding->typeDesc = vulkan_shader_reflect_type_desc_create(reflect->type_description);
+  binding->typeDesc = shader_reflect_type_desc_create(reflect->type_description);
 
   binding->array = reflect->array;
   binding->count = reflect->count;
@@ -202,14 +193,13 @@ vulkan_shader_reflect_binding_create(SpvReflectDescriptorBinding *reflect) {
   return binding;
 }
 
-void vulkan_shader_reflect_binding_destroy(vulkan_shader_reflect_binding *binding) {
-  vulkan_shader_reflect_type_desc_destroy(binding->typeDesc);
+void shader_reflect_binding_destroy(shader_reflect_binding *binding) {
+  shader_reflect_type_desc_destroy(binding->typeDesc);
   core_free(binding);
 }
 
 VkDescriptorSetLayoutBinding
-vulkan_shader_reflect_binding_get_layout_binding(vulkan_shader_reflect_binding *binding,
-                                                 vulkan_shader *shader) {
+shader_reflect_binding_get_layout_binding(shader_reflect_binding *binding, shader *shader) {
   VkDescriptorSetLayoutBinding layoutBinding = {0};
   layoutBinding.binding = 0;
   layoutBinding.descriptorCount = binding->count;
@@ -239,15 +229,15 @@ vulkan_shader_reflect_binding_get_layout_binding(vulkan_shader_reflect_binding *
     UNREACHABLE;
   }
   layoutBinding.pImmutableSamplers = NULL;
-  layoutBinding.stageFlags = vulkan_shader_type_to_stage_flag(shader->type);
+  layoutBinding.stageFlags = shader_type_to_stage_flag(shader->type);
 
   return layoutBinding;
 }
 
-void vulkan_shader_reflect_binding_debug_print(vulkan_shader_reflect_binding *binding, int indent) {
+void shader_reflect_binding_debug_print(shader_reflect_binding *binding, int indent) {
   log_debug(INDENT_FORMAT_STRING "binding:", INDENT_FORMAT_ARGS(0));
   log_debug(INDENT_FORMAT_STRING "type: %s", INDENT_FORMAT_ARGS(2),
-            vulkan_shader_reflect_binding_type_debug_str(binding->type));
+            shader_reflect_binding_type_debug_str(binding->type));
   log_debug(INDENT_FORMAT_STRING "binding: %u", INDENT_FORMAT_ARGS(2), binding->binding);
   log_debug(INDENT_FORMAT_STRING "inputAttachmentIndex: %u", INDENT_FORMAT_ARGS(2),
             binding->inputAttachmentIndex);
@@ -258,17 +248,16 @@ void vulkan_shader_reflect_binding_debug_print(vulkan_shader_reflect_binding *bi
   log_debug(INDENT_FORMAT_STRING "image: dim=%s, imageFormat=%s ", INDENT_FORMAT_ARGS(2),
             SpvDim__debug_str(binding->image.dim),
             SpvImageFormat__debug_str(binding->image.image_format));
-  vulkan_shader_reflect_type_desc_debug_print(binding->typeDesc, indent + 2);
+  shader_reflect_type_desc_debug_print(binding->typeDesc, indent + 2);
   log_debug(INDENT_FORMAT_STRING "array: dimsCount=%u", INDENT_FORMAT_ARGS(2),
             binding->array.dims_count);
   log_debug(INDENT_FORMAT_STRING "count: %u", INDENT_FORMAT_ARGS(2), binding->count);
 }
 
-/* vulkan_shader_type_desc */
+/* shader_type_desc */
 
-vulkan_shader_reflect_type_desc *
-vulkan_shader_reflect_type_desc_create(SpvReflectTypeDescription *reflect) {
-  vulkan_shader_reflect_type_desc *typeDesc = core_alloc(sizeof(vulkan_shader_reflect_type_desc));
+shader_reflect_type_desc *shader_reflect_type_desc_create(SpvReflectTypeDescription *reflect) {
+  shader_reflect_type_desc *typeDesc = core_alloc(sizeof(shader_reflect_type_desc));
   typeDesc->op = reflect->op;
   typeDesc->typeName = core_strdup(reflect->type_name);
   typeDesc->structMemberName = core_strdup(reflect->struct_member_name);
@@ -280,28 +269,27 @@ vulkan_shader_reflect_type_desc_create(SpvReflectTypeDescription *reflect) {
   typeDesc->image = reflect->traits.image;
   typeDesc->array = reflect->traits.array;
 
-  utarray_alloc(typeDesc->members, sizeof(vulkan_shader_reflect_type_desc *));
+  utarray_alloc(typeDesc->members, sizeof(shader_reflect_type_desc *));
   utarray_resize(typeDesc->members, reflect->member_count);
   for (size_t idx = 0; idx < utarray_len(typeDesc->members); idx++) {
-    vulkan_shader_reflect_type_desc **member = utarray_eltptr(typeDesc->members, idx);
-    *member = vulkan_shader_reflect_type_desc_create(&reflect->members[idx]);
+    shader_reflect_type_desc **member = utarray_eltptr(typeDesc->members, idx);
+    *member = shader_reflect_type_desc_create(&reflect->members[idx]);
   }
 
   return typeDesc;
 }
 
-void vulkan_shader_reflect_type_desc_destroy(vulkan_shader_reflect_type_desc *typeDesc) {
+void shader_reflect_type_desc_destroy(shader_reflect_type_desc *typeDesc) {
   core_free((char *)typeDesc->typeName);
   core_free((char *)typeDesc->structMemberName);
-  utarray_foreach_elem_deref (vulkan_shader_reflect_type_desc *, member, typeDesc->members) {
-    vulkan_shader_reflect_type_desc_destroy(member);
+  utarray_foreach_elem_deref (shader_reflect_type_desc *, member, typeDesc->members) {
+    shader_reflect_type_desc_destroy(member);
   }
   utarray_free(typeDesc->members);
   core_free(typeDesc);
 }
 
-void vulkan_shader_reflect_type_desc_debug_print(vulkan_shader_reflect_type_desc *typeDesc,
-                                                 int indent) {
+void shader_reflect_type_desc_debug_print(shader_reflect_type_desc *typeDesc, int indent) {
   log_debug(INDENT_FORMAT_STRING "typeDesc:", INDENT_FORMAT_ARGS(0));
   log_debug(INDENT_FORMAT_STRING "op: %s", INDENT_FORMAT_ARGS(2), SpvOp__debug_str(typeDesc->op));
   log_debug(INDENT_FORMAT_STRING "typeName: %s", INDENT_FORMAT_ARGS(2), typeDesc->typeName);
@@ -326,7 +314,7 @@ void vulkan_shader_reflect_type_desc_debug_print(vulkan_shader_reflect_type_desc
 
   log_debug(INDENT_FORMAT_STRING "members count=%zu:", INDENT_FORMAT_ARGS(2),
             utarray_len(typeDesc->members));
-  utarray_foreach_elem_deref (vulkan_shader_reflect_type_desc *, member, typeDesc->members) {
-    vulkan_shader_reflect_type_desc_debug_print(member, indent + 2);
+  utarray_foreach_elem_deref (shader_reflect_type_desc *, member, typeDesc->members) {
+    shader_reflect_type_desc_debug_print(member, indent + 2);
   }
 }

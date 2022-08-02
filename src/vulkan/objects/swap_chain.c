@@ -22,7 +22,7 @@ VkPresentModeKHR choose_swap_present_mode(UT_array *availablePresentModes) {
   return *(VkPresentModeKHR *)utarray_front(availablePresentModes);
 }
 
-VkExtent2D choose_swap_extent(vulkan_device *vkd) {
+VkExtent2D choose_swap_extent(device *vkd) {
   VkSurfaceCapabilitiesKHR capabilities = vkd->swapChainInfo.capabilities;
   if (capabilities.currentExtent.width != UINT32_MAX) {
     return capabilities.currentExtent;
@@ -38,10 +38,10 @@ VkExtent2D choose_swap_extent(vulkan_device *vkd) {
   return actualExtent;
 }
 
-void create_swap_chain(vulkan_swap_chain *vks) {
+void create_swap_chain(swap_chain *vks) {
   assert(vks->swapChain == VK_NULL_HANDLE);
   query_swap_chain_support(vks->vkd, vks->vkd->physicalDevice);
-  vulkan_swap_chain_info *swapChainInfo = &vks->vkd->swapChainInfo;
+  swap_chain_info *swapChainInfo = &vks->vkd->swapChainInfo;
   VkSurfaceFormatKHR surfaceFormat = choose_swap_surface_format(swapChainInfo->formats);
   VkPresentModeKHR presentMode = choose_swap_present_mode(swapChainInfo->presentModes);
   VkExtent2D extent = choose_swap_extent(vks->vkd);
@@ -63,7 +63,7 @@ void create_swap_chain(vulkan_swap_chain *vks) {
   createInfo.imageArrayLayers = 1;
   createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-  vulkan_queue_families queueFamilies = find_queue_families(vks->vkd, vks->vkd->physicalDevice);
+  queue_families queueFamilies = find_queue_families(vks->vkd, vks->vkd->physicalDevice);
   uint32_t queueFamiliesIndices[] = {queueFamilies.graphicsFamily, queueFamilies.presentFamily};
 
   if (queueFamilies.graphicsFamily != queueFamilies.presentFamily) {
@@ -87,7 +87,7 @@ void create_swap_chain(vulkan_swap_chain *vks) {
   vks->vkd->swapChainExtent = vks->swapChainExtent;
 }
 
-void get_swap_chain_images(vulkan_swap_chain *vks) {
+void get_swap_chain_images(swap_chain *vks) {
   assert(vks->swapChain != VK_NULL_HANDLE);
   assert(utarray_len(vks->swapChainImages) == 0);
 
@@ -98,7 +98,7 @@ void get_swap_chain_images(vulkan_swap_chain *vks) {
                           utarray_front(vks->swapChainImages));
 }
 
-void create_swap_chain_image_views(vulkan_swap_chain *vks) {
+void create_swap_chain_image_views(swap_chain *vks) {
   assert(utarray_len(vks->swapChainImages) > 0);
   assert(utarray_len(vks->swapChainImageViews) == 0);
   assert(vks->swapChainImageFormat != VK_FORMAT_UNDEFINED);
@@ -107,25 +107,25 @@ void create_swap_chain_image_views(vulkan_swap_chain *vks) {
   for (size_t i = 0; i < utarray_len(vks->swapChainImageViews); i++) {
     VkImageView *swapChainImageView = (VkImageView *)utarray_eltptr(vks->swapChainImageViews, i);
     VkImage swapChainImage = *(VkImage *)utarray_eltptr(vks->swapChainImages, i);
-    *swapChainImageView = vulkan_create_image_view(
-        vks->vkd, swapChainImage, VK_IMAGE_VIEW_TYPE_2D, vks->swapChainImageFormat,
-        VK_IMAGE_ASPECT_COLOR_BIT, 1, 1, "swap chain element #%zu", i);
-    vulkan_debug_name_image(vks->vkd->debug, swapChainImage, "swap chain element #%zu - image", i);
+    *swapChainImageView = create_image_view(vks->vkd, swapChainImage, VK_IMAGE_VIEW_TYPE_2D,
+                                            vks->swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1,
+                                            1, "swap chain element #%zu", i);
+    debug_name_image(vks->vkd->debug, swapChainImage, "swap chain element #%zu - image", i);
   }
 }
 
-vulkan_swap_chain *vulkan_swap_chain_create(vulkan_device *vkd) {
-  vulkan_swap_chain *vks = core_alloc(sizeof(vulkan_swap_chain));
-  vulkan_swap_chain_init(vks, vkd);
+swap_chain *swap_chain_create(device *vkd) {
+  swap_chain *vks = core_alloc(sizeof(swap_chain));
+  swap_chain_init(vks, vkd);
   return vks;
 }
 
-void vulkan_swap_chain_destroy(vulkan_swap_chain *vks) {
-  vulkan_swap_chain_deinit(vks);
+void swap_chain_destroy(swap_chain *vks) {
+  swap_chain_deinit(vks);
   core_free(vks);
 }
 
-void vulkan_swap_chain_init(vulkan_swap_chain *vks, vulkan_device *vkd) {
+void swap_chain_init(swap_chain *vks, device *vkd) {
   vks->vkd = vkd;
   vks->swapChain = VK_NULL_HANDLE;
   utarray_alloc(vks->swapChainImages, sizeof(VkImageView));
@@ -135,7 +135,7 @@ void vulkan_swap_chain_init(vulkan_swap_chain *vks, vulkan_device *vkd) {
   create_swap_chain_image_views(vks);
 }
 
-void vulkan_swap_chain_deinit(vulkan_swap_chain *vks) {
+void swap_chain_deinit(swap_chain *vks) {
   utarray_foreach_elem_deref (VkImageView, swapChainImageView, vks->swapChainImageViews) {
     vkDestroyImageView(vks->vkd->device, swapChainImageView, vka);
   }
@@ -146,6 +146,6 @@ void vulkan_swap_chain_deinit(vulkan_swap_chain *vks) {
   vks->swapChain = VK_NULL_HANDLE;
 }
 
-float vulkan_swap_chain_get_aspect_ratio(vulkan_swap_chain *vks) {
+float swap_chain_get_aspect_ratio(swap_chain *vks) {
   return vks->swapChainExtent.width / (float)vks->swapChainExtent.height;
 }

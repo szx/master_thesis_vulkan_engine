@@ -19,23 +19,23 @@ const char *deviceExtensions[] = {
 
 const VkAllocationCallbacks *vka = NULL;
 
-bool vulkan_queue_families_complete(vulkan_queue_families *queueFamilies) {
+bool queue_families_complete(queue_families *queueFamilies) {
   return queueFamilies->graphicsFamily < UINT32_MAX && queueFamilies->presentFamily < UINT32_MAX;
 }
 
-void vulkan_swap_chain_info_init(vulkan_swap_chain_info *vksInfo) {
+void swap_chain_info_init(swap_chain_info *vksInfo) {
   utarray_new(vksInfo->formats, &ut_vk_surface_format_icd);
   utarray_new(vksInfo->presentModes, &ut_vk_present_mode_icd);
 }
 
-void vulkan_swap_chain_info_deinit(vulkan_swap_chain_info *vksInfo) {
+void swap_chain_info_deinit(swap_chain_info *vksInfo) {
   utarray_free(vksInfo->formats);
   utarray_free(vksInfo->presentModes);
 }
 
-vulkan_device *vulkan_device_create(data_config *config, data_asset_db *assetDb) {
-  vulkan_device *vkd = core_alloc(sizeof(vulkan_device));
-  vulkan_swap_chain_info_init(&vkd->swapChainInfo);
+device *device_create(data_config *config, data_asset_db *assetDb) {
+  device *vkd = core_alloc(sizeof(device));
+  swap_chain_info_init(&vkd->swapChainInfo);
   vkd->swapChainImageFormat = VK_FORMAT_UNDEFINED;
   vkd->swapChainExtent = (VkExtent2D){0};
   create_window(vkd, config, assetDb);
@@ -45,19 +45,19 @@ vulkan_device *vulkan_device_create(data_config *config, data_asset_db *assetDb)
   pick_physical_device(vkd);
   create_logical_device(vkd);
   create_one_shot_command_pool(vkd);
-  vkd->input = vulkan_input_default();
+  vkd->input = input_default();
   return vkd;
 }
 
-void vulkan_device_destroy(vulkan_device *vkd) {
-  log_info("vulkan_device_destroy()");
-  vulkan_swap_chain_info_deinit(&vkd->swapChainInfo);
+void device_destroy(device *vkd) {
+  log_info("device_destroy()");
+  swap_chain_info_deinit(&vkd->swapChainInfo);
 
   vkDestroyCommandPool(vkd->device, vkd->oneShotCommandPool, vka);
 
   vkDestroyDevice(vkd->device, vka);
 
-  vulkan_debug_destroy(vkd->debug);
+  debug_destroy(vkd->debug);
 
   vkDestroySurfaceKHR(vkd->instance, vkd->surface, vka);
 
@@ -70,7 +70,7 @@ void vulkan_device_destroy(vulkan_device *vkd) {
 }
 
 void glfw_framebuffer_resize_callback(GLFWwindow *window, int width, int height) {
-  vulkan_device *vkd = glfwGetWindowUserPointer(window);
+  device *vkd = glfwGetWindowUserPointer(window);
   vkd->framebufferResized = true;
 }
 
@@ -78,7 +78,7 @@ void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, in
   if (!(action == GLFW_PRESS || action == GLFW_RELEASE)) {
     return; // Ignore GLFW_REPEAT.
   }
-  vulkan_device *vkd = glfwGetWindowUserPointer(window);
+  device *vkd = glfwGetWindowUserPointer(window);
 #define input_key(_name, _glfwKey, ...)                                                            \
   if (key == _glfwKey) {                                                                           \
     vkd->input.keyboard.press._name = action == GLFW_PRESS;                                        \
@@ -89,7 +89,7 @@ void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, in
 }
 
 void glfw_mouse_callback(GLFWwindow *window, double x, double y) {
-  vulkan_device *vkd = glfwGetWindowUserPointer(window);
+  device *vkd = glfwGetWindowUserPointer(window);
   static bool skip = true; // True if first callback after leaving/recreating window.
   if (skip) {
     vkd->input.mouse.lastX = x;
@@ -100,7 +100,7 @@ void glfw_mouse_callback(GLFWwindow *window, double x, double y) {
   vkd->input.mouse.y = y;
 }
 
-void create_window(vulkan_device *vkd, data_config *config, data_asset_db *assetDb) {
+void create_window(device *vkd, data_config *config, data_asset_db *assetDb) {
   log_info("create_window");
   verify(glfwInit() == GLFW_TRUE);
   verify(glfwVulkanSupported() == GLFW_TRUE);
@@ -126,7 +126,7 @@ bool validation_layers_enabled() {
 #endif
 }
 
-bool check_validation_layer_support(vulkan_device *vkd) {
+bool check_validation_layer_support(device *vkd) {
   uint32_t layerCount = 0;
   vkEnumerateInstanceLayerProperties(&layerCount, NULL);
   VkLayerProperties *availableLayers =
@@ -154,7 +154,7 @@ bool check_validation_layer_support(vulkan_device *vkd) {
   return true;
 }
 
-void create_instance(vulkan_device *vkd, data_config *config, data_asset_db *assetDb) {
+void create_instance(device *vkd, data_config *config, data_asset_db *assetDb) {
   if (validation_layers_enabled() && !check_validation_layer_support(vkd)) {
     panic("validation layers requested, but not available!");
   }
@@ -196,7 +196,7 @@ void create_instance(vulkan_device *vkd, data_config *config, data_asset_db *ass
   if (validation_layers_enabled()) {
     createInfo.enabledLayerCount = array_size(validationLayers);
     createInfo.ppEnabledLayerNames = validationLayers;
-    debugCreateInfo = vulkan_debug_messenger_create_info(vulkan_debug_callback_for_instance);
+    debugCreateInfo = debug_messenger_create_info(debug_callback_for_instance);
     validationFeatures = (VkValidationFeaturesEXT){
         .sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT,
         .enabledValidationFeatureCount = array_size(enabledValidationFeatures),
@@ -212,16 +212,16 @@ void create_instance(vulkan_device *vkd, data_config *config, data_asset_db *ass
   verify(vkCreateInstance(&createInfo, vka, &vkd->instance) == VK_SUCCESS);
 }
 
-void create_debug_utils(vulkan_device *vkd) {
+void create_debug_utils(device *vkd) {
   vkd->device = VK_NULL_HANDLE;
-  vkd->debug = vulkan_debug_create(validation_layers_enabled(), &vkd->device, vkd->instance, vka);
+  vkd->debug = debug_create(validation_layers_enabled(), &vkd->device, vkd->instance, vka);
 }
 
-void create_surface(vulkan_device *vkd) {
+void create_surface(device *vkd) {
   verify(glfwCreateWindowSurface(vkd->instance, vkd->window, vka, &vkd->surface) == VK_SUCCESS);
 }
 
-void query_swap_chain_support(vulkan_device *vkd, VkPhysicalDevice physicalDevice) {
+void query_swap_chain_support(device *vkd, VkPhysicalDevice physicalDevice) {
   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, vkd->surface,
                                             &vkd->swapChainInfo.capabilities);
 
@@ -244,7 +244,7 @@ void query_swap_chain_support(vulkan_device *vkd, VkPhysicalDevice physicalDevic
   }
 }
 
-bool check_device_extension_support(vulkan_device *vkd, VkPhysicalDevice physicalDevice) {
+bool check_device_extension_support(device *vkd, VkPhysicalDevice physicalDevice) {
   uint32_t extensionCount;
   vkEnumerateDeviceExtensionProperties(physicalDevice, NULL, &extensionCount, NULL);
 
@@ -274,7 +274,7 @@ bool check_device_extension_support(vulkan_device *vkd, VkPhysicalDevice physica
   return !missingExtension;
 }
 
-bool physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevice, size_t *rank) {
+bool physical_device_suitable(device *vkd, VkPhysicalDevice physicalDevice, size_t *rank) {
   log_info("physical device info:");
 
   VkPhysicalDeviceProperties deviceProperties;
@@ -299,8 +299,8 @@ bool physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevic
   log_info("apiVersion = %d.%d.%d", versionMajor, versionMinor, versionPatch);
   bool goodVulkanVersion = versionMajor >= 1 && versionMinor >= 2;
 
-  vulkan_queue_families queueFamilies = find_queue_families(vkd, physicalDevice);
-  bool queueFamiliesComplete = vulkan_queue_families_complete(&queueFamilies);
+  queue_families queueFamilies = find_queue_families(vkd, physicalDevice);
+  bool queueFamiliesComplete = queue_families_complete(&queueFamilies);
   log_info("found queue familes = %d", queueFamiliesComplete);
 
   bool extensionsSupported = check_device_extension_support(vkd, physicalDevice);
@@ -361,21 +361,20 @@ bool physical_device_suitable(vulkan_device *vkd, VkPhysicalDevice physicalDevic
          featuresSupported;
 }
 
-typedef struct vulkan_physical_device_info {
+typedef struct physical_device_info {
   VkPhysicalDevice physicalDevice;
   size_t rank;
-} vulkan_physical_device_info;
+} physical_device_info;
 
-static int vulkan_physical_device_info_compare(const void *s1, const void *s2) {
-  vulkan_physical_device_info *a1 = (vulkan_physical_device_info *)s1;
-  vulkan_physical_device_info *a2 = (vulkan_physical_device_info *)s2;
+static int physical_device_info_compare(const void *s1, const void *s2) {
+  physical_device_info *a1 = (physical_device_info *)s1;
+  physical_device_info *a2 = (physical_device_info *)s2;
   return (int)a2->rank - (int)a1->rank;
 }
 
-static const UT_icd ut_vulkan_physical_device_info_icd = {sizeof(vulkan_physical_device_info), NULL,
-                                                          NULL, NULL};
+static const UT_icd ut_physical_device_info_icd = {sizeof(physical_device_info), NULL, NULL, NULL};
 
-void pick_physical_device(vulkan_device *vkd) {
+void pick_physical_device(device *vkd) {
   uint32_t deviceCount = 0;
   vkEnumeratePhysicalDevices(vkd->instance, &deviceCount, NULL);
   verify(deviceCount > 0);
@@ -383,22 +382,21 @@ void pick_physical_device(vulkan_device *vkd) {
   vkEnumeratePhysicalDevices(vkd->instance, &deviceCount, devices);
 
   vkd->physicalDevice = VK_NULL_HANDLE;
-  UT_array *infos; // vulkan_physical_device_info
-  utarray_new(infos, &ut_vulkan_physical_device_info_icd);
+  UT_array *infos; // physical_device_info
+  utarray_new(infos, &ut_physical_device_info_icd);
   for (size_t i = 0; i < deviceCount; i++) {
     VkPhysicalDevice physicalDevice = devices[i];
     size_t rank = 0;
     if (physical_device_suitable(vkd, physicalDevice, &rank)) {
-      vulkan_physical_device_info info = {.physicalDevice = physicalDevice, .rank = rank};
+      physical_device_info info = {.physicalDevice = physicalDevice, .rank = rank};
       utarray_push_back(infos, &info);
     }
   }
   if (utarray_len(infos) == 0) {
     panic("failed to find suitable GPU");
   }
-  qsort(infos, utarray_len(infos), sizeof(vulkan_physical_device_info),
-        vulkan_physical_device_info_compare);
-  vkd->physicalDevice = ((vulkan_physical_device_info *)utarray_front(infos))->physicalDevice;
+  qsort(infos, utarray_len(infos), sizeof(physical_device_info), physical_device_info_compare);
+  vkd->physicalDevice = ((physical_device_info *)utarray_front(infos))->physicalDevice;
   utarray_free(infos);
   free(devices);
   verify(vkd->physicalDevice != VK_NULL_HANDLE);
@@ -411,8 +409,8 @@ void pick_physical_device(vulkan_device *vkd) {
   vkd->limits = find_limits(vkd, vkd->physicalDevice);
 }
 
-vulkan_queue_families find_queue_families(vulkan_device *vkd, VkPhysicalDevice physicalDevice) {
-  vulkan_queue_families result = {0};
+queue_families find_queue_families(device *vkd, VkPhysicalDevice physicalDevice) {
+  queue_families result = {0};
   result.graphicsFamily = UINT32_MAX;
   result.presentFamily = UINT32_MAX;
 
@@ -434,7 +432,7 @@ vulkan_queue_families find_queue_families(vulkan_device *vkd, VkPhysicalDevice p
     if (presentSupport) {
       result.presentFamily = queueFamilyIndex;
     }
-    if (vulkan_queue_families_complete(&result)) {
+    if (queue_families_complete(&result)) {
       break;
     }
     queueFamilyIndex++;
@@ -443,7 +441,7 @@ vulkan_queue_families find_queue_families(vulkan_device *vkd, VkPhysicalDevice p
   return result;
 }
 
-vulkan_limits find_limits(vulkan_device *vkd, VkPhysicalDevice physicalDevice) {
+limits find_limits(device *vkd, VkPhysicalDevice physicalDevice) {
   VkPhysicalDeviceDescriptorIndexingProperties descriptorIndexingProperties = {
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES};
   VkPhysicalDeviceProperties2 deviceProperties2 = {
@@ -452,7 +450,7 @@ vulkan_limits find_limits(vulkan_device *vkd, VkPhysicalDevice physicalDevice) {
   vkGetPhysicalDeviceProperties2(physicalDevice, &deviceProperties2);
   VkPhysicalDeviceProperties deviceProperties = deviceProperties2.properties;
 
-  vulkan_limits limits;
+  limits limits;
 
   limits.maxImageDimension2D = deviceProperties.limits.maxImageDimension2D;
   limits.maxUniformBufferRange = deviceProperties.limits.maxUniformBufferRange;
@@ -489,8 +487,8 @@ vulkan_limits find_limits(vulkan_device *vkd, VkPhysicalDevice physicalDevice) {
   return limits;
 }
 
-void create_logical_device(vulkan_device *vkd) {
-  vulkan_queue_families queueFamilies = find_queue_families(vkd, vkd->physicalDevice);
+void create_logical_device(device *vkd) {
+  queue_families queueFamilies = find_queue_families(vkd, vkd->physicalDevice);
 
   VkDeviceQueueCreateInfo *queueCreateInfos;
   uint32_t numQueues;
@@ -583,9 +581,8 @@ void create_logical_device(vulkan_device *vkd) {
   verify(vkd->cmdEndRendering);
 }
 
-void create_one_shot_command_pool(vulkan_device *vkd) {
-  vulkan_queue_families queueFamilies = find_queue_families(vkd, vkd->physicalDevice);
-  vkd->oneShotCommandPool =
-      vulkan_create_command_pool(vkd, queueFamilies.graphicsFamily, 0, "one-shot");
+void create_one_shot_command_pool(device *vkd) {
+  queue_families queueFamilies = find_queue_families(vkd, vkd->physicalDevice);
+  vkd->oneShotCommandPool = create_command_pool(vkd, queueFamilies.graphicsFamily, 0, "one-shot");
   // TODO: Also use transfer queue - but vkCmdBlitImage is graphics queue only?
 }

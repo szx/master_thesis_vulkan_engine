@@ -4,8 +4,8 @@
 #include "../common.h"
 
 /// Vulkan objects used by pipelines to render frames in flight.
-typedef struct vulkan_sync {
-  vulkan_device *vkd; ///< Pointer.
+typedef struct sync {
+  device *vkd; ///< Pointer.
 
   /// Current frame rendered in flight (0..FRAMES_IN_FLIGHT).
   size_t currentFrameInFlight;
@@ -24,17 +24,17 @@ typedef struct vulkan_sync {
 
   /// Command buffers.
   VkCommandBuffer commandBuffers[FRAMES_IN_FLIGHT];
-} vulkan_sync;
+} sync;
 
-vulkan_sync *vulkan_sync_create(vulkan_device *vkd);
-void vulkan_sync_destroy(vulkan_sync *sync);
+sync *sync_create(device *vkd);
+void sync_destroy(sync *sync);
 
-void vulkan_sync_wait_for_current_frame_fence(vulkan_sync *sync);
+void sync_wait_for_current_frame_fence(sync *sync);
 
-void vulkan_sync_reset_current_frame_fence(vulkan_sync *sync);
+void sync_reset_current_frame_fence(sync *sync);
 
-void vulkan_sync_advance_to_next_frame(vulkan_sync *sync);
+void sync_advance_to_next_frame(sync *sync);
 
-VkCommandBuffer vulkan_sync_get_current_frame_command_buffer(vulkan_sync *sync);
+VkCommandBuffer sync_get_current_frame_command_buffer(sync *sync);
 
-void vulkan_sync_debug_print(vulkan_sync *sync, int indent);
+void sync_debug_print(sync *sync, int indent);

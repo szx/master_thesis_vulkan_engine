@@ -7,18 +7,16 @@
 #include "../render_pass_decls.h"
 
 /// Generates GLSL shader source code.
-typedef struct vulkan_render_pass_shader_generator {
-  vulkan_render_state *renderState; ///< Pointer.
+typedef struct render_pass_shader_generator {
+  render_state *renderState; ///< Pointer.
 
   UT_string *sourceCode; ///< GLSL source code.
-} vulkan_render_pass_shader_generator;
+} render_pass_shader_generator;
 
-void vulkan_render_pass_shader_generator_init(vulkan_render_pass_shader_generator *shaderGenerator,
-                                              vulkan_render_state *renderState);
-void vulkan_render_pass_shader_generator_deinit(
-    vulkan_render_pass_shader_generator *shaderGenerator);
+void render_pass_shader_generator_init(render_pass_shader_generator *shaderGenerator,
+                                       render_state *renderState);
+void render_pass_shader_generator_deinit(render_pass_shader_generator *shaderGenerator);
 
-vulkan_shader *
-vulkan_render_pass_shader_generator_get_shader(vulkan_render_pass_shader_generator *shaderGenerator,
-                                               vulkan_render_pass_desc renderPassDesc,
-                                               vulkan_shader_type shaderType);
+shader *render_pass_shader_generator_get_shader(render_pass_shader_generator *shaderGenerator,
+                                                render_pass_desc renderPassDesc,
+                                                shader_type shaderType);

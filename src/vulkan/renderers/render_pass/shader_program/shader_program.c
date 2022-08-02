@@ -1,30 +1,29 @@
 #include "shader_program.h"
 
-vulkan_render_pass_shader_program *
-vulkan_render_pass_shader_program_create(vulkan_render_state *renderState,
-                                         vulkan_render_pass_desc renderPassDesc) {
-  vulkan_render_pass_shader_program *shaderProgram =
-      core_alloc(sizeof(vulkan_render_pass_shader_program));
+render_pass_shader_program *render_pass_shader_program_create(render_state *renderState,
+                                                              render_pass_desc renderPassDesc) {
+  render_pass_shader_program *shaderProgram = core_alloc(sizeof(render_pass_shader_program));
 
-  vulkan_render_pass_shader_generator_init(&shaderProgram->shaderGenerator, renderState);
+  render_pass_shader_generator_init(&shaderProgram->shaderGenerator, renderState);
 
-  shaderProgram->vertexShader = vulkan_render_pass_shader_generator_get_shader(
-      &shaderProgram->shaderGenerator, renderPassDesc, vulkan_shader_type_vertex);
-  shaderProgram->fragmentShader = vulkan_render_pass_shader_generator_get_shader(
-      &shaderProgram->shaderGenerator, renderPassDesc, vulkan_shader_type_fragment);
+  shaderProgram->vertexShader = render_pass_shader_generator_get_shader(
+      &shaderProgram->shaderGenerator, renderPassDesc, shader_type_vertex);
+  shaderProgram->fragmentShader = render_pass_shader_generator_get_shader(
+      &shaderProgram->shaderGenerator, renderPassDesc, shader_type_fragment);
 
   return shaderProgram;
 }
 
-void vulkan_render_pass_shader_program_destroy(vulkan_render_pass_shader_program *shaderProgram) {
-  vulkan_shader_destroy(shaderProgram->vertexShader);
-  vulkan_shader_destroy(shaderProgram->fragmentShader);
-  vulkan_render_pass_shader_generator_deinit(&shaderProgram->shaderGenerator);
+void render_pass_shader_program_destroy(render_pass_shader_program *shaderProgram) {
+  shader_destroy(shaderProgram->vertexShader);
+  shader_destroy(shaderProgram->fragmentShader);
+  render_pass_shader_generator_deinit(&shaderProgram->shaderGenerator);
   core_free(shaderProgram);
 }
 
-VkPipelineShaderStageCreateInfo *vulkan_render_pass_shader_program_get_shader_stages(
-    vulkan_render_pass_shader_program *shaderProgram, size_t *count) {
+VkPipelineShaderStageCreateInfo *
+render_pass_shader_program_get_shader_stages(render_pass_shader_program *shaderProgram,
+                                             size_t *count) {
   size_t shaderStageCount = 2;
   *count = shaderStageCount;
 
@@ -48,9 +47,8 @@ VkPipelineShaderStageCreateInfo *vulkan_render_pass_shader_program_get_shader_st
   return shaderStages;
 }
 
-void vulkan_render_pass_shader_program_debug_print(vulkan_render_pass_shader_program *shaderProgram,
-                                                   int indent) {
+void render_pass_shader_program_debug_print(render_pass_shader_program *shaderProgram, int indent) {
   log_debug(INDENT_FORMAT_STRING "shader generator:", INDENT_FORMAT_ARGS(0));
-  vulkan_shader_debug_print(shaderProgram->vertexShader, indent + 2);
-  vulkan_shader_debug_print(shaderProgram->fragmentShader, indent + 2);
+  shader_debug_print(shaderProgram->vertexShader, indent + 2);
+  shader_debug_print(shaderProgram->fragmentShader, indent + 2);
 }

@@ -1,7 +1,7 @@
 #include "material.h"
 #include "../scene/data.h"
 
-void vulkan_asset_material_init(vulkan_asset_material *material, vulkan_scene_data *sceneData) {
+void asset_material_init(asset_material *material, scene_data *sceneData) {
   material->sceneData = sceneData;
   // NOTE: Default material parameter values as defined by glTF spec.
   glm_vec4_copy((vec4){1.0f, 1.0f, 1.0f, 1.0f}, material->baseColorFactor);
@@ -14,9 +14,9 @@ void vulkan_asset_material_init(vulkan_asset_material *material, vulkan_scene_da
   VULKAN_ASSET_FIELD_DEFS(material, material)
 }
 
-void vulkan_asset_material_deinit(vulkan_asset_material *material) {}
+void asset_material_deinit(asset_material *material) {}
 
-data_key vulkan_asset_material_calculate_key(vulkan_asset_material *material) {
+data_key asset_material_calculate_key(asset_material *material) {
   hash_t value;
   HASH_START(hashState)
   HASH_UPDATE(hashState, &material->baseColorFactor, sizeof(material->baseColorFactor))
@@ -40,18 +40,18 @@ data_key vulkan_asset_material_calculate_key(vulkan_asset_material *material) {
   return (data_key){value};
 }
 
-void vulkan_asset_material_serialize(vulkan_asset_material *material, data_asset_db *assetDb) {
-  material->key = vulkan_asset_material_calculate_key(material);
+void asset_material_serialize(asset_material *material, data_asset_db *assetDb) {
+  material->key = asset_material_calculate_key(material);
 
-  vulkan_asset_texture_serialize(material->baseColorTexture, assetDb);
+  asset_texture_serialize(material->baseColorTexture, assetDb);
   data_asset_db_insert_material_baseColorTexture_key(assetDb, material->key,
                                                      material->baseColorTexture->key);
 
-  vulkan_asset_texture_serialize(material->metallicRoughnessTexture, assetDb);
+  asset_texture_serialize(material->metallicRoughnessTexture, assetDb);
   data_asset_db_insert_material_metallicRoughnessTexture_key(
       assetDb, material->key, material->metallicRoughnessTexture->key);
 
-  vulkan_asset_texture_serialize(material->normalMapTexture, assetDb);
+  asset_texture_serialize(material->normalMapTexture, assetDb);
   data_asset_db_insert_material_normalMapTexture_key(assetDb, material->key,
                                                      material->normalMapTexture->key);
 
@@ -63,8 +63,7 @@ void vulkan_asset_material_serialize(vulkan_asset_material *material, data_asset
                                                       data_float_temp(material->roughnessFactor));
 }
 
-void vulkan_asset_material_deserialize(vulkan_asset_material *material, data_asset_db *assetDb,
-                                       data_key key) {
+void asset_material_deserialize(asset_material *material, data_asset_db *assetDb, data_key key) {
   material->key = key;
   glm_vec4_copy(data_asset_db_select_material_baseColorFactor_vec4(assetDb, material->key).value,
                 material->baseColorFactor);
@@ -73,18 +72,18 @@ void vulkan_asset_material_deserialize(vulkan_asset_material *material, data_ass
   material->roughnessFactor =
       data_asset_db_select_material_roughnessFactor_float(assetDb, material->key).value;
 
-  material->baseColorTexture = vulkan_scene_data_get_texture_by_key(
+  material->baseColorTexture = scene_data_get_texture_by_key(
       material->sceneData, assetDb,
       data_asset_db_select_material_baseColorTexture_key(assetDb, material->key));
-  material->metallicRoughnessTexture = vulkan_scene_data_get_texture_by_key(
+  material->metallicRoughnessTexture = scene_data_get_texture_by_key(
       material->sceneData, assetDb,
       data_asset_db_select_material_metallicRoughnessTexture_key(assetDb, material->key));
-  material->normalMapTexture = vulkan_scene_data_get_texture_by_key(
+  material->normalMapTexture = scene_data_get_texture_by_key(
       material->sceneData, assetDb,
       data_asset_db_select_material_normalMapTexture_key(assetDb, material->key));
 }
 
-void vulkan_asset_material_debug_print(vulkan_asset_material *material, int indent) {
+void asset_material_debug_print(asset_material *material, int indent) {
   log_debug(INDENT_FORMAT_STRING "material:", INDENT_FORMAT_ARGS(0));
   log_debug(INDENT_FORMAT_STRING "hash=%zu:", INDENT_FORMAT_ARGS(2), material->key);
   log_debug(INDENT_FORMAT_STRING "baseColorFactor=%f %f %f %f", INDENT_FORMAT_ARGS(2),

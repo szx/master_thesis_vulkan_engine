@@ -3,34 +3,34 @@
 #include "descriptors.h"
 #include "../core/core.h"
 
-void glsl_add_vulkan_draw_push_constant(UT_string *s) {
+void glsl_add_draw_push_constant(UT_string *s) {
   utstring_printf(s, "layout(push_constant) uniform drawBlock {\n");
  utstring_printf(s, "  uint currentFrameInFlight ;\n");
   utstring_printf(s, "} draw;\n");
 }
-void glsl_add_vulkan_global_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count) {
+void glsl_add_global_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count) {
   utstring_printf(s, "struct globalStruct {\n");
  utstring_printf(s, "  mat4 viewMat ;\n");
  utstring_printf(s, "  mat4 projMat ;\n");
  utstring_printf(s, "  uint materialCount ;\n");
- utstring_printf(s, "  vulkan_material_helper_element materials [MAX_MATERIAL_COUNT];\n");
+ utstring_printf(s, "  material_helper_element materials [MAX_MATERIAL_COUNT];\n");
  utstring_printf(s, "  uint directionalLightCount ;\n");
- utstring_printf(s, "  vulkan_directional_light_helper_element directionalLights [MAX_DIRECTIONAL_LIGHT_COUNT];\n");
+ utstring_printf(s, "  directional_light_helper_element directionalLights [MAX_DIRECTIONAL_LIGHT_COUNT];\n");
  utstring_printf(s, "  uint pointLightCount ;\n");
- utstring_printf(s, "  vulkan_point_light_helper_element pointLights [MAX_POINT_LIGHT_COUNT];\n");
+ utstring_printf(s, "  point_light_helper_element pointLights [MAX_POINT_LIGHT_COUNT];\n");
  utstring_printf(s, "  uint spotLightCount ;\n");
- utstring_printf(s, "  vulkan_spot_light_helper_element spotLights [MAX_SPOT_LIGHT_COUNT];\n");
- utstring_printf(s, "  vulkan_skybox_helper_element skybox ;\n");
- utstring_printf(s, "  vulkan_font_helper_element font ;\n");
- utstring_printf(s, "  vulkan_viewport_helper_element viewport ;\n");
- utstring_printf(s, "  vulkan_offscreen_texture_helper_element offscreenTextures ;\n");
+ utstring_printf(s, "  spot_light_helper_element spotLights [MAX_SPOT_LIGHT_COUNT];\n");
+ utstring_printf(s, "  skybox_helper_element skybox ;\n");
+ utstring_printf(s, "  font_helper_element font ;\n");
+ utstring_printf(s, "  viewport_helper_element viewport ;\n");
+ utstring_printf(s, "  offscreen_texture_helper_element offscreenTextures ;\n");
   utstring_printf(s, "};\n");
   utstring_printf(s, "layout(scalar, set = %u, binding = %u) uniform globalBlock {\n", set, binding);
   utstring_printf(s, "  globalStruct global");
   if (count > 1) {utstring_printf(s, "[%u]", count);}
   utstring_printf(s, ";\n};\n");
 }
-void glsl_add_vulkan_instances_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count) {
+void glsl_add_instances_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count) {
   utstring_printf(s, "struct instancesStruct {\n");
  utstring_printf(s, "  mat4 modelMat ;\n");
  utstring_printf(s, "  uint materialId ;\n");
@@ -40,15 +40,15 @@ void glsl_add_vulkan_instances_uniform_buffer(UT_string *s, uint32_t set, uint32
   if (count > 1) {utstring_printf(s, "[%u]", count);}
   utstring_printf(s, ";\n};\n");
 }
-void glsl_add_vulkan_directional_light_helper_element(UT_string *s) {
-  utstring_printf(s, "struct vulkan_directional_light_helper_element {\n");
+void glsl_add_directional_light_helper_element(UT_string *s) {
+  utstring_printf(s, "struct directional_light_helper_element {\n");
  utstring_printf(s, "  vec3 direction ;\n");
  utstring_printf(s, "  vec3 color ;\n");
  utstring_printf(s, "  float intensity ;\n");
   utstring_printf(s, "};\n");
 }
-void glsl_add_vulkan_font_helper_element(UT_string *s) {
-  utstring_printf(s, "struct vulkan_font_helper_element {\n");
+void glsl_add_font_helper_element(UT_string *s) {
+  utstring_printf(s, "struct font_helper_element {\n");
  utstring_printf(s, "  uint fontTextureId ;\n");
  utstring_printf(s, "  uint characterSize ;\n");
  utstring_printf(s, "  uint fontTextureSize ;\n");
@@ -56,8 +56,8 @@ void glsl_add_vulkan_font_helper_element(UT_string *s) {
  utstring_printf(s, "  uint text [MAX_TEXT_CHARACTER_COUNT];\n");
   utstring_printf(s, "};\n");
 }
-void glsl_add_vulkan_material_helper_element(UT_string *s) {
-  utstring_printf(s, "struct vulkan_material_helper_element {\n");
+void glsl_add_material_helper_element(UT_string *s) {
+  utstring_printf(s, "struct material_helper_element {\n");
  utstring_printf(s, "  uint baseColorTextureId ;\n");
  utstring_printf(s, "  vec4 baseColorFactor ;\n");
  utstring_printf(s, "  uint metallicRoughnessTextureId ;\n");
@@ -66,26 +66,26 @@ void glsl_add_vulkan_material_helper_element(UT_string *s) {
  utstring_printf(s, "  float roughnessFactor ;\n");
   utstring_printf(s, "};\n");
 }
-void glsl_add_vulkan_offscreen_texture_helper_element(UT_string *s) {
-  utstring_printf(s, "struct vulkan_offscreen_texture_helper_element {\n");
+void glsl_add_offscreen_texture_helper_element(UT_string *s) {
+  utstring_printf(s, "struct offscreen_texture_helper_element {\n");
  utstring_printf(s, "  uint textureId [MAX_OFFSCREEN_TEXTURE_COUNT];\n");
   utstring_printf(s, "};\n");
 }
-void glsl_add_vulkan_point_light_helper_element(UT_string *s) {
-  utstring_printf(s, "struct vulkan_point_light_helper_element {\n");
+void glsl_add_point_light_helper_element(UT_string *s) {
+  utstring_printf(s, "struct point_light_helper_element {\n");
  utstring_printf(s, "  vec3 position ;\n");
  utstring_printf(s, "  vec3 color ;\n");
  utstring_printf(s, "  float range ;\n");
  utstring_printf(s, "  float intensity ;\n");
   utstring_printf(s, "};\n");
 }
-void glsl_add_vulkan_skybox_helper_element(UT_string *s) {
-  utstring_printf(s, "struct vulkan_skybox_helper_element {\n");
+void glsl_add_skybox_helper_element(UT_string *s) {
+  utstring_printf(s, "struct skybox_helper_element {\n");
  utstring_printf(s, "  uint skyboxCubemapTextureId ;\n");
   utstring_printf(s, "};\n");
 }
-void glsl_add_vulkan_spot_light_helper_element(UT_string *s) {
-  utstring_printf(s, "struct vulkan_spot_light_helper_element {\n");
+void glsl_add_spot_light_helper_element(UT_string *s) {
+  utstring_printf(s, "struct spot_light_helper_element {\n");
  utstring_printf(s, "  vec3 position ;\n");
  utstring_printf(s, "  vec3 color ;\n");
  utstring_printf(s, "  float innerConeAngle ;\n");
@@ -94,8 +94,8 @@ void glsl_add_vulkan_spot_light_helper_element(UT_string *s) {
  utstring_printf(s, "  float intensity ;\n");
   utstring_printf(s, "};\n");
 }
-void glsl_add_vulkan_viewport_helper_element(UT_string *s) {
-  utstring_printf(s, "struct vulkan_viewport_helper_element {\n");
+void glsl_add_viewport_helper_element(UT_string *s) {
+  utstring_printf(s, "struct viewport_helper_element {\n");
  utstring_printf(s, "  uint width ;\n");
  utstring_printf(s, "  uint height ;\n");
   utstring_printf(s, "};\n");

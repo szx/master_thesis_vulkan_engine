@@ -9,9 +9,9 @@
 
 #include "common.h"
 
-typedef struct vulkan_asset_mesh {
-  UT_array *primitives;             /// vulkan_asset_primitive* array.
+typedef struct asset_mesh {
+  UT_array *primitives;             /// asset_primitive* array.
   VULKAN_ASSET_FIELD_DECLS(mesh)
-} vulkan_asset_mesh;
+} asset_mesh;
 
 VULKAN_ASSET_FUNC_DECLS(mesh)

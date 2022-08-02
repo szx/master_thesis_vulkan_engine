@@ -4,68 +4,60 @@
 
 #include "../../core/core.h"
 
-typedef struct vulkan_device vulkan_device;
+typedef struct device device;
 
-uint32_t vulkan_find_memory_type(vulkan_device *vkd, uint32_t typeFilter,
-                                 VkMemoryPropertyFlags properties);
-VkFormat vulkan_find_supported_format(vulkan_device *vkd, VkImageTiling tiling,
-                                      VkFormatFeatureFlags features, VkFormat *candidates,
-                                      size_t candidateCount);
-size_t vulkan_format_size(VkFormat format);
-VkIndexType vulkan_stride_to_index_type(size_t stride);
+uint32_t find_memory_type(device *vkd, uint32_t typeFilter, VkMemoryPropertyFlags properties);
+VkFormat find_supported_format(device *vkd, VkImageTiling tiling, VkFormatFeatureFlags features,
+                               VkFormat *candidates, size_t candidateCount);
+size_t format_size(VkFormat format);
+VkIndexType stride_to_index_type(size_t stride);
 
 /* vulkan object creation */
 
-VkCommandPool vulkan_create_command_pool(vulkan_device *vkd, uint32_t queueFamilyIndex,
-                                         VkCommandPoolCreateFlags flags, const char *debugFormat,
-                                         ...);
+VkCommandPool create_command_pool(device *vkd, uint32_t queueFamilyIndex,
+                                  VkCommandPoolCreateFlags flags, const char *debugFormat, ...);
 
-VkCommandBuffer vulkan_create_command_buffer(vulkan_device *vkd, VkCommandPool commandPool,
-                                             const char *debugFormat, ...);
+VkCommandBuffer create_command_buffer(device *vkd, VkCommandPool commandPool,
+                                      const char *debugFormat, ...);
 
-VkFramebuffer vulkan_create_framebuffer(vulkan_device *vkd, VkRenderPass renderPass,
-                                        uint32_t attachmentCount, const VkImageView *attachments,
-                                        uint32_t width, uint32_t height, const char *debugFormat,
+VkFramebuffer create_framebuffer(device *vkd, VkRenderPass renderPass, uint32_t attachmentCount,
+                                 const VkImageView *attachments, uint32_t width, uint32_t height,
+                                 const char *debugFormat, ...);
+
+VkImage create_image(device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
+                     uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
+                     VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,
+                     const char *debugFormat, ...);
+
+VkDeviceMemory create_image_memory(device *vkd, VkImage image, VkMemoryPropertyFlags properties,
+                                   const char *debugFormat, ...);
+
+VkImageView create_image_view(device *vkd, VkImage image, VkImageViewType type, VkFormat format,
+                              VkImageAspectFlags aspectFlags, uint32_t mipLevels,
+                              uint32_t arrayLayers, const char *debugFormat, ...);
+
+VkSampler create_sampler(device *vkd, uint32_t mipLevelCount, const char *debugFormat, ...);
+
+void create_buffer(device *vkd, VkDeviceSize size, VkBufferUsageFlags usage,
+                   VkMemoryPropertyFlags properties, VkBuffer *buffer, VkDeviceMemory *bufferMemory,
+                   const char *debugFormat, ...);
+
+VkShaderModule create_shader_module(device *vkd, const uint32_t *code, size_t size,
+                                    const char *debugFormat, ...);
+
+VkDescriptorPool create_descriptor_pool(device *vkd, size_t totalUniformBufferCount,
+                                        size_t totalCombinedImageSamplerCount,
+                                        size_t maxAllocatedDescriptorSetsCount, bool bindless,
+                                        const char *debugFormat, ...);
+
+VkPipelineLayout create_pipeline_layout(device *vkd, VkPipelineLayoutCreateFlags flags,
+                                        const VkDescriptorSetLayout *descriptorSetLayouts,
+                                        size_t descriptorSetLayoutCount,
+                                        const VkPushConstantRange *pushConstantRanges,
+                                        size_t pushConstantRangeCount, const char *debugFormat,
                                         ...);
 
-VkImage vulkan_create_image(vulkan_device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
-                            uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
-                            VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,
-                            const char *debugFormat, ...);
-
-VkDeviceMemory vulkan_create_image_memory(vulkan_device *vkd, VkImage image,
-                                          VkMemoryPropertyFlags properties, const char *debugFormat,
-                                          ...);
-
-VkImageView vulkan_create_image_view(vulkan_device *vkd, VkImage image, VkImageViewType type,
-                                     VkFormat format, VkImageAspectFlags aspectFlags,
-                                     uint32_t mipLevels, uint32_t arrayLayers,
-                                     const char *debugFormat, ...);
-
-VkSampler vulkan_create_sampler(vulkan_device *vkd, uint32_t mipLevelCount, const char *debugFormat,
-                                ...);
-
-void vulkan_create_buffer(vulkan_device *vkd, VkDeviceSize size, VkBufferUsageFlags usage,
-                          VkMemoryPropertyFlags properties, VkBuffer *buffer,
-                          VkDeviceMemory *bufferMemory, const char *debugFormat, ...);
-
-VkShaderModule vulkan_create_shader_module(vulkan_device *vkd, const uint32_t *code, size_t size,
-                                           const char *debugFormat, ...);
-
-VkDescriptorPool vulkan_create_descriptor_pool(vulkan_device *vkd, size_t totalUniformBufferCount,
-                                               size_t totalCombinedImageSamplerCount,
-                                               size_t maxAllocatedDescriptorSetsCount,
-                                               bool bindless, const char *debugFormat, ...);
-
-VkPipelineLayout vulkan_create_pipeline_layout(vulkan_device *vkd,
-                                               VkPipelineLayoutCreateFlags flags,
-                                               const VkDescriptorSetLayout *descriptorSetLayouts,
-                                               size_t descriptorSetLayoutCount,
-                                               const VkPushConstantRange *pushConstantRanges,
-                                               size_t pushConstantRangeCount,
-                                               const char *debugFormat, ...);
-
-typedef struct vulkan_rendering_attachment_info {
+typedef struct rendering_attachment_info {
   const char *name;
   VkImageView imageView;
 
@@ -74,62 +66,60 @@ typedef struct vulkan_rendering_attachment_info {
   VkAttachmentLoadOp loadOp;
   VkAttachmentStoreOp storeOp;
   VkClearValue clearValue;
-} vulkan_rendering_attachment_info;
+} rendering_attachment_info;
 
-typedef struct vulkan_rendering_image_layout_transition_info {
+typedef struct rendering_image_layout_transition_info {
   const char *name;
   VkImage image;
   VkImageAspectFlags imageAspectFlags;
 
   VkImageLayout oldLayout;
   VkImageLayout newLayout;
-} vulkan_rendering_image_layout_transition_info;
+} rendering_image_layout_transition_info;
 
-typedef struct vulkan_rendering_info {
-  vulkan_rendering_attachment_info *onscreenColorAttachment;
-  vulkan_rendering_attachment_info *depthAttachment;
+typedef struct rendering_info {
+  rendering_attachment_info *onscreenColorAttachment;
+  rendering_attachment_info *depthAttachment;
   UT_array *offscreenColorAttachments;
 
   UT_array *preImageLayoutTransition;
   UT_array *postImageLayoutTransition;
-} vulkan_rendering_info;
+} rendering_info;
 
-void vulkan_rendering_info_init(vulkan_rendering_info *renderPassInfo);
+void rendering_info_init(rendering_info *renderPassInfo);
 
-void vulkan_rendering_info_deinit(vulkan_rendering_info *renderPassInfo);
+void rendering_info_deinit(rendering_info *renderPassInfo);
 
-void vulkan_rendering_info_add_onscreen_color_attachment(
-    vulkan_rendering_info *renderPassInfo, vulkan_rendering_attachment_info attachmentCreateInfo);
+void rendering_info_add_onscreen_color_attachment(rendering_info *renderPassInfo,
+                                                  rendering_attachment_info attachmentCreateInfo);
 
-void vulkan_rendering_info_add_offscreen_color_attachment(
-    vulkan_rendering_info *renderPassInfo, vulkan_rendering_attachment_info attachmentCreateInfo);
+void rendering_info_add_offscreen_color_attachment(rendering_info *renderPassInfo,
+                                                   rendering_attachment_info attachmentCreateInfo);
 
-void vulkan_rendering_info_add_depth_attachment(
-    vulkan_rendering_info *renderPassInfo, vulkan_rendering_attachment_info attachmentCreateInfo);
+void rendering_info_add_depth_attachment(rendering_info *renderPassInfo,
+                                         rendering_attachment_info attachmentCreateInfo);
 
-void vulkan_rendering_info_pre_image_layout_transition(
-    vulkan_rendering_info *renderPassInfo,
-    vulkan_rendering_image_layout_transition_info imageLayoutTransitionInfo);
+void rendering_info_pre_image_layout_transition(
+    rendering_info *renderPassInfo,
+    rendering_image_layout_transition_info imageLayoutTransitionInfo);
 
-void vulkan_rendering_info_post_image_layout_transition(
-    vulkan_rendering_info *renderPassInfo,
-    vulkan_rendering_image_layout_transition_info imageLayoutTransitionInfo);
+void rendering_info_post_image_layout_transition(
+    rendering_info *renderPassInfo,
+    rendering_image_layout_transition_info imageLayoutTransitionInfo);
 
-void vulkan_begin_rendering(vulkan_device *vkd, VkCommandBuffer commandBuffer,
-                            vulkan_rendering_info renderPassInfo);
+void begin_rendering(device *vkd, VkCommandBuffer commandBuffer, rendering_info renderPassInfo);
 
-void vulkan_end_rendering(vulkan_device *vkd, VkCommandBuffer commandBuffer,
-                          vulkan_rendering_info renderPassInfo);
+void end_rendering(device *vkd, VkCommandBuffer commandBuffer, rendering_info renderPassInfo);
 
-typedef enum vulkan_color_blending_type {
-  vulkan_color_blending_type_none,
-  vulkan_color_blending_type_alpha,
-  vulkan_color_blending_type_count,
-} vulkan_color_blending_type;
+typedef enum color_blending_type {
+  color_blending_type_none,
+  color_blending_type_alpha,
+  color_blending_type_count,
+} color_blending_type;
 
-typedef struct vulkan_graphics_pipeline_create_info {
+typedef struct graphics_pipeline_create_info {
   uint32_t colorAttachmentCount;
-  vulkan_color_blending_type colorBlendingType;
+  color_blending_type colorBlendingType;
 
   bool depthWriteEnable;
   bool depthTestEnable;
@@ -153,32 +143,28 @@ typedef struct vulkan_graphics_pipeline_create_info {
 
   VkRenderPass renderPass;
   VkPipelineLayout pipelineLayout;
-} vulkan_graphics_pipeline_create_info;
+} graphics_pipeline_create_info;
 
-VkPipeline vulkan_create_graphics_pipeline(vulkan_device *vkd,
-                                           vulkan_graphics_pipeline_create_info createInfo,
-                                           vulkan_rendering_info renderingInfo,
-                                           const char *debugFormat, ...);
+VkPipeline create_graphics_pipeline(device *vkd, graphics_pipeline_create_info createInfo,
+                                    rendering_info renderingInfo, const char *debugFormat, ...);
 
-VkSemaphore vulkan_create_semaphore(vulkan_device *vkd, VkSemaphoreCreateFlags flags,
-                                    const char *debugFormat, ...);
+VkSemaphore create_semaphore(device *vkd, VkSemaphoreCreateFlags flags, const char *debugFormat,
+                             ...);
 
-VkFence vulkan_create_fence(vulkan_device *vkd, VkFenceCreateFlags flags, const char *debugFormat,
-                            ...);
+VkFence create_fence(device *vkd, VkFenceCreateFlags flags, const char *debugFormat, ...);
 
 /* one-shot commands */
 
-VkCommandBuffer vulkan_begin_one_shot_commands(vulkan_device *vkd);
-void vulkan_end_one_shot_commands(vulkan_device *vkd, VkCommandBuffer commandBuffer);
+VkCommandBuffer begin_one_shot_commands(device *vkd);
+void end_one_shot_commands(device *vkd, VkCommandBuffer commandBuffer);
 
-void vulkan_copy_buffer_to_buffer(vulkan_device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer,
-                                  VkDeviceSize size);
-void vulkan_copy_buffer_to_image(vulkan_device *vkd, VkBuffer buffer, VkImage image, uint32_t width,
-                                 uint32_t height, uint32_t baseArrayLayer);
+void copy_buffer_to_buffer(device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+void copy_buffer_to_image(device *vkd, VkBuffer buffer, VkImage image, uint32_t width,
+                          uint32_t height, uint32_t baseArrayLayer);
 
-void vulkan_generate_mipmaps(vulkan_device *vkd, VkImage image, VkFormat format, uint32_t width,
-                             uint32_t height, uint32_t mipLevelCount);
+void generate_mipmaps(device *vkd, VkImage image, VkFormat format, uint32_t width, uint32_t height,
+                      uint32_t mipLevelCount);
 
-void vulkan_transition_image_layout(vulkan_device *vkd, VkCommandBuffer commandBuffer,
-                                    VkImage image, VkImageAspectFlags imageAspectFlags,
-                                    VkImageLayout oldLayout, VkImageLayout newLayout);
+void transition_image_layout(device *vkd, VkCommandBuffer commandBuffer, VkImage image,
+                             VkImageAspectFlags imageAspectFlags, VkImageLayout oldLayout,
+                             VkImageLayout newLayout);

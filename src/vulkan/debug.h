@@ -5,14 +5,14 @@
 #include "../core/platform.h"
 
 /// Hash table for Vulkan object names and their associated additional data.
-typedef struct vulkan_debug_name_data {
+typedef struct debug_name_data {
   const char *name;
   UT_hash_handle hh;
-} vulkan_debug_name_data;
+} debug_name_data;
 
 /// Vulkan debug utils.
 /// Manages Vulkan debug messengers.
-typedef struct vulkan_debug {
+typedef struct debug {
   bool enabled;                            /// True if we use debug utils.
   VkDevice *pDevice;                       /// Pointer to vulkan device handle.
   VkInstance instance;                     /// Vulkan instance handle.
@@ -26,16 +26,15 @@ typedef struct vulkan_debug {
   PFN_vkCmdInsertDebugUtilsLabelEXT cmdInsertDebugUtilsLabelEXT;
   PFN_vkSetDebugUtilsObjectNameEXT setDebugUtilsObjectNameEXT;
   /** @}*/
-  vulkan_debug_name_data *names; /// Hash table with Vulkan object names and their data.
-} vulkan_debug;
+  debug_name_data *names; /// Hash table with Vulkan object names and their data.
+} debug;
 
-vulkan_debug *vulkan_debug_create(bool enabled, VkDevice *device, VkInstance instance,
-                                  const VkAllocationCallbacks *vka);
-void vulkan_debug_destroy(vulkan_debug *debug);
+debug *debug_create(bool enabled, VkDevice *device, VkInstance instance,
+                    const VkAllocationCallbacks *vka);
+void debug_destroy(debug *debug);
 
 #define VULKAN_DEBUG_NAME_FUNC_DECL(_funcName, _handleType)                                        \
-  void vulkan_debug_name_##_funcName(vulkan_debug *debug, _handleType handle, const char *format,  \
-                                     ...);
+  void debug_name_##_funcName(debug *debug, _handleType handle, const char *format, ...);
 
 VULKAN_DEBUG_NAME_FUNC_DECL(command_pool, VkCommandPool)
 VULKAN_DEBUG_NAME_FUNC_DECL(command_buffer, VkCommandBuffer)
@@ -59,14 +58,14 @@ VULKAN_DEBUG_NAME_FUNC_DECL(graphics_pipeline, VkPipeline)
 
 /// Short-lived debug callback for vkCreateInstance and vkCreateInstance.
 /// Logs output of validation layers.
-VKAPI_ATTR VkBool32 VKAPI_CALL vulkan_debug_callback_for_instance(
+VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback_for_instance(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
     VkDebugUtilsMessageTypeFlagsEXT messageType,
     const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData);
 
 /// Returns create info for debug messenger with user callback.
 VkDebugUtilsMessengerCreateInfoEXT
-vulkan_debug_messenger_create_info(PFN_vkDebugUtilsMessengerCallbackEXT pfnUserCallback);
+debug_messenger_create_info(PFN_vkDebugUtilsMessengerCallbackEXT pfnUserCallback);
 
 #define DEBUG_NAME_FORMAT_START()                                                                  \
   va_list args;                                                                                    \

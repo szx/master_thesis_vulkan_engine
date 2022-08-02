@@ -17,37 +17,37 @@ VkFormat get_format_by_component_bits(char componentBits, VkFormat format8, VkFo
   UNREACHABLE;
 }
 
-vulkan_textures_texture_element *
-vulkan_textures_texture_element_create(vulkan_asset_texture *texture, vulkan_device *vkd,
-                                       const char *debugName) {
-  vulkan_textures_texture_element *element = core_alloc(sizeof(vulkan_textures_texture_element));
+textures_texture_element *textures_texture_element_create(asset_texture *texture, device *vkd,
+                                                          const char *debugName) {
+  textures_texture_element *element = core_alloc(sizeof(textures_texture_element));
 
   element->texture = texture;
-  vulkan_image_type type = element->texture->image->type;
+  image_type type = element->texture->image->type;
 
-  element->image = vulkan_image_create(vkd, type, element->texture->image->width,
-                                       element->texture->image->height,
-                                       element->texture->image->channels, debugName);
-  vulkan_image_update(element->image, element->texture);
+  element->image =
+      image_create(vkd, type, element->texture->image->width, element->texture->image->height,
+                   element->texture->image->channels, debugName);
+  image_update(element->image, element->texture);
 
-  element->sampler = vulkan_create_sampler(vkd, element->image->mipLevelCount, "texture");
+  element->sampler = create_sampler(vkd, element->image->mipLevelCount, "texture");
   static uint32_t textureIdx = 0;
   element->textureIdx = textureIdx++;
 
   return element;
 }
 
-void vulkan_textures_texture_element_destroy(vulkan_textures_texture_element *element) {
+void textures_texture_element_destroy(textures_texture_element *element) {
   vkDestroySampler(element->image->vkd->device, element->sampler, vka);
-  vulkan_image_destroy(element->image);
+  image_destroy(element->image);
   core_free(element);
 }
 
-vulkan_textures_material_element *vulkan_textures_material_element_create(
-    vulkan_asset_material *material, vulkan_textures_texture_element *baseColorTextureElement,
-    vulkan_textures_texture_element *metallicRoughnessTextureElement,
-    vulkan_textures_texture_element *normalMapTextureElement) {
-  vulkan_textures_material_element *element = core_alloc(sizeof(vulkan_textures_material_element));
+textures_material_element *
+textures_material_element_create(asset_material *material,
+                                 textures_texture_element *baseColorTextureElement,
+                                 textures_texture_element *metallicRoughnessTextureElement,
+                                 textures_texture_element *normalMapTextureElement) {
+  textures_material_element *element = core_alloc(sizeof(textures_material_element));
 
   element->material = material;
   element->baseColorTextureElement = baseColorTextureElement;
@@ -60,12 +60,10 @@ vulkan_textures_material_element *vulkan_textures_material_element_create(
   return element;
 }
 
-void vulkan_textures_material_element_destroy(vulkan_textures_material_element *element) {
-  core_free(element);
-}
+void textures_material_element_destroy(textures_material_element *element) { core_free(element); }
 
-vulkan_textures *vulkan_textures_create(vulkan_device *vkd) {
-  vulkan_textures *textures = core_alloc(sizeof(vulkan_textures));
+textures *textures_create(device *vkd) {
+  textures *textures = core_alloc(sizeof(struct textures));
 
   textures->vkd = vkd;
   textures->textureElements = NULL;
@@ -74,64 +72,62 @@ vulkan_textures *vulkan_textures_create(vulkan_device *vkd) {
   return textures;
 }
 
-void vulkan_textures_destroy(vulkan_textures *textures) {
-  uthash_foreach_elem_it(vulkan_textures_texture_element *, element, textures->textureElements) {
+void textures_destroy(textures *textures) {
+  uthash_foreach_elem_it(textures_texture_element *, element, textures->textureElements) {
     HASH_DEL(textures->textureElements, element);
-    vulkan_textures_texture_element_destroy(element);
+    textures_texture_element_destroy(element);
   }
-  uthash_foreach_elem_it(vulkan_textures_material_element *, element, textures->materialElements) {
+  uthash_foreach_elem_it(textures_material_element *, element, textures->materialElements) {
     HASH_DEL(textures->materialElements, element);
-    vulkan_textures_material_element_destroy(element);
+    textures_material_element_destroy(element);
   }
 
   core_free(textures);
 }
 
-void vulkan_textures_update(vulkan_textures *textures) {
+void textures_update(textures *textures) {
   // No-op.
 }
 
-void vulkan_textures_send_to_device(vulkan_textures *textures) {
-  uthash_foreach_elem_it(vulkan_textures_texture_element *, element, textures->textureElements) {
-    vulkan_image_send_to_device(element->image);
+void textures_send_to_device(textures *textures) {
+  uthash_foreach_elem_it(textures_texture_element *, element, textures->textureElements) {
+    image_send_to_device(element->image);
   }
 }
 
-vulkan_textures_material_element *vulkan_textures_add_material(vulkan_textures *textures,
-                                                               vulkan_asset_material *material) {
-  vulkan_textures_material_element *element;
+textures_material_element *textures_add_material(textures *textures, asset_material *material) {
+  textures_material_element *element;
   HASH_FIND(hh, textures->materialElements, &material, sizeof(material), element);
   if (element != NULL) {
     return element;
   }
 
   log_info("adding material");
-  vulkan_asset_material_debug_print(material, 0);
-  element = vulkan_textures_material_element_create(
-      material, vulkan_textures_add_texture(textures, material->baseColorTexture, "material"),
-      vulkan_textures_add_texture(textures, material->metallicRoughnessTexture, "material"),
-      vulkan_textures_add_texture(textures, material->normalMapTexture, "material"));
+  asset_material_debug_print(material, 0);
+  element = textures_material_element_create(
+      material, textures_add_texture(textures, material->baseColorTexture, "material"),
+      textures_add_texture(textures, material->metallicRoughnessTexture, "material"),
+      textures_add_texture(textures, material->normalMapTexture, "material"));
   HASH_ADD_PTR(textures->materialElements, material, element);
   return element;
 }
 
-vulkan_textures_texture_element *vulkan_textures_add_texture(vulkan_textures *textures,
-                                                             vulkan_asset_texture *texture,
-                                                             const char *debugName) {
-  vulkan_textures_texture_element *element;
+textures_texture_element *textures_add_texture(textures *textures, asset_texture *texture,
+                                               const char *debugName) {
+  textures_texture_element *element;
   HASH_FIND(hh, textures->textureElements, &texture, sizeof(texture), element);
   if (element != NULL) {
     return element;
   }
 
   log_info("adding texture");
-  vulkan_asset_texture_debug_print(texture, 0);
-  element = vulkan_textures_texture_element_create(texture, textures->vkd, debugName);
+  asset_texture_debug_print(texture, 0);
+  element = textures_texture_element_create(texture, textures->vkd, debugName);
   HASH_ADD_PTR(textures->textureElements, texture, element);
   return element;
 }
 
-void vulkan_textures_debug_print(vulkan_textures *textures, int indent) {
+void textures_debug_print(textures *textures, int indent) {
   log_debug(INDENT_FORMAT_STRING "textures:", INDENT_FORMAT_ARGS(0));
   log_debug(INDENT_FORMAT_STRING "texture count=%zu\n", INDENT_FORMAT_ARGS(2),
             HASH_CNT(hh, textures->textureElements));
@@ -139,7 +135,7 @@ void vulkan_textures_debug_print(vulkan_textures *textures, int indent) {
             HASH_CNT(hh, textures->materialElements));
 }
 
-void glsl_add_textures(UT_string *s, uint32_t set, uint32_t binding, vulkan_textures *textures) {
+void glsl_add_textures(UT_string *s, uint32_t set, uint32_t binding, textures *textures) {
   utstring_printf(s, "// Declare multiple shader variables with same set and binding numbers and "
                      "different shader types.\n"
                      "// Vulkan spec allows this aliasing ( \"DescriptorSet and Binding "

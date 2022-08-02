@@ -5,22 +5,22 @@
 #include "shader.h"
 
 /// Describes SPIR-V shader reflection.
-typedef struct vulkan_shader_reflect {
-  UT_array *inputVariables;  ///< vulkan_shader_reflect_variable* array.
-  UT_array *outputVariables; ///< vulkan_shader_reflect_variable* array.
+typedef struct shader_reflect {
+  UT_array *inputVariables;  ///< shader_reflect_variable* array.
+  UT_array *outputVariables; ///< shader_reflect_variable* array.
 
-  UT_array *descriptorBindings;    ///< vulkan_shader_reflect_binding* array.
+  UT_array *descriptorBindings;    ///< shader_reflect_binding* array.
   uint32_t maxDescriptorSetNumber; ///< Max descriptor set number referred to by shader bindings.
-} vulkan_shader_reflect;
+} shader_reflect;
 
-vulkan_shader_reflect *vulkan_shader_reflect_create(uint32_t *spvCode, size_t spvSize);
-void vulkan_shader_reflect_destroy(vulkan_shader_reflect *reflect);
+shader_reflect *shader_reflect_create(uint32_t *spvCode, size_t spvSize);
+void shader_reflect_destroy(shader_reflect *reflect);
 
-void vulkan_shader_reflect_debug_print(vulkan_shader_reflect *reflect, int indent);
+void shader_reflect_debug_print(shader_reflect *reflect, int indent);
 
-typedef struct vulkan_shader_reflect_type_desc vulkan_shader_reflect_type_desc;
+typedef struct shader_reflect_type_desc shader_reflect_type_desc;
 
-typedef struct vulkan_shader_reflect_variable {
+typedef struct shader_reflect_variable {
   const char *name;
   uint32_t location;
   SpvStorageClass storageClass;
@@ -28,30 +28,28 @@ typedef struct vulkan_shader_reflect_variable {
   SpvReflectNumericTraits numeric;
   SpvReflectArrayTraits array;
 
-  UT_array *members; /// vulkan_shader_reflect_variable* list.
+  UT_array *members; /// shader_reflect_variable* list.
 
   SpvReflectFormat format;
 
-  vulkan_shader_reflect_type_desc *typeDesc;
-} vulkan_shader_reflect_variable;
+  shader_reflect_type_desc *typeDesc;
+} shader_reflect_variable;
 
-vulkan_shader_reflect_variable *
-vulkan_shader_reflect_variable_create(SpvReflectInterfaceVariable *reflect);
-void vulkan_shader_reflect_variable_destroy(vulkan_shader_reflect_variable *inputVariable);
-void vulkan_shader_reflect_variable_debug_print(vulkan_shader_reflect_variable *inputVariable,
-                                                int indent);
+shader_reflect_variable *shader_reflect_variable_create(SpvReflectInterfaceVariable *reflect);
+void shader_reflect_variable_destroy(shader_reflect_variable *inputVariable);
+void shader_reflect_variable_debug_print(shader_reflect_variable *inputVariable, int indent);
 
-typedef enum vulkan_shader_reflect_binding_type {
-  vulkan_shader_reflect_binding_type_unknown,
-#define enum_uniform_buffer(_name, ...) vulkan_shader_reflect_binding_type_##_name##_uniform_buffer,
+typedef enum shader_reflect_binding_type {
+  shader_reflect_binding_type_unknown,
+#define enum_uniform_buffer(_name, ...) shader_reflect_binding_type_##_name##_uniform_buffer,
   VULKAN_UNIFORM_BUFFERS(enum_uniform_buffer, )
 #undef enum_uniform_buffer
-      vulkan_shader_reflect_binding_type_textures,
-  vulkan_shader_reflect_binding_type_count,
-} vulkan_shader_reflect_binding_type;
+      shader_reflect_binding_type_textures,
+  shader_reflect_binding_type_count,
+} shader_reflect_binding_type;
 
-typedef struct vulkan_shader_reflect_binding {
-  vulkan_shader_reflect_binding_type type;
+typedef struct shader_reflect_binding {
+  shader_reflect_binding_type type;
   uint32_t location;
 
   uint32_t binding;
@@ -62,23 +60,21 @@ typedef struct vulkan_shader_reflect_binding {
   SpvReflectResourceType resourceType;
 
   SpvReflectImageTraits image;
-  vulkan_shader_reflect_type_desc *typeDesc;
+  shader_reflect_type_desc *typeDesc;
 
   SpvReflectBindingArrayTraits array;
   uint32_t count;
-} vulkan_shader_reflect_binding;
+} shader_reflect_binding;
 
-vulkan_shader_reflect_binding *
-vulkan_shader_reflect_binding_create(SpvReflectDescriptorBinding *reflect);
-void vulkan_shader_reflect_binding_destroy(vulkan_shader_reflect_binding *binding);
+shader_reflect_binding *shader_reflect_binding_create(SpvReflectDescriptorBinding *reflect);
+void shader_reflect_binding_destroy(shader_reflect_binding *binding);
 
 VkDescriptorSetLayoutBinding
-vulkan_shader_reflect_binding_get_layout_binding(vulkan_shader_reflect_binding *binding,
-                                                 vulkan_shader *shader);
+shader_reflect_binding_get_layout_binding(shader_reflect_binding *binding, shader *shader);
 
-void vulkan_shader_reflect_binding_debug_print(vulkan_shader_reflect_binding *binding, int indent);
+void shader_reflect_binding_debug_print(shader_reflect_binding *binding, int indent);
 
-typedef struct vulkan_shader_reflect_type_desc {
+typedef struct shader_reflect_type_desc {
   SpvOp op;
   const char *typeName;
   const char *structMemberName;
@@ -90,11 +86,9 @@ typedef struct vulkan_shader_reflect_type_desc {
   SpvReflectImageTraits image;
   SpvReflectArrayTraits array;
 
-  UT_array *members; /// vulkan_shader_reflect_type_desc* list.
-} vulkan_shader_reflect_type_desc;
+  UT_array *members; /// shader_reflect_type_desc* list.
+} shader_reflect_type_desc;
 
-vulkan_shader_reflect_type_desc *
-vulkan_shader_reflect_type_desc_create(SpvReflectTypeDescription *reflect);
-void vulkan_shader_reflect_type_desc_destroy(vulkan_shader_reflect_type_desc *typeDesc);
-void vulkan_shader_reflect_type_desc_debug_print(vulkan_shader_reflect_type_desc *typeDesc,
-                                                 int indent);
+shader_reflect_type_desc *shader_reflect_type_desc_create(SpvReflectTypeDescription *reflect);
+void shader_reflect_type_desc_destroy(shader_reflect_type_desc *typeDesc);
+void shader_reflect_type_desc_debug_print(shader_reflect_type_desc *typeDesc, int indent);

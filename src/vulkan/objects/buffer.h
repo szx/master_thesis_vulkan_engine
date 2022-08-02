@@ -4,38 +4,38 @@
 
 #include "../common.h"
 
-typedef struct vulkan_buffer vulkan_buffer;
+typedef struct buffer buffer;
 
-typedef enum vulkan_buffer_type {
-  vulkan_buffer_type_geometry_index,
-  vulkan_buffer_type_geometry_vertex,
-  vulkan_buffer_type_uniform,
-  vulkan_buffer_type_indirect_draw,
-  vulkan_buffer_type_count
-} vulkan_buffer_type;
+typedef enum buffer_type {
+  buffer_type_geometry_index,
+  buffer_type_geometry_vertex,
+  buffer_type_uniform,
+  buffer_type_indirect_draw,
+  buffer_type_count
+} buffer_type;
 
-/// One continuous memory block that makes up vulkan_buffer.
-typedef struct vulkan_buffer_element {
-  vulkan_buffer *buffer; ///< Pointer.
+/// One continuous memory block that makes up buffer.
+typedef struct buffer_element {
+  buffer *buffer;        ///< Pointer.
   const void *data;      ///< Memory block on CPU.
   size_t size;           ///< Size of memory block on CPU in bytes.
-  uint32_t bufferOffset; ///< Offset in vulkan_buffer.
-} vulkan_buffer_element;
+  uint32_t bufferOffset; ///< Offset in buffer.
+} buffer_element;
 
-void vulkan_buffer_element_update(vulkan_buffer_element *bufferElement);
-void vulkan_buffer_element_debug_print(vulkan_buffer_element *bufferElement, int indent);
+void buffer_element_update(buffer_element *bufferElement);
+void buffer_element_debug_print(buffer_element *bufferElement, int indent);
 
 /// Buffer.
 /// Used to store data in memory.
 /// NOTE: Buffer size can't change if resident.
-typedef struct vulkan_buffer {
+typedef struct buffer {
   /* CPU state */
   size_t totalSize;   ///< Size of buffer.
-  UT_array *elements; ///< vulkan_buffer_element list.
+  UT_array *elements; ///< buffer_element list.
 
   /* GPU state */
-  vulkan_device *vkd; ///< Pointer.
-  vulkan_buffer_type type;
+  device *vkd; ///< Pointer.
+  buffer_type type;
   VkBufferUsageFlags bufferUsageFlags;
   VkMemoryPropertyFlags memoryPropertyFlags;
   const char *name;
@@ -44,11 +44,11 @@ typedef struct vulkan_buffer {
 
   bool resident; ///< True if buffer created in GPU memory.
   bool dirty;    ///< True if CPU to GPU transfer required.
-} vulkan_buffer;
+} buffer;
 
-vulkan_buffer *vulkan_buffer_create(vulkan_device *vkd, vulkan_buffer_type type);
-void vulkan_buffer_destroy(vulkan_buffer *buffer);
+buffer *buffer_create(device *vkd, buffer_type type);
+void buffer_destroy(buffer *buffer);
 
-vulkan_buffer_element vulkan_buffer_add(vulkan_buffer *buffer, const void *data, size_t size);
-void vulkan_buffer_make_resident(vulkan_buffer *buffer);
-void vulkan_buffer_send_to_device(vulkan_buffer *buffer);
+buffer_element buffer_add(buffer *buffer, const void *data, size_t size);
+void buffer_make_resident(buffer *buffer);
+void buffer_send_to_device(buffer *buffer);

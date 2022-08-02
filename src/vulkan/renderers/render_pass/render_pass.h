@@ -8,30 +8,27 @@
 
 /// Used to record command to command buffer.
 /// Can be chained with other render passes using render graph.
-typedef struct vulkan_render_pass {
-  vulkan_render_state *renderState;          ///< Pointer.
-  vulkan_render_pass_state *renderPassState; ///< Pointer.
+typedef struct render_pass {
+  render_state *renderState;          ///< Pointer.
+  render_pass_state *renderPassState; ///< Pointer.
 
-  vulkan_render_pass_desc desc;
-  vulkan_render_pass_shader_program *shaderProgram;
+  render_pass_desc desc;
+  render_pass_shader_program *shaderProgram;
 
   /* cache */
   UT_array *_graphicsPipelines; // VkPipeline array
 
-} vulkan_render_pass;
+} render_pass;
 
-vulkan_render_pass *vulkan_render_pass_create(vulkan_render_pass_desc desc,
-                                              vulkan_render_state *renderState,
-                                              vulkan_render_pass_state *renderPassState);
-void vulkan_render_pass_destroy(vulkan_render_pass *renderPass);
+render_pass *render_pass_create(render_pass_desc desc, render_state *renderState,
+                                render_pass_state *renderPassState);
+void render_pass_destroy(render_pass *renderPass);
 
-void vulkan_render_pass_init(vulkan_render_pass *renderPass, vulkan_render_pass_desc desc,
-                             vulkan_render_state *renderState,
-                             vulkan_render_pass_state *renderPassState);
-void vulkan_render_pass_deinit(vulkan_render_pass *renderPass);
+void render_pass_init(render_pass *renderPass, render_pass_desc desc, render_state *renderState,
+                      render_pass_state *renderPassState);
+void render_pass_deinit(render_pass *renderPass);
 
-void vulkan_render_pass_record_commands(vulkan_render_pass *renderPass,
-                                        VkCommandBuffer commandBuffer, size_t swapChainImageIdx,
-                                        vulkan_rendering_info renderPassInfo);
+void render_pass_record_commands(render_pass *renderPass, VkCommandBuffer commandBuffer,
+                                 size_t swapChainImageIdx, rendering_info renderPassInfo);
 
-void vulkan_render_pass_debug_print(vulkan_render_pass *renderPass);
+void render_pass_debug_print(render_pass *renderPass);

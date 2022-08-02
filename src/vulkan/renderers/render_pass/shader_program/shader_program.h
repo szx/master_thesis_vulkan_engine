@@ -6,25 +6,24 @@
 #include "shader_generator.h"
 
 /// Creates all shaders for all shader stages of the renderPass.
-typedef struct vulkan_render_pass_shader_program {
+typedef struct render_pass_shader_program {
   /// GLSL shader source code generator.
-  vulkan_render_pass_shader_generator shaderGenerator;
+  render_pass_shader_generator shaderGenerator;
 
   /// Vertex shader.
-  vulkan_shader *vertexShader;
+  shader *vertexShader;
 
   /// Fragment shader.
-  vulkan_shader *fragmentShader;
+  shader *fragmentShader;
 
-} vulkan_render_pass_shader_program;
+} render_pass_shader_program;
 
-vulkan_render_pass_shader_program *
-vulkan_render_pass_shader_program_create(vulkan_render_state *renderState,
-                                         vulkan_render_pass_desc renderPassDesc);
-void vulkan_render_pass_shader_program_destroy(vulkan_render_pass_shader_program *shaderProgram);
+render_pass_shader_program *render_pass_shader_program_create(render_state *renderState,
+                                                              render_pass_desc renderPassDesc);
+void render_pass_shader_program_destroy(render_pass_shader_program *shaderProgram);
 
-VkPipelineShaderStageCreateInfo *vulkan_render_pass_shader_program_get_shader_stages(
-    vulkan_render_pass_shader_program *shaderProgram, size_t *count);
+VkPipelineShaderStageCreateInfo *
+render_pass_shader_program_get_shader_stages(render_pass_shader_program *shaderProgram,
+                                             size_t *count);
 
-void vulkan_render_pass_shader_program_debug_print(vulkan_render_pass_shader_program *shaderProgram,
-                                                   int indent);
+void render_pass_shader_program_debug_print(render_pass_shader_program *shaderProgram, int indent);

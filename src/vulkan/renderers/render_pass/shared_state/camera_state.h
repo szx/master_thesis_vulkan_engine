@@ -6,11 +6,11 @@
 
 // TODO: Frustum plane CPU culling.
 
-typedef struct vulkan_render_pass_camera_state {
-  vulkan_render_state *renderState; ///< Pointer.
+typedef struct render_pass_camera_state {
+  render_state *renderState; ///< Pointer.
 
   size_t cameraIdx;
-  vulkan_renderer_cache_camera_element *cameraElement; ///< Pointer.
+  renderer_cache_camera_element *cameraElement; ///< Pointer.
 
   struct {
     float moveSpeed;
@@ -22,29 +22,23 @@ typedef struct vulkan_render_pass_camera_state {
     float roll;     ///< Z-axis Euler angle (in radians).
     mat4 transform; ///< Final transform after translation and yaw, pitch and roll rotations.
   } user;
-} vulkan_render_pass_camera_state;
+} render_pass_camera_state;
 
-vulkan_render_pass_camera_state *
-vulkan_render_pass_camera_state_create(vulkan_render_state *renderState);
-void vulkan_render_pass_camera_state_destroy(vulkan_render_pass_camera_state *camera);
-void vulkan_render_pass_camera_state_reinit_with_new_swap_chain(
-    vulkan_render_pass_camera_state *camera);
-void vulkan_render_pass_camera_state_update(vulkan_render_pass_camera_state *camera);
+render_pass_camera_state *render_pass_camera_state_create(render_state *renderState);
+void render_pass_camera_state_destroy(render_pass_camera_state *camera);
+void render_pass_camera_state_reinit_with_new_swap_chain(render_pass_camera_state *camera);
+void render_pass_camera_state_update(render_pass_camera_state *camera);
 
-void vulkan_render_pass_camera_state_select(vulkan_render_pass_camera_state *camera,
-                                            size_t cameraIdx);
-void vulkan_render_pass_camera_state_reset(vulkan_render_pass_camera_state *camera);
-void vulkan_render_pass_camera_state_move(vulkan_render_pass_camera_state *camera, float frontDt,
-                                          float rightDt, float upDt);
-void vulkan_render_pass_camera_state_rotate(vulkan_render_pass_camera_state *camera, float yawDt,
-                                            float pitchDt, float rollDt);
+void render_pass_camera_state_select(render_pass_camera_state *camera, size_t cameraIdx);
+void render_pass_camera_state_reset(render_pass_camera_state *camera);
+void render_pass_camera_state_move(render_pass_camera_state *camera, float frontDt, float rightDt,
+                                   float upDt);
+void render_pass_camera_state_rotate(render_pass_camera_state *camera, float yawDt, float pitchDt,
+                                     float rollDt);
 
-void vulkan_render_pass_camera_state_set_view_matrix(vulkan_render_pass_camera_state *camera,
-                                                     mat4 viewMatrix);
-void vulkan_render_pass_camera_state_set_projection_matrix(vulkan_render_pass_camera_state *camera,
-                                                           mat4 projectionMatrix);
-void vulkan_render_pass_camera_state_set_position(vulkan_render_pass_camera_state *camera,
-                                                  vec3 position);
+void render_pass_camera_state_set_view_matrix(render_pass_camera_state *camera, mat4 viewMatrix);
+void render_pass_camera_state_set_projection_matrix(render_pass_camera_state *camera,
+                                                    mat4 projectionMatrix);
+void render_pass_camera_state_set_position(render_pass_camera_state *camera, vec3 position);
 
-void vulkan_render_pass_camera_state_debug_print(vulkan_render_pass_camera_state *camera,
-                                                 int indent);
+void render_pass_camera_state_debug_print(render_pass_camera_state *camera, int indent);

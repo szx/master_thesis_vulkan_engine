@@ -4,95 +4,95 @@
 #include "../vulkan/constants.h"
 #include "../core/junk.h"
 
-typedef struct PACKED_STRUCT vulkan_directional_light_helper_element {
+typedef struct PACKED_STRUCT directional_light_helper_element {
   alignas(4) vec3 direction ;
   alignas(4) vec3 color ;
   alignas(4) float intensity ;
-} vulkan_directional_light_helper_element;
+} directional_light_helper_element;
 
-typedef struct PACKED_STRUCT vulkan_font_helper_element {
+typedef struct PACKED_STRUCT font_helper_element {
   alignas(4) uint fontTextureId ;
   alignas(4) uint characterSize ;
   alignas(4) uint fontTextureSize ;
   alignas(4) uint textLength ;
   alignas(4) uint text [MAX_TEXT_CHARACTER_COUNT];
-} vulkan_font_helper_element;
+} font_helper_element;
 
-typedef struct PACKED_STRUCT vulkan_material_helper_element {
+typedef struct PACKED_STRUCT material_helper_element {
   alignas(4) uint baseColorTextureId ;
   alignas(4) vec4 baseColorFactor ;
   alignas(4) uint metallicRoughnessTextureId ;
   alignas(4) uint normalMapTextureId ;
   alignas(4) float metallicFactor ;
   alignas(4) float roughnessFactor ;
-} vulkan_material_helper_element;
+} material_helper_element;
 
-typedef struct PACKED_STRUCT vulkan_offscreen_texture_helper_element {
+typedef struct PACKED_STRUCT offscreen_texture_helper_element {
   alignas(4) uint textureId [MAX_OFFSCREEN_TEXTURE_COUNT];
-} vulkan_offscreen_texture_helper_element;
+} offscreen_texture_helper_element;
 
-typedef struct PACKED_STRUCT vulkan_point_light_helper_element {
+typedef struct PACKED_STRUCT point_light_helper_element {
   alignas(4) vec3 position ;
   alignas(4) vec3 color ;
   alignas(4) float range ;
   alignas(4) float intensity ;
-} vulkan_point_light_helper_element;
+} point_light_helper_element;
 
-typedef struct PACKED_STRUCT vulkan_skybox_helper_element {
+typedef struct PACKED_STRUCT skybox_helper_element {
   alignas(4) uint skyboxCubemapTextureId ;
-} vulkan_skybox_helper_element;
+} skybox_helper_element;
 
-typedef struct PACKED_STRUCT vulkan_spot_light_helper_element {
+typedef struct PACKED_STRUCT spot_light_helper_element {
   alignas(4) vec3 position ;
   alignas(4) vec3 color ;
   alignas(4) float innerConeAngle ;
   alignas(4) float outerConeAngle ;
   alignas(4) float range ;
   alignas(4) float intensity ;
-} vulkan_spot_light_helper_element;
+} spot_light_helper_element;
 
-typedef struct PACKED_STRUCT vulkan_viewport_helper_element {
+typedef struct PACKED_STRUCT viewport_helper_element {
   alignas(4) uint width ;
   alignas(4) uint height ;
-} vulkan_viewport_helper_element;
+} viewport_helper_element;
 
-typedef struct PACKED_STRUCT vulkan_draw_push_constant_element {
+typedef struct PACKED_STRUCT draw_push_constant_element {
   alignas(4) uint currentFrameInFlight ;
-} vulkan_draw_push_constant_element;
+} draw_push_constant_element;
 
-typedef struct PACKED_STRUCT vulkan_global_uniform_buffer_element {
+typedef struct PACKED_STRUCT global_uniform_buffer_element {
   alignas(4) mat4 viewMat ;
   alignas(4) mat4 projMat ;
   alignas(4) uint materialCount ;
-  alignas(4) vulkan_material_helper_element materials [MAX_MATERIAL_COUNT];
+  alignas(4) material_helper_element materials [MAX_MATERIAL_COUNT];
   alignas(4) uint directionalLightCount ;
-  alignas(4) vulkan_directional_light_helper_element directionalLights [MAX_DIRECTIONAL_LIGHT_COUNT];
+  alignas(4) directional_light_helper_element directionalLights [MAX_DIRECTIONAL_LIGHT_COUNT];
   alignas(4) uint pointLightCount ;
-  alignas(4) vulkan_point_light_helper_element pointLights [MAX_POINT_LIGHT_COUNT];
+  alignas(4) point_light_helper_element pointLights [MAX_POINT_LIGHT_COUNT];
   alignas(4) uint spotLightCount ;
-  alignas(4) vulkan_spot_light_helper_element spotLights [MAX_SPOT_LIGHT_COUNT];
-  alignas(4) vulkan_skybox_helper_element skybox ;
-  alignas(4) vulkan_font_helper_element font ;
-  alignas(4) vulkan_viewport_helper_element viewport ;
-  alignas(4) vulkan_offscreen_texture_helper_element offscreenTextures ;
-} vulkan_global_uniform_buffer_element;
+  alignas(4) spot_light_helper_element spotLights [MAX_SPOT_LIGHT_COUNT];
+  alignas(4) skybox_helper_element skybox ;
+  alignas(4) font_helper_element font ;
+  alignas(4) viewport_helper_element viewport ;
+  alignas(4) offscreen_texture_helper_element offscreenTextures ;
+} global_uniform_buffer_element;
 
-typedef struct PACKED_STRUCT vulkan_instances_uniform_buffer_element {
+typedef struct PACKED_STRUCT instances_uniform_buffer_element {
   alignas(4) mat4 modelMat ;
   alignas(4) uint materialId ;
-} vulkan_instances_uniform_buffer_element;
+} instances_uniform_buffer_element;
 
-void glsl_add_vulkan_draw_push_constant(UT_string *s);
-void glsl_add_vulkan_global_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);
-void glsl_add_vulkan_instances_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);
-void glsl_add_vulkan_directional_light_helper_element(UT_string *s);
-void glsl_add_vulkan_font_helper_element(UT_string *s);
-void glsl_add_vulkan_material_helper_element(UT_string *s);
-void glsl_add_vulkan_offscreen_texture_helper_element(UT_string *s);
-void glsl_add_vulkan_point_light_helper_element(UT_string *s);
-void glsl_add_vulkan_skybox_helper_element(UT_string *s);
-void glsl_add_vulkan_spot_light_helper_element(UT_string *s);
-void glsl_add_vulkan_viewport_helper_element(UT_string *s);
+void glsl_add_draw_push_constant(UT_string *s);
+void glsl_add_global_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);
+void glsl_add_instances_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);
+void glsl_add_directional_light_helper_element(UT_string *s);
+void glsl_add_font_helper_element(UT_string *s);
+void glsl_add_material_helper_element(UT_string *s);
+void glsl_add_offscreen_texture_helper_element(UT_string *s);
+void glsl_add_point_light_helper_element(UT_string *s);
+void glsl_add_skybox_helper_element(UT_string *s);
+void glsl_add_spot_light_helper_element(UT_string *s);
+void glsl_add_viewport_helper_element(UT_string *s);
 
 #define END_OF_VULKAN_PUSH_CONSTANTS
 #define VULKAN_PUSH_CONSTANTS(X, ...) \

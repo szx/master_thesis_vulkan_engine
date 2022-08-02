@@ -62,10 +62,10 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
   data_config *assetConfig =
       data_config_create(globals.assetConfigFilepath, data_config_type_asset);
 
-  vulkan_scene_data *sceneData = vulkan_scene_data_create_with_gltf_file(
-      assetInput->sourceAssetName, gltfPath, sceneConfigPath, assetConfig, assetDb);
-  vulkan_scene_data_serialize(sceneData, assetDb);
-  vulkan_scene_data_destroy(sceneData);
+  scene_data *sceneData = scene_data_create_with_gltf_file(assetInput->sourceAssetName, gltfPath,
+                                                           sceneConfigPath, assetConfig, assetDb);
+  scene_data_serialize(sceneData, assetDb);
+  scene_data_destroy(sceneData);
 
   data_config_destroy(assetConfig);
 
@@ -77,8 +77,8 @@ void write_cubemap_to_assets(data_asset_db *assetDb, asset_pipeline_input *asset
   log_info("processing cubemap '%s' in '%s.%s'", utstring_body(assetInput->sourceAssetName),
            utstring_body(assetInput->sourceAssetPath), utstring_body(assetInput->sourceAssetExt));
 
-  vulkan_asset_image cubemapImage;
-  vulkan_asset_image_init(&cubemapImage, NULL);
+  asset_image cubemapImage;
+  asset_image_init(&cubemapImage, NULL);
   utarray_clear(cubemapImage.data);
 
   const char *faceNames[] = {"right", "left", "top", "bottom", "front", "back"};
@@ -100,7 +100,7 @@ void write_cubemap_to_assets(data_asset_db *assetDb, asset_pipeline_input *asset
     cubemapImage.depth = 1;
     cubemapImage.channels = c;
     cubemapImage.faceCount = faceCount;
-    cubemapImage.type = vulkan_image_type_cubemap;
+    cubemapImage.type = image_type_cubemap;
     size_t faceSize =
         cubemapImage.width * cubemapImage.height * cubemapImage.depth * cubemapImage.channels;
     if (utarray_len(cubemapImage.data) == 0) {
@@ -109,27 +109,27 @@ void write_cubemap_to_assets(data_asset_db *assetDb, asset_pipeline_input *asset
     core_memcpy(utarray_eltptr(cubemapImage.data, i * faceSize), pixels, faceSize);
     core_free(pixels);
   }
-  vulkan_asset_image_debug_print(&cubemapImage, 0);
-  vulkan_asset_image_serialize(&cubemapImage, assetDb);
+  asset_image_debug_print(&cubemapImage, 0);
+  asset_image_serialize(&cubemapImage, assetDb);
 
   if (strncmp("skybox", utstring_body(assetInput->sourceAssetName), strlen("skybox")) == 0) {
-    vulkan_asset_sampler cubemapSampler;
-    vulkan_asset_sampler_init(&cubemapSampler, NULL);
+    asset_sampler cubemapSampler;
+    asset_sampler_init(&cubemapSampler, NULL);
 
-    vulkan_asset_texture cubemapTexture;
-    vulkan_asset_texture_init(&cubemapTexture, NULL);
+    asset_texture cubemapTexture;
+    asset_texture_init(&cubemapTexture, NULL);
     cubemapTexture.image = &cubemapImage;
     cubemapTexture.sampler = &cubemapSampler;
 
-    vulkan_asset_skybox skybox;
-    vulkan_asset_skybox_init(&skybox, NULL);
+    asset_skybox skybox;
+    asset_skybox_init(&skybox, NULL);
     utstring_printf(skybox.name, "%s", utstring_body(assetInput->sourceAssetName));
     skybox.cubemapTexture = &cubemapTexture;
-    vulkan_asset_skybox_serialize(&skybox, assetDb);
-    vulkan_asset_skybox_deinit(&skybox);
+    asset_skybox_serialize(&skybox, assetDb);
+    asset_skybox_deinit(&skybox);
   }
 
-  vulkan_asset_image_deinit(&cubemapImage);
+  asset_image_deinit(&cubemapImage);
 }
 
 void write_font_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetInput) {
@@ -188,8 +188,8 @@ void write_font_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetInp
   // stbi_write_png("test.png", bitmapWidth, bitmapHeight, 1, utarray_front(bitmap), bitmapWidth);
 
   /* serialize font bitmap image */
-  vulkan_asset_image fontImage;
-  vulkan_asset_image_init(&fontImage, NULL);
+  asset_image fontImage;
+  asset_image_init(&fontImage, NULL);
   utarray_resize(fontImage.data, utarray_len(bitmap));
   core_memcpy(utarray_front(fontImage.data), utarray_front(bitmap), utarray_size(bitmap));
   utarray_free(bitmap);
@@ -198,30 +198,30 @@ void write_font_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetInp
   fontImage.depth = 1;
   fontImage.channels = 1;
   fontImage.faceCount = 1;
-  fontImage.type = vulkan_image_type_font_bitmap;
+  fontImage.type = image_type_font_bitmap;
 
-  vulkan_asset_image_debug_print(&fontImage, 0);
-  vulkan_asset_image_serialize(&fontImage, assetDb);
+  asset_image_debug_print(&fontImage, 0);
+  asset_image_serialize(&fontImage, assetDb);
 
   /* serialize font */
-  vulkan_asset_sampler fontSampler;
-  vulkan_asset_sampler_init(&fontSampler, NULL);
+  asset_sampler fontSampler;
+  asset_sampler_init(&fontSampler, NULL);
 
-  vulkan_asset_texture fontTexture;
-  vulkan_asset_texture_init(&fontTexture, NULL);
+  asset_texture fontTexture;
+  asset_texture_init(&fontTexture, NULL);
   fontTexture.image = &fontImage;
   fontTexture.sampler = &fontSampler;
 
-  vulkan_asset_font font;
-  vulkan_asset_font_init(&font, NULL);
+  asset_font font;
+  asset_font_init(&font, NULL);
   utstring_printf(font.name, "%s", utstring_body(assetInput->sourceAssetName));
   font.fontTexture = &fontTexture;
   utstring_printf(font.characters, "%s", characters);
   font.characterSize = boxWidth;
-  vulkan_asset_font_serialize(&font, assetDb);
-  vulkan_asset_font_deinit(&font);
+  asset_font_serialize(&font, assetDb);
+  asset_font_deinit(&font);
 
-  vulkan_asset_image_deinit(&fontImage);
+  asset_image_deinit(&fontImage);
 }
 
 int main(int argc, char *argv[]) {

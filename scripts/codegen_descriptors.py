@@ -127,7 +127,7 @@ def codegen_descriptors():
             f'void glsl_add_{struct_name}_push_constant(UT_string *s);')
         defs.append(
             f'void glsl_add_{struct_name}_push_constant(UT_string *s) {{')
-        instance_name = struct_name.partition("vulkan_")[2]
+        instance_name = struct_name
         block_name = instance_name + "Block"
 
         defs.append(f'  utstring_printf(s, "layout(push_constant) uniform {block_name} {{\\n");')
@@ -142,7 +142,7 @@ def codegen_descriptors():
             f'void glsl_add_{struct_name}_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count);')
         defs.append(
             f'void glsl_add_{struct_name}_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding, uint32_t count) {{')
-        instance_name = struct_name.partition("vulkan_")[2]
+        instance_name = struct_name
         block_name = instance_name + "Block"
         struct_name = instance_name + "Struct"
 
@@ -175,7 +175,7 @@ def codegen_descriptors():
     decls.append(f'\n#define END_OF_VULKAN_PUSH_CONSTANTS')
     decls.append(f'#define VULKAN_PUSH_CONSTANTS(X, ...) \\')
     for struct_name in push_constant_structs.keys():
-        struct_name = struct_name.partition("vulkan_")[2]
+        struct_name = struct_name
         decls.append(f'  X({struct_name}, __VA_ARGS__) \\')
     decls.append(f'  END_OF_VULKAN_PUSH_CONSTANTS')
 
@@ -183,7 +183,7 @@ def codegen_descriptors():
     decls.append(f'\n#define END_OF_VULKAN_UNIFORM_BUFFERS')
     decls.append(f'#define VULKAN_UNIFORM_BUFFERS(X, ...) \\')
     for struct_name in uniform_buffer_structs.keys():
-        struct_name = struct_name.partition("vulkan_")[2]
+        struct_name = struct_name
         decls.append(f'  X({struct_name}, __VA_ARGS__) \\')
     decls.append(f'  END_OF_VULKAN_UNIFORM_BUFFERS')
 
@@ -191,7 +191,7 @@ def codegen_descriptors():
     decls.append(f'\n#define END_OF_VULKAN_HELPER_STRUCTS')
     decls.append(f'#define VULKAN_HELPER_STRUCTS(X, ...) \\')
     for struct_name in helper_structs.keys():
-        struct_name = struct_name.partition("vulkan_")[2]
+        struct_name = struct_name
         decls.append(f'  X({struct_name}, __VA_ARGS__) \\')
     decls.append(f'  END_OF_VULKAN_HELPER_STRUCTS')
 

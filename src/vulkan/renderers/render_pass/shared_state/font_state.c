@@ -1,8 +1,7 @@
 #include "font_state.h"
 
-vulkan_render_pass_font_state *
-vulkan_render_pass_font_state_create(vulkan_render_state *renderState) {
-  vulkan_render_pass_font_state *font = core_alloc(sizeof(vulkan_render_pass_font_state));
+render_pass_font_state *render_pass_font_state_create(render_state *renderState) {
+  render_pass_font_state *font = core_alloc(sizeof(render_pass_font_state));
 
   font->renderState = renderState;
 
@@ -12,21 +11,21 @@ vulkan_render_pass_font_state_create(vulkan_render_state *renderState) {
   return font;
 }
 
-void vulkan_render_pass_font_state_destroy(vulkan_render_pass_font_state *font) {
+void render_pass_font_state_destroy(render_pass_font_state *font) {
   utstring_free(font->text);
   core_free(font);
 }
 
-void vulkan_render_pass_font_state_reinit_with_new_swap_chain(vulkan_render_pass_font_state *font) {
+void render_pass_font_state_reinit_with_new_swap_chain(render_pass_font_state *font) {
   // No-op.
 }
 
-void vulkan_render_pass_font_state_update(vulkan_render_pass_font_state *font) {
+void render_pass_font_state_update(render_pass_font_state *font) {
   // No-op.
 }
 
-void vulkan_render_pass_font_state_set_font_elements(vulkan_render_pass_font_state *font,
-                                                     vulkan_font_helper_element *fontElement) {
+void render_pass_font_state_set_font_elements(render_pass_font_state *font,
+                                              font_helper_element *fontElement) {
   fontElement->fontTextureId =
       font->renderState->rendererCache->fontElement->fontTextureElement->textureIdx;
   fontElement->characterSize = font->renderState->rendererCache->fontElement->font->characterSize;
@@ -76,7 +75,7 @@ void vulkan_render_pass_font_state_set_font_elements(vulkan_render_pass_font_sta
   }
 }
 
-void vulkan_render_pass_font_state_debug_print(vulkan_render_pass_font_state *font, int indent) {
+void render_pass_font_state_debug_print(render_pass_font_state *font, int indent) {
   log_debug(INDENT_FORMAT_STRING "font:", INDENT_FORMAT_ARGS(0));
   log_debug(INDENT_FORMAT_STRING "text: %s", INDENT_FORMAT_ARGS(2), utstring_body(font->text));
 }

@@ -4,51 +4,50 @@
 
 #include "../common.h"
 
-uint32_t vulkan_attribute_type_to_stride(vulkan_attribute_type vertexAttributes);
+uint32_t vertex_attribute_type_to_stride(vertex_attribute_type vertexAttributes);
 
-typedef struct vulkan_vertex {
+typedef struct vertex {
   vec3 position;
   vec3 normal;
   vec3 color;
   vec2 texCoord;
   vec4 tangent;
-} vulkan_vertex;
+} vertex;
 
-vulkan_vertex vulkan_vertex_default();
+vertex vertex_default();
 
-typedef struct vulkan_vertex_stream_element {
-  vulkan_attribute_type attributes;
+typedef struct vertex_stream_element {
+  vertex_attribute_type attributes;
   uint32_t firstIndexOffset;
   uint32_t firstVertexOffset;
-} vulkan_vertex_stream_element;
+} vertex_stream_element;
 
 /// Interleaved vertex stream.
-typedef struct vulkan_vertex_stream {
-  vulkan_attribute_type attributes; ///< Vertex attributes that can be present in vertex stream.
+typedef struct vertex_stream {
+  vertex_attribute_type attributes; ///< Vertex attributes that can be present in vertex stream.
   UT_array *indexData;              ///< uint32_t array
-  UT_array *vertexData;             ///< vulkan_vertex array
+  UT_array *vertexData;             ///< vertex array
 
   /// True in new geometry has been added.
   /// Unified geometry buffer is responsible for synchronizing vertex stream.
   bool dirty;
-} vulkan_vertex_stream;
+} vertex_stream;
 
-vulkan_vertex_stream *vulkan_vertex_stream_create(vulkan_attribute_type attributes);
+vertex_stream *vertex_stream_create(vertex_attribute_type attributes);
 
-void vulkan_vertex_stream_update(vulkan_vertex_stream *stream);
+void vertex_stream_update(vertex_stream *stream);
 
-void vulkan_vertex_stream_destroy(vulkan_vertex_stream *stream);
+void vertex_stream_destroy(vertex_stream *stream);
 
-vulkan_vertex_stream_element
-vulkan_vertex_stream_add_geometry(vulkan_vertex_stream *stream, uint32_t vertexCount,
-                                  UT_array *indices, UT_array *positions, UT_array *normals,
-                                  UT_array *colors, UT_array *texCoords, UT_array *tangents);
+vertex_stream_element vertex_stream_add_geometry(vertex_stream *stream, uint32_t vertexCount,
+                                                 UT_array *indices, UT_array *positions,
+                                                 UT_array *normals, UT_array *colors,
+                                                 UT_array *texCoords, UT_array *tangents);
 
-uint32_t vulkan_vertex_stream_get_vertex_buffer_binding_count(vulkan_vertex_stream *stream);
+uint32_t vertex_stream_get_vertex_buffer_binding_count(vertex_stream *stream);
 
 VkVertexInputBindingDescription
-vulkan_vertex_stream_get_vertex_buffer_binding_description(vulkan_vertex_stream *stream);
+vertex_stream_get_vertex_buffer_binding_description(vertex_stream *stream);
 
 VkVertexInputAttributeDescription *
-vulkan_vertex_stream_get_vertex_attribute_descriptions(vulkan_vertex_stream *stream,
-                                                       uint32_t *count);
+vertex_stream_get_vertex_attribute_descriptions(vertex_stream *stream, uint32_t *count);

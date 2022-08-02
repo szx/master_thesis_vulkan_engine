@@ -8,36 +8,33 @@
 #include "shared_state/shared_state.h"
 
 /// Contains all resources used by renderPasss.
-typedef struct vulkan_render_pass_state {
-  vulkan_render_state *renderState; ///< Pointer.
+typedef struct render_pass_state {
+  render_state *renderState; ///< Pointer.
 
-  vulkan_render_pass_shared_state sharedState;
+  render_pass_shared_state sharedState;
 
-  UT_array *frameStates; ///< vulkan_render_pass_frame_state list
+  UT_array *frameStates; ///< render_pass_frame_state list
 
-} vulkan_render_pass_state;
+} render_pass_state;
 
-vulkan_render_pass_state *vulkan_render_pass_state_create(vulkan_render_state *renderState);
-void vulkan_render_pass_state_destroy(vulkan_render_pass_state *renderPassState);
+render_pass_state *render_pass_state_create(render_state *renderState);
+void render_pass_state_destroy(render_pass_state *renderPassState);
 
-void vulkan_render_pass_state_init(vulkan_render_pass_state *renderPassState,
-                                   vulkan_render_state *renderState);
-void vulkan_render_pass_state_deinit(vulkan_render_pass_state *renderPassState);
-void vulkan_render_pass_state_reinit_with_new_swap_chain(vulkan_render_pass_state *renderPassState);
+void render_pass_state_init(render_pass_state *renderPassState, render_state *renderState);
+void render_pass_state_deinit(render_pass_state *renderPassState);
+void render_pass_state_reinit_with_new_swap_chain(render_pass_state *renderPassState);
 
-void vulkan_render_pass_state_update(vulkan_render_pass_state *renderPassState);
+void render_pass_state_update(render_pass_state *renderPassState);
 
-uint32_t vulkan_render_pass_state_add_offscreen_texture(vulkan_render_pass_state *renderPassState,
-                                                        const char *name,
-                                                        vulkan_image_type imageType);
+uint32_t render_pass_state_add_offscreen_texture(render_pass_state *renderPassState,
+                                                 const char *name, image_type imageType);
 
-void vulkan_render_pass_state_set_unified_uniform_buffer(
-    vulkan_render_pass_state *renderPassState, vulkan_global_uniform_buffer_element *global);
+void render_pass_state_set_unified_uniform_buffer(render_pass_state *renderPassState,
+                                                  global_uniform_buffer_element *global);
 
-void vulkan_render_pass_state_send_to_device(vulkan_render_pass_state *renderPassState);
+void render_pass_state_send_to_device(render_pass_state *renderPassState);
 
-void vulkan_render_pass_state_debug_print(vulkan_render_pass_state *renderPassState, int indent);
+void render_pass_state_debug_print(render_pass_state *renderPassState, int indent);
 
-vulkan_render_pass_frame_state *
-vulkan_render_pass_state_get_frame_state(vulkan_render_pass_state *renderPassState,
-                                         size_t frameInFlight);
+render_pass_frame_state *render_pass_state_get_frame_state(render_pass_state *renderPassState,
+                                                           size_t frameInFlight);

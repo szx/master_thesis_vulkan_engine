@@ -6400,11 +6400,73 @@ const char *VkViewportCoordinateSwizzleNV_debug_str(int value) {
   if (value == 2147483647) { return "VK_VIEWPORT_COORDINATE_SWIZZLE_MAX_ENUM_NV"; }
   return "UNKNOWN VkViewportCoordinateSwizzleNV";
 }
+const char *asset_vertex_attribute_component_type_debug_str(int value) {
+  if (value == 0) { return "asset_vertex_attribute_component_uint32_t"; }
+  if (value == 1) { return "asset_vertex_attribute_component_vec2"; }
+  if (value == 2) { return "asset_vertex_attribute_component_vec3"; }
+  if (value == 3) { return "asset_vertex_attribute_component_vec4"; }
+  if (value == 4) { return "asset_vertex_attribute_component_count"; }
+  return "UNKNOWN asset_vertex_attribute_component_type";
+}
+const char *batch_instancing_policy_debug_str(int value) {
+  if (value == 0) { return "batch_instancing_policy_no_instancing"; }
+  if (value == 1) { return "batch_instancing_policy_matching_vertex_attributes"; }
+  return "UNKNOWN batch_instancing_policy";
+}
+const char *buffer_type_debug_str(int value) {
+  if (value == 0) { return "buffer_type_geometry_index"; }
+  if (value == 1) { return "buffer_type_geometry_vertex"; }
+  if (value == 2) { return "buffer_type_uniform"; }
+  if (value == 3) { return "buffer_type_indirect_draw"; }
+  if (value == 4) { return "buffer_type_count"; }
+  return "UNKNOWN buffer_type";
+}
+const char *camera_type_debug_str(int value) {
+  if (value == 0) { return "camera_type_orthographic"; }
+  if (value == 1) { return "camera_type_perspective"; }
+  if (value == 2) { return "camera_type_count"; }
+  return "UNKNOWN camera_type";
+}
+const char *color_blending_type_debug_str(int value) {
+  if (value == 0) { return "color_blending_type_none"; }
+  if (value == 1) { return "color_blending_type_alpha"; }
+  if (value == 2) { return "color_blending_type_count"; }
+  return "UNKNOWN color_blending_type";
+}
 const char *data_config_type_debug_str(int value) {
   if (value == 0) { return "data_config_type_asset"; }
   if (value == 1) { return "data_config_type_scene"; }
   if (value == 2) { return "data_config_type_count"; }
   return "UNKNOWN data_config_type";
+}
+const char *direct_light_type_debug_str(int value) {
+  if (value == 0) { return "direct_light_type_directional"; }
+  if (value == 1) { return "direct_light_type_point"; }
+  if (value == 2) { return "direct_light_type_spot"; }
+  if (value == 3) { return "direct_light_type_count"; }
+  return "UNKNOWN direct_light_type";
+}
+const char *image_render_pass_usage_debug_str(int value) {
+  if (value == 1) { return "image_render_pass_usage_read"; }
+  if (value == 2) { return "image_render_pass_usage_write"; }
+  if (value == 3) { return "image_render_pass_usage_read_write"; }
+  return "UNKNOWN image_render_pass_usage";
+}
+const char *image_type_debug_str(int value) {
+  if (value == 0) { return "image_type_undefined"; }
+  if (value == 1) { return "image_type_swap_chain"; }
+  if (value == 2) { return "image_type_material_base_color"; }
+  if (value == 3) { return "image_type_material_parameters"; }
+  if (value == 4) { return "image_type_material_normal_map"; }
+  if (value == 5) { return "image_type_cubemap"; }
+  if (value == 6) { return "image_type_font_bitmap"; }
+  if (value == 7) { return "image_type_offscreen_first"; }
+  if (value == 7) { return "image_type_offscreen_f16"; }
+  if (value == 8) { return "image_type_offscreen_depth_buffer"; }
+  if (value == 9) { return "image_type_offscreen_r8"; }
+  if (value == 10) { return "image_type_offscreen_count"; }
+  if (value == 11) { return "image_type_count"; }
+  return "UNKNOWN image_type";
 }
 const char *log_level_debug_str(int value) {
   if (value == 0) { return "log_level_debug"; }
@@ -6415,109 +6477,47 @@ const char *log_level_debug_str(int value) {
   if (value == 5) { return "log_level_count"; }
   return "UNKNOWN log_level";
 }
+const char *renderer_cache_primitive_element_source_type_debug_str(int value) {
+  if (value == 0) { return "renderer_cache_primitive_element_source_type_scene_tree"; }
+  if (value == 1) { return "renderer_cache_primitive_element_source_type_basic"; }
+  if (value == 2) { return "renderer_cache_primitive_element_source_type_count"; }
+  return "UNKNOWN renderer_cache_primitive_element_source_type";
+}
+const char *shader_reflect_binding_type_debug_str(int value) {
+  if (value == 0) { return "shader_reflect_binding_type_unknown"; }
+  if (value == 1) { return "shader_reflect_binding_type_global_uniform_buffer"; }
+  if (value == 2) { return "shader_reflect_binding_type_instances_uniform_buffer"; }
+  if (value == 3) { return "shader_reflect_binding_type_textures"; }
+  if (value == 4) { return "shader_reflect_binding_type_count"; }
+  return "UNKNOWN shader_reflect_binding_type";
+}
+const char *shader_type_debug_str(int value) {
+  if (value == 0) { return "shader_type_unknown"; }
+  if (value == 1) { return "shader_type_vertex"; }
+  if (value == 2) { return "shader_type_fragment"; }
+  if (value == 3) { return "shader_type_count"; }
+  return "UNKNOWN shader_type";
+}
 const char *shaderc_include_type_debug_str(int value) {
   if (value == 0) { return "shaderc_include_type_relative"; }
   if (value == 1) { return "shaderc_include_type_standard"; }
   return "UNKNOWN shaderc_include_type";
 }
-const char *vulkan_asset_vertex_attribute_component_type_debug_str(int value) {
-  if (value == 0) { return "vulkan_asset_vertex_attribute_component_uint32_t"; }
-  if (value == 1) { return "vulkan_asset_vertex_attribute_component_vec2"; }
-  if (value == 2) { return "vulkan_asset_vertex_attribute_component_vec3"; }
-  if (value == 3) { return "vulkan_asset_vertex_attribute_component_vec4"; }
-  if (value == 4) { return "vulkan_asset_vertex_attribute_component_count"; }
-  return "UNKNOWN vulkan_asset_vertex_attribute_component_type";
+const char *vertex_attribute_type_debug_str(int value) {
+  if (value == 0) { return "vertex_attribute_type_unknown"; }
+  if (value == 1) { return "vertex_attribute_type_position"; }
+  if (value == 2) { return "vertex_attribute_type_normal"; }
+  if (value == 4) { return "vertex_attribute_type_color"; }
+  if (value == 8) { return "vertex_attribute_type_texcoord"; }
+  if (value == 16) { return "vertex_attribute_type_tangent"; }
+  return "UNKNOWN vertex_attribute_type";
 }
-const char *vulkan_attribute_type_debug_str(int value) {
-  if (value == 0) { return "vulkan_attribute_type_unknown"; }
-  if (value == 1) { return "vulkan_attribute_type_position"; }
-  if (value == 2) { return "vulkan_attribute_type_normal"; }
-  if (value == 4) { return "vulkan_attribute_type_color"; }
-  if (value == 8) { return "vulkan_attribute_type_texcoord"; }
-  if (value == 16) { return "vulkan_attribute_type_tangent"; }
-  return "UNKNOWN vulkan_attribute_type";
-}
-void vulkan_attribute_type_debug_print(int flags, int indent) {
-  log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type: ", INDENT_FORMAT_ARGS(0));
-  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_unknown", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_position", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_normal", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_color", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_texcoord", INDENT_FORMAT_ARGS(2)); }
-  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "vulkan_attribute_type_tangent", INDENT_FORMAT_ARGS(2)); }
-}
-const char *vulkan_batch_instancing_policy_debug_str(int value) {
-  if (value == 0) { return "vulkan_batch_instancing_policy_no_instancing"; }
-  if (value == 1) { return "vulkan_batch_instancing_policy_matching_vertex_attributes"; }
-  return "UNKNOWN vulkan_batch_instancing_policy";
-}
-const char *vulkan_buffer_type_debug_str(int value) {
-  if (value == 0) { return "vulkan_buffer_type_geometry_index"; }
-  if (value == 1) { return "vulkan_buffer_type_geometry_vertex"; }
-  if (value == 2) { return "vulkan_buffer_type_uniform"; }
-  if (value == 3) { return "vulkan_buffer_type_indirect_draw"; }
-  if (value == 4) { return "vulkan_buffer_type_count"; }
-  return "UNKNOWN vulkan_buffer_type";
-}
-const char *vulkan_camera_type_debug_str(int value) {
-  if (value == 0) { return "vulkan_camera_type_orthographic"; }
-  if (value == 1) { return "vulkan_camera_type_perspective"; }
-  if (value == 2) { return "vulkan_camera_type_count"; }
-  return "UNKNOWN vulkan_camera_type";
-}
-const char *vulkan_color_blending_type_debug_str(int value) {
-  if (value == 0) { return "vulkan_color_blending_type_none"; }
-  if (value == 1) { return "vulkan_color_blending_type_alpha"; }
-  if (value == 2) { return "vulkan_color_blending_type_count"; }
-  return "UNKNOWN vulkan_color_blending_type";
-}
-const char *vulkan_direct_light_type_debug_str(int value) {
-  if (value == 0) { return "vulkan_direct_light_type_directional"; }
-  if (value == 1) { return "vulkan_direct_light_type_point"; }
-  if (value == 2) { return "vulkan_direct_light_type_spot"; }
-  if (value == 3) { return "vulkan_direct_light_type_count"; }
-  return "UNKNOWN vulkan_direct_light_type";
-}
-const char *vulkan_image_render_pass_usage_debug_str(int value) {
-  if (value == 1) { return "vulkan_image_render_pass_usage_read"; }
-  if (value == 2) { return "vulkan_image_render_pass_usage_write"; }
-  if (value == 3) { return "vulkan_image_render_pass_usage_read_write"; }
-  return "UNKNOWN vulkan_image_render_pass_usage";
-}
-const char *vulkan_image_type_debug_str(int value) {
-  if (value == 0) { return "vulkan_image_type_undefined"; }
-  if (value == 1) { return "vulkan_image_type_swap_chain"; }
-  if (value == 2) { return "vulkan_image_type_material_base_color"; }
-  if (value == 3) { return "vulkan_image_type_material_parameters"; }
-  if (value == 4) { return "vulkan_image_type_material_normal_map"; }
-  if (value == 5) { return "vulkan_image_type_cubemap"; }
-  if (value == 6) { return "vulkan_image_type_font_bitmap"; }
-  if (value == 7) { return "vulkan_image_type_offscreen_first"; }
-  if (value == 7) { return "vulkan_image_type_offscreen_f16"; }
-  if (value == 8) { return "vulkan_image_type_offscreen_depth_buffer"; }
-  if (value == 9) { return "vulkan_image_type_offscreen_r8"; }
-  if (value == 10) { return "vulkan_image_type_offscreen_count"; }
-  if (value == 11) { return "vulkan_image_type_count"; }
-  return "UNKNOWN vulkan_image_type";
-}
-const char *vulkan_renderer_cache_primitive_element_source_type_debug_str(int value) {
-  if (value == 0) { return "vulkan_renderer_cache_primitive_element_source_type_scene_tree"; }
-  if (value == 1) { return "vulkan_renderer_cache_primitive_element_source_type_basic"; }
-  if (value == 2) { return "vulkan_renderer_cache_primitive_element_source_type_count"; }
-  return "UNKNOWN vulkan_renderer_cache_primitive_element_source_type";
-}
-const char *vulkan_shader_reflect_binding_type_debug_str(int value) {
-  if (value == 0) { return "vulkan_shader_reflect_binding_type_unknown"; }
-  if (value == 1) { return "vulkan_shader_reflect_binding_type_global_uniform_buffer"; }
-  if (value == 2) { return "vulkan_shader_reflect_binding_type_instances_uniform_buffer"; }
-  if (value == 3) { return "vulkan_shader_reflect_binding_type_textures"; }
-  if (value == 4) { return "vulkan_shader_reflect_binding_type_count"; }
-  return "UNKNOWN vulkan_shader_reflect_binding_type";
-}
-const char *vulkan_shader_type_debug_str(int value) {
-  if (value == 0) { return "vulkan_shader_type_unknown"; }
-  if (value == 1) { return "vulkan_shader_type_vertex"; }
-  if (value == 2) { return "vulkan_shader_type_fragment"; }
-  if (value == 3) { return "vulkan_shader_type_count"; }
-  return "UNKNOWN vulkan_shader_type";
+void vertex_attribute_type_debug_print(int flags, int indent) {
+  log_debug(INDENT_FORMAT_STRING "vertex_attribute_type: ", INDENT_FORMAT_ARGS(0));
+  if ((flags & 0) != 0) { log_debug(INDENT_FORMAT_STRING "vertex_attribute_type_unknown", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 1) != 0) { log_debug(INDENT_FORMAT_STRING "vertex_attribute_type_position", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 2) != 0) { log_debug(INDENT_FORMAT_STRING "vertex_attribute_type_normal", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 4) != 0) { log_debug(INDENT_FORMAT_STRING "vertex_attribute_type_color", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 8) != 0) { log_debug(INDENT_FORMAT_STRING "vertex_attribute_type_texcoord", INDENT_FORMAT_ARGS(2)); }
+  if ((flags & 16) != 0) { log_debug(INDENT_FORMAT_STRING "vertex_attribute_type_tangent", INDENT_FORMAT_ARGS(2)); }
 }

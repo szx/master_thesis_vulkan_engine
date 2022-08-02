@@ -29,7 +29,7 @@
   X(leftShift, GLFW_KEY_LEFT_SHIFT, __VA_ARGS__)                                                   \
   END_OF_VULKAN_INPUT_KEYS
 
-typedef struct vulkan_input {
+typedef struct input {
   struct {
     struct {
 #define input_key(_name, ...) bool _name;
@@ -48,8 +48,8 @@ typedef struct vulkan_input {
     double x, y;
     double lastX, lastY;
   } mouse; ///< GLFW mouse input.
-} vulkan_input;
+} input;
 
-vulkan_input vulkan_input_default();
+input input_default();
 
-void vulkan_input_clear_released_keys(vulkan_input *input);
+void input_clear_released_keys(input *input);

@@ -2,13 +2,13 @@
 
 /* primitive renderer cache element */
 
-vulkan_renderer_cache_primitive_element *vulkan_renderer_cache_primitive_element_create(
-    vulkan_renderer_cache_primitive_element_source_type sourceType, bool visible, mat4 transform,
-    vulkan_asset_primitive *primitive, vulkan_aabb aabb) {
+renderer_cache_primitive_element *
+renderer_cache_primitive_element_create(renderer_cache_primitive_element_source_type sourceType,
+                                        bool visible, mat4 transform, asset_primitive *primitive,
+                                        aabb aabb) {
   assert(primitive != NULL);
 
-  vulkan_renderer_cache_primitive_element *element =
-      core_alloc(sizeof(vulkan_renderer_cache_primitive_element));
+  renderer_cache_primitive_element *element = core_alloc(sizeof(renderer_cache_primitive_element));
 
   element->sourceType = sourceType;
 
@@ -20,7 +20,7 @@ vulkan_renderer_cache_primitive_element *vulkan_renderer_cache_primitive_element
   element->primitive = primitive;
   element->aabb = aabb;
 
-  element->vertexStreamElement = (vulkan_vertex_stream_element){0};
+  element->vertexStreamElement = (vertex_stream_element){0};
   element->instanceId = 0;
   element->materialElement = 0;
 
@@ -33,14 +33,12 @@ vulkan_renderer_cache_primitive_element *vulkan_renderer_cache_primitive_element
   return element;
 }
 
-void vulkan_renderer_cache_primitive_element_destroy(
-    vulkan_renderer_cache_primitive_element *element) {
+void renderer_cache_primitive_element_destroy(renderer_cache_primitive_element *element) {
   core_free(element);
 }
 
-void vulkan_renderer_cache_primitive_set_vulkan_vertex_stream_element(
-    vulkan_renderer_cache_primitive_element *element,
-    vulkan_vertex_stream_element vertexStreamElement) {
+void renderer_cache_primitive_set_vertex_stream_element(renderer_cache_primitive_element *element,
+                                                        vertex_stream_element vertexStreamElement) {
 #if defined(DEBUG)
   assert(!element->_vertexStreamElementSet);
   element->_vertexStreamElementSet = true;
@@ -48,17 +46,16 @@ void vulkan_renderer_cache_primitive_set_vulkan_vertex_stream_element(
   element->vertexStreamElement = vertexStreamElement;
 }
 
-void vulkan_renderer_cache_primitive_set_instance_id(
-    vulkan_renderer_cache_primitive_element *element, size_t instanceId) {
+void renderer_cache_primitive_set_instance_id(renderer_cache_primitive_element *element,
+                                              size_t instanceId) {
 #if defined(DEBUG)
   element->_instanceIdSet = true;
 #endif
   element->instanceId = instanceId;
 }
 
-void vulkan_renderer_cache_primitive_set_material_element(
-    vulkan_renderer_cache_primitive_element *element,
-    vulkan_textures_material_element *materialElement) {
+void renderer_cache_primitive_set_material_element(renderer_cache_primitive_element *element,
+                                                   textures_material_element *materialElement) {
   assert(materialElement != NULL);
 #if defined(DEBUG)
   element->_materialElementSet = true;
@@ -66,8 +63,7 @@ void vulkan_renderer_cache_primitive_set_material_element(
   element->materialElement = materialElement;
 }
 
-void vulkan_renderer_cache_primitive_element_debug_print(
-    vulkan_renderer_cache_primitive_element *element) {
+void renderer_cache_primitive_element_debug_print(renderer_cache_primitive_element *element) {
   log_raw(stdout, "\"renderer cache primitive cache\\n%p\\n", element);
   log_raw(stdout, "visible: %d\\n", element->visible);
   log_raw(stdout, "transform: \\n" MAT4_FORMAT_STRING("\\n") "\\n",
@@ -84,12 +80,11 @@ void vulkan_renderer_cache_primitive_element_debug_print(
 
 /* camera renderer cache element */
 
-vulkan_renderer_cache_camera_element *
-vulkan_renderer_cache_camera_element_create(vulkan_asset_camera *camera, mat4 transform) {
+renderer_cache_camera_element *renderer_cache_camera_element_create(asset_camera *camera,
+                                                                    mat4 transform) {
   assert(camera != NULL);
 
-  vulkan_renderer_cache_camera_element *element =
-      core_alloc(sizeof(vulkan_renderer_cache_camera_element));
+  renderer_cache_camera_element *element = core_alloc(sizeof(renderer_cache_camera_element));
 
   element->prev = NULL;
   element->next = NULL;
@@ -100,12 +95,11 @@ vulkan_renderer_cache_camera_element_create(vulkan_asset_camera *camera, mat4 tr
   return element;
 }
 
-void vulkan_renderer_cache_camera_element_destroy(vulkan_renderer_cache_camera_element *element) {
+void renderer_cache_camera_element_destroy(renderer_cache_camera_element *element) {
   core_free(element);
 }
 
-void vulkan_renderer_cache_camera_element_debug_print(
-    vulkan_renderer_cache_camera_element *element) {
+void renderer_cache_camera_element_debug_print(renderer_cache_camera_element *element) {
   log_raw(stdout, "\"renderer cache camera element\\n%p\\n", element);
   log_raw(stdout, "transform: \\n" MAT4_FORMAT_STRING("\\n") "\\n",
           MAT4_FORMAT_ARGS(element->transform));
@@ -113,12 +107,12 @@ void vulkan_renderer_cache_camera_element_debug_print(
   log_raw(stdout, "\"; ");
 }
 
-vulkan_renderer_cache_direct_light_element *
-vulkan_renderer_cache_direct_light_element_create(vulkan_asset_direct_light *directLight) {
+renderer_cache_direct_light_element *
+renderer_cache_direct_light_element_create(asset_direct_light *directLight) {
   assert(directLight != NULL);
 
-  vulkan_renderer_cache_direct_light_element *element =
-      core_alloc(sizeof(vulkan_renderer_cache_direct_light_element));
+  renderer_cache_direct_light_element *element =
+      core_alloc(sizeof(renderer_cache_direct_light_element));
 
   element->prev = NULL;
   element->next = NULL;
@@ -128,25 +122,21 @@ vulkan_renderer_cache_direct_light_element_create(vulkan_asset_direct_light *dir
   return element;
 }
 
-void vulkan_renderer_cache_direct_light_element_destroy(
-    vulkan_renderer_cache_direct_light_element *element) {
+void renderer_cache_direct_light_element_destroy(renderer_cache_direct_light_element *element) {
   core_free(element);
 }
 
-void vulkan_renderer_cache_direct_light_element_debug_print(
-    vulkan_renderer_cache_direct_light_element *element) {
+void renderer_cache_direct_light_element_debug_print(renderer_cache_direct_light_element *element) {
   log_raw(stdout, "\"renderer cache direct light element\\n%p\\n", element);
   log_raw(stdout, "\"; ");
 }
 
 /* skybox renderer cache element */
 
-vulkan_renderer_cache_skybox_element *
-vulkan_renderer_cache_skybox_element_create(vulkan_asset_skybox *skybox) {
+renderer_cache_skybox_element *renderer_cache_skybox_element_create(asset_skybox *skybox) {
   assert(skybox != NULL);
 
-  vulkan_renderer_cache_skybox_element *element =
-      core_alloc(sizeof(vulkan_renderer_cache_skybox_element));
+  renderer_cache_skybox_element *element = core_alloc(sizeof(renderer_cache_skybox_element));
 
   element->skybox = skybox;
   element->skyboxTextureElement = NULL;
@@ -154,12 +144,11 @@ vulkan_renderer_cache_skybox_element_create(vulkan_asset_skybox *skybox) {
   return element;
 }
 
-void vulkan_renderer_cache_skybox_element_destroy(vulkan_renderer_cache_skybox_element *element) {
+void renderer_cache_skybox_element_destroy(renderer_cache_skybox_element *element) {
   core_free(element);
 }
 
-void vulkan_renderer_cache_skybox_element_debug_print(
-    vulkan_renderer_cache_skybox_element *element) {
+void renderer_cache_skybox_element_debug_print(renderer_cache_skybox_element *element) {
   log_raw(stdout, "\"renderer cache skybox element\\n%p\\n", element);
   log_raw(stdout, "cubemapTexture %p\\n", element->skybox->cubemapTexture);
   log_raw(stdout, "\"; ");
@@ -167,12 +156,10 @@ void vulkan_renderer_cache_skybox_element_debug_print(
 
 /* font renderer cache element */
 
-vulkan_renderer_cache_font_element *
-vulkan_renderer_cache_font_element_create(vulkan_asset_font *font) {
+renderer_cache_font_element *renderer_cache_font_element_create(asset_font *font) {
   assert(font != NULL);
 
-  vulkan_renderer_cache_font_element *element =
-      core_alloc(sizeof(vulkan_renderer_cache_font_element));
+  renderer_cache_font_element *element = core_alloc(sizeof(renderer_cache_font_element));
 
   element->font = font;
   element->fontTextureElement = NULL;
@@ -180,11 +167,11 @@ vulkan_renderer_cache_font_element_create(vulkan_asset_font *font) {
   return element;
 }
 
-void vulkan_renderer_cache_font_element_destroy(vulkan_renderer_cache_font_element *element) {
+void renderer_cache_font_element_destroy(renderer_cache_font_element *element) {
   core_free(element);
 }
 
-void vulkan_renderer_cache_font_element_debug_print(vulkan_renderer_cache_font_element *element) {
+void renderer_cache_font_element_debug_print(renderer_cache_font_element *element) {
   log_raw(stdout, "\"renderer cache font element\\n%p\\n", element);
   log_raw(stdout, "fontTexture %p\\n", element->font->fontTexture);
   log_raw(stdout, "\"; ");

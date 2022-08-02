@@ -6,10 +6,10 @@
 
 /// Image.
 /// Used to store data in memory.
-typedef struct vulkan_image {
-  vulkan_device *vkd; ///< Pointer.
+typedef struct image {
+  device *vkd; ///< Pointer.
 
-  vulkan_image_type type;
+  image_type type;
   uint32_t width;
   uint32_t height;
   uint32_t channels;
@@ -30,24 +30,23 @@ typedef struct vulkan_image {
   VkDeviceMemory imageMemory;
   VkImageView imageView;
 
-  bool resident;                 ///< True if image created in GPU memory.
-  bool dirty;                    ///< True if CPU to GPU transfer required.
-  vulkan_asset_texture *texture; ///< Pointer to texture used to update image.
-} vulkan_image;
+  bool resident;          ///< True if image created in GPU memory.
+  bool dirty;             ///< True if CPU to GPU transfer required.
+  asset_texture *texture; ///< Pointer to texture used to update image.
+} image;
 
-vulkan_image *vulkan_image_create(vulkan_device *vkd, vulkan_image_type type, uint32_t width,
-                                  uint32_t height, uint32_t channels, const char *debugName);
-void vulkan_image_destroy(vulkan_image *image);
+image *image_create(device *vkd, image_type type, uint32_t width, uint32_t height,
+                    uint32_t channels, const char *debugName);
+void image_destroy(image *image);
 
-void vulkan_image_make_resident(vulkan_image *image);
+void image_make_resident(image *image);
 
-void vulkan_image_update(vulkan_image *image, vulkan_asset_texture *texture);
+void image_update(image *image, asset_texture *texture);
 
-void vulkan_image_send_to_device(vulkan_image *image);
+void image_send_to_device(image *image);
 
-void vulkan_image_debug_print(vulkan_image *image, int indent);
+void image_debug_print(image *image, int indent);
 
-VkFormat vulkan_find_image_format(vulkan_device *vkd, vulkan_image_type imageType,
-                                  uint32_t channels);
+VkFormat find_image_format(device *vkd, image_type imageType, uint32_t channels);
 
-VkImageAspectFlags vulkan_find_image_aspects(vulkan_image_type imageType);
+VkImageAspectFlags find_image_aspects(image_type imageType);

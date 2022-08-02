@@ -8,39 +8,38 @@
 #include "debug.h"
 #include "objects/device.h"
 
-typedef enum vulkan_attribute_type {
-  vulkan_attribute_type_unknown = 0,
-  vulkan_attribute_type_position = 1 << 0,
-  vulkan_attribute_type_normal = 1 << 1,
-  vulkan_attribute_type_color = 1 << 2,
-  vulkan_attribute_type_texcoord = 1 << 3,
-  vulkan_attribute_type_tangent = 1 << 4,
-} vulkan_attribute_type;
+typedef enum vertex_attribute_type {
+  vertex_attribute_type_unknown = 0,
+  vertex_attribute_type_position = 1 << 0,
+  vertex_attribute_type_normal = 1 << 1,
+  vertex_attribute_type_color = 1 << 2,
+  vertex_attribute_type_texcoord = 1 << 3,
+  vertex_attribute_type_tangent = 1 << 4,
+} vertex_attribute_type;
 
-typedef enum vulkan_image_type {
-  vulkan_image_type_undefined,
-  vulkan_image_type_swap_chain,
-  vulkan_image_type_material_base_color,
-  vulkan_image_type_material_parameters,
-  vulkan_image_type_material_normal_map,
-  vulkan_image_type_cubemap,
-  vulkan_image_type_font_bitmap,
-  vulkan_image_type_offscreen_first,
-  vulkan_image_type_offscreen_f16 = vulkan_image_type_offscreen_first,
-  vulkan_image_type_offscreen_depth_buffer,
-  vulkan_image_type_offscreen_r8,
-  vulkan_image_type_offscreen_count,
-  vulkan_image_type_count
-} vulkan_image_type;
+typedef enum image_type {
+  image_type_undefined,
+  image_type_swap_chain,
+  image_type_material_base_color,
+  image_type_material_parameters,
+  image_type_material_normal_map,
+  image_type_cubemap,
+  image_type_font_bitmap,
+  image_type_offscreen_first,
+  image_type_offscreen_f16 = image_type_offscreen_first,
+  image_type_offscreen_depth_buffer,
+  image_type_offscreen_r8,
+  image_type_offscreen_count,
+  image_type_count
+} image_type;
 
-typedef enum vulkan_image_render_pass_usage {
-  vulkan_image_render_pass_usage_read = (1 << 0),
-  vulkan_image_render_pass_usage_write = (1 << 1),
-  vulkan_image_render_pass_usage_read_write =
-      vulkan_image_render_pass_usage_read | vulkan_image_render_pass_usage_write,
-} vulkan_image_render_pass_usage;
+typedef enum image_render_pass_usage {
+  image_render_pass_usage_read = (1 << 0),
+  image_render_pass_usage_write = (1 << 1),
+  image_render_pass_usage_read_write = image_render_pass_usage_read | image_render_pass_usage_write,
+} image_render_pass_usage;
 
-typedef struct vulkan_image_type_info {
+typedef struct image_type_info {
   bool depthFormat;
   bool colorFormat;
 
@@ -50,40 +49,40 @@ typedef struct vulkan_image_type_info {
 
   char componentBits;
   uint32_t forcedChannels;
-} vulkan_image_type_info;
+} image_type_info;
 
-extern vulkan_image_type_info vulkanImageTypeInfo[];
+extern image_type_info vulkanImageTypeInfo[];
 
-typedef enum vulkan_camera_type {
-  vulkan_camera_type_orthographic,
-  vulkan_camera_type_perspective,
-  vulkan_camera_type_count
-} vulkan_camera_type;
+typedef enum camera_type {
+  camera_type_orthographic,
+  camera_type_perspective,
+  camera_type_count
+} camera_type;
 
-typedef enum vulkan_direct_light_type {
-  vulkan_direct_light_type_directional,
-  vulkan_direct_light_type_point,
-  vulkan_direct_light_type_spot,
-  vulkan_direct_light_type_count,
-} vulkan_direct_light_type;
+typedef enum direct_light_type {
+  direct_light_type_directional,
+  direct_light_type_point,
+  direct_light_type_spot,
+  direct_light_type_count,
+} direct_light_type;
 
 /// Axis-aligned bounding box.
-typedef struct vulkan_aabb {
+typedef struct aabb {
   vec4 min;
   vec4 max;
-} vulkan_aabb;
+} aabb;
 
-vulkan_aabb vulkan_aabb_default();
-void vulkan_aabb_add_vec3(vulkan_aabb *aabb, vec3 other);
-void vulkan_aabb_add_aabb(vulkan_aabb *aabb, vulkan_aabb *other);
-void vulkan_aabb_mul_mat4(vulkan_aabb *aabb, mat4 transform);
-void vulkan_aabb_debug_print(vulkan_aabb *aabb, int indent);
+aabb aabb_default();
+void aabb_add_vec3(aabb *aabb, vec3 other);
+void aabb_add_aabb(aabb *aabb, struct aabb *other);
+void aabb_mul_mat4(aabb *aabb, mat4 transform);
+void aabb_debug_print(aabb *aabb, int indent);
 
 /// Calculates perspective projection matrix for left handed world/view-space to right-handed
 /// flipped Vulkan clip space.
-void vulkan_get_perspective_matrix(float fovy, float aspect, float nearZ, float farZ, mat4 dest);
+void get_perspective_matrix(float fovy, float aspect, float nearZ, float farZ, mat4 dest);
 
 /// Calculates orthographic projection matrix for left handed world/view-space to right-handed
 /// flipped Vulkan clip space.
-void vulkan_get_orthographic_matrix(float left, float right, float bottom, float top, float nearZ,
-                                    float farZ, mat4 dest);
+void get_orthographic_matrix(float left, float right, float bottom, float top, float nearZ,
+                             float farZ, mat4 dest);

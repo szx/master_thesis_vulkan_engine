@@ -4,8 +4,8 @@
 #include "../common.h"
 #include "device.h"
 
-typedef struct vulkan_swap_chain {
-  vulkan_device *vkd;        /// vulkan_device pointer.
+typedef struct swap_chain {
+  device *vkd;               /// device pointer.
   VkSwapchainKHR swapChain;  /// Vulkan swap chain.
   UT_array *swapChainImages; /// Swap chain images - a collection of two or more
                              /// VKImages used to present rendering results to screen.
@@ -20,12 +20,12 @@ typedef struct vulkan_swap_chain {
   VkExtent2D swapChainExtent;            /// Size of swap chain image (in pixels).
 
   UT_array *swapChainImageViews; ///< VkImageView array.
-} vulkan_swap_chain;
+} swap_chain;
 
-vulkan_swap_chain *vulkan_swap_chain_create(vulkan_device *vkd);
-void vulkan_swap_chain_destroy(vulkan_swap_chain *vks);
+swap_chain *swap_chain_create(device *vkd);
+void swap_chain_destroy(swap_chain *vks);
 
-void vulkan_swap_chain_init(vulkan_swap_chain *vks, vulkan_device *vkd);
-void vulkan_swap_chain_deinit(vulkan_swap_chain *vks);
+void swap_chain_init(swap_chain *vks, device *vkd);
+void swap_chain_deinit(swap_chain *vks);
 
-float vulkan_swap_chain_get_aspect_ratio(vulkan_swap_chain *vks);
+float swap_chain_get_aspect_ratio(swap_chain *vks);

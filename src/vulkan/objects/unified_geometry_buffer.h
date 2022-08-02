@@ -8,23 +8,23 @@
 
 /// Unified geometry buffer.
 /// Used to aggregate scene's vertex data into one big vertex buffer.
-typedef struct vulkan_unified_geometry_buffer {
+typedef struct unified_geometry_buffer {
   /* CPU state */
-  vulkan_vertex_stream *dirtyVertexStream; ///< Not NULL if buffers need to be updated.
+  vertex_stream *dirtyVertexStream; ///< Not NULL if buffers need to be updated.
 
   /* GPU state */
-  vulkan_buffer *indexBuffer;
-  vulkan_buffer *vertexBuffer;
-} vulkan_unified_geometry_buffer;
+  buffer *indexBuffer;
+  buffer *vertexBuffer;
+} unified_geometry_buffer;
 
-vulkan_unified_geometry_buffer *vulkan_unified_geometry_buffer_create(vulkan_device *vkd);
-void vulkan_unified_geometry_buffer_destroy(vulkan_unified_geometry_buffer *geometryBuffer);
+unified_geometry_buffer *unified_geometry_buffer_create(device *vkd);
+void unified_geometry_buffer_destroy(unified_geometry_buffer *geometryBuffer);
 
-void vulkan_unified_geometry_buffer_update(vulkan_unified_geometry_buffer *geometryBuffer,
-                                           vulkan_vertex_stream *vertexStream);
-void vulkan_unified_geometry_buffer_send_to_device(vulkan_unified_geometry_buffer *geometryBuffer);
+void unified_geometry_buffer_update(unified_geometry_buffer *geometryBuffer,
+                                    vertex_stream *vertexStream);
+void unified_geometry_buffer_send_to_device(unified_geometry_buffer *geometryBuffer);
 
-void vulkan_unified_geometry_buffer_record_bind_command(
-    vulkan_unified_geometry_buffer *geometryBuffer, VkCommandBuffer commandBuffer);
+void unified_geometry_buffer_record_bind_command(unified_geometry_buffer *geometryBuffer,
+                                                 VkCommandBuffer commandBuffer);
 
-void vulkan_unified_geometry_buffer_debug_print(vulkan_unified_geometry_buffer *geometryBuffer);
+void unified_geometry_buffer_debug_print(unified_geometry_buffer *geometryBuffer);

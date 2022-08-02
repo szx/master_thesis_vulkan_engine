@@ -1,9 +1,8 @@
 #include "light.h"
 #include "../scene/data.h"
 
-void vulkan_asset_direct_light_init(vulkan_asset_direct_light *directLight,
-                                    vulkan_scene_data *sceneData) {
-  directLight->type = vulkan_direct_light_type_point;
+void asset_direct_light_init(asset_direct_light *directLight, scene_data *sceneData) {
+  directLight->type = direct_light_type_point;
   glm_vec3_copy(GLM_VEC3_ZERO, directLight->position);
   directLight->innerConeAngle = 0;
   directLight->outerConeAngle = 0;
@@ -14,9 +13,9 @@ void vulkan_asset_direct_light_init(vulkan_asset_direct_light *directLight,
   VULKAN_ASSET_FIELD_DEFS(direct_light, directLight)
 }
 
-void vulkan_asset_direct_light_deinit(vulkan_asset_direct_light *directLight) {}
+void asset_direct_light_deinit(asset_direct_light *directLight) {}
 
-data_key vulkan_asset_direct_light_calculate_key(vulkan_asset_direct_light *directLight) {
+data_key asset_direct_light_calculate_key(asset_direct_light *directLight) {
   hash_t value;
   HASH_START(hashState)
   HASH_UPDATE(hashState, &directLight->type, sizeof(directLight->type))
@@ -31,9 +30,8 @@ data_key vulkan_asset_direct_light_calculate_key(vulkan_asset_direct_light *dire
   return (data_key){value};
 }
 
-void vulkan_asset_direct_light_serialize(vulkan_asset_direct_light *directLight,
-                                         data_asset_db *assetDb) {
-  directLight->key = vulkan_asset_direct_light_calculate_key(directLight);
+void asset_direct_light_serialize(asset_direct_light *directLight, data_asset_db *assetDb) {
+  directLight->key = asset_direct_light_calculate_key(directLight);
   data_asset_db_insert_directLight_type_int(assetDb, directLight->key,
                                             data_int_temp(directLight->type));
   data_asset_db_insert_directLight_position_vec3(assetDb, directLight->key,
@@ -50,8 +48,8 @@ void vulkan_asset_direct_light_serialize(vulkan_asset_direct_light *directLight,
                                               data_vec3_temp(directLight->color));
 }
 
-void vulkan_asset_direct_light_deserialize(vulkan_asset_direct_light *directLight,
-                                           data_asset_db *assetDb, data_key key) {
+void asset_direct_light_deserialize(asset_direct_light *directLight, data_asset_db *assetDb,
+                                    data_key key) {
   directLight->key = key;
   directLight->type = data_asset_db_select_directLight_type_int(assetDb, directLight->key).value;
   glm_vec3_copy(data_asset_db_select_directLight_position_vec3(assetDb, directLight->key).value,
@@ -68,19 +66,19 @@ void vulkan_asset_direct_light_deserialize(vulkan_asset_direct_light *directLigh
                 directLight->color);
 }
 
-void vulkan_asset_direct_light_debug_print(vulkan_asset_direct_light *directLight, int indent) {
+void asset_direct_light_debug_print(asset_direct_light *directLight, int indent) {
   log_debug(INDENT_FORMAT_STRING "directLight:", INDENT_FORMAT_ARGS(0));
   log_debug(INDENT_FORMAT_STRING "hash=%zu", INDENT_FORMAT_ARGS(2), directLight->key);
   log_debug(INDENT_FORMAT_STRING "type=%s", INDENT_FORMAT_ARGS(2),
-            vulkan_direct_light_type_debug_str(directLight->type));
-  if (directLight->type == vulkan_direct_light_type_directional) {
+            direct_light_type_debug_str(directLight->type));
+  if (directLight->type == direct_light_type_directional) {
     log_debug(INDENT_FORMAT_STRING "direction=" VEC3_FORMAT_STRING(), INDENT_FORMAT_ARGS(2),
               VEC3_FORMAT_ARGS(directLight->direction));
   } else {
     log_debug(INDENT_FORMAT_STRING "position=" VEC3_FORMAT_STRING(), INDENT_FORMAT_ARGS(2),
               VEC3_FORMAT_ARGS(directLight->position));
   }
-  if (directLight->type == vulkan_direct_light_type_spot) {
+  if (directLight->type == direct_light_type_spot) {
     log_debug(INDENT_FORMAT_STRING "innerConeAngle=%f", INDENT_FORMAT_ARGS(2),
               directLight->innerConeAngle);
     log_debug(INDENT_FORMAT_STRING "outerConeAngle=%f", INDENT_FORMAT_ARGS(2),
@@ -92,45 +90,44 @@ void vulkan_asset_direct_light_debug_print(vulkan_asset_direct_light *directLigh
             VEC3_FORMAT_ARGS(directLight->color));
 }
 
-vulkan_asset_direct_light *
-vulkan_asset_direct_light_create_directional_light(vulkan_scene_data *sceneData, vec3 direction,
-                                                   float intensity, vec3 color) {
-  vulkan_asset_direct_light *directLight = core_alloc(sizeof(vulkan_asset_direct_light));
-  vulkan_asset_direct_light_init(directLight, sceneData);
+asset_direct_light *asset_direct_light_create_directional_light(scene_data *sceneData,
+                                                                vec3 direction, float intensity,
+                                                                vec3 color) {
+  asset_direct_light *directLight = core_alloc(sizeof(asset_direct_light));
+  asset_direct_light_init(directLight, sceneData);
 
-  directLight->type = vulkan_direct_light_type_directional;
+  directLight->type = direct_light_type_directional;
   glm_vec3_copy(direction, directLight->direction);
   directLight->intensity = intensity;
   glm_vec3_copy(color, directLight->color);
 
   assert(sceneData);
-  return vulkan_scene_data_add_direct_light(sceneData, directLight);
+  return scene_data_add_direct_light(sceneData, directLight);
 }
 
-vulkan_asset_direct_light *
-vulkan_asset_direct_light_create_point_light(vulkan_scene_data *sceneData, vec3 position,
-                                             float intensity, float range, vec3 color) {
-  vulkan_asset_direct_light *directLight = core_alloc(sizeof(vulkan_asset_direct_light));
-  vulkan_asset_direct_light_init(directLight, sceneData);
+asset_direct_light *asset_direct_light_create_point_light(scene_data *sceneData, vec3 position,
+                                                          float intensity, float range,
+                                                          vec3 color) {
+  asset_direct_light *directLight = core_alloc(sizeof(asset_direct_light));
+  asset_direct_light_init(directLight, sceneData);
 
-  directLight->type = vulkan_direct_light_type_point;
+  directLight->type = direct_light_type_point;
   glm_vec3_copy(position, directLight->position);
   directLight->intensity = intensity;
   directLight->range = range;
   glm_vec3_copy(color, directLight->color);
 
   assert(sceneData);
-  return vulkan_scene_data_add_direct_light(sceneData, directLight);
+  return scene_data_add_direct_light(sceneData, directLight);
 }
 
-vulkan_asset_direct_light *
-vulkan_asset_direct_light_create_spot_light(vulkan_scene_data *sceneData, vec3 position,
-                                            float innerConeAngle, float outerConeAngle,
-                                            float intensity, float range, vec3 color) {
-  vulkan_asset_direct_light *directLight = core_alloc(sizeof(vulkan_asset_direct_light));
-  vulkan_asset_direct_light_init(directLight, sceneData);
+asset_direct_light *asset_direct_light_create_spot_light(scene_data *sceneData, vec3 position,
+                                                         float innerConeAngle, float outerConeAngle,
+                                                         float intensity, float range, vec3 color) {
+  asset_direct_light *directLight = core_alloc(sizeof(asset_direct_light));
+  asset_direct_light_init(directLight, sceneData);
 
-  directLight->type = vulkan_direct_light_type_spot;
+  directLight->type = direct_light_type_spot;
   glm_vec3_copy(position, directLight->position);
   directLight->innerConeAngle = innerConeAngle;
   directLight->outerConeAngle = outerConeAngle;
@@ -139,5 +136,5 @@ vulkan_asset_direct_light_create_spot_light(vulkan_scene_data *sceneData, vec3 p
   glm_vec3_copy(color, directLight->color);
 
   assert(sceneData);
-  return vulkan_scene_data_add_direct_light(sceneData, directLight);
+  return scene_data_add_direct_light(sceneData, directLight);
 }
