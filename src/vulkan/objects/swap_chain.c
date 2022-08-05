@@ -16,10 +16,12 @@ VkPresentModeKHR choose_swap_present_mode(UT_array *availablePresentModes) {
     VkPresentModeKHR availablePresentMode =
         *(VkPresentModeKHR *)utarray_eltptr(availablePresentModes, i);
     if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+      log_debug("mailbox present mode");
       return availablePresentMode;
     }
   }
-  return *(VkPresentModeKHR *)utarray_front(availablePresentModes);
+  log_debug("fifo present mode");
+  return VK_PRESENT_MODE_FIFO_KHR;
 }
 
 VkExtent2D choose_swap_extent(device *vkd) {
