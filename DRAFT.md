@@ -1224,21 +1224,33 @@ minimalnej liczby obrazów wymaganej przez powierzchnię okna.
 
 W silniku łańcuch wymiany składa się z następujących elementów:
 
-- tryb prezentacji,
-- format obrazów,
-- rozmiar obrazów,
 - obiekt VkSwapchainKHR,
 - uchwyty do prezentowalnych obrazy,
 - widoki obrazów.
 
-Przed stworzeniem łańcucha wymiany potrzebne są dodatkowe informacje o:
-
-- tryb prezentacji...
-- ...
-- ...
-
 Obiekt VkSwapchainKHR jest obiektem Vulkan reprezentujacym łańcuch wymiany. Jest on oferowany przez rozszerzenie
-VK_KHR_swapchain będące częścią WSI.
+VK_KHR_swapchain będące częścią WSI. Stworzenie go wymaga wcześniejszego ustalenia wartości następujących parametrów:
+
+- tryb prezentacji,
+- liczba prezentowalnego obrazu
+- format i przestrzeń kolorów obrazów,
+- rozmiar obrazów.
+
+Wartości użytych parametrów muszą być wśród wartości wspieranych przez powierzchnię, które mogą być sprawdzone przy
+pomocy następujacych funkcji:
+
+- vkGetPhysicalDeviceSurfacePresentModesKHR() dla dostępnych trybów prezentacji,
+- vkGetPhysicalDeviceSurfaceFormatsKHR() dla dostępnych formatów obrazów,
+- vkGetPhysicalDeviceSurfaceCapabilitiesKHR() dla możliwości powierzchni.
+
+Preferowany tryb prezentacji to MAILBOX. Jeśli jest niedostępny, to wybierany jest zawsze wspierany tryb prezentacji
+FIFO.
+
+Format definiuje rozmiar i strukturę pojedyńczego piksela obrazu. Przestrzeń kolorów definiuje metodę interpretacji
+pikseli obrazu wykonywaną przez silnik prezentacji przed prezentacją obrazu. Preferowany format i przestrzeń kolorów to
+B8G8R8A8_SRGB i SRGB. [ponieważ...]
+
+...
 
 Uchwyty do prezentowalnych obrazów są tablicą obiektów VkImage. Należą one do obiektu VkSwapchainKHR i ...
 
