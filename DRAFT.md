@@ -1228,13 +1228,13 @@ W silniku łańcuch wymiany składa się z następujących elementów:
 - uchwyty do prezentowalnych obrazy,
 - widoki obrazów.
 
-Obiekt VkSwapchainKHR jest obiektem Vulkan reprezentujacym łańcuch wymiany. Jest on oferowany przez rozszerzenie
+Obiekt VkSwapchainKHR jest obiektem Vulkan reprezentującym łańcuch wymiany. Jest on oferowany przez rozszerzenie
 VK_KHR_swapchain będące częścią WSI. Stworzenie go wymaga wcześniejszego ustalenia wartości następujących parametrów:
 
 - tryb prezentacji,
-- liczba prezentowalnego obrazu
-- format i przestrzeń kolorów obrazów,
-- rozmiar obrazów.
+- format i przestrzeń kolorów prezentowalnych obrazów,
+- rozmiar obrazów,
+- liczba obrazów.
 
 Wartości użytych parametrów muszą być wśród wartości wspieranych przez powierzchnię, które mogą być sprawdzone przy
 pomocy następujacych funkcji:
@@ -1246,13 +1246,34 @@ pomocy następujacych funkcji:
 Preferowany tryb prezentacji to MAILBOX. Jeśli jest niedostępny, to wybierany jest zawsze wspierany tryb prezentacji
 FIFO.
 
-Format definiuje rozmiar i strukturę pojedyńczego piksela obrazu. Przestrzeń kolorów definiuje metodę interpretacji
-pikseli obrazu wykonywaną przez silnik prezentacji przed prezentacją obrazu. Preferowany format i przestrzeń kolorów to
-B8G8R8A8_SRGB i SRGB. [ponieważ...]
+Format definiuje rozmiar, strukturę i sposób kodowania podczas zapisu i dekodowania podczas próbkowania pojedyńczego
+piksela obrazu. Przestrzeń kolorów definiuje metodę interpretacji pikseli obrazu przez silnik prezentacji podczas
+prezentacji obrazu. Przestrzeń kolorów liniowa (niesprecyzowana) jest używana w shaderach. Przestrzeń kolorów SRGB jest
+przeznaczona do wyświetlania na monitorach i jest powszechnia używana w obrazach.
 
-...
+Preferowany format i przestrzeń kolorów to B8G8R8A8_SRGB i SRGB. Jeśli nie są dostępne, to wybierane są pierwsze
+dostępne.
 
-Uchwyty do prezentowalnych obrazów są tablicą obiektów VkImage. Należą one do obiektu VkSwapchainKHR i ...
+Formaty z rodziny BGRA i przestrzeń kolorów SRGB powierzchni okna są zawsze wspierane na systemie Windows i w czasie
+pisania pracy według portalu GPUInfo.org są one wspierane w ponad 96% systemów Linux.
+
+Obliczenia modelu oświetlenia będące wyjściem shaderów fragmentów odbywają się w liniowej przestrzeni kolorów. Użycie
+formatu B8G8R8A8_SRGB zamiast B8G8R8A8_UNORM pozwala na ominięcie ręcznej konwersji z przestrzeni liniowej do SRGB
+podczas renderowania bezpośrednio do prezentowalnej tekstury - konwersja zostanie przeprowadzona przez sterownik
+graficzny.
+
+Rozmiar obrazów jest równy rozmiarowi powierzchni okna.
+
+Liczba obrazów jest równa minimalnej liczbie obrazów wspieranych dla łańcucha wymiary przez powierzchnię okna
+powiększonej o jeden. Ta liczba jest polecana przez specyfikację Vulkana dla tryb prezentacji to MAILBOX i ma
+gwarantować brak blokowania funkcji vkAcquireNextImageKHR().
+
+Uchwyty do prezentowalnych obrazów są tablicą obiektów VkImage. Dostęp do nich jest uzyskiwany przy użyciu funkcji
+vkGetSwapchainImagesKHR().
+
+Mimo, że program posiada uchwyty obrazów, to wciąż są one zarządzane przez silnik prezentacji i przed użyciem muszą być
+udostępnione programowi przy użyciu funkcji vkAcquireNextImageKHR() zwracającej indesk w wcześniej przygotowanej tablicy
+uchwytów.
 
 #### Użycie łańcucha wymiany
 
@@ -1276,6 +1297,15 @@ jest zmiana rozmiaru okna.
 ## objects/device.h
 
 ### Obiekt device
+
+Obiekt device reprezentuje urządzenie.
+
+W silniku składa się z następujących elementów:
+
+- instancję
+- urządzenie logiczne,
+- urządzenie fizyczne,
+- ... ...
 
 [...]
 
