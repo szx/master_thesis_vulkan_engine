@@ -5,7 +5,7 @@ image_type_info vulkanImageTypeInfo[] = {
     [image_type_material_base_color] = {.colorFormat = true, .sRGBEncoding = true, .componentBits=8},
     [image_type_material_parameters] = {.colorFormat = true, .uNormEncoding = true, .componentBits=8},
     [image_type_material_normal_map] = {.colorFormat = true, .uNormEncoding = true, .componentBits=8},
-    [image_type_cubemap] = {.colorFormat = true, .uNormEncoding = true, .componentBits=8},
+    [image_type_cubemap] = {.colorFormat = true, .sRGBEncoding = true, .componentBits=8},
     [image_type_font_bitmap] = {.colorFormat = true, .uNormEncoding = true, .componentBits=8},
     [image_type_offscreen_f16] = {.colorFormat = true, .floatingPointEncoding = true, .componentBits=16, .forcedChannels = 4},
     [image_type_offscreen_depth_buffer] = {.depthFormat= true, .forcedChannels = 1},
