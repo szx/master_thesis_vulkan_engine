@@ -109,11 +109,13 @@ void renderer_draw_frame(renderer *renderer) {
       VK_NULL_HANDLE, &swapChainImageIdx);
   log_debug("acquired swap chain image #%u", swapChainImageIdx);
 
-  if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+  if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
+      renderer->vkd->framebufferResized) {
+    renderer->vkd->framebufferResized = false;
     renderer_recreate_swap_chain(renderer);
     return;
   }
-  verify(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR);
+  verify(result == VK_SUCCESS);
 
   /* Pre-submit CPU work:
    * We have acquired index of next in-flight image, we can now update
