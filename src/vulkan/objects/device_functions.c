@@ -465,7 +465,7 @@ void begin_rendering(device *vkd, VkCommandBuffer commandBuffer, rendering_info 
 
   VkRenderingInfoKHR renderingInfo = {.sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR,
                                       .renderArea.offset = {0, 0},
-                                      .renderArea.extent = vkd->swapChainExtent,
+                                      .renderArea.extent = vkd->swapChainInfo.extent,
                                       .layerCount = 1,
                                       .colorAttachmentCount = colorAttachmentCount,
                                       .pColorAttachments = colorAttachments,

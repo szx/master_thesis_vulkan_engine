@@ -20,14 +20,21 @@ bool queue_families_complete(queue_families *queueFamilies);
 static const UT_icd ut_vk_surface_format_icd = {sizeof(VkSurfaceFormatKHR), NULL, NULL, NULL};
 static const UT_icd ut_vk_present_mode_icd = {sizeof(VkPresentModeKHR), NULL, NULL, NULL};
 
-typedef struct swap_chain_info {
+/// Information about swap chain support.
+typedef struct swap_chain_support {
   VkSurfaceCapabilitiesKHR capabilities;
   UT_array *formats;      /// VkSurfaceFormatKHR
   UT_array *presentModes; /// VkPresentModeKHR
-} swap_chain_info;
+} swap_chain_support;
 
-void swap_chain_info_init(swap_chain_info *vksInfo);
-void swap_chain_info_deinit(swap_chain_info *vksInfo);
+void swap_chain_support_init(swap_chain_support *support);
+void swap_chain_support_deinit(swap_chain_support *support);
+
+/// Information about created swap chain.
+typedef struct swap_chain_info {
+  VkFormat imageFormat; ///< Chosen swap chain image format.
+  VkExtent2D extent;    ///< Chosen swap chain image extent.
+} swap_chain_info;
 
 typedef struct limits {
   /* Vulkan API limits */
@@ -66,17 +73,20 @@ typedef struct device {
   VkDevice device;       ///< Vulkan logical device.
   VkQueue graphicsQueue; ///< Graphical queue handle.
   VkQueue presentQueue;  ///< Present queue handle.
+
   PFN_vkCmdBeginRenderingKHR cmdBeginRendering;
   PFN_vkCmdEndRenderingKHR cmdEndRendering;
 
-  swap_chain_info swapChainInfo; ///< Swap chain support details.
-  VkFormat swapChainImageFormat; ///< Chosen swap chain image format.
-  VkExtent2D swapChainExtent;    ///< Chosen swap chain image format.
-  limits limits;                 ///< Physical device limits.
-  bool framebufferResized;       ///< True if GLFW framebuffer resize callback was triggered.
+  swap_chain_support swapChainSupport; ///< Swap chain support details.
+  swap_chain_info swapChainInfo;       /// Created swap chain info.
+
+  limits limits;           ///< Physical device limits.
+  bool framebufferResized; ///< True if GLFW framebuffer resize callback was triggered.
+
   VkCommandPool
       oneShotCommandPool; ///< Command pool used for one-shot copy and image transition commands.
-  input input;            ///< GLFW keyboard and mouse input.
+
+  input input; ///< GLFW keyboard and mouse input.
 
 } device;
 

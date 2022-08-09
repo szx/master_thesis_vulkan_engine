@@ -23,21 +23,21 @@ bool queue_families_complete(queue_families *queueFamilies) {
   return queueFamilies->graphicsFamily < UINT32_MAX && queueFamilies->presentFamily < UINT32_MAX;
 }
 
-void swap_chain_info_init(swap_chain_info *vksInfo) {
-  utarray_new(vksInfo->formats, &ut_vk_surface_format_icd);
-  utarray_new(vksInfo->presentModes, &ut_vk_present_mode_icd);
+void swap_chain_support_init(swap_chain_support *support) {
+  utarray_new(support->formats, &ut_vk_surface_format_icd);
+  utarray_new(support->presentModes, &ut_vk_present_mode_icd);
 }
 
-void swap_chain_info_deinit(swap_chain_info *vksInfo) {
-  utarray_free(vksInfo->formats);
-  utarray_free(vksInfo->presentModes);
+void swap_chain_support_deinit(swap_chain_support *support) {
+  utarray_free(support->formats);
+  utarray_free(support->presentModes);
 }
 
 device *device_create(data_config *config, data_asset_db *assetDb) {
   device *vkd = core_alloc(sizeof(device));
-  swap_chain_info_init(&vkd->swapChainInfo);
-  vkd->swapChainImageFormat = VK_FORMAT_UNDEFINED;
-  vkd->swapChainExtent = (VkExtent2D){0};
+  swap_chain_support_init(&vkd->swapChainSupport);
+  vkd->swapChainInfo.imageFormat = VK_FORMAT_UNDEFINED;
+  vkd->swapChainInfo.extent = (VkExtent2D){0};
   create_window(vkd, config, assetDb);
   create_instance(vkd, config, assetDb);
   create_debug_utils(vkd);
@@ -51,7 +51,7 @@ device *device_create(data_config *config, data_asset_db *assetDb) {
 
 void device_destroy(device *vkd) {
   log_info("device_destroy()");
-  swap_chain_info_deinit(&vkd->swapChainInfo);
+  swap_chain_support_deinit(&vkd->swapChainSupport);
 
   vkDestroyCommandPool(vkd->device, vkd->oneShotCommandPool, vka);
 
@@ -223,24 +223,24 @@ void create_surface(device *vkd) {
 
 void query_swap_chain_support(device *vkd, VkPhysicalDevice physicalDevice) {
   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, vkd->surface,
-                                            &vkd->swapChainInfo.capabilities);
+                                            &vkd->swapChainSupport.capabilities);
 
   uint32_t formatCount;
   vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, vkd->surface, &formatCount, NULL);
 
   if (formatCount != 0) {
-    utarray_resize(vkd->swapChainInfo.formats, formatCount);
+    utarray_resize(vkd->swapChainSupport.formats, formatCount);
     vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, vkd->surface, &formatCount,
-                                         utarray_front(vkd->swapChainInfo.formats));
+                                         utarray_front(vkd->swapChainSupport.formats));
   }
 
   uint32_t presentModeCount;
   vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, vkd->surface, &presentModeCount, NULL);
 
   if (presentModeCount != 0) {
-    utarray_resize(vkd->swapChainInfo.presentModes, presentModeCount);
+    utarray_resize(vkd->swapChainSupport.presentModes, presentModeCount);
     vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, vkd->surface, &presentModeCount,
-                                              utarray_front(vkd->swapChainInfo.presentModes));
+                                              utarray_front(vkd->swapChainSupport.presentModes));
   }
 }
 
@@ -309,8 +309,8 @@ bool physical_device_suitable(device *vkd, VkPhysicalDevice physicalDevice, size
   bool swapChainAdequate = false;
   if (extensionsSupported) {
     query_swap_chain_support(vkd, physicalDevice);
-    swapChainAdequate = utarray_len(vkd->swapChainInfo.formats) > 0 &&
-                        utarray_len(vkd->swapChainInfo.presentModes) > 0;
+    swapChainAdequate = utarray_len(vkd->swapChainSupport.formats) > 0 &&
+                        utarray_len(vkd->swapChainSupport.presentModes) > 0;
   }
   log_info("swapChainAdequate = %d", swapChainAdequate);
 

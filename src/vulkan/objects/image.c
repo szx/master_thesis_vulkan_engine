@@ -248,8 +248,8 @@ void image_debug_print(image *image, int indent) {
 
 VkFormat find_image_format(device *vkd, image_type imageType, uint32_t channels) {
   if (imageType == image_type_swap_chain) {
-    assert(vkd->swapChainImageFormat != VK_FORMAT_UNDEFINED);
-    return vkd->swapChainImageFormat;
+    assert(vkd->swapChainInfo.imageFormat != VK_FORMAT_UNDEFINED);
+    return vkd->swapChainInfo.imageFormat;
   }
 
   image_type_info info = vulkanImageTypeInfo[imageType];

@@ -25,7 +25,7 @@ VkPresentModeKHR choose_swap_present_mode(UT_array *availablePresentModes) {
 }
 
 VkExtent2D choose_swap_extent(device *vkd) {
-  VkSurfaceCapabilitiesKHR capabilities = vkd->swapChainInfo.capabilities;
+  VkSurfaceCapabilitiesKHR capabilities = vkd->swapChainSupport.capabilities;
   if (capabilities.currentExtent.width != UINT32_MAX) {
     return capabilities.currentExtent;
   }
@@ -43,15 +43,15 @@ VkExtent2D choose_swap_extent(device *vkd) {
 void create_swap_chain(swap_chain *vks) {
   assert(vks->swapChain == VK_NULL_HANDLE);
   query_swap_chain_support(vks->vkd, vks->vkd->physicalDevice);
-  swap_chain_info *swapChainInfo = &vks->vkd->swapChainInfo;
-  VkSurfaceFormatKHR surfaceFormat = choose_swap_surface_format(swapChainInfo->formats);
-  VkPresentModeKHR presentMode = choose_swap_present_mode(swapChainInfo->presentModes);
+  swap_chain_support *swapChainSupport = &vks->vkd->swapChainSupport;
+  VkSurfaceFormatKHR surfaceFormat = choose_swap_surface_format(swapChainSupport->formats);
+  VkPresentModeKHR presentMode = choose_swap_present_mode(swapChainSupport->presentModes);
   VkExtent2D extent = choose_swap_extent(vks->vkd);
 
-  uint32_t imageCount = swapChainInfo->capabilities.minImageCount + 1;
-  if (swapChainInfo->capabilities.maxImageCount > 0 &&
-      imageCount > swapChainInfo->capabilities.maxImageCount) {
-    imageCount = swapChainInfo->capabilities.maxImageCount;
+  uint32_t imageCount = swapChainSupport->capabilities.minImageCount + 1;
+  if (swapChainSupport->capabilities.maxImageCount > 0 &&
+      imageCount > swapChainSupport->capabilities.maxImageCount) {
+    imageCount = swapChainSupport->capabilities.maxImageCount;
   }
 
   VkSwapchainCreateInfoKHR createInfo = {0};
@@ -76,7 +76,7 @@ void create_swap_chain(swap_chain *vks) {
     createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
   }
 
-  createInfo.preTransform = swapChainInfo->capabilities.currentTransform;
+  createInfo.preTransform = swapChainSupport->capabilities.currentTransform;
   createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
   createInfo.presentMode = presentMode;
   createInfo.clipped = VK_TRUE;
@@ -84,9 +84,9 @@ void create_swap_chain(swap_chain *vks) {
   verify(vkCreateSwapchainKHR(vks->vkd->device, &createInfo, vka, &vks->swapChain) == VK_SUCCESS);
 
   vks->swapChainImageFormat = surfaceFormat.format;
-  vks->vkd->swapChainImageFormat = vks->swapChainImageFormat;
+  vks->vkd->swapChainInfo.imageFormat = vks->swapChainImageFormat;
   vks->swapChainExtent = extent;
-  vks->vkd->swapChainExtent = vks->swapChainExtent;
+  vks->vkd->swapChainInfo.extent = vks->swapChainExtent;
 }
 
 void get_swap_chain_images(swap_chain *vks) {
