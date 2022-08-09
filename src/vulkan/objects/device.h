@@ -70,7 +70,9 @@ typedef struct device {
   debug *debug;                    ///< Vulkan debug utils.
   VkPhysicalDevice physicalDevice; ///< Physical device.
 
-  VkDevice device;       ///< Vulkan logical device.
+  VkDevice device; ///< Vulkan logical device.
+
+  queue_families queueFamilies;
   VkQueue graphicsQueue; ///< Graphical queue handle.
   VkQueue presentQueue;  ///< Present queue handle.
 
@@ -93,25 +95,4 @@ typedef struct device {
 device *device_create(data_config *config, data_asset_db *assetDb);
 void device_destroy(device *vkd);
 
-void glfw_framebuffer_resize_callback(GLFWwindow *window, int width, int height);
-void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
-void glfw_mouse_callback(GLFWwindow *window, double x, double y);
-
-void create_window(device *vkd, data_config *config, data_asset_db *assetDb);
-
-bool validation_layers_enabled();
-bool check_validation_layer_support(device *vkd);
-void create_instance(device *vkd, data_config *config, data_asset_db *assetDb);
-void create_debug_utils(device *vkd);
-void create_surface(device *vkd);
-
-void query_swap_chain_support(device *vkd, VkPhysicalDevice physicalDevice);
-bool check_device_extension_support(device *vkd, VkPhysicalDevice physicalDevice);
-bool physical_device_suitable(device *vkd, VkPhysicalDevice physicalDevice, size_t *rank);
-void pick_physical_device(device *vkd);
-
-queue_families find_queue_families(device *vkd, VkPhysicalDevice physicalDevice);
-limits find_limits(device *vkd, VkPhysicalDevice physicalDevice);
-void create_logical_device(device *vkd);
-
-void create_one_shot_command_pool(device *vkd);
+void device_query_swap_chain_support(device *vkd);

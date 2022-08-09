@@ -42,7 +42,8 @@ VkExtent2D choose_swap_extent(device *vkd) {
 
 void create_swap_chain(swap_chain *vks) {
   assert(vks->swapChain == VK_NULL_HANDLE);
-  query_swap_chain_support(vks->vkd, vks->vkd->physicalDevice);
+  assert(utarray_len(vks->vkd->swapChainSupport.formats) > 0);
+  device_query_swap_chain_support(vks->vkd);
   swap_chain_support *swapChainSupport = &vks->vkd->swapChainSupport;
   VkSurfaceFormatKHR surfaceFormat = choose_swap_surface_format(swapChainSupport->formats);
   VkPresentModeKHR presentMode = choose_swap_present_mode(swapChainSupport->presentModes);
@@ -65,10 +66,10 @@ void create_swap_chain(swap_chain *vks) {
   createInfo.imageArrayLayers = 1;
   createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-  queue_families queueFamilies = find_queue_families(vks->vkd, vks->vkd->physicalDevice);
-  uint32_t queueFamiliesIndices[] = {queueFamilies.graphicsFamily, queueFamilies.presentFamily};
+  uint32_t queueFamiliesIndices[] = {vks->vkd->queueFamilies.graphicsFamily,
+                                     vks->vkd->queueFamilies.presentFamily};
 
-  if (queueFamilies.graphicsFamily != queueFamilies.presentFamily) {
+  if (queueFamiliesIndices[0] != queueFamiliesIndices[1]) {
     createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
     createInfo.queueFamilyIndexCount = 2;
     createInfo.pQueueFamilyIndices = queueFamiliesIndices;

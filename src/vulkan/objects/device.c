@@ -1,5 +1,28 @@
 #include "device.h"
 
+void glfw_framebuffer_resize_callback(GLFWwindow *window, int width, int height);
+void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
+void glfw_mouse_callback(GLFWwindow *window, double x, double y);
+
+void create_window(device *vkd, data_config *config, data_asset_db *assetDb);
+
+bool validation_layers_enabled();
+bool check_validation_layer_support(device *vkd);
+void create_instance(device *vkd, data_config *config, data_asset_db *assetDb);
+void create_debug_utils(device *vkd);
+void create_surface(device *vkd);
+
+void query_swap_chain_support(device *vkd, VkPhysicalDevice physicalDevice);
+bool check_device_extension_support(device *vkd, VkPhysicalDevice physicalDevice);
+bool physical_device_suitable(device *vkd, VkPhysicalDevice physicalDevice, size_t *rank);
+void pick_physical_device(device *vkd);
+
+queue_families find_queue_families(device *vkd, VkPhysicalDevice physicalDevice);
+limits find_limits(device *vkd, VkPhysicalDevice physicalDevice);
+void create_logical_device(device *vkd);
+
+void create_one_shot_command_pool(device *vkd);
+
 const char *validationLayers[] = {"VK_LAYER_KHRONOS_validation"};
 
 VkValidationFeatureEnableEXT enabledValidationFeatures[] = {
@@ -244,6 +267,11 @@ void query_swap_chain_support(device *vkd, VkPhysicalDevice physicalDevice) {
   }
 }
 
+void device_query_swap_chain_support(device *vkd) {
+  assert(vkd->physicalDevice != VK_NULL_HANDLE);
+  query_swap_chain_support(vkd, vkd->physicalDevice);
+}
+
 bool check_device_extension_support(device *vkd, VkPhysicalDevice physicalDevice) {
   uint32_t extensionCount;
   vkEnumerateDeviceExtensionProperties(physicalDevice, NULL, &extensionCount, NULL);
@@ -299,8 +327,8 @@ bool physical_device_suitable(device *vkd, VkPhysicalDevice physicalDevice, size
   log_info("apiVersion = %d.%d.%d", versionMajor, versionMinor, versionPatch);
   bool goodVulkanVersion = versionMajor >= 1 && versionMinor >= 2;
 
-  queue_families queueFamilies = find_queue_families(vkd, physicalDevice);
-  bool queueFamiliesComplete = queue_families_complete(&queueFamilies);
+  vkd->queueFamilies = find_queue_families(vkd, physicalDevice);
+  bool queueFamiliesComplete = queue_families_complete(&vkd->queueFamilies);
   log_info("found queue familes = %d", queueFamiliesComplete);
 
   bool extensionsSupported = check_device_extension_support(vkd, physicalDevice);
@@ -406,6 +434,8 @@ void pick_physical_device(device *vkd) {
   log_info("device found: deviceId = %X, deviceName = %s", deviceProperties.deviceID,
            deviceProperties.deviceName);
 
+  vkd->queueFamilies = find_queue_families(vkd, vkd->physicalDevice);
+  device_query_swap_chain_support(vkd);
   vkd->limits = find_limits(vkd, vkd->physicalDevice);
 }
 
@@ -488,25 +518,23 @@ limits find_limits(device *vkd, VkPhysicalDevice physicalDevice) {
 }
 
 void create_logical_device(device *vkd) {
-  queue_families queueFamilies = find_queue_families(vkd, vkd->physicalDevice);
-
   VkDeviceQueueCreateInfo *queueCreateInfos;
   uint32_t numQueues;
   float queuePriority = 1.0f;
-  if (queueFamilies.graphicsFamily != queueFamilies.presentFamily) {
+  if (vkd->queueFamilies.graphicsFamily != vkd->queueFamilies.presentFamily) {
     numQueues = 2;
     queueCreateInfos =
         (VkDeviceQueueCreateInfo *)malloc(numQueues * sizeof(VkDeviceQueueCreateInfo));
     queueCreateInfos[0].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     queueCreateInfos[0].pNext = NULL;
     queueCreateInfos[0].flags = 0;
-    queueCreateInfos[0].queueFamilyIndex = queueFamilies.graphicsFamily;
+    queueCreateInfos[0].queueFamilyIndex = vkd->queueFamilies.graphicsFamily;
     queueCreateInfos[0].queueCount = 1;
     queueCreateInfos[0].pQueuePriorities = &queuePriority;
     queueCreateInfos[1].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     queueCreateInfos[1].pNext = NULL;
     queueCreateInfos[1].flags = 0;
-    queueCreateInfos[1].queueFamilyIndex = queueFamilies.presentFamily;
+    queueCreateInfos[1].queueFamilyIndex = vkd->queueFamilies.presentFamily;
     queueCreateInfos[1].queueCount = 1;
     queueCreateInfos[1].pQueuePriorities = &queuePriority;
   } else {
@@ -516,7 +544,7 @@ void create_logical_device(device *vkd) {
     queueCreateInfos[0].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     queueCreateInfos[0].pNext = NULL;
     queueCreateInfos[0].flags = 0;
-    queueCreateInfos[0].queueFamilyIndex = queueFamilies.graphicsFamily;
+    queueCreateInfos[0].queueFamilyIndex = vkd->queueFamilies.graphicsFamily;
     queueCreateInfos[0].queueCount = 1;
     queueCreateInfos[0].pQueuePriorities = &queuePriority;
   }
@@ -570,8 +598,8 @@ void create_logical_device(device *vkd) {
   verify(vkCreateDevice(vkd->physicalDevice, &createInfo, vka, &vkd->device) == VK_SUCCESS);
   free(queueCreateInfos);
 
-  vkGetDeviceQueue(vkd->device, queueFamilies.graphicsFamily, 0, &vkd->graphicsQueue);
-  vkGetDeviceQueue(vkd->device, queueFamilies.presentFamily, 0, &vkd->presentQueue);
+  vkGetDeviceQueue(vkd->device, vkd->queueFamilies.graphicsFamily, 0, &vkd->graphicsQueue);
+  vkGetDeviceQueue(vkd->device, vkd->queueFamilies.presentFamily, 0, &vkd->presentQueue);
 
   vkd->cmdBeginRendering =
       (PFN_vkCmdBeginRenderingKHR)vkGetInstanceProcAddr(vkd->instance, "vkCmdBeginRenderingKHR");
@@ -582,7 +610,7 @@ void create_logical_device(device *vkd) {
 }
 
 void create_one_shot_command_pool(device *vkd) {
-  queue_families queueFamilies = find_queue_families(vkd, vkd->physicalDevice);
-  vkd->oneShotCommandPool = create_command_pool(vkd, queueFamilies.graphicsFamily, 0, "one-shot");
+  vkd->oneShotCommandPool =
+      create_command_pool(vkd, vkd->queueFamilies.graphicsFamily, 0, "one-shot");
   // TODO: Also use transfer queue - but vkCmdBlitImage is graphics queue only?
 }
