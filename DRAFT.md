@@ -1298,20 +1298,96 @@ jest zmiana rozmiaru okna.
 
 ### Obiekt device
 
-Obiekt device reprezentuje urządzenie.
+Obiekt device reprezentuje urządzenie. Jest on podstawowym obiektem przygotowującym podstawowe funkcjonalności używane
+przez inne obiekty systemu renderowania. ...
 
 W silniku składa się z następujących elementów:
 
-- instancję
-- urządzenie logiczne,
+- okno GLFW,
+- instancja,
+- powierzchnia okna,
+- obiekt debug,
 - urządzenie fizyczne,
-- ... ...
+- urządzenie logiczne,
+- kolejka grafiki,
+- kolejka prezentacji,
+- informacje o utworzonym łańcuchu wymiany,
+- limity,
+- bufor komend one-shot
+- obiekt input.
+
+#### Stworzenie okna
+
+Okno jest tworzone przy użyciu GLFW i jest reprezentowane obiektem *GLFWwindow*.
+
+Przykładowy kod używający GLFW do stworzenia okna:
+
+```
+// Inicjalizacja biblioteki GLFW.
+assert(glfwInit() == GLFW_TRUE);
+assert(glfwVulkanSupported() == GLFW_TRUE);
+
+// Stworzenie okna.
+glfwDefaultWindowHints();
+glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+GLFWwindow *window = glfwCreateWindow(640, 480, "Window caption", NULL, NULL);
+
+// Rejestracja funkcji wywołania zwrotnego.
+glfwSetWindowUserPointer(window, callbackData);
+glfwSetFramebufferSizeCallback(window, framebuffer_resize_callback);
+glfwSetKeyCallback(window, key_callback);
+glfwSetCursorPosCallback(window, mouse_callback);
+
+// Wirtualny kursor myszy.
+glfwSetInputMode(vkd->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+```
+
+Zarejestrowane funkcje wywołania zwrotnego są używane do wykrywania zmiany rozmiaru okna oraz obsługi danych wejściowych
+myszy i klawiatury.
+
+#### Inicjalizacja Vulkan
+
+Wszyskie programy używające Vulkan wymagają wcześniejszego stworzenia następujących obiektów:
+
+- instancji Vulkan (VkInstance),
+- powierzchni okna (VkSurface),
+- urządzenia fizycznego (VkPhysicalDevice),
+- urządzenia logicznego (VkDevice),
+- kolejek komend (VkQueue).
+
+Pierwszym krokiem każdego programu chcącego używać Vulkan jest stworzenie instancji Vulkan (VkInstance). Instancja
+pozwala programowi na komunikację z sterownikiem graficznym i musi zostać stworzona przed użyciem jakichkolwiek innych
+funkcji API Vulkan. Podczas tworzenia instancji należy zdefiniować:
+
+- podstawowe informacje o aplikacji: nazwa i wersja aplikacji oraz używanego silnika, najwyższa wersja Vulkan używana
+  przez aplikację (1.2),
+- włączone rozszerzenia instancji: VK_KHR_surface i dodatkowe rozszerzenia zwrócone przez funkcję
+  glfwGetRequiredInstanceExtensions() używane do stworzenia powierzchni okna, w trybie debugowania VK_EXT_debug_utils
+  używane przez obiekt debug.
+- włączone warstwy: w trybie debugowania warstwa walidacji i jej używane funkcjonalności,
+- komunikator debugowania dla instancji.
+
+Po stworzeniu instancji Vulkan program chcący prezentować wyniki renderowania musi stworzyć powierzchnię okna (
+VkSurfaceKHR). Ten krok może być pominięty dla programów używających Vulkan w tzw. trybie *headless* niewyświetlającym
+wyniku renderowania na ekranie. W innym wypadku powierzchnia musi być stworzona przed urządzeniem fizycznym, ponieważ
+jest używana do sprawdzania, czy będzie ono wspierało późniejsze stworzenie łańcucha wymiany. Powierzchnia jest tworzona
+przy użyciu funkcji glfwCreateWindowSurface().
+
+Po stworzeniu instancji Vulkan należy wybrać urządzenie fizyczne (VkPhysicalDevice). Urządzenie fizyczne ...
+
+### Stworzenie powierzchni okna
+
+...
 
 [...]
+
+[warstwa walidacji]
 
 [onscreen vs ofscreen...]
 
 [część globalna i część instancji ujednoliconego bufora uniform, dlatczego podział]
 
 [hierarchia obiektów, diagram, opisy]
+
+[model obiektów vulkan]
 
