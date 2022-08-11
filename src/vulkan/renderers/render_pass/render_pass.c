@@ -40,16 +40,6 @@ VkPipeline get_graphics_pipeline(render_pass *renderPass, size_t currentFrameInF
   VkPipelineShaderStageCreateInfo *shaderStages =
       render_pass_shader_program_get_shader_stages(renderPass->shaderProgram, &shaderStageCount);
 
-  size_t descriptorSetLayoutCount = 0;
-  VkDescriptorSetLayout *descriptorSetLayouts = descriptors_get_descriptor_set_layouts(
-      renderPass->renderState->descriptors, &descriptorSetLayoutCount);
-  assert(descriptorSetLayoutCount > 0);
-
-  size_t pushConstantRangeCount = 1;
-  VkPushConstantRange pushConstantRanges[pushConstantRangeCount];
-  pushConstantRanges[0] = (VkPushConstantRange){
-      .stageFlags = VK_SHADER_STAGE_ALL, .offset = 0, .size = sizeof(draw_push_constant_element)};
-
   uint32_t vertexBindingDescriptionsCount =
       vertex_stream_get_vertex_buffer_binding_count(renderPass->renderState->vertexStream);
   assert(vertexBindingDescriptionsCount == 1);
@@ -80,11 +70,6 @@ VkPipeline get_graphics_pipeline(render_pass *renderPass, size_t currentFrameInF
       .framebufferWidth = renderPass->renderState->vks->swapChainExtent.width,
       .framebufferHeight = renderPass->renderState->vks->swapChainExtent.height,
 
-      .descriptorSetLayouts = descriptorSetLayouts,
-      .descriptorSetLayoutCount = descriptorSetLayoutCount,
-      .pushConstantRanges = pushConstantRanges,
-      .pushConstantRangeCount = pushConstantRangeCount,
-
       .renderPass = NULL,
       .pipelineLayout = renderPass->renderState->descriptors->pipelineLayout,
   };
@@ -95,7 +80,6 @@ VkPipeline get_graphics_pipeline(render_pass *renderPass, size_t currentFrameInF
                                currentFrameInFlight, swapChainImageIdx);
 
   core_free(vertexAttributeDescriptions);
-  core_free(descriptorSetLayouts);
   core_free(shaderStages);
 
   return *graphicsPipeline;

@@ -136,11 +136,6 @@ typedef struct graphics_pipeline_create_info {
   uint32_t framebufferWidth;
   uint32_t framebufferHeight;
 
-  const VkDescriptorSetLayout *descriptorSetLayouts;
-  size_t descriptorSetLayoutCount;
-  const VkPushConstantRange *pushConstantRanges;
-  size_t pushConstantRangeCount;
-
   VkRenderPass renderPass;
   VkPipelineLayout pipelineLayout;
 } graphics_pipeline_create_info;
