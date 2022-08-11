@@ -354,14 +354,11 @@ bool physical_device_suitable(device *vkd, VkPhysicalDevice physicalDevice, size
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES};
   VkPhysicalDeviceVulkan12Features features12 = {
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES};
-  VkPhysicalDeviceRobustness2FeaturesEXT featuresRobustness2 = {
-      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT};
   VkPhysicalDeviceDynamicRenderingFeaturesKHR featuresDynamicRendering = {
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR};
   physicalDeviceFeatures2.pNext = &features11;
   features11.pNext = &features12;
-  features12.pNext = &featuresRobustness2;
-  featuresRobustness2.pNext = &featuresDynamicRendering;
+  features12.pNext = &featuresDynamicRendering;
   vkGetPhysicalDeviceFeatures2(physicalDevice, &physicalDeviceFeatures2);
   VkPhysicalDeviceFeatures features10 = physicalDeviceFeatures2.features;
   log_info("samplerAnisotropy = %d", features10.samplerAnisotropy);
@@ -369,7 +366,6 @@ bool physical_device_suitable(device *vkd, VkPhysicalDevice physicalDevice, size
            features10.shaderUniformBufferArrayDynamicIndexing);
   log_info("shaderSampledImageArrayDynamicIndexing = %d",
            features10.shaderSampledImageArrayDynamicIndexing);
-  log_info("nullDescriptor = %d", featuresRobustness2.nullDescriptor);
   log_info("dynamicRendering = %d", featuresDynamicRendering.dynamicRendering);
   log_info("descriptorIndexing = %d", features12.descriptorIndexing);
   log_info("shaderSampledImageArrayNonUniformIndexing = %d",
@@ -385,8 +381,7 @@ bool physical_device_suitable(device *vkd, VkPhysicalDevice physicalDevice, size
   log_info("drawIndirectFirstInstance = %d", features10.drawIndirectFirstInstance);
   bool featuresSupported =
       features10.samplerAnisotropy && features10.shaderUniformBufferArrayDynamicIndexing &&
-      features10.shaderSampledImageArrayDynamicIndexing && featuresRobustness2.nullDescriptor &&
-      features12.descriptorIndexing && features12.descriptorBindingVariableDescriptorCount &&
+      features10.shaderSampledImageArrayDynamicIndexing && features12.descriptorIndexing && features12.descriptorBindingVariableDescriptorCount &&
       features12.descriptorBindingPartiallyBound && features12.runtimeDescriptorArray &&
       features12.scalarBlockLayout && featuresDynamicRendering.dynamicRendering &&
       features10.multiDrawIndirect && features10.drawIndirectFirstInstance;
