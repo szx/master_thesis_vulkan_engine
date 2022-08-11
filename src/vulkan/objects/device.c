@@ -313,9 +313,15 @@ bool physical_device_suitable(device *vkd, VkPhysicalDevice physicalDevice, size
   // Favor discrete GPUs.
   switch (deviceProperties.deviceType) {
   case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:
-    *rank += 100;
+    *rank += 10000;
     break;
   case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:
+    *rank += 1000;
+    break;
+  case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU:
+    *rank += 100;
+    break;
+  case VK_PHYSICAL_DEVICE_TYPE_CPU:
     *rank += 10;
     break;
   default:
