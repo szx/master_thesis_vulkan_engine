@@ -18,8 +18,8 @@ qualifier - kwalifikator układu update-after-bind - aktualizacja po dowiązaniu
 dowiązanie deskryptora o zmiennej wielkości render state - stan renderowania unified uniform buffer - ujednolicony bufor
 uniform unified geometry buffer - ujednolicony bufor geometrii GLSL - OpenGL Shading Language swap chain - łańcuch
 wymiany WSI - window system integration framebufer attachment - załącznik bufora ramki front buffer - bufor przedni back
-buffer - bufor tylni presentation engine - silnik prezentacji
-
+buffer - bufor tylni presentation engine - silnik prezentacji in-flight frame - klatka w locie
+ 
 -------------
 
 # Streszczenie
@@ -1355,9 +1355,11 @@ Wszyskie programy używające Vulkan wymagają wcześniejszego stworzenia nastę
 - urządzenia logicznego (VkDevice),
 - kolejek komend (VkQueue).
 
+###### Instancja
+
 Pierwszym krokiem każdego programu chcącego używać Vulkan jest stworzenie instancji Vulkan (VkInstance). Instancja
-pozwala programowi na komunikację z sterownikiem graficznym i musi zostać stworzona przed użyciem jakichkolwiek innych
-funkcji API Vulkan. Podczas tworzenia instancji należy zdefiniować:
+pozwala programowi na inicjalizację i komunikację z biblioteką Vulkan i musi zostać stworzona przed użyciem
+jakichkolwiek innych funkcji API Vulkan. Podczas tworzenia instancji należy zdefiniować:
 
 - podstawowe informacje o aplikacji: nazwa i wersja aplikacji oraz używanego silnika, najwyższa wersja Vulkan używana
   przez aplikację (1.2),
@@ -1367,15 +1369,116 @@ funkcji API Vulkan. Podczas tworzenia instancji należy zdefiniować:
 - włączone warstwy: w trybie debugowania warstwa walidacji i jej używane funkcjonalności,
 - komunikator debugowania dla instancji.
 
+###### Powierzchnia
+
 Po stworzeniu instancji Vulkan program chcący prezentować wyniki renderowania musi stworzyć powierzchnię okna (
 VkSurfaceKHR). Ten krok może być pominięty dla programów używających Vulkan w tzw. trybie *headless* niewyświetlającym
 wyniku renderowania na ekranie. W innym wypadku powierzchnia musi być stworzona przed urządzeniem fizycznym, ponieważ
 jest używana do sprawdzania, czy będzie ono wspierało późniejsze stworzenie łańcucha wymiany. Powierzchnia jest tworzona
 przy użyciu funkcji glfwCreateWindowSurface().
 
-Po stworzeniu instancji Vulkan należy wybrać urządzenie fizyczne (VkPhysicalDevice). Urządzenie fizyczne ...
+###### Urządzenie fizyczne
 
-### Stworzenie powierzchni okna
+Po stworzeniu instancji Vulkan należy wybrać urządzenie fizyczne (VkPhysicalDevice). Urządzenie fizyczne reprezentuje
+pojedyńczą implementację Vulkan - zwykle jedną z kart graficznych lub renderer programowy taki jak llvmpipe.
+
+Lista dostępnych urządzeń fizycznych jest uzyskiwana używając funkcji vkEnumeratePhysicalDevices().
+
+Lista urządzeń fizycznych jest przefiltrowana do listy kandydatów przy użyciu następujących kryteriów:
+
+- wsparcie Vulkan 1.2,
+- wsparcie kolejek graficznych i prezentacji,
+- wsparcie rozszerzeń urządzenia:
+  - VK_KHR_swapchain,
+  - VK_KHR_dynamic_rendering
+  - VK_KHR_shader_non_semantic_info (w trybie debugowania, używane przez debugPrintf)
+- wsparcie powierzchni,
+- wsparcie funkcji urządzenia fizycznego:
+  - Vulkan 1.0 Core:
+    - samplerAnisotropy: filtrowanie anizotropowego podczas próbkowania,
+    - shaderUniformBufferArrayDynamicIndexing: jednolite dynamiczne indeksowanie tablic buforów uniform,
+    - shaderSampledImageArrayDynamicIndexing: jednolite dynamiczne indeksowanie tablic próbkowanych obrazów,
+    - multiDrawIndirect: ...
+    - drawIndirectFirstInstance: ...
+  - Vulkan 1.2 Core:
+    - descriptorIndexing: ...
+    - shaderSampledImageArrayNonUniformIndexing: ...
+    - descriptorBindingVariableDescriptorCount: ...
+    - descriptorBindingPartiallyBound: ...
+    - descriptorBindingPartiallyBound: ...
+    - scalarBlockLayout: ... VK_KHR_dynamic_rendering:
+    - dynamicRendering: ...
+
+Każde urządzenie fizyczne listy kandydatów ma nadawany ranking poprzez oceniane jego typu od najlepszego do najgorszego:
+
+- dyskretne GPU,
+- zintegrowane GPU,
+- wirtualne GPU (oferowane przez środowisko wirtualizacji),
+- CPU (renderer programowy).
+
+Urządzenie fizyczne z najwyższym rankingiem jest ostatecznie wybierane z listy kandydatów.
+
+###### Urządzenie logiczne
+
+Po wybraniu urządzenia fizycznego ...
+
+###### Kolejki komend
+
+...
+
+## objects/device_functions.h
+
+### Funkcje pomocnicze
+
+Funkcja find_memory_type() ...
+
+Funkcja find_supported_format() ...
+
+### Funkcje tworzące obiekty Vulkan
+
+Funkcje create_*() ...
+
+Funkcja create_graphics_pipeline() ...
+
+Funkcje begin_rendering() i end_rendering() ...
+
+### Funkcje używające bufora komend one-shot
+
+Funkcje begin_one_shot_commands() i end_one_shot_commands() ...
+
+Funkcja copy_buffer_to_buffer() ...
+
+Funkcja copy_buffer_to_image() ...
+
+Funkcja generate_mipmaps() ...
+
+Funkcja transition_image_layout() ...
+
+## objects/sync.h
+
+### Obiekt sync
+
+...
+
+### Klatki w locie
+
+... SEE: Simplifying Vulkan initialization and frame composition
+
+## objects/vertex_stream.h
+
+### Obiekt vertex_stream
+
+...
+
+## objects/unified_geometry_buffer.h
+
+### Obiekt unified_geometry_buffer
+
+...
+
+## objects/unified_uniform_buffer.h
+
+### Obiekt unified_uniform_buffer
 
 ...
 
@@ -1389,5 +1492,6 @@ Po stworzeniu instancji Vulkan należy wybrać urządzenie fizyczne (VkPhysicalD
 
 [hierarchia obiektów, diagram, opisy]
 
-[model obiektów vulkan]
+[model obiektów vulkan, creation i enumeration]
 
+[TEST: filtrowanie anizotropowe]
