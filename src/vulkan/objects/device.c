@@ -488,6 +488,8 @@ limits find_limits(device *vkd, VkPhysicalDevice physicalDevice) {
 
   limits limits;
 
+  limits.maxSamplerAnisotropy = deviceProperties.limits.maxSamplerAnisotropy;
+
   limits.maxImageDimension2D = deviceProperties.limits.maxImageDimension2D;
   limits.maxUniformBufferRange = deviceProperties.limits.maxUniformBufferRange;
   limits.maxStorageBufferRange = deviceProperties.limits.maxStorageBufferRange;

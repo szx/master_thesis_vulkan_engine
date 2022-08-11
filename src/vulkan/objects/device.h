@@ -38,6 +38,8 @@ typedef struct swap_chain_info {
 
 typedef struct limits {
   /* Vulkan API limits */
+  float maxSamplerAnisotropy;
+
   uint32_t maxImageDimension2D;
   uint32_t maxUniformBufferRange;
   uint32_t maxStorageBufferRange;
