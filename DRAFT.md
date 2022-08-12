@@ -545,8 +545,9 @@ specyfikowane w shaderach przy użyciu jednego z następujących coraz nowszych 
 
 - std140,
 - std430,
-- scalar. Każdy kolejny standard pozwala na ciaśniejsze upakowanie pól w buforze, co skutkuje mniejszym zużyciem pamięci
-  GPU.
+- scalar.
+
+Każdy kolejny standard pozwala na ciaśniejsze upakowanie pól w buforze, co skutkuje mniejszym zużyciem pamięci GPU.
 
 Funkcje glsl_add zwracają ciągi znaków z definicjami struktur buforów uniform w języku GLSL i są używane podczas
 generacji shaderów, co zostanie opisane później w pracy podczas opisu potoku renderowania.
@@ -1398,16 +1399,17 @@ Lista urządzeń fizycznych jest przefiltrowana do listy kandydatów przy użyci
     - samplerAnisotropy: filtrowanie anizotropowego podczas próbkowania,
     - shaderUniformBufferArrayDynamicIndexing: jednolite dynamiczne indeksowanie tablic buforów uniform,
     - shaderSampledImageArrayDynamicIndexing: jednolite dynamiczne indeksowanie tablic próbkowanych obrazów,
-    - multiDrawIndirect: ...
-    - drawIndirectFirstInstance: ...
+    - multiDrawIndirect: polecenia wielokrotnego rysowania pośredniego,
+    - drawIndirectFirstInstance: polecenia rysowania pośredniego z offsetem indeksu instancji
   - Vulkan 1.2 Core:
-    - descriptorIndexing: ...
-    - shaderSampledImageArrayNonUniformIndexing: ...
-    - descriptorBindingVariableDescriptorCount: ...
-    - descriptorBindingPartiallyBound: ...
-    - descriptorBindingPartiallyBound: ...
-    - scalarBlockLayout: ... VK_KHR_dynamic_rendering:
-    - dynamicRendering: ...
+    - descriptorIndexing: indeksowanie deskryptorów,
+    - shaderSampledImageArrayNonUniformIndexing: niejednolite dynamiczne indeksowanie tablic próbkowanych obrazów,
+    - descriptorBindingVariableDescriptorCount: dowiązania deskryptora o zmiennej wielkości,
+    - descriptorBindingPartiallyBound: częściowe dowiązanie deskryptorów,
+    - runtimeDescriptorArray: tablice deskryptorów czasu wykonania,
+    - scalarBlockLayout: układ pamięci *scalar*,
+  - VK_KHR_dynamic_rendering:
+    - dynamicRendering: dynamiczne przebiegi renderowania.
 
 Każde urządzenie fizyczne listy kandydatów ma nadawany ranking poprzez oceniane jego typu od najlepszego do najgorszego:
 
@@ -1423,8 +1425,8 @@ Urządzenie fizyczne z najwyższym rankingiem jest ostatecznie wybierane z listy
 Po wybraniu urządzenia fizycznego ...
 
 ###### Kolejki komend
-
 ...
+
 
 ## objects/device_functions.h
 
@@ -1433,6 +1435,7 @@ Po wybraniu urządzenia fizycznego ...
 Funkcja find_memory_type() ...
 
 Funkcja find_supported_format() ...
+
 
 ### Funkcje tworzące obiekty Vulkan
 
@@ -1457,7 +1460,6 @@ Funkcja transition_image_layout() ...
 ## objects/sync.h
 
 ### Obiekt sync
-
 ...
 
 ### Klatki w locie
@@ -1467,13 +1469,11 @@ Funkcja transition_image_layout() ...
 ## objects/vertex_stream.h
 
 ### Obiekt vertex_stream
-
 ...
 
 ## objects/unified_geometry_buffer.h
 
 ### Obiekt unified_geometry_buffer
-
 ...
 
 ## objects/unified_uniform_buffer.h
@@ -1484,14 +1484,17 @@ Funkcja transition_image_layout() ...
 
 [...]
 
-[warstwa walidacji]
+MORE: multiDrawIndirect: polecenia wielokrotnego rysowania pośredniego MORE: drawIndirectFirstInstance: polecenia
+rysowania pośredniego z offsetem indeksu instancji MORE: dynamicRendering: dynamiczne przebiegi renderowania
 
-[onscreen vs ofscreen...]
+MORE: warstwa walidacji
 
-[część globalna i część instancji ujednoliconego bufora uniform, dlatczego podział]
+MORE: onscreen vs ofscreen...
 
-[hierarchia obiektów, diagram, opisy]
+MORE: część globalna i część instancji ujednoliconego bufora uniform, dlatczego podział
 
-[model obiektów vulkan, creation i enumeration]
+MORE: hierarchia obiektów, diagram, opisy
 
-[TEST: filtrowanie anizotropowe]
+MORE: model obiektów vulkan, creation i enumeration
+
+TEST: filtrowanie anizotropowe
