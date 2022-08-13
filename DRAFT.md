@@ -13,7 +13,7 @@ fixed-function, buffor, image, texture - sampled image, binding - dowiązanie, b
 dowiązań, update after bind - uaktualnienie po dowiązaniu tiling - kafelkowanie, texel, staging buffer - bufor
 przemieszczenia, MSAA, shader stage - etap cieniowania, shader invocation - wywołanie shadera, draw call - polecenie
 rysowania, texture unit - jednostka teksturujące, device feature - funkcja urządzenia, instance feature - funkcja
-instancji, sampler - próbnik sampled image - próbkowany obraz, frame - klatka, command buffer - bufor komend layout
+instancji, sampler - próbnik sampled image - próbkowany obraz, frame - klatka, command buffer - bufor poleceń layout
 qualifier - kwalifikator układu update-after-bind - aktualizacja po dowiązaniu variable-sized descriptor binding -
 dowiązanie deskryptora o zmiennej wielkości render state - stan renderowania unified uniform buffer - ujednolicony bufor
 uniform unified geometry buffer - ujednolicony bufor geometrii GLSL - OpenGL Shading Language swap chain - łańcuch
@@ -34,6 +34,7 @@ silnika i szczegóły implementacyjne. Wyrenderowano przykładową scenę i zbad
 ...
 
 ## Postawowe definicje
+
 Zrozumienie celu pracy wymaga przybliżenia serii fundamentalnych pojęć związanych z grafiką komputerową.
 
 Silnik graficzny ...
@@ -50,11 +51,14 @@ opartego o renderowanie bazujące na fizyce. W czwartym rozdziale wyrenderowano 
 silnika. Ostatni rozdział zawiera podsumowanie oraz opis przewidywanych kierunków przyszłego rozwoju silnika.
 
 ## Cel i zakres pracy
+
 Celem pracy jest zaprojektowanie i zaimplementowanie silnika graficznego używajągo techniki cieniowania odroczonego.
-Silnik został zaimplementowany jako biblioteka programistyczna przy użyciu języków C i Python oraz biblioteki graficznej Vulkan.
-Celem autora było zapoznanie się z teorią stojącą za elementami składającymi się na silnik graficzny i praktyczne zademonstrowanie zdobytej wiedzy.
+Silnik został zaimplementowany jako biblioteka programistyczna przy użyciu języków C i Python oraz biblioteki graficznej
+Vulkan. Celem autora było zapoznanie się z teorią stojącą za elementami składającymi się na silnik graficzny i
+praktyczne zademonstrowanie zdobytej wiedzy.
 
 Praca ma formę przeglądową i jej zakres obejmuje:
+
 - opis algorytmów i technik graficznych używanych w nowoczesnych silnikach graficznych,
 - porównanie renderowania odroczonego z tradycyjnym renderowaniem wprzód,
 - omówienie architektury i implementacji projektu,
@@ -70,70 +74,77 @@ Silnik graficzny składa się z [założenia kierujące projektem i implementacj
 
 ## Przegląd
 
-
 # 2. Podstawy teoretyczne
+
 ...
 
-
-
-
 # 3. Implementacja
+
 Ten rozdział przedstawia szczegóły implementacji poszczególnych elementów silnika.
 
 ## Założenia
 
 Implementacji przyświacały następujące:
-Niskopoziomowość.
-...
-
+Niskopoziomowość. ...
 
 ## Struktura plików
 
 Wszystkie pliki silnika znajduje się w jednym katalogu głównym.
 
 Katalog główny jest podzielony na mniejsze podkatalogi:
+
 - *assets*: zawierający pliki wejściowe potoku zasobów,
 - *src*: kod źródłowy silnika dla języka C,
 - *scripts*: kod źródłowy silnika dla języka Python,
 - *thirdparty*: kod źródłowy bibliotek zewnętrznych.
 
 Proces budowania stwarza dodatkowe podkatalogi tymczasowe:
+
 - *venv*: środowisko wirtualne interpretera języka Python,
 - *cmake-build-debug* & *cmake-build-release*: katalogi budowania
 
-
 ## Użyte narzędzia
 
-Silnik została napisany jako biblioteka w języku C w standardzie C11. Budowanie biblioteki ze źródeł wymaga generacji dodatkowego kodu przy pomocy skryptów w języku Python w wersji 3.9.7.
+Silnik została napisany jako biblioteka w języku C w standardzie C11. Budowanie biblioteki ze źródeł wymaga generacji
+dodatkowego kodu przy pomocy skryptów w języku Python w wersji 3.9.7.
 
-Silnik został opracowany na maszynie z systemem Linux i wspiera systemy Linux i Windows.
-Projekt został w całości napisany przy użyciu środowiska programistycznego *CLion 2021.2.3*.
+Silnik został opracowany na maszynie z systemem Linux i wspiera systemy Linux i Windows. Projekt został w całości
+napisany przy użyciu środowiska programistycznego *CLion 2021.2.3*.
 
 Podczas pracy stosowano rozproszony system kontroli wersji *git*. Repozytorium jest utrzymywane na serwisie *GitHub*.
 
-Pliki *.clang-tidy* i *.clang-format* znajdujące się w strukturze plików projektu pozwalają na automatyczne formatowanie kodu źródłowego zgodnie ze uprzednio zdefiniowanym standardem kodowania.
+Pliki *.clang-tidy* i *.clang-format* znajdujące się w strukturze plików projektu pozwalają na automatyczne formatowanie
+kodu źródłowego zgodnie ze uprzednio zdefiniowanym standardem kodowania.
 
-Proces budowania projektu jest zautomatyzowany przy użyciu narzędzia CMake, które w przypadku języków C i C++ jest praktycznie standardem podczas rozwoju wieloplatformowych projektów.
-
+Proces budowania projektu jest zautomatyzowany przy użyciu narzędzia CMake, które w przypadku języków C i C++ jest
+praktycznie standardem podczas rozwoju wieloplatformowych projektów.
 
 ### Proces budowania
 
 Proces budowania silnika jest zdefiniowany w pliku *CMakeLists.txt* znajdującym się w katalogu głównym projektu.
 
-Kompilacja kodu źródłowego w języku C jest obsługiwana bezpośrednio przez CMake, które generuje standardowe pliki kompilacji (pliki Makefile w systemie Unix, projekty Microsoft Visual C++ w systemie Windows). Użyto prekompilowanych nagłówków do przyśpieszenia kompilacji bibliotek zewnętrznych.
+Kompilacja kodu źródłowego w języku C jest obsługiwana bezpośrednio przez CMake, które generuje standardowe pliki
+kompilacji (pliki Makefile w systemie Unix, projekty Microsoft Visual C++ w systemie Windows). Użyto prekompilowanych
+nagłówków do przyśpieszenia kompilacji bibliotek zewnętrznych.
 
-Skrypty w języku Python są obsługiwane pośrednio przez CMake, które wykrywa zainstalowany interpreter języka Python i używa go do stworzenia tzw. środowiska wirtualnego w tymczasowym katalogu venv/ w głównym katalogu projektu.
-Podczas procesu budowania środowisko wirtualne jest używane do zainstalowania wymaganych zewnętrznych bibliotek w języku Python i wykonywania skryptów generatora kodu.
-Zaletą użycia środowiska wirtualnego w porównaniu do bezpośredniego wywoływania zainstalowanego interpretera Pythona jest izolacja zarządzania zależnościami od reszty systemu operacyjnego, co pozwala na łatwiejszą powtarzalność podczas debugowania. [PEP]
+Skrypty w języku Python są obsługiwane pośrednio przez CMake, które wykrywa zainstalowany interpreter języka Python i
+używa go do stworzenia tzw. środowiska wirtualnego w tymczasowym katalogu venv/ w głównym katalogu projektu. Podczas
+procesu budowania środowisko wirtualne jest używane do zainstalowania wymaganych zewnętrznych bibliotek w języku Python
+i wykonywania skryptów generatora kodu. Zaletą użycia środowiska wirtualnego w porównaniu do bezpośredniego wywoływania
+zainstalowanego interpretera Pythona jest izolacja zarządzania zależnościami od reszty systemu operacyjnego, co pozwala
+na łatwiejszą powtarzalność podczas debugowania. [PEP]
 
-CMake organizuje proces budowania jako graf, w którym wierzchołki to cele połączonych ze sobą zależnościami. Budowa celu wymaga wcześniejszego zbudowania wszystkich innych celów od których zależy budowany cel.
+CMake organizuje proces budowania jako graf, w którym wierzchołki to cele połączonych ze sobą zależnościami. Budowa celu
+wymaga wcześniejszego zbudowania wszystkich innych celów od których zależy budowany cel.
 
 Wyróżniane są trzy rodzaje celów:
+
 - plik wykonywalny
 - biblioteka
 - cel niestandardowy
 
 Poniższy diagram przedstawia proces budowania projektu w formie celów i ich zależności:
+
 ```mermaid
 graph TD;
     subgraph "cele niestandardowe"
@@ -160,19 +171,23 @@ graph TD;
 
 **engine** Cel odpowiedzialny za zbudowanie biblioteki programistycznej z implementacją silnika.
 
-**main** Cel odpowiedzialny za zbudowanie pliku wykonywalnego o nazwie *main* demonstrującego użycie silnika poprzez wyrenderowanie przykładową scenę.
+**main** Cel odpowiedzialny za zbudowanie pliku wykonywalnego o nazwie *main* demonstrującego użycie silnika poprzez
+wyrenderowanie przykładową scenę.
 
 **test** Cel odpowiedzialny za zbudowanie pliku wykonywalnego o nazwie *test*  wykonującego testy integracyjne.
 
-**asset_pipeline** Cel odpowiedzialny za zbudowanie pliku wykonywalnego o nazwie *asset_pipeline* będącego narzędziem wiersza poleceń implementującym operacje potoku zasobów.
+**asset_pipeline** Cel odpowiedzialny za zbudowanie pliku wykonywalnego o nazwie *asset_pipeline* będącego narzędziem
+wiersza poleceń implementującym operacje potoku zasobów.
 
 **copy_assets** Niestandardowy cel odpowiedzialny za skopiowanie podkatalogu *assets* do katalogu budowania.
 
-**run_asset_pipeline** Niestandardowy cel odpowiedzialny uruchomienie skryptu Python realizującego potok zasobów poprzez wielokrotne użycie wcześniej zbudowanego narzędzia *asset_pipeline*.
+**run_asset_pipeline** Niestandardowy cel odpowiedzialny uruchomienie skryptu Python realizującego potok zasobów poprzez
+wielokrotne użycie wcześniej zbudowanego narzędzia *asset_pipeline*.
 
 ...
 
 ### Biblioteki zewnętrzne
+
 Silnik następujących zewnętrznych bibliotek programistycznych:
 
 - *Vulkan SDK 1.3.211.0*: pliki nagłówkowe dla Vulkan, kompilacja shaderów z kodu źródłowego GLSL do kodu bajtowego
@@ -188,18 +203,21 @@ Silnik następujących zewnętrznych bibliotek programistycznych:
 - biblioteka standardowa Python,
 - *libclang 12.0.0*: analizowanie kodu C w Python,
 
-Dodatkowo biblioteka zbudowana w konfiguracji *Debug* statycznie linkuje biblioteki ASan (AddressSanitizer) i UBSan (UndefinedBehaviorSanitizer) wykrywające szeroką klasę błędów dotyczących niewłaściwego użycia pamięci i niezdefiniowanych zachowań. Błędy te w języku C są nieoczywiste i trudne do wykrycia przez programistę.
-Podczas rozwoju projektu ASan wielokrotnie pozwolił na wykrycie i naprawienie następujących rodzajów błędów:
+Dodatkowo biblioteka zbudowana w konfiguracji *Debug* statycznie linkuje biblioteki ASan (AddressSanitizer) i UBSan (
+UndefinedBehaviorSanitizer) wykrywające szeroką klasę błędów dotyczących niewłaściwego użycia pamięci i
+niezdefiniowanych zachowań. Błędy te w języku C są nieoczywiste i trudne do wykrycia przez programistę. Podczas rozwoju
+projektu ASan wielokrotnie pozwolił na wykrycie i naprawienie następujących rodzajów błędów:
+
 - wycieki pamięci,
 - dereferencje zwisających wskaźników,
 - dereferencja wskaźników NULL,
 - dereferencja źle wyrównanych wskaźników,
 - odczyt i zapis poza granicami tablicy.
 
-
 ## Architektura
 
 Silnik składa się z siedmiu modułów. Moduły:
+
 - generator kodu:  ...
 - rdzeń: funkcje pomocnicze: ...
 - zasoby: wczytywanie i zapisywanie danych sceny i konfiguracji globalnej
@@ -210,11 +228,12 @@ Silnik składa się z siedmiu modułów. Moduły:
 
 Każdemu modułowi zostanie poświęcony osobny podrozdział.
 
-
 ## Generator kodu
+
 ...
 
 ## Rdzeń
+
 ...
 
 ## Dane
@@ -279,44 +298,39 @@ Na potrzeby projektu wyróżniono następujące rodzaje zasobów:
 
 Wymienione powyżej rodzaje zasobów są opisane w następnych podrozdziałach.
 
-*Konfiguracja globalna* Plik ...
-...
-
+*Konfiguracja globalna* Plik ... ...
 
 ## Scena
-Moduł sceny jest odpowiedzialny za wygenerowanie ze sceny listy obiektów renderowania.
-Struktury:
-Scene data...
-Scene graph...
-Scene tree...
-Render cache...
-Render cache list...
+
+Moduł sceny jest odpowiedzialny za wygenerowanie ze sceny listy obiektów renderowania. Struktury:
+Scene data... Scene graph... Scene tree... Render cache... Render cache list...
 
 ...
 
 ## Potok graficzny
-Moduł potoku graficznego udostępnia zbiór obiektów pozwalających na użycie bilioteki graficznej Vulkan za pośrednictwem wygodniejszej dla programisty abstrakcji.
-...
+
+Moduł potoku graficznego udostępnia zbiór obiektów pozwalających na użycie bilioteki graficznej Vulkan za pośrednictwem
+wygodniejszej dla programisty abstrakcji. ...
 
 ## Przebieg renderowania
-Moduł przebiegu renderowania jest odpowiedzialny za wyrenderowanie całości bądź części listy renderującej.
-Przebieg renderowania nagrywa komendy do podanego bufora komend.
+
+Moduł przebiegu renderowania jest odpowiedzialny za wyrenderowanie całości bądź części listy renderującej. Przebieg
+renderowania nagrywa polecenia do podanego bufora poleceń.
 [DIAGRAM]
 
 ...
 
 ## Graf renderowania
-Moduł grafu renderowania jest odpowiedzialny za stworzenie przebiegów renderowania na podstawie wysokopoziomowego deklaratywne opisu renderowania dostarczonego przez programistę.
-...
 
+Moduł grafu renderowania jest odpowiedzialny za stworzenie przebiegów renderowania na podstawie wysokopoziomowego
+deklaratywne opisu renderowania dostarczonego przez programistę. ...
 
 # 4. Badania
+
 ...
 
-
-
-
 # 5. Podsumowanie
+
 ...
 
 # Bibliografia
@@ -340,7 +354,7 @@ błędu przez warstwy walidacji, co upraszcza proces debugownia.
 [OBRAZEK]
 
 Rozszerzenie VK_EXT_debug_utils pozwala na dodawanie nazw do obiektów Vulkan oraz etykiet do regionów kolejek i buforów
-komend. Nazwy i etykiety są używane w wiadomościach debugujących i pokazywane przez zewnętrzne narzędzia do debugowania
+poleceń. Nazwy i etykiety są używane w wiadomościach debugujących i pokazywane przez zewnętrzne narzędzia do debugowania
 grafiki, co upraszcza proces debugowania.
 [OBRAZER RENDERDOC]
 
@@ -464,7 +478,7 @@ Wyróżniowo cztery rodzaje elementów:
 
 ------
 /src/assets/primitive.h Zasób primitywu graficznego. Reprezentuje część siatku obiektu. Primityw składa się z dwóch
-elementów: geometrii oraz materiału. Jeden prymityw zawiera wszystkie dane wymagane do wygenerowania jednej komendy
+elementów: geometrii oraz materiału. Jeden prymityw zawiera wszystkie dane wymagane do wygenerowania jednego polecenia
 rysowania. Geometria prymitywu składa się z:
 
 - rodzaju topologii,
@@ -678,13 +692,13 @@ został uznany za zbyt duży, i dlatego jest poza zakresem tej pracy. Z tego pow
 jako cele renderowania, , CPU nie używa obrazów używanych przez GPU do renderowania, dlatego też pamięć wszystkich
 rodzajów obrazów jest pamięcią DEVICE_LOCAL, co powinno skutkować najszybszym dostępem do obrazów przez GPU. Kopiowanie
 danych z CPU do GPU jest ważną operacją pozwalającą na wstępne wypełnienie obrazów danymi załadowanymi z bazy zasobów.
-Silnik używa bufora przenoszenia i serii funkcji vkCmdCopyBufferToImage w buforze komend one-shot do skopiowania każdej
+Silnik używa bufora przenoszenia i serii funkcji vkCmdCopyBufferToImage w buforze poleceń one-shot do skopiowania każdej
 warstwy obrazu z CPU do GPU.
 [LISTING]
 W przypadku obrazów używanych do mapowania tekstur po skopiowaniu danych do mipmapy poziomu 0 silnik generuje resztę
 poziomów mipmap używając serii funkcji vkCmdBlitImage. Użycie tej funkcji wymaga obrazu w formacie wspierającym
 filtrowanie liniowe. Dodatkowo ta funkcja może być wykonywana używając tylko kolejki graficznej, dlatego też bufory
-komend one-shot nie mogą być wykonywane używając tylko kolejki transferowej, mimo możliwej większej wydajności.
+poleceń one-shot nie mogą być wykonywane używając tylko kolejki transferowej, mimo możliwej większej wydajności.
 [LISTING mipmap]
 Format obrazu jest wybierany przy pomocy algorytmu opisanego w poniższym listingu. Algorytm generuje listę formatów
 spełniających wymagania specyfikowane przez rodzaj obrazu i liczbą kanałów równą lub większą od liczby kanałów używanej
@@ -711,12 +725,12 @@ DEVICE_LOCAL bufor pośredniego renderowania / TRANSFER_DST | INDIRECT_BUFFER / 
 uniform / UNIFORM_BUFFER / HOST_VISIBLE | HOST_COHERENT
 
 Kopiowanie danych z CPU do bufora w GPU jest ważną operacją wykonywaną na początku każdej ramki mającą na celu
-wypełnienie pamięci GPU danymi używanymi przez komendy renderowania. Może się ono odbyć na dwa sposoby w zależności od
+wypełnienie pamięci GPU danymi używanymi przez polecenia renderowania. Może się ono odbyć na dwa sposoby w zależności od
 użytych flag właściwości pamięci. Dla pamięci HOST_VISIBLE silnik używa funkcji vkMapMemory() do uzyskania wskaźnika do
 regionu pamięci i bezpośredniego skopiowania pamięci przy użyciu CPU.
 [LISTING vkMapMemory]
 Dla innych rodzajów pamięci, które nie mogą być bezpośrednio zapisywane przez CPU (w tym DEVICE_LOCAL) silnik używa
-bufora przenoszenia i funkcji vkCmdCopyBuffer() w bufore komend one-shot.
+bufora przenoszenia i funkcji vkCmdCopyBuffer() w bufore poleceń one-shot.
 [LISTING staging]
 
 ---
@@ -772,11 +786,11 @@ vkUpdateDescriptorSets(). Jej wejściem jest tablica struktur VkWriteDescriptorS
 sposób aktualizacji zawartości pojedyńczego deskryptora w wybranym dowiązaniu deskryptora przy użyciu wybranego zasobu.
 
 Aktualizacja zbioru deskryptorów odbywa się na CPU natychmiastowo po wywołaniu vkUpdateDescriptorSets() i jest możliwa
-tylko zanim zbiór deskryptorów zostanie użyty przez jakąkolwiek komendę w nagrywanym lub wykonywanym buforze komend.
+tylko zanim zbiór deskryptorów zostanie użyty przez jakiekolwiek polecenie w nagrywanym lub wykonywanym buforze poleceń.
 Jednym z wyjątków jest aktualizacja zbiorów deskryptorów zaalokowanych z puli deskryptorów wspierającej funkcjonalność *
 uaktualnienia deskryptorów po dowiązaniu*.
 
-Przed użyciem zasobów opisanych zbiorem deskryptorów przez komendy rysowania wymagane jest dowiązania ich do bufora
+Przed użyciem zasobów opisanych zbiorem deskryptorów przez polecenia rysowania wymagane jest dowiązania ich do bufora
 poleceń przy użyciu komeny vkCmdBindDescriptorSets(). Jednym z jej wejść jest numer zbioru, który wraz z numerami
 dowiązań służy do identyfikacji zasobu w shaderach.
 
@@ -877,9 +891,9 @@ należących do Vulkan Core 1.2:
 Podczas używania tej funkcjonalności należy zapewnić odpowiednią synchronizację - aktualizowane deskryptory nie mogą być
 używane przez potok graficzny w momencie aktualizacji.
 
-Użycie tej funkcjonalności wprowadza nowe limity maxPerStage* określające maksymalną liczbę zasobów które mogą być
-dostępne dla pojedyńczego etapu cieniowania w potoku graficznym. Rozszerzenie gwarantuje, że nowe limity są takie same
-lub znacznie większe od starych limitów. Przykładowo na maszynie testowej limity maxPerStageDescriptorSampledImages i
+Użycie tej funkcjonalności wprowadza nowe limity maxPerStageUpdateAfterBind* i maxDescriptorSetUpdateAfterBind*
+zastępujące stare limity maxPerStage* i maxDescriptorSet*. Rozszerzenie gwarantuje, że nowe limity są takie same lub
+znacznie większe od starych limitów. Przykładowo na maszynie testowej limity maxPerStageDescriptorSampledImages i
 maxDescriptorSetUpdateAfterBindSampledImages to kolejno 65535 i 1048576.
 
 #### Dowiązanie deskryptora o zmiennej wielkości
@@ -1312,9 +1326,10 @@ W silniku składa się z następujących elementów:
 - urządzenie logiczne,
 - kolejka grafiki,
 - kolejka prezentacji,
+- wskaźniki funkcji rozszerzeń,
 - informacje o utworzonym łańcuchu wymiany,
 - limity,
-- bufor komend one-shot
+- bufor poleceń one-shot
 - obiekt input.
 
 #### Stworzenie okna
@@ -1354,19 +1369,21 @@ Wszyskie programy używające Vulkan wymagają wcześniejszego stworzenia nastę
 - powierzchni okna (VkSurface),
 - urządzenia fizycznego (VkPhysicalDevice),
 - urządzenia logicznego (VkDevice),
-- kolejek komend (VkQueue).
+- kolejek (VkQueue).
 
 ###### Instancja
 
-Pierwszym krokiem każdego programu chcącego używać Vulkan jest stworzenie instancji Vulkan (VkInstance). Instancja
-pozwala programowi na inicjalizację i komunikację z biblioteką Vulkan i musi zostać stworzona przed użyciem
-jakichkolwiek innych funkcji API Vulkan. Podczas tworzenia instancji należy zdefiniować:
+Pierwszym krokiem każdego programu chcącego używać Vulkan jest stworzenie instancji Vulkan. Instancja pozwala programowi
+na inicjalizację i komunikację z biblioteką Vulkan i musi zostać stworzona przed użyciem jakichkolwiek innych funkcji
+API Vulkan. Podczas tworzenia instancji należy zdefiniować:
 
 - podstawowe informacje o aplikacji: nazwa i wersja aplikacji oraz używanego silnika, najwyższa wersja Vulkan używana
   przez aplikację (1.2),
-- włączone rozszerzenia instancji: VK_KHR_surface i dodatkowe rozszerzenia zwrócone przez funkcję
-  glfwGetRequiredInstanceExtensions() używane do stworzenia powierzchni okna, w trybie debugowania VK_EXT_debug_utils
-  używane przez obiekt debug.
+- włączone rozszerzenia instancji:
+  - VK_KHR_get_physical_device_properties2,
+  - dodatkowe rozszerzenia zwrócone przez funkcję glfwGetRequiredInstanceExtensions() używane do stworzenia powierzchni
+    okna (VK_KHR_surface i dodatkowe rozszerzenie zależące od systemu)
+  - w trybie debugowania VK_EXT_debug_utils używane przez obiekt debug.
 - włączone warstwy: w trybie debugowania warstwa walidacji i jej używane funkcjonalności,
 - komunikator debugowania dla instancji.
 
@@ -1380,21 +1397,21 @@ przy użyciu funkcji glfwCreateWindowSurface().
 
 ###### Urządzenie fizyczne
 
-Po stworzeniu instancji Vulkan należy wybrać urządzenie fizyczne (VkPhysicalDevice). Urządzenie fizyczne reprezentuje
-pojedyńczą implementację Vulkan - zwykle jedną z kart graficznych lub renderer programowy taki jak llvmpipe.
+Po stworzeniu instancji Vulkan należy wybrać urządzenie fizyczne. Urządzenie fizyczne reprezentuje pojedyńczą
+implementację Vulkan - zwykle jedną z kart graficznych lub renderer programowy taki jak llvmpipe.
 
 Lista dostępnych urządzeń fizycznych jest uzyskiwana używając funkcji vkEnumeratePhysicalDevices().
 
-Lista urządzeń fizycznych jest przefiltrowana do listy kandydatów przy użyciu następujących kryteriów:
+Lista urządzeń fizycznych jest przefiltrowana do listy kandydatów przy użyciu następujących kryteriów wsparcia:
 
-- wsparcie Vulkan 1.2,
-- wsparcie kolejek graficznych i prezentacji,
-- wsparcie rozszerzeń urządzenia:
+- wersja Vulkan: Vulkan 1.2,
+- dostępne rodziny kolejek: graficzne i prezentacji,
+- rozszerzenia urządzenia:
   - VK_KHR_swapchain,
   - VK_KHR_dynamic_rendering
   - VK_KHR_shader_non_semantic_info (w trybie debugowania, używane przez debugPrintf)
-- wsparcie powierzchni,
-- wsparcie funkcji urządzenia fizycznego:
+- wcześniej utworzonej powierzchni,
+- funkcji urządzenia fizycznego:
   - Vulkan 1.0 Core:
     - samplerAnisotropy: filtrowanie anizotropowego podczas próbkowania,
     - shaderUniformBufferArrayDynamicIndexing: jednolite dynamiczne indeksowanie tablic buforów uniform,
@@ -1420,13 +1437,59 @@ Każde urządzenie fizyczne listy kandydatów ma nadawany ranking poprzez ocenia
 
 Urządzenie fizyczne z najwyższym rankingiem jest ostatecznie wybierane z listy kandydatów.
 
+Każde urządzenie fizyczne posiada limity - wartości określające jego właściwości, które muszą być przestrzegane przez
+program podczas jego użytkowania. Po wybraniu urządzenia fizycznego zapamiętywane są następujące limity używane w
+dalszych częściach silnika:
+
+- obrazy i próbkowanie:
+  - maxSamplerAnisotropy: maksymalny stopień filtrowania anizotropowego,
+  - maxImageDimension2D: najwyższa obsługiwana wysokość lub szerokość obrazu 2D,
+- aktualizacja deskryptorów:
+  - maxUniformBufferRange: maksymalna wielkość bloku pamięci, którą można użyć do aktualizacji deskryptora bufora
+    uniform,
+  - minUniformBufferOffsetAlignment: minimalne wyrównanie offsetu bloku pamięci, które można użyć do aktualizacji
+    deskryptora bufora uniform,
+- tworzenie deskryptorów:
+  - maxDescriptorSetUpdateAfterBindUniformBuffers: maksymalna liczba buforów uniform w układzie potoku,
+  - maxDescriptorSetUpdateAfterBindSampledImages: maksymalna liczba próbkowanych obrazów w układzie potoku
+  - maxPerStageUpdateAfterBindResources: maksymalna liczba zasobów które mogą być dostępne dla pojedyńczego etapu
+    cieniowania w potoku graficznym,
+- rysowanie pośrednie:
+  - maxDrawIndirectCount: maksymalna liczba poleceń rysowania które mogą być wykonane przez jedno polecenie rysowania
+    pośredniego.
+
 ###### Urządzenie logiczne
 
-Po wybraniu urządzenia fizycznego ...
+Po wybraniu urządzenia fizycznego należy użyć go do stworzenia urządzenia logiczne. Urządzenie logiczne reprezentuje
+sterownik graficzny urządzenia fizycznego i jest używane przez większość funkcji i poleceń Vulkan. Podczas tworzenia
+urządzenia logicznego oprócz urządzenia fizycznego należy dodatkowo zdefiniować używane:
 
-###### Kolejki komend
+- kolejki: albo po jednej kolejce graficznej i prezentacji, albo jedna kolejka "uniwersalna" wspierająca obie rodziny
+  poleceń,
+- funkcje urządzenia fizycznego: te same jak te, których wsparcie było sprawdzane podczas wybierania urządzenia
+  fizycznego,
+- rozszerzenia urządzenia: jw.,
+- warstwy walidacji.
+
+###### Kolejki
+
+Podczas tworzenia urządzeniem logicznego sterownik graficzny automatycznie tworzony żądane kolejki.
+
+Kolejki są używane do wykonywania na urządzeniu fizycznych poleceń zawartych w buforach poleceń wysłanych do kolejki.
+
+Uchwyt do kolejki jest uzyskiwany używając funkcji vkGetDeviceQueue().
+
+##### Wskaźniki funkcji rozszerzeń
+
 ...
 
+#### bufor poleceń one-shot
+
+...
+
+#### obiekt input.
+
+...
 
 ## objects/device_functions.h
 
@@ -1436,7 +1499,6 @@ Funkcja find_memory_type() ...
 
 Funkcja find_supported_format() ...
 
-
 ### Funkcje tworzące obiekty Vulkan
 
 Funkcje create_*() ...
@@ -1445,7 +1507,7 @@ Funkcja create_graphics_pipeline() ...
 
 Funkcje begin_rendering() i end_rendering() ...
 
-### Funkcje używające bufora komend one-shot
+### Funkcje używające bufora poleceń one-shot
 
 Funkcje begin_one_shot_commands() i end_one_shot_commands() ...
 
@@ -1460,6 +1522,7 @@ Funkcja transition_image_layout() ...
 ## objects/sync.h
 
 ### Obiekt sync
+
 ...
 
 ### Klatki w locie
@@ -1469,11 +1532,13 @@ Funkcja transition_image_layout() ...
 ## objects/vertex_stream.h
 
 ### Obiekt vertex_stream
+
 ...
 
 ## objects/unified_geometry_buffer.h
 
 ### Obiekt unified_geometry_buffer
+
 ...
 
 ## objects/unified_uniform_buffer.h
@@ -1487,7 +1552,7 @@ Funkcja transition_image_layout() ...
 MORE: multiDrawIndirect: polecenia wielokrotnego rysowania pośredniego MORE: drawIndirectFirstInstance: polecenia
 rysowania pośredniego z offsetem indeksu instancji MORE: dynamicRendering: dynamiczne przebiegi renderowania
 
-MORE: warstwa walidacji
+MORE: warstwy walidacji
 
 MORE: onscreen vs ofscreen...
 
