@@ -501,9 +501,8 @@ limits find_limits(device *vkd, VkPhysicalDevice physicalDevice) {
   limits.maxPerStageBindlessResources =
       descriptorIndexingProperties.maxPerStageUpdateAfterBindResources;
 
-  limits.maxDrawIndirectCount = deviceProperties.limits.maxDrawIndirectCount;
   limits.maxDrawIndirectCommands =
-      MIN(limits.maxDrawIndirectCount, MAX_INDIRECT_DRAW_COMMAND_COUNT);
+      MIN(deviceProperties.limits.maxDrawIndirectCount, MAX_INDIRECT_DRAW_COMMAND_COUNT);
 
   return limits;
 }

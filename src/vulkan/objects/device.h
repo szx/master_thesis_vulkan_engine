@@ -48,7 +48,6 @@ typedef struct limits {
   uint32_t maxPerStageBindlessDescriptorSampledImages;
   uint32_t maxPerStageBindlessResources;
 
-  size_t maxDrawIndirectCount;
   size_t maxDrawIndirectCommands;
 } limits;
 
