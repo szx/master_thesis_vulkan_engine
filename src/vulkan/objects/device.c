@@ -20,6 +20,8 @@ void pick_physical_device(device *vkd);
 queue_families find_queue_families(device *vkd, VkPhysicalDevice physicalDevice);
 limits find_limits(device *vkd, VkPhysicalDevice physicalDevice);
 void create_logical_device(device *vkd);
+void get_queues(device *vkd);
+void get_function_pointers(device *vkd);
 
 void create_one_shot_command_pool(device *vkd);
 
@@ -67,6 +69,8 @@ device *device_create(data_config *config, data_asset_db *assetDb) {
   create_surface(vkd);
   pick_physical_device(vkd);
   create_logical_device(vkd);
+  get_queues(vkd);
+  get_function_pointers(vkd);
   create_one_shot_command_pool(vkd);
   vkd->input = input_default();
   return vkd;
@@ -381,7 +385,8 @@ bool physical_device_suitable(device *vkd, VkPhysicalDevice physicalDevice, size
   log_info("drawIndirectFirstInstance = %d", features10.drawIndirectFirstInstance);
   bool featuresSupported =
       features10.samplerAnisotropy && features10.shaderUniformBufferArrayDynamicIndexing &&
-      features10.shaderSampledImageArrayDynamicIndexing && features12.descriptorIndexing && features12.descriptorBindingVariableDescriptorCount &&
+      features10.shaderSampledImageArrayDynamicIndexing && features12.descriptorIndexing &&
+      features12.descriptorBindingVariableDescriptorCount &&
       features12.descriptorBindingPartiallyBound && features12.runtimeDescriptorArray &&
       features12.scalarBlockLayout && featuresDynamicRendering.dynamicRendering &&
       features10.multiDrawIndirect && features10.drawIndirectFirstInstance;
@@ -487,17 +492,12 @@ limits find_limits(device *vkd, VkPhysicalDevice physicalDevice) {
 
   limits.maxImageDimension2D = deviceProperties.limits.maxImageDimension2D;
   limits.maxUniformBufferRange = deviceProperties.limits.maxUniformBufferRange;
-  limits.maxStorageBufferRange = deviceProperties.limits.maxStorageBufferRange;
   limits.minUniformBufferOffsetAlignment = deviceProperties.limits.minUniformBufferOffsetAlignment;
 
   limits.maxPerStageDescriptorUniformBuffers =
       deviceProperties.limits.maxPerStageDescriptorUniformBuffers;
   limits.maxPerStageBindlessDescriptorUniformBuffers =
       descriptorIndexingProperties.maxDescriptorSetUpdateAfterBindUniformBuffers;
-  limits.maxPerStageDescriptorStorageBuffers =
-      deviceProperties.limits.maxPerStageDescriptorStorageBuffers;
-  limits.maxPerStageBindlessDescriptorStorageBuffers =
-      descriptorIndexingProperties.maxDescriptorSetUpdateAfterBindStorageBuffers;
   limits.maxPerStageDescriptorSampledImages =
       deviceProperties.limits.maxPerStageDescriptorSampledImages;
   limits.maxPerStageBindlessDescriptorSampledImages =
@@ -506,12 +506,6 @@ limits find_limits(device *vkd, VkPhysicalDevice physicalDevice) {
   limits.maxPerStageResources = deviceProperties.limits.maxPerStageResources;
   limits.maxPerStageBindlessResources =
       descriptorIndexingProperties.maxPerStageUpdateAfterBindResources;
-
-  limits.maxBoundDescriptorSets = deviceProperties.limits.maxBoundDescriptorSets;
-  limits.maxVertexInputAttributes = deviceProperties.limits.maxVertexInputAttributes;
-  limits.maxVertexOutputComponents = deviceProperties.limits.maxVertexOutputComponents;
-  limits.maxVertexInputBindings = deviceProperties.limits.maxVertexInputBindings;
-  limits.maxVertexInputBindingStride = deviceProperties.limits.maxVertexInputBindingStride;
 
   limits.maxDrawIndirectCount = deviceProperties.limits.maxDrawIndirectCount;
   limits.maxDrawIndirectCommands =
@@ -600,10 +594,14 @@ void create_logical_device(device *vkd) {
 
   verify(vkCreateDevice(vkd->physicalDevice, &createInfo, vka, &vkd->device) == VK_SUCCESS);
   free(queueCreateInfos);
+}
 
+void get_queues(device *vkd) {
   vkGetDeviceQueue(vkd->device, vkd->queueFamilies.graphicsFamily, 0, &vkd->graphicsQueue);
   vkGetDeviceQueue(vkd->device, vkd->queueFamilies.presentFamily, 0, &vkd->presentQueue);
+}
 
+void get_function_pointers(device *vkd) {
   vkd->cmdBeginRendering =
       (PFN_vkCmdBeginRenderingKHR)vkGetInstanceProcAddr(vkd->instance, "vkCmdBeginRenderingKHR");
   vkd->cmdEndRendering =

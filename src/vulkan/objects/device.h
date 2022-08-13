@@ -42,24 +42,16 @@ typedef struct limits {
 
   uint32_t maxImageDimension2D;
   uint32_t maxUniformBufferRange;
-  uint32_t maxStorageBufferRange;
   uint32_t minUniformBufferOffsetAlignment;
 
   uint32_t maxPerStageDescriptorUniformBuffers;
   uint32_t maxPerStageBindlessDescriptorUniformBuffers;
-  uint32_t maxPerStageDescriptorStorageBuffers;
-  uint32_t maxPerStageBindlessDescriptorStorageBuffers;
   uint32_t maxPerStageDescriptorSampledImages;
   uint32_t maxPerStageBindlessDescriptorSampledImages;
 
   uint32_t maxPerStageResources;
   uint32_t maxPerStageBindlessResources;
 
-  uint32_t maxBoundDescriptorSets;
-  uint32_t maxVertexInputAttributes;
-  uint32_t maxVertexOutputComponents;
-  uint32_t maxVertexInputBindings;
-  uint32_t maxVertexInputBindingStride;
 
   size_t maxDrawIndirectCount;
   size_t maxDrawIndirectCommands;

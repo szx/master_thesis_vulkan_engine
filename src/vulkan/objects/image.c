@@ -2,6 +2,9 @@
 
 image *image_create(device *vkd, image_type type, uint32_t width, uint32_t height,
                     uint32_t channels, const char *debugName) {
+  verify(width <= vkd->limits.maxImageDimension2D);
+  verify(height <= vkd->limits.maxImageDimension2D);
+
   image *image = core_alloc(sizeof(struct image));
 
   image->vkd = vkd;
