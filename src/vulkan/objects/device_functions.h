@@ -47,7 +47,7 @@ VkShaderModule create_shader_module(device *vkd, const uint32_t *code, size_t si
 
 VkDescriptorPool create_descriptor_pool(device *vkd, size_t totalUniformBufferCount,
                                         size_t totalCombinedImageSamplerCount,
-                                        size_t maxAllocatedDescriptorSetsCount, bool bindless,
+                                        size_t maxAllocatedDescriptorSetsCount,
                                         const char *debugFormat, ...);
 
 VkPipelineLayout create_pipeline_layout(device *vkd, VkPipelineLayoutCreateFlags flags,

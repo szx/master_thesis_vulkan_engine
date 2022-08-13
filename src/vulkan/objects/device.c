@@ -494,16 +494,10 @@ limits find_limits(device *vkd, VkPhysicalDevice physicalDevice) {
   limits.maxUniformBufferRange = deviceProperties.limits.maxUniformBufferRange;
   limits.minUniformBufferOffsetAlignment = deviceProperties.limits.minUniformBufferOffsetAlignment;
 
-  limits.maxPerStageDescriptorUniformBuffers =
-      deviceProperties.limits.maxPerStageDescriptorUniformBuffers;
   limits.maxPerStageBindlessDescriptorUniformBuffers =
       descriptorIndexingProperties.maxDescriptorSetUpdateAfterBindUniformBuffers;
-  limits.maxPerStageDescriptorSampledImages =
-      deviceProperties.limits.maxPerStageDescriptorSampledImages;
   limits.maxPerStageBindlessDescriptorSampledImages =
       descriptorIndexingProperties.maxDescriptorSetUpdateAfterBindSampledImages;
-
-  limits.maxPerStageResources = deviceProperties.limits.maxPerStageResources;
   limits.maxPerStageBindlessResources =
       descriptorIndexingProperties.maxPerStageUpdateAfterBindResources;
 

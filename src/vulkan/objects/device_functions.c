@@ -284,7 +284,7 @@ VkShaderModule create_shader_module(device *vkd, const uint32_t *code, size_t si
 
 VkDescriptorPool create_descriptor_pool(device *vkd, size_t totalUniformBufferCount,
                                         size_t totalCombinedImageSamplerCount,
-                                        size_t maxAllocatedDescriptorSetsCount, bool bindless,
+                                        size_t maxAllocatedDescriptorSetsCount,
                                         const char *debugFormat, ...) {
   VkDescriptorPoolSize poolSizes[2] = {0};
   poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -292,21 +292,14 @@ VkDescriptorPool create_descriptor_pool(device *vkd, size_t totalUniformBufferCo
   poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
   poolSizes[1].descriptorCount = totalCombinedImageSamplerCount;
 
-  if (!bindless) {
-    verify(poolSizes[0].descriptorCount <= vkd->limits.maxPerStageDescriptorUniformBuffers);
-    verify(poolSizes[1].descriptorCount <= vkd->limits.maxPerStageDescriptorSampledImages);
-    verify((poolSizes[0].descriptorCount + poolSizes[1].descriptorCount) <=
-           vkd->limits.maxPerStageResources);
-  } else {
-    verify(poolSizes[0].descriptorCount <= vkd->limits.maxPerStageBindlessDescriptorUniformBuffers);
-    verify(poolSizes[1].descriptorCount <= vkd->limits.maxPerStageBindlessDescriptorSampledImages);
-    verify((poolSizes[0].descriptorCount + poolSizes[1].descriptorCount) <=
-           vkd->limits.maxPerStageBindlessResources);
-  }
+  verify(poolSizes[0].descriptorCount <= vkd->limits.maxPerStageBindlessDescriptorUniformBuffers);
+  verify(poolSizes[1].descriptorCount <= vkd->limits.maxPerStageBindlessDescriptorSampledImages);
+  verify((poolSizes[0].descriptorCount + poolSizes[1].descriptorCount) <=
+         vkd->limits.maxPerStageBindlessResources);
 
   VkDescriptorPoolCreateInfo poolInfo = {0};
   poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-  poolInfo.flags = bindless ? VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT_EXT : 0;
+  poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT_EXT;
   poolInfo.poolSizeCount = 2;
   poolInfo.pPoolSizes = poolSizes;
   poolInfo.maxSets = maxAllocatedDescriptorSetsCount;

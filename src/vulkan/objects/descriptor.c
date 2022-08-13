@@ -235,7 +235,7 @@ descriptors *descriptors_create(device *vkd, unified_uniform_buffer *unifiedUnif
       descriptors->vkd->limits.maxPerStageBindlessDescriptorSampledImages;
   descriptors->descriptorPool =
       create_descriptor_pool(descriptors->vkd, totalUniformBufferDescriptorCount,
-                             totalCombinedImageSamplerDescriptorCount, 1, true, "descriptors");
+                             totalCombinedImageSamplerDescriptorCount, 1, "descriptors");
 
   descriptors->descriptorSetNumber = 0;
 
