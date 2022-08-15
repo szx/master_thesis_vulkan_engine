@@ -151,7 +151,7 @@ VkFence create_fence(device *vkd, VkFenceCreateFlags flags, const char *debugFor
 /* one-shot commands */
 
 VkCommandBuffer begin_one_shot_commands(device *vkd);
-void end_one_shot_commands(device *vkd, VkCommandBuffer commandBuffer);
+void end_one_shot_commands(device *vkd);
 
 void copy_buffer_to_buffer(device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 void copy_buffer_to_image(device *vkd, VkBuffer buffer, VkImage image, uint32_t width,

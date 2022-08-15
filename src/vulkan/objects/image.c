@@ -188,7 +188,7 @@ void image_send_to_device(image *image) {
     VkCommandBuffer commandBuffer = begin_one_shot_commands(image->vkd);
     transition_image_layout(image->vkd, commandBuffer, image->image, image->aspectFlags,
                             VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    end_one_shot_commands(image->vkd, commandBuffer);
+    end_one_shot_commands(image->vkd);
 
     size_t pixelSize = image->texture->image->channels;
     size_t texelSize = format_size(image->format);

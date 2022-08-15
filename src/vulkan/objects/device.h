@@ -82,8 +82,9 @@ typedef struct device {
   limits limits;           ///< Physical device limits.
   bool framebufferResized; ///< True if GLFW framebuffer resize callback was triggered.
 
-  VkCommandPool
-      oneShotCommandPool; ///< Command pool used for one-shot copy and image transition commands.
+  VkCommandPool oneShotCommandPool; ///< Command pool used for one-shot command buffer.
+  VkCommandBuffer
+      oneShotCommandBuffer; /// One-shot command buffer used for copy and image transition commands.
 
   input input; ///< GLFW keyboard and mouse input.
 

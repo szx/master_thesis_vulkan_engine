@@ -657,29 +657,26 @@ VkFence create_fence(device *vkd, VkFenceCreateFlags flags, const char *debugFor
 #undef DEBUG_NAME_FORMAT_END
 
 VkCommandBuffer begin_one_shot_commands(device *vkd) {
-  VkCommandBuffer commandBuffer;
-  commandBuffer = create_command_buffer(vkd, vkd->oneShotCommandPool, "one-shot");
-
   VkCommandBufferBeginInfo beginInfo = {0};
   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
   beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-  vkBeginCommandBuffer(commandBuffer, &beginInfo);
+  vkBeginCommandBuffer(vkd->oneShotCommandBuffer, &beginInfo);
 
-  return commandBuffer;
+  return vkd->oneShotCommandBuffer;
 }
 
-void end_one_shot_commands(device *vkd, VkCommandBuffer commandBuffer) {
-  vkEndCommandBuffer(commandBuffer);
+void end_one_shot_commands(device *vkd) {
+  vkEndCommandBuffer(vkd->oneShotCommandBuffer);
 
   VkSubmitInfo submitInfo = {0};
   submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
   submitInfo.commandBufferCount = 1;
-  submitInfo.pCommandBuffers = &commandBuffer;
+  submitInfo.pCommandBuffers = &vkd->oneShotCommandBuffer;
 
   vkQueueSubmit(vkd->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
   vkQueueWaitIdle(vkd->graphicsQueue);
 
-  vkFreeCommandBuffers(vkd->device, vkd->oneShotCommandPool, 1, &commandBuffer);
+  vkResetCommandPool(vkd->device, vkd->oneShotCommandPool, 0);
 }
 
 void copy_buffer_to_buffer(device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
@@ -689,7 +686,7 @@ void copy_buffer_to_buffer(device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer, 
   copyRegion.size = size;
   vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
 
-  end_one_shot_commands(vkd, commandBuffer);
+  end_one_shot_commands(vkd);
 }
 
 void copy_buffer_to_image(device *vkd, VkBuffer buffer, VkImage image, uint32_t width,
@@ -708,7 +705,7 @@ void copy_buffer_to_image(device *vkd, VkBuffer buffer, VkImage image, uint32_t 
   vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1,
                          &copyRegion);
 
-  end_one_shot_commands(vkd, commandBuffer);
+  end_one_shot_commands(vkd);
 }
 
 void generate_mipmaps(device *vkd, VkImage image, VkFormat format, uint32_t width, uint32_t height,
@@ -780,7 +777,7 @@ void generate_mipmaps(device *vkd, VkImage image, VkFormat format, uint32_t widt
   vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT,
                        VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, NULL, 0, NULL, 1, &barrier);
 
-  end_one_shot_commands(vkd, commandBuffer);
+  end_one_shot_commands(vkd);
 }
 
 void transition_image_layout(device *vkd, VkCommandBuffer commandBuffer, VkImage image,
