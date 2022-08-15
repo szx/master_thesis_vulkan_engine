@@ -64,8 +64,17 @@ typedef struct device {
   VkQueue graphicsQueue; ///< Graphical queue handle.
   VkQueue presentQueue;  ///< Present queue handle.
 
+  /// Functions pointers to EXT functions.
+  ///@{
+  /// VK_KHR_dynamic_rendering
   PFN_vkCmdBeginRenderingKHR cmdBeginRendering;
   PFN_vkCmdEndRenderingKHR cmdEndRendering;
+  /// VK_EXT_debug_utils
+  PFN_vkCmdBeginDebugUtilsLabelEXT cmdBeginDebugUtilsLabel;
+  PFN_vkCmdEndDebugUtilsLabelEXT cmdEndDebugUtilsLabel;
+  PFN_vkCmdInsertDebugUtilsLabelEXT cmdInsertDebugUtilsLabel;
+  PFN_vkSetDebugUtilsObjectNameEXT setDebugUtilsObjectName;
+  ///@}
 
   swap_chain_support swapChainSupport; ///< Swap chain support details.
   swap_chain_info swapChainInfo;       /// Created swap chain info.

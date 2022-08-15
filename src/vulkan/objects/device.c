@@ -241,7 +241,7 @@ void create_instance(device *vkd, data_config *config, data_asset_db *assetDb) {
 
 void create_debug_utils(device *vkd) {
   vkd->device = VK_NULL_HANDLE;
-  vkd->debug = debug_create(validation_layers_enabled(), &vkd->device, vkd->instance, vka);
+  vkd->debug = debug_create(validation_layers_enabled(), vkd);
 }
 
 void create_surface(device *vkd) {
@@ -595,12 +595,26 @@ void get_queues(device *vkd) {
 }
 
 void get_function_pointers(device *vkd) {
+  // VK_KHR_dynamic_rendering
   vkd->cmdBeginRendering =
       (PFN_vkCmdBeginRenderingKHR)vkGetInstanceProcAddr(vkd->instance, "vkCmdBeginRenderingKHR");
+  verify(vkd->cmdBeginRendering);
   vkd->cmdEndRendering =
       (PFN_vkCmdEndRenderingKHR)vkGetInstanceProcAddr(vkd->instance, "vkCmdEndRenderingKHR");
-  verify(vkd->cmdBeginRendering);
   verify(vkd->cmdEndRendering);
+  // VK_EXT_debug_utils
+  vkd->cmdBeginDebugUtilsLabel = (PFN_vkCmdBeginDebugUtilsLabelEXT)vkGetInstanceProcAddr(
+      vkd->instance, "vkCmdBeginDebugUtilsLabelEXT");
+  verify(vkd->cmdBeginDebugUtilsLabel);
+  vkd->cmdEndDebugUtilsLabel = (PFN_vkCmdEndDebugUtilsLabelEXT)vkGetInstanceProcAddr(
+      vkd->instance, "vkCmdEndDebugUtilsLabelEXT");
+  verify(vkd->cmdEndDebugUtilsLabel);
+  vkd->cmdInsertDebugUtilsLabel = (PFN_vkCmdInsertDebugUtilsLabelEXT)vkGetInstanceProcAddr(
+      vkd->instance, "vkCmdInsertDebugUtilsLabelEXT");
+  verify(vkd->cmdInsertDebugUtilsLabel);
+  vkd->setDebugUtilsObjectName = (PFN_vkSetDebugUtilsObjectNameEXT)vkGetInstanceProcAddr(
+      vkd->instance, "vkSetDebugUtilsObjectNameEXT");
+  verify(vkd->setDebugUtilsObjectName);
 }
 
 void create_one_shot_command_pool(device *vkd) {

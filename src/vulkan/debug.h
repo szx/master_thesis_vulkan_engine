@@ -13,24 +13,13 @@ typedef struct debug_name_data {
 /// Vulkan debug utils.
 /// Manages Vulkan debug messengers.
 typedef struct debug {
-  bool enabled;                            /// True if we use debug utils.
-  VkDevice *pDevice;                       /// Pointer to vulkan device handle.
-  VkInstance instance;                     /// Vulkan instance handle.
-  const VkAllocationCallbacks *vka;        /// Vulkan allocator.
-  VkDebugUtilsMessengerEXT debugMessenger; /// Vulkan debug messenger (VK_EXT_debug_utils).
-  /** \addtogroup Functions pointers to EXT functions.
-   *  @{
-   */
-  PFN_vkCmdBeginDebugUtilsLabelEXT cmdBeginDebugUtilsLabelEXT;
-  PFN_vkCmdEndDebugUtilsLabelEXT cmdEndDebugUtilsLabelEXT;
-  PFN_vkCmdInsertDebugUtilsLabelEXT cmdInsertDebugUtilsLabelEXT;
-  PFN_vkSetDebugUtilsObjectNameEXT setDebugUtilsObjectNameEXT;
-  /** @}*/
-  debug_name_data *names; /// Hash table with Vulkan object names and their data.
+  bool enabled;                            ///< True if we use debug utils.
+  void *vkd;                               ///< Pointer to device object.
+  VkDebugUtilsMessengerEXT debugMessenger; ///< Vulkan debug messenger (VK_EXT_debug_utils).
+  debug_name_data *names;                  ///< Hash table with Vulkan object names and their data.
 } debug;
 
-debug *debug_create(bool enabled, VkDevice *device, VkInstance instance,
-                    const VkAllocationCallbacks *vka);
+debug *debug_create(bool enabled, void *vkd);
 void debug_destroy(debug *debug);
 
 #define VULKAN_DEBUG_NAME_FUNC_DECL(_funcName, _handleType)                                        \

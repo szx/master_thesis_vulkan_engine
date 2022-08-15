@@ -1,4 +1,5 @@
 #include "debug.h"
+#include "objects/device.h"
 
 /// Creates persistent debug messenger.
 static VkResult create_debug_utils_messenger_ext(
@@ -128,34 +129,23 @@ static void name_object(debug *debug, VkObjectType objectType, uint64_t objectHa
   nameInfo.objectHandle = objectHandle;
   nameInfo.pObjectName = nameData->name;
 
-  // TODO: Add names and additional data to debug.
-  assert(debug->pDevice != VK_NULL_HANDLE);
-  verify(debug->setDebugUtilsObjectNameEXT(*debug->pDevice, &nameInfo) == VK_SUCCESS);
+  device *vkd = (device *)debug->vkd;
+  verify(vkd->setDebugUtilsObjectName(vkd->device, &nameInfo) == VK_SUCCESS);
 }
 
 /* public */
 
-debug *debug_create(bool enabled, VkDevice *pDevice, VkInstance instance,
-                    const VkAllocationCallbacks *vka) {
+debug *debug_create(bool enabled, void *vkdPtr) {
   debug *debug = core_alloc(sizeof(struct debug));
   debug->enabled = enabled;
-  debug->pDevice = pDevice;
-  debug->instance = instance;
-  debug->vka = vka;
+  debug->vkd = vkdPtr;
   debug->debugMessenger = VK_NULL_HANDLE;
   if (debug->enabled) {
+    device *vkd = (device *)debug->vkd;
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo =
         debug_messenger_create_info(debug_callback_general);
-    verify(create_debug_utils_messenger_ext(debug->instance, &debugCreateInfo, debug->vka,
+    verify(create_debug_utils_messenger_ext(vkd->instance, &debugCreateInfo, vka,
                                             &debug->debugMessenger) == VK_SUCCESS);
-    debug->cmdBeginDebugUtilsLabelEXT = (PFN_vkCmdBeginDebugUtilsLabelEXT)vkGetInstanceProcAddr(
-        debug->instance, "vkCmdBeginDebugUtilsLabelEXT");
-    debug->cmdEndDebugUtilsLabelEXT = (PFN_vkCmdEndDebugUtilsLabelEXT)vkGetInstanceProcAddr(
-        debug->instance, "vkCmdEndDebugUtilsLabelEXT");
-    debug->cmdInsertDebugUtilsLabelEXT = (PFN_vkCmdInsertDebugUtilsLabelEXT)vkGetInstanceProcAddr(
-        debug->instance, "vkCmdInsertDebugUtilsLabelEXT");
-    debug->setDebugUtilsObjectNameEXT = (PFN_vkSetDebugUtilsObjectNameEXT)vkGetInstanceProcAddr(
-        debug->instance, "vkSetDebugUtilsObjectNameEXT");
 
     debug->names = NULL;
   }
@@ -164,7 +154,8 @@ debug *debug_create(bool enabled, VkDevice *pDevice, VkInstance instance,
 
 void debug_destroy(debug *debug) {
   if (debug->enabled) {
-    destroy_debug_utils_messenger_ext(debug->instance, debug->debugMessenger, NULL);
+    device *vkd = (device *)debug->vkd;
+    destroy_debug_utils_messenger_ext(vkd->instance, debug->debugMessenger, vka);
     debug_name_data *nameData, *temp;
     HASH_ITER(hh, debug->names, nameData, temp) {
       HASH_DEL(debug->names, nameData);
