@@ -8,20 +8,20 @@ sync *sync_create(device *vkd) {
 
   for (size_t i = 0; i < FRAMES_IN_FLIGHT; i++) {
     sync->imageAvailableSemaphores[i] =
-        create_semaphore(sync->vkd, 0, "frame #%zu available for rendering", i);
+        device_create_semaphore(sync->vkd, 0, "frame #%zu available for rendering", i);
     sync->renderFinishedSemaphores[i] =
-        create_semaphore(sync->vkd, 0, "frame #%zu finished rendering", i);
-    sync->inFlightFences[i] =
-        create_fence(sync->vkd, VK_FENCE_CREATE_SIGNALED_BIT, "frame #%zu finished rendering", i);
+        device_create_semaphore(sync->vkd, 0, "frame #%zu finished rendering", i);
+    sync->inFlightFences[i] = device_create_fence(sync->vkd, VK_FENCE_CREATE_SIGNALED_BIT,
+                                                  "frame #%zu finished rendering", i);
 
-    sync->commandPools[i] = create_command_pool(
+    sync->commandPools[i] = device_create_command_pool(
         sync->vkd, vkd->queueFamilies.graphicsFamily,
         VK_COMMAND_POOL_CREATE_TRANSIENT_BIT |
             VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, // command buffer is short-lived,
                                                              // rerecorded every frame
         "frame #%zu", i);
     sync->commandBuffers[i] =
-        create_command_buffer(sync->vkd, sync->commandPools[i], "frame #%zu", i);
+        device_create_command_buffer(sync->vkd, sync->commandPools[i], "frame #%zu", i);
   }
 
   return sync;

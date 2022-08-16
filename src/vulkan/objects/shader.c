@@ -66,8 +66,8 @@ shader *shader_create_with_str(device *vkd, shader_type type, UT_string *text) {
   shader->spvCode = (uint32_t *)malloc(shader->spvSize);
   core_memcpy(shader->spvCode, (uint32_t *)shaderc_result_get_bytes(result), shader->spvSize);
   shaderc_result_release(result);
-  shader->module = create_shader_module(shader->vkd, shader->spvCode, shader->spvSize,
-                                        shader_type_debug_str(shader->type));
+  shader->module = device_create_shader_module(shader->vkd, shader->spvCode, shader->spvSize,
+                                               shader_type_debug_str(shader->type));
 
   shader->reflect = shader_reflect_create(shader->spvCode, shader->spvSize);
 

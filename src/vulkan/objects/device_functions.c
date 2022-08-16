@@ -2,7 +2,8 @@
 
 #include "device.h"
 
-uint32_t find_memory_type(device *vkd, uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+uint32_t device_find_memory_type(device *vkd, uint32_t typeFilter,
+                                 VkMemoryPropertyFlags properties) {
   VkPhysicalDeviceMemoryProperties memProperties;
   vkGetPhysicalDeviceMemoryProperties(vkd->physicalDevice, &memProperties);
   for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
@@ -14,8 +15,9 @@ uint32_t find_memory_type(device *vkd, uint32_t typeFilter, VkMemoryPropertyFlag
   return 0;
 }
 
-VkFormat find_supported_format(device *vkd, VkImageTiling tiling, VkFormatFeatureFlags features,
-                               VkFormat *candidates, size_t candidateCount) {
+VkFormat device_find_supported_format(device *vkd, VkImageTiling tiling,
+                                      VkFormatFeatureFlags features, VkFormat *candidates,
+                                      size_t candidateCount) {
   assert(candidateCount > 0);
 
   for (size_t i = 0; i < candidateCount; i++) {
@@ -40,7 +42,7 @@ VkFormat find_supported_format(device *vkd, VkImageTiling tiling, VkFormatFeatur
   return VK_FORMAT_UNDEFINED;
 }
 
-size_t format_size(VkFormat format) {
+size_t device_format_size(VkFormat format) {
   if (format == VK_FORMAT_R8_SRGB || format == VK_FORMAT_R8_UNORM) {
     return 1;
   }
@@ -56,7 +58,7 @@ size_t format_size(VkFormat format) {
   UNREACHABLE;
 }
 
-VkIndexType stride_to_index_type(size_t stride) {
+VkIndexType device_stride_to_index_type(size_t stride) {
   if (stride == 2) {
     return VK_INDEX_TYPE_UINT16;
   }
@@ -66,8 +68,9 @@ VkIndexType stride_to_index_type(size_t stride) {
   UNREACHABLE;
 }
 
-VkCommandPool create_command_pool(device *vkd, uint32_t queueFamilyIndex,
-                                  VkCommandPoolCreateFlags flags, const char *debugFormat, ...) {
+VkCommandPool device_create_command_pool(device *vkd, uint32_t queueFamilyIndex,
+                                         VkCommandPoolCreateFlags flags, const char *debugFormat,
+                                         ...) {
   VkCommandPoolCreateInfo poolInfo = {0};
   poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
   poolInfo.queueFamilyIndex = queueFamilyIndex;
@@ -83,8 +86,8 @@ VkCommandPool create_command_pool(device *vkd, uint32_t queueFamilyIndex,
   return commandPool;
 }
 
-VkCommandBuffer create_command_buffer(device *vkd, VkCommandPool commandPool,
-                                      const char *debugFormat, ...) {
+VkCommandBuffer device_create_command_buffer(device *vkd, VkCommandPool commandPool,
+                                             const char *debugFormat, ...) {
   VkCommandBufferAllocateInfo allocInfo = {0};
   allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
   allocInfo.commandPool = commandPool;
@@ -101,9 +104,10 @@ VkCommandBuffer create_command_buffer(device *vkd, VkCommandPool commandPool,
   return commandBuffer;
 }
 
-VkFramebuffer create_framebuffer(device *vkd, VkRenderPass renderPass, uint32_t attachmentCount,
-                                 const VkImageView *attachments, uint32_t width, uint32_t height,
-                                 const char *debugFormat, ...) {
+VkFramebuffer device_create_framebuffer(device *vkd, VkRenderPass renderPass,
+                                        uint32_t attachmentCount, const VkImageView *attachments,
+                                        uint32_t width, uint32_t height, const char *debugFormat,
+                                        ...) {
   assert(renderPass != VK_NULL_HANDLE);
 
   VkFramebufferCreateInfo framebufferInfo = {0};
@@ -126,10 +130,10 @@ VkFramebuffer create_framebuffer(device *vkd, VkRenderPass renderPass, uint32_t 
   return framebuffer;
 }
 
-VkImage create_image(device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
-                     uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
-                     VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,
-                     const char *debugFormat, ...) {
+VkImage device_create_image(device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
+                            uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
+                            VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,
+                            const char *debugFormat, ...) {
   VkImageCreateInfo imageInfo = {0};
   imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
   imageInfo.flags = flags;
@@ -158,15 +162,17 @@ VkImage create_image(device *vkd, uint32_t width, uint32_t height, uint32_t mipL
   return image;
 }
 
-VkDeviceMemory create_image_memory(device *vkd, VkImage image, VkMemoryPropertyFlags properties,
-                                   const char *debugFormat, ...) {
+VkDeviceMemory device_create_image_memory(device *vkd, VkImage image,
+                                          VkMemoryPropertyFlags properties, const char *debugFormat,
+                                          ...) {
   VkMemoryRequirements memRequirements;
   vkGetImageMemoryRequirements(vkd->device, image, &memRequirements);
 
   VkMemoryAllocateInfo allocInfo = {0};
   allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
   allocInfo.allocationSize = memRequirements.size;
-  allocInfo.memoryTypeIndex = find_memory_type(vkd, memRequirements.memoryTypeBits, properties);
+  allocInfo.memoryTypeIndex =
+      device_find_memory_type(vkd, memRequirements.memoryTypeBits, properties);
 
   VkDeviceMemory imageMemory;
   verify(vkAllocateMemory(vkd->device, &allocInfo, vka, &imageMemory) == VK_SUCCESS);
@@ -181,9 +187,10 @@ VkDeviceMemory create_image_memory(device *vkd, VkImage image, VkMemoryPropertyF
   return imageMemory;
 }
 
-VkImageView create_image_view(device *vkd, VkImage image, VkImageViewType type, VkFormat format,
-                              VkImageAspectFlags aspectFlags, uint32_t mipLevels,
-                              uint32_t arrayLayers, const char *debugFormat, ...) {
+VkImageView device_create_image_view(device *vkd, VkImage image, VkImageViewType type,
+                                     VkFormat format, VkImageAspectFlags aspectFlags,
+                                     uint32_t mipLevels, uint32_t arrayLayers,
+                                     const char *debugFormat, ...) {
   VkImageViewCreateInfo viewInfo = {0};
   viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
   viewInfo.image = image;
@@ -206,7 +213,7 @@ VkImageView create_image_view(device *vkd, VkImage image, VkImageViewType type, 
   return imageView;
 }
 
-VkSampler create_sampler(device *vkd, uint32_t mipLevelCount, const char *debugFormat, ...) {
+VkSampler device_create_sampler(device *vkd, uint32_t mipLevelCount, const char *debugFormat, ...) {
   // TODO: Share sampler with same parameters.
   VkSamplerCreateInfo samplerInfo = {0};
   samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -237,9 +244,9 @@ VkSampler create_sampler(device *vkd, uint32_t mipLevelCount, const char *debugF
   return sampler;
 }
 
-void create_buffer(device *vkd, VkDeviceSize size, VkBufferUsageFlags usage,
-                   VkMemoryPropertyFlags properties, VkBuffer *buffer, VkDeviceMemory *bufferMemory,
-                   const char *debugFormat, ...) {
+void device_create_buffer(device *vkd, VkDeviceSize size, VkBufferUsageFlags usage,
+                          VkMemoryPropertyFlags properties, VkBuffer *buffer,
+                          VkDeviceMemory *bufferMemory, const char *debugFormat, ...) {
   VkBufferCreateInfo bufferInfo = {0};
   bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
   bufferInfo.size = size;
@@ -255,7 +262,8 @@ void create_buffer(device *vkd, VkDeviceSize size, VkBufferUsageFlags usage,
   VkMemoryAllocateInfo allocInfo = {0};
   allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
   allocInfo.allocationSize = memRequirements.size;
-  allocInfo.memoryTypeIndex = find_memory_type(vkd, memRequirements.memoryTypeBits, properties);
+  allocInfo.memoryTypeIndex =
+      device_find_memory_type(vkd, memRequirements.memoryTypeBits, properties);
   verify(vkAllocateMemory(vkd->device, &allocInfo, vka, bufferMemory) == VK_SUCCESS);
 
   debug_name_device_memory(vkd->debug, *bufferMemory, "%s - device memory (%zu B)", debugName,
@@ -265,8 +273,8 @@ void create_buffer(device *vkd, VkDeviceSize size, VkBufferUsageFlags usage,
   vkBindBufferMemory(vkd->device, *buffer, *bufferMemory, 0);
 }
 
-VkShaderModule create_shader_module(device *vkd, const uint32_t *code, size_t size,
-                                    const char *debugFormat, ...) {
+VkShaderModule device_create_shader_module(device *vkd, const uint32_t *code, size_t size,
+                                           const char *debugFormat, ...) {
   VkShaderModuleCreateInfo createInfo = {0};
   createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
   createInfo.codeSize = size * sizeof(char);
@@ -282,10 +290,10 @@ VkShaderModule create_shader_module(device *vkd, const uint32_t *code, size_t si
   return shaderModule;
 }
 
-VkDescriptorPool create_descriptor_pool(device *vkd, size_t totalUniformBufferCount,
-                                        size_t totalCombinedImageSamplerCount,
-                                        size_t maxAllocatedDescriptorSetsCount,
-                                        const char *debugFormat, ...) {
+VkDescriptorPool device_create_descriptor_pool(device *vkd, size_t totalUniformBufferCount,
+                                               size_t totalCombinedImageSamplerCount,
+                                               size_t maxAllocatedDescriptorSetsCount,
+                                               const char *debugFormat, ...) {
   VkDescriptorPoolSize poolSizes[2] = {0};
   poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
   poolSizes[0].descriptorCount = totalUniformBufferCount;
@@ -318,12 +326,12 @@ VkDescriptorPool create_descriptor_pool(device *vkd, size_t totalUniformBufferCo
   return descriptorPool;
 }
 
-VkPipelineLayout create_pipeline_layout(device *vkd, VkPipelineLayoutCreateFlags flags,
-                                        const VkDescriptorSetLayout *descriptorSetLayouts,
-                                        size_t descriptorSetLayoutCount,
-                                        const VkPushConstantRange *pushConstantRanges,
-                                        size_t pushConstantRangeCount, const char *debugFormat,
-                                        ...) {
+VkPipelineLayout device_create_pipeline_layout(device *vkd, VkPipelineLayoutCreateFlags flags,
+                                               const VkDescriptorSetLayout *descriptorSetLayouts,
+                                               size_t descriptorSetLayoutCount,
+                                               const VkPushConstantRange *pushConstantRanges,
+                                               size_t pushConstantRangeCount,
+                                               const char *debugFormat, ...) {
   VkPipelineLayoutCreateInfo pipelineLayoutInfo = {0};
   pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
   pipelineLayoutInfo.setLayoutCount = descriptorSetLayoutCount;
@@ -403,15 +411,16 @@ void add_general_memory_barrier(device *vkd, VkCommandBuffer commandBuffer) {
                        NULL);
 }
 
-void begin_rendering(device *vkd, VkCommandBuffer commandBuffer, rendering_info renderPassInfo) {
+void device_begin_rendering(device *vkd, VkCommandBuffer commandBuffer,
+                            rendering_info renderPassInfo) {
 
   // add_general_memory_barrier(vkd, commandBuffer);
   utarray_foreach_elem_it (rendering_image_layout_transition_info *, imageLayoutTransitionInfo,
                            renderPassInfo.preImageLayoutTransition) {
-    transition_image_layout_command(vkd, commandBuffer, imageLayoutTransitionInfo->image,
-                                    imageLayoutTransitionInfo->imageAspectFlags,
-                                    imageLayoutTransitionInfo->oldLayout,
-                                    imageLayoutTransitionInfo->newLayout);
+    device_transition_image_layout_command(vkd, commandBuffer, imageLayoutTransitionInfo->image,
+                                           imageLayoutTransitionInfo->imageAspectFlags,
+                                           imageLayoutTransitionInfo->oldLayout,
+                                           imageLayoutTransitionInfo->newLayout);
   }
 
   uint32_t onscreenColorAttachmentCount = renderPassInfo.onscreenColorAttachment ? 1 : 0;
@@ -467,21 +476,23 @@ void begin_rendering(device *vkd, VkCommandBuffer commandBuffer, rendering_info 
   vkd->cmdBeginRendering(commandBuffer, &renderingInfo);
 }
 
-void end_rendering(device *vkd, VkCommandBuffer commandBuffer, rendering_info renderPassInfo) {
+void device_end_rendering(device *vkd, VkCommandBuffer commandBuffer,
+                          rendering_info renderPassInfo) {
   vkd->cmdEndRendering(commandBuffer);
 
   // add_general_memory_barrier(vkd, commandBuffer);
   utarray_foreach_elem_it (rendering_image_layout_transition_info *, imageLayoutTransitionInfo,
                            renderPassInfo.postImageLayoutTransition) {
-    transition_image_layout_command(vkd, commandBuffer, imageLayoutTransitionInfo->image,
-                                    imageLayoutTransitionInfo->imageAspectFlags,
-                                    imageLayoutTransitionInfo->oldLayout,
-                                    imageLayoutTransitionInfo->newLayout);
+    device_transition_image_layout_command(vkd, commandBuffer, imageLayoutTransitionInfo->image,
+                                           imageLayoutTransitionInfo->imageAspectFlags,
+                                           imageLayoutTransitionInfo->oldLayout,
+                                           imageLayoutTransitionInfo->newLayout);
   }
 }
 
-VkPipeline create_graphics_pipeline(device *vkd, graphics_pipeline_create_info createInfo,
-                                    rendering_info renderingInfo, const char *debugFormat, ...) {
+VkPipeline device_create_graphics_pipeline(device *vkd, graphics_pipeline_create_info createInfo,
+                                           rendering_info renderingInfo, const char *debugFormat,
+                                           ...) {
 
   /* vertex input */
   VkPipelineVertexInputStateCreateInfo vertexInputInfo = {0};
@@ -622,8 +633,8 @@ VkPipeline create_graphics_pipeline(device *vkd, graphics_pipeline_create_info c
 
   return graphicsPipeline;
 }
-VkSemaphore create_semaphore(device *vkd, VkSemaphoreCreateFlags flags, const char *debugFormat,
-                             ...) {
+VkSemaphore device_create_semaphore(device *vkd, VkSemaphoreCreateFlags flags,
+                                    const char *debugFormat, ...) {
   VkSemaphoreCreateInfo semaphoreInfo = {0};
   semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
   semaphoreInfo.flags = flags;
@@ -638,7 +649,7 @@ VkSemaphore create_semaphore(device *vkd, VkSemaphoreCreateFlags flags, const ch
   return semaphore;
 }
 
-VkFence create_fence(device *vkd, VkFenceCreateFlags flags, const char *debugFormat, ...) {
+VkFence device_create_fence(device *vkd, VkFenceCreateFlags flags, const char *debugFormat, ...) {
   VkFenceCreateInfo fenceInfo = {0};
   fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
   fenceInfo.flags = flags;
@@ -656,7 +667,7 @@ VkFence create_fence(device *vkd, VkFenceCreateFlags flags, const char *debugFor
 #undef DEBUG_NAME_FORMAT_START
 #undef DEBUG_NAME_FORMAT_END
 
-VkCommandBuffer begin_one_shot_commands(device *vkd) {
+VkCommandBuffer device_begin_one_shot_commands(device *vkd) {
   VkCommandBufferBeginInfo beginInfo = {0};
   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
   beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
@@ -665,7 +676,7 @@ VkCommandBuffer begin_one_shot_commands(device *vkd) {
   return vkd->oneShotCommandBuffer;
 }
 
-void end_one_shot_commands(device *vkd) {
+void device_end_one_shot_commands(device *vkd) {
   vkEndCommandBuffer(vkd->oneShotCommandBuffer);
 
   VkSubmitInfo submitInfo = {0};
@@ -679,27 +690,28 @@ void end_one_shot_commands(device *vkd) {
   vkResetCommandPool(vkd->device, vkd->oneShotCommandPool, 0);
 }
 
-void create_staging_buffer(device *vkd, VkDeviceSize size, VkBuffer *buffer,
-                           VkDeviceMemory *bufferMemory) {
+void device_create_staging_buffer(device *vkd, VkDeviceSize size, VkBuffer *buffer,
+                                  VkDeviceMemory *bufferMemory) {
   // TODO: Reuse staging buffer?
-  create_buffer(vkd, size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, buffer,
-                bufferMemory, "staging buffer");
+  device_create_buffer(vkd, size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                       buffer, bufferMemory, "staging buffer");
 }
 
-void copy_buffer_to_buffer(device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
-  VkCommandBuffer commandBuffer = begin_one_shot_commands(vkd);
+void device_one_shot_copy_buffer_to_buffer(device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer,
+                                           VkDeviceSize size) {
+  VkCommandBuffer commandBuffer = device_begin_one_shot_commands(vkd);
 
   VkBufferCopy copyRegion = {0};
   copyRegion.size = size;
   vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
 
-  end_one_shot_commands(vkd);
+  device_end_one_shot_commands(vkd);
 }
 
-void copy_buffer_to_image(device *vkd, VkBuffer buffer, VkImage image, uint32_t width,
-                          uint32_t height, uint32_t layerCount) {
-  VkCommandBuffer commandBuffer = begin_one_shot_commands(vkd);
+void device_one_shot_copy_buffer_to_image(device *vkd, VkBuffer buffer, VkImage image,
+                                          uint32_t width, uint32_t height, uint32_t layerCount) {
+  VkCommandBuffer commandBuffer = device_begin_one_shot_commands(vkd);
 
   VkBufferImageCopy copyRegion = {.bufferOffset = 0,
                                   .bufferRowLength = 0,
@@ -713,11 +725,11 @@ void copy_buffer_to_image(device *vkd, VkBuffer buffer, VkImage image, uint32_t 
   vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1,
                          &copyRegion);
 
-  end_one_shot_commands(vkd);
+  device_end_one_shot_commands(vkd);
 }
 
-void generate_mipmaps(device *vkd, VkImage image, VkFormat format, uint32_t width, uint32_t height,
-                      uint32_t mipLevelCount) {
+void device_one_shot_generate_mipmaps(device *vkd, VkImage image, VkFormat format, uint32_t width,
+                                      uint32_t height, uint32_t mipLevelCount) {
 
   // Format needs to support linear filtering (vkCmdBlitImage)
   VkFormatProperties formatProperties;
@@ -725,7 +737,7 @@ void generate_mipmaps(device *vkd, VkImage image, VkFormat format, uint32_t widt
   verify((formatProperties.optimalTilingFeatures &
           VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT) != 0);
 
-  VkCommandBuffer commandBuffer = begin_one_shot_commands(vkd);
+  VkCommandBuffer commandBuffer = device_begin_one_shot_commands(vkd);
 
   VkImageMemoryBarrier barrier = {.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
                                   .image = image,
@@ -785,22 +797,23 @@ void generate_mipmaps(device *vkd, VkImage image, VkFormat format, uint32_t widt
   vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT,
                        VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, NULL, 0, NULL, 1, &barrier);
 
-  end_one_shot_commands(vkd);
+  device_end_one_shot_commands(vkd);
 }
 
-void transition_image_layout(device *vkd, VkImage image, VkImageAspectFlags imageAspectFlags,
-                             VkImageLayout oldLayout, VkImageLayout newLayout) {
-  VkCommandBuffer commandBuffer = begin_one_shot_commands(vkd);
+void device_one_shot_transition_image_layout(device *vkd, VkImage image,
+                                             VkImageAspectFlags imageAspectFlags,
+                                             VkImageLayout oldLayout, VkImageLayout newLayout) {
+  VkCommandBuffer commandBuffer = device_begin_one_shot_commands(vkd);
 
-  transition_image_layout_command(vkd, commandBuffer, image, imageAspectFlags, oldLayout,
-                                  newLayout);
+  device_transition_image_layout_command(vkd, commandBuffer, image, imageAspectFlags, oldLayout,
+                                         newLayout);
 
-  end_one_shot_commands(vkd);
+  device_end_one_shot_commands(vkd);
 }
 
-void transition_image_layout_command(device *vkd, VkCommandBuffer commandBuffer, VkImage image,
-                                     VkImageAspectFlags imageAspectFlags, VkImageLayout oldLayout,
-                                     VkImageLayout newLayout) {
+void device_transition_image_layout_command(device *vkd, VkCommandBuffer commandBuffer,
+                                            VkImage image, VkImageAspectFlags imageAspectFlags,
+                                            VkImageLayout oldLayout, VkImageLayout newLayout) {
   VkImageMemoryBarrier barrier = {.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
                                   .oldLayout = oldLayout,
                                   .newLayout = newLayout,

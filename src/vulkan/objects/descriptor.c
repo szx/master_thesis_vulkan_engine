@@ -234,8 +234,8 @@ descriptors *descriptors_create(device *vkd, unified_uniform_buffer *unifiedUnif
   size_t totalCombinedImageSamplerDescriptorCount =
       descriptors->vkd->limits.maxPerStageBindlessDescriptorSampledImages;
   descriptors->descriptorPool =
-      create_descriptor_pool(descriptors->vkd, totalUniformBufferDescriptorCount,
-                             totalCombinedImageSamplerDescriptorCount, 1, "descriptors");
+      device_create_descriptor_pool(descriptors->vkd, totalUniformBufferDescriptorCount,
+                                    totalCombinedImageSamplerDescriptorCount, 1, "descriptors");
 
   descriptors->descriptorSetNumber = 0;
 
@@ -294,8 +294,8 @@ descriptors *descriptors_create(device *vkd, unified_uniform_buffer *unifiedUnif
       .stageFlags = VK_SHADER_STAGE_ALL, .offset = 0, .size = sizeof(draw_push_constant_element)};
 
   descriptors->pipelineLayout =
-      create_pipeline_layout(vkd, 0, descriptorSetLayouts, descriptorSetLayoutCount,
-                             pushConstantRanges, pushConstantRangeCount, "descriptors");
+      device_create_pipeline_layout(vkd, 0, descriptorSetLayouts, descriptorSetLayoutCount,
+                                    pushConstantRanges, pushConstantRangeCount, "descriptors");
 
   core_free(descriptorSetLayouts);
 

@@ -152,21 +152,22 @@ void image_make_resident(image *image) {
     if (image->image != VK_NULL_HANDLE) {
       vkDestroyImage(image->vkd->device, image->image, vka);
     }
-    image->image = create_image(image->vkd, image->width, image->height, image->mipLevelCount,
-                                image->arrayLayers, image->sampleCount, image->format,
-                                image->tiling, image->createFlags, image->usageFlags, "%s %s",
-                                image->name[0], image->name[1]);
+    image->image = device_create_image(image->vkd, image->width, image->height,
+                                       image->mipLevelCount, image->arrayLayers, image->sampleCount,
+                                       image->format, image->tiling, image->createFlags,
+                                       image->usageFlags, "%s %s", image->name[0], image->name[1]);
 
     if (image->imageMemory != VK_NULL_HANDLE) {
       vkFreeMemory(image->vkd->device, image->imageMemory, vka);
     }
-    image->imageMemory = create_image_memory(image->vkd, image->image, image->memoryPropertyFlags,
-                                             "%s %s", image->name[0], image->name[1]);
+    image->imageMemory =
+        device_create_image_memory(image->vkd, image->image, image->memoryPropertyFlags, "%s %s",
+                                   image->name[0], image->name[1]);
 
     if (image->imageView != VK_NULL_HANDLE) {
       vkDestroyImageView(image->vkd->device, image->imageView, vka);
     }
-    image->imageView = create_image_view(
+    image->imageView = device_create_image_view(
         image->vkd, image->image, image->viewType, image->format, image->aspectFlags,
         image->mipLevelCount, image->arrayLayers, "%s %s", image->name[0], image->name[1]);
     image->resident = true;
@@ -185,11 +186,12 @@ void image_send_to_device(image *image) {
     return;
   }
   if (image->texture != NULL && image->copyDataToDevice) {
-    transition_image_layout(image->vkd, image->image, image->aspectFlags, VK_IMAGE_LAYOUT_UNDEFINED,
-                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    device_one_shot_transition_image_layout(image->vkd, image->image, image->aspectFlags,
+                                            VK_IMAGE_LAYOUT_UNDEFINED,
+                                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
     size_t pixelSize = image->texture->image->channels;
-    size_t texelSize = format_size(image->format);
+    size_t texelSize = device_format_size(image->format);
     assert(pixelSize <= texelSize);
     size_t emptyComponents = texelSize - pixelSize;
     size_t texelNum = image->width * image->height;
@@ -199,7 +201,7 @@ void image_send_to_device(image *image) {
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
-    create_staging_buffer(image->vkd, totalTexelSize, &stagingBuffer, &stagingBufferMemory);
+    device_create_staging_buffer(image->vkd, totalTexelSize, &stagingBuffer, &stagingBufferMemory);
 
     void *data;
     vkMapMemory(image->vkd->device, stagingBufferMemory, 0, totalTexelSize, 0, &data);
@@ -218,14 +220,14 @@ void image_send_to_device(image *image) {
     }
     vkUnmapMemory(image->vkd->device, stagingBufferMemory);
 
-    copy_buffer_to_image(image->vkd, stagingBuffer, image->image, image->width, image->height,
-                         image->arrayLayers);
+    device_one_shot_copy_buffer_to_image(image->vkd, stagingBuffer, image->image, image->width,
+                                         image->height, image->arrayLayers);
 
     vkDestroyBuffer(image->vkd->device, stagingBuffer, vka);
     vkFreeMemory(image->vkd->device, stagingBufferMemory, vka);
 
-    generate_mipmaps(image->vkd, image->image, image->format, image->width, image->height,
-                     image->mipLevelCount);
+    device_one_shot_generate_mipmaps(image->vkd, image->image, image->format, image->width,
+                                     image->height, image->mipLevelCount);
 
     image->texture = NULL;
   }
@@ -266,9 +268,9 @@ VkFormat find_image_format(device *vkd, image_type imageType, uint32_t channels)
     assert(channels == 1);
     VkFormat formats[] = {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT,
                           VK_FORMAT_D24_UNORM_S8_UINT};
-    return find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
-                                 VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT, formats,
-                                 array_size(formats));
+    return device_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
+                                        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT, formats,
+                                        array_size(formats));
   }
 
   if (info.colorFormat) {
@@ -316,27 +318,27 @@ VkFormat find_image_format(device *vkd, image_type imageType, uint32_t channels)
 
     if (channels == 1) {
       VkFormat formats[] = {r, rg, rgb, rgba};
-      return find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
-                                   VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
-                                   array_size(formats));
+      return device_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
+                                          VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
+                                          array_size(formats));
     }
     if (channels == 2) {
       VkFormat formats[] = {rg, rgb, rgba};
-      return find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
-                                   VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
-                                   array_size(formats));
+      return device_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
+                                          VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
+                                          array_size(formats));
     }
     if (channels == 3) {
       VkFormat formats[] = {rgb, rgba};
-      return find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
-                                   VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
-                                   array_size(formats));
+      return device_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
+                                          VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
+                                          array_size(formats));
     }
     if (channels == 4) {
       VkFormat formats[] = {rgba};
-      return find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
-                                   VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
-                                   array_size(formats));
+      return device_find_supported_format(vkd, VK_IMAGE_TILING_OPTIMAL,
+                                          VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT, formats,
+                                          array_size(formats));
     }
   }
 

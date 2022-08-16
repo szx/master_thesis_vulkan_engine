@@ -6,56 +6,62 @@
 
 typedef struct device device;
 
-uint32_t find_memory_type(device *vkd, uint32_t typeFilter, VkMemoryPropertyFlags properties);
-VkFormat find_supported_format(device *vkd, VkImageTiling tiling, VkFormatFeatureFlags features,
-                               VkFormat *candidates, size_t candidateCount);
-size_t format_size(VkFormat format);
-VkIndexType stride_to_index_type(size_t stride);
+uint32_t device_find_memory_type(device *vkd, uint32_t typeFilter,
+                                 VkMemoryPropertyFlags properties);
+VkFormat device_find_supported_format(device *vkd, VkImageTiling tiling,
+                                      VkFormatFeatureFlags features, VkFormat *candidates,
+                                      size_t candidateCount);
+size_t device_format_size(VkFormat format);
+VkIndexType device_stride_to_index_type(size_t stride);
 
 /* vulkan object creation */
 
-VkCommandPool create_command_pool(device *vkd, uint32_t queueFamilyIndex,
-                                  VkCommandPoolCreateFlags flags, const char *debugFormat, ...);
+VkCommandPool device_create_command_pool(device *vkd, uint32_t queueFamilyIndex,
+                                         VkCommandPoolCreateFlags flags, const char *debugFormat,
+                                         ...);
 
-VkCommandBuffer create_command_buffer(device *vkd, VkCommandPool commandPool,
-                                      const char *debugFormat, ...);
+VkCommandBuffer device_create_command_buffer(device *vkd, VkCommandPool commandPool,
+                                             const char *debugFormat, ...);
 
-VkFramebuffer create_framebuffer(device *vkd, VkRenderPass renderPass, uint32_t attachmentCount,
-                                 const VkImageView *attachments, uint32_t width, uint32_t height,
-                                 const char *debugFormat, ...);
-
-VkImage create_image(device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
-                     uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
-                     VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,
-                     const char *debugFormat, ...);
-
-VkDeviceMemory create_image_memory(device *vkd, VkImage image, VkMemoryPropertyFlags properties,
-                                   const char *debugFormat, ...);
-
-VkImageView create_image_view(device *vkd, VkImage image, VkImageViewType type, VkFormat format,
-                              VkImageAspectFlags aspectFlags, uint32_t mipLevels,
-                              uint32_t arrayLayers, const char *debugFormat, ...);
-
-VkSampler create_sampler(device *vkd, uint32_t mipLevelCount, const char *debugFormat, ...);
-
-void create_buffer(device *vkd, VkDeviceSize size, VkBufferUsageFlags usage,
-                   VkMemoryPropertyFlags properties, VkBuffer *buffer, VkDeviceMemory *bufferMemory,
-                   const char *debugFormat, ...);
-
-VkShaderModule create_shader_module(device *vkd, const uint32_t *code, size_t size,
-                                    const char *debugFormat, ...);
-
-VkDescriptorPool create_descriptor_pool(device *vkd, size_t totalUniformBufferCount,
-                                        size_t totalCombinedImageSamplerCount,
-                                        size_t maxAllocatedDescriptorSetsCount,
-                                        const char *debugFormat, ...);
-
-VkPipelineLayout create_pipeline_layout(device *vkd, VkPipelineLayoutCreateFlags flags,
-                                        const VkDescriptorSetLayout *descriptorSetLayouts,
-                                        size_t descriptorSetLayoutCount,
-                                        const VkPushConstantRange *pushConstantRanges,
-                                        size_t pushConstantRangeCount, const char *debugFormat,
+VkFramebuffer device_create_framebuffer(device *vkd, VkRenderPass renderPass,
+                                        uint32_t attachmentCount, const VkImageView *attachments,
+                                        uint32_t width, uint32_t height, const char *debugFormat,
                                         ...);
+
+VkImage device_create_image(device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
+                            uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
+                            VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,
+                            const char *debugFormat, ...);
+
+VkDeviceMemory device_create_image_memory(device *vkd, VkImage image,
+                                          VkMemoryPropertyFlags properties, const char *debugFormat,
+                                          ...);
+
+VkImageView device_create_image_view(device *vkd, VkImage image, VkImageViewType type,
+                                     VkFormat format, VkImageAspectFlags aspectFlags,
+                                     uint32_t mipLevels, uint32_t arrayLayers,
+                                     const char *debugFormat, ...);
+
+VkSampler device_create_sampler(device *vkd, uint32_t mipLevelCount, const char *debugFormat, ...);
+
+void device_create_buffer(device *vkd, VkDeviceSize size, VkBufferUsageFlags usage,
+                          VkMemoryPropertyFlags properties, VkBuffer *buffer,
+                          VkDeviceMemory *bufferMemory, const char *debugFormat, ...);
+
+VkShaderModule device_create_shader_module(device *vkd, const uint32_t *code, size_t size,
+                                           const char *debugFormat, ...);
+
+VkDescriptorPool device_create_descriptor_pool(device *vkd, size_t totalUniformBufferCount,
+                                               size_t totalCombinedImageSamplerCount,
+                                               size_t maxAllocatedDescriptorSetsCount,
+                                               const char *debugFormat, ...);
+
+VkPipelineLayout device_create_pipeline_layout(device *vkd, VkPipelineLayoutCreateFlags flags,
+                                               const VkDescriptorSetLayout *descriptorSetLayouts,
+                                               size_t descriptorSetLayoutCount,
+                                               const VkPushConstantRange *pushConstantRanges,
+                                               size_t pushConstantRangeCount,
+                                               const char *debugFormat, ...);
 
 typedef struct rendering_attachment_info {
   const char *name;
@@ -107,9 +113,11 @@ void rendering_info_post_image_layout_transition(
     rendering_info *renderPassInfo,
     rendering_image_layout_transition_info imageLayoutTransitionInfo);
 
-void begin_rendering(device *vkd, VkCommandBuffer commandBuffer, rendering_info renderPassInfo);
+void device_begin_rendering(device *vkd, VkCommandBuffer commandBuffer,
+                            rendering_info renderPassInfo);
 
-void end_rendering(device *vkd, VkCommandBuffer commandBuffer, rendering_info renderPassInfo);
+void device_end_rendering(device *vkd, VkCommandBuffer commandBuffer,
+                          rendering_info renderPassInfo);
 
 typedef enum color_blending_type {
   color_blending_type_none,
@@ -140,33 +148,37 @@ typedef struct graphics_pipeline_create_info {
   VkPipelineLayout pipelineLayout;
 } graphics_pipeline_create_info;
 
-VkPipeline create_graphics_pipeline(device *vkd, graphics_pipeline_create_info createInfo,
-                                    rendering_info renderingInfo, const char *debugFormat, ...);
+VkPipeline device_create_graphics_pipeline(device *vkd, graphics_pipeline_create_info createInfo,
+                                           rendering_info renderingInfo, const char *debugFormat,
+                                           ...);
 
-VkSemaphore create_semaphore(device *vkd, VkSemaphoreCreateFlags flags, const char *debugFormat,
-                             ...);
+VkSemaphore device_create_semaphore(device *vkd, VkSemaphoreCreateFlags flags,
+                                    const char *debugFormat, ...);
 
-VkFence create_fence(device *vkd, VkFenceCreateFlags flags, const char *debugFormat, ...);
+VkFence device_create_fence(device *vkd, VkFenceCreateFlags flags, const char *debugFormat, ...);
 
 /* one-shot commands */
 
-VkCommandBuffer begin_one_shot_commands(device *vkd);
-void end_one_shot_commands(device *vkd);
+VkCommandBuffer device_begin_one_shot_commands(device *vkd);
+void device_end_one_shot_commands(device *vkd);
 
-void create_staging_buffer(device *vkd, VkDeviceSize size, VkBuffer *buffer,
-                           VkDeviceMemory *bufferMemory);
+void device_create_staging_buffer(device *vkd, VkDeviceSize size, VkBuffer *buffer,
+                                  VkDeviceMemory *bufferMemory);
 
-void copy_buffer_to_buffer(device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-void copy_buffer_to_image(device *vkd, VkBuffer buffer, VkImage image, uint32_t width,
-                          uint32_t height, uint32_t layerCount);
+void device_one_shot_copy_buffer_to_buffer(device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer,
+                                           VkDeviceSize size);
+void device_one_shot_copy_buffer_to_image(device *vkd, VkBuffer buffer, VkImage image,
+                                          uint32_t width, uint32_t height, uint32_t layerCount);
 
-void generate_mipmaps(device *vkd, VkImage image, VkFormat format, uint32_t width, uint32_t height,
-                      uint32_t mipLevelCount);
+void device_one_shot_generate_mipmaps(device *vkd, VkImage image, VkFormat format, uint32_t width,
+                                      uint32_t height, uint32_t mipLevelCount);
 
-void transition_image_layout(device *vkd, VkImage image, VkImageAspectFlags imageAspectFlags,
-                             VkImageLayout oldLayout, VkImageLayout newLayout);
+void device_one_shot_transition_image_layout(device *vkd, VkImage image,
+                                             VkImageAspectFlags imageAspectFlags,
+                                             VkImageLayout oldLayout, VkImageLayout newLayout);
+
 /* general commands */
 
-void transition_image_layout_command(device *vkd, VkCommandBuffer commandBuffer, VkImage image,
-                                     VkImageAspectFlags imageAspectFlags, VkImageLayout oldLayout,
-                                     VkImageLayout newLayout);
+void device_transition_image_layout_command(device *vkd, VkCommandBuffer commandBuffer,
+                                            VkImage image, VkImageAspectFlags imageAspectFlags,
+                                            VkImageLayout oldLayout, VkImageLayout newLayout);

@@ -75,9 +75,9 @@ VkPipeline get_graphics_pipeline(render_pass *renderPass, size_t currentFrameInF
   };
 
   *graphicsPipeline =
-      create_graphics_pipeline(renderPass->renderState->vkd, createInfo, renderingInfo,
-                               "renderPass (frameInFlight=#%u, swapChainImage=#%u)",
-                               currentFrameInFlight, swapChainImageIdx);
+      device_create_graphics_pipeline(renderPass->renderState->vkd, createInfo, renderingInfo,
+                                      "renderPass (frameInFlight=#%u, swapChainImage=#%u)",
+                                      currentFrameInFlight, swapChainImageIdx);
 
   core_free(vertexAttributeDescriptions);
   core_free(shaderStages);
@@ -188,13 +188,13 @@ void render_pass_record_commands(render_pass *renderPass, VkCommandBuffer comman
       get_graphics_pipeline(renderPass, currentFrameInFlight, swapChainImageIdx, renderPassInfo);
 
   /* record new render pass into command buffer */
-  begin_rendering(renderPass->renderState->vkd, commandBuffer, renderPassInfo);
+  device_begin_rendering(renderPass->renderState->vkd, commandBuffer, renderPassInfo);
 
   vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphicsPipeline);
 
   renderPass->desc.recordFunc(renderPass, frameState, commandBuffer);
 
-  end_rendering(renderPass->renderState->vkd, commandBuffer, renderPassInfo);
+  device_end_rendering(renderPass->renderState->vkd, commandBuffer, renderPassInfo);
 }
 
 void render_pass_debug_print(render_pass *renderPass) {

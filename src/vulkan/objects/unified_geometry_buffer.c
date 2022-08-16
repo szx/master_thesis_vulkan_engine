@@ -63,7 +63,8 @@ void unified_geometry_buffer_record_bind_command(unified_geometry_buffer *geomet
 
   VkBuffer indexBuffer = geometryBuffer->indexBuffer->buffer;
   size_t indexBufferStride = sizeof(uint32_t);
-  vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, stride_to_index_type(indexBufferStride));
+  vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0,
+                       device_stride_to_index_type(indexBufferStride));
 }
 
 void unified_geometry_buffer_debug_print(unified_geometry_buffer *geometryBuffer) {

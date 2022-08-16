@@ -618,9 +618,10 @@ void get_function_pointers(device *vkd) {
 }
 
 void create_one_shot_command_pool(device *vkd) {
-  vkd->oneShotCommandPool = create_command_pool(vkd, vkd->queueFamilies.graphicsFamily,
-                                                VK_COMMAND_POOL_CREATE_TRANSIENT_BIT, "one-shot");
+  vkd->oneShotCommandPool = device_create_command_pool(
+      vkd, vkd->queueFamilies.graphicsFamily, VK_COMMAND_POOL_CREATE_TRANSIENT_BIT, "one-shot");
   // TODO: Also use transfer queue - but vkCmdBlitImage is graphics queue only?
 
-  vkd->oneShotCommandBuffer = create_command_buffer(vkd, vkd->oneShotCommandPool, "one-shot");
+  vkd->oneShotCommandBuffer =
+      device_create_command_buffer(vkd, vkd->oneShotCommandPool, "one-shot");
 }

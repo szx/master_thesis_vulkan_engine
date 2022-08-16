@@ -110,9 +110,9 @@ void create_swap_chain_image_views(swap_chain *vks) {
   for (size_t i = 0; i < utarray_len(vks->swapChainImageViews); i++) {
     VkImageView *swapChainImageView = (VkImageView *)utarray_eltptr(vks->swapChainImageViews, i);
     VkImage swapChainImage = *(VkImage *)utarray_eltptr(vks->swapChainImages, i);
-    *swapChainImageView = create_image_view(vks->vkd, swapChainImage, VK_IMAGE_VIEW_TYPE_2D,
-                                            vks->swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1,
-                                            1, "swap chain element #%zu", i);
+    *swapChainImageView = device_create_image_view(
+        vks->vkd, swapChainImage, VK_IMAGE_VIEW_TYPE_2D, vks->swapChainImageFormat,
+        VK_IMAGE_ASPECT_COLOR_BIT, 1, 1, "swap chain element #%zu", i);
     debug_name_image(vks->vkd->debug, swapChainImage, "swap chain element #%zu - image", i);
   }
 }

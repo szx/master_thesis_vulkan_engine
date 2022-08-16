@@ -99,9 +99,9 @@ buffer_element buffer_add(buffer *buffer, const void *data, size_t size) {
 void buffer_make_resident(buffer *buffer) {
   if (!buffer->resident) {
     verify(buffer->totalSize > 0);
-    create_buffer(buffer->vkd, buffer->totalSize, buffer->bufferUsageFlags,
-                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &buffer->buffer, &buffer->bufferMemory,
-                  buffer->name);
+    device_create_buffer(buffer->vkd, buffer->totalSize, buffer->bufferUsageFlags,
+                         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &buffer->buffer,
+                         &buffer->bufferMemory, buffer->name);
     buffer->resident = true;
   }
 }
@@ -117,7 +117,8 @@ void buffer_send_to_device(buffer *buffer) {
   if (useStagingBuffer) {
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
-    create_staging_buffer(buffer->vkd, buffer->totalSize, &stagingBuffer, &stagingBufferMemory);
+    device_create_staging_buffer(buffer->vkd, buffer->totalSize, &stagingBuffer,
+                                 &stagingBufferMemory);
 
     void *data;
     vkMapMemory(buffer->vkd->device, stagingBufferMemory, 0, buffer->totalSize, 0, &data);
@@ -126,7 +127,8 @@ void buffer_send_to_device(buffer *buffer) {
     }
     vkUnmapMemory(buffer->vkd->device, stagingBufferMemory);
 
-    copy_buffer_to_buffer(buffer->vkd, stagingBuffer, buffer->buffer, buffer->totalSize);
+    device_one_shot_copy_buffer_to_buffer(buffer->vkd, stagingBuffer, buffer->buffer,
+                                          buffer->totalSize);
 
     vkDestroyBuffer(buffer->vkd->device, stagingBuffer, vka);
     vkFreeMemory(buffer->vkd->device, stagingBufferMemory, vka);
