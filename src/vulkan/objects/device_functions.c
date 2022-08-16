@@ -408,10 +408,10 @@ void begin_rendering(device *vkd, VkCommandBuffer commandBuffer, rendering_info 
   // add_general_memory_barrier(vkd, commandBuffer);
   utarray_foreach_elem_it (rendering_image_layout_transition_info *, imageLayoutTransitionInfo,
                            renderPassInfo.preImageLayoutTransition) {
-    transition_image_layout(vkd, commandBuffer, imageLayoutTransitionInfo->image,
-                            imageLayoutTransitionInfo->imageAspectFlags,
-                            imageLayoutTransitionInfo->oldLayout,
-                            imageLayoutTransitionInfo->newLayout);
+    transition_image_layout_command(vkd, commandBuffer, imageLayoutTransitionInfo->image,
+                                    imageLayoutTransitionInfo->imageAspectFlags,
+                                    imageLayoutTransitionInfo->oldLayout,
+                                    imageLayoutTransitionInfo->newLayout);
   }
 
   uint32_t onscreenColorAttachmentCount = renderPassInfo.onscreenColorAttachment ? 1 : 0;
@@ -473,10 +473,10 @@ void end_rendering(device *vkd, VkCommandBuffer commandBuffer, rendering_info re
   // add_general_memory_barrier(vkd, commandBuffer);
   utarray_foreach_elem_it (rendering_image_layout_transition_info *, imageLayoutTransitionInfo,
                            renderPassInfo.postImageLayoutTransition) {
-    transition_image_layout(vkd, commandBuffer, imageLayoutTransitionInfo->image,
-                            imageLayoutTransitionInfo->imageAspectFlags,
-                            imageLayoutTransitionInfo->oldLayout,
-                            imageLayoutTransitionInfo->newLayout);
+    transition_image_layout_command(vkd, commandBuffer, imageLayoutTransitionInfo->image,
+                                    imageLayoutTransitionInfo->imageAspectFlags,
+                                    imageLayoutTransitionInfo->oldLayout,
+                                    imageLayoutTransitionInfo->newLayout);
   }
 }
 
@@ -679,6 +679,14 @@ void end_one_shot_commands(device *vkd) {
   vkResetCommandPool(vkd->device, vkd->oneShotCommandPool, 0);
 }
 
+void create_staging_buffer(device *vkd, VkDeviceSize size, VkBuffer *buffer,
+                           VkDeviceMemory *bufferMemory) {
+  // TODO: Reuse staging buffer?
+  create_buffer(vkd, size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, buffer,
+                bufferMemory, "staging buffer");
+}
+
 void copy_buffer_to_buffer(device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
   VkCommandBuffer commandBuffer = begin_one_shot_commands(vkd);
 
@@ -690,7 +698,7 @@ void copy_buffer_to_buffer(device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer, 
 }
 
 void copy_buffer_to_image(device *vkd, VkBuffer buffer, VkImage image, uint32_t width,
-                          uint32_t height, uint32_t baseArrayLayer) {
+                          uint32_t height, uint32_t layerCount) {
   VkCommandBuffer commandBuffer = begin_one_shot_commands(vkd);
 
   VkBufferImageCopy copyRegion = {.bufferOffset = 0,
@@ -698,8 +706,8 @@ void copy_buffer_to_image(device *vkd, VkBuffer buffer, VkImage image, uint32_t 
                                   .bufferImageHeight = 0,
                                   .imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
                                   .imageSubresource.mipLevel = 0,
-                                  .imageSubresource.baseArrayLayer = baseArrayLayer,
-                                  .imageSubresource.layerCount = 1,
+                                  .imageSubresource.baseArrayLayer = 0,
+                                  .imageSubresource.layerCount = layerCount,
                                   .imageOffset = {0, 0, 0},
                                   .imageExtent = {width, height, 1}};
   vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1,
@@ -780,10 +788,19 @@ void generate_mipmaps(device *vkd, VkImage image, VkFormat format, uint32_t widt
   end_one_shot_commands(vkd);
 }
 
-void transition_image_layout(device *vkd, VkCommandBuffer commandBuffer, VkImage image,
-                             VkImageAspectFlags imageAspectFlags, VkImageLayout oldLayout,
-                             VkImageLayout newLayout) {
+void transition_image_layout(device *vkd, VkImage image, VkImageAspectFlags imageAspectFlags,
+                             VkImageLayout oldLayout, VkImageLayout newLayout) {
+  VkCommandBuffer commandBuffer = begin_one_shot_commands(vkd);
 
+  transition_image_layout_command(vkd, commandBuffer, image, imageAspectFlags, oldLayout,
+                                  newLayout);
+
+  end_one_shot_commands(vkd);
+}
+
+void transition_image_layout_command(device *vkd, VkCommandBuffer commandBuffer, VkImage image,
+                                     VkImageAspectFlags imageAspectFlags, VkImageLayout oldLayout,
+                                     VkImageLayout newLayout) {
   VkImageMemoryBarrier barrier = {.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
                                   .oldLayout = oldLayout,
                                   .newLayout = newLayout,

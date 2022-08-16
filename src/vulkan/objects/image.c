@@ -185,10 +185,8 @@ void image_send_to_device(image *image) {
     return;
   }
   if (image->texture != NULL && image->copyDataToDevice) {
-    VkCommandBuffer commandBuffer = begin_one_shot_commands(image->vkd);
-    transition_image_layout(image->vkd, commandBuffer, image->image, image->aspectFlags,
-                            VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    end_one_shot_commands(image->vkd);
+    transition_image_layout(image->vkd, image->image, image->aspectFlags, VK_IMAGE_LAYOUT_UNDEFINED,
+                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
     size_t pixelSize = image->texture->image->channels;
     size_t texelSize = format_size(image->format);
@@ -197,30 +195,32 @@ void image_send_to_device(image *image) {
     size_t texelNum = image->width * image->height;
     size_t totalLayerPixelSize = texelNum * pixelSize;
     size_t totalLayerTexelSize = texelNum * texelSize;
+    size_t totalTexelSize = image->arrayLayers * texelNum * texelSize;
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
-    create_buffer(image->vkd, totalLayerTexelSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                  &stagingBuffer, &stagingBufferMemory, "staging buffer for image");
+    create_staging_buffer(image->vkd, totalTexelSize, &stagingBuffer, &stagingBufferMemory);
+
+    void *data;
+    vkMapMemory(image->vkd->device, stagingBufferMemory, 0, totalTexelSize, 0, &data);
+    uint8_t *bytes = data;
     for (size_t layerIdx = 0; layerIdx < image->arrayLayers; layerIdx++) {
-      void *data;
-      vkMapMemory(image->vkd->device, stagingBufferMemory, 0, totalLayerTexelSize, 0, &data);
-      uint8_t *bytes = data;
       size_t pixelLayerOffset = layerIdx * totalLayerPixelSize;
+      size_t texelLayerOffset = layerIdx * totalLayerTexelSize;
       for (size_t i = 0; i < texelNum; i++) {
-        core_memcpy(bytes + i * texelSize,
+        core_memcpy(bytes + texelLayerOffset + i * texelSize,
                     utarray_eltptr(image->texture->image->data, pixelLayerOffset + i * pixelSize),
                     pixelSize);
         if (emptyComponents > 0) {
           core_memset(bytes + i * texelSize + pixelSize, 0, emptyComponents);
         }
       }
-      vkUnmapMemory(image->vkd->device, stagingBufferMemory);
-
-      copy_buffer_to_image(image->vkd, stagingBuffer, image->image, image->width, image->height,
-                           layerIdx);
     }
+    vkUnmapMemory(image->vkd->device, stagingBufferMemory);
+
+    copy_buffer_to_image(image->vkd, stagingBuffer, image->image, image->width, image->height,
+                         image->arrayLayers);
+
     vkDestroyBuffer(image->vkd->device, stagingBuffer, vka);
     vkFreeMemory(image->vkd->device, stagingBufferMemory, vka);
 

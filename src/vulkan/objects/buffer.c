@@ -115,13 +115,9 @@ void buffer_send_to_device(buffer *buffer) {
 
   bool useStagingBuffer = (buffer->memoryPropertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) == 0;
   if (useStagingBuffer) {
-    // TODO: Reuse staging buffer.
-    // TODO: Free geometry buffer data if geometry buffer is device local.
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
-    create_buffer(buffer->vkd, buffer->totalSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                  &stagingBuffer, &stagingBufferMemory, "staging buffer for geometry");
+    create_staging_buffer(buffer->vkd, buffer->totalSize, &stagingBuffer, &stagingBufferMemory);
 
     void *data;
     vkMapMemory(buffer->vkd->device, stagingBufferMemory, 0, buffer->totalSize, 0, &data);

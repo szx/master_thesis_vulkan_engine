@@ -153,13 +153,20 @@ VkFence create_fence(device *vkd, VkFenceCreateFlags flags, const char *debugFor
 VkCommandBuffer begin_one_shot_commands(device *vkd);
 void end_one_shot_commands(device *vkd);
 
+void create_staging_buffer(device *vkd, VkDeviceSize size, VkBuffer *buffer,
+                           VkDeviceMemory *bufferMemory);
+
 void copy_buffer_to_buffer(device *vkd, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 void copy_buffer_to_image(device *vkd, VkBuffer buffer, VkImage image, uint32_t width,
-                          uint32_t height, uint32_t baseArrayLayer);
+                          uint32_t height, uint32_t layerCount);
 
 void generate_mipmaps(device *vkd, VkImage image, VkFormat format, uint32_t width, uint32_t height,
                       uint32_t mipLevelCount);
 
-void transition_image_layout(device *vkd, VkCommandBuffer commandBuffer, VkImage image,
-                             VkImageAspectFlags imageAspectFlags, VkImageLayout oldLayout,
-                             VkImageLayout newLayout);
+void transition_image_layout(device *vkd, VkImage image, VkImageAspectFlags imageAspectFlags,
+                             VkImageLayout oldLayout, VkImageLayout newLayout);
+/* general commands */
+
+void transition_image_layout_command(device *vkd, VkCommandBuffer commandBuffer, VkImage image,
+                                     VkImageAspectFlags imageAspectFlags, VkImageLayout oldLayout,
+                                     VkImageLayout newLayout);
