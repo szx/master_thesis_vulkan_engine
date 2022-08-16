@@ -11,7 +11,7 @@ What? Why? How? Nieporuszono: podział przestrzeni i culling, multisampling Zaga
 generacja kodu, bazy danych Test: obrazy z HOST_VISIBlE Skróty: GPU, indirect rendering - pośrednie renderowania,
 fixed-function, buffor, image, texture - sampled image, binding - dowiązanie, bindless rendering - renderowanie bez
 dowiązań, update after bind - uaktualnienie po dowiązaniu tiling - kafelkowanie, texel, staging buffer - bufor
-przemieszczenia, MSAA, shader stage - etap cieniowania, shader invocation - wywołanie shadera, draw call - polecenie
+tymczasowy, MSAA, shader stage - etap cieniowania, shader invocation - wywołanie shadera, draw call - polecenie
 rysowania, texture unit - jednostka teksturujące, device feature - funkcja urządzenia, instance feature - funkcja
 instancji, sampler - próbnik sampled image - próbkowany obraz, frame - klatka, command buffer - bufor poleceń layout
 qualifier - kwalifikator układu update-after-bind - aktualizacja po dowiązaniu variable-sized descriptor binding -
@@ -692,8 +692,6 @@ został uznany za zbyt duży, i dlatego jest poza zakresem tej pracy. Z tego pow
 jako cele renderowania, , CPU nie używa obrazów używanych przez GPU do renderowania, dlatego też pamięć wszystkich
 rodzajów obrazów jest pamięcią DEVICE_LOCAL, co powinno skutkować najszybszym dostępem do obrazów przez GPU. Kopiowanie
 danych z CPU do GPU jest ważną operacją pozwalającą na wstępne wypełnienie obrazów danymi załadowanymi z bazy zasobów.
-Silnik używa bufora przenoszenia i serii funkcji vkCmdCopyBufferToImage w buforze poleceń one-shot do skopiowania każdej
-warstwy obrazu z CPU do GPU.
 [LISTING]
 W przypadku obrazów używanych do mapowania tekstur po skopiowaniu danych do mipmapy poziomu 0 silnik generuje resztę
 poziomów mipmap używając serii funkcji vkCmdBlitImage. Użycie tej funkcji wymaga obrazu w formacie wspierającym
@@ -730,7 +728,7 @@ użytych flag właściwości pamięci. Dla pamięci HOST_VISIBLE silnik używa f
 regionu pamięci i bezpośredniego skopiowania pamięci przy użyciu CPU.
 [LISTING vkMapMemory]
 Dla innych rodzajów pamięci, które nie mogą być bezpośrednio zapisywane przez CPU (w tym DEVICE_LOCAL) silnik używa
-bufora przenoszenia i funkcji vkCmdCopyBuffer() w bufore poleceń one-shot.
+bufora tymczasowego i funkcji vkCmdCopyBuffer() w bufore poleceń one-shot.
 [LISTING staging]
 
 ---
@@ -1494,11 +1492,6 @@ Pobieranie są wskaźniki do następujących funkcji rozszerzeń:
 
 #### Wykonywanie poleceń one-shot
 
-Bufor poleceń one-shot jest używany do transferu danych pomiędzy CPU i GPU. Podstawowe operacje transferu obejmują:
-
-- kopiowanie danych zasobów z CPU do bufora lub obrazu na GPU,
-- generację poziomów mipmap dla tekstur 2D.
-
 Bufor poleceń one-shot jest przeznaczony do jednokrotnego transferu dużych ilości danych z bazy zasobów do pamięci
 DEVICE_LOCAL na GPU i musi być użyty przez rozpoczęciem pętli głównej renderowania - pamięć, która może być modyfikowana
 pomiędzy klatkami (np. bufory poleceń rysowania pośredniego) musi być pamięcią HOST_VISIBLE, która pozwala na mapowanie
@@ -1509,31 +1502,18 @@ przeznaczona do użycia z kolejką graficzną i stworzona z flagą TRANSIENT_BIT
 że zaalokowane bufory komend będą krótkotrwałe i zresetowane bądź zwolnione w stosunkowo krótkim czasie, co teoretycznie
 pozwala sterownikowi na optymalizację metody alokacji pamięci.
 
-Nagrywanie poleceń one-shot rozpoczyna się wywołaniem funkcji begin_one_shot_commands() rozpoczynającej nagrywanie
-bufora poleceń funkcją vkBeginCommandBuffer() z flagą użycia ONE_TIME_SUBMIT_BIT wskazującą, że będzie on wykonany tylko
-jeden raz.
+Nagrywanie poleceń one-shot rozpoczyna się wywołaniem metody begin_one_shot_commands() rozpoczynającej nagrywanie bufora
+poleceń funkcją vkBeginCommandBuffer() z flagą użycia ONE_TIME_SUBMIT_BIT wskazującą, że będzie on wykonany tylko jeden
+raz.
 
-Bufor poleceń one-shot można nagrać następujące wspiera nagrywanie następujących funkcji:
+Nagrywanie jak kończone wywołaniem metody end_one_shot_commands(), która wykonuje następujące czynności:
 
-- copy_buffer_to_buffer(),
-- copy_buffer_to_image(),
-- generate_mipmaps(),
-- transition_image_layout().
-
-Funkcja copy_buffer_to_buffer() pozwala na kopiowanie
-
-Funkcja copy_buffer_to_image() ...
-
-Funkcja generate_mipmaps() ...
-
-Funkcja transition_image_layout() ...
-
-Funkcja end_one_shot_commands() wykonuje następujące czynności:
-
+```
 1. Kończy nagrywanie bufora komend one-shot funkcją vkEndCommandBuffer(),
 2. Wysyła bufor poleceń do kolejki graficznej funkcją vkQueueSubmit(),
 3. Czeka na CPU aż kolejka zakończy wykonywanie poleceń na GPU funkcją vkQueueWaitIdle(),
 4. Resetuje bufor komend one-shot poprzez reset całej puli komend one-shot funkcją vkResetCommandPool().
+```
 
 Synchronizacja między krokiem 2. i 4. zapobiega próbie zresetowania bufora poleceń wciąż używanego przez GPU.
 Resetowanie puli poleceń automatycznie resetuje zaalokowane z niego bufory poleceń i jest uznawane za szybsze od
@@ -1543,13 +1523,59 @@ manualnego resetowania buforów poleceń przez warstwy walidacji:
 Validation Performance Warning: [ UNASSIGNED-BestPractices-vkCreateCommandPool-command-buffer-reset ] Object 0: handle = 0x626000015100, type = VK_OBJECT_TYPE_DEVICE; | MessageID = 0x8728e724 | vkCreateCommandPool(): VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT is set. Consider resetting entire pool instead.
 ```
 
+Bufor poleceń one-shot może być wypełniony dowolnymi poleceniami graficznymi Vulkan, ale silnik oferuje następujące
+metody implementujące podstawowe operacje używane podczas transferu danych:
+
+- one_shot_copy_buffer_to_buffer(),
+- one_shot_copy_buffer_to_image(),
+- one_shot_generate_mipmaps(),
+- one_shot_transition_image_layout().
+
+##### Metody one_shot_copy_buffer_to_buffer() i one_shot_copy_buffer_to_image()
+
+Metody one_shot_copy_buffer_to_buffer() i one_shot_copy_buffer_to_image() kopiują dane w obrębie GPU z bufora do bufora
+lub obrazu używając poleceń vkCmdCopyBuffer() i vkCmdCopyBufferToImage().
+
+Te metody są przeznaczone do użycia wraz z buforem tymczasowym do kopiowanie danych z pamięci CPU do pamięci
+DEVICE_LOCAL używając pośredniczącej pamięci HOST_VISIBLE. Pseudokod:
+
+```
+1. Stwórz bufor tymczasowy z flagą użycia TRANSFER_SRC_BIT (bufer może być używany jako źródło w operacji transferu) i dowiązaną pamięcią HOST_VISIBLE,
+2. Mapuj pamięć bufora tymczasowego funkcją vkMapMemory(),
+3. Skopiuj pamięć CPU do pamięci HOST_VISIBLE bufora tymczasowego,
+4. Odmapuj pamięć bufora tymczasowego funkcją vkUpmapMemory(),
+5. Skopiuj pamięć HOST_VISIBLE bufora tymczasowego do pamięci DEVICE_LOCAL bufora lub obrazu używając bufora poleceń one-shot,
+6. Zniszcz bufor tymczasowy i jego pamięć.
+```
+
+##### Metoda one_shot_generate_mipmaps()
+
+Metoda generate_mipmaps() generuje poziomy mipmap dla tekstur 2D. Baza zasobów nie przechowuje mipmap, dlatego funkcja
+jest wywoływania po transferze danych zasobu obrazu do pierwszego poziomu mipmapy obrazu w celu automatycznej generacji
+reszty poziomów. Pseudokod:
+
+```
+MipWidth, MipHeight = szerokość oraz wysokość pierwszego poziomu mipmapy
+1. Oblicz maksymalną liczbę poziomów mipmap:
+	1 + (uint32_t)floor(log2((double)MAX(image->width, image->height)));
+	[...]
+2. Dla każdego poziomu mipmapy:
+	2.1. ...
+```
+
+##### Metoda one_shot_transition_image_layout()
+
+Metoda one_shot_transition_image_layout() ...
+
+Tranzycje tabelka ...
+
 ## objects/device_functions.h
 
 ### Funkcje pomocnicze
 
-Funkcja find_memory_type() ...
+Funkcja device_find_memory_type() ...
 
-Funkcja find_supported_format() ...
+Funkcja device_find_supported_format() ...
 
 ### Funkcje tworzące obiekty Vulkan
 
@@ -1594,12 +1620,12 @@ rysowania pośredniego z offsetem indeksu instancji MORE: dynamicRendering: dyna
 
 MORE: warstwy walidacji
 
-MORE: onscreen vs ofscreen...
+MORE: onscreen vs offscreen...
 
 MORE: część globalna i część instancji ujednoliconego bufora uniform, dlatczego podział
 
 MORE: hierarchia obiektów, diagram, opisy
 
-MORE: model obiektów vulkan, creation i enumeration
+MORE: model obiektów vulkan, creation i enumeration, typy pamięci
 
-TEST: filtrowanie anizotropowe, usuń TRANSIENT
+TEST: technika filtrowanie anizotropowe, usuń TRANSIENT TEST: technika mipmapy, usuń mipmapy
