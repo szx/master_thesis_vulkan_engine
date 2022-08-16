@@ -712,16 +712,16 @@ Silnik wyróżnia cztery rodzaje buforów:
 
 - bufor wierzchołków,
 - bufor indeksów,
-- bufor pośredniego renderowania,
+- bufor poleceń rysowania pośredniego,
 - bufor uniform.
 
-Bufory wierzchołków, indeksów i pośredniego renderowania są źródłem danych odczytywanych przez stałe funkcji potoku
+Bufory wierzchołków, indeksów i poleceń rysowania pośredniego są źródłem danych odczytywanych przez stałe funkcji potoku
 graficznego. Bufory uniform są źródłem danych odczytywanych przez shadery. Bufor składa się z dwóch obiektów Vulkan:
 VkBuffer i VkDeviceMemory. Rodzaj bufora przekłada się na flagi stosowane podczas tworzenia obiektów Vulkan, co zostało
 podsumowane w poniższej tabeli:
 rodzaj bufora / flagi użycia bufora (VkBufferUsageFlags) / flagi właściwości pamięci (VkMemoryPropertyFlags)
 bufor wierzchołków / TRANSFER_DST | VERTEX_BUFFER / DEVICE_LOCAL bufor indeksów / TRANSFER_DST | INDEX_BUFFER /
-DEVICE_LOCAL bufor pośredniego renderowania / TRANSFER_DST | INDIRECT_BUFFER / HOST_VISIBLE | HOST_COHERENT bufor
+DEVICE_LOCAL bufor poleceń rysowania pośredniego / TRANSFER_DST | INDIRECT_BUFFER / HOST_VISIBLE | HOST_COHERENT bufor
 uniform / UNIFORM_BUFFER / HOST_VISIBLE | HOST_COHERENT
 
 Kopiowanie danych z CPU do bufora w GPU jest ważną operacją wykonywaną na początku każdej ramki mającą na celu
@@ -1316,23 +1316,13 @@ jest zmiana rozmiaru okna.
 Obiekt device reprezentuje urządzenie. Jest on podstawowym obiektem przygotowującym podstawowe funkcjonalności używane
 przez inne obiekty systemu renderowania. ...
 
-W silniku składa się z następujących elementów:
+W silniku obiekt device oferuje następujące funkcjonalności:
 
-- okno GLFW,
-- instancja,
-- powierzchnia okna,
-- obiekt debug,
-- urządzenie fizyczne,
-- urządzenie logiczne,
-- kolejka grafiki,
-- kolejka prezentacji,
-- wskaźniki funkcji rozszerzeń,
-- informacje o utworzonym łańcuchu wymiany,
-- limity,
-- bufor poleceń one-shot
-- obiekt input.
+- obsługa okna,
+- inicjalizacja Vulkan,
+- wykonywanie poleceń one-shot,
 
-#### Stworzenie okna
+#### Obsługa okna
 
 Okno jest tworzone przy użyciu GLFW i jest reprezentowane obiektem *GLFWwindow*.
 
@@ -1358,8 +1348,8 @@ glfwSetCursorPosCallback(window, mouse_callback);
 glfwSetInputMode(vkd->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 ```
 
-Zarejestrowane funkcje wywołania zwrotnego są używane do wykrywania zmiany rozmiaru okna oraz obsługi danych wejściowych
-myszy i klawiatury.
+Zarejestrowane funkcje wywołania zwrotnego są używane do wykrywania zmiany rozmiaru okna oraz przekazywania danych
+wejściowych myszy i klawiatury do obiektu input.
 
 #### Inicjalizacja Vulkan
 
@@ -1479,17 +1469,79 @@ Kolejki są używane do wykonywania na urządzeniu fizycznych poleceń zawartych
 
 Uchwyt do kolejki jest uzyskiwany używając funkcji vkGetDeviceQueue().
 
+Pobierane są po jednym uchwycie do koleki graficznej oraz kolejki prezentacji.
+
 ##### Wskaźniki funkcji rozszerzeń
 
-...
+Użycie funkcji niebędących częścią podstawowego API używanej wersji API Vulkan ale oferowanych przez wspierane
+rozszerzenia instancji i urządzenia wymaga pobrania wskaźników funkcji używając funkcji vkGetInstanceProcAddr():
 
-#### bufor poleceń one-shot
+```
+  vkd->cmdBeginRendering =
+      (PFN_vkCmdBeginRenderingKHR)vkGetInstanceProcAddr(vkd->instance, "vkCmdBeginRenderingKHR");
+```
 
-...
+Pobieranie są wskaźniki do następujących funkcji rozszerzeń:
 
-#### obiekt input.
+- VK_KHR_dynamic_rendering
+  - vkCmdBeginRenderingKHR
+  - vkCmdEndRenderingKHR
+- VK_EXT_debug_utils
+  - vkCmdBeginDebugUtilsLabelEXT
+  - vkCmdEndDebugUtilsLabelEXT
+  - vkCmdInsertDebugUtilsLabelEXT
+  - vkSetDebugUtilsObjectNameEXT
 
-...
+#### Wykonywanie poleceń one-shot
+
+Bufor poleceń one-shot jest używany do transferu danych pomiędzy CPU i GPU. Podstawowe operacje transferu obejmują:
+
+- kopiowanie danych zasobów z CPU do bufora lub obrazu na GPU,
+- generację poziomów mipmap dla tekstur 2D.
+
+Bufor poleceń one-shot jest przeznaczony do jednokrotnego transferu dużych ilości danych z bazy zasobów do pamięci
+DEVICE_LOCAL na GPU i musi być użyty przez rozpoczęciem pętli głównej renderowania - pamięć, która może być modyfikowana
+pomiędzy klatkami (np. bufory poleceń rysowania pośredniego) musi być pamięcią HOST_VISIBLE, która pozwala na mapowanie
+pamięci i tymsamym pominęcie użycia buforów poleceń.
+
+Bufor poleceń one-shot jest alokowany podczas tworzenia obiektu device z puli komend one-shot (VkCommandPool). Jest ona
+przeznaczona do użycia z kolejką graficzną i stworzona z flagą TRANSIENT_BIT, która wskazuje sterownikowi graficznemu,
+że zaalokowane bufory komend będą krótkotrwałe i zresetowane bądź zwolnione w stosunkowo krótkim czasie, co teoretycznie
+pozwala sterownikowi na optymalizację metody alokacji pamięci.
+
+Nagrywanie poleceń one-shot rozpoczyna się wywołaniem funkcji begin_one_shot_commands() rozpoczynającej nagrywanie
+bufora poleceń funkcją vkBeginCommandBuffer() z flagą użycia ONE_TIME_SUBMIT_BIT wskazującą, że będzie on wykonany tylko
+jeden raz.
+
+Bufor poleceń one-shot można nagrać następujące wspiera nagrywanie następujących funkcji:
+
+- copy_buffer_to_buffer(),
+- copy_buffer_to_image(),
+- generate_mipmaps(),
+- transition_image_layout().
+
+Funkcja copy_buffer_to_buffer() pozwala na kopiowanie
+
+Funkcja copy_buffer_to_image() ...
+
+Funkcja generate_mipmaps() ...
+
+Funkcja transition_image_layout() ...
+
+Funkcja end_one_shot_commands() wykonuje następujące czynności:
+
+1. Kończy nagrywanie bufora komend one-shot funkcją vkEndCommandBuffer(),
+2. Wysyła bufor poleceń do kolejki graficznej funkcją vkQueueSubmit(),
+3. Czeka na CPU aż kolejka zakończy wykonywanie poleceń na GPU funkcją vkQueueWaitIdle(),
+4. Resetuje bufor komend one-shot poprzez reset całej puli komend one-shot funkcją vkResetCommandPool().
+
+Synchronizacja między krokiem 2. i 4. zapobiega próbie zresetowania bufora poleceń wciąż używanego przez GPU.
+Resetowanie puli poleceń automatycznie resetuje zaalokowane z niego bufory poleceń i jest uznawane za szybsze od
+manualnego resetowania buforów poleceń przez warstwy walidacji:
+
+```
+Validation Performance Warning: [ UNASSIGNED-BestPractices-vkCreateCommandPool-command-buffer-reset ] Object 0: handle = 0x626000015100, type = VK_OBJECT_TYPE_DEVICE; | MessageID = 0x8728e724 | vkCreateCommandPool(): VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT is set. Consider resetting entire pool instead.
+```
 
 ## objects/device_functions.h
 
@@ -1506,18 +1558,6 @@ Funkcje create_*() ...
 Funkcja create_graphics_pipeline() ...
 
 Funkcje begin_rendering() i end_rendering() ...
-
-### Funkcje używające bufora poleceń one-shot
-
-Funkcje begin_one_shot_commands() i end_one_shot_commands() ...
-
-Funkcja copy_buffer_to_buffer() ...
-
-Funkcja copy_buffer_to_image() ...
-
-Funkcja generate_mipmaps() ...
-
-Funkcja transition_image_layout() ...
 
 ## objects/sync.h
 
@@ -1562,4 +1602,4 @@ MORE: hierarchia obiektów, diagram, opisy
 
 MORE: model obiektów vulkan, creation i enumeration
 
-TEST: filtrowanie anizotropowe
+TEST: filtrowanie anizotropowe, usuń TRANSIENT
