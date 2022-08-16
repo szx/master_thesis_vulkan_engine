@@ -417,10 +417,10 @@ void device_begin_rendering(device *vkd, VkCommandBuffer commandBuffer,
   // add_general_memory_barrier(vkd, commandBuffer);
   utarray_foreach_elem_it (rendering_image_layout_transition_info *, imageLayoutTransitionInfo,
                            renderPassInfo.preImageLayoutTransition) {
-    device_transition_image_layout_command(vkd, commandBuffer, imageLayoutTransitionInfo->image,
-                                           imageLayoutTransitionInfo->imageAspectFlags,
-                                           imageLayoutTransitionInfo->oldLayout,
-                                           imageLayoutTransitionInfo->newLayout);
+    device_transition_image_layout_command(
+        vkd, commandBuffer, imageLayoutTransitionInfo->image,
+        imageLayoutTransitionInfo->imageAspectFlags, 0, VK_REMAINING_MIP_LEVELS,
+        imageLayoutTransitionInfo->oldLayout, imageLayoutTransitionInfo->newLayout);
   }
 
   uint32_t onscreenColorAttachmentCount = renderPassInfo.onscreenColorAttachment ? 1 : 0;
@@ -483,10 +483,10 @@ void device_end_rendering(device *vkd, VkCommandBuffer commandBuffer,
   // add_general_memory_barrier(vkd, commandBuffer);
   utarray_foreach_elem_it (rendering_image_layout_transition_info *, imageLayoutTransitionInfo,
                            renderPassInfo.postImageLayoutTransition) {
-    device_transition_image_layout_command(vkd, commandBuffer, imageLayoutTransitionInfo->image,
-                                           imageLayoutTransitionInfo->imageAspectFlags,
-                                           imageLayoutTransitionInfo->oldLayout,
-                                           imageLayoutTransitionInfo->newLayout);
+    device_transition_image_layout_command(
+        vkd, commandBuffer, imageLayoutTransitionInfo->image,
+        imageLayoutTransitionInfo->imageAspectFlags, 0, VK_REMAINING_MIP_LEVELS,
+        imageLayoutTransitionInfo->oldLayout, imageLayoutTransitionInfo->newLayout);
   }
 }
 
@@ -739,47 +739,33 @@ void device_one_shot_generate_mipmaps(device *vkd, VkImage image, VkFormat forma
 
   VkCommandBuffer commandBuffer = device_begin_one_shot_commands(vkd);
 
-  VkImageMemoryBarrier barrier = {.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-                                  .image = image,
-                                  .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-                                  .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-                                  .subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                                  .subresourceRange.baseArrayLayer = 0,
-                                  .subresourceRange.layerCount = 1,
-                                  .subresourceRange.levelCount = 1};
-
-  int32_t mipWidth = width;
-  int32_t mipHeight = height;
+  uint32_t mipWidth = width;
+  uint32_t mipHeight = height;
   for (uint32_t i = 1; i < mipLevelCount; i++) {
-    barrier.subresourceRange.baseMipLevel = i - 1;
-    barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-    barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-    barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-    barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-    vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT,
-                         VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, NULL, 0, NULL, 1, &barrier);
+    uint32_t currentMipLevel = i - 1;
+    uint32_t nextMipLevel = i - 1;
+    device_transition_image_layout_command(vkd, commandBuffer, image, VK_IMAGE_ASPECT_COLOR_BIT,
+                                           currentMipLevel, 1, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                           VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
     VkImageBlit blit = {
         .srcOffsets = {{0, 0, 0}, {mipWidth, mipHeight, 1}},
         .srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-        .srcSubresource.mipLevel = i - 1,
+        .srcSubresource.mipLevel = currentMipLevel,
         .srcSubresource.baseArrayLayer = 0,
         .srcSubresource.layerCount = 1,
         .dstOffsets = {{0, 0, 0},
                        {mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1}},
         .dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-        .dstSubresource.mipLevel = i,
+        .dstSubresource.mipLevel = nextMipLevel,
         .dstSubresource.baseArrayLayer = 0,
         .dstSubresource.layerCount = 1};
     vkCmdBlitImage(commandBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, image,
                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blit, VK_FILTER_LINEAR);
 
-    barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-    barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-    vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT,
-                         VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, NULL, 0, NULL, 1, &barrier);
+    device_transition_image_layout_command(vkd, commandBuffer, image, VK_IMAGE_ASPECT_COLOR_BIT,
+                                           currentMipLevel, 1, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                                           VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     if (mipWidth > 1) {
       mipWidth /= 2;
@@ -789,13 +775,9 @@ void device_one_shot_generate_mipmaps(device *vkd, VkImage image, VkFormat forma
     }
   }
 
-  barrier.subresourceRange.baseMipLevel = mipLevelCount - 1;
-  barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-  barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-  barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-  barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-  vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT,
-                       VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, NULL, 0, NULL, 1, &barrier);
+  device_transition_image_layout_command(vkd, commandBuffer, image, VK_IMAGE_ASPECT_COLOR_BIT,
+                                         mipLevelCount - 1, 1, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
   device_end_one_shot_commands(vkd);
 }
@@ -805,14 +787,15 @@ void device_one_shot_transition_image_layout(device *vkd, VkImage image,
                                              VkImageLayout oldLayout, VkImageLayout newLayout) {
   VkCommandBuffer commandBuffer = device_begin_one_shot_commands(vkd);
 
-  device_transition_image_layout_command(vkd, commandBuffer, image, imageAspectFlags, oldLayout,
-                                         newLayout);
+  device_transition_image_layout_command(vkd, commandBuffer, image, imageAspectFlags, 0,
+                                         VK_REMAINING_MIP_LEVELS, oldLayout, newLayout);
 
   device_end_one_shot_commands(vkd);
 }
 
 void device_transition_image_layout_command(device *vkd, VkCommandBuffer commandBuffer,
                                             VkImage image, VkImageAspectFlags imageAspectFlags,
+                                            uint32_t baseMipLevel, uint32_t mipLevelCount,
                                             VkImageLayout oldLayout, VkImageLayout newLayout) {
   VkImageMemoryBarrier barrier = {.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
                                   .oldLayout = oldLayout,
@@ -821,8 +804,8 @@ void device_transition_image_layout_command(device *vkd, VkCommandBuffer command
                                   .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
                                   .image = image,
                                   .subresourceRange.aspectMask = imageAspectFlags,
-                                  .subresourceRange.baseMipLevel = 0,
-                                  .subresourceRange.levelCount = VK_REMAINING_MIP_LEVELS,
+                                  .subresourceRange.baseMipLevel = baseMipLevel,
+                                  .subresourceRange.levelCount = mipLevelCount,
                                   .subresourceRange.baseArrayLayer = 0,
                                   .subresourceRange.layerCount = VK_REMAINING_ARRAY_LAYERS};
 
@@ -830,14 +813,34 @@ void device_transition_image_layout_command(device *vkd, VkCommandBuffer command
   VkPipelineStageFlags dstStageMask = 0;
 
   if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+    // memory dependency:
     barrier.srcAccessMask = 0;
     barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    // execution dependency:
     srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
     dstStageMask = VK_PIPELINE_STAGE_TRANSFER_BIT;
   } else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
+             newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) {
+    // memory dependency:
+    barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+    // execution dependency:
+    srcStageMask = VK_PIPELINE_STAGE_TRANSFER_BIT;
+    dstStageMask = VK_PIPELINE_STAGE_TRANSFER_BIT;
+  } else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL &&
              newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+    // memory dependency:
+    barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+    // execution dependency:
+    srcStageMask = VK_PIPELINE_STAGE_TRANSFER_BIT;
+    dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+  } else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
+             newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+    // memory dependency:
     barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
     barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+    // execution dependency:
     srcStageMask = VK_PIPELINE_STAGE_TRANSFER_BIT;
     dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
   } else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED &&

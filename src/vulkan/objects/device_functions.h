@@ -181,4 +181,5 @@ void device_one_shot_transition_image_layout(device *vkd, VkImage image,
 
 void device_transition_image_layout_command(device *vkd, VkCommandBuffer commandBuffer,
                                             VkImage image, VkImageAspectFlags imageAspectFlags,
+                                            uint32_t baseMipLevel, uint32_t mipLevelCount,
                                             VkImageLayout oldLayout, VkImageLayout newLayout);
