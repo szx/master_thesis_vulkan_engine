@@ -186,10 +186,6 @@ void image_send_to_device(image *image) {
     return;
   }
   if (image->texture != NULL && image->copyDataToDevice) {
-    device_one_shot_transition_image_layout(image->vkd, image->image, image->aspectFlags,
-                                            VK_IMAGE_LAYOUT_UNDEFINED,
-                                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-
     size_t pixelSize = image->texture->image->channels;
     size_t texelSize = device_format_size(image->format);
     assert(pixelSize <= texelSize);
@@ -220,6 +216,9 @@ void image_send_to_device(image *image) {
     }
     vkUnmapMemory(image->vkd->device, stagingBufferMemory);
 
+    device_one_shot_transition_image_layout(image->vkd, image->image, image->aspectFlags,
+                                            VK_IMAGE_LAYOUT_UNDEFINED,
+                                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
     device_one_shot_copy_buffer_to_image(image->vkd, stagingBuffer, image->image, image->width,
                                          image->height, image->arrayLayers);
 

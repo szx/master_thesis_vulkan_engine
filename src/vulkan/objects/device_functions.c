@@ -743,23 +743,21 @@ void device_one_shot_generate_mipmaps(device *vkd, VkImage image, VkFormat forma
   uint32_t mipHeight = height;
   for (uint32_t i = 1; i < mipLevelCount; i++) {
     uint32_t currentMipLevel = i - 1;
-    uint32_t nextMipLevel = i - 1;
+    uint32_t nextMipLevel = i;
     device_transition_image_layout_command(vkd, commandBuffer, image, VK_IMAGE_ASPECT_COLOR_BIT,
                                            currentMipLevel, 1, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                            VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
-    VkImageBlit blit = {
-        .srcOffsets = {{0, 0, 0}, {mipWidth, mipHeight, 1}},
-        .srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-        .srcSubresource.mipLevel = currentMipLevel,
-        .srcSubresource.baseArrayLayer = 0,
-        .srcSubresource.layerCount = 1,
-        .dstOffsets = {{0, 0, 0},
-                       {mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1}},
-        .dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-        .dstSubresource.mipLevel = nextMipLevel,
-        .dstSubresource.baseArrayLayer = 0,
-        .dstSubresource.layerCount = 1};
+    VkImageBlit blit = {.srcOffsets = {{0, 0, 0}, {mipWidth, mipHeight, 1}},
+                        .srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                        .srcSubresource.mipLevel = currentMipLevel,
+                        .srcSubresource.baseArrayLayer = 0,
+                        .srcSubresource.layerCount = 1,
+                        .dstOffsets = {{0, 0, 0}, {MAX(mipWidth / 2, 1), MAX(mipHeight / 2, 1), 1}},
+                        .dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                        .dstSubresource.mipLevel = nextMipLevel,
+                        .dstSubresource.baseArrayLayer = 0,
+                        .dstSubresource.layerCount = 1};
     vkCmdBlitImage(commandBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, image,
                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blit, VK_FILTER_LINEAR);
 
