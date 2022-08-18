@@ -880,25 +880,14 @@ void device_transition_image_layout_command(device *vkd, VkCommandBuffer command
     dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
   } else if (oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL &&
              newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) {
-    // memory dependency: none
-    barrier.srcAccessMask = 0;
-    barrier.dstAccessMask = 0;
-    // execution dependency: color attachment output is completed before fragment shader
-    srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+    // taken care of by primitive order and rasterization order
+    return;
   } else if (oldLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL &&
              newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL) {
-    // memory dependency: none
-    // execution dependency: none
     return;
   } else if (oldLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL &&
              newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
-    // memory dependency: none
-    barrier.srcAccessMask = 0;
-    barrier.dstAccessMask = 0;
-    // execution dependency: color attachment output is completed before fragment shader
-    srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+    return;
   } else if (oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL &&
              newLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) {
     // memory dependency: color attachment writes are read by swap chain
