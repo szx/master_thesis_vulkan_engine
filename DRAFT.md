@@ -1526,15 +1526,57 @@ Validation Performance Warning: [ UNASSIGNED-BestPractices-vkCreateCommandPool-c
 Bufor poleceń one-shot może być wypełniony dowolnymi poleceniami graficznymi Vulkan, ale silnik oferuje następujące
 metody implementujące podstawowe operacje używane podczas transferu danych:
 
+- one_shot_transition_image_layout(),
 - one_shot_copy_buffer_to_buffer(),
 - one_shot_copy_buffer_to_image(),
-- one_shot_generate_mipmaps(),
-- one_shot_transition_image_layout().
+- one_shot_generate_mipmaps().
+
+##### Metoda one_shot_transition_image_layout()
+
+Metoda one_shot_transition_image_layout() zmienia układ całego obrazu - jego wszystkich warstw i poziomów mipmap. Używa
+ona do tego metody device_transition_image_layout_command().
+
+##### Układ pamięci
+
+Obrazy są przechowywane w pamięci GPU w układach zdefiniowanych przez sterownik graficzny. Każdy układ ogranicza zbiór
+możliwych operacji na obrazie w zamian za optymalizację dozwolonych operacji.
+
+Możliwe układy obrazu:
+
+- UNDEFINED: ...
+- GENERAL:
+- COLOR_ATTACHMENT_OPTIMAL:
+- DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+- DEPTH_STENCIL_READ_ONLY_OPTIMAL:
+- SHADER_READ_ONLY_OPTIMAL:
+- TRANSFER_SRC_OPTIMAL:
+- TRANSFER_DST_OPTIMAL:
+- PREINITIALIZED:
+- DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL:
+- DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL:
+- DEPTH_ATTACHMENT_OPTIMAL:
+- DEPTH_READ_ONLY_OPTIMAL:
+- STENCIL_ATTACHMENT_OPTIMAL:
+- STENCIL_READ_ONLY_OPTIMAL:
+
+Układ obrazu nie jest tym samym co jego kafelkowanie - rodzaj używanego kafelkowania nie może być zmieniany po
+utworzeniu obrazu, a układ obrazu jest zwykle często zmieniany podczas działania programu aby pozwolić GPU na
+optymalizację sposobu użycia obrazu. W przeciwieństwie do poprzednich API takich jak OpenGL, Vulkan nie zmienia
+automatycznie układu obrazu, co zmusza programistę do samodzielnego śledzenia i zmieniania go przed użyciem.
+
+Pipeline ...
+
+##### Metoda device_transition_image_layout_command()
+
+Metoda device_transition_image_layout_command() ....
+
+Tranzycje tabelka ...
 
 ##### Metody one_shot_copy_buffer_to_buffer() i one_shot_copy_buffer_to_image()
 
 Metody one_shot_copy_buffer_to_buffer() i one_shot_copy_buffer_to_image() kopiują dane w obrębie GPU z bufora do bufora
-lub obrazu używając poleceń vkCmdCopyBuffer() i vkCmdCopyBufferToImage().
+lub obrazu używając poleceń vkCmdCopyBuffer() i vkCmdCopyBufferToImage(). Metoda one_shot_copy_buffer_to_image() wymaga
+wcześniejszej zmiany układu obrazu do TRANSFER_DST.
 
 Te metody są przeznaczone do użycia wraz z buforem tymczasowym do kopiowanie danych z pamięci CPU do pamięci
 DEVICE_LOCAL używając pośredniczącej pamięci HOST_VISIBLE. Pseudokod:
@@ -1544,30 +1586,38 @@ DEVICE_LOCAL używając pośredniczącej pamięci HOST_VISIBLE. Pseudokod:
 2. Mapuj pamięć bufora tymczasowego funkcją vkMapMemory(),
 3. Skopiuj pamięć CPU do pamięci HOST_VISIBLE bufora tymczasowego,
 4. Odmapuj pamięć bufora tymczasowego funkcją vkUpmapMemory(),
-5. Skopiuj pamięć HOST_VISIBLE bufora tymczasowego do pamięci DEVICE_LOCAL bufora lub obrazu używając bufora poleceń one-shot,
-6. Zniszcz bufor tymczasowy i jego pamięć.
+5. Jeśli kopiowanie do obrazu, to zmień jego układ z UNDEFINED do TRANSFER_DST metodą one_shot_transition_image_layout(),
+6. Skopiuj pamięć HOST_VISIBLE bufora tymczasowego do pamięci DEVICE_LOCAL bufora lub obrazu używając bufora poleceń one-shot,
+7. Zniszcz bufor tymczasowy i jego pamięć.
 ```
 
 ##### Metoda one_shot_generate_mipmaps()
 
-Metoda generate_mipmaps() generuje poziomy mipmap dla tekstur 2D. Baza zasobów nie przechowuje mipmap, dlatego funkcja
+Metoda generate_mipmaps() generuje poziomy mipmap dla tekstur 2D. Baza zasobów nie przechowuje mipmap, dlatego metoda
 jest wywoływania po transferze danych zasobu obrazu do pierwszego poziomu mipmapy obrazu w celu automatycznej generacji
-reszty poziomów. Pseudokod:
+reszty poziomów. Metoda zakłada układ obrazu TRANSFER_DST i pozostawia go w układzie SHADER_READ_ONLY_OPTIMAL.
+Pseudokod:
 
 ```
+MipLevelCount - liczba poziomów mipmap
 MipWidth, MipHeight = szerokość oraz wysokość pierwszego poziomu mipmapy
-1. Oblicz maksymalną liczbę poziomów mipmap:
-	1 + (uint32_t)floor(log2((double)MAX(image->width, image->height)));
-	[...]
-2. Dla każdego poziomu mipmapy:
-	2.1. ...
+1. Dla każdego poziomu mipmapy i in <1;MipLevelCount):
+	1.1. Zmień układ poziomu mipmapy i-1 z TRANSFER_DST_OPTIMAL do TRANSFER_SRC_OPTIMAL,
+	1.2. Skopiuj poziom mipmapy i-1 (offset 0,0, rozmar MipWidth, MipHeight) do poziom mipmapy i (offset 0,0, rozmar max(MipWidth,1), max(MipHeight, 1)) funkcją vkCmdBlitImage() używającą filtrowania liniowego,
+	1.3. Zmień układ poziomu mipmapy i-1 z TRANSFER_SRC_OPTIMAL do SHADER_READ_ONLY_OPTIMAL,
+	1.4. MipWidth, MipHeight = max(MipWidth/2, 1), max(MipHeight/2, 1)
+2. Zmień układ ostatniego (MipLevelCount - 1) poziomu mipmapy z TRANSFER_SRC_OPTIMAL do SHADER_READ_ONLY_OPTIMAL.
 ```
 
-##### Metoda one_shot_transition_image_layout()
+Rozmiar każdego poziomu mipmap jest otrzymywany przez zmniejszenie o połowę każdego wymiaru poprzedniego poziomu aż oba
+wymiary osiągną 1 (jeśli obraz nie jest kwadratowy, jeden z wymiarów pozostaje 1 dla reszty poziomów). Wynika z tego, że
+maksymalna liczba poziomów mipmap MipLevelCount = 1 + floor(log2(max(MipWidth, MipHeight))).
 
-Metoda one_shot_transition_image_layout() ...
+Zmiana układu obrazu w kroku 1.1. jest wymagana przez funkcję vkCmdBlitImage(), która wymaga obrazu źródłowego w
+układzie TRANSFER_SRC_OPTIMAL i obrazu docelowego w układzie TRANSFER_DST_OPTIMAL. Zmiany układów obrazu w krokach 1.3.
+i 2 zapewnia, że obraz jest w układzie SHADER_READ_ONLY_OPTIMAL spodziewanym przez shadery potoku graficznego (nawet
+jeśli MipLevelCount to 1 i nie zostały wygenerowane żadne mipmapy).
 
-Tranzycje tabelka ...
 
 ## objects/device_functions.h
 
