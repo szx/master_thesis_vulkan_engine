@@ -192,22 +192,23 @@ int main(int argc, char *argv[]) {
   render_graph_add_image_resource(renderer->renderGraph, "ssaoRaw", image_type_offscreen_r8);
   render_graph_add_image_resource(renderer->renderGraph, "ssaoBlurred", image_type_offscreen_r8);
 
-  /*
   render_graph_add_render_pass(
       renderer->renderGraph,
       (render_pass_desc){.vertexShader = "forward_vertex.glsl",
-                                .fragmentShader = "forward_fragment.glsl",
-                                .useOnscreenColorAttachment = true,
-                                .onscreenClearValue = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}},
-                                .offscreenColorAttachmentCount = 0,
-                                .useDepthAttachment = true,
-                                .depthAttachmentWriteEnable = true,
-                                .depthAttachmentTestEnable = true,
-                                .depthAttachmentTestOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
-                                .depthClearValue = (VkClearDepthStencilValue){0.0f, 0},
-                                .colorBlendingType = color_blending_type_none,
-                                .recordFunc = render_pass_record_primitive_geometry_draws});
-  */
+                         .fragmentShader = "forward_fragment.glsl",
+                         .useOnscreenColorAttachment = true,
+                         .onscreenClearValue = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}},
+                         .offscreenColorAttachmentCount = 0,
+                         .offscreenDepthAttachment =
+                             {
+                                 .name = "depthBuffer",
+                                 .depthWriteEnable = true,
+                                 .depthTestEnable = true,
+                                 .depthTestOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
+                                 .clearValue = {0.0f, 0},
+                             },
+                         .colorBlendingType = color_blending_type_none,
+                         .recordFunc = render_pass_record_primitive_geometry_draws});
 
   render_graph_add_render_pass(
       renderer->renderGraph,
@@ -300,7 +301,7 @@ int main(int argc, char *argv[]) {
                                  .depthTestEnable = true,
                                  .depthTestOp = VK_COMPARE_OP_EQUAL,
                              },
-                                .recordFunc = render_pass_record_skybox_draw});
+                         .recordFunc = render_pass_record_skybox_draw});
 
   render_graph_add_render_pass(
       renderer->renderGraph,
