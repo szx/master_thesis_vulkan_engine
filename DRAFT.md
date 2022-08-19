@@ -4,8 +4,8 @@
 2. Definicja / Dlaczego / Co dokładnie robi. ...
 
 HIRO: wrong union in light, remove spot light, rename vertex component to vertex element, rename asset_image to
-asset_bitmap, move asset/ outside vulkan/, remove MAX_FRAMEBUFFER_ATTACHMENT_COUNT, remove STORAGE_BUFFER_BIT, move
-checking FILTER_LINEAR to image format params
+asset_bitmap, move asset/ outside vulkan/, remove MAX_FRAMEBUFFER_ATTACHMENT_COUNT, remove STORAGE_BUFFER, move checking
+FILTER_LINEAR to image format params
 
 What? Why? How? Nieporuszono: podział przestrzeni i culling, multisampling Zagadnienia: wieloplatformowość, automatyczna
 generacja kodu, bazy danych Test: obrazy z HOST_VISIBlE Skróty: GPU, indirect rendering - pośrednie renderowania,
@@ -877,8 +877,8 @@ Dzięki tej funkcjonalności istnieje możliwość nagrania bufora poleceń bez 
 deskryptorów. Pozwala to na elastyczniejsze zarządzanie zasobami - proces ładowania jest odroczony i oddzielony od
 procesu renderowania.
 
-Użycie tej funkcjonalności wymaga stworzenia puli deskryptorów z flagą UPDATE_AFTER_BIND_BIT oraz stworzenia układu
-zbioru deskryptorów z flagą UPDATE_AFTER_BIND_POOL_BIT dla dowiązań.
+Użycie tej funkcjonalności wymaga stworzenia puli deskryptorów z flagą UPDATE_AFTER_BIND oraz stworzenia układu zbioru
+deskryptorów z flagą UPDATE_AFTER_BIND_POOL dla dowiązań.
 
 Wsparcie tej funkcjonalości dla buforów uniform i próbkowanych obrazów wymaga następujących funkcji urządzenia
 należących do Vulkan Core 1.2:
@@ -1499,13 +1499,12 @@ pomiędzy klatkami (np. bufory poleceń rysowania pośredniego) musi być pamię
 pamięci i tymsamym pominęcie użycia buforów poleceń.
 
 Bufor poleceń one-shot jest alokowany podczas tworzenia obiektu device z puli komend one-shot (VkCommandPool). Jest ona
-przeznaczona do użycia z kolejką graficzną i stworzona z flagą TRANSIENT_BIT, która wskazuje sterownikowi graficznemu,
-że zaalokowane bufory komend będą krótkotrwałe i zresetowane bądź zwolnione w stosunkowo krótkim czasie, co teoretycznie
+przeznaczona do użycia z kolejką graficzną i stworzona z flagą TRANSIENT, która wskazuje sterownikowi graficznemu, że
+zaalokowane bufory komend będą krótkotrwałe i zresetowane bądź zwolnione w stosunkowo krótkim czasie, co teoretycznie
 pozwala sterownikowi na optymalizację metody alokacji pamięci.
 
 Nagrywanie poleceń one-shot rozpoczyna się wywołaniem metody begin_one_shot_commands() rozpoczynającej nagrywanie bufora
-poleceń funkcją vkBeginCommandBuffer() z flagą użycia ONE_TIME_SUBMIT_BIT wskazującą, że będzie on wykonany tylko jeden
-raz.
+poleceń funkcją vkBeginCommandBuffer() z flagą użycia ONE_TIME_SUBMIT wskazującą, że będzie on wykonany tylko jeden raz.
 
 Nagrywanie jak kończone wywołaniem metody end_one_shot_commands(), która wykonuje następujące czynności:
 
@@ -1521,7 +1520,7 @@ Resetowanie puli poleceń automatycznie resetuje zaalokowane z niego bufory pole
 manualnego resetowania buforów poleceń przez warstwy walidacji:
 
 ```
-Validation Performance Warning: [ UNASSIGNED-BestPractices-vkCreateCommandPool-command-buffer-reset ] Object 0: handle = 0x626000015100, type = VK_OBJECT_TYPE_DEVICE; | MessageID = 0x8728e724 | vkCreateCommandPool(): VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT is set. Consider resetting entire pool instead.
+Validation Performance Warning: [ UNASSIGNED-BestPractices-vkCreateCommandPool-command-buffer-reset ] Object 0: handle = 0x626000015100, type = VK_OBJECT_TYPE_DEVICE; | MessageID = 0x8728e724 | vkCreateCommandPool(): VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER is set. Consider resetting entire pool instead.
 ```
 
 Bufor poleceń one-shot może być wypełniony dowolnymi poleceniami graficznymi Vulkan, ale silnik oferuje następujące
@@ -1553,22 +1552,43 @@ Przykładowe układy obrazu i dozwolone użycie:
 - COLOR_ATTACHMENT_OPTIMAL: dołączenie koloru,
 - DEPTH_STENCIL_ATTACHMENT_OPTIMAL:  dołączenie głębi/szablonu pozwalające na odczyt (testy głębi i szablonu) i zapis (
   wyjście głębi),
-- DEPTH_STENCIL_READ_ONLY_OPTIMAL: dołączenie głębi/szablonu pozwalające tylko na odczyt,
+- DEPTH_STENCIL_READ_ONLY_OPTIMAL: dołączenie głębi/szablonu tylko do odczytu,
 - SHADER_READ_ONLY_OPTIMAL: odczyt w shaderach jako próbkowany obraz,
 - TRANSFER_SRC_OPTIMAL: obraz źródłowy w poleceniu transferu,
 - TRANSFER_DST_OPTIMAL: obraz docelowy w poleceniu transferu,
 - PRESENT_SRC_KHR: prezentowanie obrazu.
 
 W przeciwieństwie do poprzednich API takich jak OpenGL, Vulkan nie zmienia automatycznie układu obrazu, co zmusza
-programistę do samodzielnego śledzenia stanu układu obrazów i wykonywania przejść na poprawny układ przed użyciem.
+programistę do samodzielnego śledzenia stanu układu obrazów i wykonywania przejść na poprawny układ przed użyciem ich
+przez polecenia.
 
-Przejście układu obrazu może być wykonane używając bariery pamięci obrazu.
+Graf renderowania jest odpowiedzialyn za śledzenie stanu układu obrazów na przestrzeni klatki i jest używany do
+nagrywania barier pamięci obrazu gwarantujących odpowiednie przejścia układu obrazów.
 
 ##### Metoda device_transition_image_layout_command()
 
-Metoda device_transition_image_layout_command() ....
+Metoda device_transition_image_layout_command() nagrywa barierę pamięci obrazu przeprowadzającą przejście ze *starego
+układu obrazu* na *nowy układ obrazu*. Użycie bariery potoku wymaga zdefiniowania całej zależności pamięci, dlatego
+każde przejście układu obrazów wymaga zdefiniowania jak dokładnie obraz będzie używany po przejściu i zakodowania tej
+wiedzy używając źródłowych i docelowych etapów potoku oraz zakresów dostępów.
 
-Tranzycje tabelka ...
+Poniższa tabela ilustruje logikę przejść używanych przez silnik:
+
+| stary układ obrazu | nowy układ obrazu | uzycie obrazu po przejściu | źródłowy etap potoku | docelowy etap potoku | źródłowy zakres dostępu | docelowy zakres dostępu |
+| --- | --- | --- | --- | --- | --- | --- |
+| UNDEFINED | TRANSFER_DST_OPTIMAL | nowy obraz jest inicjalizowy poleceniem transferu | 0 | TRANSFER_WRITE | TOP_OF_PIPE | TRANSFER |
+| TRANSFER_DST_OPTIMAL | TRANSFER_SRC_OPTIMAL | zainicjalizowany obraz jest źródłem polecenia transferu (generacje mipmap) | TRANSFER_WRITE | TRANSFER_READ | TRANSFER | TRANSFER |
+| TRANSFER_SRC_OPTIMAL | SHADER_READ_ONLY_OPTIMAL | obraz jest odczytywany przez shader fragmentów | TRANSFER_READ | SHADER_READ | TRANSFER | FRAGMENT_SHADER |
+| TRANSFER_DST_OPTIMAL | SHADER_READ_ONLY_OPTIMAL | obraz jest odczytywany przez shader fragmentów | TRANSFER_WRITE | SHADER_READ | TRANSFER | FRAGMENT_SHADER |
+| UNDEFINED | COLOR_ATTACHMENT_OPTIMAL | obraz jest dołączeniem koloru pierwszy raz z klatce | 0 |  COLOR_ATTACHMENT_WRITE | TOP_OF_PIPE | COLOR_ATTACHMENT_OUTPUT |
+| UNDEFINED | DEPTH_STENCIL_ATTACHMENT_OPTIMAL | obraz jest dołączeniem głebi/szablonu pierwszy raz z klatce | 0 |  DEPTH_STENCIL_ATTACHMENT_READ, DEPTH_STENCIL_ATTACHMENT_WRITE | TOP_OF_PIPE | EARLY_FRAGMENT_TESTS, LATE_FRAGMENT_TESTS |
+| DEPTH_STENCIL_ATTACHMENT_OPTIMAL | DEPTH_STENCIL_READ_ONLY_OPTIMAL | obraz staje się dołączeniem głebi/szablonu tylko do odczytu | DEPTH_STENCIL_ATTACHMENT_WRITE |  DEPTH_STENCIL_ATTACHMENT_READ, SHADER_READ | EARLY_FRAGMENT_TESTS, LATE_FRAGMENT_TESTS | EARLY_FRAGMENT_TESTS, FRAGMENT_SHADER |
+| DEPTH_STENCIL_READ_ONLY_OPTIMAL | DEPTH_STENCIL_ATTACHMENT_OPTIMAL | obraz przestaje być dołączeniem głebi/szablonu tylko do odczytu | DEPTH_STENCIL_ATTACHMENT_READ, SHADER_READ | DEPTH_STENCIL_ATTACHMENT_WRITE | EARLY_FRAGMENT_TESTS, FRAGMENT_SHADER | EARLY_FRAGMENT_TESTS, LATE_FRAGMENT_TESTS |
+| COLOR_ATTACHMENT_OPTIMAL | SHADER_READ_ONLY_OPTIMAL | obraz staje się dołączeniem koloru tylko do odczytu | COLOR_ATTACHMENT_WRITE | SHADER_READ | COLOR_ATTACHMENT_OUTPUT | FRAGMENT_SHADER |
+| SHADER_READ_ONLY_OPTIMAL | COLOR_ATTACHMENT_OPTIMAL | obraz przestaje być dołączeniem koloru tylko do odczytu | SHADER_READ | COLOR_ATTACHMENT_WRITE | FRAGMENT_SHADER | COLOR_ATTACHMENT_OUTPUT |
+| COLOR_ATTACHMENT_OPTIMAL | COLOR_ATTACHMENT_OPTIMAL | obraz jest ponowanie dołączeniem koloru w następnym przebiegu renderowania | COLOR_ATTACHMENT_WRITE | COLOR_ATTACHMENT_READ, COLOR_ATTACHMENT_WRITE | COLOR_ATTACHMENT_OUTPUT | COLOR_ATTACHMENT_OUTPUT |
+| DEPTH_STENCIL_ATTACHMENT_OPTIMAL | DEPTH_STENCIL_ATTACHMENT_OPTIMAL | obraz jest ponownie dołączeniem głębi/szablonu w następnym przebiegu renderowania | DEPTH_STENCIL_ATTACHMENT_WRITE | DEPTH_STENCIL_ATTACHMENT_READ, DEPTH_STENCIL_ATTACHMENT_WRITE | LATE_FRAGMENT_TESTS | EARLY_FRAGMENT_TESTS, LATE_FRAGMENT_TESTS |
+| COLOR_ATTACHMENT_OPTIMAL | PRESENT_SRC_KHR | obraz staje się prezentowalny i gotowy do przekazania silnikowi prezentacji | COLOR_ATTACHMENT_WRITE | MEMORY_READ | COLOR_ATTACHMENT_OUTPUT | BOTTOM_OF_PIPE |
 
 ##### Metody one_shot_copy_buffer_to_buffer() i one_shot_copy_buffer_to_image()
 
@@ -1580,7 +1600,7 @@ Te metody są przeznaczone do użycia wraz z buforem tymczasowym do kopiowanie d
 DEVICE_LOCAL używając pośredniczącej pamięci HOST_VISIBLE. Pseudokod:
 
 ```
-1. Stwórz bufor tymczasowy z flagą użycia TRANSFER_SRC_BIT (bufer może być używany jako źródło w operacji transferu) i dowiązaną pamięcią HOST_VISIBLE,
+1. Stwórz bufor tymczasowy z flagą użycia TRANSFER_SRC (bufer może być używany jako źródło w operacji transferu) i dowiązaną pamięcią HOST_VISIBLE,
 2. Mapuj pamięć bufora tymczasowego funkcją vkMapMemory(),
 3. Skopiuj pamięć CPU do pamięci HOST_VISIBLE bufora tymczasowego,
 4. Odmapuj pamięć bufora tymczasowego funkcją vkUpmapMemory(),
@@ -1616,22 +1636,24 @@ układzie TRANSFER_SRC_OPTIMAL i obrazu docelowego w układzie TRANSFER_DST_OPTI
 1.3. i 2 zapewnia, że obraz jest w układzie SHADER_READ_ONLY_OPTIMAL spodziewanym przez shadery potoku graficznego (
 nawet jeśli MipLevelCount to 1 i nie zostały wygenerowane żadne mipmapy).
 
-
 ## objects/device_functions.h
 
 ### Funkcje pomocnicze
 
-Funkcja device_find_memory_type() ...
+Metoda pomocnicza device_find_memory_type() jest używana podczas alokowania pamięci dla buferów i obrazów wraz z
+funkcjami vkGetBufferMemoryRequirements() i vkGetImageMemoryRequirements() do określenia indeksu sterty pamięci
+urządzenia fizycznego wspierającej żądany typ pamięci.
 
-Funkcja device_find_supported_format() ...
+Metoda pomocnicza device_find_supported_format() szuka w wejściowej liście kandydatów formatu (VkFormat) wspieranego
+przez urządzenie fizyczne dla rządanego kafelkowania (VkImageTiling) oraz właściwosci formatu (VkFormatFeatureFlags).
+
+Metody pomocnicze device_create_*() tworzą nowe obiekty Vulkan i nazwywają je używając obiektu debug.
 
 ### Funkcje tworzące obiekty Vulkan
 
-Funkcje create_*() ...
+Metoda device_create_graphics_pipeline() ...
 
-Funkcja create_graphics_pipeline() ...
-
-Funkcje begin_rendering() i end_rendering() ...
+Metody device_begin_rendering() i end_rendering() ...
 
 ## objects/sync.h
 
@@ -1686,8 +1708,8 @@ wykonywania shadera fragmentów.
 **Zależność pamięci** to zależność wykonania z dodatkową gwarancją, że rezultat zapisów określony przez pewien *źródłowy
 zakres dostępów* (określony używając VkAccessFlags) wygenerowanych przez wcześniejszy zestaw poleceń jest udostępiony
 późniejszemu zestawowi poleceń dla pewnego *docelowego zakresu dostępów*. Przykładowo zaleźność pamięci pomiędzy etapami
-COLOR_ATTACHMENT_OUTPUT i FRAGMENT_SHADER z zakresami dostępów COLOR_ATTACHMENT_WRITE_BIT i SHADER_READ_BIT gwarantuje,
-że zapis do dołączeń kolorów zostanie skończony i będzie mógł być odczytany przez shader fragmentów.
+COLOR_ATTACHMENT_OUTPUT i FRAGMENT_SHADER z zakresami dostępów COLOR_ATTACHMENT_WRITE i SHADER_READ gwarantuje, że zapis
+do dołączeń kolorów zostanie skończony i będzie mógł być odczytany przez shader fragmentów.
 
 Istnieją trzy rodzaje barier w zależności od rodzaju pamięci zarządzanego przez zależności pamięci:
 
@@ -1695,15 +1717,21 @@ Istnieją trzy rodzaje barier w zależności od rodzaju pamięci zarządzanego p
 - bariery pamięci buforów: dla zakresu bufora,
 - globalne bariery pamięci: dla wszystkich istniejących obiektów.
 
-## Semafor
+## Semafory
 
-to prymityw synchronizacji używany do synchronizacji wykonywania buforów poleceń w tej samej lub pomiędzy kolejkami.
-Przykładowo semafory są używane do synchronizacji pomiędzy kolejką graficzna i kolejką prezentacji w celu
-zagwarantowania, że prezentowalny obraz łańcucha wymiany jest używany tylko przez jedną kolejkę.
+to obiekty VkSemaphore pozwalające na synchronizację wykonywania buforów poleceń w tej samej lub pomiędzy kolejkami. GPU
+może sygnalizować semafor po zakończeniu wykonywania poleceń oraz może czekać na sygnalizację semafora przed
+rozpoczęciem wykonywania następnego bufora poleceń. Przykładowo semafory są używane do synchronizacji pomiędzy kolejką
+graficzna i kolejką prezentacji w celu zagwarantowania, że prezentowalny obraz łańcucha wymiany jest używany tylko przez
+jedną kolejkę.
 
-## Ogrodzenie
+## Ogrodzenia
 
-to prymityw synchronizacji ...
+to obiekty VkFence pozwalające na synchonizację poleceń wykonywanych w kolejce z CPU. Ogrodzenie może być sygnalizowane
+przez GPU po zakończeniu wykonywania funkcji używających GPU (np. vkQueueSubmit()), CPU może zresetować ogrodzenie
+funkcją vkResetFences() lub czekać na jego sygnalizację funkcją vkWaitForFences() chwilowo blokując kontynuację
+wykonywania programu. Przykładowo ogrodzenia są używane do zagwarantowania, że program nie wysyła buforów poleceń
+szybciej, niż GPU je wykonuje.
 
 # TODO
 
