@@ -23,11 +23,6 @@ VkCommandPool device_create_command_pool(device *vkd, uint32_t queueFamilyIndex,
 VkCommandBuffer device_create_command_buffer(device *vkd, VkCommandPool commandPool,
                                              const char *debugFormat, ...);
 
-VkFramebuffer device_create_framebuffer(device *vkd, VkRenderPass renderPass,
-                                        uint32_t attachmentCount, const VkImageView *attachments,
-                                        uint32_t width, uint32_t height, const char *debugFormat,
-                                        ...);
-
 VkImage device_create_image(device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
                             uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
                             VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,

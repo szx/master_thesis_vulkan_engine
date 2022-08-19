@@ -104,32 +104,6 @@ VkCommandBuffer device_create_command_buffer(device *vkd, VkCommandPool commandP
   return commandBuffer;
 }
 
-VkFramebuffer device_create_framebuffer(device *vkd, VkRenderPass renderPass,
-                                        uint32_t attachmentCount, const VkImageView *attachments,
-                                        uint32_t width, uint32_t height, const char *debugFormat,
-                                        ...) {
-  assert(renderPass != VK_NULL_HANDLE);
-
-  VkFramebufferCreateInfo framebufferInfo = {0};
-  framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-  framebufferInfo.renderPass = renderPass;
-  framebufferInfo.attachmentCount = attachmentCount;
-  framebufferInfo.pAttachments = attachments;
-  framebufferInfo.width = width;
-  framebufferInfo.height = height;
-  framebufferInfo.layers = 1; // NOTE: 1 layer when rendering to swap chain image, could use more
-                              // layers if rendering to shadow maps, VR etc.
-
-  VkFramebuffer framebuffer;
-  verify(vkCreateFramebuffer(vkd->device, &framebufferInfo, vka, &framebuffer) == VK_SUCCESS);
-
-  DEBUG_NAME_FORMAT_START();
-  debug_name_framebuffer(vkd->debug, framebuffer, "%s - framebuffer", debugName);
-  DEBUG_NAME_FORMAT_END();
-
-  return framebuffer;
-}
-
 VkImage device_create_image(device *vkd, uint32_t width, uint32_t height, uint32_t mipLevels,
                             uint32_t arrayLayers, VkSampleCountFlagBits numSamples, VkFormat format,
                             VkImageTiling tiling, VkImageCreateFlags flags, VkImageUsageFlags usage,
