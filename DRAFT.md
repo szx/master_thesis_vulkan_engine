@@ -17,8 +17,9 @@ instancji, sampler - próbnik sampled image - próbkowany obraz, frame - klatka,
 qualifier - kwalifikator układu update-after-bind - aktualizacja po dowiązaniu variable-sized descriptor binding -
 dowiązanie deskryptora o zmiennej wielkości render state - stan renderowania unified uniform buffer - ujednolicony bufor
 uniform unified geometry buffer - ujednolicony bufor geometrii GLSL - OpenGL Shading Language swap chain - łańcuch
-wymiany WSI - window system integration framebufer attachment - załącznik bufora ramki front buffer - bufor przedni back
-buffer - bufor tylni presentation engine - silnik prezentacji in-flight frame - klatka w locie
+wymiany WSI - window system integration framebufer attachment - dołączenie bufora ramki front buffer - bufor przedni
+back buffer - bufor tylni presentation engine - silnik prezentacji in-flight frame - klatka w locie, image layout
+transition - przejście układu obrazu, execution dependency - zależność wykonania, memory dependency - zależność pamięci
  
 -------------
 
@@ -1297,7 +1298,7 @@ Użycie łańcucha wymiany w pętli głównej programu sprowadza się do następ
 3. Dodanie wyrenderowanego prezentowalnego obrazu do kolejki do prezentacji przy użyciu funkcji vkQueuePresentKHR().
 
 Każdy z tych kroków wymaga synchronizacji z krokiem następnym przy użyciu semaforów. Funkcja vkAcquireNextImageKHR()
-sygnalizuje *semafor dostępności obrazu*, na który czeka funkcja vkQueueSubmit() - GPU zaczyn renderowanie dopiero
+sygnalizuje *semafor dostępności obrazu*, na który czeka funkcja vkQueueSubmit() - GPU zaczyna renderowanie dopiero
 wtedy, gdy prezentowany obraz nie jest używany przez okno. Funkcja vkQueueSubmit() sygnalizuje *semafor zakończena
 renderowania*, na który czeka funkcja vkQueuePresent() - okno może zacząć prezentować wynik renderowania dopiero wtedy,
 gdy GPU zakończył wykonywanie poleceń.
@@ -1536,35 +1537,32 @@ metody implementujące podstawowe operacje używane podczas transferu danych:
 Metoda one_shot_transition_image_layout() zmienia układ całego obrazu - jego wszystkich warstw i poziomów mipmap. Używa
 ona do tego metody device_transition_image_layout_command().
 
-##### Układ pamięci
+##### Układ obrazu
 
 Obrazy są przechowywane w pamięci GPU w układach zdefiniowanych przez sterownik graficzny. Każdy układ ogranicza zbiór
 możliwych operacji na obrazie w zamian za optymalizację dozwolonych operacji.
 
-Możliwe układy obrazu:
-
-- UNDEFINED: ...
-- GENERAL:
-- COLOR_ATTACHMENT_OPTIMAL:
-- DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
-- DEPTH_STENCIL_READ_ONLY_OPTIMAL:
-- SHADER_READ_ONLY_OPTIMAL:
-- TRANSFER_SRC_OPTIMAL:
-- TRANSFER_DST_OPTIMAL:
-- PREINITIALIZED:
-- DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL:
-- DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL:
-- DEPTH_ATTACHMENT_OPTIMAL:
-- DEPTH_READ_ONLY_OPTIMAL:
-- STENCIL_ATTACHMENT_OPTIMAL:
-- STENCIL_READ_ONLY_OPTIMAL:
-
 Układ obrazu nie jest tym samym co jego kafelkowanie - rodzaj używanego kafelkowania nie może być zmieniany po
 utworzeniu obrazu, a układ obrazu jest zwykle często zmieniany podczas działania programu aby pozwolić GPU na
-optymalizację sposobu użycia obrazu. W przeciwieństwie do poprzednich API takich jak OpenGL, Vulkan nie zmienia
-automatycznie układu obrazu, co zmusza programistę do samodzielnego śledzenia i zmieniania go przed użyciem.
+optymalizację sposobu użycia obrazu.
 
-Pipeline ...
+Przykładowe układy obrazu i dozwolone użycie:
+
+- UNDEFINED: zawartość pamięci obrazu jest niezdefiniowana,
+- GENERAL: wszystkie rodzaje dostępu,
+- COLOR_ATTACHMENT_OPTIMAL: dołączenie koloru,
+- DEPTH_STENCIL_ATTACHMENT_OPTIMAL:  dołączenie głębi/szablonu pozwalające na odczyt (testy głębi i szablonu) i zapis (
+  wyjście głębi),
+- DEPTH_STENCIL_READ_ONLY_OPTIMAL: dołączenie głębi/szablonu pozwalające tylko na odczyt,
+- SHADER_READ_ONLY_OPTIMAL: odczyt w shaderach jako próbkowany obraz,
+- TRANSFER_SRC_OPTIMAL: obraz źródłowy w poleceniu transferu,
+- TRANSFER_DST_OPTIMAL: obraz docelowy w poleceniu transferu,
+- PRESENT_SRC_KHR: prezentowanie obrazu.
+
+W przeciwieństwie do poprzednich API takich jak OpenGL, Vulkan nie zmienia automatycznie układu obrazu, co zmusza
+programistę do samodzielnego śledzenia stanu układu obrazów i wykonywania przejść na poprawny układ przed użyciem.
+
+Przejście układu obrazu może być wykonane używając bariery pamięci obrazu.
 
 ##### Metoda device_transition_image_layout_command()
 
@@ -1575,8 +1573,8 @@ Tranzycje tabelka ...
 ##### Metody one_shot_copy_buffer_to_buffer() i one_shot_copy_buffer_to_image()
 
 Metody one_shot_copy_buffer_to_buffer() i one_shot_copy_buffer_to_image() kopiują dane w obrębie GPU z bufora do bufora
-lub obrazu używając poleceń vkCmdCopyBuffer() i vkCmdCopyBufferToImage(). Metoda one_shot_copy_buffer_to_image() wymaga
-wcześniejszej zmiany układu obrazu do TRANSFER_DST.
+lub obrazu używając poleceń transferu vkCmdCopyBuffer() i vkCmdCopyBufferToImage(). Metoda
+one_shot_copy_buffer_to_image() wymaga wcześniejszej przejścia układu obrazu do TRANSFER_DST.
 
 Te metody są przeznaczone do użycia wraz z buforem tymczasowym do kopiowanie danych z pamięci CPU do pamięci
 DEVICE_LOCAL używając pośredniczącej pamięci HOST_VISIBLE. Pseudokod:
@@ -1613,10 +1611,10 @@ Rozmiar każdego poziomu mipmap jest otrzymywany przez zmniejszenie o połowę k
 wymiary osiągną 1 (jeśli obraz nie jest kwadratowy, jeden z wymiarów pozostaje 1 dla reszty poziomów). Wynika z tego, że
 maksymalna liczba poziomów mipmap MipLevelCount = 1 + floor(log2(max(MipWidth, MipHeight))).
 
-Zmiana układu obrazu w kroku 1.1. jest wymagana przez funkcję vkCmdBlitImage(), która wymaga obrazu źródłowego w
-układzie TRANSFER_SRC_OPTIMAL i obrazu docelowego w układzie TRANSFER_DST_OPTIMAL. Zmiany układów obrazu w krokach 1.3.
-i 2 zapewnia, że obraz jest w układzie SHADER_READ_ONLY_OPTIMAL spodziewanym przez shadery potoku graficznego (nawet
-jeśli MipLevelCount to 1 i nie zostały wygenerowane żadne mipmapy).
+Przejście układu obrazu w kroku 1.1. jest wymagana przez funkcję vkCmdBlitImage(), która wymaga obrazu źródłowego w
+układzie TRANSFER_SRC_OPTIMAL i obrazu docelowego w układzie TRANSFER_DST_OPTIMAL. Przejścia układów obrazu w krokach
+1.3. i 2 zapewnia, że obraz jest w układzie SHADER_READ_ONLY_OPTIMAL spodziewanym przez shadery potoku graficznego (
+nawet jeśli MipLevelCount to 1 i nie zostały wygenerowane żadne mipmapy).
 
 
 ## objects/device_functions.h
@@ -1663,14 +1661,60 @@ Funkcje begin_rendering() i end_rendering() ...
 
 ...
 
-[...]
+# Definicje Vulkan
+
+## Dowiązanie koloru
+
+to widok obrazu używany przez potok graficzny do zapisywania końcowych wartości kolorów podczas etapu mieszania kolorów.
+
+## Dowiązanie głębi/szablonu
+
+to widok obrazu używany przez potok graficzny do odczytywania i zapisywania wartości głebi/szablonu podczas testów
+głębi/szablonu w etapach wczesnych i późnych testów fragmentów.
+
+## Bariera potoku
+
+to prymityw synchronizacji definiowany poleceniem vkCmdPipelineBarrier() pozwalający na zdefiniowanie zależności
+wykonania oraz zależności pamięci pomiędzy poleceniami przed i po barierze.
+
+**Zależność wykonania** to gwarancja, że praca pewnych *źródłowych etapów potoku* (określonych używając
+VkPipelineStageFlags) dla wcześniejszego zestawu poleceń została zakończona przed rozpoczęciem wykonywania pewnych *
+docelowych etapów potoku* dla późniejszego etapu poleceń. Przykładowo zależność wykonania pomiędzy etapami
+COLOR_ATTACHMENT_OUTPUT i FRAGMENT_SHADER gwarantuje, że zapis do dołączeń kolorów został skończony przed rozpoczęciem
+wykonywania shadera fragmentów.
+
+**Zależność pamięci** to zależność wykonania z dodatkową gwarancją, że rezultat zapisów określony przez pewien *źródłowy
+zakres dostępów* (określony używając VkAccessFlags) wygenerowanych przez wcześniejszy zestaw poleceń jest udostępiony
+późniejszemu zestawowi poleceń dla pewnego *docelowego zakresu dostępów*. Przykładowo zaleźność pamięci pomiędzy etapami
+COLOR_ATTACHMENT_OUTPUT i FRAGMENT_SHADER z zakresami dostępów COLOR_ATTACHMENT_WRITE_BIT i SHADER_READ_BIT gwarantuje,
+że zapis do dołączeń kolorów zostanie skończony i będzie mógł być odczytany przez shader fragmentów.
+
+Istnieją trzy rodzaje barier w zależności od rodzaju pamięci zarządzanego przez zależności pamięci:
+
+- bariery pamięci obrazów: dla zakresu obrazu, dodatkowo pozwala na tranzycje układu obrazu,
+- bariery pamięci buforów: dla zakresu bufora,
+- globalne bariery pamięci: dla wszystkich istniejących obiektów.
+
+## Semafor
+
+to prymityw synchronizacji używany do synchronizacji wykonywania buforów poleceń w tej samej lub pomiędzy kolejkami.
+Przykładowo semafory są używane do synchronizacji pomiędzy kolejką graficzna i kolejką prezentacji w celu
+zagwarantowania, że prezentowalny obraz łańcucha wymiany jest używany tylko przez jedną kolejkę.
+
+## Ogrodzenie
+
+to prymityw synchronizacji ...
+
+# TODO
 
 MORE: multiDrawIndirect: polecenia wielokrotnego rysowania pośredniego MORE: drawIndirectFirstInstance: polecenia
 rysowania pośredniego z offsetem indeksu instancji MORE: dynamicRendering: dynamiczne przebiegi renderowania
 
 MORE: warstwy walidacji
 
-MORE: onscreen vs offscreen...
+MORE: onscreen vs offscreen
+
+MORE: framebuffer attachment
 
 MORE: część globalna i część instancji ujednoliconego bufora uniform, dlatczego podział
 
