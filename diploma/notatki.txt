@@ -5,8 +5,6 @@ Opis i analiza algorytmów graficznych i technik post-processingu używanych pod
 Grafika trójwymiarowa: obiekt to siatka wierzchołków, albo np. woksele
 Grafika czasu rzeczywistego: grafika realistyczna, raczej nie ray-tracking, path-tracking, rasteryzacja trójkątów
 
-Silnik: nie jest ściśle zdefiniowany
-Renderowanie: graf sceny składającej się z modeli
 Biblioteki graficzne są niskopoziomowe (geometria, tekstury i samplery, bufory, shadery), silniki graficzne zapewniają dodatkową warstwę abstrakcji (obiekty, materiały, światła, sceny).
 
 Vertex shader: animacje szkieletowa
@@ -72,24 +70,6 @@ transition - przejście układu obrazu, execution dependency - zależność wyko
 
 -------------
 
-# Streszczenie
-
-Ninejsza praca opisuje proces zaprojektowania i implementacja silnika renderującego używającego technik cieniowania
-odroczonego. Silnik renderujący został zaimplementowany jako biblioteka języka C używająca ekosystemu Vulkan 1.2.
-Opisano użyte techniki graficzne używanych podczas renderowania scen w nowoczesnych grach 3D. Opisano architekturę
-silnika i szczegóły implementacyjne. Wyrenderowano przykładową scenę i zbadano wydajność silnika.
-
-# 1. Wprowadzenie
-
-...
-
-## Postawowe definicje
-
-Zrozumienie celu pracy wymaga przybliżenia serii fundamentalnych pojęć związanych z grafiką komputerową.
-
-Silnik graficzny ...
-
-...
 
 ## Struktura pracy
 
@@ -101,24 +81,6 @@ opartego o renderowanie bazujące na fizyce. W czwartym rozdziale wyrenderowano 
 silnika. Ostatni rozdział zawiera podsumowanie oraz opis przewidywanych kierunków przyszłego rozwoju silnika.
 
 ## Cel i zakres pracy
-
-Celem pracy jest zaprojektowanie i zaimplementowanie silnika graficznego używajągo techniki cieniowania odroczonego.
-Silnik został zaimplementowany jako biblioteka programistyczna przy użyciu języków C i Python oraz biblioteki graficznej
-Vulkan. Celem autora było zapoznanie się z teorią stojącą za elementami składającymi się na silnik graficzny i
-praktyczne zademonstrowanie zdobytej wiedzy.
-
-Praca ma formę przeglądową i jej zakres obejmuje:
-
-- opis algorytmów i technik graficznych używanych w nowoczesnych silnikach graficznych,
-- porównanie renderowania odroczonego z tradycyjnym renderowaniem wprzód,
-- omówienie architektury i implementacji projektu,
-- demonstrację użycia silnika graficznego do wyrenderowania przykładowej sceny,
-- analizę wydajności silnika graficznego.
-
-Omówiono obecny stan wiedzy dotyczący algorytmów, struktur i technik renderowania. Szczególną uwagę przyłożono do
-technik cienowania odroczonego.
-
-Silnik graficzny składa się z [założenia kierujące projektem i implementacją]
 
 ...
 

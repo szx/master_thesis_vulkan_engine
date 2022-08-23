@@ -1,0 +1,190 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{none/global//global/global}
+    \entry{HughesDamEtAl13}{book}{}
+      \name{author}{7}{}{%
+        {{hash=f301cb8654c4029713c65f456589d819}{%
+           family={Hughes},
+           familyi={H\bibinitperiod},
+           given={John\bibnamedelima F.},
+           giveni={J\bibinitperiod\bibinitdelim F\bibinitperiod}}}%
+        {{hash=38b0810d6eb83eaf31dbf55609aeb0b6}{%
+           family={Dam},
+           familyi={D\bibinitperiod},
+           given={Andries},
+           giveni={A\bibinitperiod},
+           prefix={van},
+           prefixi={v\bibinitperiod}}}%
+        {{hash=b00c7506870712b7873df016c5094720}{%
+           family={McGuire},
+           familyi={M\bibinitperiod},
+           given={Morgan},
+           giveni={M\bibinitperiod}}}%
+        {{hash=bc77d5b1a8ba5a49af6435159be2224c}{%
+           family={Sklar},
+           familyi={S\bibinitperiod},
+           given={David\bibnamedelima F.},
+           giveni={D\bibinitperiod\bibinitdelim F\bibinitperiod}}}%
+        {{hash=61151e3691774bd7a6ecf72e3c15d034}{%
+           family={Foley},
+           familyi={F\bibinitperiod},
+           given={James\bibnamedelima D.},
+           giveni={J\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+        {{hash=4b3462cefe1c5b2c7537ae21555c665a}{%
+           family={Feiner},
+           familyi={F\bibinitperiod},
+           given={Steven},
+           giveni={S\bibinitperiod}}}%
+        {{hash=46aaecf43ec225444bf8ff5134695ac4}{%
+           family={Akeley},
+           familyi={A\bibinitperiod},
+           given={Kurt},
+           giveni={K\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Upper Saddle River, NJ}%
+      }
+      \list{publisher}{1}{%
+        {Addison-Wesley}%
+      }
+      \strng{namehash}{13711f7603324c4f678da7468cd6a588}
+      \strng{fullhash}{d7bae053f1f0f59d55e0bbec7de1e304}
+      \strng{bibnamehash}{13711f7603324c4f678da7468cd6a588}
+      \strng{authorbibnamehash}{13711f7603324c4f678da7468cd6a588}
+      \strng{authornamehash}{13711f7603324c4f678da7468cd6a588}
+      \strng{authorfullhash}{d7bae053f1f0f59d55e0bbec7de1e304}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{The third edition remains the most authoritative introduction to the field. The first edition, the original 'Foley and van Dam', helped to define computer graphics and how it could be taught. The second edition became an even more comprehensive resource for practitioners and students alike. This third edition has been completely rewritten to provide detailed and up-to-date coverage of key concepts, algorithms, technologies, and applications. The authors explain the principles, as well as the mathematics, underlying computer graphics-knowledge that is essential for successful work both now and in the future. Early chapters show how to create 2D and 3D pictures right away, supporting experimentation. Later chapters, covering a broad range of topics, demonstrate more sophisticated approaches. Sections on current computer graphics practice show how to apply given principles in common situations, such as how to approximate an ideal solution on available hardware, or how to represent a data structure more efficiently. Topics are reinforced by exercises, programming problems, and hands-on projects.}
+      \field{edition}{3}
+      \field{isbn}{978-0-321-39952-6}
+      \field{title}{Computer Graphics: Principles and Practice}
+      \field{year}{2013}
+      \verb{file}
+      \verb eBook:2013/HughesDamEtAl13.pdf:PDF;InformIT Product page:http\://www.informit.com/store/computer-graphics-principles-and-practice-9780321399526:URL;Amazon Search inside:http\://www.amazon.de/gp/reader/0321399528/:URL
+      \endverb
+      \keyw{01821 103 book computer graphics}
+    \endentry
+    \entry{SIGGRAPH}{misc}{}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labeltitlesource}{title}
+      \field{title}{Konferencja SIGGRAPH}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://www.siggraph.org/
+      \endverb
+      \verb{url}
+      \verb https://www.siggraph.org/
+      \endverb
+    \endentry
+    \entry{SIGGRAPH_ADVANCES}{misc}{}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labeltitlesource}{title}
+      \field{title}{Advances in Real-Time Rendering in 3D Graphics and Games}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://advances.realtimerendering.com/
+      \endverb
+      \verb{url}
+      \verb https://advances.realtimerendering.com/
+      \endverb
+    \endentry
+    \entry{godotengine}{software}{}
+      \name{author}{1}{}{%
+        {{hash=74c424008b92315aa90a1cf69752b6fd}{%
+           family={{Społeczność Godot Engine}},
+           familyi={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{74c424008b92315aa90a1cf69752b6fd}
+      \strng{fullhash}{74c424008b92315aa90a1cf69752b6fd}
+      \strng{bibnamehash}{74c424008b92315aa90a1cf69752b6fd}
+      \strng{authorbibnamehash}{74c424008b92315aa90a1cf69752b6fd}
+      \strng{authornamehash}{74c424008b92315aa90a1cf69752b6fd}
+      \strng{authorfullhash}{74c424008b92315aa90a1cf69752b6fd}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Godon Engine}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://godotengine.org
+      \endverb
+      \verb{url}
+      \verb https://godotengine.org
+      \endverb
+    \endentry
+    \entry{unrealengine}{software}{}
+      \name{author}{1}{}{%
+        {{hash=f74dc6a40e6ed3e07e99f3e972a5394a}{%
+           family={{Epic Games}},
+           familyi={E\bibinitperiod}}}%
+      }
+      \strng{namehash}{f74dc6a40e6ed3e07e99f3e972a5394a}
+      \strng{fullhash}{f74dc6a40e6ed3e07e99f3e972a5394a}
+      \strng{bibnamehash}{f74dc6a40e6ed3e07e99f3e972a5394a}
+      \strng{authorbibnamehash}{f74dc6a40e6ed3e07e99f3e972a5394a}
+      \strng{authornamehash}{f74dc6a40e6ed3e07e99f3e972a5394a}
+      \strng{authorfullhash}{f74dc6a40e6ed3e07e99f3e972a5394a}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Unreal Engine}
+      \field{version}{5}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://www.unrealengine.com
+      \endverb
+      \verb{url}
+      \verb https://www.unrealengine.com
+      \endverb
+    \endentry
+    \entry{dx12_2}{article}{}
+      \name{author}{1}{}{%
+        {{hash=de538eb48368581016865255fbadc779}{%
+           family={{Piotr Piwowarczyk}},
+           familyi={P\bibinitperiod}}}%
+      }
+      \strng{namehash}{de538eb48368581016865255fbadc779}
+      \strng{fullhash}{de538eb48368581016865255fbadc779}
+      \strng{bibnamehash}{de538eb48368581016865255fbadc779}
+      \strng{authorbibnamehash}{de538eb48368581016865255fbadc779}
+      \strng{authornamehash}{de538eb48368581016865255fbadc779}
+      \strng{authorfullhash}{de538eb48368581016865255fbadc779}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Microsoft DirectX 12 Feature Level 12\_2 - nowa wersja funkcji API \url{https://www.purepc.pl/microsoft-directx-12-feature-level-12-2-nowa-wersja-funkcji-api}}
+      \field{urlday}{2}
+      \field{urlmonth}{11}
+      \field{urlyear}{2020}
+      \field{urldateera}{ce}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

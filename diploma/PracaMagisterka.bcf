@@ -159,7 +159,7 @@
     </bcf:option>
     <bcf:option type="singlevalued">
       <bcf:key>sortlocale</bcf:key>
-      <bcf:value>english</bcf:value>
+      <bcf:value>polish</bcf:value>
     </bcf:option>
     <bcf:option type="singlevalued">
       <bcf:key>sortingtemplatename</bcf:key>
@@ -2345,8 +2345,18 @@
     <bcf:datasource type="file" datatype="bibtex" glob="false">bibliography/bibliography.bib</bcf:datasource>
   </bcf:bibdata>
   <bcf:section number="0">
-    <bcf:citekey order="1">dx12_2</bcf:citekey>
-    <bcf:citekey order="2">dx12_2</bcf:citekey>
+    <bcf:citekey order="1">HughesDamEtAl13</bcf:citekey>
+    <bcf:citekey order="2">SIGGRAPH</bcf:citekey>
+    <bcf:citekey order="3">SIGGRAPH_ADVANCES</bcf:citekey>
+    <bcf:citekey order="4">godotengine</bcf:citekey>
+    <bcf:citekey order="5">unrealengine</bcf:citekey>
+    <bcf:citekey order="6">dx12_2</bcf:citekey>
+    <bcf:citekey order="7">HughesDamEtAl13</bcf:citekey>
+    <bcf:citekey order="8">SIGGRAPH</bcf:citekey>
+    <bcf:citekey order="9">SIGGRAPH_ADVANCES</bcf:citekey>
+    <bcf:citekey order="10">godotengine</bcf:citekey>
+    <bcf:citekey order="11">unrealengine</bcf:citekey>
+    <bcf:citekey order="12">dx12_2</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="none">
