@@ -44,7 +44,7 @@ Synchronizacja w Vulkanie: Semafory i fence dla command bufferów, pipeline barr
 1. Wybierz plik.
 2. Definicja / Dlaczego / Co dokładnie robi. ...
 
-HIRO: wrong union in light, remove spot light, rename vertex component to vertex element, rename asset_image to
+TODO: wrong union in light, remove spot light, rename vertex component to vertex element, rename asset_image to
 asset_bitmap, move asset/ outside vulkan/, remove MAX_FRAMEBUFFER_ATTACHMENT_COUNT, remove STORAGE_BUFFER, move checking
 FILTER_LINEAR to image format params
 
@@ -61,24 +61,9 @@ uniform unified geometry buffer - ujednolicony bufor geometrii GLSL - OpenGL Sha
 wymiany WSI - window system integration framebufer attachment - dołączenie bufora ramki front buffer - bufor przedni
 back buffer - bufor tylni presentation engine - silnik prezentacji in-flight frame - klatka w locie, image layout
 transition - przejście układu obrazu, execution dependency - zależność wykonania, memory dependency - zależność pamięci
+storage buffer - bufor magazynowy
 
 -------------
-
-
-## Struktura pracy
-
-Praca została podzielona na pięć rozdziałów. Pierwszy rozdział pracy zawiera opis struktury pracy, cel i zakres pracy,
-podstawowe definicje oraz przegląd literatury i dostępnych rozwiązań związanych w tematyką silników renderujących. W
-drugim rozdziale opisano architekturę silnika i szczegóły implementacji poszczególnych modułów silnika renderującego. W
-trzecim rozdziale opisano specyficzny potok graficzny używający cieniowania odroczonego do realizacji modelu oświetlenia
-opartego o renderowanie bazujące na fizyce. W czwartym rozdziale wyrenderowano przykładową scenę i zbadano wydajność
-silnika. Ostatni rozdział zawiera podsumowanie oraz opis przewidywanych kierunków przyszłego rozwoju silnika.
-
-## Cel i zakres pracy
-
-...
-
-## Przegląd
 
 # 2. Podstawy teoretyczne
 
@@ -113,98 +98,7 @@ Proces budowania stwarza dodatkowe podkatalogi tymczasowe:
 
 ### Proces budowania
 
-Proces budowania silnika jest zdefiniowany w pliku *CMakeLists.txt* znajdującym się w katalogu głównym projektu.
-
-Kompilacja kodu źródłowego w języku C jest obsługiwana bezpośrednio przez CMake, które generuje standardowe pliki
-kompilacji (pliki Makefile w systemie Unix, projekty Microsoft Visual C++ w systemie Windows). Użyto prekompilowanych
-nagłówków do przyśpieszenia kompilacji bibliotek zewnętrznych.
-
-Skrypty w języku Python są obsługiwane pośrednio przez CMake, które wykrywa zainstalowany interpreter języka Python i
-używa go do stworzenia tzw. środowiska wirtualnego w tymczasowym katalogu venv/ w głównym katalogu projektu. Podczas
-procesu budowania środowisko wirtualne jest używane do zainstalowania wymaganych zewnętrznych bibliotek w języku Python
-i wykonywania skryptów generatora kodu. Zaletą użycia środowiska wirtualnego w porównaniu do bezpośredniego wywoływania
-zainstalowanego interpretera Pythona jest izolacja zarządzania zależnościami od reszty systemu operacyjnego, co pozwala
-na łatwiejszą powtarzalność podczas debugowania. [PEP]
-
-CMake organizuje proces budowania jako graf, w którym wierzchołki to cele połączonych ze sobą zależnościami. Budowa celu
-wymaga wcześniejszego zbudowania wszystkich innych celów od których zależy budowany cel.
-
-Wyróżniane są trzy rodzaje celów:
-
-- plik wykonywalny
-- biblioteka
-- cel niestandardowy
-
-Poniższy diagram przedstawia proces budowania projektu w formie celów i ich zależności:
-
-```mermaid
-graph TD;
-    subgraph "cele niestandardowe"
-    copy_assets
-    run_asset_pipeline
-    end
-
-    subgraph "biblioteki"
-    engine
-    end
-
-    subgraph "pliki wykonywalne"
-    main
-    test
-    asset_pipeline
-    end
-
-    main --> engine & copy_assets & run_asset_pipeline
-    test --> engine & copy_assets & run_asset_pipeline
-    asset_pipeline --> engine & copy_assets
-    run_asset_pipeline --> copy_assets & asset_pipeline
-
-```
-
-**engine** Cel odpowiedzialny za zbudowanie biblioteki programistycznej z implementacją silnika.
-
-**main** Cel odpowiedzialny za zbudowanie pliku wykonywalnego o nazwie *main* demonstrującego użycie silnika poprzez
-wyrenderowanie przykładową scenę.
-
-**test** Cel odpowiedzialny za zbudowanie pliku wykonywalnego o nazwie *test*  wykonującego testy integracyjne.
-
-**asset_pipeline** Cel odpowiedzialny za zbudowanie pliku wykonywalnego o nazwie *asset_pipeline* będącego narzędziem
-wiersza poleceń implementującym operacje potoku zasobów.
-
-**copy_assets** Niestandardowy cel odpowiedzialny za skopiowanie podkatalogu *assets* do katalogu budowania.
-
-**run_asset_pipeline** Niestandardowy cel odpowiedzialny uruchomienie skryptu Python realizującego potok zasobów poprzez
-wielokrotne użycie wcześniej zbudowanego narzędzia *asset_pipeline*.
-
-...
-
 ### Biblioteki zewnętrzne
-
-Silnik następujących zewnętrznych bibliotek programistycznych:
-
-- *Vulkan SDK 1.3.211.0*: pliki nagłówkowe dla Vulkan, kompilacja shaderów z kodu źródłowego GLSL do kodu bajtowego
-  SPIR-V poprzez *shaderc*, mechanizm refleksji dla kodu bajtowego SPIR-V poprzez SPIRV-Reflect,
-- *glfw 3.4*: międzyplatformowa obsługa tworzenia okien, obsługa wejścia klawiatury i myszy,
-- *sqlite 3.35.5*: relacyjna baza danych SQL,
-- *uthash 2.3.0*: proste struktury danych (tablica dynamiczna, lista dwukierunkowa, tablica mieszająca),
-- *xxHash 0.8.1*: niekryptograficzny algorytm mieszający,
-- *cgltf 1.11*: wczytywanie plików w formacie glTF,
-- *cglm 0.8.5*: biblioteka matematyczna,
-- biblioteka standardowa C,
-- API systemu: pliki nagłówkowe POSIX albo WinAPI,
-- biblioteka standardowa Python,
-- *libclang 12.0.0*: analizowanie kodu C w Python,
-
-Dodatkowo biblioteka zbudowana w konfiguracji *Debug* statycznie linkuje biblioteki ASan (AddressSanitizer) i UBSan (
-UndefinedBehaviorSanitizer) wykrywające szeroką klasę błędów dotyczących niewłaściwego użycia pamięci i
-niezdefiniowanych zachowań. Błędy te w języku C są nieoczywiste i trudne do wykrycia przez programistę. Podczas rozwoju
-projektu ASan wielokrotnie pozwolił na wykrycie i naprawienie następujących rodzajów błędów:
-
-- wycieki pamięci,
-- dereferencje zwisających wskaźników,
-- dereferencja wskaźników NULL,
-- dereferencja źle wyrównanych wskaźników,
-- odczyt i zapis poza granicami tablicy.
 
 ## Architektura
 
@@ -729,91 +623,11 @@ bufora tymczasowego i funkcji vkCmdCopyBuffer() w bufore poleceń one-shot.
 
 ### Vulkan
 
-W Vulkan dostęp do zasobów z poziomu shadera wymaga użycia deskryptorów.
-
-Deskryptor to blok pamięci z opisem pojedyńczego zasobu używanego przez GPU. Dokładna wewnętrzna struktura deskryptora
-jest w formacie specyficznym dla GPU, ale może być intuicyjnie rozumiana jako struktura zawierająca wskaźnik to adresu
-pamięci z danymi zasobu oraz dodatkowe metadane opisujące rodzaj zasobu oraz w jaki sposób zasób będzie używany przez
-shader.
-
-Rodzaj opisywanego zasobu wymaga użycia odpowiadającego rodzaju deskryptora. Silnik używa następujących rodzajów
-deskryptorów:
-
-- VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER dla buforów uniform.
-- VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER dla próbkowanych obrazów.
-
-Vulkan nie pozwala na tworzenie i używanie pojedyńczych deskryptorów i wymaga grupowania ich w tablice poprzez zbiory
-deskryptorów (VkDescriptorSet).
-
-Stworzenie zbiorów deskryptorów wymaga wcześniejszego stworzenia dwóch obiektów: puli deskryptorów (VkDescriptorPool)
-oraz układ zbioru deskryptorów (VkDescriptorSetLayout).
-
-Pula deskryptorów to źródło, z którego alokowane są deskryptory w postaci zbiorów deskryptorów. Podczas tworzenia puli
-deskryptorów aplikacja musi zadeklarować:
-
-- maksymalną liczbę zaalokowanych zbiorów deskryptorów,
-- maksymalną liczbę rodzajów deskryptorów.
-
-Układ zbioru deskryptorów reprezentuje wewnętrzną strukturę zbioru deskryptorów. Składa się on z dowiązań deskryptorów (
-VkDescriptorSetLayoutBinding).
-
-Jedno dowiązanie deskryptora reprezentuje fragment zbioru deskryptorów zajmowany przez deskryptory tego samego rodzaju.
-Każde dowiązanie deskryptora jest opisane poprzez:
-
-- numer dowiązania (ang. binding number) używany do odnoszenia się w shaderze do dowiązania i uzyskania dostępu do
-  zasobu,
-- typ deskryptora,
-- liczba deskryptorów,
-- zbiór etapy cieniowania określający które shadery mają dostep do zasobów.
-
-Push constant to sposób przekazywania danych do shaderów będący alternatywą do deskryptorów. [...push constant]
-
-Układ potoku (VkPipelineLayout) zawiera informacje o wszystkich układach zbiorów deskryptorów i zakresów push constant
-które mogą być używane w potoku graficznym. Obiekt ten jest wymagany do stworzenia potoku graficznego.
-
-Po stworzeniu zbioru deskryptorów zawartość jej deskryptorów jest niezdefiniowna i może być zaktualizowana funkcją
-vkUpdateDescriptorSets(). Jej wejściem jest tablica struktur VkWriteDescriptorSet. Każda pojedyńcza strukura opisuje
-sposób aktualizacji zawartości pojedyńczego deskryptora w wybranym dowiązaniu deskryptora przy użyciu wybranego zasobu.
-
-Aktualizacja zbioru deskryptorów odbywa się na CPU natychmiastowo po wywołaniu vkUpdateDescriptorSets() i jest możliwa
-tylko zanim zbiór deskryptorów zostanie użyty przez jakiekolwiek polecenie w nagrywanym lub wykonywanym buforze poleceń.
-Jednym z wyjątków jest aktualizacja zbiorów deskryptorów zaalokowanych z puli deskryptorów wspierającej funkcjonalność *
-uaktualnienia deskryptorów po dowiązaniu*.
-
-Przed użyciem zasobów opisanych zbiorem deskryptorów przez polecenia rysowania wymagane jest dowiązania ich do bufora
-poleceń przy użyciu komeny vkCmdBindDescriptorSets(). Jednym z jej wejść jest numer zbioru, który wraz z numerami
-dowiązań służy do identyfikacji zasobu w shaderach.
-
-Po dowiązaniu zbióru deskryptorów użycie zasobów poprzez zmienną shadera wymaga dodania odpowiednich kwalifikatorów
-układu w kodzie GLSL.
-
-Kwalifikator układu dla pojedyńczego deskryptora bufora uniform ma następującą formę:
-
-```
-struct bufferStruct {
-    vec3 field1;
-    mat4 field;
-    ...
-};
-layout({układ pamięci}, set = {numer zbioru}, binding = {numer dowiązania}) uniform bufferBlock {
-    bufferStruct buffer;
-};
-```
-
-Kwalifikator układu dla tablicy deskryptorów próbkowanych obrazów 2D ma następującą formę:
-
-```
-layout(set = {numer zbioru}, binding = {numer dowiązania}) uniform sampler2D texture[{rozmiar_tablicy}];
-```
-
-Relacje między różnymi obiektami Vulkan używanymi do zarządzania deskryptorami została przedstawiona na poniższym
-diagramie:
-[OBRAZEK: layout to bindings to set to shader]
+HIRO
 
 #### Rozszerzenie VK_EXT_descriptor_indexing
 
-Rozszerzenie VK_EXT_descriptor_indexing wprowadziło dodatkowe funkcjonalności pozwalającą na tworzenie dużych zbiorów
-deskryptorów zawierających wszystkie zasoby używane przez program używanych podczas renderowania bez dowiązań. Zostały
+ Zostały
 one opisane poniżej.
 
 ##### Niejednolite dynamiczne indeksowanie deskryptorów
@@ -1685,44 +1499,7 @@ to widok obrazu używany przez potok graficzny do zapisywania końcowych wartoś
 to widok obrazu używany przez potok graficzny do odczytywania i zapisywania wartości głebi/szablonu podczas testów
 głębi/szablonu w etapach wczesnych i późnych testów fragmentów.
 
-## Bariera potoku
 
-to prymityw synchronizacji definiowany poleceniem vkCmdPipelineBarrier() pozwalający na zdefiniowanie zależności
-wykonania oraz zależności pamięci pomiędzy poleceniami przed i po barierze.
-
-**Zależność wykonania** to gwarancja, że praca pewnych *źródłowych etapów potoku* (określonych używając
-VkPipelineStageFlags) dla wcześniejszego zestawu poleceń została zakończona przed rozpoczęciem wykonywania pewnych *
-docelowych etapów potoku* dla późniejszego etapu poleceń. Przykładowo zależność wykonania pomiędzy etapami
-COLOR_ATTACHMENT_OUTPUT i FRAGMENT_SHADER gwarantuje, że zapis do dołączeń kolorów został skończony przed rozpoczęciem
-wykonywania shadera fragmentów.
-
-**Zależność pamięci** to zależność wykonania z dodatkową gwarancją, że rezultat zapisów określony przez pewien *źródłowy
-zakres dostępów* (określony używając VkAccessFlags) wygenerowanych przez wcześniejszy zestaw poleceń jest udostępiony
-późniejszemu zestawowi poleceń dla pewnego *docelowego zakresu dostępów*. Przykładowo zaleźność pamięci pomiędzy etapami
-COLOR_ATTACHMENT_OUTPUT i FRAGMENT_SHADER z zakresami dostępów COLOR_ATTACHMENT_WRITE i SHADER_READ gwarantuje, że zapis
-do dołączeń kolorów zostanie skończony i będzie mógł być odczytany przez shader fragmentów.
-
-Istnieją trzy rodzaje barier w zależności od rodzaju pamięci zarządzanego przez zależności pamięci:
-
-- bariery pamięci obrazów: dla zakresu obrazu, dodatkowo pozwala na tranzycje układu obrazu,
-- bariery pamięci buforów: dla zakresu bufora,
-- globalne bariery pamięci: dla wszystkich istniejących obiektów.
-
-## Semafory
-
-to obiekty VkSemaphore pozwalające na synchronizację wykonywania buforów poleceń w tej samej lub pomiędzy kolejkami. GPU
-może sygnalizować semafor po zakończeniu wykonywania poleceń oraz może czekać na sygnalizację semafora przed
-rozpoczęciem wykonywania następnego bufora poleceń. Przykładowo semafory są używane do synchronizacji pomiędzy kolejką
-graficzna i kolejką prezentacji w celu zagwarantowania, że prezentowalny obraz łańcucha wymiany jest używany tylko przez
-jedną kolejkę.
-
-## Ogrodzenia
-
-to obiekty VkFence pozwalające na synchonizację poleceń wykonywanych w kolejce z CPU. Ogrodzenie może być sygnalizowane
-przez GPU po zakończeniu wykonywania funkcji używających GPU (np. vkQueueSubmit()), CPU może zresetować ogrodzenie
-funkcją vkResetFences() lub czekać na jego sygnalizację funkcją vkWaitForFences() chwilowo blokując kontynuację
-wykonywania programu. Przykładowo ogrodzenia są używane do zagwarantowania, że program nie wysyła buforów poleceń
-szybciej, niż GPU je wykonuje.
 
 # TODO
 

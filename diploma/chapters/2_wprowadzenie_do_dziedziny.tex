@@ -14,7 +14,15 @@ W tej sekcji przybliżono serię pojęć oraz technik związanych z grafiką kom
 
 \section{Vulkan}
 
-// TODO
+// TODO HISTORIA, core vs ext, promowanie
+
+\subsection{Podstawy API}
+
+// TODO użycie api, notacje
+
+\subsection{Bufory i obrazy}
+
+// TODO bufory uniform i bufory magazynowe, obrazy, próbniki, obrazy magazynowe
 
 \subsection{Synchronizacja}
 
@@ -49,8 +57,8 @@ Istnieją trzy rodzaje barier w zależności od rodzaju pamięci zarządzanego p
 	\item {globalne bariery pamięci}: dla wszystkich istniejących obiektów,
 \end{itemize}
 
-// TODO
-
+// TODO użycie
+// TODO listingi?
 
 \subsubsection{Semafory}
 
@@ -69,16 +77,194 @@ funkcją \textit{vkResetFences()} lub czekać na jego sygnalizację funkcją \te
 
 Przykładowo ogrodzenia są używane do zagwarantowania, że program nie używa funkcji \textit{vkQueueSubmit()} do wysyłania buforów poleceń szybciej, niż GPU je wykonuje.
 
-\subsection{Deskryptory}
+\subsection{Deskryptory i stałe push}
+
+Vulkan nie pozwala na bezpośredni dostęp do zasobów z poziomu shadera i wymaga użycia deskryptorów.
+
+Deskryptor to blok pamięci z opisem pojedyńczego zasobu używanego przez GPU. Dokładna wewnętrzna struktura deskryptora jest w formacie specyficznym dla GPU, ale może być intuicyjnie rozumiana jako struktura zawierająca wskaźnik to adresu pamięci GPU z danymi zasobu oraz dodatkowe metadane opisujące rodzaj zasobu oraz w jaki sposób zasób będzie używany przez shader.
+
+\subsubsection{Tworzenie deskryptorów}
+
+Vulkan nie pozwala na tworzenie i używanie pojedyńczych deskryptorów i wymaga grupowania ich w tablice poprzez zbiory deskryptorów  (obiekt \textit{VkDescriptorSet}).
+
+Stworzenie zbiorów deskryptorów wymaga wcześniejszego stworzenia dwóch obiektów: puli deskryptorów (\textit{VkDescriptorPool})
+oraz układu zbioru deskryptorów (\textit{VkDescriptorSetLayout}).
+
+Pula deskryptorów to źródło, z którego alokowane są deskryptory w postaci zbiorów deskryptorów. Podczas tworzenia należy zadeklarować:
+\begin{itemize}
+	\item maksymalną liczbę zaalokowanych zbiorów deskryptorów,
+	\item maksymalną liczbę rodzajów deskryptorów.
+\end{itemize}
+
+Układ zbioru deskryptorów reprezentuje wewnętrzną strukturę zbioru deskryptorów - programista języka C może o nim myśleć jako o deklaracji struktury używanej później do definiowania zmiennych (zbiorów deskryptorów).
+Układ składa się z listy dowiązań deskryptorów (\textit{VkDescriptorSetLayoutBinding}).
+
+Jedno dowiązanie deskryptora reprezentuje fragment zbioru deskryptorów zajmowany przez deskryptory tego samego typu.
+Każde dowiązanie deskryptora jest opisane poprzez:
+\begin{itemize}
+	\item {\textit{numer dowiązania}}: używany do odnoszenia się w shaderze do dowiązania i uzyskania dostępu do
+	zasobu,
+	\item \textit{typ deskryptora},
+	\item \textit{liczba deskryptorów},
+	\item {\textit{zbiór etapów cieniowania}}: określa które shadery w potoku graficznym mają dostep do zasobów.
+\end{itemize}
+Typ deskryptora zależy od rodzaju opisywanego zasobu, przykładowo:
+\begin{itemize}
+	\item {\textit{UNIFORM\_BUFFER}}: bufor uniform,
+	\item {\textit{UNIFORM\_BUFFER\_DYNAMIC}}: dynamiczny bufor uniform, dodatkowy dynamiczny offset jest specyfikowany podczas dowiązywania zbioru deskryptorów,
+	\item {\textit{STORAGE\_BUFFER}}: bufor magazynowy,
+	\item {\textit{STORAGE\_BUFFER\_DYNAMIC}}: dynamiczny bufor magazynowy,
+	\item {\textit{SAMPLER}}: próbnik,
+	\item {\textit{SAMPLED\_IMAGE}}: widok próbkowalnego obrazu,
+	\item {\textit{STORAGE\_IMAGE}}: widok obrazu magazynowego,
+	\item {\textit{COMBINED\_IMAGE\_SAMPLER}}: próbkowany obraz, pojedyńczy deskryptor jest skojarzony zarówno z próbnikiej, jaki i z widokiem obrazu,
+	\item {\textit{UNIFORM\_TEXEL\_BUFFER}}: widok bufora uniform,
+	\item {\textit{STORAGE\_TEXEL\_BUFFER}}: widok bufora magazynowego.
+\end{itemize}
+
+\subsubsection{Aktualizacja deskryptorów}
+
+Po stworzeniu zbioru deskryptorów zawartość jego deskryptorów jest niezdefiniowna i musi być zaktualizowana funkcją
+\textit{vkUpdateDescriptorSets()}. Jej wejściem jest \textit{tablica struktur VkWriteDescriptorSet}, której każdy pojedyńczy element opisuje
+który wycinek tablicy wybranego dowiązania w zbiorze deskryptorów powinien być zaktualizowany informacjami o zasobach.
+
+Aktualizacja zbioru deskryptorów odbywa się na CPU natychmiastowo po wywołaniu \textit{vkUpdateDescriptorSets()} i jest możliwa
+tylko zanim zbiór deskryptorów zostanie użyty przez jakiekolwiek polecenie w nagrywanym bądź wykonywanym buforze poleceń.
+Jednym z wyjątków jest aktualizacja zbiorów deskryptorów zaalokowanych z puli deskryptorów wspierającej funkcjonalność uaktualnienia deskryptorów po dowiązaniu.
+
+\subsubsection{Stałe push}
+
+Stałe push to sposób przekazywania danych do shaderów będący szybszą i łatwiejszą 
+alternatywą dla deskryptorów. Nie wymagają one tworzenia i aktualizacji zasobów opartych na pamięci GPU - pamięć CPU stałej push jest bezpośrednio kopiowana i przechowywana w nagrywanym buforze poleceń komendą \textit{vkCmdPushConstants()}.
+
+Niestety ta metoda ma poważne ograniczenie - minimalny rozmiar pamięci udostępniany shaderowi gwarantowany przez specyfikację Vulkan to tylko 128 bajtów, co odpowiada dwóm macierzom 4x4. Z tego powodu stałe push powinny być używane do przekazywania danych, które zmieniają się na tyle często, że narzut wydajnościowy synchronizacji modyfikowanych buforów uniform. Przykładem mogą być macierze transformacji albo indeksy tekstur używane przez polecenia rysowania.
+
+
+\subsubsection{Zadeklarowanie użycia deskryptorów w układzie potoku}
+
+Układ potoku (VkPipelineLayout) zawiera informacje o sposobie organizacji wszystkich zbiorów deskryptorów i stałych push, które mogą być używane w potoku (VkPipeline). Jest on używany do dowiązywania zbiorów deskryptorów i nagrywania stałych push.
+
+Podczas tworzenia należy zadeklarować:
+\begin{itemize}
+	\item listę układów zbiorów deskryptorów,
+	\item listę zakresów stałych push (VkPushConstantRange).
+\end{itemize}
+
+Zakres stałej push składa się z:
+\begin{itemize}
+	\item zbioru etapów cieniowania mających dostęp do stałej push,
+	\item offset i rozmiar pamięci, który moze być używany przez powyższe etapy cieniowania.
+\end{itemize}
+
+\subsubsection{Dowiązanie deskryptorów do bufora poleceń}
+
+Przed użyciem zasobów opisanych zbiorem deskryptorów przez polecenia rysowania wymagane jest dowiązania ich do bufora
+poleceń przy użyciu komeny \textit{vkCmdBindDescriptorSets()}. Jednym z jej wejść jest \textit{numer zbioru}, który wraz z numerami
+dowiązań służy do identyfikacji zasobu w shaderach.
+
+
+\subsubsection{Diagram użycia deskryptorów}
+
+Relacje pomiędzy obiektami, funkcjami i komendami używającymi deskryptorów i stałych push zostały przedstawione na poniższym diagramie:
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[node distance=1cm]
+		\tikzstyle{object} = [rectangle, minimum width=3cm, minimum height=1cm,text centered, draw=black]
+		\tikzstyle{function} = [rectangle, rounded corners,text centered, draw=black]
+		\tikzstyle{arrow} = [thick,->,>=stealth]
+		\tikzstyle{relation} = [densely dotted]
+
+		\node (VkDescriptorSetLayout) [object] {VkDescriptorSetLayout};
+		\node (VkDescriptorPool) [object, right = of VkDescriptorSetLayout] {VkDescriptorPool};
+		\node (VkDescriptorSet) [object, below = of VkDescriptorPool] {VkDescriptorSet};
+		\draw [arrow] (VkDescriptorSetLayout) -- (VkDescriptorSet);
+		\draw [arrow] (VkDescriptorPool) -- (VkDescriptorSet);
+		
+		\node (VkPipelineLayout) [object, below = of VkDescriptorSetLayout] {VkPipelineLayout};
+		\node (VkPushConstantRange) [object, left = of VkDescriptorSetLayout] {VkPushConstantRange};
+		\draw [arrow] (VkDescriptorSetLayout) -- (VkPipelineLayout);
+		\draw [arrow] (VkPushConstantRange) -- (VkPipelineLayout);
+		
+		\node (vkUpdateDescriptorSets) [function, right = of VkDescriptorSet] {vkUpdateDescriptorSets};
+		\draw [arrow] (VkDescriptorSet) -- (vkUpdateDescriptorSets);
+		\draw [arrow] (vkUpdateDescriptorSets) -- (VkDescriptorSet);
+		\node (resources) [object, rectangle split, rectangle split parts=2, above = of vkUpdateDescriptorSets] {VkBuffer \nodepart{two} VkImage};
+		\draw [arrow] (resources) -- (vkUpdateDescriptorSets);
+		\draw [relation] (resources) edge[out=135, in=45, looseness=0.4] (VkDescriptorSetLayout);
+		
+		\node (vkCmdBindDescriptorSets) [function, below = of VkDescriptorSet] {vkCmdBindDescriptorSets};
+		\draw [arrow] (VkPipelineLayout) -- (vkCmdBindDescriptorSets);
+		\draw [arrow] (VkDescriptorSet) -- (vkCmdBindDescriptorSets);
+		
+		\node (vkCmdPushConstants) [function, below = of VkPipelineLayout] {vkCmdPushConstants};
+		\draw [arrow] (VkPipelineLayout) -- (vkCmdPushConstants);
+		\node (pushmemory) [object, text width=2cm, left = of vkCmdPushConstants] {pamięć CPU stałej push};
+		\draw [arrow] (pushmemory) -- (vkCmdPushConstants);
+		\draw [relation] (pushmemory) -- (VkPushConstantRange);
+		
+		\node (VkCommandBuffer) [object, below = of vkCmdBindDescriptorSets] {VkCommandBuffer};
+		\draw [arrow] (vkCmdPushConstants) -- (VkCommandBuffer);
+		\draw [arrow] (vkCmdBindDescriptorSets) -- (VkCommandBuffer);
+		
+		 \path ([xshift=34mm,yshift=-2mm]current bounding box.south west)
+		node[matrix,anchor=south east,cells={nodes={font=\sffamily,anchor=west}},
+		draw,thick,inner sep=1ex]{
+			\draw[arrow](0,0) -- ++ (0.6,0); & \node{Użycie};\\
+			\draw[relation](0,0) -- ++ (0.6,0); & \node{Kompatybilność};\\
+		};
+
+	\end{tikzpicture}
+	\caption{Relacje pomiędzy obiektami Vulkan używanymi do zarządzania deskryptorami}
+	\label{descriptor_relations}
+\end{figure}
+
+\subsubsection{Dostęp do zasobów w shaderach}
+
+Po dowiązaniu zbiorów deskryptorów i stałych push do bufora poleceń dostęp do zasobów z poziomu kodzu GLSL shadera odbywa się poprzez zmienną posiadającą odpowiednie kwalifikatory układu.
+
+Przykładowo kwalifikator układu dla pojedyńczego deskryptora typu UNIFORM\_BUFFER z dowiązania o numerze $x$ ze zbioru o numerze $y$ ma następującą formę:
+\lstset{language=GLSL}
+\begin{lstlisting}
+	struct bufferStruct {
+		vec3 field1;
+		mat4 field2;
+		...
+	};
+	layout(scalar, set = y, binding = x) uniform bufferBlock {
+		bufferStruct buffer;
+	};
+\end{lstlisting}
+
+Analogicznie kwalifikator układu dla tablicy deskryptorów typu COMBINED\_IMAGE\_SAMPLER o rozmiarze $r$ z dowiązania o numerze $x$ ze zbioru o numerze $y$ próbkowanych obrazów 2D ma następującą formę:
+\lstset{language=GLSL}
+\begin{lstlisting}
+	layout(set = y, binding = x) uniform sampler2D texture[r];
+\end{lstlisting}
+
+\section{Rozszerzenie VK\_EXT\_descriptor\_indexing}
+
+Rozszerzenie \textit{VK\_EXT\_descriptor\_indexing} wprowadziło szereg dodatkowych funkcjonalności pozwalających na tworzenie dużych zbiorów
+deskryptorów zawierających wszystkie zasoby używane przez program.
+Celem tego jest umożliwienie technik renderowania bez dowiązań. Z powodu swojej użyteczności rozszerzenie to zostało promowane w Vulkan 1.2.
+W kolejnych sekcjach opisano nowe funkcjonalości.
+
+\subsection{Niejednolite dynamiczne indeksowanie deskryptorów}
 
 // TODO
 
+\section{Renderowanie bez dowiązań}
+
+// TODO
 
 \section{Mapowanie tekstur}
 
 // TODO
 
 \section{Oświetlenie}
+
+// TODO
+
+\section{Cieniowanie odroczone}
 
 // TODO
 
