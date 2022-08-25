@@ -184,6 +184,19 @@
       \field{urlyear}{2020}
       \field{urldateera}{ce}
     \endentry
+    \entry{PEP405}{misc}{}
+      \field{sortinit}{7}
+      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
+      \field{labeltitlesource}{title}
+      \field{title}{PEP 405 – Python Virtual Environments}
+      \field{year}{2011}
+      \verb{urlraw}
+      \verb https://peps.python.org/pep-0405/
+      \endverb
+      \verb{url}
+      \verb https://peps.python.org/pep-0405/
+      \endverb
+    \endentry
   \enddatalist
 \endrefsection
 \endinput

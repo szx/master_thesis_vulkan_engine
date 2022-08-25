@@ -1,4 +1,4 @@
-\chapter{Technologie, algorytmy i narzędzia}
+\chapter{Architektura i implementacja}
 \label{chap:algs}
 
 \section{Użyte narzędzia}
@@ -6,8 +6,14 @@
 Silnik została napisany jako biblioteka w języku C w standardzie C11. Budowanie biblioteki ze źródeł wymaga generacji
 dodatkowego kodu przy pomocy skryptów w języku Python w wersji 3.9.7.
 
-Silnik został opracowany na maszynie z systemem Linux i wspiera systemy Linux i Windows. Projekt został w całości
-napisany przy użyciu środowiska programistycznego CLion w wersji 2021.2.3.
+Silnik został w całości opracowany na przy użyciu środowiska programistycznego CLion w wersji 2021.2.3.
+
+Proces testowania i debugowania odbywał się na maszynie o następującej konfiguracji:
+\begin{itemize}
+	\item {OS}: Kubuntu 22.04.1 LTS x86-64,
+	\item {CPU}: 11th Gen Intel Core i5-11400 (2.60GHz),
+	\item {GPU}: Intel UHD Graphics 730 (Rocket Lake GT1).
+\end{itemize}
 
 Podczas pracy stosowano rozproszony system kontroli wersji git. Repozytorium jest utrzymywane na serwisie GitHub.
 
@@ -19,9 +25,125 @@ praktycznie standardem podczas rozwoju wieloplatformowych projektów.
 
 \subsection{Proces budowania}
 
-// TODO
+Proces budowania silnika jest zdefiniowany w pliku *CMakeLists.txt* znajdującym się w katalogu głównym projektu.
 
+Kompilacja kodu źródłowego w języku C jest obsługiwana bezpośrednio przez CMake, które generuje standardowe pliki
+kompilacji (pliki Makefile w systemie Unix, projekty Microsoft Visual C++ w systemie Windows). Użyto prekompilowanych
+nagłówków do przyśpieszenia kompilacji bibliotek zewnętrznych.
+
+Skrypty w języku Python są obsługiwane pośrednio przez CMake, które wykrywa zainstalowany interpreter języka Python i
+używa go do stworzenia tzw. środowiska wirtualnego w tymczasowym katalogu venv/ w głównym katalogu projektu. Podczas
+procesu budowania środowisko wirtualne jest używane do zainstalowania wymaganych zewnętrznych bibliotek w języku Python
+i wykonywania skryptów generatora kodu. Zaletą użycia środowiska wirtualnego w porównaniu do bezpośredniego wywoływania
+zainstalowanego interpretera Pythona jest izolacja zarządzania zależnościami od reszty systemu operacyjnego, co pozwala
+na łatwiejszą powtarzalność podczas debugowania \cite{PEP405}.
+
+CMake organizuje proces budowania jako graf, w którym wierzchołki to cele połączonych ze sobą zależnościami. Budowa celu
+wymaga wcześniejszego zbudowania wszystkich innych celów od których zależy budowany cel.
+
+Wyróżniane są trzy rodzaje celów:
+\begin{itemize}
+	\item {plik wykonywalny}
+	\item {biblioteka}: statyczna lub dynamiczna
+	\item {cel niestandardowy}: używany do uruchamiania zewnętrznych programów podczas procesu kompilacji, np. generatorów kodu
+\end{itemize}
+
+Poniższy diagram przedstawia proces budowania projektu w formie celów i ich zależności:
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[node distance=2cm]
+		\tikzstyle{module} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black]
+		\tikzstyle{arrow} = [thick,->,>=stealth]
+		
+		\node (main) [module] {main};
+		\node (test) [module, right = of main] {test};
+		\node (assetpipeline) [module, right = of test] {asset\_pipeline};
+		
+		\node (engine) [module, below = of main] {engine};
+		
+		\node (runassetpipeline) [module, above = of assetpipeline] {run\_asset\_pipeline};
+		\node (copyasset) [module, left = of runassetpipeline] {copy\_asset};
+		
+		\draw [arrow] (main) -- (engine);
+		\draw [arrow] (test) edge[out=180, in=45] (engine);
+		\draw [arrow] (assetpipeline) edge[out=-90, in=0] (engine);
+		
+		\draw [arrow] (main) edge[]  (runassetpipeline);
+		\draw [arrow] (test) edge[]  (runassetpipeline);
+		
+		\draw [arrow] (runassetpipeline) -- (assetpipeline);
+		
+		\draw [arrow] (main) -- (copyasset);
+		\draw [arrow] (test) -- (copyasset);
+		\draw [arrow] (assetpipeline) -- (copyasset);
+		\draw [arrow] (runassetpipeline) -- (copyasset);
+		
+		\node(plikiwykonywalne)[draw,dotted,fit=(main) (test) (assetpipeline)] {};
+		\node (plikiwykonywalneLabel)[below=0cm of plikiwykonywalne] {\textbf{Pliki wykonywalne}};
+		
+		\node(biblioteki)[draw,dotted,fit=(engine)] {};
+		\node (bibliotekiLabel)[below=0cm of biblioteki] {\textbf{Biblioteki}};
+		
+		\node(celeniestandardowe)[draw,dotted,fit=(copyasset) (runassetpipeline)] {};
+		\node (celeniestandardoweLabel)[above=0cm of celeniestandardowe] {\textbf{Cele niestandardowe}};
+		
+	\end{tikzpicture}
+	\caption{Proces budowania w formie celów i ich zależności}
+	\label{pipeline}
+\end{figure}
+
+\paragraph{engine} Cel budujący bibliotekę programistyczną zawierającą implementację silnika.
+
+\paragraph{main} Cel budujący plik wykonywalny demonstujący użycie silnika poprzez wyrenderowanie przykładowej sceny.
+
+\paragraph{test} Cel budujący plik wykonywalny z testami jednostkowymi napisanymi i używanymi podczas implementowania projektu.
+
+\paragraph{asset\_pipeline} Cel budujący plik wykonywalny służący jako narzędzie wiersza poleceń wykonujące operacje potoku zasobów.
+
+\paragraph{copy\_assets} Niestandardowy cel kopiujący podkatalogu głównego \textit{assets} zawierającego nieprzetworzone zasoby wejściowe do katalogu budowania.
+
+\paragraph{run\_asset\_pipeline} Niestandardowy cel realizujący potoku zasobów poprzez uruchomienie skryptu Python wielokrotne uruchamiającego narzędzie \textbf{asset\_pipeline} na zasobach wejściowych.
+
+// TODO więcej o celach
 
 \subsection{Biblioteki zewnętrzne}
+
+Projekt używa następujących zewnętrznych bibliotek programistycznych:
+
+\begin{itemize}
+	\item {\textit{Vulkan SDK 1.3.211.0}}:
+	\begin{itemize}
+		\item pliki nagłówkowe dla Vulkan,
+		\item \textit{shaderc}: kompilacja shaderów z kodu źródłowego GLSL do kodu bajtowego SPIR,
+		\item \textit{SPIRV-Reflect}: mechanizm refleksji dla kodu bajtowego SPIR-V,
+	\end{itemize}
+	\item {\textit{glfw 3.4}}: międzyplatformowa obsługa tworzenia okien, obsługa wejścia klawiatury i myszy,
+	\item {\textit{sqlite 3.35.5}}: relacyjna baza danych SQL,
+	\item {\textit{uthash 2.3.0}}: proste struktury danych (tablica dynamiczna, lista dwukierunkowa, tablica mieszająca),
+	\item {\textit{xxHash 0.8.1}}: niekryptograficzny algorytm mieszający,
+	\item {\textit{cgltf 1.11}}: wczytywanie plików w formacie glTF,
+	\item {\textit{cglm 0.8.5}}: biblioteka matematyczna,
+	\item {biblioteka standardowa C},
+	\item {API systemu operacyjnego}: pliki nagłówkowe POSIX albo WinAPI,
+	\item {biblioteka standardowa Python},
+	\item {\textit{libclang 12.0.0}}: analizowanie kodu C w skryptach Python.
+\end{itemize}
+
+Dodatkowo biblioteka zbudowana w konfiguracji \textit{Debug} statycznie linkuje biblioteki \textit{ASan} (AddressSanitizer) i \textit{UBSan} (
+UndefinedBehaviorSanitizer) wykrywające szeroką klasę błędów dotyczących niewłaściwego użycia pamięci i niezdefiniowanych zachowań. Błędy te w języku C są nieoczywiste i trudne do wykrycia przez programistę. Podczas rozwoju projektu ASan wielokrotnie pozwolił na wykrycie i naprawienie następujących rodzajów błędów:
+
+\begin{itemize}
+	\item wycieki pamięci,
+	\item dereferencje zwisających wskaźników,
+	\item dereferencja wskaźników NULL,
+	\item dereferencja źle wyrównanych struktur,
+	\item odczyt i zapis poza granicami tablicy.
+\end{itemize}
+
+\section{Architektura}
+
+// TODO
+
+\section{Moduły}
 
 // TODO

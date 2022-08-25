@@ -16,18 +16,76 @@ W tej sekcji przybliżono serię pojęć oraz technik związanych z grafiką kom
 
 // TODO
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Obrazek kawusi to rys. \ref{fig:coffee} \cite{dx12_2}.
+\subsection{Synchronizacja}
 
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.9\textwidth]{images/kawunia.png}
-    \caption{Smacznej kawuni}
-    \label{fig:coffee}
-\end{figure}
+// TODO
 
-Nunc venenatis in felis lobortis vehicula.
+\subsubsection{Bariery potoku}
+
+Bariera potoku to prymityw synchronizacji definiowany poleceniem \textit{vkCmdPipelineBarrier()} pozwalający na zdefiniowanie zależności
+wykonania oraz zależności pamięci pomiędzy poleceniami przed i po barierze.
+
+Zależność wykonania to gwarancja, że praca pewnych \textit{źródłowych etapów potoku} (określonych używając
+VkPipelineStageFlags) dla wcześniejszego zestawu poleceń została zakończona przed rozpoczęciem wykonywania pewnych
+\textit{docelowych etapów potoku} dla późniejszego etapu poleceń. 
+
+Przykładowo zależność wykonania pomiędzy etapami
+COLOR\_ATTACHMENT\_OUTPUT i FRAGMENT\_SHADER gwarantuje, że zapis do dołączeń kolorów został skończony przed rozpoczęciem
+wykonywania shadera fragmentów.
+
+Zależność pamięci to zależność wykonania z dodatkową gwarancją, że rezultat zapisów wyspecyfikowanych przez pewien \textit{źródłowy
+zakres dostępów} (określony używając VkAccessFlags) wygenerowanych przez wcześniejszy zestaw poleceń jest udostępiony
+późniejszemu zestawowi poleceń dla pewnego \textit{docelowego zakresu dostępów}.
+
+Przykładowo zaleźność pamięci pomiędzy etapami
+COLOR\_ATTACHMENT\_OUTPUT i FRAGMENT\_SHADER z zakresami dostępów COLOR\_ATTACHMENT\_WRITE i SHADER\_READ gwarantuje, że zapis
+do dołączeń kolorów zostanie skończony i będzie mógł być odczytany przez shader fragmentów.
+
+Istnieją trzy rodzaje barier w zależności od rodzaju pamięci zarządzanego przez zależności pamięci:
+
+\begin{itemize}
+	\item {bariery pamięci obrazów}: dla zakresu obrazu, dodatkowo pozwala na tranzycje układu obrazu,
+	\item {bariery pamięci buforów}: dla zakresu bufora,
+	\item {globalne bariery pamięci}: dla wszystkich istniejących obiektów,
+\end{itemize}
+
+// TODO
+
+
+\subsubsection{Semafory}
+
+Semafory to obiekty VkSemaphore pozwalające na synchronizację wykonywania buforów poleceń w tej samej lub pomiędzy kolejkami. GPU
+może sygnalizować semafor po zakończeniu wykonywania poleceń oraz może czekać na sygnalizację semafora przed
+rozpoczęciem wykonywania następnego bufora poleceń.
+
+Przykładowo semafory są używane do synchronizacji pomiędzy kolejką
+graficzna i kolejką prezentacji w celu zagwarantowania, że prezentowalny obraz łańcucha wymiany jest używany tylko przez jedną kolejkę.
+
+\subsubsection{Ogrodzenia}
+
+Ogrodzenia to obiekty VkFence pozwalające na synchonizację poleceń wykonywanych w kolejce na GPU z CPU.
+Ogrodzenie może być sygnalizowane przez GPU po zakończeniu wykonywania funkcji używających GPU, CPU może zresetować ogrodzenie
+funkcją \textit{vkResetFences()} lub czekać na jego sygnalizację funkcją \textit{vkWaitForFences()} chwilowo blokując wykonywanie programu.
+
+Przykładowo ogrodzenia są używane do zagwarantowania, że program nie używa funkcji \textit{vkQueueSubmit()} do wysyłania buforów poleceń szybciej, niż GPU je wykonuje.
+
+\subsection{Deskryptory}
+
+// TODO
+
 
 \section{Mapowanie tekstur}
+
+// TODO
+
+\section{Oświetlenie}
+
+// TODO
+
+\section{Graf sceny}
+
+// TODO
+
+\section{Graf renderowania}
 
 // TODO
