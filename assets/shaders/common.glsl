@@ -5,10 +5,10 @@ uint getGlobalIdx() {
 
 uint getInstanceId() {
     #if SHADER_VERTEX == 1
-    uint idx = gl_InstanceIndex;
+    uint idx = nonuniformEXT(gl_InstanceIndex);
     return FRAMES_IN_FLIGHT*idx + draw.currentFrameInFlight;
     #elif SHADER_FRAGMENT == 1
-    uint idx = inInstanceId;
+    uint idx = nonuniformEXT(inInstanceId);
     return idx;// already calculated in vertex shader
     #endif
 }
