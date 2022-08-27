@@ -623,160 +623,6 @@ bufora tymczasowego i funkcji vkCmdCopyBuffer() w bufore poleceń one-shot.
 
 ### Vulkan
 
-HIRO
-
-#### Rozszerzenie VK_EXT_descriptor_indexing
-
- Zostały
-one opisane poniżej.
-
-##### Niejednolite dynamiczne indeksowanie deskryptorów
-
-Deskryptory są widziane przez shadery jako tablice, do których dostęp odbywa się poprzez indeksowanie w czasie
-wykonywania wywołań shaderów.
-
-Statyczne indeksowanie pozwala na dostęp do zasobu przy użyciu indeksu będącego stałą czasu kompilacji. Jest to
-najstarszy i zawsze wspierany sposób indeksowania deskryptorów.
-
-Dynamiczne indeksowanie pozwala na dostęp do zasobu przy użyciu wartości czasu wykonywania.
-
-Jednolite dynamiczne indeksowanie wymaga, żeby indeks był taki sam dla wszystkich wywołań shadera spowodowanych przez
-pojedyńcze polecenie rysowania - użycie różnych indeksów jest błędem i może skutkować korupcjami. Wsparcie tej
-funkcjonalości dla buforów uniform i próbkowanych obrazów wymaga następujących funkcji urządzenia należących do Vulkan
-Core 1.0:
-
-- shaderSampledImageArrayDynamicIndexing
-- shaderUniformBufferArrayDynamicIndexing W czasie pisania pracy według portalu GPUInfo.org powyższe funkcje urządzenia
-  są wspierane przez ponad 90% urządzeń.
-
-Niejednolite dynamiczne indeksowanie pozwala na spobodny dostęp do zasobów znajdujących się w pamięci GPU przy użyciu
-dowolnych indeksów. Wsparcie tej funkcjonalości dla buforów uniform i próbkowanych obrazów wymaga następujących funkcji
-urządzenia należących do Vulkan Core 1.2:
-
-- shaderSampledImageArrayNonUniformIndexing
-- shaderUniformBufferArrayNonUniformIndexing W czasie pisania pracy według portalu GPUInfo.org powyższe funkcje
-  urządzenia są wspierane przez ponad 91% urządzeń. Użycie tej funkcjonalności w shaderze wymaga użycia rozszerzenia
-  SPIR-V SPV_EXT_descriptor_indexing. Może być to uczynione z poziomu kodu GLSL przez dodanie następującej dyrektywy:
-
-```
-#extension GL_EXT_nonuniform_qualifier : require
-```
-
-Wymóg jednolitości podczas indeksowania deskryptorów był spowodowany ograniczeniami poprzednich generacji GPU - w modelu
-renderowania OpenGL dostęp do dowiązanych tekstur odbywał się pośrednio poprzez jednostki teksturujące, które były
-widoczne przez wszystkie wywołania shaderów i nie pozwalały na zmianę dołączonych tekstur podczas wykonywania polecenia
-rysowania ([GEMS4]). Wywołuje to problem podczas renderowania scen z obiektami używającymi różnych tekstur -
-wyrenderowanie każdego obiektu wymaga wyemitowania nowego polecenia rysowania z dołączonymi odpowiednimi teksturami.
-Niejednolite dynamiczne indeksowanie pozwala na wyrenderowanie obiektów z różnymi teksturami poprzez dowiązanie
-wszystkich używanych zasobów na początku bufora poleceń i wyemitowanie pojedyńczego polecenia rysowania używającego
-bufora widocznego przez GPU wypełnionego indeksami tekstur używanych przez kolejne obiekty na scenie. Różnica ta została
-zilustrowana na poniższym diagramie:
-[OBRAZEK bindful vs bindless]
-
-#### Uaktualnienie deskryptorów po dowiązaniu
-
-Domyślnie deskryptory nie mogą być aktualizowane po dowiązaniu ich do bufora poleceń. Nie dotyczy to deskryptorów
-używających funkcjonalności aktualizacji po dowiązaniu.
-
-Dzięki tej funkcjonalności istnieje możliwość nagrania bufora poleceń bez wcześniejszej aktualizacji zbioru
-deskryptorów. Pozwala to na elastyczniejsze zarządzanie zasobami - proces ładowania jest odroczony i oddzielony od
-procesu renderowania.
-
-Użycie tej funkcjonalności wymaga stworzenia puli deskryptorów z flagą UPDATE_AFTER_BIND oraz stworzenia układu zbioru
-deskryptorów z flagą UPDATE_AFTER_BIND_POOL dla dowiązań.
-
-Wsparcie tej funkcjonalości dla buforów uniform i próbkowanych obrazów wymaga następujących funkcji urządzenia
-należących do Vulkan Core 1.2:
-
-- descriptorBindingUniformBufferUpdateAfterBind
-- descriptorBindingSampledImageUpdateAfterBind W czasie pisania pracy według portalu GPUInfo.org powyższe
-  funkcjonalności są wspierane przez kolejno 66.9% i 94,1% urządzeń.
-
-Podczas używania tej funkcjonalności należy zapewnić odpowiednią synchronizację - aktualizowane deskryptory nie mogą być
-używane przez potok graficzny w momencie aktualizacji.
-
-Użycie tej funkcjonalności wprowadza nowe limity maxPerStageUpdateAfterBind* i maxDescriptorSetUpdateAfterBind*
-zastępujące stare limity maxPerStage* i maxDescriptorSet*. Rozszerzenie gwarantuje, że nowe limity są takie same lub
-znacznie większe od starych limitów. Przykładowo na maszynie testowej limity maxPerStageDescriptorSampledImages i
-maxDescriptorSetUpdateAfterBindSampledImages to kolejno 65535 i 1048576.
-
-#### Dowiązanie deskryptora o zmiennej wielkości
-
-Domyślnie dowiązania deskryptora mają stałą wielkość określoną podczas stworzenia układu zbioru deskryptora.
-Ograniczenie to nie dotyczny dowiązań deskryptora o zmiennej wielkości.
-
-Dzięki tej funkcjonalości wielkość zbioru deskryptorów jest niezależna od układu zbioru deskryptorów. Zwiększa to
-elastyczność procesu tworzenia zbiorów deskryptorów i pozwala to obsługę sytuacji, w której dokładna liczba deskryptorów
-wymaganych do opisania zasobów nie jest znana podczas tworzenia układu zbioru deskryptoru.
-
-Użycie tej funkcjonalności wymaga stworzenia układu zbioru deskryptorów z flagą VARIABLE_DESCRIPTOR_COUNT dla ostatniego
-dowiązania. Zamiast liczby deskryptorów podawana jest jej górna granica. Rzeczywista liczba deskryptorów jest podawana
-podczas tworzenia zbioru deskryptorów przy użyciu struktury VkDescriptorSetVariableDescriptorCountAllocateInfo.
-
-Wsparcie tej funkcjonalości wymaga funkcji urządzenia descriptorBindingVariableDescriptorCount należącej do Vulkan Core
-1.2. W czasie pisania pracy według portalu GPUInfo.org jest ona wspierana przez 94,1% urządzeń.
-
-#### Częściowe dowiązania deskryptorów
-
-Domyślnie wszystkie deskryptory w zbiorze deskryptorów używanym przez potok graficzny nie mogą być nieprawidłowe i muszą
-być zaktualizowane przez dowiązaniem. Ograniczenie to nie dotyczny częściowo dowiązanych deskryptorów.
-
-Dzięki tej funkcjonalności deskryptory nieużywane podczas wykonywania potoku graficznego nie muszą być prawidłowe i mogą
-być one także aktualizowane nawet podczas używania zbioru deskryptorów przez GPU.
-
-Wsparcie tej funkcjonalości wymaga funkcji urządzenia descriptorBindingPartiallyBound należącej do Vulkan Core 1.2. W
-czasie pisania pracy według portalu GPUInfo.org jest ona wspierana przez 94,1% urządzeń.
-
-#### Deskryptory zerowe
-
-Dostęp przy użyciu nieprawidłowego deskryptora jest niezdefiniowanym zachowaniem. W sytuacji, w której program nie jest
-w stanie zagwarantować użycia tylko prawidłowych deskryptorów przez shadery, istnieje możliwość użycia deskryptorów
-zerowych - dostęp do nich zawsze skutkuje zwróceniem zer.
-
-Użycie tej funkcjonalności wymaga zaktualizowania deskryptorów przy użyciu uchwytu VK_NULL_HANDLE w miejsce zasobu.
-
-Wsparcie tej funkcjonalności wymaga funkcji urządzenia nullDescriptor należącej do rozszerzenia VK_EXT_robustness2. W
-czasie pisania pracy według portalu GPUInfo.org jest ona wspierana przez 26,8% urządzeń.
-
-#### Tablice deskryptorów czasu wykonania
-
-Ta funkcjonalność pozwala deklarację tablic deskryptorów w shaderach których rozmiar nie jest znany podczas kompilacji.
-
-Dzięki tej funkcjonalności możliwa jest kompilacja shaderów bez wiedzy o dokładnej liczbie deskryptorów w dowiązaniach
-zbioru deskryptorów.
-
-Użycie tej funkcjonalności wymaga pominięcia rozmiaru tablicy w kwalifikatorze układu w kodzie GLSL:
-
-```
-layout(set = 0, binding = 2) uniform sampler2D textures2D[];
-```
-
-Skutkuje to generacją kodu SPIR-V używającego rozszerzenia SPV_EXT_descriptor_indexing i typu OpTypeRuntimeArray zamiast
-OpTypeArray:
-
-```
-OpCapability Shader
-OpCapability RuntimeDescriptorArray
-OpExtension "SPV_EXT_descriptor_indexing"
-...
-OpName %textures2D "textures2D"
-...
-OpDecorate %textures2D DescriptorSet 0
-OpDecorate %textures2D Binding 2
-...
-%150 = OpTypeImage %float 2D 0 0 0 1 Unknown
-%151 = OpTypeSampledImage %150
-%_runtimearr_151 = OpTypeRuntimeArray %151
-%_ptr_UniformConstant__runtimearr_151 = OpTypePointer UniformConstant %_runtimearr_151
-%textures2D = OpVariable %_ptr_UniformConstant__runtimearr_151 UniformConstant
-...
-```
-
-Wsparcie tej funkcjonalości wymaga funkcji urządzenia runtimeDescriptorArray należącej do Vulkan Core 1.2. W czasie
-pisania pracy według portalu GPUInfo.org jest ona wspierana przez 94,1% urządzeń.
-
-Indeksowanie poza długością tablicy czasu wykonania jest niezdefiniowanym zachowaniem.
-
 ### Silnik
 
 Silnik zgodnie z duchem renderowania bez dowiązań dąży do zmniejszenia liczby alokowanych deskryptorów i eliminacji
@@ -932,6 +778,8 @@ vec4 baseColorSample = texture(textures2D[baseColorTextureId], inTexCoord);
 Obiekt shader reprezentuje pojedyńczy shader i jest odpowiedzialny za kompilację ich do formy używanej przez Vulkan.
 
 ### Shader
+
+HIRO
 
 Shader to program specyfikujący operacje wykonywane podczas etapu potoku graficznego dla każdego elementu przetwarzanego
 przez ten etapu potoku (np. wierzchołka albo fragmentu).
@@ -1205,7 +1053,7 @@ Lista urządzeń fizycznych jest przefiltrowana do listy kandydatów przy użyci
   - VK_KHR_dynamic_rendering
   - VK_KHR_shader_non_semantic_info (w trybie debugowania, używane przez debugPrintf)
 - wcześniej utworzonej powierzchni,
-- funkcji urządzenia fizycznego:
+- funkcjonalności urządzenia fizycznego:
   - Vulkan 1.0 Core:
     - samplerAnisotropy: filtrowanie anizotropowego podczas próbkowania,
     - shaderUniformBufferArrayDynamicIndexing: jednolite dynamiczne indeksowanie tablic buforów uniform,

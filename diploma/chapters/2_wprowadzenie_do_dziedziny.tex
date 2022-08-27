@@ -6,10 +6,11 @@ W tej sekcji przybliżono serię pojęć oraz technik związanych z grafiką kom
 \section{Podstawowe pojęcia}
 // TODO
 
-\section{Potok graficzny}
+\section{Potok zasobów}
 // TODO
 
-\section{Potok zasobów}
+\subsection{glTF}
+
 // TODO
 
 \section{Vulkan}
@@ -18,11 +19,23 @@ W tej sekcji przybliżono serię pojęć oraz technik związanych z grafiką kom
 
 \subsection{Podstawy API}
 
-// TODO użycie api, notacje
+// TODO użycie api, notacje, łańcuch pNext
 
-\subsection{Bufory i obrazy}
+\subsection{Inicjalizacja}
 
+// TODO surface, urządzenie fizyczne i logiczne
+
+\subsection{Bufory poleceń}
+
+// TODO surface, urządzenie fizyczne i logiczne
+
+\subsection{Zasoby}
+// TODO pamięć
 // TODO bufory uniform i bufory magazynowe, obrazy, próbniki, obrazy magazynowe
+
+\subsection{Łańcuch wymiany}
+
+// TODO surface
 
 \subsection{Synchronizacja}
 
@@ -38,7 +51,7 @@ VkPipelineStageFlags) dla wcześniejszego zestawu poleceń została zakończona 
 \textit{docelowych etapów potoku} dla późniejszego etapu poleceń. 
 
 Przykładowo zależność wykonania pomiędzy etapami
-COLOR\_ATTACHMENT\_OUTPUT i FRAGMENT\_SHADER gwarantuje, że zapis do dołączeń kolorów został skończony przed rozpoczęciem
+\textit{COLOR\_ATTACHMENT\_OUTPUT} i \textit{FRAGMENT\_SHADER} gwarantuje, że zapis do dołączeń kolorów został skończony przed rozpoczęciem
 wykonywania shadera fragmentów.
 
 Zależność pamięci to zależność wykonania z dodatkową gwarancją, że rezultat zapisów wyspecyfikowanych przez pewien \textit{źródłowy
@@ -46,7 +59,7 @@ zakres dostępów} (określony używając VkAccessFlags) wygenerowanych przez wc
 późniejszemu zestawowi poleceń dla pewnego \textit{docelowego zakresu dostępów}.
 
 Przykładowo zaleźność pamięci pomiędzy etapami
-COLOR\_ATTACHMENT\_OUTPUT i FRAGMENT\_SHADER z zakresami dostępów COLOR\_ATTACHMENT\_WRITE i SHADER\_READ gwarantuje, że zapis
+\textit{COLOR\_ATTACHMENT\_OUTPUT} i \textit{FRAGMENT\_SHADER} z zakresami dostępów \textit{COLOR\_ATTACHMENT\_WRITE} i \textit{SHADER\_READ} gwarantuje, że zapis
 do dołączeń kolorów zostanie skończony i będzie mógł być odczytany przez shader fragmentów.
 
 Istnieją trzy rodzaje barier w zależności od rodzaju pamięci zarządzanego przez zależności pamięci:
@@ -156,6 +169,10 @@ Zakres stałej push składa się z:
 	\item offset i rozmiar pamięci, który moze być używany przez powyższe etapy cieniowania.
 \end{itemize}
 
+Liczba poszczególnych typów deskryptorów uzwględnionych w potoku renderowania jest ograniczona limitami urządzenia fizycznego.
+Limit \textit{maxPerStageResources} to maksymalna liczba zasobów, które mogą być dostępne dla pojedyńczego etapu cieniowania.
+Rodzina limitów \textit{maxDescriptorSet*}, gdzie \textit{*} to typ deskryptora, kontroluje maksymalną liczbę deskryptorów danego typu w układzie potoku.
+
 \subsubsection{Dowiązanie deskryptorów do bufora poleceń}
 
 Przed użyciem zasobów opisanych zbiorem deskryptorów przez polecenia rysowania wymagane jest dowiązania ich do bufora
@@ -225,20 +242,20 @@ Po dowiązaniu zbiorów deskryptorów i stałych push do bufora poleceń dostęp
 Przykładowo kwalifikator układu dla pojedyńczego deskryptora typu UNIFORM\_BUFFER z dowiązania o numerze $x$ ze zbioru o numerze $y$ ma następującą formę:
 \lstset{language=GLSL}
 \begin{lstlisting}
-	struct bufferStruct {
-		vec3 field1;
-		mat4 field2;
-		...
-	};
-	layout(scalar, set = y, binding = x) uniform bufferBlock {
-		bufferStruct buffer;
-	};
+struct bufferStruct {
+	vec3 field1;
+	mat4 field2;
+	...
+};
+layout(scalar, set = y, binding = x) uniform bufferBlock {
+	bufferStruct buffer;
+};
 \end{lstlisting}
 
 Analogicznie kwalifikator układu dla tablicy deskryptorów typu COMBINED\_IMAGE\_SAMPLER o rozmiarze $r$ z dowiązania o numerze $x$ ze zbioru o numerze $y$ próbkowanych obrazów 2D ma następującą formę:
 \lstset{language=GLSL}
 \begin{lstlisting}
-	layout(set = y, binding = x) uniform sampler2D texture[r];
+layout(set = y, binding = x) uniform sampler2D texture[r];
 \end{lstlisting}
 
 \section{Rozszerzenie VK\_EXT\_descriptor\_indexing}
@@ -250,9 +267,320 @@ W kolejnych sekcjach opisano nowe funkcjonalości.
 
 \subsection{Niejednolite dynamiczne indeksowanie deskryptorów}
 
+Deskryptory są traktowane przez shadery jako tablice, do których dostęp odbywa się używając indeksu.
+
+Statyczne indeksowanie pozwala na dostęp do zasobu przy użyciu indeksu będącego stałą czasu kompilacji. Jest to najstarszy i zawsze wspierany sposób indeksowania.
+
+Dynamiczne indeksowanie pozwala na dostęp do zasobu przy użyciu wartości czasu wykonywania.
+
+Jednolite dynamiczne indeksowanie wymaga, żeby indeks był taki sam we wszystkich wywołań shadera spowodowanych przez pojedyńcze polecenie rysowania - użycie różnych indeksów jest błędem i może skutkować korupcjami.
+Przykładem tego rodzaju indeksowania jest użycie indeksu tekstury w stałej push lub buforze uniform.
+Wymaga ona wsparcia następujących funkcjonalności urządzenia Vulkan 1.0:
+\begin{itemize}
+	\item {\textit{shaderUniformBufferArrayDynamicIndexing}}: tablice buforów uniform,
+	\item {\textit{shaderSampledImageArrayDynamicIndexing}}: tablice próbkowalnych obrazów,
+	\item {\textit{shaderStorageBufferArrayDynamicIndexing}}: tablice buforów magazynowych,
+	\item {\textit{shaderStorageImageArrayDynamicIndexing}}: tablice obrazów magazynowych.
+\end{itemize}
+
+Niejednolite dynamiczne indeksowanie pozwala na swobodny dostęp do zasobów znajdujących się w pamięci GPU przy użyciu dowolnych indeksów.
+Przykładem może być indeksowanie tablicy tekstur używając indeksu instancji polecenia rysowania albo próbki tekstury pozaekranowej.
+Wymaga ona wsparcia analogicznych funkcjonalności urządzenia Vulkan 1.2:
+\begin{itemize}
+	\item {\textit{shaderUniformBufferArrayNonUniformIndexing}},
+	\item {\textit{shaderSampledImageArrayNonUniformIndexing}},
+	\item {\textit{shaderStorageBufferArrayNonUniformIndexing}},
+	\item {\textit{shaderStorageImageArrayNonUniformIndexing}}.
+\end{itemize}
+
+W czasie pisania pracy powyższe funkcjonalności są wspierane przez więcej niż $90\%$ urządzeń \cite{GPUINFO}.
+
+Niejednolite dynamiczne indeksowanie wymaga zadeklarowania rozszerzenia SPIR-V \textit{SPV\_EXT\_descriptor\_indexing}.
+Może być to uczynione z poziomu kodu GLSL przez dodanie następującej dyrektywy preprocesora:
+\lstset{language=GLSL}
+\begin{lstlisting}
+#extension GL_EXT_nonuniform_qualifier : require
+\end{lstlisting}
+Dodatkowo każde użycie niejednolitego indeksu powinno być oznaczone funkcją \textit{nonuniformEXT}:
+\lstset{language=GLSL}
+\begin{lstlisting}
+vec4 color = texture(textures2D[nonuniformEXT(index)], uv);
+\end{lstlisting}
+
+Wymóg jednolitości podczas indeksowania deskryptorów był spowodowany ograniczeniami poprzednich generacji GPU - w modelu renderowania OpenGL dostęp do dowiązanych tekstur odbywał się pośrednio poprzez jednostki teksturujące, które były widoczne przez wszystkie wywołania shaderów i nie pozwalały na zmianę dołączonych tekstur podczas wykonywania polecenia rysowania \cite{GPUGEM4}. 
+
+\subsection {Aktualizacja deskryptorów po dowiązaniu}
+
+Domyślnie deskryptory nie mogą być aktualizowane po nagraniu ich dowiązania w buforze poleceń, przez co aplikacja musi mieć kompletną wiedzę o wszystkich używanych zasobach w trakcie nagrywania buforów poleceń.
+Nie dotyczy to jednak deskryptorów używających funkcjonalności aktualizacji po dowiązaniu, co pozwala na elastyczniejsze zarządzanie zasobami poprzez odroczenie aktualizacji zbiorów deskryptorów aż do momentu bezpośrednio przed wykonaniem bufora poleceń.
+
+Wsparcie aktualizacji po dowiązaniu dla wybranego typu deskryptora wymaga odpowiedniej funkcjonalności urządzenia Vulkan 1.2:
+\begin{itemize}
+	\item {\textit{descriptorBindingUniformBufferUpdateAfterBind}}: bufory uniform,
+	\item {\textit{descriptorBindingSampledImageUpdateAfterBind}}: próbkowalne obrazów,
+	\item {\textit{descriptorBindingStorageBufferUpdateAfterBind}}: bufory magazynowe,
+	\item {\textit{descriptorBindingStorageImageUpdateAfterBind}}: obrazy magazynowe.
+\end{itemize}
+W czasie pisania pracy powyższe funkcjonalności są wspierane przez ponad $90\%$ urządzeń wyłączając bufory uniform niewspierane przez ok. $40\%$ platform \cite{GPUINFO}.
+
+Użycie tej funkcjonalności wprowadza nowe limity \textit{maxPerStageUpdateAfterBindResources} i \textit{maxDescriptorSetUpdateAfterBind*}
+zastępujące stare limity \textit{maxPerStageResources} i \textit{maxDescriptorSet*}. Rozszerzenie gwarantuje, że nowe limity są takie same lub znacznie większe od starych limitów. Przykładowo na maszynie testowej limity maxPerStageDescriptorSampledImages i maxDescriptorSetUpdateAfterBindSampledImages to kolejno $65535$ i $1048576$.
+
+Użycie tej funkcjonalności odbywa się poprzez stworzenia puli deskryptorów z flagą \textit{UPDATE\_AFTER\_BIND}. Dowiązania zdefiniowane podczas tworzenia układu zbioru deskryptorów muszą posiadać flagę
+\textit{UPDATE\_AFTER\_BIND\_POOL}.
+
+Aplikacja musi zapewnić odpowiednią synchronizację - aktualizowane deskryptory nie mogą być używane przez potok graficzny w momencie aktualizacji.
+
+\subsection {Dowiązanie deskryptora o zmiennej wielkości}
+
+Domyślnie wielkość dowiązania deskryptora jest stałą wartością określoną podczas stworzenia układu zbioru deskryptora.
+Ograniczenie to nie dotyczny dowiązań deskryptora o zmiennej wielkości.
+
+Dzięki tej funkcjonalości wielkość zbioru deskryptorów jest niezależna od układu zbioru deskryptorów i jest specyfikowana dopiero podczas tworzenia zbioru deskryptorów, co pozwala to obsługę sytuacji, w której dokładna liczba deskryptorów wymaganych do opisania zasobów nie jest znana podczas tworzenia układu zbioru deskryptoru.
+
+Wsparcie dowiązań o zmiennej wielkości wymaga funkcjonalności urządzenia Vulkan 1.2 \textit{descriptorBindingVariableDescriptorCount}, która w czasie pisania pracy jest wspierana przez ponad $90\%$ urządzeń \cite{GPUINFO}.
+
+Użycie tej funkcjonalności odbywa się poprzez stworzenia układu zbioru deskryptorów, którego ostatnie dowiązanie posiada flagę \textit{VARIABLE\_DESCRIPTOR\_COUNT} i zamiast liczby deskryptorów podawana jest jej górna granica.
+Rzeczywista liczba jest ustalana podczas tworzenia zbioru deskryptorów przy użyciu struktury \textit{VkDescriptorSetVariableDescriptorCountAllocateInfo} w łańcuchu \textit{pNext}.
+
+\subsection {Częściowe dowiązania deskryptorów}
+
+Domyślnie wszystkie deskryptory w dołączonym zbiorze deskryptorów nie mogą być w stanie nieprawidłowym i muszą koniecznie być zaktualizowane przez dowiązaniem - jest to nazywane wymogiem statycznego użycia deskryptorów.
+Ograniczenie to nie dotyczny częściowo dowiązanych deskryptorów.
+
+Dzięki tej funkcjonalności deskryptory muszą być dynamicznie używane: deskryptory nieużywane przez shadery mogą być nieprawidłowe i dodatkowo mogą być nawet aktualizowane gdy zbior deskryptorów jest używany przez GPU - pamiętając, że dostęp przy użyciu nieprawidłowego deskryptora jest wciąż niezdefiniowanym zachowaniem i aplikacja musi zapewnić odpowiednią synchronizację CPU-GPU.
+
+Wsparcie dowiązań o zmiennej wielkości wymaga funkcjonalności urządzenia Vulkan 1.2 \textit{descriptorBindingPartiallyBound}, która w czasie pisania pracy jest wspierana przez ponad $94\%$ urządzeń \cite{GPUINFO}.
+
+Użycie tej funkcjonalności odbywa się poprzez stworzenia układu zbioru deskryptorów, którego dowiązanie posiada flagę \textit{PARTIALLY\_BOUND\_BIT}.
+
+\subsection {Tablice deskryptorów czasu wykonania}
+
+Domyślnie rozmiar tablicy deskryptorów musi być znany podczas kompilacji shaderów. Przykładowo w języku GLSL jest on podawany w kwalifikatorze układu.
+Wymaganie to nie dotyczy tablic deskryptorów czasu wykonania.
+
+Ta funkcjonalność pozwala na deklarację w shaderach tablic deskryptorów których rozmiar nie jest znany podczas kompilacji, co pozwala na kompilację shaderów bez wiedzy o dokładnej liczbie deskryptorów w dowiązaniach.
+
+Wsparcie tablic deskryptorów czasu wykonania wymaga funkcjonalności urządzenia Vulkan 1.2 \textit{runtimeDescriptorArray}, która w czasie pisania pracy jest wspierana przez ponad $94\%$ urządzeń \cite{GPUINFO}.
+
+Użycie tej funkcjonalności odbywa się poprzez pominięcie rozmiaru tablicy w kwalifikatorze układu w kodzie GLSL:
+\lstset{language=GLSL}
+\begin{lstlisting}
+layout(set = y, binding = x) uniform sampler2D texture[];
+\end{lstlisting}
+Dostęp do zmiennej w GLSL się nie zmienia, ale wygenerowany kod SPIR-V używa rozszerzenia \textit{SPV\_EXT\_descriptor\_indexing} i typu \textit{OpTypeRuntimeArray} zamiast \textit{OpTypeArray}:
+\lstset{language=SPIRV}
+\begin{lstlisting}
+OpCapability Shader
+OpCapability RuntimeDescriptorArray
+OpExtension "SPV_EXT_descriptor_indexing"
+...
+OpName %textures2D "textures2D"
+...
+OpDecorate %textures2D DescriptorSet 0
+OpDecorate %textures2D Binding 2
+...
+%150 = OpTypeImage %float 2D 0 0 0 1 Unknown
+%151 = OpTypeSampledImage %150
+%_runtimearr_151 = OpTypeRuntimeArray %151
+%_ptr_UniformConstant__runtimearr_151 =OpTypePointer UniformConstant %_runtimearr_151
+%textures2D =
+	OpVariable %_ptr_UniformConstant__runtimearr_151 UniformConstant
+\end{lstlisting}
+
+Indeksowanie poza długością tablicy czasu wykonania jest niezdefiniowanym zachowaniem i może skutkować korupcją.
+
+// TODO
+
+\section{Przebiegi renderowania i potoki}
+
+// TODO
+
+\section{Rozszerzenie VK\_EXT\_dynamic\_rendering}
+
 // TODO
 
 \section{Renderowanie bez dowiązań}
+
+Renderowania bez dowiązań to grupa technik mająca na celu minimalizację liczby poleceń rysowania w celu maksymalizacji czasu GPU, który jest spędzany na rzeczywistym renderowaniu, a nie na zmianach stanu pomiędzy poleceniami [COOKBOOK].
+
+W Vulkan renderowanie bez dowiązań jest realizowane poprzez:
+\begin{itemize}
+	\item maksymalne zmniejszenie liczby alokowanych deskryptorów,
+	\item eliminację kosztownego dowiązywania zasobów między poleceniami rysowania,
+	\item łączenie // HIRO multidraw
+	\item reifikacja sceny // HIRO
+	\item umożliwienia GPU bezpośredniego dostępu do buforów i tekstur poprzez niejednolite dynamiczne indeksowanie deskryptorów.
+\end{itemize}
+
+// TODO unified geometry buffer
+
+\subsection {Tekstury bez dowiązań}
+
+Wymóg jednolitości podczas dynamicznego indeksowania deskryptorów wywołuje problemy z renderowaniem scen wypełnionych obiektami używającymi różnych tekstur.
+Podczas renderowania obiektów każda zmiana uzywanej tekstury wymaga nagrania nowego polecenia rysowania po zmianie używanych deskryptorów poprzez:
+\begin{itemize}
+	\item dowiązanie całkowicie nowego zbioru deskryptorów: bardzo kosztowaną operacją, ale wymaga wsparcia tylko statycznego indeksowania,
+	\item ponowne dowiązanie deskryptora dynamicznego bufora uniform ze zmienionym dynamicznym offsetem,
+	\item zmianę jednolitego indeksu używanego do indeksowania deskryptorów poprzez:
+	\begin{itemize}
+		\item nagranie nowej stałej push,
+		\item zmianę bazowego indeksu instancji w poleceniu rysowania pojedyńczej instancji: wbudowania zmienna shaderów \textit{gl\_InstanceIndex} jest niejednolita tylko dla poleceń rysowania renderujacych wiecej niż jedną instancję.
+	\end{itemize}
+\end{itemize}
+
+Poniższy diagram przedstawia tradycyjne tekstury z dowiązaniami używające jednolitego indeksu w stałej push:
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[node distance=1cm]
+		\tikzstyle{command} = [rectangle, minimum width=5cm, minimum height=1cm,text centered, draw=black]
+		\tikzstyle{resource} = [rectangle, rounded corners,text centered, draw=black]
+		\tikzstyle{uses} = [thick,->,>=stealth]
+		\tikzstyle{binds} = [dotted,->,>=stealth]
+		
+		\begin{scope}[node distance=1mm and 10mm]
+			\node (vkCmdBindDescriptorSets) [command] {vkCmdBindDescriptorSets(...)};
+			\node (vkCmdBeginRenderingKHR) [command, below = of vkCmdBindDescriptorSets] {vkCmdBeginRenderingKHR(...)};
+			\node (vkCmdBindVertexBuffers) [command, below = of vkCmdBeginRenderingKHR] {vkCmdBindVertexBuffers(...)};
+			\node (vkCmdBindIndexBuffer) [command, below = of vkCmdBindVertexBuffers] {vkCmdBindIndexBuffer(...)};
+			\node (vkCmdBindPipeline) [command, below = of vkCmdBindIndexBuffer] {vkCmdBindPipeline(...)};
+			\node (vkCmdPushConstantsX) [command, below = of vkCmdBindPipeline] {vkCmdPushConstants(...)};
+			\node (vkCmdDrawIndexedX) [command, below = of vkCmdPushConstantsX] {vkCmdDrawIndexed(...)};
+			\node (vkCmdPushConstantsY) [command, below = of vkCmdDrawIndexedX] {vkCmdPushConstants(...)};
+			\node (vkCmdDrawIndexedY) [command, below = of vkCmdPushConstantsY] {vkCmdDrawIndexed(...)};
+			\node (vkCmdEndRenderingKHR) [command, below = of vkCmdDrawIndexedY] {vkCmdEndRenderingKHR(...)};
+		\end{scope}
+		\node(commandBuffer)[draw,dotted,fit=(vkCmdBindDescriptorSets) (vkCmdEndRenderingKHR)] {};
+		
+		\begin{scope}[node distance=1mm and 10mm]
+			\node (textureResourceDot1) [right = of vkCmdBindDescriptorSets] {...};
+			\node (textureResourceM) [resource, right = 1mm of textureResourceDot1] {VkImage \#m};
+			\node (textureResourceDot2) [right = 1mm of textureResourceM] {...};
+			\node (textureResourceN) [resource, right = 1mm of textureResourceDot2] {VkImage \#n};
+			\node (textureResourceDot3) [right = 1mm of textureResourceN] {...};
+		\end{scope}
+		\node(textureResources)[draw,dotted,fit=(textureResourceDot1) (textureResourceN) (textureResourceDot3)] {};
+		
+		\node (fragmentShader) [resource, right = of vkCmdDrawIndexedY] {Shader fragmentów};
+		
+		\node (textureIdX) [resource, right = of vkCmdPushConstantsX] {Indeks tekstury \#n};
+		\node (textureIdY) [resource, right = of textureIdX] {Indeks tekstury \#m};
+		
+		\draw [binds] (vkCmdBindDescriptorSets) -- (textureResources);
+		\draw [binds] (vkCmdBindPipeline) edge[out=0,in=-180] (fragmentShader);
+		
+		\draw [binds] (vkCmdPushConstantsX) edge[out=0,in=-180] (textureIdX);
+		\draw [binds] (vkCmdPushConstantsY) edge[out=0,in=-90] (textureIdY);
+		
+		\draw [uses] (vkCmdDrawIndexedX) edge[out=0,in=-180] (fragmentShader);
+		\draw [uses] (vkCmdDrawIndexedY) edge[out=0,in=-180] (fragmentShader);
+		
+		\draw [uses] (fragmentShader) edge (textureIdX);
+		\draw [uses] (fragmentShader) edge (textureIdY);
+		
+		\draw [uses] (textureIdX) edge (textureResourceN);
+		\draw [uses] (textureIdY) edge (textureResourceM);
+		
+		\node (commandBufferLabel)[above=0cm of commandBuffer] {\textbf{Bufor poleceń}};
+		\node (textureResourcesLabel)[above=0cm of textureResources] {\textbf{Tablica deskryptorów obrazów}};
+		
+		\path ([xshift=0mm,yshift=0mm]current bounding box.south east)
+		node[matrix,anchor=south east,cells={nodes={font=\sffamily,anchor=west}},
+		draw,thick,inner sep=1ex]{
+			\draw[uses](0,0) -- ++ (0.6,0); & \node{Użycie};\\
+			\draw[binds](0,0) -- ++ (0.6,0); & \node{Dowiązanie/Nagranie};\\
+		};
+		
+	\end{tikzpicture}
+	\caption{Tradycyjne tekstury z dowiązaniami używające jednolitego indeksu w stałej push}
+	\label{bindful_texture_command_buffer}
+\end{figure}
+
+Niejednolite dynamiczne indeksowanie pozwala na dowiązanie wszystkich używanych zasobów na początku bufora poleceń i wyemitowanie pojedyńczego polecenia rysowania, którego shadery używją niejednolitego indeksu do pobrania indeksów używanych tekstur z bufora uniform opisującego obiekty na scenie.
+
+Poniższy diagram przedstawia tekstury bez dowiązań używając niejednolitych indeksów instancji:
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[node distance=1cm]
+		\tikzstyle{command} = [rectangle, minimum width=5cm, minimum height=1cm,text centered, draw=black]
+		\tikzstyle{resource} = [rectangle, rounded corners,text centered, draw=black]
+		\tikzstyle{uses} = [thick,->,>=stealth]
+		\tikzstyle{generates} = [dashed,->,>=stealth]
+		\tikzstyle{binds} = [dotted,->,>=stealth]
+		
+		\begin{scope}[node distance=1mm and 10mm]
+			\node (vkCmdBindDescriptorSets) [command] {vkCmdBindDescriptorSets(...)};
+			\node (vkCmdBeginRenderingKHR) [command, below = of vkCmdBindDescriptorSets] {vkCmdBeginRenderingKHR(...)};
+			\node (vkCmdBindVertexBuffers) [command, below = of vkCmdBeginRenderingKHR] {vkCmdBindVertexBuffers(...)};
+			\node (vkCmdBindIndexBuffer) [command, below = of vkCmdBindVertexBuffers] {vkCmdBindIndexBuffer(...)};
+			\node (vkCmdBindPipeline) [command, below = of vkCmdBindIndexBuffer] {vkCmdBindPipeline(...)};
+			\node (vkCmdPushConstants) [command, below = of vkCmdBindPipeline] {vkCmdPushConstants(...)};
+			\node (vkCmdDrawIndexed) [command, below = of vkCmdPushConstants] {vkCmdDrawIndexed(...)};
+			\node (vkCmdEndRenderingKHR) [command, below = of vkCmdDrawIndexed] {vkCmdEndRenderingKHR(...)};
+		\end{scope}
+		\node(commandBuffer)[draw,dotted,fit=(vkCmdBindDescriptorSets) (vkCmdEndRenderingKHR)] {};
+		
+		\begin{scope}[node distance=1mm and 10mm]
+			\node (textureResourceDot1) [right = of vkCmdBindDescriptorSets] {...};
+			\node (textureResourceM) [resource, right = 1mm of textureResourceDot1] {VkImage \#m};
+			\node (textureResourceDot2) [right = 1mm of textureResourceM] {...};
+			\node (textureResourceN) [resource, right = 1mm of textureResourceDot2] {VkImage \#n};
+			\node (textureResourceDot3) [right = 1mm of textureResourceN] {...};
+		\end{scope}
+		\node(textureResources)[draw,dotted,fit=(textureResourceDot1) (textureResourceN) (textureResourceDot3)] {};
+		
+		\begin{scope}[node distance=1mm and 10mm]
+			\node (instanceDataDot1) [right = of vkCmdBindVertexBuffers] {...};
+			\node (instanceDataX) [resource, right = 1mm of instanceDataDot1] {instancja \#x};
+			\node (instanceDataDot2) [right = 1mm of instanceDataX] {...};
+			\node (instanceDataY) [resource, right = 1mm of instanceDataDot2] {instancja \#y};
+			\node (instanceDataDot3) [right = 1mm of instanceDataY] {...};
+		\end{scope}
+		\node(instanceData)[draw,dotted,fit=(instanceDataDot1) (instanceDataX) (instanceDataDot3)] {};
+
+		
+		\node (fragmentShader) [resource, right = of vkCmdDrawIndexed] {Shader fragmentów};
+		
+		\node (instanceIdX) [resource, above = 15mm of fragmentShader] {Indeks instancji \#x};
+		\node (instanceIdY) [resource, right = of instanceIdX] {Indeks instancji \#y};
+		\node(instanceIds)[draw,dotted,fit=(instanceIdX) (instanceIdY)] {};
+		
+		\draw [binds] (vkCmdBindDescriptorSets) -- (textureResources);
+		\draw [binds] (vkCmdBindDescriptorSets) edge[out=0,in=-180] (instanceData);
+		\draw [binds] (vkCmdBindPipeline) edge[out=0,in=-180] (fragmentShader);
+		
+		\draw [generates] (vkCmdDrawIndexed) edge[out=0,in=-180] (instanceIds);
+		
+		\draw [uses] (vkCmdDrawIndexed) edge (fragmentShader);
+		
+		\draw [uses] (fragmentShader) edge (instanceIdX);
+		\draw [uses] (fragmentShader) edge (instanceIdY);
+		
+		\draw [uses] (instanceIdX) edge (instanceDataX);
+		\draw [uses] (instanceIdY) edge (instanceDataY);
+		
+		\draw [uses] (instanceDataX) edge (textureResourceN);
+		\draw [uses] (instanceDataY) edge (textureResourceM);
+		
+		\node (commandBufferLabel)[above=0cm of commandBuffer] {\textbf{Bufor poleceń}};
+		\node (textureResourcesLabel)[above=0cm of textureResources] {\textbf{Tablica deskryptorów obrazów}};
+		\node (instanceDataLabel)[below=2mm of instanceData, fill=white] {\textbf{Deskryptor bufora uniform danych instancji}};
+		\node (instanceIdsLabel)[below=2mm of instanceIds, fill=white] {\textbf{Indeksy instancji \textit{gl\_InstanceIndex}}};
+		
+		\path ([xshift=0mm,yshift=0mm]current bounding box.south east)
+		node[matrix,anchor=south east,cells={nodes={font=\sffamily,anchor=west}},
+		draw,thick,inner sep=1ex]{
+			\draw[uses](0,0) -- ++ (0.6,0); & \node{Użycie};\\
+			\draw[binds](0,0) -- ++ (0.6,0); & \node{Dowiązanie};\\
+			\draw[generates](0,0) -- ++ (0.6,0); & \node{Generacja};\\
+		};
+	
+	\end{tikzpicture}
+	\caption{Tekstury bez dowiązań używając niejednolitych indeksów instancji}
+	\label{bindless_texture_command_buffer}
+\end{figure}
+
+\subsection {Geometria bez dowiązań}
 
 // TODO
 

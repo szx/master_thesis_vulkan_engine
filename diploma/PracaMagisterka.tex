@@ -17,7 +17,7 @@
 % Diagramy
 \usepackage{tikz}
 \usepackage{float}
-\usetikzlibrary{er,positioning,fit,shapes.multipart}
+\usetikzlibrary{er,positioning,fit,shapes.multipart,calc}
 
 % Zmiana czcionki dla symulacji maszynopisu (verbatim)
 \makeatletter
@@ -26,6 +26,9 @@
 
 % Usuń list spacing
 \raggedbottom
+
+% Napraw marginesy
+\renewcommand\_{\textunderscore\allowbreak}
 
 % listingi
 \usepackage{listings}
@@ -68,6 +71,22 @@
 	moredirectives={define,defined,elif,else,if,ifdef,endif,line,error,ifndef,include,pragma,undef,warning,extension,version}%
 }[keywords,comments,strings,directives]%
 
+\lstdefinelanguage{SPIRV}
+{
+	morekeywords={
+		OpCapability, Shader, RuntimeDescriptorArray,
+		OpExtension,
+		OpName,
+		OpDecorate, DescriptorSet, Binding,
+		OpTypeImage, 
+		OpTypeSampledImage,
+		OpTypeRuntimeArray,
+		OpTypePointer, UniformConstant,
+		OpVariable
+	},
+	morestring=[b]",
+	sensitive=true
+}
 
 % Część właściwa pracy
 \begin{document}

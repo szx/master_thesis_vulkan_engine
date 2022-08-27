@@ -162,31 +162,49 @@
       \verb https://www.unrealengine.com
       \endverb
     \endentry
-    \entry{dx12_2}{article}{}
-      \name{author}{1}{}{%
-        {{hash=de538eb48368581016865255fbadc779}{%
-           family={{Piotr Piwowarczyk}},
-           familyi={P\bibinitperiod}}}%
-      }
-      \strng{namehash}{de538eb48368581016865255fbadc779}
-      \strng{fullhash}{de538eb48368581016865255fbadc779}
-      \strng{bibnamehash}{de538eb48368581016865255fbadc779}
-      \strng{authorbibnamehash}{de538eb48368581016865255fbadc779}
-      \strng{authornamehash}{de538eb48368581016865255fbadc779}
-      \strng{authorfullhash}{de538eb48368581016865255fbadc779}
+    \entry{GPUINFO}{misc}{}
       \field{sortinit}{6}
       \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
-      \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{title}{Microsoft DirectX 12 Feature Level 12\_2 - nowa wersja funkcji API \url{https://www.purepc.pl/microsoft-directx-12-feature-level-12-2-nowa-wersja-funkcji-api}}
-      \field{urlday}{2}
-      \field{urlmonth}{11}
-      \field{urlyear}{2020}
-      \field{urldateera}{ce}
+      \field{title}{Vulkan Hardware Database - GPUinfo.org}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://vulkan.gpuinfo.org/
+      \endverb
+      \verb{url}
+      \verb https://vulkan.gpuinfo.org/
+      \endverb
     \endentry
-    \entry{PEP405}{misc}{}
+    \entry{GPUGEM4}{book}{}
+      \name{author}{1}{}{%
+        {{hash=d96f623538516f6e8e1ec7951b0e45bf}{%
+           family={Engel},
+           familyi={E\bibinitperiod},
+           given={W.},
+           giveni={W\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Taylor \& Francis}%
+      }
+      \strng{namehash}{d96f623538516f6e8e1ec7951b0e45bf}
+      \strng{fullhash}{d96f623538516f6e8e1ec7951b0e45bf}
+      \strng{bibnamehash}{d96f623538516f6e8e1ec7951b0e45bf}
+      \strng{authorbibnamehash}{d96f623538516f6e8e1ec7951b0e45bf}
+      \strng{authornamehash}{d96f623538516f6e8e1ec7951b0e45bf}
+      \strng{authorfullhash}{d96f623538516f6e8e1ec7951b0e45bf}
       \field{sortinit}{7}
       \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{9781466567436}
+      \field{number}{t. 4}
+      \field{series}{An A K Peters Book}
+      \field{title}{GPU Pro 4: Advanced Rendering Techniques}
+      \field{year}{2013}
+    \endentry
+    \entry{PEP405}{misc}{}
+      \field{sortinit}{8}
+      \field{sortinithash}{a231b008ebf0ecbe0b4d96dcc159445f}
       \field{labeltitlesource}{title}
       \field{title}{PEP 405 – Python Virtual Environments}
       \field{year}{2011}

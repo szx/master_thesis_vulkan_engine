@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  26 AUG 2022 00:38
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  27 AUG 2022 01:18
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1075,6 +1075,10 @@ File: pgflibraryshapes.multipart.code.tex 2021/05/15 v3.1.9a (3.1.9a)
 \pgfnodepartsixbox=\box87
 \pgfnodepartfivebox=\box88
 ))
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tik
+zlibrarycalc.code.tex
+File: tikzlibrarycalc.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
 (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.sty
 \lst@mode=\count464
 \lst@gtempboxa=\box89
@@ -1116,32 +1120,32 @@ Package biblatex Warning: 'babel/polyglossia' detected but 'csquotes' missing.
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
 \openout1 = `PracaMagisterka.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 73.
-LaTeX Font Info:    Trying to load font information for TS1+cmr on input line 7
-3.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 92.
+LaTeX Font Info:    ... okay on input line 92.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 92.
+LaTeX Font Info:    ... okay on input line 92.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 92.
+LaTeX Font Info:    ... okay on input line 92.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 92.
+LaTeX Font Info:    ... okay on input line 92.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 92.
+LaTeX Font Info:    Trying to load font information for TS1+cmr on input line 9
+2.
 
 (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    ... okay on input line 92.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 92.
+LaTeX Font Info:    ... okay on input line 92.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 92.
+LaTeX Font Info:    ... okay on input line 92.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 92.
+LaTeX Font Info:    ... okay on input line 92.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 92.
+LaTeX Font Info:    ... okay on input line 92.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 92.
+LaTeX Font Info:    ... okay on input line 92.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
@@ -1199,9 +1203,9 @@ Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'PracaMagisterka.bbl' found.
 
 (./PracaMagisterka.bbl)
-Package biblatex Info: Reference section=0 on input line 73.
-Package biblatex Info: Reference segment=0 on input line 73.
-Package hyperref Info: Link coloring OFF on input line 73.
+Package biblatex Info: Reference section=0 on input line 92.
+Package biblatex Info: Reference segment=0 on input line 92.
+Package hyperref Info: Link coloring OFF on input line 92.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
@@ -1214,9 +1218,9 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
 \c@section@level=\count474
 )
-LaTeX Info: Redefining \ref on input line 73.
-LaTeX Info: Redefining \pageref on input line 73.
-LaTeX Info: Redefining \nameref on input line 73.
+LaTeX Info: Redefining \ref on input line 92.
+LaTeX Info: Redefining \pageref on input line 92.
+LaTeX Info: Redefining \nameref on input line 92.
 
 (./PracaMagisterka.out) (./PracaMagisterka.out)
 \@outlinefile=\write5
@@ -1240,28 +1244,33 @@ Underfull \hbox (badness 10000) in paragraph at lines 5--12
 \openout2 = `chapters/0b_spis_tresci.aux'.
 
  (./chapters/0b_spis_tresci.tex (./PracaMagisterka.toc
-Overfull \hbox (0.56pt too wide) detected at line 35
+Overfull \hbox (0.56pt too wide) detected at line 45
 \TU/lmss/m/n/10 2.10. 
  []
 
 
-Overfull \hbox (0.56pt too wide) detected at line 36
+Overfull \hbox (0.56pt too wide) detected at line 46
 \TU/lmss/m/n/10 2.11. 
  []
 
-)
+
+Overfull \hbox (0.56pt too wide) detected at line 47
+\TU/lmss/m/n/10 2.12. 
+ []
+
+[3
+
+
+
+
+])
 \tf@toc=\write6
 \openout6 = `PracaMagisterka.toc'.
 
-) [3
-
-
-
-
-]
+) [4]
 \openout2 = `chapters/0c_wykaz_skrotow.aux'.
 
- (./chapters/0c_wykaz_skrotow.tex) [4
+ (./chapters/0c_wykaz_skrotow.tex) [5
 
 
 
@@ -1314,45 +1323,65 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 6.25204pt on input line 13.
 LaTeX Font Info:    Font shape `TU/lmss/bx/it' in size <11> not available
 (Font)              Font shape `TU/lmss/bx/sl' tried instead on input line 23.
- [5
+ [6
 
 
 
 
-]) [6]
+]) [7]
 \openout2 = `chapters/2_wprowadzenie_do_dziedziny.aux'.
 
 
 (./chapters/2_wprowadzenie_do_dziedziny.tex
 Rozdzia\l  2.
 LaTeX Font Info:    Font shape `TU/lmss/m/it' in size <10> not available
-(Font)              Font shape `TU/lmss/m/sl' tried instead on input line 19.
-[7
+(Font)              Font shape `TU/lmss/m/sl' tried instead on input line 12.
+[8
 
 
 
 
-] [8] [9]
-Overfull \hbox (62.56535pt too wide) in paragraph at lines 216--217
+] [9] [10]
+Overfull \hbox (62.56535pt too wide) in paragraph at lines 233--234
  [][] 
  []
 
-[10] [11]) [12]
+[11] [12] [13]
+Overfull \hbox (3.56866pt too wide) in paragraph at lines 329--331
+\TU/lmss/m/sl/10 AFTER_BIND\TU/lmss/m/n/10 . Dowiązania zdefiniowane podczas tw
+orzenia układu zbioru deskryptorów muszą posiadać
+ []
+
+[14]
+Overfull \hbox (83.21382pt too wide) in paragraph at lines 386--387
+[][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (5.21303pt too wide) in paragraph at lines 388--389
+[][][][][][][][][][] 
+ []
+
+[15] [16]
+LaTeX Font Info:    Font shape `TU/lmss/bx/it' in size <10> not available
+(Font)              Font shape `TU/lmss/bx/sl' tried instead on input line 568.
+
+ [17]) [18]
 \openout2 = `chapters/3_technologie_algorytmy_narzedzia.aux'.
 
  (./chapters/3_technologie_algorytmy_narzedzia.tex
 Rozdzia\l  3.
-[13
+[19
 
 
 
 
-] [14]) [15]
+] [20]) [21]
 \openout2 = `chapters/5_badania.aux'.
 
  (./chapters/5_badania.tex
 Rozdzia\l  4.
-) [16
+) [22
 
 
 
@@ -1362,7 +1391,7 @@ Rozdzia\l  4.
 
  (./chapters/6_podsumowanie.tex
 Rozdzia\l  5.
-) [17
+) [23
 
 
 
@@ -1385,12 +1414,7 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 7.29405pt on input line 3.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 5.21004pt on input line 3.
-
-
-Package biblatex Warning: Bibliography string 'urldate' untranslated
-(biblatex)                at entry 'dx12_2' on input line 3.
-
-[18
+ [24
 
 
 
@@ -1399,33 +1423,34 @@ Package biblatex Warning: Bibliography string 'urldate' untranslated
 \tf@lof=\write7
 \openout7 = `PracaMagisterka.lof'.
 
- [19
+ [25
 
-] (./PracaMagisterka.lot)
+]
+(./PracaMagisterka.lot)
 \tf@lot=\write8
 \openout8 = `PracaMagisterka.lot'.
 
-) [20
+) [26
 
-]
-(./PracaMagisterka.aux (./chapters/0a_streszczenie.aux)
-(./chapters/0b_spis_tresci.aux) (./chapters/0c_wykaz_skrotow.aux)
-(./chapters/1_wstep.aux) (./chapters/2_wprowadzenie_do_dziedziny.aux)
+] (./PracaMagisterka.aux
+(./chapters/0a_streszczenie.aux) (./chapters/0b_spis_tresci.aux)
+(./chapters/0c_wykaz_skrotow.aux) (./chapters/1_wstep.aux)
+(./chapters/2_wprowadzenie_do_dziedziny.aux)
 (./chapters/3_technologie_algorytmy_narzedzia.aux) (./chapters/5_badania.aux)
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
 Package rerunfilecheck Info: File `PracaMagisterka.out' has not changed.
-(rerunfilecheck)             Checksum: A419EBDAB3F525748010C8ED448A3678;5059.
+(rerunfilecheck)             Checksum: 22CFAA4C9011EDBD5C78631DD2CA99A0;7269.
 Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 \openout1 = `PracaMagisterka.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 37148 strings out of 476191
- 756667 string characters out of 5812072
- 1547068 words of memory out of 5000000
- 57264 multiletter control sequences out of 15000+600000
- 486541 words of font info for 90 fonts, out of 8000000 for 9000
+ 37556 strings out of 476191
+ 766480 string characters out of 5812072
+ 1555223 words of memory out of 5000000
+ 57668 multiletter control sequences out of 15000+600000
+ 486549 words of font info for 91 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  88i,15n,91p,1516b,4828s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on PracaMagisterka.pdf (20 pages).
+Output written on PracaMagisterka.pdf (26 pages).

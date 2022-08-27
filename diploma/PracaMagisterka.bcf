@@ -2350,13 +2350,21 @@
     <bcf:citekey order="3">SIGGRAPH_ADVANCES</bcf:citekey>
     <bcf:citekey order="4">godotengine</bcf:citekey>
     <bcf:citekey order="5">unrealengine</bcf:citekey>
-    <bcf:citekey order="6">PEP405</bcf:citekey>
-    <bcf:citekey order="7">HughesDamEtAl13</bcf:citekey>
-    <bcf:citekey order="8">SIGGRAPH</bcf:citekey>
-    <bcf:citekey order="9">SIGGRAPH_ADVANCES</bcf:citekey>
-    <bcf:citekey order="10">godotengine</bcf:citekey>
-    <bcf:citekey order="11">unrealengine</bcf:citekey>
+    <bcf:citekey order="6">GPUINFO</bcf:citekey>
+    <bcf:citekey order="7">GPUGEM4</bcf:citekey>
+    <bcf:citekey order="8">GPUINFO</bcf:citekey>
+    <bcf:citekey order="9">GPUINFO</bcf:citekey>
+    <bcf:citekey order="10">GPUINFO</bcf:citekey>
+    <bcf:citekey order="11">GPUINFO</bcf:citekey>
     <bcf:citekey order="12">PEP405</bcf:citekey>
+    <bcf:citekey order="13">HughesDamEtAl13</bcf:citekey>
+    <bcf:citekey order="14">SIGGRAPH</bcf:citekey>
+    <bcf:citekey order="15">SIGGRAPH_ADVANCES</bcf:citekey>
+    <bcf:citekey order="16">godotengine</bcf:citekey>
+    <bcf:citekey order="17">unrealengine</bcf:citekey>
+    <bcf:citekey order="18">GPUINFO</bcf:citekey>
+    <bcf:citekey order="19">GPUGEM4</bcf:citekey>
+    <bcf:citekey order="20">PEP405</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="none">
