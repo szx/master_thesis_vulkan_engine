@@ -597,23 +597,23 @@ void get_queues(device *vkd) {
 void get_function_pointers(device *vkd) {
   // VK_KHR_dynamic_rendering
   vkd->cmdBeginRendering =
-      (PFN_vkCmdBeginRenderingKHR)vkGetInstanceProcAddr(vkd->instance, "vkCmdBeginRenderingKHR");
+      (PFN_vkCmdBeginRenderingKHR)vkGetDeviceProcAddr(vkd->device, "vkCmdBeginRenderingKHR");
   verify(vkd->cmdBeginRendering);
   vkd->cmdEndRendering =
-      (PFN_vkCmdEndRenderingKHR)vkGetInstanceProcAddr(vkd->instance, "vkCmdEndRenderingKHR");
+      (PFN_vkCmdEndRenderingKHR)vkGetDeviceProcAddr(vkd->device, "vkCmdEndRenderingKHR");
   verify(vkd->cmdEndRendering);
   // VK_EXT_debug_utils
-  vkd->cmdBeginDebugUtilsLabel = (PFN_vkCmdBeginDebugUtilsLabelEXT)vkGetInstanceProcAddr(
-      vkd->instance, "vkCmdBeginDebugUtilsLabelEXT");
+  vkd->cmdBeginDebugUtilsLabel = (PFN_vkCmdBeginDebugUtilsLabelEXT)vkGetDeviceProcAddr(
+      vkd->device, "vkCmdBeginDebugUtilsLabelEXT");
   verify(vkd->cmdBeginDebugUtilsLabel);
-  vkd->cmdEndDebugUtilsLabel = (PFN_vkCmdEndDebugUtilsLabelEXT)vkGetInstanceProcAddr(
-      vkd->instance, "vkCmdEndDebugUtilsLabelEXT");
+  vkd->cmdEndDebugUtilsLabel = (PFN_vkCmdEndDebugUtilsLabelEXT)vkGetDeviceProcAddr(
+      vkd->device, "vkCmdEndDebugUtilsLabelEXT");
   verify(vkd->cmdEndDebugUtilsLabel);
-  vkd->cmdInsertDebugUtilsLabel = (PFN_vkCmdInsertDebugUtilsLabelEXT)vkGetInstanceProcAddr(
-      vkd->instance, "vkCmdInsertDebugUtilsLabelEXT");
+  vkd->cmdInsertDebugUtilsLabel = (PFN_vkCmdInsertDebugUtilsLabelEXT)vkGetDeviceProcAddr(
+      vkd->device, "vkCmdInsertDebugUtilsLabelEXT");
   verify(vkd->cmdInsertDebugUtilsLabel);
-  vkd->setDebugUtilsObjectName = (PFN_vkSetDebugUtilsObjectNameEXT)vkGetInstanceProcAddr(
-      vkd->instance, "vkSetDebugUtilsObjectNameEXT");
+  vkd->setDebugUtilsObjectName = (PFN_vkSetDebugUtilsObjectNameEXT)vkGetDeviceProcAddr(
+      vkd->device, "vkSetDebugUtilsObjectNameEXT");
   verify(vkd->setDebugUtilsObjectName);
 }
 
