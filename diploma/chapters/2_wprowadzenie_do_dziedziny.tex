@@ -1,10 +1,12 @@
 \chapter{Wprowadzenie do dziedziny}
 \label{chap:field}
 
-W tej sekcji przybliżono serię pojęć oraz technik związanych z grafiką komputerową, których zrozumienie jest wymagane przed rozpoczęciem implementacji silnika graficznego.
+Grafika komputerowa czasu rzeczywistego jest szerokim zagadnieniem.
+W tym rozdziale przybliżono podstawowe pojęcia, bibliotekę Vulkan oraz techniki renderowania, których zrozumienie jest wymagane przed rozpoczęciem implementacji silnika graficznego.
 
 \section{Podstawowe pojęcia}
-// TODO
+// TODO matematyka
+// TODO podział przestrzeni
 
 \section{Potok zasobów}
 // TODO
@@ -15,27 +17,269 @@ W tej sekcji przybliżono serię pojęć oraz technik związanych z grafiką kom
 
 \section{Vulkan}
 
+Biblioteki graficzne pozwalaja aplikacji na użycie ich API do uzyskania dostępu do akceleracji sprzętowej, czyli przeniesienia obliczeń wymaganych przez renderowanie z CPU do specjalnie pod nie zoptymalizowanego GPU.
+
+Biblioteka graficzna mająca na celu równe wsparcie wielu platform rozwijanych przez różnych IHV (\textit{Independent Hardware Vendor}, niezależny dostawca sprzętu) wymaga drobiazgowego ustandaryzowania i dokumentacji.
+W czasie pisania pracy istnieją trzy popularne standardy: Direct3D od firmy Microsoft oraz OpenGL i Vulkan od konsorcjum non-profit Khronos.
+
+Vulkan został po raz pierwszy wydany w 2016 i oferuje między innymi:
+\begin{itemize}
+	\item ponad 1000+ stron zwięzłej, precyzyjnej i szczgółowej specyfikacji API,
+	\item bezstanowość: nie jest używana globalna maszyna stanów jak w OpenGL, co ułatwia wielowątkowość,
+	\item wszystkie informacje używane podczas renderowania są zaszyte w 
+	\item zestaw testów zgodności Vulkan CTS \cite{VULKANCTS},
+	\item wieloplatformowość: w odróżnieniu od DirectX wspieranego tylko przez system Windows i konsole Xbox \cite{HughesDamEtAl13},
+	\item ustandaryzowaną niskopoziomową reprezentację shaderów w postaci kodu bajtowego SPIR-V,
+	\item niskopoziomowe i ręczne zarządzanie pamięcią GPU: odciąża to sterownik,
+	\item warstwy walidacji wykrywające nieprawidłowe użycie API.
+\end{itemize}
+
+
+// TODO 1000+ linijek trójkąt
+
 // TODO HISTORIA, core vs ext, promowanie
 
 \subsection{Podstawy API}
 
-// TODO użycie api, notacje, łańcuch pNext
+// TODO użycie api, notacje, funcje tworzenia i niszczenia, łańcuch pNext, rozszerzenia instancji i urządzenia
 
 \subsection{Inicjalizacja}
 
-// TODO surface, urządzenie fizyczne i logiczne
+Wszyskie programy używające API Vulkan wymagają wcześniejszego stworzenia następujących obiektów:
+\begin{itemize}
+	\item instancji (\textit{VkInstance}),
+	\item powierzchni okna (\textit{VkSurface}),
+	\item urządzenia fizycznego (\textit{VkPhysicalDevice}),
+	\item urządzenia logicznego (\textit{VkDevice}),
+	\item wskaźników funkcji rozszerzeń,
+	\item kolejek (VkQueue),
+	\item łańcucha wymiany (\textit{VkSwapchain}).
+\end{itemize}
+
+\subsubsection{Instancja}
+
+Pierwszym krokiem każdego programu chcącego używać Vulkan jest stworzenie instancji, która pozwala programowi
+na komunikację z loaderem Vulkan.
+
+Loader Vulkan to zewnętrzna warstwa biblioteki Vulkan pośredniczącą miedzy aplikacją i urządzeniami fizycznymi. Jest on odpowiedzialny za wykrywanie sterowników wspierających Vulkan i przekazywanie do nich wywołań API po wcześniejszym przefiltrowaniu ich przez załadowane warstwy.
+Poniższy diagram przedstawia warstwową architekturę biblioteki Vulkan \cite{VULKANLOADER}:
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[node distance=1cm]
+		\tikzstyle{object} = [rectangle, minimum width=3cm, minimum height=1cm,text centered, draw=black]
+		\tikzstyle{relation} = [thick,->,>=stealth]
+		
+		\node (Aplikacja) [object] {Aplikacja};
+		\node (Loader) [object, right = of Aplikacja] {Loader};
+		\node (Warstwa1) [object, below = of Aplikacja] {Warstwa \#1};
+		\node (WarstwaDot) [right = 2.4mm of Warstwa1] {...};
+		\node (WarstwaN) [object, below = of Loader] {Warstwa \#n};
+		\node (Driver1) [object, right = of Loader] {Sterownik \#1};
+		\node (DriverDot) [below = 3mm of Driver1] {...};
+		\node (DriverM) [object, below = 3mm of DriverDot] {Sterownik \#m};
+		\node (Device1) [object, right = of Driver1] {Urządzenie fizyczne \#1};
+		\node (DeviceDot) [below = 3mm of Device1] {...};
+		\node (DeviceK) [object, below = 3mm of DeviceDot] {Urządzenie fizyczne \#k};
+		
+		\draw [relation] (Aplikacja) -- (Loader);
+		\draw [relation] (Loader) -- (Warstwa1);
+		\draw [relation] (Warstwa1) -- (WarstwaDot);
+		\draw [relation] (WarstwaDot) -- (WarstwaN);
+		\draw [relation] (WarstwaN) -- (Loader);
+		\draw [relation] (Loader) edge[out=0,in=180] (Driver1);
+		\draw [relation] (Loader) edge[out=0,in=180,out looseness=-0.6] (DriverDot);
+		\draw [relation] (Loader) edge[out=0,in=180,looseness=0] (DriverM);
+		\draw [relation] (Driver1) edge[out=0,in=180] (Device1);
+		\draw [relation] (Driver1) edge[out=0,in=180,out looseness=0.2,in looseness=2.4] (DeviceDot);
+		\draw [relation] (DriverM) edge[out=0,in=180,looseness=0] (DeviceK);
+		\draw [relation] (DriverM) edge[out=0,in=180,out looseness=0.2,in looseness=2.4] (DeviceDot);
+		
+	\end{tikzpicture}
+	\caption{Warstwowa architektura biblioteki Vulkan}
+	\label{vulkan_loader}
+\end{figure}
+
+// HIRO warstwy
+
+Instancja musi zostać stworzona przed użyciem jakichkolwiek innych funkcji API Vulkan.
+Jest ona używana przez funkcje instancji, które są używane do:
+\begin{itemize}
+	\item stworzenia powierzchni okna,
+	\item stworzenia komunikatora debugowania,
+	\item uzyskania wskaźników funkcji rozszerzeń,
+	\item pobrania listy urządzeń fizycznych
+\end{itemize}
+
+Podczas tworzenia instancji należy zdefiniować podstawowe informacje o aplikacji (VkApplicationInfo zawierające nazwę i wersję aplikacji, używanego silnika i API Vulkan) oraz listę używanych rozszerzeń instancji i warstw.
+
+\subsubsection{Powierzchnia}
+
+Po stworzeniu instancji Vulkan program chcący prezentować wyniki renderowania musi stworzyć powierzchnię okna.
+
+Ten krok może być pominięty dla programów używających Vulkan w trybie *headless* niewyświetlającym
+wyniku renderowania na ekranie. W innym wypadku powierzchnia musi być stworzona przed urządzeniem fizycznym, ponieważ
+jest używana do sprawdzania, czy wybrane urządzenie fizyczne wspiera stworzenie łańcucha wymiany dla powierzchni okna.
+
+Stworzenie powierzchni okna odbywa się przy użyciu WSI (Windowing System Integration, integracja systemu okien), który jest zbiórem rozszerzeń udostępnianych przez środowisko uruchomieniowe programu pozwalających na integrację API Vulkan z systemem okien w celu wyświetlenia wyników renderowania.
+Użycie WSI wymaga trzech rozszerzeń istancji:
+\begin{itemize}
+	\item \textit{VK\_KHR\_surface}: udostępnia obiekt VkSurface bez funkcji tworzenia,
+	\item \textit{VK\_KHR\_swapchain}: udostępnia obiekt VkSwapchain,
+	\item \textit{VK\_KHR\_*\_surface}, gdzie \textit{*} to nazwa systemu okien (przykładowo \textit{VK\_KHR\_win32\_surface} dla Windows): udostępnia specyficzne funkcje instancji pozwalajace na stworzenie VkSurface.
+\end{itemize}
+Tworzenie okna jest często obsługiwane przez bibliotekę multimedialną taką jak GLFW \cite{GLFW} czy SDL \cite{SDL}, które posiadają funkcjonalność abstrahującą zawiłości tworzenia powierzchni okna używając WSI.
+
+\subsubsection{Urządzenie fizyczne}
+
+Po stworzeniu instancji należy wybrać urządzenie fizyczne. Reprezentuje ono pojedyńczą implementację Vulkan - zwykle jedną z kart graficznych obsługiwana przez zainstalowany sterownik graficzny lub renderer programowy taki jak llvmpipe \cite{LLVMPIPE} czy \cite{SWIFTSHADER}.
+
+Rozróżniane są następujące typy urządzeń fizycznych (\textit{VkPhysicalDeviceType}):
+\begin{itemize}
+	\item \textit{DISCRETE\_GPU}: dedykowana karta graficzna,
+	\item \textit{INTEGRATED\_GPU}: zintegrowane GPU,
+	\item \textit{VIRTUAL\_GPU}: wirtualne GPU oferowane przez środowisko wirtualizacji,
+	\item \textit{CPU}: renderer programowy.
+\end{itemize}
+
+Kazde urządzenie fizyczne jest opisywane ogólnie przy pomocy właściwości i funkcjonalności.
+Właściwości (\textit{VkPhysicalDeviceProperties}) zawierają wspieraną wersja API, typ, nazwę i producenta GPU oraz jego limity - numeryczne wartości, które muszą być przestrzegane przez program podczas jego użytkowania (przykładowo limit \textit{maxImageDimension2D} definiuje najwyższa obsługiwana wysokość lub szerokość obrazu 2D).
+Funkcjonalności (\textit{VkPhysicalDeviceFeatures} zawierają długą listę wartości logicznych, które opisują dokładnie możliwości urządzenia (przykładowo \textit{tessellationShader} oznaczaja wsparcie shaderów wyliczania teselacji).
+
+Funkcja instancji \textit{vkEnumeratePhysicalDevices()} zwraca listę dostępnych urządzeń fizycznych.
+Funkcje \textit{vkGetPhysicalDeviceProperties2()} i \textit{vkGetPhysicalDeviceFeatures2()}\footnote{Te funkcje są częścią rozszerzenia instancji \textit{VK\_KHR\_get\_physical\_device\_properties2}, które zostało promowane w Vulkan 1.1. W przeciwieństwie do wcześniejszych funkcji \textit{vkGetPhysicalDeviceProperties()} i \textit{vkGetPhysicalDeviceFeatures()} używają one fańcucha \textit{pNext} i wspierają odpytywanie właściwości i funkcjonalności wprowadzonych przez późniejsze wesje Vulkan oraz rozszerzenia.} pozwalają on określenie kolejno właściwości i funkcjonalności urządzenia fizycznego.
+Funkcja \textit{vkEnumerateDeviceExtensionProperties()} zwraca listę wspieranych rozszerzeń urządzenia.
+
+Aplikacja musi wybrać z listy kandydatów urządzenie fizyczne, które wspiera wszystkie właściwości i funkcjonalności używane podczas działania aplikacji oraz jest najlepiej najwydajniejsze - powinno uniknąć się sytuacji, w której renderer programowy jest wybierany zamiast GPU.
+
+
+\subsubsection{Urządzenie logiczne}
+
+Po wybraniu urządzenia fizycznego należy użyć go do stworzenia urządzenia logiczne. Reprezentuje ono
+sterownik graficzny urządzenia fizycznego i jest używane przez większość funkcji i poleceń Vulkan.
+
+Podczas tworzenia urządzenia fizycznego nalezy zdefiniować używane kolejki oraz funkcjonalności i rozszerzenia urządzenia, których wsparcie było sprawdzane podczs wyboru urządzenia fizycznego.
+Dodatkowo w imię kompatybilności wstecznej powinno się ponownie podać listę używanych warstw. Jest to spowodowane przestarzałym i zlikwidowanym podziałem na warstwy instancji i urządzenia - obecnie wszystkie warstwy są traktowane jako oba rodzaje.
+
+
+\subsubsection{Kolejki}
+
+Podczas tworzenia urządzeniem logicznego sterownik graficzny automatycznie tworzony żądane kolejki.
+
+Kolejki są używane do wykonywania na urządzeniu fizycznym poleceń zawartych w buforach poleceń wysłanych do kolejki funkcją \textit{vkQueueSubmit()}.
+
+Każda kolejka należy do pewnej rodziny kolejek (\textit{VkQueueFlagBits}) sygnalizując tym wsparcie pewnego rodzaju poleceń:
+\begin{itemize}
+	\item \textit{GRAPHICS}: kolejka graficzna, wspiera polecenia rysowania \textit{vkCmdDraw*()},
+	\item \textit{COMPUTE}: kolejka obliczeniowa, wspiera polecenia GPGPU (General-Purpose Computing on GPU, obliczenia ogólnego przeznaczenia na GPU) \textit{vkCmdDispatch*()} oraz polecenia śledzenia promieni (np. \textit{vkCmdTraceRays*()}),
+	\item \textit{TRANSFER}: kolejka transferowa, wspiera polecenia transferu (np. \textit{vkCmdCopyBuffer*()}, \textit{vkCmdFillBuffer()}),
+	\item \textit{SPARSE\_BINDING}: kolejka zasobów chronionych, wspiera funkcję \textit{vkQueueBindSparse()} dowiązującą do zasobu indywidualne strony pamięci,
+	\item \textit{PROTECTED}: kolejka pamięci chronionej, promowana w Vulkan 1.1, pozwala na ochronę pamięci zasobów.
+\end{itemize}
+Jedna kolejka może należeć do kilku rodzin - przykładowo kolejki graficzne i obliczeniowe zawsze wspierają operacje transferu.
+Sterowniki mogą wykonywać bufory poleceń wysłane do różnych kolejek asynchronicznie zapewniając skalowanie na wielordzeniowych GPU, dlatego warto pomyśleć o użyciu osobnych kolejek transferu, graficznych i obliczeniowych do kopiowania danych i przeplatania poleceń rysowania z obliczeniami GPGPU - pamiętając, że narzut związany z synchronizacją może zniwelować poprawy wydajności.
+
+Uchwyt do kolejki urządzenia logicznego jest uzyskiwany używając funkcji \textit{vkGetDeviceQueue()}.
+
+
+\subsubsection{Wskaźniki funkcji rozszerzeń}
+
+Użycie funkcji niebędących częścią używanej wersji API Vulkan i oferowanej przez wspierane rozszerzenia instancji i urządzenia wymaga pobrania wskaźników funkcji w loadera używając funkcji instancji \textit{vkGetInstanceProcAddr()}.
+Zwrócony wskaźnik nie musi bezpośrednio wskazywać na implementację oferowaną przez sterownik i może być funkcją loadera wykonującą dodatkową logikę dodaną przez załadowane warstwy.
+Funkcja \textit{vkGetDeviceProcAddr()} pozwala na pominięcie loadera, co gwarantuje szybsze wywołania API, ale zwrócona funkcja może być używana tylko dla urządzenia logicznego użytego do pobrania jej.
+
+\subsubsection{Łańcuch wymiany}
+
+Łańcuch wymiany to tablica prezentowalnych obrazów należących do powierzchni okna.
+Jest on używany do prezentacji obrazu, czyli aktualizacji powierzchni okna zawartością wyrenderowanego obrazu.
+Dodatkowo łańcuch wymiany może być używany do synchronizacji pionowej (vertical synchronization, V-sync), czyli synchronizacji prezentacji obrazów z częstotliwością
+odświeżania ekranu. Jej brak powoduje rozrywanie obrazu - korupcję polegającą na jednoczesnym wyświetlaniu zawartości
+kilku klatek w tym samym czasie.
+
+Program nie może bezpośrednio prezentować obrazu. Zamiast tego musi on pobrać nieużywany prezentowalny obraz z łańcucha
+wymiany funkcją \textit{vkAcquireNextImageKHR()}, wyrenderować do niego scenę oraz ponownie dodać go do kolejki obrazów do prezentacji w łańcuchu wymiany funkcją \textit{vkQueuePresentKHR()}.
+
+Okno wyświetla tylko jeden prezentowalny obraz na raz, ale istnieje możliwość umieszczania kilku obrazów w kolejce do
+prezentacji. Aktualnie prezentowany obraz jest zwany \textit{buforem przednim} (front buffer), a reszta obrazów w kolejce od prezentowania jest zwana \textit{buforami tylnymi} (back buffers).
+
+Część sterownika graficznego zwana silnikiem prezentacji wybiera z kolejki obraz służący jako bufor przedni i używa go
+do prezentacji. Po zakończeniu prezentacji obraz zostaje oznaczony jako nieużywany i może być ponownie pobrany przez
+program.
+
+Poniższy diagram ilustruje cykl życia obrazu łańcucha wymiany:
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[node distance=1cm]
+		\tikzstyle{object} = [rectangle, minimum width=3cm, minimum height=1cm,text centered, draw=black]
+		\tikzstyle{function} = [rectangle, rounded corners,text centered, draw=black]
+		\tikzstyle{arrow} = [thick,->,>=stealth]
+		
+		\node (PresentableImage1) [object] at (90:4cm) {Prezentowalny obraz};
+		\node (PresentableImageDot1) [right = 1mm of PresentableImage1] {...};
+		\node (PresentableImages) [draw,dotted,fit=(PresentableImage1) (PresentableImageDot1)] {};
+		
+		\node (vkAcquireNextImageKHR) [function] at (150:4cm) {vkAcquireNextImageKHR()};
+		
+		\node (AcquiredImage1) [object] at (180:4cm) {Pobrany obraz};
+		\node (AcquiredImageDot1) [left = 1mm of AcquiredImage1] {...};	
+		\node (AcquiredImages) [draw,dotted,fit=(AcquiredImage1) (AcquiredImageDot1)] {};
+		
+		\node (vkQueueSubmit) [function] at (215:4cm) {vkQueueSubmit()};
+		
+		\node (RenderedImage1) [object] at (270:4cm) {Wyrenderowany obraz};
+		\node (RenderedImageDot1) [right = 1mm of RenderedImage1] {...};	
+		\node (RenderedImages) [draw,dotted,fit=(RenderedImage1) (RenderedImageDot1)] {};
+		
+		\node (vkQueuePresentKHR) [function] at (325:4cm) {vkQueuePresentKHR()};
+		
+		\node (PresentedImage1) [object] at (360:4cm) {Prezentowany obraz};
+		\node (PresentedImageDot1) [right = 1mm of PresentedImage1] {...};	
+		\node (PresentedImages) [draw,dotted,fit=(PresentedImage1) (PresentedImageDot1)] {};
+		
+		\node (PresentEvent) [function] at (390:4cm) {Prezentacja obrazu};
+				
+		\draw [arrow] (120:4cm) arc (120:142:4cm);
+		\draw [arrow] (157:4cm) arc (157:168:4cm);
+		\draw [arrow] (198:4cm) arc (198:208:4cm);
+		\draw [arrow] (224:4cm) arc (224:240:4cm);
+		\draw [arrow] (307:4cm) arc (307:318:4cm);
+		\draw [arrow] (335:4cm) arc (335:343:4cm);
+		\draw [arrow] (372:4cm) arc (372:383:4cm);
+		\draw [arrow] (399:4cm) arc (398:412:4cm);
+		
+		\node (PresentableImagesLabel)[above=0cm of PresentableImages] {\textbf{Nieużywane prezentowalne obrazy}};
+		\node (AcquiredImagesLabel)[below=0cm of AcquiredImages] {\textbf{Pobrane obrazy}};
+		\node (RenderedImagesLabel)[below=0cm of RenderedImages] {\textbf{Wyniki renderowania}};
+		\node (PresentedImagesLabel)[below=0cm of PresentedImages] {\textbf{Kolejka obrazów do prezentacji}};
+		
+		\draw [arrow, postaction={decorate,decoration={text along path,raise=1mm,text align=center,text={Aplikacja}}}] (133:16mm) arc (133:300:16mm);
+		\draw [arrow, postaction={decorate,decoration={text along path,raise=1mm,text align=center,reverse path,text={Silnik prezentacji}}}] (305:16mm) arc (305:486:16mm);
+		
+		
+	\end{tikzpicture}
+	\caption{Cykl życia obrazu łańcucha wymiany}
+	\label{swap_chain}
+\end{figure}
+
+
+Dokładny mechanizm działania silnika prezentacji zależy od trybu prezentacji i liczby prezentowalnych obrazów ustalonych
+podczas tworzenia łańcucha zdarzeń.
+
+// HIRO FIRO, MAILBOX etc.
+
+
+\subsubsection{Diagram inicjalizacji}
+
+/// HIRO diagram inicjalizacji
+
 
 \subsection{Bufory poleceń}
 
-// TODO surface, urządzenie fizyczne i logiczne
+// TODO surface, urządzenie fizyczne i logiczne, diagram state
 
 \subsection{Zasoby}
 // TODO pamięć
 // TODO bufory uniform i bufory magazynowe, obrazy, próbniki, obrazy magazynowe
 
-\subsection{Łańcuch wymiany}
-
-// TODO surface
 
 \subsection{Synchronizacja}
 
@@ -47,7 +291,7 @@ Bariera potoku to prymityw synchronizacji definiowany poleceniem \textit{vkCmdPi
 wykonania oraz zależności pamięci pomiędzy poleceniami przed i po barierze.
 
 Zależność wykonania to gwarancja, że praca pewnych \textit{źródłowych etapów potoku} (określonych używając
-VkPipelineStageFlags) dla wcześniejszego zestawu poleceń została zakończona przed rozpoczęciem wykonywania pewnych
+\textit{VkPipelineStageFlags}) dla wcześniejszego zestawu poleceń została zakończona przed rozpoczęciem wykonywania pewnych
 \textit{docelowych etapów potoku} dla późniejszego etapu poleceń. 
 
 Przykładowo zależność wykonania pomiędzy etapami
@@ -55,7 +299,7 @@ Przykładowo zależność wykonania pomiędzy etapami
 wykonywania shadera fragmentów.
 
 Zależność pamięci to zależność wykonania z dodatkową gwarancją, że rezultat zapisów wyspecyfikowanych przez pewien \textit{źródłowy
-zakres dostępów} (określony używając VkAccessFlags) wygenerowanych przez wcześniejszy zestaw poleceń jest udostępiony
+zakres dostępów} (określony używając \textit{VkAccessFlags}) wygenerowanych przez wcześniejszy zestaw poleceń jest udostępiony
 późniejszemu zestawowi poleceń dla pewnego \textit{docelowego zakresu dostępów}.
 
 Przykładowo zaleźność pamięci pomiędzy etapami
@@ -75,7 +319,7 @@ Istnieją trzy rodzaje barier w zależności od rodzaju pamięci zarządzanego p
 
 \subsubsection{Semafory}
 
-Semafory to obiekty VkSemaphore pozwalające na synchronizację wykonywania buforów poleceń w tej samej lub pomiędzy kolejkami. GPU
+Semafory to obiekty \textit{VkSemaphore} pozwalające na synchronizację wykonywania buforów poleceń w tej samej lub pomiędzy kolejkami. GPU
 może sygnalizować semafor po zakończeniu wykonywania poleceń oraz może czekać na sygnalizację semafora przed
 rozpoczęciem wykonywania następnego bufora poleceń.
 
@@ -84,7 +328,7 @@ graficzna i kolejką prezentacji w celu zagwarantowania, że prezentowalny obraz
 
 \subsubsection{Ogrodzenia}
 
-Ogrodzenia to obiekty VkFence pozwalające na synchonizację poleceń wykonywanych w kolejce na GPU z CPU.
+Ogrodzenia to obiekty \textit{VkFence} pozwalające na synchonizację poleceń wykonywanych w kolejce na GPU z CPU.
 Ogrodzenie może być sygnalizowane przez GPU po zakończeniu wykonywania funkcji używających GPU, CPU może zresetować ogrodzenie
 funkcją \textit{vkResetFences()} lub czekać na jego sygnalizację funkcją \textit{vkWaitForFences()} chwilowo blokując wykonywanie programu.
 
@@ -155,12 +399,12 @@ Niestety ta metoda ma poważne ograniczenie - minimalny rozmiar pamięci udostę
 
 \subsubsection{Zadeklarowanie użycia deskryptorów w układzie potoku}
 
-Układ potoku (VkPipelineLayout) zawiera informacje o sposobie organizacji wszystkich zbiorów deskryptorów i stałych push, które mogą być używane w potoku (VkPipeline). Jest on używany do dowiązywania zbiorów deskryptorów i nagrywania stałych push.
+Układ potoku (\textit{VkPipelineLayout}) zawiera informacje o sposobie organizacji wszystkich zbiorów deskryptorów i stałych push, które mogą być używane w potoku (\textit{VkPipeline}). Jest on używany do dowiązywania zbiorów deskryptorów i nagrywania stałych push.
 
 Podczas tworzenia należy zadeklarować:
 \begin{itemize}
 	\item listę układów zbiorów deskryptorów,
-	\item listę zakresów stałych push (VkPushConstantRange).
+	\item listę zakresów stałych push (\textit{VkPushConstantRange}).
 \end{itemize}
 
 Zakres stałej push składa się z:

@@ -21,12 +21,6 @@ Vulkan 1.2: styczeń 2020
 VK_KHR_buffer_device_address: wskaźniki do buforów w shaderach
 
 
-W porównaniu do poprzednich API Vulkan oferuje:
-- 1000+ stron zwięzłej specyfikacji API,
-- domyślne wsparcie prekompilowanych shaderów SPIR-V (intermediate representation),
-- niskopoziomowość i ręczne zarządzanie pamięcią (co odciąża sterownik graficzny),
-- zaprojektowany z myślą o wielowątkowości (nie jest używana maszyna stanów jak w OpenGL),
-
 1. Ustawienie stanów renderowania (w tym tekstur, shaderów i parametrów przekazanych do shaderów)
 2. Ustawienie aktywnego bufora wierzchołków, bufora indeksów
 3. Uruchomienie metody renderującej
@@ -779,8 +773,6 @@ Obiekt shader reprezentuje pojedyńczy shader i jest odpowiedzialny za kompilacj
 
 ### Shader
 
-HIRO
-
 Shader to program specyfikujący operacje wykonywane podczas etapu potoku graficznego dla każdego elementu przetwarzanego
 przez ten etapu potoku (np. wierzchołka albo fragmentu).
 
@@ -847,34 +839,7 @@ szerokości).
 
 ### Łancuch wymiany
 
-WSI to zbiór mechanizmów pozwalających na integrację API Vulkan z systemem okien w celu wyświetlenia wyników
-renderowania na powierzchni okna. WSI jest zapewniane przez użycie obiektów Vulkan z rozszerzeń udostępnianych przez
-środowisko uruchomieniowe programu.
-
-Łańcuch wymiany to tablica prezentowalnych obrazów należących do powierzchni okna. Jest on używany do prezentacji
-obrazów, czyli aktualizacji powierzchni okna zawartością obrazu.
-
-Przed prezentacją obrazu musi być coś do niego wyrenderowane. Program musi pobrać nieużywany prezentowalny obraz z
-łańcucha wymiany, użyć do jako ostatecznego celu renderowania i ponownie dodać do łańcucha wymiany. Tylko obrazy z
-łańcucha wymiany mogą być prezentowane.
-
-Łańcuch wymiany może być używany do synchronizacji pionowej, czyli synchronizacji prezentacji obrazów z częstotliwością
-odświeżania ekranu. Jej brak powoduje rozrywanie obrazu - korupcję polegającą na jednoczesnym wyświetlaniu zawartości
-kilku klatek w tym samym czasie.
-
-Program nie może bezpośrednio prezentować obrazu. Zamiast tego musi on pobrać nieużywany prezentowalny obraz z łańcucha
-wymiany, wyrenderować do niego scenę i dodajać go kolejki obrazów do prezentacji w łańcuchu wymiany.
-
-Okno wyświetla tylko jeden prezentowalny obraz na raz, ale istnieje możliwość umieszczania kilku obrazów w kolejce do
-prezentacji. Aktualnie prezentowany obraz jest zwany *buforem przednim*, a reszta obrazów w kolejce od prezentowania
-jest zwana *buforami tylnymi*.
-
-Część sterownika graficznego zwana *silnikiem prezentacji* wybiera z kolejki obraz służący jako bufor przedni i używa go
-do prezentacji. Po zakończeniu prezentacji obraz zostaje oznaczony jako nieużywany i może być ponownie pobrany przez
-program.
-
-Dokładny mechanizm działania silnika prezentacji zależy od trybu prezentacji i liczby prezentowalnych obrazów ustalonych
-podczas tworzenia łańcucha zdarzeń.
+HIRO
 
 W trybie prezentacji FIFO łańcuch wymiany zachowuje się jak kolejka FIFO. Przed odświeżeniem ekranu obraz z przodu
 kolejki jest usuwany i traktowany jako bufor przedni. Wyrenderowane obrazy są dodawane na koniec kolejki. Jeśli kolejka
@@ -1005,19 +970,9 @@ wejściowych myszy i klawiatury do obiektu input.
 
 #### Inicjalizacja Vulkan
 
-Wszyskie programy używające Vulkan wymagają wcześniejszego stworzenia następujących obiektów:
-
-- instancji Vulkan (VkInstance),
-- powierzchni okna (VkSurface),
-- urządzenia fizycznego (VkPhysicalDevice),
-- urządzenia logicznego (VkDevice),
-- kolejek (VkQueue).
+HIRO Implementacja
 
 ###### Instancja
-
-Pierwszym krokiem każdego programu chcącego używać Vulkan jest stworzenie instancji Vulkan. Instancja pozwala programowi
-na inicjalizację i komunikację z biblioteką Vulkan i musi zostać stworzona przed użyciem jakichkolwiek innych funkcji
-API Vulkan. Podczas tworzenia instancji należy zdefiniować:
 
 - podstawowe informacje o aplikacji: nazwa i wersja aplikacji oraz używanego silnika, najwyższa wersja Vulkan używana
   przez aplikację (1.2),
@@ -1031,18 +986,9 @@ API Vulkan. Podczas tworzenia instancji należy zdefiniować:
 
 ###### Powierzchnia
 
-Po stworzeniu instancji Vulkan program chcący prezentować wyniki renderowania musi stworzyć powierzchnię okna (
-VkSurfaceKHR). Ten krok może być pominięty dla programów używających Vulkan w tzw. trybie *headless* niewyświetlającym
-wyniku renderowania na ekranie. W innym wypadku powierzchnia musi być stworzona przed urządzeniem fizycznym, ponieważ
-jest używana do sprawdzania, czy będzie ono wspierało późniejsze stworzenie łańcucha wymiany. Powierzchnia jest tworzona
-przy użyciu funkcji glfwCreateWindowSurface().
+Powierzchnia jest tworzona przy użyciu funkcji glfwCreateWindowSurface().
 
 ###### Urządzenie fizyczne
-
-Po stworzeniu instancji Vulkan należy wybrać urządzenie fizyczne. Urządzenie fizyczne reprezentuje pojedyńczą
-implementację Vulkan - zwykle jedną z kart graficznych lub renderer programowy taki jak llvmpipe.
-
-Lista dostępnych urządzeń fizycznych jest uzyskiwana używając funkcji vkEnumeratePhysicalDevices().
 
 Lista urządzeń fizycznych jest przefiltrowana do listy kandydatów przy użyciu następujących kryteriów wsparcia:
 
@@ -1079,8 +1025,7 @@ Każde urządzenie fizyczne listy kandydatów ma nadawany ranking poprzez ocenia
 
 Urządzenie fizyczne z najwyższym rankingiem jest ostatecznie wybierane z listy kandydatów.
 
-Każde urządzenie fizyczne posiada limity - wartości określające jego właściwości, które muszą być przestrzegane przez
-program podczas jego użytkowania. Po wybraniu urządzenia fizycznego zapamiętywane są następujące limity używane w
+Po wybraniu urządzenia fizycznego zapamiętywane są następujące limity używane w
 dalszych częściach silnika:
 
 - obrazy i próbkowanie:
@@ -1102,10 +1047,6 @@ dalszych częściach silnika:
 
 ###### Urządzenie logiczne
 
-Po wybraniu urządzenia fizycznego należy użyć go do stworzenia urządzenia logiczne. Urządzenie logiczne reprezentuje
-sterownik graficzny urządzenia fizycznego i jest używane przez większość funkcji i poleceń Vulkan. Podczas tworzenia
-urządzenia logicznego oprócz urządzenia fizycznego należy dodatkowo zdefiniować używane:
-
 - kolejki: albo po jednej kolejce graficznej i prezentacji, albo jedna kolejka "uniwersalna" wspierająca obie rodziny
   poleceń,
 - funkcje urządzenia fizycznego: te same jak te, których wsparcie było sprawdzane podczas wybierania urządzenia
@@ -1115,18 +1056,9 @@ urządzenia logicznego oprócz urządzenia fizycznego należy dodatkowo zdefinio
 
 ###### Kolejki
 
-Podczas tworzenia urządzeniem logicznego sterownik graficzny automatycznie tworzony żądane kolejki.
-
-Kolejki są używane do wykonywania na urządzeniu fizycznych poleceń zawartych w buforach poleceń wysłanych do kolejki.
-
-Uchwyt do kolejki jest uzyskiwany używając funkcji vkGetDeviceQueue().
-
 Pobierane są po jednym uchwycie do koleki graficznej oraz kolejki prezentacji.
 
 ##### Wskaźniki funkcji rozszerzeń
-
-Użycie funkcji niebędących częścią podstawowego API używanej wersji API Vulkan ale oferowanych przez wspierane
-rozszerzenia instancji i urządzenia wymaga pobrania wskaźników funkcji używając funkcji vkGetInstanceProcAddr():
 
 ```
   vkd->cmdBeginRendering =

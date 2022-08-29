@@ -162,9 +162,87 @@
       \verb https://www.unrealengine.com
       \endverb
     \endentry
-    \entry{GPUINFO}{misc}{}
+    \entry{VULKANCTS}{misc}{}
       \field{sortinit}{6}
       \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
+      \field{labeltitlesource}{title}
+      \field{title}{Khronos Vulkan, OpenGL, and OpenGL ES Conformance Tests}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://github.com/KhronosGroup/VK-GL-CTS
+      \endverb
+      \verb{url}
+      \verb https://github.com/KhronosGroup/VK-GL-CTS
+      \endverb
+    \endentry
+    \entry{VULKANLOADER}{misc}{}
+      \field{sortinit}{8}
+      \field{sortinithash}{a231b008ebf0ecbe0b4d96dcc159445f}
+      \field{labeltitlesource}{title}
+      \field{title}{Architecture of the Vulkan Loader Interfaces}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://github.com/KhronosGroup/Vulkan-Loader/blob/master/docs/LoaderInterfaceArchitecture.md
+      \endverb
+      \verb{url}
+      \verb https://github.com/KhronosGroup/Vulkan-Loader/blob/master/docs/LoaderInterfaceArchitecture.md
+      \endverb
+    \endentry
+    \entry{GLFW}{misc}{}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{labeltitlesource}{title}
+      \field{title}{GLFW: An OpenGL library}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://www.glfw.org/
+      \endverb
+      \verb{url}
+      \verb https://www.glfw.org/
+      \endverb
+    \endentry
+    \entry{SDL}{misc}{}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labeltitlesource}{title}
+      \field{title}{Simple DirectMedia Layer (SDL)}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://www.libsdl.org/
+      \endverb
+      \verb{url}
+      \verb https://www.libsdl.org/
+      \endverb
+    \endentry
+    \entry{LLVMPIPE}{misc}{}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labeltitlesource}{title}
+      \field{title}{LLVMpipe - The Mesa 3D Graphics Library}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://docs.mesa3d.org/drivers/llvmpipe.html
+      \endverb
+      \verb{url}
+      \verb https://docs.mesa3d.org/drivers/llvmpipe.html
+      \endverb
+    \endentry
+    \entry{SWIFTSHADER}{misc}{}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labeltitlesource}{title}
+      \field{title}{SwiftShader}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://github.com/google/swiftshader
+      \endverb
+      \verb{url}
+      \verb https://github.com/google/swiftshader
+      \endverb
+    \endentry
+    \entry{GPUINFO}{misc}{}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labeltitlesource}{title}
       \field{title}{Vulkan Hardware Database - GPUinfo.org}
       \field{year}{2022}
@@ -192,8 +270,8 @@
       \strng{authorbibnamehash}{d96f623538516f6e8e1ec7951b0e45bf}
       \strng{authornamehash}{d96f623538516f6e8e1ec7951b0e45bf}
       \strng{authorfullhash}{d96f623538516f6e8e1ec7951b0e45bf}
-      \field{sortinit}{7}
-      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{isbn}{9781466567436}
@@ -203,8 +281,8 @@
       \field{year}{2013}
     \endentry
     \entry{PEP405}{misc}{}
-      \field{sortinit}{8}
-      \field{sortinithash}{a231b008ebf0ecbe0b4d96dcc159445f}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labeltitlesource}{title}
       \field{title}{PEP 405 – Python Virtual Environments}
       \field{year}{2011}
