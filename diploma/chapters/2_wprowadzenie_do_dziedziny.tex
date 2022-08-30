@@ -43,7 +43,7 @@ Vulkan został po raz pierwszy wydany w 2016 i oferuje między innymi:
 
 // TODO użycie api, notacje, funcje tworzenia i niszczenia, łańcuch pNext, rozszerzenia instancji i urządzenia
 
-\subsection{Inicjalizacja}
+\subsection{Inicjalizacja podstawowych obiektów}
 
 Wszyskie programy używające API Vulkan wymagają wcześniejszego stworzenia następujących obiektów:
 \begin{itemize}
@@ -53,8 +53,46 @@ Wszyskie programy używające API Vulkan wymagają wcześniejszego stworzenia na
 	\item urządzenia logicznego (\textit{VkDevice}),
 	\item wskaźników funkcji rozszerzeń,
 	\item kolejek (VkQueue),
-	\item łańcucha wymiany (\textit{VkSwapchain}).
 \end{itemize}
+
+Poniższy diagram przedstawia kolejność inicjalizacji podstawowych obiektów Vulkan:
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[node distance=1cm]
+		\tikzstyle{object} = [rectangle, minimum width=3cm, minimum height=1cm,text centered, draw=black]
+		\tikzstyle{input} = [rectangle, rounded corners, minimum width=3cm, minimum height=5mm,text centered, draw=black]
+		\tikzstyle{arrow} = [thick,->,>=stealth]
+		\tikzstyle{relation} = [densely dotted,->]
+		
+		\node (VkInstance) [object] {VkInstance};
+		\node (VkApplicationInfo) [input, above = 3mm of VkInstance, rectangle split, rectangle split parts=3] {VkApplicationInfo\nodepart{two}Rozszerzenia instancji\nodepart{three}Warstwy};
+		\node (VkSurface) [object, right = of VkInstance] {VkSurface};
+		\node (WSI) [input, above = 3mm of VkSurface] {Rozszerzenia WSI};
+		\node (VkPhysicalDevice) [object, below = of VkInstance] {VkPhysicalDevice};
+		\node (VkDevice) [object, right = of VkPhysicalDevice] {VkDevice};
+		\node (VkDeviceInfo) [input, below = 3mm of VkDevice, rectangle split, rectangle split parts=4] {Rodziny kolejek\nodepart{two}Funkcjonalności\nodepart{three}Rozszerzenia urządzenia\nodepart{four}Warstwy};
+		\node (VkQueue) [object, right = of VkDevice] {VkQueue};
+		
+		\draw [arrow] (VkApplicationInfo) -- (VkInstance);
+		\draw [arrow] (VkInstance) -- (VkSurface);
+		\draw [arrow] (WSI) -- (VkSurface);
+		\draw [relation] (VkInstance) -- (VkPhysicalDevice);
+		\draw [relation] (VkSurface) -- (VkPhysicalDevice);
+		\draw [arrow] (VkPhysicalDevice) -- (VkDevice);
+		\draw [arrow] (VkDeviceInfo) -- (VkDevice);
+		\draw [relation] (VkDeviceInfo) -- (VkPhysicalDevice);
+		\draw [arrow] (VkDevice) -- (VkQueue);
+
+		\path ([xshift=29mm,yshift=0mm]current bounding box.south west)
+		node[matrix,anchor=south east,cells={nodes={font=\sffamily,anchor=west}},draw,thick,inner sep=1ex]{
+			\draw[arrow](0,0) -- ++ (0.6,0); & \node{Tworzenie};\\
+			\draw[relation](0,0) -- ++ (0.6,0); & \node{Wybieranie};\\
+		};
+		
+	\end{tikzpicture}
+	\caption{Kolejność inicjalizacji podstawowych obiektów Vulkan}
+	\label{vulkan_initialization}
+\end{figure}
 
 \subsubsection{Instancja}
 
@@ -165,7 +203,9 @@ Dodatkowo w imię kompatybilności wstecznej powinno się ponownie podać list�
 
 Podczas tworzenia urządzeniem logicznego sterownik graficzny automatycznie tworzony żądane kolejki.
 
-Kolejki są używane do wykonywania na urządzeniu fizycznym poleceń zawartych w buforach poleceń wysłanych do kolejki funkcją \textit{vkQueueSubmit()}.
+Kolejki są używane do wykonywania na urządzeniu fizycznym poleceń zawartych w buforach poleceń wysłanych do kolejki funkcją \textit{vkQueueSubmit()}. Funkcja zwraca kontrolę do aplikacji nieczekając na zakończenie wykonywania bufora poleceń na GPU - wymagana jest synchronizacja GPU z CPU przy pomocy ogrodzeń.
+Wykonanie buforów poleceń może się odbywać poza kolejnością lub nakładać i wymaga synchronizacji GPU z GPU przy pomocy semafor.
+Podobnie nie ma silnej gwarancji porządkowania wykonywania poleceń należącego do pojedyńczego bufora i wymaga jawnej synchronizacji używając barier potoku lub zdarzeń.
 
 Każda kolejka należy do pewnej rodziny kolejek (\textit{VkQueueFlagBits}) sygnalizując tym wsparcie pewnego rodzaju poleceń:
 \begin{itemize}
@@ -187,19 +227,28 @@ Użycie funkcji niebędących częścią używanej wersji API Vulkan i oferowane
 Zwrócony wskaźnik nie musi bezpośrednio wskazywać na implementację oferowaną przez sterownik i może być funkcją loadera wykonującą dodatkową logikę dodaną przez załadowane warstwy.
 Funkcja \textit{vkGetDeviceProcAddr()} pozwala na pominięcie loadera, co gwarantuje szybsze wywołania API, ale zwrócona funkcja może być używana tylko dla urządzenia logicznego użytego do pobrania jej.
 
-\subsubsection{Łańcuch wymiany}
 
-Łańcuch wymiany to tablica prezentowalnych obrazów należących do powierzchni okna.
+\subsection{Łańcuch wymiany}
+
+Łańcuch wymiany to obiekt \textit{VkSwapchainKHR} będący częścia rozszerzenia \textit{VK\_KHR\_swapchain} WSI i reprezentuje tablica prezentowalnych obrazów należących do powierzchni okna.
 Jest on używany do prezentacji obrazu, czyli aktualizacji powierzchni okna zawartością wyrenderowanego obrazu.
 Dodatkowo łańcuch wymiany może być używany do synchronizacji pionowej (vertical synchronization, V-sync), czyli synchronizacji prezentacji obrazów z częstotliwością
-odświeżania ekranu. Jej brak powoduje rozrywanie obrazu - korupcję polegającą na jednoczesnym wyświetlaniu zawartości
+odświeżania ekranu, której brak powoduje rozrywanie obrazu - korupcję polegającą na jednoczesnym wyświetlaniu zawartości
 kilku klatek w tym samym czasie.
 
-Program nie może bezpośrednio prezentować obrazu. Zamiast tego musi on pobrać nieużywany prezentowalny obraz z łańcucha
-wymiany funkcją \textit{vkAcquireNextImageKHR()}, wyrenderować do niego scenę oraz ponownie dodać go do kolejki obrazów do prezentacji w łańcuchu wymiany funkcją \textit{vkQueuePresentKHR()}.
+Program nie może bezpośrednio prezentować obrazu. Zamiast tego musi on:
+\begin{itemize}
+	\item Pobrać tablicę uchwytów prezentowalnych obrazów funkcją \textit{vkGetSwapchainImagesKHR()},
+	\item Wybrać dostępny prezentowalny obraz z tablicy uchwyrów przy użyciu indeksu zwróconego przez funkcję \textit{vkAcquireNextImageKHR()},
+	\item Wyrenderować scenę do dostępnego prezentowalnego obrazu przy użyciu funkcji vkQueueSubmit(),
+	\item Oddać wyrenderowany obraz łańcuchowi wymiany funkcją \textit{vkQueuePresentKHR()}.
+\end{itemize}
+Każdy z tych kroków wymaga synchronizacji z krokiem następnym przy użyciu semaforów. Funkcja \textit{vkAcquireNextImageKHR()} sygnalizuje \textit{semafor dostępności obrazu}, na który czeka funkcja \textit{vkQueueSubmit()} - GPU zaczyna renderowanie dopiero wtedy, gdy prezentowany obraz nie jest używany przez okno.
+Funkcja \textit{vkQueueSubmit()} sygnalizuje \textit{semafor zakończena renderowania}, na który czeka funkcja \textit{vkQueuePresentKHR()} - okno może zacząć prezentować wynik renderowania dopiero wtedy, gdy GPU zakończył wykonywanie poleceń.
+
 
 Okno wyświetla tylko jeden prezentowalny obraz na raz, ale istnieje możliwość umieszczania kilku obrazów w kolejce do
-prezentacji. Aktualnie prezentowany obraz jest zwany \textit{buforem przednim} (front buffer), a reszta obrazów w kolejce od prezentowania jest zwana \textit{buforami tylnymi} (back buffers).
+prezentacji. Aktualnie prezentowany obraz jest często nazywany \textit{buforem przednim} (front buffer), a reszta obrazów w kolejce od prezentowania jest zwana \textit{buforami tylnymi} (back buffers).
 
 Część sterownika graficznego zwana silnikiem prezentacji wybiera z kolejki obraz służący jako bufor przedni i używa go
 do prezentacji. Po zakończeniu prezentacji obraz zostaje oznaczony jako nieużywany i może być ponownie pobrany przez
@@ -235,7 +284,7 @@ Poniższy diagram ilustruje cykl życia obrazu łańcucha wymiany:
 		\node (PresentedImageDot1) [right = 1mm of PresentedImage1] {...};	
 		\node (PresentedImages) [draw,dotted,fit=(PresentedImage1) (PresentedImageDot1)] {};
 		
-		\node (PresentEvent) [function] at (390:4cm) {Prezentacja obrazu};
+		\node (PresentEvent) [function] at (390:4cm) {Wyświetlenie obrazu};
 				
 		\draw [arrow] (120:4cm) arc (120:142:4cm);
 		\draw [arrow] (157:4cm) arc (157:168:4cm);
@@ -252,7 +301,7 @@ Poniższy diagram ilustruje cykl życia obrazu łańcucha wymiany:
 		\node (PresentedImagesLabel)[below=0cm of PresentedImages] {\textbf{Kolejka obrazów do prezentacji}};
 		
 		\draw [arrow, postaction={decorate,decoration={text along path,raise=1mm,text align=center,text={Aplikacja}}}] (133:16mm) arc (133:300:16mm);
-		\draw [arrow, postaction={decorate,decoration={text along path,raise=1mm,text align=center,reverse path,text={Silnik prezentacji}}}] (305:16mm) arc (305:486:16mm);
+		\draw [arrow, postaction={decorate,decoration={text along path,raise=1mm,text align=center,reverse path,text={Łańcuch wymiany}}}] (305:16mm) arc (305:486:16mm);
 		
 		
 	\end{tikzpicture}
@@ -261,20 +310,23 @@ Poniższy diagram ilustruje cykl życia obrazu łańcucha wymiany:
 \end{figure}
 
 
-Dokładny mechanizm działania silnika prezentacji zależy od trybu prezentacji i liczby prezentowalnych obrazów ustalonych
-podczas tworzenia łańcucha zdarzeń.
+Dokładny mechanizm działania silnika prezentacji zależy od wybranego trybu prezentacji: (\textit{VkPresentModeKHR}):
+\begin{itemize}
+	\item \textit{IMMEDIATE}: wyrenderowane obrazy są natychmiastowo prezentowane. Brak synchronizacji pionowej może powodować rozrywanie obrazu.
+	\item \textit{FIFO}: łańcuch wymiany zachowuje się jak kolejka FIFO. Przed odświeżeniem ekranu obraz z przodu kolejki jest usuwany i prezentowany. Wyrenderowane obrazy są dodawane na koniec kolejki. Jeśli kolejka jest pełna, to program jest blokowany na funkcji \textit{vkQueuePresentKHR()} i musi czekać na zwolnienie miejsca w kolejce. Ten tryb zapewnia synchronizację pionową i jego dostępność jest gwarantowana przez specyfikację Vulkan. Jednak w sytuacji, w której GPU renderuje obrazy szybciej, niż ekran je prezentuje, program jest blokowany.
+	\item \textit{FIFO\_RELAXED}: podobny do \textit{FIFO}, ale prezentacja obrazu może pomijać synchronizację pionowa wywołując rozrywanie gdy kolejka jest pełna, ale zmniejszając czas blokowania aplikacji,
+	\item \textit{MAILBOX}: podobny do \textit{FIFO}, ale zamiast blokowania programu gdy kolejka jest pełna, starsze obrazy w kolejce są zastępowane przez nowsze. Ten tryb zapewnia synchronizację pionową i zgodnie ze specyfiakcją Vulkan gwarantuje, że program nie jest blokowany podczas prezentacji oraz może zawsze pobrać nieużywany obraz z łańcucha wymiany, ale tylko pod warunkiem, że liczba prezentowalnych obrazów jest większa od minimalnej liczby wymaganej przez powierzchnię okna.
+\end{itemize}
 
-// HIRO FIRO, MAILBOX etc.
-
-
-\subsubsection{Diagram inicjalizacji}
-
-/// HIRO diagram inicjalizacji
-
+Istnieją sytuacja, w których łańcuch wymiany musi być odtworzony (zniszczony i stworzony).
+Fukcje \textit{vkAcquireNextImageKHR()} i \textit{vkQueuePresentKHR()} mogą zwrócić rezultat
+ERROR\_OUT\_OF\_DATE\_KHR oznaczający, że powierzchnia okna zmieniła się w taki sposób, że nie jest już kompatybilna z łańcuchem wymiany.
+Aplikacja może chciać odtworzyć łańcuch wymiany także dla rezultatu \textit{SUBOPTIMAL\_KHR} oznaczającego, że rozmiar obrazów łańcucha wymiany przestał dokładnie pokrywać się z powierzchnią okna i prezentacja musi przeprowadzać dodatkowe operacje skalowania.
+Najczęstszym sprawcą obu tych sytuacji jest zmiana rozmiaru okna.
 
 \subsection{Bufory poleceń}
 
-// TODO surface, urządzenie fizyczne i logiczne, diagram state
+// TODO diagram state, bindings
 
 \subsection{Zasoby}
 // TODO pamięć
@@ -287,8 +339,7 @@ podczas tworzenia łańcucha zdarzeń.
 
 \subsubsection{Bariery potoku}
 
-Bariera potoku to prymityw synchronizacji definiowany poleceniem \textit{vkCmdPipelineBarrier()} pozwalający na zdefiniowanie zależności
-wykonania oraz zależności pamięci pomiędzy poleceniami przed i po barierze.
+Bariera potoku to prymityw synchronizacji definiowany poleceniem \textit{vkCmdPipelineBarrier()} pozwalający na zdefiniowanie zależności wykonania oraz zależności pamięci pomiędzy poleceniami przed i po barierze.
 
 Zależność wykonania to gwarancja, że praca pewnych \textit{źródłowych etapów potoku} (określonych używając
 \textit{VkPipelineStageFlags}) dla wcześniejszego zestawu poleceń została zakończona przed rozpoczęciem wykonywania pewnych
@@ -333,6 +384,11 @@ Ogrodzenie może być sygnalizowane przez GPU po zakończeniu wykonywania funkcj
 funkcją \textit{vkResetFences()} lub czekać na jego sygnalizację funkcją \textit{vkWaitForFences()} chwilowo blokując wykonywanie programu.
 
 Przykładowo ogrodzenia są używane do zagwarantowania, że program nie używa funkcji \textit{vkQueueSubmit()} do wysyłania buforów poleceń szybciej, niż GPU je wykonuje.
+
+\subsubsection{Zdarzenia}
+Zdarzenia to obiekty \textit{VkEvent} pozwalające ogólną synchronizację wykonywanych poleceń z innymi poleceniami bądź CPU.
+Funkcja \textit{vkCmdSetEvents()} sygnalizuje zdarzenie po rozpoczęciu wykonywania źródłowych etapów potoku zależności wykonania. Wraz z funkcją \textit{vkCmdWaitEvents()} pozwala na specyfikację pełnej zależności pamięci.
+Aplikacja może manualnie sygnalizowane, resetować i czekać na zdarzenia na funkcjami \textit{vkSetEvents()}, \textit{vkResetEvent()} i \textit{vkGetEventStatus()}, co pozwala na blokowanie GPU przez CPU i jest jedyną funkcjonalnością niemożliwą do zaimplementowania przez poprzednio opisane prymitywy synchronizacji, które powinny być optymalniejsze od elastyczniejszych zdarzeń.
 
 \subsection{Deskryptory i stałe push}
 
