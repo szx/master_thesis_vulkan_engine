@@ -203,7 +203,7 @@ void create_instance(device *vkd, data_config *config, data_asset_db *assetDb) {
   glfwInstanceExtensions = glfwGetRequiredInstanceExtensions(&glfwInstanceExtensionCount);
   uint32_t instanceExtensionCount = glfwInstanceExtensionCount + array_size(instanceExtensions);
   if (validation_layers_enabled()) {
-    instanceExtensionCount += 1;
+    instanceExtensionCount += 2;
   }
   const char *mergedInstanceExtensions[instanceExtensionCount];
   for (uint32_t i = 0; i < glfwInstanceExtensionCount; i++) {
@@ -213,7 +213,9 @@ void create_instance(device *vkd, data_config *config, data_asset_db *assetDb) {
     mergedInstanceExtensions[glfwInstanceExtensionCount + i] = instanceExtensions[i];
   }
   if (validation_layers_enabled()) {
-    mergedInstanceExtensions[instanceExtensionCount - 1] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
+    mergedInstanceExtensions[instanceExtensionCount - 2] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
+    mergedInstanceExtensions[instanceExtensionCount - 1] =
+        VK_EXT_VALIDATION_FEATURES_EXTENSION_NAME;
   }
   createInfo.enabledExtensionCount = instanceExtensionCount;
   createInfo.ppEnabledExtensionNames = mergedInstanceExtensions;
