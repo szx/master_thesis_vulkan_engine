@@ -41,17 +41,17 @@
   >
 ]>
 <requests version="1.0">
-  <internal package="biblatex" priority="9" active="0">
-    <generic>latex</generic>
-    <provides type="dynamic">
-      <file>PracaMagisterka.bcf</file>
-    </provides>
-    <requires type="dynamic">
-      <file>PracaMagisterka.bbl</file>
-    </requires>
-    <requires type="static">
-      <file>blx-dm.def</file>
-      <file>blx-unicode.def</file>
+  <internal package="biblatex" priority="9" active="1">
+      <generic>latex</generic>
+      <provides type="dynamic">
+          <file>PracaMagisterka.bcf</file>
+      </provides>
+      <requires type="dynamic">
+          <file>PracaMagisterka.bbl</file>
+      </requires>
+      <requires type="static">
+          <file>blx-dm.def</file>
+          <file>blx-unicode.def</file>
       <file>blx-compat.def</file>
       <file>biblatex.def</file>
       <file>standard.bbx</file>
@@ -63,17 +63,17 @@
       <file>polish.lbx</file>
     </requires>
   </internal>
-  <external package="biblatex" priority="5" active="0">
-    <generic>biber</generic>
-    <cmdline>
-      <binary>biber</binary>
-      <infile>PracaMagisterka</infile>
-    </cmdline>
-    <input>
-      <file>PracaMagisterka.bcf</file>
-    </input>
-    <output>
-      <file>PracaMagisterka.bbl</file>
+    <external package="biblatex" priority="5" active="1">
+        <generic>biber</generic>
+        <cmdline>
+            <binary>biber</binary>
+            <infile>PracaMagisterka</infile>
+        </cmdline>
+        <input>
+            <file>PracaMagisterka.bcf</file>
+        </input>
+        <output>
+            <file>PracaMagisterka.bbl</file>
     </output>
     <provides type="dynamic">
       <file>PracaMagisterka.bbl</file>

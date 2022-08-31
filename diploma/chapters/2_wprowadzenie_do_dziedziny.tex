@@ -22,26 +22,110 @@ Biblioteki graficzne pozwalaja aplikacji na użycie ich API do uzyskania dostęp
 Biblioteka graficzna mająca na celu równe wsparcie wielu platform rozwijanych przez różnych IHV (\textit{Independent Hardware Vendor}, niezależny dostawca sprzętu) wymaga drobiazgowego ustandaryzowania i dokumentacji.
 W czasie pisania pracy istnieją trzy popularne standardy: Direct3D od firmy Microsoft oraz OpenGL i Vulkan od konsorcjum non-profit Khronos.
 
-Vulkan został po raz pierwszy wydany w 2016 i oferuje między innymi:
+Vulkan w wersji 1.0 został po raz pierwszy wydany w 2016. By zacząć używać Vulkan należy pobrać Vulkan SDK rozwijany przez LunarG \cite{VULKANSDK}.
+Zawiera on m.in. specyfikację, nagłówki API, biblioteki (de)kompilujące kod SPIR-V oraz warstwy walidacji.
+
+\paragraph{Specyfikacja}
+
+Specyfikacja Vulkan \cite{VULKANSPEC} to ponad 1000 stron zwięzłej, precyzyjnej i szczgółowej specyfikacji API przeznaczonej do użytku zarówno przez implementatorów sterowników, jak i programistów aplikacji. Khronos utrzymuje listę urządzeń, które zaliczyły zestaw testów zgodności Vulkan CTS \cite{VULKANCTS} i spełniają wymagania wieloplatformowości (w odróżnieniu takich API jak DirectX wspieranego tylko przez system Windows i konsole Xbox \cite{HughesDamEtAl13} czy Metal wspierane przeez urządzenia firmy Apple).
+
+\paragraph{Obiektowość i bezstanowość}
+
+Vulkan jest API obiektowym - wszystkie używane koncepty są reprezentowane przez obiekty Vulkan tworzone i niszczone przez aplikację, która ma do nich dostęp poprzez uchwyty.
+W przeciwieństwie do OpenGL używającego globalnej maszyny stanów,
+
+Vulkan jest bezstanowy, używany stan jest całkowiecie zaszyty w obiektach i wszystkie funkcje API operują tylko stanie obiektów przekazanych do nich w postaci parametrów i mogą być wywoływane współbieżnie z wielu wątków. Wyjątkiem są parametry zdefiniowane jako \textit{zewnętrznie synchronizowane}, dla których aplikacja musi zagwarantować, że tylko jeden wątek używa obiektu takiego parametu w danym momencie - przykładowo większość funkcji nagrywania poleceń \textit{vkCmd*} wymagają zewnętrznej synchronizacji obiektu bufora poleceń \textit{VkCommandBuffer}, co oznacza, że nagrywanie pojedyńczego bufora poleceń powinno się najlepiej odbywać w ramach jednego wątku.
+
+\paragraph{SPIR-V}
+
+Vulkan używa niskopoziomowej pośredniej reprezentacji shaderów w postaci kodu bajtowego SPIR-V \cite{SPIRVSPEC}, który jest standardem Khronos będącym przenośnym celem kompilacji shaderów napisanych w wysokopoziomowych językach takich jak GLSL, HLSL czy Cg.
+Implementatorzy zajmują się tylko translację ze SPIR-V do kodu maszynowego urządzenia, co znacznie upraszcza sterowniki niemuszące osadzać całego kompilatora, przyśpiesza proces kompilacji oraz zmniejsza prawdopodobieństwo sytuacji znanej z OpenGL, w której mimo deklarowanej przenośności API sterowniki różnej jakości interpretują ten sam shader na różne sposoby \cite{GLSLBAD}.
+
+\paragraph{Warstwy}
+
+Vulkan jest niskopioziomowy i skomplikowany w użyciu - słynny tutorial wymaga ponad 1000 linijek kodu C++ do renderowania pojedyńczego trójkąta  \cite{VULKANTUTORIAL}.
+Sterowniki nie sprawdzają większości błędów i wymagają od programisty chcącego uniknąć korupcji drobiazgowego przestrzegania zasad poprawnego użycia API.
+
+Na szczęście Vulkan wspiera tworzenie warstw - małych bibliotek dynamicznych pośredniczących pomiędzy apikacją i sterownikiem, które przechwytują wywołania API i pozwala na dodanie do nich dodatkowej logiki.
+Vulkan SDK oferuje oficjalne warstwy mające uprościć proces debugowania.
+
+Warstwa walidacji \textit{VK\_LAYER\_KHRONOS\_validation} wykrywaja i raportuje nieprawidłowe i niewydajne użycie API.
+
+Warstwy rozszerzeń implementują funkcje rozszerzeń niewspieranych przez sterownik - przykładowo warstwa \textit{VK\_LAYER\_KHRONOS\_synchronization2} implementuje rozszerzenie \textit{VK\_KHR\_synchronization2}.
+
+Warstwy narzędzi dodają przydatne funkcjonalności takie jak raportowanie wywołań API (\textit{VK\_LAYER\_LUNARG\_api\_dump}), robienie zrzutów ekranu (\textit{VK\_LAYER\_LUNARG\_screenshot}) czy symulacja możliwości bardziej ograniczonych GPU (\textit{VK\_LAYER\_LUNARG\_device\_simulation}).
+
+Warstwy mają negatywny wpływ na wydajność, który jest zwłaszcza widoczny w przypadku warstwy walidacji. Dlatego też warto używać je w trakcie rozwoju, ale nie w produkcie końcowym.
+
+\paragraph{Rozszerzenia}
+
+Nowa funkcjonalność jest dodawana podobnie jak w OpenGL uzywając opcjonalnych rozszerzeń podstawowej specyfikacji. Są one proponowane przez członków Khronos i często są specyficzne dla urządzeń - przykładowo rozszerzenie \textit{VK\_NV\_mesh\_shader} pozwala na użycie shaderów siatki na GPU firmy Nvidia.
+
+Rozszerzenia \textit{EXT} są wspierane przez wielu dostawców. Dostatecznie popularne rozszerzenie może stać się podstawą rozszerzenia \textit{KHR}, od którego oczekuje się wsparcia przez większość sterowników - przykładowo na podstawie rozszerzenia \textit{VK\_NV\_ray\_tracing} stworzono rozszerzenie \textit{VK\_KHR\_ray\_tracing\_pipeline}.
+
+Rozszerzenia mogą być promowana w nowej wersji Vulkan stając się częścią postawowej specyfikacji - przykładowo rozszerzenie \textit{VK\_EXT\_scalar\_block\_layout} zostało promowane w Vulkan 1.2.
+
+\subsection{Konwerncje API}
+
+API Vulkan posiadaja regularną i przewidywalną strukturę nazewnictwa oraz użycia obieków.
+
+\subsubsection{Konwencje nazewnictwa}
+Konwencje nazewnictwa API Vulkan posiadają regularną i przewidywalną strukturę.
+Nagłówek \textit{vulkan.h} dołącza funkcje, struktury, typy wyliczeniowe i stałe preprocesora języka C mające następujące przedrostki:
 \begin{itemize}
-	\item ponad 1000+ stron zwięzłej, precyzyjnej i szczgółowej specyfikacji API,
-	\item bezstanowość: nie jest używana globalna maszyna stanów jak w OpenGL, co ułatwia wielowątkowość,
-	\item wszystkie informacje używane podczas renderowania są zaszyte w 
-	\item zestaw testów zgodności Vulkan CTS \cite{VULKANCTS},
-	\item wieloplatformowość: w odróżnieniu od DirectX wspieranego tylko przez system Windows i konsole Xbox \cite{HughesDamEtAl13},
-	\item ustandaryzowaną niskopoziomową reprezentację shaderów w postaci kodu bajtowego SPIR-V,
-	\item niskopoziomowe i ręczne zarządzanie pamięcią GPU: odciąża to sterownik,
-	\item warstwy walidacji wykrywające nieprawidłowe użycie API.
+	\item \textit{vk}: funkcje (np. \textit{vkBeginCommandBuffer}),
+	\item \textit{Vk}: struktury i typy wyliczeniowe (np. \textit{VkPipeline} i  \textit{VkPipelineBindPoint}),
+	\item \textit{VK\_}: wyliczenia i stałe (np. \textit{VK\_PIPELINE\_BIND\_POINT\_GRAPHICS} i \textit{VK\_NULL\_HANDLE}),
 \end{itemize}
+W imię zwięzłości dalej w pracy części nazwy będą pomijane jeśli można je wywnioskować z kontekstu - przykładowo \textit{VK\_PIPELINE\_STAGE\_COLOR\_ATTACHMENT\_OUTPUT\_BIT} może być zapisywany jako etap potoku \textit{COLOR\_ATTACHMENT\_OUTPUT}.
 
+Funkcje \textit{vkCmd*()} są nazywane poleceniami i nagrywają polecenie przeznaczone do wykonania na GPU do bufora poleceń - przykładowo polecenie \textit{vkCmdCopyBufferToImage} nagrywa polecenie kopiowania bufora do obrazu.
 
-// TODO 1000+ linijek trójkąt
+Funkcje \textit{vkEnumerate*()} i \textit{vkGet*()} służą do odpytywania właściwości obiektów - przykładowo funkcja \textit{vkGetPhysicalDeviceQueueFamilyProperties()} raportuje właściwości rodzin kolejek udostępnianych przez dane urządzenie fizyczne.
 
-// TODO HISTORIA, core vs ext, promowanie
+Nowe elementy nagłówka wprowadzane przez rozszerzenia kończą się przyrostkami - przykładowo rozszerzenie \textit{VK\_NV\_device\_diagnostic\_checkpoints} wprowadza funkcję \textit{vkCmdSetCheckpointNV} używającą struktury \textit{VkCheckpointDataNV}.
 
-\subsection{Podstawy API}
+\subsubsection{Model obiektów}
 
-// TODO użycie api, notacje, funcje tworzenia i niszczenia, łańcuch pNext, rozszerzenia instancji i urządzenia
+Wszystkie obiekty Vulkan mogą być albo tworzone funkcją \textit{vkCreate*()}, albo alokowane z puli wcześniej utworzonego obiektu funkcją \textit{vkAllocate*()}.
+
+Tworzenie obiektu wymaga przygotowania struktury informacji tworzenia \textit{Vk*CreateInfo}:
+\lstset{language=C}
+\begin{lstlisting}
+Vk*CreateInfo createInfo = {
+	.sType = VK_STRUCTURE_TYPE_*_CREATE_INFO;
+	.flags = ...,
+	...
+	.pNext = NULL,
+};
+
+Vk* object;
+assert(vkCreate*(..., &createInfo, ..., &object) == VK_SUCCESS);
+\end{lstlisting}
+
+Alokacja obiektu wymaga przygotowania struktury informacji alokacji \textit{Vk*AllocateInfo}:
+\lstset{language=C}
+\begin{lstlisting}
+Vk*Pool pool;
+
+Vk*AllocateInfo allocInfo = {
+	.sType = VK_STRUCTURE_TYPE_*_ALLOCATE_INFO;
+	.*Pool = pool,
+	...
+	.pNext = NULL,
+};
+
+Vk* object;
+assert(vkAllocate*(..., &allocInfo, ..., &object) == VK_SUCCESS);
+\end{lstlisting}
+
+Stworzone obiekty są niszczone funkcją \textit{vkDestroy*()}.
+Zaalokowane obiekty są zwalniane funkcją \textit{vkFree*()} lub poprzez zniszczenie puli obiektów.
+
+Struktury Vulkan często wspierają łańcuch \textit{pNext} - wskaźnik \textit{void*} na kolejną strukturę w liście jednokierunkowej lub \textit{NULL}. Jest on używany przez rozszerzenia dodające nowe struktury i może być iterowany w wygodny sposób używając struktur \textit{VkBaseInStructure} i \textit{VkBaseOutStructure} - typ stuktury może być wywnioskowany używając jej pierwszego pola \textit{sType}.
+
+\subsubsection{Ogólna struktura aplikacji}
+// HIRO diagram
 
 \subsection{Inicjalizacja podstawowych obiektów}
 
@@ -82,6 +166,7 @@ Poniższy diagram przedstawia kolejność inicjalizacji podstawowych obiektów V
 		\draw [arrow] (VkDeviceInfo) -- (VkDevice);
 		\draw [relation] (VkDeviceInfo) -- (VkPhysicalDevice);
 		\draw [arrow] (VkDevice) -- (VkQueue);
+		\draw [relation] (VkDeviceInfo) -- (VkQueue);
 
 		\path ([xshift=29mm,yshift=0mm]current bounding box.south west)
 		node[matrix,anchor=south east,cells={nodes={font=\sffamily,anchor=west}},draw,thick,inner sep=1ex]{
@@ -136,8 +221,6 @@ Poniższy diagram przedstawia warstwową architekturę biblioteki Vulkan \cite{V
 	\caption{Warstwowa architektura biblioteki Vulkan}
 	\label{vulkan_loader}
 \end{figure}
-
-// HIRO warstwy
 
 Instancja musi zostać stworzona przed użyciem jakichkolwiek innych funkcji API Vulkan.
 Jest ona używana przez funkcje instancji, które są używane do:
@@ -652,7 +735,7 @@ Dzięki tej funkcjonalności deskryptory muszą być dynamicznie używane: deskr
 
 Wsparcie dowiązań o zmiennej wielkości wymaga funkcjonalności urządzenia Vulkan 1.2 \textit{descriptorBindingPartiallyBound}, która w czasie pisania pracy jest wspierana przez ponad $94\%$ urządzeń \cite{GPUINFO}.
 
-Użycie tej funkcjonalności odbywa się poprzez stworzenia układu zbioru deskryptorów, którego dowiązanie posiada flagę \textit{PARTIALLY\_BOUND\_BIT}.
+Użycie tej funkcjonalności odbywa się poprzez stworzenia układu zbioru deskryptorów, którego dowiązanie posiada flagę \textit{PARTIALLY\_BOUND}.
 
 \subsection {Tablice deskryptorów czasu wykonania}
 

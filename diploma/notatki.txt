@@ -839,18 +839,7 @@ szerokości).
 
 ### Łancuch wymiany
 
-HIRO
-
-W trybie prezentacji FIFO łańcuch wymiany zachowuje się jak kolejka FIFO. Przed odświeżeniem ekranu obraz z przodu
-kolejki jest usuwany i traktowany jako bufor przedni. Wyrenderowane obrazy są dodawane na koniec kolejki. Jeśli kolejka
-jest pełna, to program jest blokowany i musi czekać. Ten tryb zapewnia synchronizację pionową i jego dostępność jest
-gwarantowana przez specyfikację Vulkan. W sytuacji, w której GPU renderuje obrazy szybciej, niż ekran je prezentuje,
-program nie może pobrać nieużywanego prezentowalnego obrazu z łańcucha wymiany i jest blokowany.
-
-W trybie prezentacji MAILBOX jest podobny do trybu FIFO, ale zamiast blokowania programu gdy kolejka jest pełnia,
-starsze obrazy w kolejce są zastępowane przez nowsze. Ten tryb zapewnia synchronizację pionową i gwarantuje, że program
-może zawsze pobrać nieużywany obraz z łańcucha wymiany pod warunkiem, że liczba prezentowalnych obrazów jest większa od
-minimalnej liczby obrazów wymaganej przez powierzchnię okna.
+TODO implementacja
 
 ### Łańcuch wymiany w silniku
 
@@ -896,12 +885,8 @@ graficzny.
 
 Rozmiar obrazów jest równy rozmiarowi powierzchni okna.
 
-Liczba obrazów jest równa minimalnej liczbie obrazów wspieranych dla łańcucha wymiary przez powierzchnię okna
-powiększonej o jeden. Ta liczba jest polecana przez specyfikację Vulkana dla tryb prezentacji to MAILBOX i ma
-gwarantować brak blokowania funkcji vkAcquireNextImageKHR().
 
-Uchwyty do prezentowalnych obrazów są tablicą obiektów VkImage. Dostęp do nich jest uzyskiwany przy użyciu funkcji
-vkGetSwapchainImagesKHR().
+
 
 Mimo, że program posiada uchwyty obrazów, to wciąż są one zarządzane przez silnik prezentacji i przed użyciem muszą być
 udostępnione programowi przy użyciu funkcji vkAcquireNextImageKHR() zwracającej indesk w wcześniej przygotowanej tablicy
@@ -909,22 +894,7 @@ uchwytów.
 
 #### Użycie łańcucha wymiany
 
-Użycie łańcucha wymiany w pętli głównej programu sprowadza się do następujących kroków:
 
-1. Pobranie indeksu następnego dostępnego prezentowalnego obrazu przy użyciu funkcji vkAcquireNextImageKHR(),
-2. Wyrenderowanie sceny do probranego prezentowalnego obrazu przy użyciu funkcji vkQueueSubmit(),
-3. Dodanie wyrenderowanego prezentowalnego obrazu do kolejki do prezentacji przy użyciu funkcji vkQueuePresentKHR().
-
-Każdy z tych kroków wymaga synchronizacji z krokiem następnym przy użyciu semaforów. Funkcja vkAcquireNextImageKHR()
-sygnalizuje *semafor dostępności obrazu*, na który czeka funkcja vkQueueSubmit() - GPU zaczyna renderowanie dopiero
-wtedy, gdy prezentowany obraz nie jest używany przez okno. Funkcja vkQueueSubmit() sygnalizuje *semafor zakończena
-renderowania*, na który czeka funkcja vkQueuePresent() - okno może zacząć prezentować wynik renderowania dopiero wtedy,
-gdy GPU zakończył wykonywanie poleceń.
-
-Istnieją sytuacja, w których łańcuch wymiany musi być odtworzony (zniszczony i stworzony). Fukcje
-vkAcquireNextImageKHR() i vkQueuePresent() mogą zwrócić rezultat VK_ERROR_OUT_OF_DATE_KHR oznaczający, że powierzchnia
-okna zmieniła się w taki sposób, że nie jest już kompatybilna z łańcuchem wymiany. Najczęstszym sprawcą tej sytuacji
-jest zmiana rozmiaru okna.
 
 ## objects/device.h
 
@@ -970,7 +940,7 @@ wejściowych myszy i klawiatury do obiektu input.
 
 #### Inicjalizacja Vulkan
 
-HIRO Implementacja
+TODO implementacja
 
 ###### Instancja
 

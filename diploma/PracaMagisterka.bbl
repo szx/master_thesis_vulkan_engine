@@ -162,9 +162,37 @@
       \verb https://www.unrealengine.com
       \endverb
     \endentry
-    \entry{VULKANCTS}{misc}{}
+    \entry{VULKANSPEC}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=5765836ecb1701c4dbd1ad291979f96b}{%
+           family={Group},
+           familyi={G\bibinitperiod},
+           given={The\bibnamedelimb Khronos\bibnamedelimb Vulkan\bibnamedelima Working},
+           giveni={T\bibinitperiod\bibinitdelim K\bibinitperiod\bibinitdelim V\bibinitperiod\bibinitdelim W\bibinitperiod}}}%
+      }
+      \strng{namehash}{5765836ecb1701c4dbd1ad291979f96b}
+      \strng{fullhash}{5765836ecb1701c4dbd1ad291979f96b}
+      \strng{bibnamehash}{5765836ecb1701c4dbd1ad291979f96b}
+      \strng{authorbibnamehash}{5765836ecb1701c4dbd1ad291979f96b}
+      \strng{authornamehash}{5765836ecb1701c4dbd1ad291979f96b}
+      \strng{authorfullhash}{5765836ecb1701c4dbd1ad291979f96b}
+      \field{extraname}{1}
       \field{sortinit}{6}
       \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Vulkan 1.2.225 - A Specification (with KHR extensions)}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://registry.khronos.org/vulkan/specs/1.2-khr-extensions/html/
+      \endverb
+      \verb{url}
+      \verb https://registry.khronos.org/vulkan/specs/1.2-khr-extensions/html/
+      \endverb
+    \endentry
+    \entry{VULKANCTS}{misc}{}
+      \field{sortinit}{7}
+      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
       \field{labeltitlesource}{title}
       \field{title}{Khronos Vulkan, OpenGL, and OpenGL ES Conformance Tests}
       \field{year}{2022}
@@ -175,9 +203,116 @@
       \verb https://github.com/KhronosGroup/VK-GL-CTS
       \endverb
     \endentry
+    \entry{SPIRVSPEC}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=638160ae56a17712d83fafc12a740c80}{%
+           family={Group},
+           familyi={G\bibinitperiod},
+           given={Khronos},
+           giveni={K\bibinitperiod}}}%
+      }
+      \strng{namehash}{638160ae56a17712d83fafc12a740c80}
+      \strng{fullhash}{638160ae56a17712d83fafc12a740c80}
+      \strng{bibnamehash}{638160ae56a17712d83fafc12a740c80}
+      \strng{authorbibnamehash}{638160ae56a17712d83fafc12a740c80}
+      \strng{authornamehash}{638160ae56a17712d83fafc12a740c80}
+      \strng{authorfullhash}{638160ae56a17712d83fafc12a740c80}
+      \field{extraname}{2}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{SPIR-V Specification}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://registry.khronos.org/SPIR-V/specs/unified1/SPIRV.html
+      \endverb
+      \verb{url}
+      \verb https://registry.khronos.org/SPIR-V/specs/unified1/SPIRV.html
+      \endverb
+    \endentry
+    \entry{GLSLBAD}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=0a5dca901b1ecddcab39b24a7e98133e}{%
+           family={Barczak},
+           familyi={B\bibinitperiod},
+           given={Joshua},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{0a5dca901b1ecddcab39b24a7e98133e}
+      \strng{fullhash}{0a5dca901b1ecddcab39b24a7e98133e}
+      \strng{bibnamehash}{0a5dca901b1ecddcab39b24a7e98133e}
+      \strng{authorbibnamehash}{0a5dca901b1ecddcab39b24a7e98133e}
+      \strng{authornamehash}{0a5dca901b1ecddcab39b24a7e98133e}
+      \strng{authorfullhash}{0a5dca901b1ecddcab39b24a7e98133e}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{OpenGL Is Broken}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb http://www.joshbarczak.com/blog/?p=154
+      \endverb
+      \verb{url}
+      \verb http://www.joshbarczak.com/blog/?p=154
+      \endverb
+    \endentry
+    \entry{VULKANSDK}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=612588e929004ece6146ca0f2586ad25}{%
+           family={LunarG},
+           familyi={L\bibinitperiod}}}%
+      }
+      \strng{namehash}{612588e929004ece6146ca0f2586ad25}
+      \strng{fullhash}{612588e929004ece6146ca0f2586ad25}
+      \strng{bibnamehash}{612588e929004ece6146ca0f2586ad25}
+      \strng{authorbibnamehash}{612588e929004ece6146ca0f2586ad25}
+      \strng{authornamehash}{612588e929004ece6146ca0f2586ad25}
+      \strng{authorfullhash}{612588e929004ece6146ca0f2586ad25}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Vulkan SDK}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://www.lunarg.com/vulkan-sdk/
+      \endverb
+      \verb{url}
+      \verb https://www.lunarg.com/vulkan-sdk/
+      \endverb
+    \endentry
+    \entry{VULKANTUTORIAL}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=af6e218ca532c5996569a0f30ad69730}{%
+           family={Overvoorde},
+           familyi={O\bibinitperiod},
+           given={Alexander},
+           giveni={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{af6e218ca532c5996569a0f30ad69730}
+      \strng{fullhash}{af6e218ca532c5996569a0f30ad69730}
+      \strng{bibnamehash}{af6e218ca532c5996569a0f30ad69730}
+      \strng{authorbibnamehash}{af6e218ca532c5996569a0f30ad69730}
+      \strng{authornamehash}{af6e218ca532c5996569a0f30ad69730}
+      \strng{authorfullhash}{af6e218ca532c5996569a0f30ad69730}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Vulkan SDK}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://vulkan-tutorial.com/
+      \endverb
+      \verb{url}
+      \verb https://vulkan-tutorial.com/
+      \endverb
+    \endentry
     \entry{VULKANLOADER}{misc}{}
-      \field{sortinit}{8}
-      \field{sortinithash}{a231b008ebf0ecbe0b4d96dcc159445f}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labeltitlesource}{title}
       \field{title}{Architecture of the Vulkan Loader Interfaces}
       \field{year}{2022}
@@ -189,8 +324,8 @@
       \endverb
     \endentry
     \entry{GLFW}{misc}{}
-      \field{sortinit}{9}
-      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labeltitlesource}{title}
       \field{title}{GLFW: An OpenGL library}
       \field{year}{2022}
@@ -281,8 +416,8 @@
       \field{year}{2013}
     \endentry
     \entry{PEP405}{misc}{}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
       \field{labeltitlesource}{title}
       \field{title}{PEP 405 – Python Virtual Environments}
       \field{year}{2011}
