@@ -8,13 +8,6 @@ W tym rozdziale przybliżono podstawowe pojęcia, bibliotekę Vulkan oraz techni
 // TODO matematyka
 // TODO podział przestrzeni
 
-\section{Potok zasobów}
-// TODO
-
-\subsection{glTF}
-
-// TODO
-
 \section{Vulkan}
 
 Biblioteki graficzne pozwalaja aplikacji na użycie ich API do uzyskania dostępu do akceleracji sprzętowej, czyli przeniesienia obliczeń wymaganych przez renderowanie z CPU do specjalnie pod nie zoptymalizowanego GPU.
@@ -65,7 +58,7 @@ Rozszerzenia \textit{EXT} są wspierane przez wielu dostawców. Dostatecznie pop
 
 Rozszerzenia mogą być promowana w nowej wersji Vulkan stając się częścią postawowej specyfikacji - przykładowo rozszerzenie \textit{VK\_EXT\_scalar\_block\_layout} zostało promowane w Vulkan 1.2.
 
-\subsection{Konwerncje API}
+\subsection{Podstawy API}
 
 API Vulkan posiadaja regularną i przewidywalną strukturę nazewnictwa oraz użycia obieków.
 
@@ -124,12 +117,26 @@ Zaalokowane obiekty są zwalniane funkcją \textit{vkFree*()} lub poprzez zniszc
 
 Struktury Vulkan często wspierają łańcuch \textit{pNext} - wskaźnik \textit{void*} na kolejną strukturę w liście jednokierunkowej lub \textit{NULL}. Jest on używany przez rozszerzenia dodające nowe struktury i może być iterowany w wygodny sposób używając struktur \textit{VkBaseInStructure} i \textit{VkBaseOutStructure} - typ stuktury może być wywnioskowany używając jej pierwszego pola \textit{sType}.
 
-\subsubsection{Ogólna struktura aplikacji}
-// HIRO diagram
+\subsection{Szkielet aplikacji graficznej}
+
+Vulkan, z racji swojej niskopoziomowości, nie narzuca jednej konkretnej struktury aplikacji - większość problemów można rozwiązać wieloma technikami, z których każda ma swoje zalety i wady.
+Programista powinien zaprojektować program w taki sposób, żeby rozwiązywał on problem, nie był zawiły i jego profilowanie ujawniało maksymalne użycie GPU.
+
+Wszystkie aplikacjie graficzne mogą być jednak podsumowane następującymi ogólnymi krokami:
+\begin{itemize}
+	\item Stworzenie bądź wybór podstawowych obiektów: instancja (\textit{VkInstance}), urządzenie fizyczne (\textit{VkPhysicalDevice}), urządzenie logiczne (\textit{VkDevice}) oraz kolejka graficzna (\textit{VkQueue}),
+	\item Przygotowanie obiektów służących do prezentacji wyników renderowania: powierzchnia okna (\textit{VkSurface}), łańcuch wymiany (\textit{VkSwapchain}), prezentowalne obrazy (\textit{VkImage}) i ich widoki (\textit{VkImageView}) oraz kolejka prezentacji (\textit{VkQueue}),
+	\item Transfer zasobów z CPU do GPU opisanych w zbiorach deskryptorów (\textit{VkDescriptorSet}),
+	\item Stworzenie obiektów opisujących proces renderowania: potoki (\textit{VkPipeline}) z shaderami (\textit{VkShaderModule}) oraz przebiegi renderowania (\textit{VkRenderPass}),
+	\item Wykonanie procesu renderowania w pętli głównej programu: pobranie nieużywanego prezentowalnego obrazu, nagranie i wykonanie buforów poleceń (\textit{VkCommandBuffer}) realizujących pożądane techniki renderowania oraz prezentacja wyrenderowaniego obrazu.
+\end{itemize}
+
+W kolejnych sekcjach pracy przybliżono wspomniane powyżej obiekty Vulkan i zaprezentowano metody ich użycia.
+
 
 \subsection{Inicjalizacja podstawowych obiektów}
 
-Wszyskie programy używające API Vulkan wymagają wcześniejszego stworzenia następujących obiektów:
+Wszyskie programy używające API Vulkan wymagają wcześniejszego stworzenia obiektów w następującej kolejności:
 \begin{itemize}
 	\item instancji (\textit{VkInstance}),
 	\item powierzchni okna (\textit{VkSurface}),
@@ -239,7 +246,7 @@ Po stworzeniu instancji Vulkan program chcący prezentować wyniki renderowania 
 
 Ten krok może być pominięty dla programów używających Vulkan w trybie *headless* niewyświetlającym
 wyniku renderowania na ekranie. W innym wypadku powierzchnia musi być stworzona przed urządzeniem fizycznym, ponieważ
-jest używana do sprawdzania, czy wybrane urządzenie fizyczne wspiera stworzenie łańcucha wymiany dla powierzchni okna.
+jest używana do sprawdzania, czy wybrane urządzenie fizyczne będzie wspierało stworzenie łańcucha wymiany dla powierzchni okna.
 
 Stworzenie powierzchni okna odbywa się przy użyciu WSI (Windowing System Integration, integracja systemu okien), który jest zbiórem rozszerzeń udostępnianych przez środowisko uruchomieniowe programu pozwalających na integrację API Vulkan z systemem okien w celu wyświetlenia wyników renderowania.
 Użycie WSI wymaga trzech rozszerzeń istancji:
@@ -301,7 +308,7 @@ Każda kolejka należy do pewnej rodziny kolejek (\textit{VkQueueFlagBits}) sygn
 Jedna kolejka może należeć do kilku rodzin - przykładowo kolejki graficzne i obliczeniowe zawsze wspierają operacje transferu.
 Sterowniki mogą wykonywać bufory poleceń wysłane do różnych kolejek asynchronicznie zapewniając skalowanie na wielordzeniowych GPU, dlatego warto pomyśleć o użyciu osobnych kolejek transferu, graficznych i obliczeniowych do kopiowania danych i przeplatania poleceń rysowania z obliczeniami GPGPU - pamiętając, że narzut związany z synchronizacją może zniwelować poprawy wydajności.
 
-Uchwyt do kolejki urządzenia logicznego jest uzyskiwany używając funkcji \textit{vkGetDeviceQueue()}.
+Uchwyt kolejki urządzenia logicznego jest uzyskiwany używając funkcji \textit{vkGetDeviceQueue()}.
 
 
 \subsubsection{Wskaźniki funkcji rozszerzeń}
@@ -309,6 +316,57 @@ Uchwyt do kolejki urządzenia logicznego jest uzyskiwany używając funkcji \tex
 Użycie funkcji niebędących częścią używanej wersji API Vulkan i oferowanej przez wspierane rozszerzenia instancji i urządzenia wymaga pobrania wskaźników funkcji w loadera używając funkcji instancji \textit{vkGetInstanceProcAddr()}.
 Zwrócony wskaźnik nie musi bezpośrednio wskazywać na implementację oferowaną przez sterownik i może być funkcją loadera wykonującą dodatkową logikę dodaną przez załadowane warstwy.
 Funkcja \textit{vkGetDeviceProcAddr()} pozwala na pominięcie loadera, co gwarantuje szybsze wywołania API, ale zwrócona funkcja może być używana tylko dla urządzenia logicznego użytego do pobrania jej.
+
+\subsubsection{Rozszerzenie VK\_EXT\_debug\_utils}
+
+Podczas inicjalizacji Vulkan warto rozważyć użycie rozszerzenia \textit{VK\_EXT\_debug\_utils}, które pozwala na stworzenie komunikatora debugowania (ang. debug messanger) przechwytującego wszystkie komunikaty wygenerowane przez loader, warstwy i sterownik Vulkan.
+Przechwycone komunikaty debugowania wraz z priorytetami są przekazywne do wywołania zwrotnego zdefiniowanego przez programistę, które może przykładowo logować wiadomość.
+Użycie debuggera wspierającego warunkowe punkty przerwania (ang. conditional breakpoint) dla wiadomości o priorytecie \textit{error} lub \textit{fatal} pozwala na zatrzymanie działania programu tuż po zgłoszeniu błędu przez warstwy walidacji, co upraszcza proces debugownia.
+
+Rozszerzenie pozwala też na dodawanie nazw do obiektów Vulkan funkcją \textit{vkSetDebugUtilsObjectNameEXT()} oraz etykiet do regionów buforów poleceń funkcjami \textit{vkCmdInsertDebugUtilsLabelEXT()}, \textit{vkCmdBeginDebugUtilsLabelEXT()} i \textit{vkCmdEndDebugUtilsLabelEXT()}.
+
+Nazwy i etykiety są używane w wiadomościach debugujących i pokazywane przez zewnętrzne narzędzia takie jak RenderDoc \cite{RENDERDOC}, co znacznie upraszcza proces debugowania.
+
+
+\subsection{Pamięć i zasoby}
+
+Vulkan wyróżnia dwa rodzaje zasobów: bufory (\textit{VkBuffer}) i obrazy (\textit{VkImage}).
+
+Bufor to ciągły blok pamięci który może być odczytany i zapisywany przez GPU. Jest on najprostszym zasobem oferowanym przez Vulkan.
+
+Obraz podobnie jak bufor reprezentuje ciągły blok pamięci, ale jego wewnętrzna struktura jest o wiele bardziej skomplikowana i wymaga wcześniejszego ustalenia następujących informacji tworzenia:
+\begin{itemize}
+	\item typ (\textit{VkImageType}),
+	\item flagi tworzenia (\textit{VkImageCreateFlags}),
+	\item format (\textit{VkFormat}),
+	\item rozmiar (\textit{VkExtent}),
+	\item liczba poziomów mipmap,
+	\item liczba warstw,
+	\item liczba próbek na teksel (\textit{VkSampleCountFlagBits}),
+	\item kafelkowanie (\textit{VkImageTiling}),
+	\item flagi użycia (\textit{VkUsageFlags}),
+	\item tryb udostępniania (\textit{VkSharingMode})
+	\item początkowy układ (\textit{VkUsageFlags}).
+\end{itemize}
+
+// HIRO opisz powyższe
+// HIRO VK\_IMAGE\_CREATE\_CUBE\_COMPATIBL\_BIT
+
+// HIRO pamięć
+// HIRO widok
+// HIRO bufory uniform i bufory magazynowe, obrazy, próbniki, obrazy magazynowe
+
+\paragraph{Format i przestrzeń kolorów}
+Format (\textit{VkFormat}) definiuje rozmiar, strukturę i sposób kodowania podczas zapisu i dekodowania podczas próbkowania pojedyńczego piksela obrazu.
+Przestrzeń kolorów (VkColorSpaceKHR) definiuje metodę interpretacji pikseli obrazu przez silnik prezentacji podczas prezentacji obrazu.
+Przestrzeń kolorów liniowa (niesprecyzowana) jest używana w obliczeniach shaderów.
+Przestrzeń kolorów SRGB jest przeznaczona do wyświetlania na monitorach i jest powszechnia używana w teksturach.
+Przykładowe często używane formaty i ich użycie:
+\begin{itemize}
+	\item \textit{R8G8B8A8\_UNORM}: 4 komponenty koloru B,G,R,A, z których każdy zajmuje 8 bitów i jest interpretowany jako znormalizowana wartość bez znaku (8-bitowa liczba zmienno przecinkowa pomiędzy 0 i 1), używany przez teksturę pozekranowa będącą dołączeniem koloru,
+	\item \textit{B8G8R8A8\_SRGB}: podobny do poprzedniego, ale podczas próbkowania GPU przeprowadza automatyczną konwersję z SRGB do przestrzeni liniowej (odwrotna konwersja podczas zapisu), używany przez prezentowalne obrazy łańcucha wymiany,
+	\item \textit{D32\_SFLOAT\_S8\_UINT}: 32-bity komponentu głębi (liczba zmiennoprzecinkową ze znakiem), 8-bitów komponentu szablonu (liczba całkowita bez znaku), używany przez bufory głębi.
+\end{itemize}
 
 
 \subsection{Łańcuch wymiany}
@@ -329,6 +387,8 @@ Program nie może bezpośrednio prezentować obrazu. Zamiast tego musi on:
 Każdy z tych kroków wymaga synchronizacji z krokiem następnym przy użyciu semaforów. Funkcja \textit{vkAcquireNextImageKHR()} sygnalizuje \textit{semafor dostępności obrazu}, na który czeka funkcja \textit{vkQueueSubmit()} - GPU zaczyna renderowanie dopiero wtedy, gdy prezentowany obraz nie jest używany przez okno.
 Funkcja \textit{vkQueueSubmit()} sygnalizuje \textit{semafor zakończena renderowania}, na który czeka funkcja \textit{vkQueuePresentKHR()} - okno może zacząć prezentować wynik renderowania dopiero wtedy, gdy GPU zakończył wykonywanie poleceń.
 
+Prezentacja funkcją \textit{vkQueuePresentKHR()} wymaga użycia uchwytu kolejki prezentacji, która jest dowolną kolejką wspierająca prezentację.
+Nie istnieje osobna rodzina kolejek prezentacji, zwykle kolejki graficzne deklarują wsparcie, które może zostać potwierdzone funkcją \textit{vkGetPhysicalDeviceSurfaceSupportKHR()}.
 
 Okno wyświetla tylko jeden prezentowalny obraz na raz, ale istnieje możliwość umieszczania kilku obrazów w kolejce do
 prezentacji. Aktualnie prezentowany obraz jest często nazywany \textit{buforem przednim} (front buffer), a reszta obrazów w kolejce od prezentowania jest zwana \textit{buforami tylnymi} (back buffers).
@@ -392,8 +452,10 @@ Poniższy diagram ilustruje cykl życia obrazu łańcucha wymiany:
 	\label{swap_chain}
 \end{figure}
 
+Informacje tworzenia łańcucha wymiany muszą być wspierane przez powierzchnię okna.
+Wymaganie jest ustalenei trybu prezentacji (funkcja \textit{vkGetPhysicalDeviceSurfacePresentModesKHR()}), liczba prezentowalnych obrazów i ich rozmiar (funkcja \textit{vkGetPhysicalDeviceSurfaceFormatsKHR()}) oraz ich formatu i przestrzeń kolorów (funkcja \textit{vkGetPhysicalDeviceSurfaceCapabilitiesKHR()}).
 
-Dokładny mechanizm działania silnika prezentacji zależy od wybranego trybu prezentacji: (\textit{VkPresentModeKHR}):
+Trybu prezentacji (\textit{VkPresentModeKHR}) definiuje dokładny mechanizm działania silnika prezentacji:
 \begin{itemize}
 	\item \textit{IMMEDIATE}: wyrenderowane obrazy są natychmiastowo prezentowane. Brak synchronizacji pionowej może powodować rozrywanie obrazu.
 	\item \textit{FIFO}: łańcuch wymiany zachowuje się jak kolejka FIFO. Przed odświeżeniem ekranu obraz z przodu kolejki jest usuwany i prezentowany. Wyrenderowane obrazy są dodawane na koniec kolejki. Jeśli kolejka jest pełna, to program jest blokowany na funkcji \textit{vkQueuePresentKHR()} i musi czekać na zwolnienie miejsca w kolejce. Ten tryb zapewnia synchronizację pionową i jego dostępność jest gwarantowana przez specyfikację Vulkan. Jednak w sytuacji, w której GPU renderuje obrazy szybciej, niż ekran je prezentuje, program jest blokowany.
@@ -401,19 +463,20 @@ Dokładny mechanizm działania silnika prezentacji zależy od wybranego trybu pr
 	\item \textit{MAILBOX}: podobny do \textit{FIFO}, ale zamiast blokowania programu gdy kolejka jest pełna, starsze obrazy w kolejce są zastępowane przez nowsze. Ten tryb zapewnia synchronizację pionową i zgodnie ze specyfiakcją Vulkan gwarantuje, że program nie jest blokowany podczas prezentacji oraz może zawsze pobrać nieużywany obraz z łańcucha wymiany, ale tylko pod warunkiem, że liczba prezentowalnych obrazów jest większa od minimalnej liczby wymaganej przez powierzchnię okna.
 \end{itemize}
 
+Po stworzeniu łańcucha obrazów aplikacja może pobrać tablicę uchwytów jego prezentowalnych obrazów funkcją \textit{vkGetSwapchainImagesKHR()} - należy oczywiście pamiętać, że pomimo posiadania uchwytu obrazu może być on używany dopiero, gdy jego indeks jest zwrócony przez funkcję \textit{vkAcquireNextImageKHR()}.
+Następnie należy utworzyć widoki prezentowalnych obrazów, które będą później używane do renderowania do nich.
+
 Istnieją sytuacja, w których łańcuch wymiany musi być odtworzony (zniszczony i stworzony).
 Fukcje \textit{vkAcquireNextImageKHR()} i \textit{vkQueuePresentKHR()} mogą zwrócić rezultat
 ERROR\_OUT\_OF\_DATE\_KHR oznaczający, że powierzchnia okna zmieniła się w taki sposób, że nie jest już kompatybilna z łańcuchem wymiany.
 Aplikacja może chciać odtworzyć łańcuch wymiany także dla rezultatu \textit{SUBOPTIMAL\_KHR} oznaczającego, że rozmiar obrazów łańcucha wymiany przestał dokładnie pokrywać się z powierzchnią okna i prezentacja musi przeprowadzać dodatkowe operacje skalowania.
 Najczęstszym sprawcą obu tych sytuacji jest zmiana rozmiaru okna.
 
+
 \subsection{Bufory poleceń}
 
-// TODO diagram state, bindings
-
-\subsection{Zasoby}
-// TODO pamięć
-// TODO bufory uniform i bufory magazynowe, obrazy, próbniki, obrazy magazynowe
+// TODO diagram state,
+// TODO Rodzaje poleceń: zmiana stanu (dowiązywanie), rysowanie
 
 
 \subsection{Synchronizacja}
@@ -976,6 +1039,18 @@ Poniższy diagram przedstawia tekstury bez dowiązań używając niejednolitych 
 // TODO
 
 \section{Cieniowanie odroczone}
+
+// TODO
+
+\section{Potok zasobów}
+
+W kontekście silnika zasób (ang. asset) można zdefiniować jako ogół jego elementów, które nie są częścią jego kodu źródłowego i mogą być niezależnie od niego dodawane, usuwane i modyfikowane.
+
+Zasoby można podzielić na zasoby wejściowe (surowe) i wyjściowe (przetworzone).
+
+// TODO
+
+\subsection{glTF}
 
 // TODO
 

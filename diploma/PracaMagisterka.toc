@@ -9,72 +9,74 @@
 \contentsline {section}{\numberline {1.3}Struktura pracy}{7}{section.1.3}%
 \contentsline {chapter}{\numberline {2}Wprowadzenie do dziedziny}{8}{chapter.2}%
 \contentsline {section}{\numberline {2.1}Podstawowe pojęcia}{8}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Potok zasobów}{8}{section.2.2}%
-\contentsline {subsection}{\numberline {2.2.1}glTF}{8}{subsection.2.2.1}%
-\contentsline {section}{\numberline {2.3}Vulkan}{8}{section.2.3}%
+\contentsline {section}{\numberline {2.2}Vulkan}{8}{section.2.2}%
 \contentsline {paragraph}{Specyfikacja}{8}{paragraph*.5}%
 \contentsline {paragraph}{Obiektowość i bezstanowość}{8}{paragraph*.6}%
-\contentsline {paragraph}{SPIR-V}{9}{paragraph*.7}%
+\contentsline {paragraph}{SPIR-V}{8}{paragraph*.7}%
 \contentsline {paragraph}{Warstwy}{9}{paragraph*.8}%
 \contentsline {paragraph}{Rozszerzenia}{9}{paragraph*.9}%
-\contentsline {subsection}{\numberline {2.3.1}Konwerncje API}{9}{subsection.2.3.1}%
-\contentsline {subsubsection}{Konwencje nazewnictwa}{10}{subsubsection*.10}%
+\contentsline {subsection}{\numberline {2.2.1}Podstawy API}{9}{subsection.2.2.1}%
+\contentsline {subsubsection}{Konwencje nazewnictwa}{9}{subsubsection*.10}%
 \contentsline {subsubsection}{Model obiektów}{10}{subsubsection*.11}%
-\contentsline {subsubsection}{Ogólna struktura aplikacji}{11}{subsubsection*.12}%
-\contentsline {subsection}{\numberline {2.3.2}Inicjalizacja podstawowych obiektów}{11}{subsection.2.3.2}%
-\contentsline {subsubsection}{Instancja}{11}{subsubsection*.14}%
-\contentsline {subsubsection}{Powierzchnia}{12}{subsubsection*.16}%
-\contentsline {subsubsection}{Urządzenie fizyczne}{12}{subsubsection*.17}%
-\contentsline {subsubsection}{Urządzenie logiczne}{13}{subsubsection*.18}%
-\contentsline {subsubsection}{Kolejki}{13}{subsubsection*.19}%
-\contentsline {subsubsection}{Wskaźniki funkcji rozszerzeń}{14}{subsubsection*.20}%
-\contentsline {subsection}{\numberline {2.3.3}Łańcuch wymiany}{14}{subsection.2.3.3}%
-\contentsline {subsection}{\numberline {2.3.4}Bufory poleceń}{16}{subsection.2.3.4}%
-\contentsline {subsection}{\numberline {2.3.5}Zasoby}{16}{subsection.2.3.5}%
-\contentsline {subsection}{\numberline {2.3.6}Synchronizacja}{16}{subsection.2.3.6}%
-\contentsline {subsubsection}{Bariery potoku}{16}{subsubsection*.22}%
-\contentsline {subsubsection}{Semafory}{17}{subsubsection*.23}%
-\contentsline {subsubsection}{Ogrodzenia}{17}{subsubsection*.24}%
-\contentsline {subsubsection}{Zdarzenia}{17}{subsubsection*.25}%
-\contentsline {subsection}{\numberline {2.3.7}Deskryptory i stałe push}{17}{subsection.2.3.7}%
-\contentsline {subsubsection}{Tworzenie deskryptorów}{18}{subsubsection*.26}%
-\contentsline {subsubsection}{Aktualizacja deskryptorów}{18}{subsubsection*.27}%
-\contentsline {subsubsection}{Stałe push}{19}{subsubsection*.28}%
-\contentsline {subsubsection}{Zadeklarowanie użycia deskryptorów w układzie potoku}{19}{subsubsection*.29}%
-\contentsline {subsubsection}{Dowiązanie deskryptorów do bufora poleceń}{19}{subsubsection*.30}%
-\contentsline {subsubsection}{Diagram użycia deskryptorów}{19}{subsubsection*.31}%
-\contentsline {subsubsection}{Dostęp do zasobów w shaderach}{20}{subsubsection*.33}%
-\contentsline {section}{\numberline {2.4}Rozszerzenie VK\textunderscore \allowbreak EXT\textunderscore \allowbreak descriptor\textunderscore \allowbreak indexing}{20}{section.2.4}%
-\contentsline {subsection}{\numberline {2.4.1}Niejednolite dynamiczne indeksowanie deskryptorów}{21}{subsection.2.4.1}%
-\contentsline {subsection}{\numberline {2.4.2}Aktualizacja deskryptorów po dowiązaniu}{21}{subsection.2.4.2}%
-\contentsline {subsection}{\numberline {2.4.3}Dowiązanie deskryptora o zmiennej wielkości}{22}{subsection.2.4.3}%
-\contentsline {subsection}{\numberline {2.4.4}Częściowe dowiązania deskryptorów}{22}{subsection.2.4.4}%
-\contentsline {subsection}{\numberline {2.4.5}Tablice deskryptorów czasu wykonania}{23}{subsection.2.4.5}%
-\contentsline {section}{\numberline {2.5}Przebiegi renderowania i potoki}{23}{section.2.5}%
-\contentsline {section}{\numberline {2.6}Rozszerzenie VK\textunderscore \allowbreak EXT\textunderscore \allowbreak dynamic\textunderscore \allowbreak rendering}{23}{section.2.6}%
-\contentsline {section}{\numberline {2.7}Renderowanie bez dowiązań}{24}{section.2.7}%
-\contentsline {subsection}{\numberline {2.7.1}Tekstury bez dowiązań}{24}{subsection.2.7.1}%
-\contentsline {subsection}{\numberline {2.7.2}Geometria bez dowiązań}{26}{subsection.2.7.2}%
-\contentsline {section}{\numberline {2.8}Mapowanie tekstur}{26}{section.2.8}%
-\contentsline {section}{\numberline {2.9}Oświetlenie}{26}{section.2.9}%
-\contentsline {section}{\numberline {2.10}Cieniowanie odroczone}{26}{section.2.10}%
-\contentsline {section}{\numberline {2.11}Graf sceny}{26}{section.2.11}%
-\contentsline {section}{\numberline {2.12}Graf renderowania}{26}{section.2.12}%
-\contentsline {chapter}{\numberline {3}Architektura i implementacja}{27}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Użyte narzędzia}{27}{section.3.1}%
-\contentsline {subsection}{\numberline {3.1.1}Proces budowania}{27}{subsection.3.1.1}%
-\contentsline {paragraph}{engine}{28}{paragraph*.37}%
-\contentsline {paragraph}{main}{28}{paragraph*.38}%
-\contentsline {paragraph}{test}{28}{paragraph*.39}%
-\contentsline {paragraph}{asset\textunderscore \allowbreak pipeline}{28}{paragraph*.40}%
-\contentsline {paragraph}{copy\textunderscore \allowbreak assets}{28}{paragraph*.41}%
-\contentsline {paragraph}{run\textunderscore \allowbreak asset\textunderscore \allowbreak pipeline}{28}{paragraph*.42}%
-\contentsline {subsection}{\numberline {3.1.2}Biblioteki zewnętrzne}{28}{subsection.3.1.2}%
-\contentsline {section}{\numberline {3.2}Architektura}{29}{section.3.2}%
-\contentsline {section}{\numberline {3.3}Moduły}{29}{section.3.3}%
-\contentsline {chapter}{\numberline {4}Badania}{30}{chapter.4}%
-\contentsline {chapter}{\numberline {5}Podsumowanie}{31}{chapter.5}%
-\contentsline {chapter}{Wykaz literatury}{32}{chapter*.43}%
-\contentsline {chapter}{Spis rysunk\'ow}{33}{chapter*.44}%
-\contentsline {chapter}{Spis tablic}{34}{chapter*.45}%
+\contentsline {subsection}{\numberline {2.2.2}Szkielet aplikacji graficznej}{11}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Inicjalizacja podstawowych obiektów}{11}{subsection.2.2.3}%
+\contentsline {subsubsection}{Instancja}{12}{subsubsection*.13}%
+\contentsline {subsubsection}{Powierzchnia}{13}{subsubsection*.15}%
+\contentsline {subsubsection}{Urządzenie fizyczne}{13}{subsubsection*.16}%
+\contentsline {subsubsection}{Urządzenie logiczne}{14}{subsubsection*.17}%
+\contentsline {subsubsection}{Kolejki}{14}{subsubsection*.18}%
+\contentsline {subsubsection}{Wskaźniki funkcji rozszerzeń}{15}{subsubsection*.19}%
+\contentsline {subsubsection}{Rozszerzenie VK\textunderscore \allowbreak EXT\textunderscore \allowbreak debug\textunderscore \allowbreak utils}{15}{subsubsection*.20}%
+\contentsline {subsection}{\numberline {2.2.4}Pamięć i zasoby}{15}{subsection.2.2.4}%
+\contentsline {paragraph}{Format i przestrzeń kolorów}{16}{paragraph*.21}%
+\contentsline {subsection}{\numberline {2.2.5}Łańcuch wymiany}{16}{subsection.2.2.5}%
+\contentsline {subsection}{\numberline {2.2.6}Bufory poleceń}{18}{subsection.2.2.6}%
+\contentsline {subsection}{\numberline {2.2.7}Synchronizacja}{18}{subsection.2.2.7}%
+\contentsline {subsubsection}{Bariery potoku}{18}{subsubsection*.23}%
+\contentsline {subsubsection}{Semafory}{19}{subsubsection*.24}%
+\contentsline {subsubsection}{Ogrodzenia}{19}{subsubsection*.25}%
+\contentsline {subsubsection}{Zdarzenia}{19}{subsubsection*.26}%
+\contentsline {subsection}{\numberline {2.2.8}Deskryptory i stałe push}{19}{subsection.2.2.8}%
+\contentsline {subsubsection}{Tworzenie deskryptorów}{19}{subsubsection*.27}%
+\contentsline {subsubsection}{Aktualizacja deskryptorów}{20}{subsubsection*.28}%
+\contentsline {subsubsection}{Stałe push}{21}{subsubsection*.29}%
+\contentsline {subsubsection}{Zadeklarowanie użycia deskryptorów w układzie potoku}{21}{subsubsection*.30}%
+\contentsline {subsubsection}{Dowiązanie deskryptorów do bufora poleceń}{21}{subsubsection*.31}%
+\contentsline {subsubsection}{Diagram użycia deskryptorów}{21}{subsubsection*.32}%
+\contentsline {subsubsection}{Dostęp do zasobów w shaderach}{22}{subsubsection*.34}%
+\contentsline {section}{\numberline {2.3}Rozszerzenie VK\textunderscore \allowbreak EXT\textunderscore \allowbreak descriptor\textunderscore \allowbreak indexing}{22}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Niejednolite dynamiczne indeksowanie deskryptorów}{23}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Aktualizacja deskryptorów po dowiązaniu}{23}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Dowiązanie deskryptora o zmiennej wielkości}{24}{subsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.3.4}Częściowe dowiązania deskryptorów}{24}{subsection.2.3.4}%
+\contentsline {subsection}{\numberline {2.3.5}Tablice deskryptorów czasu wykonania}{25}{subsection.2.3.5}%
+\contentsline {section}{\numberline {2.4}Przebiegi renderowania i potoki}{25}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Rozszerzenie VK\textunderscore \allowbreak EXT\textunderscore \allowbreak dynamic\textunderscore \allowbreak rendering}{25}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Renderowanie bez dowiązań}{26}{section.2.6}%
+\contentsline {subsection}{\numberline {2.6.1}Tekstury bez dowiązań}{26}{subsection.2.6.1}%
+\contentsline {subsection}{\numberline {2.6.2}Geometria bez dowiązań}{28}{subsection.2.6.2}%
+\contentsline {section}{\numberline {2.7}Mapowanie tekstur}{28}{section.2.7}%
+\contentsline {section}{\numberline {2.8}Oświetlenie}{28}{section.2.8}%
+\contentsline {section}{\numberline {2.9}Cieniowanie odroczone}{28}{section.2.9}%
+\contentsline {section}{\numberline {2.10}Potok zasobów}{28}{section.2.10}%
+\contentsline {subsection}{\numberline {2.10.1}glTF}{28}{subsection.2.10.1}%
+\contentsline {section}{\numberline {2.11}Graf sceny}{29}{section.2.11}%
+\contentsline {section}{\numberline {2.12}Graf renderowania}{29}{section.2.12}%
+\contentsline {chapter}{\numberline {3}Architektura i implementacja}{30}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Użyte narzędzia}{30}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Proces budowania}{30}{subsection.3.1.1}%
+\contentsline {paragraph}{engine}{31}{paragraph*.38}%
+\contentsline {paragraph}{main}{31}{paragraph*.39}%
+\contentsline {paragraph}{test}{31}{paragraph*.40}%
+\contentsline {paragraph}{asset\textunderscore \allowbreak pipeline}{31}{paragraph*.41}%
+\contentsline {paragraph}{copy\textunderscore \allowbreak assets}{31}{paragraph*.42}%
+\contentsline {paragraph}{run\textunderscore \allowbreak asset\textunderscore \allowbreak pipeline}{31}{paragraph*.43}%
+\contentsline {subsection}{\numberline {3.1.2}Biblioteki zewnętrzne}{31}{subsection.3.1.2}%
+\contentsline {section}{\numberline {3.2}Architektura}{32}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Moduły}{32}{section.3.3}%
+\contentsline {chapter}{\numberline {4}Badania}{33}{chapter.4}%
+\contentsline {chapter}{\numberline {5}Podsumowanie}{34}{chapter.5}%
+\contentsline {chapter}{Wykaz literatury}{35}{chapter*.44}%
+\contentsline {chapter}{Spis rysunk\'ow}{36}{chapter*.45}%
+\contentsline {chapter}{Spis tablic}{37}{chapter*.46}%
 \contentsfinish 

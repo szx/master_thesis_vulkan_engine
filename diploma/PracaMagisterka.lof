@@ -1,14 +1,14 @@
 \babel@toc {polish}{}\relax 
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {2.1}{\ignorespaces Kolejność inicjalizacji podstawowych obiektów Vulkan\relax }}{11}{figure.caption.13}%
-\contentsline {figure}{\numberline {2.2}{\ignorespaces Warstwowa architektura biblioteki Vulkan\relax }}{12}{figure.caption.15}%
-\contentsline {figure}{\numberline {2.3}{\ignorespaces Cykl życia obrazu łańcucha wymiany\relax }}{15}{figure.caption.21}%
-\contentsline {figure}{\numberline {2.4}{\ignorespaces Relacje pomiędzy obiektami Vulkan używanymi do zarządzania deskryptorami\relax }}{20}{figure.caption.32}%
-\contentsline {figure}{\numberline {2.5}{\ignorespaces Tradycyjne tekstury z dowiązaniami używające jednolitego indeksu w stałej push\relax }}{25}{figure.caption.34}%
-\contentsline {figure}{\numberline {2.6}{\ignorespaces Tekstury bez dowiązań używając niejednolitych indeksów instancji\relax }}{26}{figure.caption.35}%
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Kolejność inicjalizacji podstawowych obiektów Vulkan\relax }}{12}{figure.caption.12}%
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Warstwowa architektura biblioteki Vulkan\relax }}{12}{figure.caption.14}%
+\contentsline {figure}{\numberline {2.3}{\ignorespaces Cykl życia obrazu łańcucha wymiany\relax }}{17}{figure.caption.22}%
+\contentsline {figure}{\numberline {2.4}{\ignorespaces Relacje pomiędzy obiektami Vulkan używanymi do zarządzania deskryptorami\relax }}{22}{figure.caption.33}%
+\contentsline {figure}{\numberline {2.5}{\ignorespaces Tradycyjne tekstury z dowiązaniami używające jednolitego indeksu w stałej push\relax }}{27}{figure.caption.35}%
+\contentsline {figure}{\numberline {2.6}{\ignorespaces Tekstury bez dowiązań używając niejednolitych indeksów instancji\relax }}{28}{figure.caption.36}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Proces budowania w formie celów i ich zależności\relax }}{28}{figure.caption.36}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Proces budowania w formie celów i ich zależności\relax }}{31}{figure.caption.37}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \contentsfinish 

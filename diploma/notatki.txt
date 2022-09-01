@@ -127,10 +127,8 @@ Moduł zasobów jest odpowiedzialny za zapisywanie i wczytywania sceny z bazy za
 
 ### Definicje
 
-W kontekście silnika zasób (ang. *asset*) można zdefiniować jako ogół jego elementów, które nie są częścią jego kodu
-źródłowego i mogą być niezależnie od niego dodawane, usuwane i modyfikowane.
 
-Zasoby można podzielić na zasoby wejściowe (surowe) i wyjściowe (przetworzone).
+HIRO
 
 Zasoby wejściowe mają formę plików w formacie przystosowanym do edycji przy użyciu zewnętrznego oprogramowania.
 Przykładem zasobu wejściowego jest model 3D stworzony w programie do grafiki 3D Blender [BLENDER].
@@ -224,19 +222,7 @@ deklaratywne opisu renderowania dostarczonego przez programistę. ...
 
 # TODO
 
-/vulkan/debug.h Obiekt vulkan_debug pozwala na dodawanie informacji debugujących do obiektów Vulkan. Jest to osiągnętę
-przy pomocy rozszerzenia VK_EXT_debug_utils. Rozszerzenie VK_EXT_debug_utils pozwala na stworzenie komunikatora
-debugowania (ang. debug messanger) przechwytującego wszystkie komunikaty debugowania wygenerowane przez moduł ładowania,
-warstwy i sterownik Vulkan. Przechwycone komunikaty debugowania są przekazywne do wywołania zwrotnego, które loguje
-wiadomość z odpowiednim priotytetem. Użycie debuggera wspierającego warunkowe punkty przerwania (ang. conditional
-breakpoint) dla wiadomości o priorytecie error lub fatal pozwala na zatrzymanie działania programu tuż po zgłoszeniu
-błędu przez warstwy walidacji, co upraszcza proces debugownia.
-[OBRAZEK]
-
-Rozszerzenie VK_EXT_debug_utils pozwala na dodawanie nazw do obiektów Vulkan oraz etykiet do regionów kolejek i buforów
-poleceń. Nazwy i etykiety są używane w wiadomościach debugujących i pokazywane przez zewnętrzne narzędzia do debugowania
-grafiki, co upraszcza proces debugowania.
-[OBRAZER RENDERDOC]
+/vulkan/debug.h Obiekt vulkan_debug pozwala na dodawanie informacji debugujących do obiektów Vulkan. Jest to osiągnętę przy pomocy rozszerzenia VK_EXT_debug_utils.
 
 -------------
 /vulkan/constants.h Lista stałych wartości uznanych za zbyt niepraktyczne aby pozwolić na ich modyfikację przy użyciu
@@ -525,13 +511,9 @@ Funkcje pomocnicze są wrapperami na funccje biblioteki standardowej języka C z
 sprawdzającymi, czy wywołanie funkcji nie skutkuje niezdefiniowanym zachowaniem.
 
 -------------
-Vulkan wyróżnia dwa rodzaje zasobów: bufory i obrazy.
 
-Bufor to ciągły blok pamięci który może być odczytany i zapisywany przez GPU. Bufor jest najprostszym i najbardzoei
-podstawowym zasobem oferowanym przez Vulkan.
+HIRO
 
-Obraz podobnie jak bufor reprezentuje ciągły blok pamięci, ale jego struktura jest bardziej skomplikowana i
-interpretowana według od parametrów określonych podczas tworzenia obrazu.
 Vulkan [... 2d/3d, mipmap (lod), array layers, tiling]
 [OBRAZEK]
 Oba rodzaje zasobów muszą posiadać dowiązaną alokację pamięci.
@@ -849,32 +831,11 @@ W silniku łańcuch wymiany składa się z następujących elementów:
 - uchwyty do prezentowalnych obrazy,
 - widoki obrazów.
 
-Obiekt VkSwapchainKHR jest obiektem Vulkan reprezentującym łańcuch wymiany. Jest on oferowany przez rozszerzenie
-VK_KHR_swapchain będące częścią WSI. Stworzenie go wymaga wcześniejszego ustalenia wartości następujących parametrów:
-
-- tryb prezentacji,
-- format i przestrzeń kolorów prezentowalnych obrazów,
-- rozmiar obrazów,
-- liczba obrazów.
-
-Wartości użytych parametrów muszą być wśród wartości wspieranych przez powierzchnię, które mogą być sprawdzone przy
-pomocy następujacych funkcji:
-
-- vkGetPhysicalDeviceSurfacePresentModesKHR() dla dostępnych trybów prezentacji,
-- vkGetPhysicalDeviceSurfaceFormatsKHR() dla dostępnych formatów obrazów,
-- vkGetPhysicalDeviceSurfaceCapabilitiesKHR() dla możliwości powierzchni.
-
 Preferowany tryb prezentacji to MAILBOX. Jeśli jest niedostępny, to wybierany jest zawsze wspierany tryb prezentacji
 FIFO.
 
-Format definiuje rozmiar, strukturę i sposób kodowania podczas zapisu i dekodowania podczas próbkowania pojedyńczego
-piksela obrazu. Przestrzeń kolorów definiuje metodę interpretacji pikseli obrazu przez silnik prezentacji podczas
-prezentacji obrazu. Przestrzeń kolorów liniowa (niesprecyzowana) jest używana w shaderach. Przestrzeń kolorów SRGB jest
-przeznaczona do wyświetlania na monitorach i jest powszechnia używana w obrazach.
-
 Preferowany format i przestrzeń kolorów to B8G8R8A8_SRGB i SRGB. Jeśli nie są dostępne, to wybierane są pierwsze
 dostępne.
-
 Formaty z rodziny BGRA i przestrzeń kolorów SRGB powierzchni okna są zawsze wspierane na systemie Windows i w czasie
 pisania pracy według portalu GPUInfo.org są one wspierane w ponad 96% systemów Linux.
 
@@ -884,9 +845,6 @@ podczas renderowania bezpośrednio do prezentowalnej tekstury - konwersja zostan
 graficzny.
 
 Rozmiar obrazów jest równy rozmiarowi powierzchni okna.
-
-
-
 
 Mimo, że program posiada uchwyty obrazów, to wciąż są one zarządzane przez silnik prezentacji i przed użyciem muszą być
 udostępnione programowi przy użyciu funkcji vkAcquireNextImageKHR() zwracającej indesk w wcześniej przygotowanej tablicy
