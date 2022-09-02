@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  2 SEP 2022 00:48
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  3 SEP 2022 00:11
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1267,17 +1267,17 @@ Underfull \hbox (badness 10000) in paragraph at lines 5--12
 \openout2 = `chapters/0b_spis_tresci.aux'.
 
  (./chapters/0b_spis_tresci.tex (./PracaMagisterka.toc
-Overfull \hbox (0.56pt too wide) detected at line 61
+Overfull \hbox (0.56pt too wide) detected at line 63
 \TU/lmss/m/n/10 2.10. 
  []
 
 
-Overfull \hbox (0.56pt too wide) detected at line 63
+Overfull \hbox (0.56pt too wide) detected at line 65
 \TU/lmss/m/n/10 2.11. 
  []
 
 
-Overfull \hbox (0.56pt too wide) detected at line 64
+Overfull \hbox (0.56pt too wide) detected at line 66
 \TU/lmss/m/n/10 2.12. 
  []
 
@@ -1403,47 +1403,50 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 5.21004pt on input line 277.
 LaTeX Font Info:    Font shape `TU/lmss/m/it' in size <8> not available
 (Font)              Font shape `TU/lmss/m/sl' tried instead on input line 277.
- [13] [14] [15] [16] [17] [18] [19] [20]
-Overfull \hbox (62.56535pt too wide) in paragraph at lines 679--680
+ [13] [14] [15]
+File: images/mipmap.png Graphic file (type bmp)
+<images/mipmap.png>
+ [16] [17] [18] [19] [20] [21]
+Overfull \hbox (62.56535pt too wide) in paragraph at lines 708--709
  [][] 
  []
 
-[21] [22] [23]
-Overfull \hbox (3.56866pt too wide) in paragraph at lines 775--777
+[22] [23] [24]
+Overfull \hbox (3.56866pt too wide) in paragraph at lines 804--806
 \TU/lmss/m/sl/10 AFTER_BIND\TU/lmss/m/n/10 . Dowiązania zdefiniowane podczas tw
 orzenia układu zbioru deskryptorów muszą posiadać
  []
 
-[24]
-Overfull \hbox (83.21382pt too wide) in paragraph at lines 832--833
+[25]
+Overfull \hbox (83.21382pt too wide) in paragraph at lines 861--862
 [][][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (5.21303pt too wide) in paragraph at lines 834--835
+Overfull \hbox (5.21303pt too wide) in paragraph at lines 863--864
 [][][][][][][][][][] 
  []
 
-[25] [26]
+[26] [27]
 LaTeX Font Info:    Font shape `TU/lmss/bx/it' in size <10> not available
-(Font)              Font shape `TU/lmss/bx/sl' tried instead on input line 1014
+(Font)              Font shape `TU/lmss/bx/sl' tried instead on input line 1043
 .
- [27] [28]) [29]
+ [28] [29]) [30]
 \openout2 = `chapters/3_technologie_algorytmy_narzedzia.aux'.
 
  (./chapters/3_technologie_algorytmy_narzedzia.tex
 Rozdzia\l  3.
-[30
+[31
 
 
 
 
-] [31]) [32]
+] [32]) [33]
 \openout2 = `chapters/5_badania.aux'.
 
  (./chapters/5_badania.tex
 Rozdzia\l  4.
-) [33
+) [34
 
 
 
@@ -1453,7 +1456,7 @@ Rozdzia\l  4.
 
  (./chapters/6_podsumowanie.tex
 Rozdzia\l  5.
-) [34
+) [35
 
 
 
@@ -1472,7 +1475,7 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 9.37807pt on input line 3.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 7.29405pt on input line 3.
- [35
+ [36
 
 
 
@@ -1481,14 +1484,14 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 \tf@lof=\write7
 \openout7 = `PracaMagisterka.lof'.
 
- [36
+ [37
 
 ]
 (./PracaMagisterka.lot)
 \tf@lot=\write8
 \openout8 = `PracaMagisterka.lot'.
 
-) [37
+) [38
 
 ] (./PracaMagisterka.aux
 (./chapters/0a_streszczenie.aux) (./chapters/0b_spis_tresci.aux)
@@ -1496,19 +1499,27 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (./chapters/2_wprowadzenie_do_dziedziny.aux)
 (./chapters/3_technologie_algorytmy_narzedzia.aux) (./chapters/5_badania.aux)
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
+
+LaTeX Warning: There were undefined references.
+
 Package rerunfilecheck Info: File `PracaMagisterka.out' has not changed.
-(rerunfilecheck)             Checksum: ECBC8D4E64284B1B7FD1C79329B13204;7660.
+(rerunfilecheck)             Checksum: 5F9C1809A8A51BB5843F048661C8D728;7603.
+
+Package biblatex Warning: Please (re)run Biber on the file:
+(biblatex)                PracaMagisterka
+(biblatex)                and rerun LaTeX afterwards.
+
 Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 \openout1 = `PracaMagisterka.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 38895 strings out of 476191
- 805564 string characters out of 5812072
- 1570871 words of memory out of 5000000
- 58984 multiletter control sequences out of 15000+600000
+ 38910 strings out of 476191
+ 805896 string characters out of 5812072
+ 1571039 words of memory out of 5000000
+ 58995 multiletter control sequences out of 15000+600000
  488879 words of font info for 102 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 88i,15n,91p,1516b,4828s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 88i,15n,91p,1516b,6445s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on PracaMagisterka.pdf (37 pages).
+Output written on PracaMagisterka.pdf (38 pages).

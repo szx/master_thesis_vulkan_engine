@@ -400,9 +400,37 @@
       \verb https://renderdoc.org/
       \endverb
     \endentry
-    \entry{GPUINFO}{misc}{}
+    \entry{GLTFSAMPLEMODELS}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=638160ae56a17712d83fafc12a740c80}{%
+           family={Group},
+           familyi={G\bibinitperiod},
+           given={Khronos},
+           giveni={K\bibinitperiod}}}%
+      }
+      \strng{namehash}{638160ae56a17712d83fafc12a740c80}
+      \strng{fullhash}{638160ae56a17712d83fafc12a740c80}
+      \strng{bibnamehash}{638160ae56a17712d83fafc12a740c80}
+      \strng{authorbibnamehash}{638160ae56a17712d83fafc12a740c80}
+      \strng{authornamehash}{638160ae56a17712d83fafc12a740c80}
+      \strng{authorfullhash}{638160ae56a17712d83fafc12a740c80}
+      \field{extraname}{3}
       \field{sortinit}{1}
       \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{glTF Sample Models}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://github.com/KhronosGroup/glTF-Sample-Models
+      \endverb
+      \verb{url}
+      \verb https://github.com/KhronosGroup/glTF-Sample-Models
+      \endverb
+    \endentry
+    \entry{GPUINFO}{misc}{}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
       \field{labeltitlesource}{title}
       \field{title}{Vulkan Hardware Database - GPUinfo.org}
       \field{year}{2022}

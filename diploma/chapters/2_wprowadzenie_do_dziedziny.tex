@@ -328,20 +328,26 @@ Rozszerzenie pozwala też na dodawanie nazw do obiektów Vulkan funkcją \texti
 Nazwy i etykiety są używane w wiadomościach debugujących i pokazywane przez zewnętrzne narzędzia takie jak RenderDoc \cite{RENDERDOC}, co znacznie upraszcza proces debugowania.
 
 
-\subsection{Pamięć i zasoby}
+\subsection{Zasoby}
 
 Vulkan wyróżnia dwa rodzaje zasobów: bufory (\textit{VkBuffer}) i obrazy (\textit{VkImage}).
 
+\subsubsection{Bufory}
+
 Bufor to ciągły blok pamięci który może być odczytany i zapisywany przez GPU. Jest on najprostszym zasobem oferowanym przez Vulkan.
+// HIRO bufory
+
+
+\subsubsection{Obrazy}
 
 Obraz podobnie jak bufor reprezentuje ciągły blok pamięci, ale jego wewnętrzna struktura jest o wiele bardziej skomplikowana i wymaga wcześniejszego ustalenia następujących informacji tworzenia:
 \begin{itemize}
-	\item typ (\textit{VkImageType}),
-	\item flagi tworzenia (\textit{VkImageCreateFlags}),
-	\item format (\textit{VkFormat}),
+	\item typ (\textit{VkImageType})
 	\item rozmiar (\textit{VkExtent}),
-	\item liczba poziomów mipmap,
 	\item liczba warstw,
+	\item flagi tworzenia (\textit{VkImageCreateFlags}),
+	\item liczba poziomów mipmap,
+	\item format (\textit{VkFormat}),
 	\item liczba próbek na teksel (\textit{VkSampleCountFlagBits}),
 	\item kafelkowanie (\textit{VkImageTiling}),
 	\item flagi użycia (\textit{VkUsageFlags}),
@@ -350,7 +356,30 @@ Obraz podobnie jak bufor reprezentuje ciągły blok pamięci, ale jego wewnętrz
 \end{itemize}
 
 // HIRO opisz powyższe
-// HIRO VK\_IMAGE\_CREATE\_CUBE\_COMPATIBL\_BIT
+
+Typ obrazu określa jego liczbę wymiarów (1D, 2D lub 3D).
+Rozmiar opisuje liczbę pikseli obrazu (tekseli) wzdłuż każdego wymaiaru (szerokość, wysokość i głębokość).
+
+Obraz Vulkan może być traktowany jako tablica identycznych obrazów, której pojedeńczy element jest zwany warstwą. Warstwy nie są liczone jako wymiar obrazu - obraz 2D z warstwami nie jest obrazem 3D.
+
+Flagi tworzenia pozwalają na definicję dodatkowych funkcjonalności. Przykładowo flaga \textit{CUBE\_COMPATIBLE} pozwala na traktowanie obrazu z 6 kwadratowymi warstwami jako obrazu sześciennego.
+
+Mipmapa to kopia obrazu z każdym wymiarem zmniejszonym dwukrotnie.
+W obrazie z mipmapami pierwotny obraz traktuowany jest jako pierwszej mipmapa poziomu zerowego, z której generowane są mipmapy następonych poziomów aż do osiągnięcia wymiaru 1x1x1.
+Przykładowo poniższy obraz przedstawia obraz 2D 1024x1024 z modelu Spozna \cite{GLTFSAMPLEMODELS} i jego 10 automatycznie wygenerowanych mipmap:
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.3\textwidth]{images/mipmap.png}
+	\caption{Obraz 2D 1024x1024 z modelu Spozna \cite{GLTFSAMPLEMODELS} i jego 10 mipmap}
+	\label{mipmap}
+\end{figure}
+Obraz posiadający mipmapy zajmuje więcej pamięci, ale pozwala na użycie filtrowania mipmapowego, które jest popularną techniką zwiększającej prędkość i jakość renderowania poprzez wprowadzenie nowych metod filtrowania podczas próbkowania obrazu.
+
+Kafelkowanie obrazu (VkImageTiling) definiuje ułożenie tekselów w pamięci GPU i może być liniowe lub optymalne.
+W kafelkowaniu liniowym teksele są uszeregowane w pamięci wierszami (ang. row-major order) podobnie jak tablicach dwuwymiarowych języka C.
+Vulkan wspiera też kafelkowanie optymalne, w którym rozkład tekseli obrazu jest decydowany całkowicie przez sterownik - wybrane kafelkowanie ma na celu zwiększenie prędkości dostępu poprzez poprawę lokalności przestrzennej w pamięci podręcznej GPU.
+
+// HIRO próbkowanie, filtrowanie mag, min, mipmap
 
 // HIRO pamięć
 // HIRO widok
@@ -1032,7 +1061,7 @@ Poniższy diagram przedstawia tekstury bez dowiązań używając niejednolitych 
 
 \section{Mapowanie tekstur}
 
-// TODO
+// TODO teksturowanie sześcienne
 
 \section{Oświetlenie}
 
