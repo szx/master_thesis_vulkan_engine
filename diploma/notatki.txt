@@ -99,7 +99,6 @@ Proces budowania stwarza dodatkowe podkatalogi tymczasowe:
 Silnik składa się z siedmiu modułów. Moduły:
 
 - generator kodu:  ...
-- rdzeń: funkcje pomocnicze: ...
 - zasoby: wczytywanie i zapisywanie danych sceny i konfiguracji globalnej
 - scena: konstrukcja grafu sceny, drzewa sceny i listy renderującej
 - potok graficzny: abstrakcja podstawowych operacji renderowane używających Vulkan
@@ -109,10 +108,6 @@ Silnik składa się z siedmiu modułów. Moduły:
 Każdemu modułowi zostanie poświęcony osobny podrozdział.
 
 ## Generator kodu
-
-...
-
-## Rdzeń
 
 ...
 
@@ -459,34 +454,13 @@ Na jeden typ wyliczeniowy przypada jedna funkcja. Te funkcje to przykład koncep
 refleksją. Funkcje są użyteczne podczas debugowania - podczas działania programu typy wyliczeniowe języa C są zwykłymi
 liczbami, człowiek lepiej orientuje się widząc ich nazwy.
 
--------------
-/src/core/thirdparty.h Nagłówek thirdparty.h dołączający nagłówki bibliotek zewnętrznych. Nagłówek prekompilowany (ang.
-precompiled header, PCH) z powodów wydajnościowych. Część bibliotek zewnętrznych ma formę jedynie nagłówków (ang.
-header-only library). W tradycyjnych bibliotekach języka C kod jest podzielony na pliki nagłówkowe i pliki źródłowe.
-Pliki nagłówowe zawierają deklaracje (funkcji, struktur, typów wyliczeniowych itp.) widocznych dla użytkownika końcowego
-i powinny być dołączone do programu przy użyciu dyrektywy #include preprocesora. Pliki źródłowe zawierają definicje
-deklaracji plika nagłówkowego i powinny być dołączone do programu używając argumentów kompilatora (jeśli dodawane są
-niezbudowane pliki źródłowe) bądź linkera (jeśli dodawane są zbudowane pliki biblioteczne). W przypadku jedynie
-nagłówków dostęp do definicj tradycyje znajdujących sę z plikach źródłowych jest uzyskiwany poprzez ponowne dołączenie
-pliku nagłówkowego przy użyciu dyrektywy #include przy wcześniejszym zdefiniowaniu symbolu preprocesora. Nagłówek
-thirdparty.h posiada odpowiadający mu plik źródłowy thirdparty.c robiący to.
 ------
+HIRO
 /src/core/platform.h Wieloplatformowe funkcje. Funkcja panic(). Używa atrybutu noreturn i pozwala na zamknięcie programu
 po wystąpieniu fatalnego błędu. Odkrywanie ścieźki z katalogiem zawierającym plik wykonywalny - potrzebne do znalezienia
 plików z konfiguracją i zasobami. Na systemie Linux używana jest funkcja readlink() do odczytania pliku /proc/self/exe
 oraz funkcja dirname(). Na systemie Windows używana jest funkcja GetModuleFileName() oraz funkcja PathRemoveFileSpec().
 Obsługa plików - zapisywanie i wczytywanie. Inicjalizacja systemu logowania.
-
-------
-/src/core/log.h System logowania wiadomości. Logowanie znacząco upraszcza proces debuggowania. Logowanie odbywa się
-poprzez funkcje zachowujące się tak samo jak funkcja printf - pierwszy argument to ciąg znaków z znakami formatującymi,
-reszta argumentów to formatowane wartości. Rozróżniane jest pięć priorytetów wiadomości:
-
-- debug,
-- info,
-- warn,
-- error,
-- fatal. Wiadomości są zapisywane do standardowego wyjścia (stdou albo stderr) oraz do pliku na dysku.
 
 ------
 /src/core/junk.h Proste funkcje i makra które mogą być potencjalnie używane na wskroś wszystkich modułów w całej
@@ -625,12 +599,6 @@ GLFW pozwala na stosowania wirtualnej pozycji kursora. Kursor myszy jest ukryty 
 centrowana co klatkę - program ma dostęp do wirtualnej pozycji, co pozwala na nieograniczony ruch myszy.
 
 Wirtualna pozycja kursowa jest używana do implemenacji sterowania kamerą.
-
-## Obiekty
-
-Obiekty oferują parę metod create() i destroy(). Alokują i dealokują one pamięć dla instancję obiektu oraz inicjalizują
-i niszczą ją. Analogiczna para metod init() i deinit() inicjalizują i niszczą instancję obiektu bez alokacji i
-dealokacji jej pamięci. Obiekty oferują metodę debug_print() logującą informacje użyteczne podczas debugowania.
 
 ## objects/textures.h
 

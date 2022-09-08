@@ -27,6 +27,10 @@
 % Usuń list spacing
 \raggedbottom
 
+% StrSubstitute
+\usepackage{xstring}
+\newcommand\myesc[1]{\StrSubstitute{#1}{_}{\textunderscore}}
+
 % Napraw marginesy
 \renewcommand\_{\textunderscore\allowbreak}
 

@@ -428,6 +428,33 @@
       \verb https://github.com/KhronosGroup/glTF-Sample-Models
       \endverb
     \endentry
+    \entry{DESCRIPTORSHARD}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=b96aa620a8a52edf6b88fc127c49b96c}{%
+           family={Ekstrand},
+           familyi={E\bibinitperiod},
+           given={Jason},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{b96aa620a8a52edf6b88fc127c49b96c}
+      \strng{fullhash}{b96aa620a8a52edf6b88fc127c49b96c}
+      \strng{bibnamehash}{b96aa620a8a52edf6b88fc127c49b96c}
+      \strng{authorbibnamehash}{b96aa620a8a52edf6b88fc127c49b96c}
+      \strng{authornamehash}{b96aa620a8a52edf6b88fc127c49b96c}
+      \strng{authorfullhash}{b96aa620a8a52edf6b88fc127c49b96c}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Descriptors are hard}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://www.jlekstrand.net/jason/blog/2022/08/descriptors-are-hard/
+      \endverb
+      \verb{url}
+      \verb https://www.jlekstrand.net/jason/blog/2022/08/descriptors-are-hard/
+      \endverb
+    \endentry
     \entry{GPUINFO}{misc}{}
       \field{sortinit}{2}
       \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}

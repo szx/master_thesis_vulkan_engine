@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  3 SEP 2022 00:11
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  9 SEP 2022 00:29
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1102,24 +1102,31 @@ decorations.text.code.tex
 )
 \tikz@lib@dec@te@box=\box91
 )
+(/usr/share/texlive/texmf-dist/tex/generic/xstring/xstring.sty
+(/usr/share/texlive/texmf-dist/tex/generic/xstring/xstring.tex
+\integerpart=\count465
+\decimalpart=\count466
+)
+Package: xstring 2021/07/21 v1.84 String manipulations (CT)
+)
 (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.sty
-\lst@mode=\count465
+\lst@mode=\count467
 \lst@gtempboxa=\box92
 \lst@token=\toks45
-\lst@length=\count466
+\lst@length=\count468
 \lst@currlwidth=\dimen298
-\lst@column=\count467
-\lst@pos=\count468
+\lst@column=\count469
+\lst@pos=\count470
 \lst@lostspace=\dimen299
 \lst@width=\dimen300
-\lst@newlines=\count469
-\lst@lineno=\count470
+\lst@newlines=\count471
+\lst@lineno=\count472
 \lst@maxwidth=\dimen301
 
 (/usr/share/texlive/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2020/03/24 1.8d (Carsten Heinz)
-\c@lstnumber=\count471
-\lst@skipnumbers=\count472
+\c@lstnumber=\count473
+\lst@skipnumbers=\count474
 \lst@framebox=\box93
 )
 (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.cfg
@@ -1134,8 +1141,8 @@ File: lstmisc.sty 2020/03/24 1.8d (Carsten Heinz)
 Package biblatex Warning: 'babel/polyglossia' detected but 'csquotes' missing.
 (biblatex)                Loading 'csquotes' recommended.
 
-\@quotelevel=\count473
-\@quotereset=\count474
+\@quotelevel=\count475
+\@quotereset=\count476
 (./PracaMagisterka.aux (./chapters/0a_streszczenie.aux)
 (./chapters/0b_spis_tresci.aux) (./chapters/0c_wykaz_skrotow.aux)
 (./chapters/1_wstep.aux) (./chapters/2_wprowadzenie_do_dziedziny.aux)
@@ -1143,32 +1150,32 @@ Package biblatex Warning: 'babel/polyglossia' detected but 'csquotes' missing.
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
 \openout1 = `PracaMagisterka.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 92.
-LaTeX Font Info:    ... okay on input line 92.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 92.
-LaTeX Font Info:    ... okay on input line 92.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 92.
-LaTeX Font Info:    ... okay on input line 92.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 92.
-LaTeX Font Info:    ... okay on input line 92.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 92.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 96.
+LaTeX Font Info:    ... okay on input line 96.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 96.
+LaTeX Font Info:    ... okay on input line 96.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 96.
+LaTeX Font Info:    ... okay on input line 96.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 96.
+LaTeX Font Info:    ... okay on input line 96.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 96.
 LaTeX Font Info:    Trying to load font information for TS1+cmr on input line 9
-2.
+6.
 
 (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 92.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 92.
-LaTeX Font Info:    ... okay on input line 92.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 92.
-LaTeX Font Info:    ... okay on input line 92.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 92.
-LaTeX Font Info:    ... okay on input line 92.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 92.
-LaTeX Font Info:    ... okay on input line 92.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 92.
-LaTeX Font Info:    ... okay on input line 92.
+LaTeX Font Info:    ... okay on input line 96.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 96.
+LaTeX Font Info:    ... okay on input line 96.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 96.
+LaTeX Font Info:    ... okay on input line 96.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 96.
+LaTeX Font Info:    ... okay on input line 96.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 96.
+LaTeX Font Info:    ... okay on input line 96.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 96.
+LaTeX Font Info:    ... okay on input line 96.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
@@ -1226,9 +1233,9 @@ Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'PracaMagisterka.bbl' found.
 
 (./PracaMagisterka.bbl)
-Package biblatex Info: Reference section=0 on input line 92.
-Package biblatex Info: Reference segment=0 on input line 92.
-Package hyperref Info: Link coloring OFF on input line 92.
+Package biblatex Info: Reference section=0 on input line 96.
+Package biblatex Info: Reference segment=0 on input line 96.
+Package hyperref Info: Link coloring OFF on input line 96.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
@@ -1239,17 +1246,17 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 (/usr/share/texlive/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count475
+\c@section@level=\count477
 )
-LaTeX Info: Redefining \ref on input line 92.
-LaTeX Info: Redefining \pageref on input line 92.
-LaTeX Info: Redefining \nameref on input line 92.
+LaTeX Info: Redefining \ref on input line 96.
+LaTeX Info: Redefining \pageref on input line 96.
+LaTeX Info: Redefining \nameref on input line 96.
 
 (./PracaMagisterka.out) (./PracaMagisterka.out)
 \@outlinefile=\write5
 \openout5 = `PracaMagisterka.out'.
 
-\c@lstlisting=\count476
+\c@lstlisting=\count478
 \openout2 = `chapters/0a_streszczenie.aux'.
 
  (./chapters/0a_streszczenie.tex
@@ -1441,12 +1448,82 @@ Rozdzia\l  3.
 
 
 
-] [32]) [33]
+] [32]
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+
+Overfull \hbox (5.91325pt too wide) in paragraph at lines 262--263
+ [][] 
+ []
+
+[33] [34]) [35]
 \openout2 = `chapters/5_badania.aux'.
 
  (./chapters/5_badania.tex
 Rozdzia\l  4.
-) [34
+) [36
 
 
 
@@ -1456,7 +1533,7 @@ Rozdzia\l  4.
 
  (./chapters/6_podsumowanie.tex
 Rozdzia\l  5.
-) [35
+) [37
 
 
 
@@ -1475,7 +1552,7 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 9.37807pt on input line 3.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 7.29405pt on input line 3.
- [36
+ [38
 
 
 
@@ -1484,14 +1561,14 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 \tf@lof=\write7
 \openout7 = `PracaMagisterka.lof'.
 
- [37
+ [39
 
 ]
 (./PracaMagisterka.lot)
 \tf@lot=\write8
 \openout8 = `PracaMagisterka.lot'.
 
-) [38
+) [40
 
 ] (./PracaMagisterka.aux
 (./chapters/0a_streszczenie.aux) (./chapters/0b_spis_tresci.aux)
@@ -1499,27 +1576,19 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (./chapters/2_wprowadzenie_do_dziedziny.aux)
 (./chapters/3_technologie_algorytmy_narzedzia.aux) (./chapters/5_badania.aux)
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
-
-LaTeX Warning: There were undefined references.
-
 Package rerunfilecheck Info: File `PracaMagisterka.out' has not changed.
-(rerunfilecheck)             Checksum: 5F9C1809A8A51BB5843F048661C8D728;7603.
-
-Package biblatex Warning: Please (re)run Biber on the file:
-(biblatex)                PracaMagisterka
-(biblatex)                and rerun LaTeX afterwards.
-
+(rerunfilecheck)             Checksum: B5E39C5CBA286B4843264BF7726F1908;7641.
 Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 \openout1 = `PracaMagisterka.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 38910 strings out of 476191
- 805896 string characters out of 5812072
- 1571039 words of memory out of 5000000
- 58995 multiletter control sequences out of 15000+600000
+ 39590 strings out of 476191
+ 818226 string characters out of 5812072
+ 1578752 words of memory out of 5000000
+ 59670 multiletter control sequences out of 15000+600000
  488879 words of font info for 102 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  88i,15n,91p,1516b,6445s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on PracaMagisterka.pdf (38 pages).
+Output written on PracaMagisterka.pdf (40 pages).

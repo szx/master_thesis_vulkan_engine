@@ -123,6 +123,8 @@ Projekt używa następujących zewnętrznych bibliotek programistycznych:
 	\item {\textit{xxHash 0.8.1}}: niekryptograficzny algorytm mieszający,
 	\item {\textit{cgltf 1.11}}: wczytywanie plików w formacie glTF,
 	\item {\textit{cglm 0.8.5}}: biblioteka matematyczna,
+	\item {\textit{stb\_image 2.27}}: wczytywanie obrazów,
+	\item {\textit{stb\_truetype 1.26}}: rasteryzacja tekstu czcionek,
 	\item {biblioteka standardowa C},
 	\item {API systemu operacyjnego}: pliki nagłówkowe POSIX albo WinAPI,
 	\item {biblioteka standardowa Python},
@@ -142,9 +144,161 @@ UndefinedBehaviorSanitizer) wykrywające szeroką klasę błędów dotyczących 
 
 \section{Architektura}
 
-// TODO diagram moduły
-// TODO diagram klasy
+Silnik jest podzielony na moduły, które składają się z jednostek, przez które rozumie się parę plik nagłówkowy \textit{*.h} z odpowiadającym plikiem źródłowymi \textit{*.c} o tej samej nazwie.
+W imię zwięzłości dalej w pracy rozszerzenia plików będą pomijane jeśli można wywnioskować je z kontekstu.
 
-\section{Moduły}
+Pliki nagłówowe zawierają deklaracje funkcji, struktur oraz typów wyliczeniowych widocznych dla użytkownika końcowego i powinny być dołączone do programu przy użyciu dyrektywy \textit{\#include} preprocesora.
+Pliki źródłowe zawierają definicje deklaracji plika nagłówkowego i powinny być dołączone do programu używając argumentów kompilatora (jeśli dodawane są niezbudowane pliki źródłowe) bądź linkera (jeśli dodawane są zbudowane pliki biblioteczne), co jest automatycznie wykonywane przez CMake.
+
+Struktury są zorganizowane w sposób obiektowy.
+Język C nie posiada wbudowanej koncepcji klasy, ale w projekcie przyjęto założenie, że struktura \textit{struct} posiada metodę \textit{func()}, jeśli istnieje funkcja \textit{struct\_func()} przyjmująca  wskaźnik do \textit{struct} jako pierwszy argument.
+
+Obiekty mogą oferować metody \textit{create()} i \textit{destroy()}, które alokują lub dealokują instancję obiektu oraz tworzą bądź niszczą jej wewnętrzny stan.
+Analogiczne metody \textit{init()} i \textit{deinit()} tworzą i niszczą instancję, której pamięć została wcześniej zaalokowaną (np. na stosie lub w tablicy).
+Opcjonalna metoda \textit{debug\_print()} loguje informacje o wewnętrznym stanie instancji użyteczne podczas debugowania.
+
+Aplikacja składa się z następujących modułów:
+// TODO lista modułów
+
+Poniższy diagram przedstawia moduły i klasy występujące w silniku:
+// TODO diagram klas
+Relacje pomiędzy modułami silnika i ich najważniejszymi klasami są przedstawione na poniższym diagramie:
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[node distance=2mm]
+		\tikzstyle{class} = [rectangle, minimum width=2cm, minimum height=5mm,text centered, draw=black]
+		\tikzstyle{file} = [rectangle, minimum width=2cm, minimum height=5mm,text centered, draw=gray]
+		\tikzstyle{file2} = [file, minimum width=3cm]
+		\tikzstyle{executable} = [rectangle, rounded corners, minimum width=1cm, minimum height=5mm,text centered, draw=gray]
+
+		\tikzstyle{arrow} = [thick,->,>=stealth]
+		\tikzstyle{relation} = [densely dotted]
+		
+		% codegen
+		\node (descriptors) [file] {descriptors};
+		\node (globals) [file, below = of descriptors] {globals};
+		\node (macros) [file, below = of globals] {macros};
+		\node (meta) [file, below = of macros] {meta};
+		\node(codegen)[draw,dotted,fit=(descriptors) (meta)] {};
+		
+		% core
+		\node (alloc) [file, below = 1cm of codegen] {alloc};
+		\node (junk) [file, below = of alloc] {junk};
+		\node (log) [file, below = of junk] {log};
+		\node (platform) [file, below = of log] {platform};
+		\node (thirdparty) [file, below = of platform] {thirdparty};
+		\node(core)[draw,dotted,fit=(alloc) (junk) (log) (platform) (thirdparty)] {};
+		
+		% data
+		\node (db) [file, below = 1cm of core] {db};
+		\node (config) [file, below = of db] {config};
+		\node (assetdb) [file, below = of config] {asset\_db};
+		\node(data)[draw,dotted,fit=(db) (assetdb)] {};
+		
+		% assets
+		\node (assetcommon) [file2, right = 1cm of db] {asset\_common}; \def\y{assetcommon};
+		\def\x{asset_camera}; \node (\x) [file2, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{asset_direct_light}; \node (\x) [file2, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{asset_material}; \node (\x) [file2, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{asset_vertex_attribute}; \node (\x) [file2, right = of assetcommon] {\myesc{\x}}; \edef\y{\x};
+		\def\x{asset_primitive}; \node (\x) [file2, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{asset_mesh}; \node (\x) [file2, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{asset_object}; \node (\x) [file2, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{asset_image}; \node (\x) [file2, right = of asset_vertex_attribute] {\myesc{\x}}; \edef\y{\x};
+		\def\x{asset_sampler}; \node (\x) [file2, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{asset_texture}; \node (\x) [file2, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{asset_skybox}; \node (\x) [file2, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{asset_font}; \node (\x) [file2, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\node (assetpipeline) [executable, below = of asset_object] {asset\_pipeline};
+		\node(assets)[draw,dotted,fit=(assetcommon) (asset_font)] {};
+	
+		% scene
+		\node (scene_data) [file, right = 1cm of thirdparty] {scene\_data}; \def\y{scene_data};
+		\def\x{scene_graph}; \node (\x) [file, right = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{scene_tree}; \node (\x) [file, right = of \y] {\myesc{\x}}; \edef\y{\x};
+		\node(scene)[draw,dotted,fit=(scene_data) (scene_tree)] {};
+		
+		% objects
+		\node (buffer) [file, right = 2cm of descriptors] {buffer}; \def\y{buffer};
+		\def\x{image}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{vertex_stream};\node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{device}; \node (\x) [file, right = 1cm of buffer] {\myesc{\x}}; \edef\y{\x};
+		\def\x{swap_chain}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{sync}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{unified_uniform_buffer}; \node (\x) [file, below = 4mm of vertex_stream] {\myesc{\x}}; \edef\y{\x};
+		\def\x{textures}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{unified_geometry_buffer}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{descriptors};\node (\x) [file, right = 4mm of unified_uniform_buffer] {\myesc{\x}}; \edef\y{\x};
+		\def\x{shader};\node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\node(objects)[draw,dotted,fit=(device) (unified_geometry_buffer) (shader)] {};
+		
+		% renderer
+		\node (renderer) [file, right = 1cm of device] {renderer}; \def\y{renderer};
+		\def\x{render_state}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{renderer_cache}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{render_graph}; \node (\x) [file, right = of renderer] {\myesc{\x}}; \edef\y{\x};
+		\def\x{render_pass}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{render_pass_state}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{batch}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\node(rendering)[draw,dotted,fit=(renderer) (batch)] {};
+		
+		% legend
+		\path ([xshift=34mm,yshift=-2mm]current bounding box.south west)
+		node[matrix,anchor=south east,cells={nodes={font=\sffamily,anchor=west}},
+		draw,thick,inner sep=1ex]{
+			\draw[arrow](0,0) -- ++ (0.6,0); & \node{Użycie};\\
+			\draw[relation](0,0) -- ++ (0.6,0); & \node{Kompatybilność};\\
+		};
+	
+		% labels
+		\node ()[above=0cm of codegen] {\textbf{Generacja kodu}};
+		\node ()[above=0cm of core] {\textbf{Rdzeń}};
+		\node ()[above=0cm of data] {\textbf{I/O}};
+		\node ()[below=0cm of assets] {\textbf{Zasoby}};
+		\node ()[above=0cm of objects] {\textbf{Obiekty Vulkan}};
+		\node ()[below=0cm of scene] {\textbf{Scena}};
+		\node ()[above=0cm of rendering] {\textbf{Renderer}};
+		
+	\end{tikzpicture}
+	\caption{Relacje pomiędzy modułam silnika i ich najważniejszymi klasami}
+	\label{archit}
+\end{figure}
+
+\subsection{Moduł rdzeń}
+
+Rdzeń jest kolekcją funkcji pomocniczych i obiektów globalnych zapewniających podstawowe funkcjonalności używane przez resztę modułów.
+
+\paragraph{thirdparty}
+Jednostka odpowiedzialna za udostępnienia bibliotek zewnętrznych reszcie kodu.
+
+Nagłówek dołącza nagłówki bibliotek zewnętrznych i z powodów wydajnościowych podczas procesu budowania jest traktowany jako nagłówek prekompilowany (ang. precompiled header, PCH).
+
+Plik źródłowy obsługuje część bibliotek zewnętrznych składających się jedynie z nagłówków (ang. header-only library).
+W przeciwieństwie do tradycyjnych bibliotek języka C w których kod jest podzielony na pliki nagłówkowe i źródłowe, w tym przypadku dostęp do definicji tradycyjnie znajdujących sę z plikach źródłowych jest uzyskiwany poprzez ponowne dołączenie nagłówka przy użyciu dyrektywy \textit{\#include} po wcześniejszym zdefiniowaniu odpowiedniego symbolu preprocesora.
+Przykładowo biblioteka \textit{cgltf} wymaga ponownego dołączenia nagłówka w następujący sposób:
+\lstset{language=C}
+\begin{lstlisting}
+#define CGLTF_IMPLEMENTATION
+#include "cgltf.h"
+\end{lstlisting}
+
+
+\paragraph{log}
+Jednostka implementująca system logowanie komunikatów wygenerowanych podczas działania kodu mający na celu w uproszczenie procesu debuggowania.
+
+Komunikat jest ciągiem znaków z przypisanym priotytetem, z których rozróżniono:
+\begin{itemize}
+	\item \textit{debug}: HIRO,
+	\item \textit{info}: a,
+	\item \textit{warn}: a,
+	\item \textit{error}: a,
+	\item \textit{fatal}: a,
+\end{itemize}
+
+//
+Logowanie komuniaktu odbywa się poprzez grupę funkcji \textit{log\_*()} zachowujące się tak samo jak funkcja printf - pierwszy argument to ciąg znaków z znakami formatującymi, reszta argumentów to formatowane wartości.
+
+Wiadomości są zapisywane do standardowego wyjścia (stdou albo stderr) oraz do pliku na dysku.
+
 
 // TODO moduł i klasy
