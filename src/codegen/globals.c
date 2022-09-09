@@ -7,9 +7,11 @@ void globals_create() {
   globals.assetsDirname = get_executable_dir_file_path("", "assets");
   globals.assetDatabaseFilepath = get_executable_dir_file_path("", "assets/data.db");
   globals.assetConfigFilepath = get_executable_dir_file_path("", "assets/config.ini");
+  globals.logFileName = get_executable_dir_file_path("", "log.txt");
 }
 void globals_destroy() {
   utstring_free(globals.assetsDirname);
   utstring_free(globals.assetDatabaseFilepath);
   utstring_free(globals.assetConfigFilepath);
+  utstring_free(globals.logFileName);
 }

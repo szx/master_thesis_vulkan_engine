@@ -2,6 +2,7 @@
 assetsDirname = assets
 assetDatabaseFilepath = ${assetsDirname}/data.db
 assetConfigFilepath =${assetsDirname}/config.ini
+logFileName = log.txt
 
 [ASSET.CONFIG]
 graphics.WindowWidth = 640

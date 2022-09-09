@@ -7,5 +7,6 @@ typedef struct globals_ {
   UT_string *assetsDirname;
   UT_string *assetDatabaseFilepath;
   UT_string *assetConfigFilepath;
+  UT_string *logFileName;
 } globals_;
 extern globals_ globals;

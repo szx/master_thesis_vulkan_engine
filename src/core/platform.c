@@ -50,9 +50,7 @@ void platform_destroy() {
 }
 
 void log_create() {
-  UT_string *path = get_executable_dir_file_path("", "log.txt");
-  log_set_file(path);
-  utstring_free(path);
+  log_set_file(globals.logFileName);
   log_set_use_default_file(true);
 }
 
@@ -121,7 +119,9 @@ UT_string *get_executable_dir_file_path(const char *dirName, const char *fileNam
 }
 
 UT_string *get_asset_file_path(const char *dirName, const char *fileName) {
-  UT_string *path = get_executable_dir_file_path("assets", dirName);
+  UT_string *path;
+  utstring_alloc(path, utstring_body(globals.assetsDirname));
+  append_to_path(path, dirName);
   append_to_path(path, fileName);
   return path;
 }
