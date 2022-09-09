@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  9 SEP 2022 00:29
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  9 SEP 2022 23:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1514,16 +1514,16 @@ Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 
-Overfull \hbox (5.91325pt too wide) in paragraph at lines 262--263
+Overfull \hbox (14.69826pt too wide) in paragraph at lines 264--265
  [][] 
  []
 
-[33] [34]) [35]
+[33] [34] [35] [36]) [37]
 \openout2 = `chapters/5_badania.aux'.
 
  (./chapters/5_badania.tex
 Rozdzia\l  4.
-) [36
+) [38
 
 
 
@@ -1533,7 +1533,7 @@ Rozdzia\l  4.
 
  (./chapters/6_podsumowanie.tex
 Rozdzia\l  5.
-) [37
+) [39
 
 
 
@@ -1552,7 +1552,7 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 9.37807pt on input line 3.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 7.29405pt on input line 3.
- [38
+ [40
 
 
 
@@ -1561,14 +1561,14 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 \tf@lof=\write7
 \openout7 = `PracaMagisterka.lof'.
 
- [39
+ [41
 
 ]
 (./PracaMagisterka.lot)
 \tf@lot=\write8
 \openout8 = `PracaMagisterka.lot'.
 
-) [40
+) [42
 
 ] (./PracaMagisterka.aux
 (./chapters/0a_streszczenie.aux) (./chapters/0b_spis_tresci.aux)
@@ -1577,18 +1577,18 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (./chapters/3_technologie_algorytmy_narzedzia.aux) (./chapters/5_badania.aux)
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
 Package rerunfilecheck Info: File `PracaMagisterka.out' has not changed.
-(rerunfilecheck)             Checksum: B5E39C5CBA286B4843264BF7726F1908;7641.
+(rerunfilecheck)             Checksum: 62B518CEC14C29E5FFC73BC5FC92907B;7870.
 Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 \openout1 = `PracaMagisterka.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 39590 strings out of 476191
- 818226 string characters out of 5812072
- 1578752 words of memory out of 5000000
- 59670 multiletter control sequences out of 15000+600000
- 488879 words of font info for 102 fonts, out of 8000000 for 9000
+ 39675 strings out of 476191
+ 819579 string characters out of 5812072
+ 1584872 words of memory out of 5000000
+ 59753 multiletter control sequences out of 15000+600000
+ 488887 words of font info for 103 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  88i,15n,91p,1516b,6445s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on PracaMagisterka.pdf (40 pages).
+Output written on PracaMagisterka.pdf (42 pages).

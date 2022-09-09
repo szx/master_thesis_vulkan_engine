@@ -125,9 +125,9 @@ Projekt używa następujących zewnętrznych bibliotek programistycznych:
 	\item {\textit{cglm 0.8.5}}: biblioteka matematyczna,
 	\item {\textit{stb\_image 2.27}}: wczytywanie obrazów,
 	\item {\textit{stb\_truetype 1.26}}: rasteryzacja tekstu czcionek,
-	\item {biblioteka standardowa C},
+	\item {biblioteka standardowa języka C},
 	\item {API systemu operacyjnego}: pliki nagłówkowe POSIX albo WinAPI,
-	\item {biblioteka standardowa Python},
+	\item {biblioteka standardowa języka Python},
 	\item {\textit{libclang 12.0.0}}: analizowanie kodu C w skryptach Python.
 \end{itemize}
 
@@ -151,11 +151,13 @@ Pliki nagłówowe zawierają deklaracje funkcji, struktur oraz typów wyliczenio
 Pliki źródłowe zawierają definicje deklaracji plika nagłówkowego i powinny być dołączone do programu używając argumentów kompilatora (jeśli dodawane są niezbudowane pliki źródłowe) bądź linkera (jeśli dodawane są zbudowane pliki biblioteczne), co jest automatycznie wykonywane przez CMake.
 
 Struktury są zorganizowane w sposób obiektowy.
-Język C nie posiada wbudowanej koncepcji klasy, ale w projekcie przyjęto założenie, że struktura \textit{struct} posiada metodę \textit{func()}, jeśli istnieje funkcja \textit{struct\_func()} przyjmująca  wskaźnik do \textit{struct} jako pierwszy argument.
+Język C nie posiada wbudowanej koncepcji klasy, ale w projekcie przyjęto założenie, że dla klasy \textit{struct} jej stan jest reprezentowany przez strukturę \textit{struct}, która może posiadać metodę \textit{func()}, jeśli istnieje funkcja \textit{struct\_func()} przyjmująca wskaźnik do \textit{struct} jako pierwszy argument.
+Dla obiektów globalnych nie jest istnieje osobna struktura przekazywana do jej metod - stan obiektu jest zaszyty w zmiennych globalnych jednostki translacji pliku źródłowego.
 
 Obiekty mogą oferować metody \textit{create()} i \textit{destroy()}, które alokują lub dealokują instancję obiektu oraz tworzą bądź niszczą jej wewnętrzny stan.
 Analogiczne metody \textit{init()} i \textit{deinit()} tworzą i niszczą instancję, której pamięć została wcześniej zaalokowaną (np. na stosie lub w tablicy).
 Opcjonalna metoda \textit{debug\_print()} loguje informacje o wewnętrznym stanie instancji użyteczne podczas debugowania.
+
 
 Aplikacja składa się z następujących modułów:
 // TODO lista modułów
@@ -251,7 +253,7 @@ Relacje pomiędzy modułami silnika i ich najważniejszymi klasami są przedstaw
 		};
 	
 		% labels
-		\node ()[above=0cm of codegen] {\textbf{Generacja kodu}};
+		\node ()[above=0cm of codegen] {\textbf{Wygenerowany kod}};
 		\node ()[above=0cm of core] {\textbf{Rdzeń}};
 		\node ()[above=0cm of data] {\textbf{I/O}};
 		\node ()[below=0cm of assets] {\textbf{Zasoby}};
@@ -264,11 +266,24 @@ Relacje pomiędzy modułami silnika i ich najważniejszymi klasami są przedstaw
 	\label{archit}
 \end{figure}
 
-\subsection{Moduł rdzeń}
+\section {Implementacja}
 
-Rdzeń jest kolekcją funkcji pomocniczych i obiektów globalnych zapewniających podstawowe funkcjonalności używane przez resztę modułów.
+Ta sekcja opisuje szczegóły implementacyjne poszczególnych modułów silnika.
 
-\paragraph{thirdparty}
+\subsection{Wygenerowany kod}
+
+Silnik używa kodu w języku C wygenerowanego przez automatyczny generator kodu, który jest skryptem Python uruchamianym przez CMake przed rozpoczęciem reszty kompilacji.
+
+// HIRO sources: config, headers
+
+// HIRO globals: wygenerowane stałe
+// HIRO X makra
+
+\subsection{Rdzeń}
+
+Rdzeń to moduł zawierający funkcje pomocniczych i obiekty globalne zapewniające podstawowe funkcjonalności używane przez resztę modułów.
+
+\paragraph{Jednostka thirdparty}
 Jednostka odpowiedzialna za udostępnienia bibliotek zewnętrznych reszcie kodu.
 
 Nagłówek dołącza nagłówki bibliotek zewnętrznych i z powodów wydajnościowych podczas procesu budowania jest traktowany jako nagłówek prekompilowany (ang. precompiled header, PCH).
@@ -283,22 +298,116 @@ Przykładowo biblioteka \textit{cgltf} wymaga ponownego dołączenia nagłówka 
 \end{lstlisting}
 
 
-\paragraph{log}
-Jednostka implementująca system logowanie komunikatów wygenerowanych podczas działania kodu mający na celu w uproszczenie procesu debuggowania.
+\paragraph{Jednostka alloc}
+Funkcje pomocnicze wspomagające zarządzanie pamięcią CPU, co objemuje alokację, dealokację, kopiowanie, duplikowanie i porównywanie bloków pamięci CPU.
 
-Komunikat jest ciągiem znaków z przypisanym priotytetem, z których rozróżniono:
-\begin{itemize}
-	\item \textit{debug}: HIRO,
-	\item \textit{info}: a,
-	\item \textit{warn}: a,
-	\item \textit{error}: a,
-	\item \textit{fatal}: a,
-\end{itemize}
+Funkcje te są potrzebne, ponieważ działanie odpowiednich funkcji oferowane przez bibliotekę standardową języka C, chociaż oferują żądaną funkcjonalność, opiera się na mechanizmie niezdefiniowanych zachowań (ang. undefined behaviour) dla niektórych argumentów (wskaźnik NULL, rozmiar 0) i zachowań OOM (ang. Out-of-memory).
 
-//
-Logowanie komuniaktu odbywa się poprzez grupę funkcji \textit{log\_*()} zachowujące się tak samo jak funkcja printf - pierwszy argument to ciąg znaków z znakami formatującymi, reszta argumentów to formatowane wartości.
+Funkcje pomocnicze są wrapperami z dodatkowymi instrukcjami warunkowymi sprawdzającymi, czy wywołanie funkcji nie skutkuje niezdefiniowanym zachowaniem.
 
-Wiadomości są zapisywane do standardowego wyjścia (stdou albo stderr) oraz do pliku na dysku.
+Jednostka definiuje też makra ułatwiające zarządzanie pamięcią struktur danych bibliteki \textit{uthash}.
 
 
-// TODO moduł i klasy
+\paragraph{Jednostka log}
+Obiekt globalny \textit{log} reprezentujący system logowana komunikatów wygenerowanych podczas działania kodu mający na celu w uproszczenie procesu debuggowania.
+
+Komunikat jest ciągiem znaków z przypisanym poziomem logowania określającym jego ważność z domyślnie wspieranymi wartościami \textit{debug}, \textit{info}, \textit{warn}, \textit{error} i \textit{fatal}.
+Komunikaty \textit{debug} są logowane tylko w konfiguracji \textit{Debug}.
+
+Komunikaty są zapisywane do standardowego wyjścia (\textit{stdout} albo \textit{stderr}) oraz do pliku tekstowego na dysku, którego nazwa zaostała zdefiniowana w zmiennych globalnych generatora kodu (domyślnie \textit{log.txt}).
+
+Logowanie komuniaktu odbywa się poprzez grupę funkcji \textit{log\_*()}, gdzie \textit{*} to poziom logowania, zachowujące się tak samo jak funkcja \textit{printf} z biblioteki standardowej języka C - pierwszy argument to ciąg znaków z znakami formatującymi, reszta argumentów to formatowane wartości.
+
+Przykładowy kod demonstrujący logowanie:
+\lstset{language=C}
+\begin{lstlisting}
+log_create();
+log_debug("komunikat #%d", 1);
+log_debug("komunikat #%d", 2);
+log_fatal("%s #%d", "komunikat", 3);
+log_destroy();
+\end{lstlisting}
+
+Powyższy kod powinien zapisać do pliku \textit{log.txt} w katalogu z plikiem wykonywalnym komunikaty podobne do poniższych:
+\begin{verbatim}
+[DEBUG] (/home/user/repo/src/main.c:45) main:
+komunikat #1
+komunikat #2
+[FATAL] (/home/user/repo/src/main.c:47) main:
+komunikat #3
+\end{verbatim}
+
+\paragraph{Jednostka junk}
+Proste funkcje i makra które mogą być potencjalnie używane na wskroś wszystkich modułów w całej bibliotece, ale nie zostały uznane za wystarczająca skomplikowane, aby uzasadnić wydzielenia do osobnej jednostki.
+
+Jednostka definiuje stałe preprocesora \textit{PLATFORM\_*} używane do rozpoznania systemu operacyjnego, na którym budowany jest silnik (Linux, MacOS, Windows):
+\lstset{language=C}
+\begin{lstlisting}
+#if defined(__linux) || defined(__linux__) || defined(linux)
+#define PLATFORM_LINUX
+#elif defined(__APPLE__)
+#define PLATFORM_APPLE
+#elif defined(_WIN32) || defined(__WIN32__) \
+   || defined(WIN32) || defined(_WIN64)
+#define PLATFORM_WINDOWS
+#endif
+\end{lstlisting}
+
+Funkcja \textit{strstrip()} usuwa początkowe i końcowe białe znaki z ciągu znaków.
+
+Funkcja \textit{count\_bits()} zlicza bity w liczbie całkowitej używając metody Briana Kernighana \cite{BITTWIDDLINGHACKS}. Przykładem użycia jest określenie liczby flag ustawionych w wyliczeniu.
+
+Makra \textit{HASH\_*} ukrywają detale użycie funkcji skrótu biblioteki \textit{xxHash}:
+\lstset{language=C}
+\begin{lstlisting}
+hash_t hash;
+HASH_START(hashState)
+HASH_UPDATE(hashState, &num, sizeof(num))
+HASH_UPDATE(hashState, str, strlen(str))
+HASH_UPDATE(hashState, &object->field, sizeof(object->field))
+HASH_DIGEST(hashState, hash)
+HASH_END(hashState)
+log_debug("Hash value is %zu", hash);
+\end{lstlisting}
+
+Makro \textit{UNREACHABLE} pozwala na optymalizację kodu poprzez oznaczenie punktów programu, które nigdy nie są napotykane przez przepływ sterowania.
+Jego definicja zależy od konfiguracji: w \textit{Debug} sprowadza się do asercji \textit{assert(0)}, a w \textit{Release} do funkcji wbudowanej kompilatora GCC \textit{\_\_builtin\_unreachable()}.
+Przykładowo określenie nieosiągnalności przypadku domyślny instrukcji switch bądź bloku else informuje o
+kompletności sprawdzanych warunków:
+\lstset{language=C}
+\begin{lstlisting}
+if (type == directional) {
+	...
+} else if (type == point) {
+	...
+} else {
+	UNREACHABLE;
+}
+\end{lstlisting}
+
+Makro pomocnicze \textit{MACRO\_FOREACH()} jest używane w X makrach. // TODO więcej
+
+Jednostka definiuje też makra używające formy metaprogramowania w celu dodania nowych struktur kontrolnych \cite{METACONTROLC} upraszczających iterowanie po strukturach danych bibliteki \textit{uthash}:
+\lstset{language=C}
+\begin{lstlisting}
+utarray_foreach_elem_deref (tree_node *, node, tree->nodes) {
+	tree_set_dirty(tree, node);
+}
+\end{lstlisting}
+
+
+\paragraph{Jednostka platform}
+Głowna część rdzenia implementująca obiekt globalny \textit{platform} odpowiedzialny za tworzenie i niszczenie globalnego stanu używanego przez system logowania i funkcje wieloplatformowe, z których najważniejsze zostały opisane poniżej.
+
+Funkcja \textit{panic()} pozwala na zamknięcie programu z kodem wyjścia oznaczającym nieudane wykonanie po wystąpieniu fatalnego błędu.
+Jest ona używana przez makro \textit{verify()}, które podobnie do makra \textit{assert()} pozwala na testowanie warunku logicznego i przerwanie działania programu gdy przyjmuje on wartość fałsz, ale w przeciwieństwie do niego działa też w konfiguracji \textit{Release}.
+
+Funkcje \textit{get\_executable\_dir\_path()} i \textit{get\_path\_dirname()} pozwalają na odkrycie ścieźki z katalogiem zawierającym plik wykonywalny, co jest potrzebne do pełnego określenia struktury plików opisanych przez wygenerowane stałe.
+Na systemie Linux używana jest funkcja \textit{readlink()} do odczytania pliku \textit{/proc/self/exe}
+oraz funkcja \textit{dirname()}.
+Na systemie Windows używana jest funkcja \textit{GetModuleFileName()} oraz funkcja \textit{PathRemoveFileSpec()}.
+
+Funkcje \textit{write\_text\_file()} i \textit{read\_text\_file()} pozwalają na odczyt i zapis plików tekstowych i są używane do obsługi konfiguracji i kodu źródłowego shaderów.
+
+
+// TODO reszta modułów

@@ -508,6 +508,60 @@
       \verb https://peps.python.org/pep-0405/
       \endverb
     \endentry
+    \entry{BITTWIDDLINGHACKS}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=bfda6d7d5ae465404d023a20781181c9}{%
+           family={Anderson},
+           familyi={A\bibinitperiod},
+           given={Sean\bibnamedelima Eron},
+           giveni={S\bibinitperiod\bibinitdelim E\bibinitperiod}}}%
+      }
+      \strng{namehash}{bfda6d7d5ae465404d023a20781181c9}
+      \strng{fullhash}{bfda6d7d5ae465404d023a20781181c9}
+      \strng{bibnamehash}{bfda6d7d5ae465404d023a20781181c9}
+      \strng{authorbibnamehash}{bfda6d7d5ae465404d023a20781181c9}
+      \strng{authornamehash}{bfda6d7d5ae465404d023a20781181c9}
+      \strng{authorfullhash}{bfda6d7d5ae465404d023a20781181c9}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Bit Twiddling Hacks}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb http://graphics.stanford.edu/~seander/bithacks.html
+      \endverb
+      \verb{url}
+      \verb http://graphics.stanford.edu/~seander/bithacks.html
+      \endverb
+    \endentry
+    \entry{METACONTROLC}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=e1f2616e32f74ae07dd3a6d988339af0}{%
+           family={Tatham},
+           familyi={T\bibinitperiod},
+           given={Simon},
+           giveni={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{e1f2616e32f74ae07dd3a6d988339af0}
+      \strng{fullhash}{e1f2616e32f74ae07dd3a6d988339af0}
+      \strng{bibnamehash}{e1f2616e32f74ae07dd3a6d988339af0}
+      \strng{authorbibnamehash}{e1f2616e32f74ae07dd3a6d988339af0}
+      \strng{authornamehash}{e1f2616e32f74ae07dd3a6d988339af0}
+      \strng{authorfullhash}{e1f2616e32f74ae07dd3a6d988339af0}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Metaprogramming custom control structures in C}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://www.chiark.greenend.org.uk/~sgtatham/mp/
+      \endverb
+      \verb{url}
+      \verb https://www.chiark.greenend.org.uk/~sgtatham/mp/
+      \endverb
+    \endentry
   \enddatalist
 \endrefsection
 \endinput

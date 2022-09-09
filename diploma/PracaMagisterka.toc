@@ -75,12 +75,17 @@
 \contentsline {paragraph}{run\textunderscore \allowbreak asset\textunderscore \allowbreak pipeline}{32}{paragraph*.46}%
 \contentsline {subsection}{\numberline {3.1.2}Biblioteki zewnętrzne}{32}{subsection.3.1.2}%
 \contentsline {section}{\numberline {3.2}Architektura}{33}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}Moduł rdzeń}{34}{subsection.3.2.1}%
-\contentsline {paragraph}{thirdparty}{34}{paragraph*.48}%
-\contentsline {paragraph}{log}{35}{paragraph*.49}%
-\contentsline {chapter}{\numberline {4}Badania}{36}{chapter.4}%
-\contentsline {chapter}{\numberline {5}Podsumowanie}{37}{chapter.5}%
-\contentsline {chapter}{Wykaz literatury}{38}{chapter*.50}%
-\contentsline {chapter}{Spis rysunk\'ow}{39}{chapter*.51}%
-\contentsline {chapter}{Spis tablic}{40}{chapter*.52}%
+\contentsline {section}{\numberline {3.3}Implementacja}{34}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Wygenerowany kod}{34}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Rdzeń}{34}{subsection.3.3.2}%
+\contentsline {paragraph}{Jednostka thirdparty}{35}{paragraph*.48}%
+\contentsline {paragraph}{Jednostka alloc}{35}{paragraph*.49}%
+\contentsline {paragraph}{Jednostka log}{35}{paragraph*.50}%
+\contentsline {paragraph}{Jednostka junk}{36}{paragraph*.51}%
+\contentsline {paragraph}{Jednostka platform}{37}{paragraph*.52}%
+\contentsline {chapter}{\numberline {4}Badania}{38}{chapter.4}%
+\contentsline {chapter}{\numberline {5}Podsumowanie}{39}{chapter.5}%
+\contentsline {chapter}{Wykaz literatury}{40}{chapter*.53}%
+\contentsline {chapter}{Spis rysunk\'ow}{41}{chapter*.54}%
+\contentsline {chapter}{Spis tablic}{42}{chapter*.55}%
 \contentsfinish 

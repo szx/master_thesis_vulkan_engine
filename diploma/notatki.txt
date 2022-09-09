@@ -431,6 +431,8 @@ Dodanie nowej struktury buffora uniform sprowadza się do zdefniniowania nowej s
 pozwala na szybkie dodawania nowych parametrów podczas pisania shaderów.
 
 ------
+HIRO
+
 /src/codegen/globals.h Globalny obiekt globals wygenerowane na podstawie konfiguracji generatora kodu. Obiekt zawiera
 ścieżki do plików z konfiguracją globalną i bazą zasobów.
 ------
@@ -453,36 +455,6 @@ Wygenerowane makra są używane do implementacji:
 Na jeden typ wyliczeniowy przypada jedna funkcja. Te funkcje to przykład koncepcji w metaprogramowaniu zwanego
 refleksją. Funkcje są użyteczne podczas debugowania - podczas działania programu typy wyliczeniowe języa C są zwykłymi
 liczbami, człowiek lepiej orientuje się widząc ich nazwy.
-
-------
-HIRO
-/src/core/platform.h Wieloplatformowe funkcje. Funkcja panic(). Używa atrybutu noreturn i pozwala na zamknięcie programu
-po wystąpieniu fatalnego błędu. Odkrywanie ścieźki z katalogiem zawierającym plik wykonywalny - potrzebne do znalezienia
-plików z konfiguracją i zasobami. Na systemie Linux używana jest funkcja readlink() do odczytania pliku /proc/self/exe
-oraz funkcja dirname(). Na systemie Windows używana jest funkcja GetModuleFileName() oraz funkcja PathRemoveFileSpec().
-Obsługa plików - zapisywanie i wczytywanie. Inicjalizacja systemu logowania.
-
-------
-/src/core/junk.h Proste funkcje i makra które mogą być potencjalnie używane na wskroś wszystkich modułów w całej
-bibliotece. Symbole preprocessora definiowane warunkowo z zależności od systemu operacyjnego dla którego biblioteka jest
-kompilowana (Linux, MacOS, Windows). Przetwarzanie ciągów znaków. Liczenie bitów w flagach. Używanie funkcji skrótów.
-Makra upraszczające użycie preprocesora języka C. Makra upraszczające opreracje na kontenerach. Zebranie wszystkich
-drobnych funkcji pomocniczch w jedno miejsce projektu upraszcza proces implementacji.
-------
-/src/core/alloc.h
-
-Funkcje pomocnicze wspomagające zarządzanie pamięcią:
-
-- alokacja i deaokacja bloków pamięci na stercie,
-- duplikacja bloków pamięci,
-- porównywanie bloków pamięci.
-
-Potrzebne, ponieważ działanie odpowiednich funkcji oferowane przez bibliotekę standardową języka C, chociaż oferują
-żądaną funkcjonalność, opiera się na mechanizmie niezdefiniowanych zachowań (ang. undefined behaviour) dla niektórych
-argumentów (wskaźnik NULL, rozmiar 0) i zachowań OOM (ang. Out-of-memory).
-
-Funkcje pomocnicze są wrapperami na funccje biblioteki standardowej języka C z dodatkowymi instrukcjami warunkowymi
-sprawdzającymi, czy wywołanie funkcji nie skutkuje niezdefiniowanym zachowaniem.
 
 -------------
 
