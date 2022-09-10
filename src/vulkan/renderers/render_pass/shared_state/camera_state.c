@@ -111,7 +111,7 @@ void render_pass_camera_state_reset(render_pass_camera_state *camera) {
   vec3 distance = {center[0], center[1], -glm_vec3_max(extentAbs)};
   glm_vec3_copy(distance, camera->user.position);
   glm_vec3_copy((vec3){0, 0, 1}, camera->user.front);
-  glm_vec3_copy(WORLD_UP, camera->user.up);
+  glm_vec3_copy((vec3){WORLD_UP}, camera->user.up);
   camera->user.yaw = 0;
   camera->user.pitch = 0;
   camera->user.roll = 0;

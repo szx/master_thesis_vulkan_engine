@@ -65,9 +65,9 @@ void render_pass_shared_state_set_unified_uniform_buffer(render_pass_shared_stat
                                                    global->materials);
 
   render_pass_light_state *lights = sharedState->lights;
-  render_pass_light_state_set_direct_light_elements(
-      lights, &global->directionalLightCount, global->directionalLights, &global->pointLightCount,
-      global->pointLights, &global->spotLightCount, global->spotLights);
+  render_pass_light_state_set_direct_light_elements(lights, &global->directionalLightCount,
+                                                    global->directionalLights,
+                                                    &global->pointLightCount, global->pointLights);
 
   render_pass_skybox_state *skybox = sharedState->skybox;
   render_pass_skybox_state_set_skybox_elements(skybox, &global->skybox);

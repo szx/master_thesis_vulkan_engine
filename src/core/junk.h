@@ -105,6 +105,9 @@ typedef XXH64_hash_t hash_t;
 #define MACRO_FOREACH_23(_macro, _elem, ...) _macro(15, _elem) MACRO_FOREACH_22(_macro, __VA_ARGS__)
 #define MACRO_FOREACH_24(_macro, _elem, ...) _macro(15, _elem) MACRO_FOREACH_23(_macro, __VA_ARGS__)
 
+#define MACRO_STR_(_i, _elem) #_elem
+#define MACRO_STR(...) MACRO_FOREACH(MACRO_STR_, __VA_ARGS__)
+
 #define TYPEOF(x) __typeof__(x)
 #define VLA(_count) ((_count) > 0 ? (_count) : 1)
 #define PACKED_STRUCT __attribute__((packed))

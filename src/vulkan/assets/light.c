@@ -78,12 +78,6 @@ void asset_direct_light_debug_print(asset_direct_light *directLight, int indent)
     log_debug(INDENT_FORMAT_STRING "position=" VEC3_FORMAT_STRING(), INDENT_FORMAT_ARGS(2),
               VEC3_FORMAT_ARGS(directLight->position));
   }
-  if (directLight->type == direct_light_type_spot) {
-    log_debug(INDENT_FORMAT_STRING "innerConeAngle=%f", INDENT_FORMAT_ARGS(2),
-              directLight->innerConeAngle);
-    log_debug(INDENT_FORMAT_STRING "outerConeAngle=%f", INDENT_FORMAT_ARGS(2),
-              directLight->outerConeAngle);
-  }
   log_debug(INDENT_FORMAT_STRING "intensity=%f", INDENT_FORMAT_ARGS(2), directLight->intensity);
   log_debug(INDENT_FORMAT_STRING "range=%f", INDENT_FORMAT_ARGS(2), directLight->range);
   log_debug(INDENT_FORMAT_STRING "color=" VEC3_FORMAT_STRING(), INDENT_FORMAT_ARGS(2),
@@ -113,24 +107,6 @@ asset_direct_light *asset_direct_light_create_point_light(scene_data *sceneData,
 
   directLight->type = direct_light_type_point;
   glm_vec3_copy(position, directLight->position);
-  directLight->intensity = intensity;
-  directLight->range = range;
-  glm_vec3_copy(color, directLight->color);
-
-  assert(sceneData);
-  return scene_data_add_direct_light(sceneData, directLight);
-}
-
-asset_direct_light *asset_direct_light_create_spot_light(scene_data *sceneData, vec3 position,
-                                                         float innerConeAngle, float outerConeAngle,
-                                                         float intensity, float range, vec3 color) {
-  asset_direct_light *directLight = core_alloc(sizeof(asset_direct_light));
-  asset_direct_light_init(directLight, sceneData);
-
-  directLight->type = direct_light_type_spot;
-  glm_vec3_copy(position, directLight->position);
-  directLight->innerConeAngle = innerConeAngle;
-  directLight->outerConeAngle = outerConeAngle;
   directLight->intensity = intensity;
   directLight->range = range;
   glm_vec3_copy(color, directLight->color);

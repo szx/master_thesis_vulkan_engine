@@ -73,8 +73,8 @@ void glsl_add_defines(UT_string *s, render_pass_desc renderPassDesc, shader_type
                       render_state *renderState) {
   glsl_add_vertex_shader_input_variables_defines(s, renderState->vertexStream);
   glsl_add_shader_type_defines(s, shaderType);
-#define x(_name, ...) utstring_printf(s, "#define " #_name " %d\n", _name);
-  VULKAN_SHADER_CONSTANTS(x, )
+#define x(_name, ...) utstring_printf(s, "#define " #_name " " MACRO_STR((_name)) "\n");
+  CODEGEN_CONSTANTS(x, )
 #undef x
   glsl_add_offscreen_texture_defines(s, renderPassDesc);
 }

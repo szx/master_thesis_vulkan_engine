@@ -18,8 +18,6 @@ void glsl_add_global_uniform_buffer(UT_string *s, uint32_t set, uint32_t binding
  utstring_printf(s, "  directional_light_helper_element directionalLights [MAX_DIRECTIONAL_LIGHT_COUNT];\n");
  utstring_printf(s, "  uint pointLightCount ;\n");
  utstring_printf(s, "  point_light_helper_element pointLights [MAX_POINT_LIGHT_COUNT];\n");
- utstring_printf(s, "  uint spotLightCount ;\n");
- utstring_printf(s, "  spot_light_helper_element spotLights [MAX_SPOT_LIGHT_COUNT];\n");
  utstring_printf(s, "  skybox_helper_element skybox ;\n");
  utstring_printf(s, "  font_helper_element font ;\n");
  utstring_printf(s, "  viewport_helper_element viewport ;\n");
@@ -82,16 +80,6 @@ void glsl_add_point_light_helper_element(UT_string *s) {
 void glsl_add_skybox_helper_element(UT_string *s) {
   utstring_printf(s, "struct skybox_helper_element {\n");
  utstring_printf(s, "  uint skyboxCubemapTextureId ;\n");
-  utstring_printf(s, "};\n");
-}
-void glsl_add_spot_light_helper_element(UT_string *s) {
-  utstring_printf(s, "struct spot_light_helper_element {\n");
- utstring_printf(s, "  vec3 position ;\n");
- utstring_printf(s, "  vec3 color ;\n");
- utstring_printf(s, "  float innerConeAngle ;\n");
- utstring_printf(s, "  float outerConeAngle ;\n");
- utstring_printf(s, "  float range ;\n");
- utstring_printf(s, "  float intensity ;\n");
   utstring_printf(s, "};\n");
 }
 void glsl_add_viewport_helper_element(UT_string *s) {

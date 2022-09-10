@@ -44,12 +44,10 @@ loop_start:
 void render_pass_light_state_set_direct_light_elements(
     render_pass_light_state *lights, uint32_t *directionalLightCount,
     directional_light_helper_element *directionalLightElements, uint32_t *pointLightCount,
-    point_light_helper_element *pointLightElements, uint32_t *spotLightCount,
-    spot_light_helper_element *spotLightElements) {
+    point_light_helper_element *pointLightElements) {
 
   *directionalLightCount = 0;
   *pointLightCount = 0;
-  *spotLightCount = 0;
   dl_foreach_elem(renderer_cache_direct_light_element *, directLightElement,
                   lights->renderState->rendererCache->directLightElements) {
     asset_direct_light *directLight = directLightElement->directLight;
@@ -66,14 +64,6 @@ void render_pass_light_state_set_direct_light_elements(
       pointLightElement->range = directLight->range;
       pointLightElement->intensity = directLight->intensity;
       glm_vec3_copy(directLight->color, pointLightElement->color);
-    } else if (directLight->type == direct_light_type_spot) {
-      spot_light_helper_element *spotLightElement = &spotLightElements[(*spotLightCount)++];
-      glm_vec3_copy(directLight->position, spotLightElement->position);
-      spotLightElement->innerConeAngle = directLight->innerConeAngle;
-      spotLightElement->outerConeAngle = directLight->outerConeAngle;
-      spotLightElement->range = directLight->range;
-      spotLightElement->intensity = directLight->intensity;
-      glm_vec3_copy(directLight->color, spotLightElement->color);
     } else {
       UNREACHABLE;
     }

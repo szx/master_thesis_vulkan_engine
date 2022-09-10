@@ -1,9 +1,9 @@
 /* Vulkan API device helper functions and structures */
 #pragma once
 
+#include "../../codegen/constants.h"
 #include "../../core/core.h"
 #include "../../data/data.h"
-#include "../constants.h"
 #include "../debug.h"
 #include "device_functions.h"
 #include "input.h"

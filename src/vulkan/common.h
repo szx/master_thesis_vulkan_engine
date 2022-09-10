@@ -2,9 +2,9 @@
 
 #pragma once
 
+#include "../codegen/constants.h"
 #include "../core/core.h"
 #include "../data/data.h"
-#include "constants.h"
 #include "debug.h"
 #include "objects/device.h"
 
@@ -62,7 +62,6 @@ typedef enum camera_type {
 typedef enum direct_light_type {
   direct_light_type_directional,
   direct_light_type_point,
-  direct_light_type_spot,
   direct_light_type_count,
 } direct_light_type;
 

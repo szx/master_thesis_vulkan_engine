@@ -1,6 +1,5 @@
 #include "descriptor.h"
 
-#include "../constants.h"
 #include "textures.h"
 #include "unified_uniform_buffer.h"
 

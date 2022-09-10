@@ -32,15 +32,6 @@ typedef struct point_light_helper_struct {
   float intensity;
 } point_light_helper_struct;
 
-typedef struct spot_light_helper_struct {
-  vec3 position;
-  vec3 color;
-  float innerConeAngle;
-  float outerConeAngle;
-  float range;
-  float intensity;
-} spot_light_helper_struct;
-
 typedef struct skybox_helper_struct {
   uint skyboxCubemapTextureId;
 } skybox_helper_struct;
@@ -71,8 +62,6 @@ typedef struct global_uniform_buffer_struct {
   directional_light_helper_struct directionalLights; ///< array=MAX_DIRECTIONAL_LIGHT_COUNT
   uint pointLightCount;
   point_light_helper_struct pointLights; ///< array=MAX_POINT_LIGHT_COUNT
-  uint spotLightCount;
-  spot_light_helper_struct spotLights; ///< array=MAX_SPOT_LIGHT_COUNT
   skybox_helper_struct skybox;
   font_helper_struct font;
   viewport_helper_struct viewport;

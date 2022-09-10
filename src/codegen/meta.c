@@ -6442,8 +6442,7 @@ const char *data_config_type_debug_str(int value) {
 const char *direct_light_type_debug_str(int value) {
   if (value == 0) { return "direct_light_type_directional"; }
   if (value == 1) { return "direct_light_type_point"; }
-  if (value == 2) { return "direct_light_type_spot"; }
-  if (value == 3) { return "direct_light_type_count"; }
+  if (value == 2) { return "direct_light_type_count"; }
   return "UNKNOWN direct_light_type";
 }
 const char *image_render_pass_usage_debug_str(int value) {

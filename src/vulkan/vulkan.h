@@ -11,7 +11,6 @@
 #include "assets/texture.h"
 #include "assets/vertex_attribute.h"
 #include "common.h"
-#include "constants.h"
 #include "debug.h"
 #include "objects/buffer.h"
 #include "objects/descriptor.h"

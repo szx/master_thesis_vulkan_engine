@@ -31,7 +31,3 @@ asset_direct_light *asset_direct_light_create_directional_light(scene_data *scen
 
 asset_direct_light *asset_direct_light_create_point_light(scene_data *sceneData, vec3 position,
                                                           float intensity, float range, vec3 color);
-
-asset_direct_light *asset_direct_light_create_spot_light(scene_data *sceneData, vec3 position,
-                                                         float innerConeAngle, float outerConeAngle,
-                                                         float intensity, float range, vec3 color);

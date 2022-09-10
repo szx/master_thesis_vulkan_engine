@@ -21,7 +21,6 @@ renderer_cache_direct_light_element *render_pass_light_state_select(render_pass_
 void render_pass_light_state_set_direct_light_elements(
     render_pass_light_state *lights, uint32_t *directionalLightCount,
     directional_light_helper_element *directionalLightElements, uint32_t *pointLightCount,
-    point_light_helper_element *pointLightElements, uint32_t *spotLightCount,
-    spot_light_helper_element *spotLightElements);
+    point_light_helper_element *pointLightElements);
 
 void render_pass_light_state_debug_print(render_pass_light_state *lights, int indent);

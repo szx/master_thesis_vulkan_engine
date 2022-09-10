@@ -74,7 +74,7 @@ def codegen_descriptors():
     push_constant_structs = {}
     uniform_buffer_structs = {}
     helper_structs = {}
-    decls = ['#pragma once', '#include "../vulkan/constants.h"', '#include "../core/junk.h"', '']
+    decls = ['#pragma once', '#include "../codegen/constants.h"', '#include "../core/junk.h"', '']
     defs = ['#include "descriptors.h"', '#include "../core/core.h"', '']
 
     # parse C structs ending with _struct
