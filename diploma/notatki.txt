@@ -220,20 +220,8 @@ deklaratywne opisu renderowania dostarczonego przez programistę. ...
 /vulkan/debug.h Obiekt vulkan_debug pozwala na dodawanie informacji debugujących do obiektów Vulkan. Jest to osiągnętę przy pomocy rozszerzenia VK_EXT_debug_utils.
 
 -------------
-/vulkan/constants.h Lista stałych wartości uznanych za zbyt niepraktyczne aby pozwolić na ich modyfikację przy użyciu
-konfiguracji globalnej:
 
-Stała FRAMES_IN_FLIGHT określa liczbę ramek, do których mogą być jednocześnie renderowane przez GPU. Domyślna wartość to
-2, co pozwala na podwójne buforowanie. Stała MAX_OFFSCREEN_TEXTURE_COUNT określa maksymalną liczbę obrazów
-pozaekranowych. Domyślna wartość to 16. Stała MAX_RENDER_TARGET_COUNT określa maksymalną liczbę celów renderowania,
-które mogą być używane podczas jednego przebiegu renderowania. Domyślnie 8. Stała MAX_INDIRECT_DRAW_COMMAND_COUNT.
-Domyślnie 1024. Stała MAX_MATERIAL_COUNT Domyślnie 128. Stała MAX_DIRECTIONAL_LIGHT_COUNT określa maksymalną liczbę
-świateł kierunkowych. Domyślnie 1. Stała MAX_POINT_LIGHT_COUNT określa maksymalną liczbę świateł punktowych. Domyślnie
-128 Stała MAX_TEXT_CHARACTER_COUNT określa maksymalną liczbę znaków w renderowanym ciągu znaków. Domyślnie 256. Stała
-MIN_DELTA_TIME określa minimalny czas pomiędzy wywołanami funkcji update podanej przez użytkownika. Domyślnie (1.0 /
-60.0) (60 ramek na sekundę). Stała WORLD_UP określa wektor interpretowany jako "w górę" w przestrzeni świata. Domyślna
-wartość to (0, 1, 0). Stałe mogą być używane przez shadery - ich definicje preprocesora są umieszczane na początku kodu
-źródłowego w języku GLSL przed kompilacją.
+
 -------------
 /vulkan/common.h Globalna tablica typów obrazów wspieranych przez silnik:
 [TABELA]
@@ -393,68 +381,25 @@ wyboru i wprowadzania dla poszczególnych tabel i kolumn bazy zasobów:
 [LISTING]
 
 -------------
-/src/codegen Kod źródłowy języka C generowany automatycznie przy użyciu skryptów w języku Python. Język C nie posiada
-mechanizmów pozwalających na metaprogramowanie z wyjątkiem makr preprocessora, który może zaspokoić część potrzeb
-programisty chcącego przykładowo rozszerzyć dostępne rodzaje pętli, ale nie pozwala na bardziej skomplikowane analizę i
-przekształcenia kodu, co przekonało autora do dodania automatycznej generacji kodu do projektu. Generacja kodu jest
-wykonywana przez skrypt codegen.py. Skrypt parsuje pliki nagłówkowe języka C znajdujący się w katalogu /src z
-pominięciem katalogu /src/codegen, do którego skrypt zapisuje wygenerowane pliki nagłówkowe i pliki źródłowe.
-Wygenerowane pliki nagłówkowe są dołączane w innych modułach silnika . Wygenerowane pliki źródłowe są argumentami
-kompilatora. Skrypt jest uruchamiany przez CMake na początku procesu budowania przed rozpoczęciem kompilacji właściwego
-kodu źródłowego biblioteki napisanego w języku C. Działanie skryptu jest parametryzowane przy użyciu pliku konfiguracji
-generatora kodu znajdującej się w /scripts/config.txt. Ma ona format INI. Format INI jest podzielony na sekcje, które
-zawierają pary klucz-wartość:
-[PRZYKŁAD]
-/src/codegen/descriptors.h Definicje struktur helper_element i funkcji glsl_add wygenerowanych na podstawie analizy
+HIRO
+
+/src/codegen/descriptors.h
+Definicje struktur helper_element i funkcji glsl_add wygenerowanych na podstawie analizy
 struktur helper_struct pliku nagłówkowego /src/objects/descriptor.h.
 
 Stuktury helper_struct opisują wewnętrzną strukturę buforów uniform znajdujących się na GPU. Relacja ta została
 przedstawiona na poniższym diagramie:
 [helper_struct w C -> helper_element na GPU & kod GLSL]
+
 Układ pamięci struktur zdefiniowanych w języku C nie są koniecznie kompatybilne układem pamięci wymaganymi przez GPU.
-Fakt ten wymusza generacje struktur helper_element, w których użyto atrybutów alignas udostępnianych przez C11 do
-wyrównania pól struktury w układzie pamięci *scalar*.
+Fakt ten wymusza generacje struktur helper_element, w których użyto atrybutów alignas udostępnianych przez C11 do wyrównania pól struktury w układzie pamięci *scalar*.
 
-Układ pamięci definiuje wielkości i wyrównania pól w strukturze w pamięci. Układy pamięci wspierane przez GPU są
-specyfikowane w shaderach przy użyciu jednego z następujących coraz nowszych standardów:
-
-- std140,
-- std430,
-- scalar.
-
-Każdy kolejny standard pozwala na ciaśniejsze upakowanie pól w buforze, co skutkuje mniejszym zużyciem pamięci GPU.
 
 Funkcje glsl_add zwracają ciągi znaków z definicjami struktur buforów uniform w języku GLSL i są używane podczas
 generacji shaderów, co zostanie opisane później w pracy podczas opisu potoku renderowania.
 
 Dodanie nowej struktury buffora uniform sprowadza się do zdefniniowania nowej struktury w /src/objects/descriptor.h, co
 pozwala na szybkie dodawania nowych parametrów podczas pisania shaderów.
-
-------
-HIRO
-
-/src/codegen/globals.h Globalny obiekt globals wygenerowane na podstawie konfiguracji generatora kodu. Obiekt zawiera
-ścieżki do plików z konfiguracją globalną i bazą zasobów.
-------
-/src/codegen/macros.h Makra preprocesora wygenerowane na podstawie konfiguracji generatora kodu. Struktura
-wygenerowanych makr pozwala na użycie ich w ramach techniki X-macro.
-[PRZYKŁAD LISTING]
-Wygenerowane makra są używane do implementacji:
-
-- konfiguracji globalnej,
-- konfiguracji zasobów,
-- bazy zasobów. Makra opisują strukturę konfiguracji globalnej i zasobów:
-- sekcje
-- pary klucz-wartość i ich domyślne wartości. Makra opisują strukturę bazy zasobów:
-- typy podstawowe bazy danych i ich odpowiedniki w języku C [PRZYKŁAD]
-- tabele w bazie danych
-
-------
-/src/codegen/meta.h Funkcje pozwalające na konwersję wartości typu wyliczeniowego na ciąg znaków.
-[PRZYKŁAD LISTING]
-Na jeden typ wyliczeniowy przypada jedna funkcja. Te funkcje to przykład koncepcji w metaprogramowaniu zwanego
-refleksją. Funkcje są użyteczne podczas debugowania - podczas działania programu typy wyliczeniowe języa C są zwykłymi
-liczbami, człowiek lepiej orientuje się widząc ich nazwy.
 
 -------------
 
@@ -1154,6 +1099,8 @@ głębi/szablonu w etapach wczesnych i późnych testów fragmentów.
 MORE: multiDrawIndirect: polecenia wielokrotnego rysowania pośredniego MORE: drawIndirectFirstInstance: polecenia
 rysowania pośredniego z offsetem indeksu instancji MORE: dynamicRendering: dynamiczne przebiegi renderowania
 
+HIRO: debug_printf
+
 MORE: warstwy walidacji
 
 MORE: onscreen vs offscreen
@@ -1165,5 +1112,3 @@ MORE: część globalna i część instancji ujednoliconego bufora uniform, dlat
 MORE: hierarchia obiektów, diagram, opisy
 
 MORE: model obiektów vulkan, creation i enumeration, typy pamięci
-
-TEST: technika filtrowanie anizotropowe, usuń TRANSIENT TEST: technika mipmapy, usuń mipmapy

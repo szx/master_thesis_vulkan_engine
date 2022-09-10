@@ -46,14 +46,15 @@
 \contentsline {subsubsection}{Dowiązanie deskryptorów do bufora poleceń}{22}{subsubsection*.34}%
 \contentsline {subsubsection}{Diagram użycia deskryptorów}{22}{subsubsection*.35}%
 \contentsline {subsubsection}{Dostęp do zasobów w shaderach}{23}{subsubsection*.37}%
-\contentsline {section}{\numberline {2.3}Rozszerzenie VK\textunderscore \allowbreak EXT\textunderscore \allowbreak descriptor\textunderscore \allowbreak indexing}{23}{section.2.3}%
+\contentsline {subsubsection}{Układ pamięci scalar dla buforów i stałych push}{23}{subsubsection*.38}%
+\contentsline {section}{\numberline {2.3}Rozszerzenie VK\textunderscore \allowbreak EXT\textunderscore \allowbreak descriptor\textunderscore \allowbreak indexing}{24}{section.2.3}%
 \contentsline {subsection}{\numberline {2.3.1}Niejednolite dynamiczne indeksowanie deskryptorów}{24}{subsection.2.3.1}%
-\contentsline {subsection}{\numberline {2.3.2}Aktualizacja deskryptorów po dowiązaniu}{24}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.2}Aktualizacja deskryptorów po dowiązaniu}{25}{subsection.2.3.2}%
 \contentsline {subsection}{\numberline {2.3.3}Dowiązanie deskryptora o zmiennej wielkości}{25}{subsection.2.3.3}%
-\contentsline {subsection}{\numberline {2.3.4}Częściowe dowiązania deskryptorów}{25}{subsection.2.3.4}%
+\contentsline {subsection}{\numberline {2.3.4}Częściowe dowiązania deskryptorów}{26}{subsection.2.3.4}%
 \contentsline {subsection}{\numberline {2.3.5}Tablice deskryptorów czasu wykonania}{26}{subsection.2.3.5}%
-\contentsline {section}{\numberline {2.4}Przebiegi renderowania i potoki}{26}{section.2.4}%
-\contentsline {section}{\numberline {2.5}Rozszerzenie VK\textunderscore \allowbreak EXT\textunderscore \allowbreak dynamic\textunderscore \allowbreak rendering}{26}{section.2.5}%
+\contentsline {section}{\numberline {2.4}Przebiegi renderowania i potoki}{27}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Rozszerzenie VK\textunderscore \allowbreak EXT\textunderscore \allowbreak dynamic\textunderscore \allowbreak rendering}{27}{section.2.5}%
 \contentsline {section}{\numberline {2.6}Renderowanie bez dowiązań}{27}{section.2.6}%
 \contentsline {subsection}{\numberline {2.6.1}Tekstury bez dowiązań}{27}{subsection.2.6.1}%
 \contentsline {subsection}{\numberline {2.6.2}Geometria bez dowiązań}{29}{subsection.2.6.2}%
@@ -64,28 +65,34 @@
 \contentsline {subsection}{\numberline {2.10.1}glTF}{29}{subsection.2.10.1}%
 \contentsline {section}{\numberline {2.11}Graf sceny}{30}{section.2.11}%
 \contentsline {section}{\numberline {2.12}Graf renderowania}{30}{section.2.12}%
-\contentsline {chapter}{\numberline {3}Architektura i implementacja}{31}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Użyte narzędzia}{31}{section.3.1}%
+\contentsline {chapter}{\numberline {3}Narzędzia, architektura i implementacja}{31}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Narzędzia}{31}{section.3.1}%
 \contentsline {subsection}{\numberline {3.1.1}Proces budowania}{31}{subsection.3.1.1}%
-\contentsline {paragraph}{engine}{32}{paragraph*.41}%
-\contentsline {paragraph}{main}{32}{paragraph*.42}%
-\contentsline {paragraph}{test}{32}{paragraph*.43}%
-\contentsline {paragraph}{asset\textunderscore \allowbreak pipeline}{32}{paragraph*.44}%
-\contentsline {paragraph}{copy\textunderscore \allowbreak assets}{32}{paragraph*.45}%
-\contentsline {paragraph}{run\textunderscore \allowbreak asset\textunderscore \allowbreak pipeline}{32}{paragraph*.46}%
+\contentsline {paragraph}{engine}{32}{paragraph*.42}%
+\contentsline {paragraph}{main}{32}{paragraph*.43}%
+\contentsline {paragraph}{test}{32}{paragraph*.44}%
+\contentsline {paragraph}{asset\textunderscore \allowbreak pipeline}{32}{paragraph*.45}%
+\contentsline {paragraph}{copy\textunderscore \allowbreak assets}{32}{paragraph*.46}%
+\contentsline {paragraph}{run\textunderscore \allowbreak asset\textunderscore \allowbreak pipeline}{32}{paragraph*.47}%
 \contentsline {subsection}{\numberline {3.1.2}Biblioteki zewnętrzne}{32}{subsection.3.1.2}%
 \contentsline {section}{\numberline {3.2}Architektura}{33}{section.3.2}%
 \contentsline {section}{\numberline {3.3}Implementacja}{34}{section.3.3}%
 \contentsline {subsection}{\numberline {3.3.1}Wygenerowany kod}{34}{subsection.3.3.1}%
-\contentsline {subsection}{\numberline {3.3.2}Rdzeń}{34}{subsection.3.3.2}%
-\contentsline {paragraph}{Jednostka thirdparty}{35}{paragraph*.48}%
-\contentsline {paragraph}{Jednostka alloc}{35}{paragraph*.49}%
-\contentsline {paragraph}{Jednostka log}{35}{paragraph*.50}%
-\contentsline {paragraph}{Jednostka junk}{36}{paragraph*.51}%
-\contentsline {paragraph}{Jednostka platform}{37}{paragraph*.52}%
-\contentsline {chapter}{\numberline {4}Badania}{38}{chapter.4}%
-\contentsline {chapter}{\numberline {5}Podsumowanie}{39}{chapter.5}%
-\contentsline {chapter}{Wykaz literatury}{40}{chapter*.53}%
-\contentsline {chapter}{Spis rysunk\'ow}{41}{chapter*.54}%
-\contentsline {chapter}{Spis tablic}{42}{chapter*.55}%
+\contentsline {subsubsection}{Jednostka constants}{35}{subsubsection*.49}%
+\contentsline {subsubsection}{Jednostka globals}{36}{subsubsection*.50}%
+\contentsline {subsubsection}{Jednostka macros}{37}{subsubsection*.51}%
+\contentsline {subsubsection}{Jednostka meta}{37}{subsubsection*.52}%
+\contentsline {subsubsection}{Jednostka descriptors}{38}{subsubsection*.53}%
+\contentsline {subsection}{\numberline {3.3.2}Rdzeń}{38}{subsection.3.3.2}%
+\contentsline {subsubsection}{Jednostka thirdparty}{38}{subsubsection*.54}%
+\contentsline {subsubsection}{Jednostka alloc}{38}{subsubsection*.55}%
+\contentsline {subsubsection}{Jednostka log}{38}{subsubsection*.56}%
+\contentsline {subsubsection}{Jednostka junk}{39}{subsubsection*.57}%
+\contentsline {subsubsection}{Jednostka platform}{40}{subsubsection*.58}%
+\contentsline {subsection}{\numberline {3.3.3}Zasoby}{40}{subsection.3.3.3}%
+\contentsline {chapter}{\numberline {4}Badania}{41}{chapter.4}%
+\contentsline {chapter}{\numberline {5}Podsumowanie}{42}{chapter.5}%
+\contentsline {chapter}{Wykaz literatury}{43}{chapter*.59}%
+\contentsline {chapter}{Spis rysunk\'ow}{44}{chapter*.60}%
+\contentsline {chapter}{Spis tablic}{45}{chapter*.61}%
 \contentsfinish 

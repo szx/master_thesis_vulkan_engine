@@ -380,6 +380,7 @@ W kafelkowaniu liniowym teksele są uszeregowane w pamięci wierszami (ang. row-
 Vulkan wspiera też kafelkowanie optymalne, w którym rozkład tekseli obrazu jest decydowany całkowicie przez sterownik - wybrane kafelkowanie ma na celu zwiększenie prędkości dostępu poprzez poprawę lokalności przestrzennej w pamięci podręcznej GPU.
 
 // HIRO próbkowanie, filtrowanie mag, min, mipmap
+// HIRO tekstury pozeekranowe
 
 // HIRO pamięć
 // HIRO widok
@@ -732,6 +733,33 @@ Analogicznie kwalifikator układu dla tablicy deskryptorów typu COMBINED\_IMAGE
 \begin{lstlisting}
 layout(set = y, binding = x) uniform sampler2D texture[r];
 \end{lstlisting}
+
+
+\subsubsection{Układ pamięci scalar dla buforów i stałych push}
+
+Układ pamięci definiuje wyrównania pól w strukturze znajdującej się w bloku pamięci.
+Używany układ musi być zadeklarowany w kwalifikatorze układu dla buforów i stałych push.
+
+OpenGL wspiera dwa rodzaje standardy układów: \textit{std140} i \textit{std430}.
+Vulkan odziedziczył te układy i dodatkowo wprowadził \textit{scalar}.
+Każdy kolejny standard pozwala na ciaśniejsze upakowanie pól, co skutkuje mniejszym zużyciem pamięci GPU.
+
+Układ pamięci scalar wymaga ona wsparcia funkcjonalności urządzenia Vulkan 1.2 \textit{scalarBlockLayout}, które w czasie pisania pracy jest wspierane przez więcej niż $98\%$ urządzeń \cite{GPUINFO}.
+Dodatkowo kod GLSL shadera musi posiadać następującą dyrektywę preprocesora:
+\lstset{language=GLSL}
+\begin{lstlisting}
+#extension GL_EXT_scalar_block_layout : require
+\end{lstlisting}
+
+W przeciwieństwie do swoich poprzedników, układ scalar ma bardzo proste wymagania dotyczące wyrównań pól:
+\begin{itemize}
+	\item dla typu skalarnego jest równe jego wielkości,
+	\item dla wektora bądź macierzy jest równe wyrównaniu jego komponentu,
+	\item dla tablicy jest równe wyrównaniu jego elementu,
+	\item dla struktury jest równe największemu wyrównaniu jej pól.
+\end{itemize}
+Powyższe zasady skutkują maksymalnym upakowaniem pól dla buforów używających tylko standardowych 32-bitowych skalarów mających to samo wyrównanie, co obejmuje większość shaderów nieużywających rozszerzeń takich jak \textit{GL\_EXT\_shader\_16bit\_storage} wprowadzające 16-bitowe skalary.
+
 
 \section{Rozszerzenie VK\_EXT\_descriptor\_indexing}
 

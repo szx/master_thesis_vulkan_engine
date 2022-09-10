@@ -6,11 +6,11 @@
 \contentsline {figure}{\numberline {2.3}{\ignorespaces Obraz 2D 1024x1024 z modelu Spozna \blx@tocontentsinit {0}\cite {GLTFSAMPLEMODELS} i jego 10 mipmap\relax }}{16}{figure.caption.23}%
 \contentsline {figure}{\numberline {2.4}{\ignorespaces Cykl życia obrazu łańcucha wymiany\relax }}{18}{figure.caption.25}%
 \contentsline {figure}{\numberline {2.5}{\ignorespaces Relacje pomiędzy obiektami Vulkan używanymi do zarządzania deskryptorami\relax }}{23}{figure.caption.36}%
-\contentsline {figure}{\numberline {2.6}{\ignorespaces Tradycyjne tekstury z dowiązaniami używające jednolitego indeksu w stałej push\relax }}{28}{figure.caption.38}%
-\contentsline {figure}{\numberline {2.7}{\ignorespaces Tekstury bez dowiązań używając niejednolitych indeksów instancji\relax }}{29}{figure.caption.39}%
+\contentsline {figure}{\numberline {2.6}{\ignorespaces Tradycyjne tekstury z dowiązaniami używające jednolitego indeksu w stałej push\relax }}{28}{figure.caption.39}%
+\contentsline {figure}{\numberline {2.7}{\ignorespaces Tekstury bez dowiązań używając niejednolitych indeksów instancji\relax }}{29}{figure.caption.40}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Proces budowania w formie celów i ich zależności\relax }}{32}{figure.caption.40}%
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Relacje pomiędzy modułam silnika i ich najważniejszymi klasami\relax }}{34}{figure.caption.47}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Proces budowania w formie celów i ich zależności\relax }}{32}{figure.caption.41}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Relacje pomiędzy modułam silnika i ich najważniejszymi klasami\relax }}{34}{figure.caption.48}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \contentsfinish 

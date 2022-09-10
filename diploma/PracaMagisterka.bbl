@@ -508,33 +508,6 @@
       \verb https://peps.python.org/pep-0405/
       \endverb
     \endentry
-    \entry{BITTWIDDLINGHACKS}{misc}{}
-      \name{author}{1}{}{%
-        {{hash=bfda6d7d5ae465404d023a20781181c9}{%
-           family={Anderson},
-           familyi={A\bibinitperiod},
-           given={Sean\bibnamedelima Eron},
-           giveni={S\bibinitperiod\bibinitdelim E\bibinitperiod}}}%
-      }
-      \strng{namehash}{bfda6d7d5ae465404d023a20781181c9}
-      \strng{fullhash}{bfda6d7d5ae465404d023a20781181c9}
-      \strng{bibnamehash}{bfda6d7d5ae465404d023a20781181c9}
-      \strng{authorbibnamehash}{bfda6d7d5ae465404d023a20781181c9}
-      \strng{authornamehash}{bfda6d7d5ae465404d023a20781181c9}
-      \strng{authorfullhash}{bfda6d7d5ae465404d023a20781181c9}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{title}{Bit Twiddling Hacks}
-      \field{year}{2022}
-      \verb{urlraw}
-      \verb http://graphics.stanford.edu/~seander/bithacks.html
-      \endverb
-      \verb{url}
-      \verb http://graphics.stanford.edu/~seander/bithacks.html
-      \endverb
-    \endentry
     \entry{METACONTROLC}{misc}{}
       \name{author}{1}{}{%
         {{hash=e1f2616e32f74ae07dd3a6d988339af0}{%
@@ -560,6 +533,73 @@
       \endverb
       \verb{url}
       \verb https://www.chiark.greenend.org.uk/~sgtatham/mp/
+      \endverb
+    \endentry
+    \entry{PYTHONCONFIGPARSER}{misc}{}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labeltitlesource}{title}
+      \field{title}{configparser — Configuration file parser}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://docs.python.org/3/library/configparser.html
+      \endverb
+      \verb{url}
+      \verb https://docs.python.org/3/library/configparser.html
+      \endverb
+    \endentry
+    \entry{XMACRO}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=6853e812ddbc24a593e70d94545fc29b}{%
+           family={Bright},
+           familyi={B\bibinitperiod},
+           given={Walter},
+           giveni={W\bibinitperiod}}}%
+      }
+      \strng{namehash}{6853e812ddbc24a593e70d94545fc29b}
+      \strng{fullhash}{6853e812ddbc24a593e70d94545fc29b}
+      \strng{bibnamehash}{6853e812ddbc24a593e70d94545fc29b}
+      \strng{authorbibnamehash}{6853e812ddbc24a593e70d94545fc29b}
+      \strng{authornamehash}{6853e812ddbc24a593e70d94545fc29b}
+      \strng{authorfullhash}{6853e812ddbc24a593e70d94545fc29b}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{The X Macro}
+      \field{year}{2010}
+      \verb{urlraw}
+      \verb https://digitalmars.com/articles/b51.html
+      \endverb
+      \verb{url}
+      \verb https://digitalmars.com/articles/b51.html
+      \endverb
+    \endentry
+    \entry{BITTWIDDLINGHACKS}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=bfda6d7d5ae465404d023a20781181c9}{%
+           family={Anderson},
+           familyi={A\bibinitperiod},
+           given={Sean\bibnamedelima Eron},
+           giveni={S\bibinitperiod\bibinitdelim E\bibinitperiod}}}%
+      }
+      \strng{namehash}{bfda6d7d5ae465404d023a20781181c9}
+      \strng{fullhash}{bfda6d7d5ae465404d023a20781181c9}
+      \strng{bibnamehash}{bfda6d7d5ae465404d023a20781181c9}
+      \strng{authorbibnamehash}{bfda6d7d5ae465404d023a20781181c9}
+      \strng{authornamehash}{bfda6d7d5ae465404d023a20781181c9}
+      \strng{authorfullhash}{bfda6d7d5ae465404d023a20781181c9}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Bit Twiddling Hacks}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb http://graphics.stanford.edu/~seander/bithacks.html
+      \endverb
+      \verb{url}
+      \verb http://graphics.stanford.edu/~seander/bithacks.html
       \endverb
     \endentry
   \enddatalist

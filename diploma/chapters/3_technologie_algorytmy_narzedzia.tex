@@ -1,7 +1,7 @@
-\chapter{Architektura i implementacja}
+\chapter{Narzędzia, architektura i implementacja}
 \label{chap:algs}
 
-\section{Użyte narzędzia}
+\section{Narzędzia}
 
 Silnik została napisany jako biblioteka w języku C w standardzie C11. Budowanie biblioteki ze źródeł wymaga generacji
 dodatkowego kodu przy pomocy skryptów w języku Python w wersji 3.9.7.
@@ -178,7 +178,8 @@ Relacje pomiędzy modułami silnika i ich najważniejszymi klasami są przedstaw
 		
 		% codegen
 		\node (descriptors) [file] {descriptors};
-		\node (globals) [file, below = of descriptors] {globals};
+		\node (constants) [file, below = of descriptors] {constants};
+		\node (globals) [file, below = of constants] {globals};
 		\node (macros) [file, below = of globals] {macros};
 		\node (meta) [file, below = of macros] {meta};
 		\node(codegen)[draw,dotted,fit=(descriptors) (meta)] {};
@@ -272,18 +273,166 @@ Ta sekcja opisuje szczegóły implementacyjne poszczególnych modułów silnika.
 
 \subsection{Wygenerowany kod}
 
-Silnik używa kodu w języku C wygenerowanego przez automatyczny generator kodu, który jest skryptem Python uruchamianym przez CMake przed rozpoczęciem reszty kompilacji.
+Silnik używa kodu w języku C wygenerowanego przez automatyczny generator kodu będący skryptem Python uruchamianym przez CMake na początku procesu budowania przed rozpoczęciem kompilacji właściwego
+kodu źródłowego biblioteki.
 
-// HIRO sources: config, headers
+Język C nie posiada mechanizmów pozwalających na metaprogramowanie z wyjątkiem makr preprocessora, które mogą zaspokoić część potrzeb programisty chcącego przykładowo dodać nowy rodzaje pętli \cite{METACONTROLC}, ale nie pozwalają na bardziej skomplikowaną analizę i przekształcanie kodu, które muszą być wykonywane przez zewnętrzne narzędzia.
 
-// HIRO globals: wygenerowane stałe
-// HIRO X makra
+Działanie skryptu jest sterowane konfiguracją generatora, który jest plikiem w formacie INI (zgodnym z biblioteką \textit{configparser} \cite{PYTHONCONFIGPARSER}) znajdującym się w katalogu ze skryptem.
+Format INI jest podzielony na sekcje, które zawierają pary klucz-wartość.
+
+Skrypt parsuje pliki nagłówkowe języka C znajdujący się w katalogu /src z
+pominięciem katalogu /src/codegen, do którego skrypt zapisuje wygenerowane pliki nagłówkowe i źródłowe, które są kolejno dołączane w innych modułach silnika i dodawane jako argumenty kompilatora.
+Razem wszystkie wygenerowane pliki tworzą jednostki modułu wygenerowanego kodu.
+
+
+\subsubsection{Jednostka constants}
+Zawiera wygenerowane stałe: wartości zdefiniowane w sekcji \textit{CONSTANTS} konfiguracji generatora używane przez resztę modułów, które zostały uznane za zbyt niepraktyczne aby pozwolić na ich modyfikację przy użyciu konfiguracji globalnej.
+Poniżej wymieniono stałe, ich wartości oraz interpretacje:
+\begin{itemize}
+	\item \textit{FRAMES\_IN\_FLIGHT}: $2$, liczba klatek "w locie" (ang. in flight frames), czyli jednocześnie renderowanych przez GPU, domyślna wartość pozwala na podwójne buforowanie; 
+	\item \textit{MAX\_OFFSCREEN\_TEXTURE\_COUNT}: $16$, maksymalna liczbę tekstur pozaekranowych;
+	\item \textit{MAX\_RENDER\_TARGET\_COUNT}: $8$, maksymalną liczbę tekstur pozaekranowych, które mogą być używane jako cele renderowania podczas jednego przebiegu; 
+	\item \textit{MAX\_FRAMEBUFFER\_ATTACHMENT\_COUNT}: $MAX_RENDER_TARGET_COUNT + 1 + 1$, maksymalna liczba dołączeń używana przez potok graficzny - wystarcza na dołączenia celów renderowania, prezentowalnego obrazu i bufor głębi;
+	\item \textit{MAX\_INDIRECT\_DRAW\_COMMAND\_COUNT}: $1024$, maksymalna liczba poleceń rysowania które mogą być wykonana przez jedno polecenie rysowania pośredniego;
+	\item \textit{MAX\_MATERIAL\_COUNT}: $128$, maksymalna liczba materiałów;
+	\item \textit{MAX\_DIRECTIONAL\_LIGHT\_COUNT}: $1$, maksymalna liczbę świateł kierunkowych na scenie;
+	\item \textit{MAX\_POINT\_LIGHT\_COUNT}: $128$, maksymalna liczbę świateł punktowych na scenie;
+	\item \textit{MAX\_TEXT\_CHARACTER\_COUNT}: $256$, maksymalną liczbę znaków w renderowanym ciągu znaków;
+	\item \textit{MIN\_DELTA\_TIME}: $(1.0 / 60.0)$, minimalny czas pomiędzy wywołaniami fnukcji zwrotnej \textit{update} w pętli głównej, domyślnie $\frac{1}{60}$ sekundy (60 FPS);
+	\item \textit{WORLD\_UP}: $0, 1, 0$; wektor interpretowany jako "w górę" w przestrzeni świata.
+\end{itemize}
+
+Wygenerowane stałe mogą być używane przez shadery - ich definicje są umieszczane na początku kodu GLSL shadera przed jego kompilacją - dlatego są one udostępiane w formie X makro \textit{CODEGEN\_CONSTANTS}.
+
+X makro to przydatna technika preprocessora pozwalająca na pisanie kodu, który jest automatycznie aktualizowany po zmienie danych opisywanych przez X makro \cite{XMACRO}.
+Przykładowo poniższa funkcja wymaga manualnej aktualizacji po zmianie używanego typu wyliczeniowego:
+\lstset{language=C}
+\begin{lstlisting}
+typedef enum key {
+	key_space,
+	key_enter,
+	key_count,
+} key;
+
+int key_to_glfw_key(key value) {
+	switch (value) {
+		case key_space: return GLFW_KEY_SPACE;
+		case key_enter: return GLFW_KEY_ENTER;
+		default: return GLFW_KEY_UNKNOWN;
+	}
+}
+\end{lstlisting}
+Ten sam kod używający X makro:
+\lstset{language=C}
+\begin{lstlisting}
+
+#define END_OF_KEYS
+#define KEYS(X, ...)			\
+	X(space, GLFW_KEY_SPACE)	\
+	X(enter, GLFW_KEY_ENTER)	\
+	END_OF_KEYS
+
+typedef enum key {
+#define x(_name, ...) key_##_name,
+	KEYS(x, )
+#undef x
+	key_count,
+} key;
+
+int key_to_glfw_key(key value) {
+	switch (value) {
+#define x(_name, _value, ...) case key_##_name: return _value;
+		KEYS(x, )
+#undef x
+		default: return GLFW_KEY_UNKNOWN;
+	}
+}
+\end{lstlisting}
+X makra ułatwiają utrzymywanie kodu poprzez deklaratywnego "jedynego źródła prawdy" i są intensywnie używane na wskroś silnika.
+
+\subsubsection{Jednostka globals}
+Obiekt globalny \textit{globals} reprezentujący wygenerowane zmienne.
+Ich wartości, w przeciwieństwie stałych, mogą być ustalone dopiero w czasie wykonywania.
+Obiekt jest używany do specyfikacji struktury różnych ścieżek katalogów i plików używanych przez silnik.
+Przykładowo zmienne zadeklarowane w poniższej sekcji konfiguracji generacji opisują ścieżki katalogu zasobów, konfiguracji globalnej, bazy zasobów i pliku logowania:
+\begin{verbatim}
+[GLOBALS]
+assetsDirname = assets
+assetDatabaseFilepath = ${assetsDirname}/data.db
+assetConfigFilepath = ${assetsDirname}/config.ini
+logFileName = log.txt
+\end{verbatim}
+Powyższa konfiguracja generuje poniższą metodę init():
+\lstset{language=C}
+\begin{lstlisting}
+void globals_create() {
+	globals.assetsDirname =
+		get_executable_dir_file_path("", "assets");
+	globals.assetDatabaseFilepath =
+		get_executable_dir_file_path("", "assets/data.db");
+	globals.assetConfigFilepath =
+		get_executable_dir_file_path("", "assets/config.ini");
+	globals.logFileName =
+		get_executable_dir_file_path("", "log.txt");
+}
+\end{lstlisting}
+
+\subsubsection{Jednostka macros}
+Zbiór X makr używanych przez moduł I/O obsługujący następujące zasoby wejściowe.
+
+Makra opisują wewnętrzną strukturę plików INI konfiguracji globalnej i zasobów: używane sekcje i ich dopuszczalne pary klucz-wartość z domyślnymi wartościami (liczby całkowite bądź ciągi znaków).
+Przykładowy fragment konfiguracji generatora opisujący konfiguracji globalnej:
+\begin{verbatim}
+[ASSET.CONFIG]
+graphics.WindowWidth = 640
+controls.Enabled = 1
+settings.StartScene = "sponza"
+\end{verbatim}
+Powyższa konfiguracja pozwala na sparsowanie poniższego pliku INI:
+\begin{verbatim}
+[settings]
+StartScene = MetalRoughSpheresNoTextures
+[graphics]
+WindowWidth = 1024
+[controls]
+Enabled = 1 
+\end{verbatim}
+
+Podobnie opisywana jest struktura bazy zasobów: typy podstawowe i ich odpowiedniki w języku C oraz tabele i ich kolumny. Ilustruje to poniższy fragment konfiguracji generatora:
+\begin{verbatim}
+[ASSET.DB]
+types = "BYTE:uint8_t, INT:uint32_t, FLOAT:float, TEXT:UT_string *, KEY:hash_t"
+image = "key KEY, width INT, height INT, depth INT, channels INT, type INT, data BYTE_ARRAY"
+sampler = "key KEY, magFilter INT, minFilter INT, addressWrapU INT, addressWrapV INT"
+texture = "key KEY, image KEY, sampler KEY"
+\end{verbatim}
+
+Struktura zasobów wejściowych zostanie dokładniej opisana w dalszym podrozdziale o module I/O. 
+
+\subsubsection{Jednostka meta}
+Funkcje pomocnicze wygenerowane na podstawie nagłówków silnika i Vulkan SDK.
+
+Dla każdego napotkanego typu wyliczeniowego \textit{EnumName} jest generowana jedna z poniższych funkcji:
+\lstset{language=C}
+\begin{lstlisting}
+const char *EnumName_debug_str(int value);
+void EnumName_debug_print(int flags, int indent);
+\end{lstlisting}
+Funkcje pozwalające na konwersję liczby całkowitej będącej wartoścą zmiennej wyliczeniowego na ciąg znaków i są używane przez metody \textit{debug\_print()} do logowania wartości w formie przyjaźniejszej dla użytkownika.
+
+Funkcja \textit{*\_debug\_str()} jest generowana tylko wtedy, jeśli literały wyliczeniowe nie są flagami, tj. nie są kolejnymi potęgami liczby 2.
+
+
+\subsubsection{Jednostka descriptors}
+Funkcje
+// HIRO descriptors
 
 \subsection{Rdzeń}
 
 Rdzeń to moduł zawierający funkcje pomocniczych i obiekty globalne zapewniające podstawowe funkcjonalności używane przez resztę modułów.
 
-\paragraph{Jednostka thirdparty}
+\subsubsection{Jednostka thirdparty}
 Jednostka odpowiedzialna za udostępnienia bibliotek zewnętrznych reszcie kodu.
 
 Nagłówek dołącza nagłówki bibliotek zewnętrznych i z powodów wydajnościowych podczas procesu budowania jest traktowany jako nagłówek prekompilowany (ang. precompiled header, PCH).
@@ -297,8 +446,7 @@ Przykładowo biblioteka \textit{cgltf} wymaga ponownego dołączenia nagłówka 
 #include "cgltf.h"
 \end{lstlisting}
 
-
-\paragraph{Jednostka alloc}
+\subsubsection{Jednostka alloc}
 Funkcje pomocnicze wspomagające zarządzanie pamięcią CPU, co objemuje alokację, dealokację, kopiowanie, duplikowanie i porównywanie bloków pamięci CPU.
 
 Funkcje te są potrzebne, ponieważ działanie odpowiednich funkcji oferowane przez bibliotekę standardową języka C, chociaż oferują żądaną funkcjonalność, opiera się na mechanizmie niezdefiniowanych zachowań (ang. undefined behaviour) dla niektórych argumentów (wskaźnik NULL, rozmiar 0) i zachowań OOM (ang. Out-of-memory).
@@ -308,13 +456,13 @@ Funkcje pomocnicze są wrapperami z dodatkowymi instrukcjami warunkowymi sprawdz
 Jednostka definiuje też makra ułatwiające zarządzanie pamięcią struktur danych bibliteki \textit{uthash}.
 
 
-\paragraph{Jednostka log}
+\subsubsection{Jednostka log}
 Obiekt globalny \textit{log} reprezentujący system logowana komunikatów wygenerowanych podczas działania kodu mający na celu w uproszczenie procesu debuggowania.
 
 Komunikat jest ciągiem znaków z przypisanym poziomem logowania określającym jego ważność z domyślnie wspieranymi wartościami \textit{debug}, \textit{info}, \textit{warn}, \textit{error} i \textit{fatal}.
 Komunikaty \textit{debug} są logowane tylko w konfiguracji \textit{Debug}.
 
-Komunikaty są zapisywane do standardowego wyjścia (\textit{stdout} albo \textit{stderr}) oraz do pliku tekstowego na dysku, którego nazwa zaostała zdefiniowana w zmiennych globalnych generatora kodu (domyślnie \textit{log.txt}).
+Komunikaty są zapisywane do standardowego wyjścia (\textit{stdout} albo \textit{stderr}) oraz do pliku tekstowego na dysku, którego nazwa zaostała zdefiniowana w wygenrowanych zmiennych (domyślnie \textit{log.txt}).
 
 Logowanie komuniaktu odbywa się poprzez grupę funkcji \textit{log\_*()}, gdzie \textit{*} to poziom logowania, zachowujące się tak samo jak funkcja \textit{printf} z biblioteki standardowej języka C - pierwszy argument to ciąg znaków z znakami formatującymi, reszta argumentów to formatowane wartości.
 
@@ -337,7 +485,7 @@ komunikat #2
 komunikat #3
 \end{verbatim}
 
-\paragraph{Jednostka junk}
+\subsubsection{Jednostka junk}
 Proste funkcje i makra które mogą być potencjalnie używane na wskroś wszystkich modułów w całej bibliotece, ale nie zostały uznane za wystarczająca skomplikowane, aby uzasadnić wydzielenia do osobnej jednostki.
 
 Jednostka definiuje stałe preprocesora \textit{PLATFORM\_*} używane do rozpoznania systemu operacyjnego, na którym budowany jest silnik (Linux, MacOS, Windows):
@@ -396,7 +544,7 @@ utarray_foreach_elem_deref (tree_node *, node, tree->nodes) {
 \end{lstlisting}
 
 
-\paragraph{Jednostka platform}
+\subsubsection{Jednostka platform}
 Głowna część rdzenia implementująca obiekt globalny \textit{platform} odpowiedzialny za tworzenie i niszczenie globalnego stanu używanego przez system logowania i funkcje wieloplatformowe, z których najważniejsze zostały opisane poniżej.
 
 Funkcja \textit{panic()} pozwala na zamknięcie programu z kodem wyjścia oznaczającym nieudane wykonanie po wystąpieniu fatalnego błędu.
@@ -409,5 +557,8 @@ Na systemie Windows używana jest funkcja \textit{GetModuleFileName()} oraz funk
 
 Funkcje \textit{write\_text\_file()} i \textit{read\_text\_file()} pozwalają na odczyt i zapis plików tekstowych i są używane do obsługi konfiguracji i kodu źródłowego shaderów.
 
+\subsection{Zasoby}
+
+// HIRO Zasoby to moduł zawierajacy struktury reprezentujące ...
 
 // TODO reszta modułów
