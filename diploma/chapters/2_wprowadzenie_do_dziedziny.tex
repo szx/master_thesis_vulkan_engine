@@ -366,11 +366,11 @@ Flagi tworzenia pozwalają na definicję dodatkowych funkcjonalności. Przykład
 
 Mipmapa to kopia obrazu z każdym wymiarem zmniejszonym dwukrotnie.
 W obrazie z mipmapami pierwotny obraz traktuowany jest jako pierwszej mipmapa poziomu zerowego, z której generowane są mipmapy następonych poziomów aż do osiągnięcia wymiaru 1x1x1.
-Przykładowo poniższy obraz przedstawia obraz 2D 1024x1024 z modelu Spozna \cite{GLTFSAMPLEMODELS} i jego 10 automatycznie wygenerowanych mipmap:
+Przykładowo poniższy obraz przedstawia obraz 2D 1024x1024 z modelu Sponza \cite{GLTFSAMPLEMODELS} i jego 10 automatycznie wygenerowanych mipmap:
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[width=0.3\textwidth]{images/mipmap.png}
-	\caption{Obraz 2D 1024x1024 z modelu Spozna \cite{GLTFSAMPLEMODELS} i jego 10 mipmap}
+	\caption{Obraz 2D 1024x1024 z modelu Sponza \cite{GLTFSAMPLEMODELS} i jego 10 mipmap}
 	\label{mipmap}
 \end{figure}
 Obraz posiadający mipmapy zajmuje więcej pamięci, ale pozwala na użycie filtrowania mipmapowego, które jest popularną techniką zwiększającej prędkość i jakość renderowania poprzez wprowadzenie nowych metod filtrowania podczas próbkowania obrazu.
@@ -737,7 +737,7 @@ layout(set = y, binding = x) uniform sampler2D texture[r];
 
 \subsubsection{Układ pamięci scalar dla buforów i stałych push}
 
-Układ pamięci definiuje wyrównania pól w strukturze znajdującej się w bloku pamięci.
+Układ pamięci definiuje wyrównania pól w strukturze znajdującej się w opisywanym deskryptorem pamięci.
 Używany układ musi być zadeklarowany w kwalifikatorze układu dla buforów i stałych push.
 
 OpenGL wspiera dwa rodzaje standardy układów: \textit{std140} i \textit{std430}.
@@ -1102,10 +1102,50 @@ Poniższy diagram przedstawia tekstury bez dowiązań używając niejednolitych 
 \section{Potok zasobów}
 
 W kontekście silnika zasób (ang. asset) można zdefiniować jako ogół jego elementów, które nie są częścią jego kodu źródłowego i mogą być niezależnie od niego dodawane, usuwane i modyfikowane.
+Zasoby można podzielić na zasoby wejściowe i wyjściowe.
 
-Zasoby można podzielić na zasoby wejściowe (surowe) i wyjściowe (przetworzone).
+Zasoby wejściowe mają formę plików w formacie przystosowanym do edycji przy użyciu zewnętrznego oprogramowania.
+Oczywistymi przykładami zasobów wejściowych są zasoby 3D obejmujące modele wraz z siatkami, teksturami, materiałami, transformacjami, animacjami, szkieletami i innymi elementami używanymi do renderowania, ale do zasobów wejściowych można też wliczyć tak różnorodne elementy jak oprawa dźwiękowa, efekty cząsteczkowe, pliki konfiguracyjne, shadery czy skrypty.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.9\textwidth]{images/blender.png}
+	\caption{Interfejs programu Blender \cite{BLENDER} używanego do modelowania 3D}
+	\label{blendermodel}
+\end{figure}
 
-// TODO
+Liczba możliwych elementów składającymi się na zasób 3D skłoniła branżę do opracowania ustandaryzowanych formatów opisu sceny, wśród których szczególną popularność zdobyły \textit{USD} (Universal Scene Description), który jest rozwijany przez Pixar i pozwala na łatwą i kompletną wymianę informacji pomiędzy różnymi programami grafiki 3D, oraz \textit{glTF} (GL Transmission Format), który jest rozwijany przez Khronos i jest przystosowany do przechowywania ostatecznej wersji sceny w sposób prosty do sparsowania i wyrenderowania bądź dalszego przetworzenia.
+
+Zasoby wyjściowe mają formę plików w formacie przystosowanym do manipulacji przez aplikację. Przykładami zasobów wyjściowych są pliki z rozszerzeniami \textit{.uasset} i \textit{.umap} używane przez silnik Unreal Engine \cite{unrealengine} do przechowywania zasobów w zoptymalizowanym formacie binarnym czy pliki \textit{.streamdb} i \textit{.resources}, które według twórców narzędzia do ekstrakcji zasobów z gier UnArch \cite{UNARCH} są używane w grze Doom Eternal i zastąpiły pliki \textit{.pak} wcześniejszych gier od id Software.
+
+Przepływ pracy dla zasobów jest przedstawiony na poniższym diagramie:
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[node distance=0.5cm]
+		\tikzstyle{entity} = [rectangle, minimum width=5cm, minimum height=1cm,text centered, draw=black]
+		\tikzstyle{flows} = [thick,->,>=stealth]
+		
+		\node (ThirdpartySoftware) [entity] {Oprogramowanie zewnętrzne};
+		\node (InputAsset) [entity, below = of ThirdpartySoftware] {Zasoby wejściowe};
+		\node (AssetPipeline) [entity, below = of InputAsset] {Potok zasobów};
+		\node (OutputAsset) [entity, below = of AssetPipeline] {Zasoby wyjściowe};
+		\node (Software) [entity, below = of OutputAsset] {Oprogramowanie};
+		
+		\draw [flows] (ThirdpartySoftware) edge[out=0,in=0] (InputAsset);
+		\draw [flows] (InputAsset) edge[out=180,in=180] (ThirdpartySoftware);
+		\draw [flows] (InputAsset) edge[out=-90,in=90] (AssetPipeline);
+		\draw [flows] (AssetPipeline) edge[out=-90,in=90] (OutputAsset);
+		\draw [flows] (OutputAsset) edge[out=-90,in=90] (Software);
+		
+	\end{tikzpicture}
+	\caption{Przepływ pracy dla zasobów}
+	\label{asset_workflow}
+\end{figure}
+
+Potok zasobów (ang. asset pipeline) to część silnika odpowiadająca za konwersję zasobów wejściowych na zasoby wyjściowe.
+Konwersja ta jest wymagana, ponieważ istnieją różne wymagania dotyczące formatów: zasoby wejściowe są zoptymalizowane pod kątem oszczędności miejsca na dysku i interoperacyjności między oprogramowaniem zewnętrznym, kiedy zasoby wyjściowe zwykle wymagają mniejszego zakresu możliwych funkcjonalności i powinny być w formacie dostosowanym do maksymalnie szybkiego wczytywania przez aplikację - szybkość ich zapisu jest mniej ważna ponieważ musi się odbyć tylko jeden raz na komputerach twórców oprogramowania uruchamiających potok zasobów.
+
+Baza zasobów (ang. asset database) to zasób wyjściowy mający na celu zgromadzenie informacji o wszystkich zasobach używanych przez silnik.
+// HIRO https://docs.unity3d.com/2020.1/Documentation/Manual/AssetDatabase.html
 
 \subsection{glTF}
 

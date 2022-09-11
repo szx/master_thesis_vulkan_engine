@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  11 SEP 2022 01:08
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  11 SEP 2022 23:25
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1438,17 +1438,26 @@ Overfull \hbox (5.21303pt too wide) in paragraph at lines 891--892
 LaTeX Font Info:    Font shape `TU/lmss/bx/it' in size <10> not available
 (Font)              Font shape `TU/lmss/bx/sl' tried instead on input line 1071
 .
- [28] [29]) [30]
+ [28]
+File: images/blender.png Graphic file (type bmp)
+<images/blender.png>
+ [29] [30]
+Overfull \hbox (126.89754pt too wide) in paragraph at lines 1147--1149
+\TU/lmss/m/n/10 wszystkich zasobach używanych przez silnik. // HIRO https://doc
+s.unity3d.com/2020.1/Documentation/Manual/AssetDatabase.html 
+ []
+
+) [31]
 \openout2 = `chapters/3_technologie_algorytmy_narzedzia.aux'.
 
  (./chapters/3_technologie_algorytmy_narzedzia.tex
 Rozdzia\l  3.
-[31
+[32
 
 
 
 
-] [32]
+] [33]
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
@@ -1518,25 +1527,25 @@ Overfull \hbox (14.69826pt too wide) in paragraph at lines 265--266
  [][] 
  []
 
-[33] [34]
+[34] [35]
 Overfull \hbox (0.50352pt too wide) in paragraph at lines 296--297
 []\TU/lmss/m/sl/10 MAX_FRAMEBUFFER_ATTACHMENT_COUNT\TU/lmss/m/n/10 : $\OML/zplm
 /m/it/10 MAX[]ENDER[]ARGET[]OUNT \OT1/zplm/m/n/10 + \OT1/ppl/m/n/10 1 \OT1/zplm
 /m/n/10 + \OT1/ppl/m/n/10 1$\TU/lmss/m/n/10 ,
  []
 
-[35] [36]
-Overfull \hbox (7.90878pt too wide) in paragraph at lines 409--409
+[36] [37]
+Overfull \hbox (7.90878pt too wide) in paragraph at lines 411--411
 []\TU/lmtt/m/n/9 image = "key KEY, width INT, height INT, depth INT, channels I
 NT, type INT, data BYTE_ARRAY"[] 
  []
 
-[37] [38] [39]) [40]
+[38] [39] [40] [41] [42]) [43]
 \openout2 = `chapters/5_badania.aux'.
 
  (./chapters/5_badania.tex
 Rozdzia\l  4.
-) [41
+) [44
 
 
 
@@ -1546,7 +1555,7 @@ Rozdzia\l  4.
 
  (./chapters/6_podsumowanie.tex
 Rozdzia\l  5.
-) [42
+) [45
 
 
 
@@ -1565,23 +1574,23 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 9.37807pt on input line 3.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 7.29405pt on input line 3.
- [43
+ [46
 
 
 
 
-] (./PracaMagisterka.lof)
+] [47] (./PracaMagisterka.lof)
 \tf@lof=\write7
 \openout7 = `PracaMagisterka.lof'.
 
- [44
+ [48
 
 ]
 (./PracaMagisterka.lot)
 \tf@lot=\write8
 \openout8 = `PracaMagisterka.lot'.
 
-) [45
+) [49
 
 ] (./PracaMagisterka.aux
 (./chapters/0a_streszczenie.aux) (./chapters/0b_spis_tresci.aux)
@@ -1589,25 +1598,19 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (./chapters/2_wprowadzenie_do_dziedziny.aux)
 (./chapters/3_technologie_algorytmy_narzedzia.aux) (./chapters/5_badania.aux)
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
-
-Package rerunfilecheck Warning: File `PracaMagisterka.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `PracaMagisterka.out':
-(rerunfilecheck)             Before: DB69BC1EE1488FFF3BDAACD3044DF531;7895
-(rerunfilecheck)             After:  9221F16C0088DE88DEB459662F597D45;7987.
+Package rerunfilecheck Info: File `PracaMagisterka.out' has not changed.
+(rerunfilecheck)             Checksum: E9B5652A6B720099014E1A7890CA60F8;8064.
 Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 \openout1 = `PracaMagisterka.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 39765 strings out of 476191
- 821148 string characters out of 5812072
- 1583990 words of memory out of 5000000
- 59843 multiletter control sequences out of 15000+600000
+ 39864 strings out of 476191
+ 823453 string characters out of 5812072
+ 1593298 words of memory out of 5000000
+ 59941 multiletter control sequences out of 15000+600000
  488887 words of font info for 103 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  88i,15n,91p,1516b,6445s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on PracaMagisterka.pdf (45 pages).
+Output written on PracaMagisterka.pdf (49 pages).

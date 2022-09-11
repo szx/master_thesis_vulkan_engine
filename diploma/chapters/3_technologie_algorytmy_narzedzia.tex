@@ -393,8 +393,10 @@ Powyższa konfiguracja pozwala na sparsowanie poniższego pliku INI:
 \begin{verbatim}
 [settings]
 StartScene = MetalRoughSpheresNoTextures
+
 [graphics]
 WindowWidth = 1024
+
 [controls]
 Enabled = 1 
 \end{verbatim}
@@ -408,7 +410,7 @@ sampler = "key KEY, magFilter INT, minFilter INT, addressWrapU INT, addressWrapV
 texture = "key KEY, image KEY, sampler KEY"
 \end{verbatim}
 
-Struktura zasobów wejściowych zostanie dokładniej opisana w dalszym podrozdziale o module I/O. 
+Struktura zasobów wejściowych zostanie dokładniej opisana w dalszym podrozdziale o module I/O.
 
 \subsubsection{Jednostka meta}
 Funkcje pomocnicze wygenerowane na podstawie nagłówków silnika i Vulkan SDK.
@@ -425,8 +427,77 @@ Funkcja \textit{*\_debug\_str()} jest generowana tylko wtedy, jeśli literały w
 
 
 \subsubsection{Jednostka descriptors}
-Funkcje
-// HIRO descriptors
+Jednostka zawierająca struktury i funkcje upraszczające pracę z deskryptorami.
+
+Nagłówek \textit{descriptor} modułu Vulkan zawiera definicje struktur języka C opisujących wewnętrzną strukturę pamięci buforów i stałych push znajdujących się na GPU.
+W zależności od nazwy dzielą się one na 3 rodziny:
+\begin{itemize}
+	\item \textit{*\_push\_constant\_struct}: stała push o nazwie \textit{*},
+	\item \textit{*\_uniform\_buffer\_struct}: bufor uniform o nazwie \textit{*},
+	\item \textit{*\_helper\_struct}: struktura pomocnicza o nazwie \textit{*} używana w powyższych.
+\end{itemize}
+Przykłady powyższych struktur:
+\lstset{language=C}
+\begin{lstlisting}
+// stała push 'draw'
+typedef struct draw_push_constant_struct {
+	uint currentFrameInFlight;
+} draw_push_constant_struct;
+
+// struktura pomocnicza 'offscreen_texture'
+typedef struct offscreen_texture_helper_struct {
+	uint textureId; ///< array=MAX_OFFSCREEN_TEXTURE_COUNT
+} offscreen_texture_helper_struct;
+
+// stała push 'global'
+typedef struct global_uniform_buffer_struct {
+	mat4 viewMat;
+	mat4 projMat;
+	...
+	offscreen_texture_helper_struct offscreenTextures;
+} global_uniform_buffer_struct;
+\end{lstlisting}
+
+Układ pamięci struktur zdefiniowanych w języku C nie są koniecznie kompatybilne układem pamięci wymaganymi przez GPU.
+Dlatego dla każdej sparsowanej struktury \textit{*\_struct} jest generowana analogiczna struktura \textit{*\_element}, w których użyto specyfikatorów \textit{alignas} i atrybutów \textit{packed} udostępnianych przez C11 i rozszerzenia GCC w celu wyrównania pól struktury w zgodzie ze standardem układu pamięci *scalar*.
+Generowana jest też funkcja \textit{glsl\_add\_*()} dodająca do ciągu znaków z kodem GLSL definicje struktury i kwalifikator układu.
+Przykładowe wejście i wyjście generacji dla bufora uniform \textit{instances}:
+\lstset{language=C}
+\begin{lstlisting}
+// descriptor.h:
+typedef struct instances_uniform_buffer_struct {
+	mat4 modelMat;
+	uint materialId;
+} instances_uniform_buffer_struct;
+	
+// descriptors.h
+typedef struct PACKED_STRUCT instances_uniform_buffer_element {
+	alignas(4) mat4 modelMat ;
+	alignas(4) uint materialId ;
+} instances_uniform_buffer_element;
+void glsl_add_instances_uniform_buffer(
+	UT_string *s, uint32_t set, uint32_t binding, uint32_t count);
+
+// descriptors.c
+void glsl_add_instances_uniform_buffer(
+	UT_string *s, uint32_t set, uint32_t binding, uint32_t count) {
+	utstring_printf(s, "struct instancesStruct {\n");
+	utstring_printf(s, "  mat4 modelMat ;\n");
+	utstring_printf(s, "  uint materialId ;\n");
+	utstring_printf(s, "};\n");
+	utstring_printf(s, "layout(scalar, set = %u, binding = %u) "
+			   "uniform instancesBlock {\n", set, binding);
+	utstring_printf(s, "  instancesStruct instances");
+	if (count > 1) {utstring_printf(s, "[%u]", count);}
+	utstring_printf(s, ";\n};\n");
+}
+\end{lstlisting}
+Generacja jest kończona X makraami wyliczającymi nazwy wszystkich sparsowanych rodzin struktur. 
+
+Dzięki automatycznej generacji kodu modyfikacja sposobu organizacji pamięci GPU buforów sprowadza się do modyfikacji struktur w nagłówku \textit{descriptors}, co pozwala na szybkie testowanie nowych parametrów i metod dostępu do nich podczas pisania shaderów.
+Mechanizm ten został zainspirowany implementacją jednolitych buforów w grze \textit{Tom Clancy's Rainbow Six Siege} \cite{RAINBOWSIXSIEGE}.
+
+Wygenerowane struktury, funkcje i X makra są używane podczas kopiowania danych z CPU do pamięci GPU oraz generacji shaderów, co zostanie dokładniej opisane w dalszym podrozdziale o module Vulkan.
 
 \subsection{Rdzeń}
 
@@ -556,6 +627,13 @@ oraz funkcja \textit{dirname()}.
 Na systemie Windows używana jest funkcja \textit{GetModuleFileName()} oraz funkcja \textit{PathRemoveFileSpec()}.
 
 Funkcje \textit{write\_text\_file()} i \textit{read\_text\_file()} pozwalają na odczyt i zapis plików tekstowych i są używane do obsługi konfiguracji i kodu źródłowego shaderów.
+
+\subsection{I/O}
+
+Moduł I/O zawiera obiekty używane do wczytywania i zapisywania zasobów wyjściowych.
+
+// HIRO definicje zasobów w wprowadzeniu
+// HIRO db, config, asset\_db
 
 \subsection{Zasoby}
 

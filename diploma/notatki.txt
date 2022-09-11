@@ -120,37 +120,6 @@ Każdemu modułowi zostanie poświęcony osobny podrozdział.
 
 Moduł zasobów jest odpowiedzialny za zapisywanie i wczytywania sceny z bazy zasobów. ...
 
-### Definicje
-
-
-HIRO
-
-Zasoby wejściowe mają formę plików w formacie przystosowanym do edycji przy użyciu zewnętrznego oprogramowania.
-Przykładem zasobu wejściowego jest model 3D stworzony w programie do grafiki 3D Blender [BLENDER].
-
-[OBRAZEK: MODEL 3D]
-
-Zasoby wyjściowe mają formę plików w formacie przystosowanym do manipulacji przez silnik. Przykładami zasobów
-wyjściowych są pliki z rozszerzeniami *.uasset* i *.umap* używane przez silnik Unreal Engine do przechowywania zasobów w
-zoptymalizowanym formacie binarnym.
-
-Potok zasobów (ang. *asset pipeline*) to część silnika odpowiadająca za konwersję zasobów wejściowych na zasoby
-wyjściowe. Konwersja ta jest spowodowana wyżej opisanymi różnymi wymaganiami dotyczącymi ich formatów.
-
-Poniższy diagram przedstawia przepływ pracy zasobów:
-
-```mermaid
-graph TD;
-    CGI[Zewnętrzne oprogramowanie] --> SA
-    SA[Zasób wejściowy] --> AP
-    AP[Potok zasobów] --> RF
-    RF[Zasób wyjściowy] --> R
-    R[Plik wykonywalny]
-```
-
-Baza zasobów (ang. *asset database*) to zasób wyjściowy mający na celu zgromadzenie informacji o wszystkich zasobach
-używanych przez silnik. ...
-
 ### Implementacja
 
 Rodzaje zasobów wejściowych wyróżniownych na potrzeby projektu:
@@ -379,27 +348,6 @@ Biblioteka pozwala na przeprowadzanie standardowych operacji wyboru (ang. select
 /src/data/asset_db.h Definiuje obiekt bazę zasobów. Używa on wewnętrznie obiekt bazy danych SQLite i dodaje operacje
 wyboru i wprowadzania dla poszczególnych tabel i kolumn bazy zasobów:
 [LISTING]
-
--------------
-HIRO
-
-/src/codegen/descriptors.h
-Definicje struktur helper_element i funkcji glsl_add wygenerowanych na podstawie analizy
-struktur helper_struct pliku nagłówkowego /src/objects/descriptor.h.
-
-Stuktury helper_struct opisują wewnętrzną strukturę buforów uniform znajdujących się na GPU. Relacja ta została
-przedstawiona na poniższym diagramie:
-[helper_struct w C -> helper_element na GPU & kod GLSL]
-
-Układ pamięci struktur zdefiniowanych w języku C nie są koniecznie kompatybilne układem pamięci wymaganymi przez GPU.
-Fakt ten wymusza generacje struktur helper_element, w których użyto atrybutów alignas udostępnianych przez C11 do wyrównania pól struktury w układzie pamięci *scalar*.
-
-
-Funkcje glsl_add zwracają ciągi znaków z definicjami struktur buforów uniform w języku GLSL i są używane podczas
-generacji shaderów, co zostanie opisane później w pracy podczas opisu potoku renderowania.
-
-Dodanie nowej struktury buffora uniform sprowadza się do zdefniniowania nowej struktury w /src/objects/descriptor.h, co
-pozwala na szybkie dodawania nowych parametrów podczas pisania shaderów.
 
 -------------
 

@@ -495,9 +495,59 @@
       \field{title}{GPU Pro 4: Advanced Rendering Techniques}
       \field{year}{2013}
     \endentry
+    \entry{BLENDER}{software}{}
+      \name{author}{1}{}{%
+        {{hash=38b863a4731f9082165e291d08953ee2}{%
+           family={{Blender Foundation}},
+           familyi={B\bibinitperiod}}}%
+      }
+      \strng{namehash}{38b863a4731f9082165e291d08953ee2}
+      \strng{fullhash}{38b863a4731f9082165e291d08953ee2}
+      \strng{bibnamehash}{38b863a4731f9082165e291d08953ee2}
+      \strng{authorbibnamehash}{38b863a4731f9082165e291d08953ee2}
+      \strng{authornamehash}{38b863a4731f9082165e291d08953ee2}
+      \strng{authorfullhash}{38b863a4731f9082165e291d08953ee2}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Modeler 3D Blender}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://www.blender.org/
+      \endverb
+      \verb{url}
+      \verb https://www.blender.org/
+      \endverb
+    \endentry
+    \entry{UNARCH}{software}{}
+      \name{author}{1}{}{%
+        {{hash=c0529ab46fafe8e43d340cb2d8746b42}{%
+           family={{ArwgLacyProgramming}},
+           familyi={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{c0529ab46fafe8e43d340cb2d8746b42}
+      \strng{fullhash}{c0529ab46fafe8e43d340cb2d8746b42}
+      \strng{bibnamehash}{c0529ab46fafe8e43d340cb2d8746b42}
+      \strng{authorbibnamehash}{c0529ab46fafe8e43d340cb2d8746b42}
+      \strng{authornamehash}{c0529ab46fafe8e43d340cb2d8746b42}
+      \strng{authorfullhash}{c0529ab46fafe8e43d340cb2d8746b42}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Narzędzie do ekstrakcji archiw gier UnArch}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb www.alprogramming.com
+      \endverb
+      \verb{url}
+      \verb www.alprogramming.com
+      \endverb
+    \endentry
     \entry{PEP405}{misc}{}
-      \field{sortinit}{2}
-      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
       \field{labeltitlesource}{title}
       \field{title}{PEP 405 – Python Virtual Environments}
       \field{year}{2011}
@@ -575,6 +625,33 @@
       \verb https://digitalmars.com/articles/b51.html
       \endverb
     \endentry
+    \entry{RAINBOWSIXSIEGE}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=67aca50e6f272da40c98e8ba5efa5aa3}{%
+           family={Mansouri},
+           familyi={M\bibinitperiod},
+           given={Jalal\bibnamedelimb Eddine\bibnamedelima El},
+           giveni={J\bibinitperiod\bibinitdelim E\bibinitperiod\bibinitdelim E\bibinitperiod}}}%
+      }
+      \strng{namehash}{67aca50e6f272da40c98e8ba5efa5aa3}
+      \strng{fullhash}{67aca50e6f272da40c98e8ba5efa5aa3}
+      \strng{bibnamehash}{67aca50e6f272da40c98e8ba5efa5aa3}
+      \strng{authorbibnamehash}{67aca50e6f272da40c98e8ba5efa5aa3}
+      \strng{authornamehash}{67aca50e6f272da40c98e8ba5efa5aa3}
+      \strng{authorfullhash}{67aca50e6f272da40c98e8ba5efa5aa3}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Rendering 'Rainbow Six | Siege'}
+      \field{year}{2018}
+      \verb{urlraw}
+      \verb https://www.gdcvault.com/play/1022990/Rendering-Rainbow-Six-Siege
+      \endverb
+      \verb{url}
+      \verb https://www.gdcvault.com/play/1022990/Rendering-Rainbow-Six-Siege
+      \endverb
+    \endentry
     \entry{BITTWIDDLINGHACKS}{misc}{}
       \name{author}{1}{}{%
         {{hash=bfda6d7d5ae465404d023a20781181c9}{%
@@ -589,8 +666,8 @@
       \strng{authorbibnamehash}{bfda6d7d5ae465404d023a20781181c9}
       \strng{authornamehash}{bfda6d7d5ae465404d023a20781181c9}
       \strng{authorfullhash}{bfda6d7d5ae465404d023a20781181c9}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Bit Twiddling Hacks}

@@ -62,37 +62,38 @@
 \contentsline {section}{\numberline {2.8}Oświetlenie}{29}{section.2.8}%
 \contentsline {section}{\numberline {2.9}Cieniowanie odroczone}{29}{section.2.9}%
 \contentsline {section}{\numberline {2.10}Potok zasobów}{29}{section.2.10}%
-\contentsline {subsection}{\numberline {2.10.1}glTF}{29}{subsection.2.10.1}%
-\contentsline {section}{\numberline {2.11}Graf sceny}{30}{section.2.11}%
-\contentsline {section}{\numberline {2.12}Graf renderowania}{30}{section.2.12}%
-\contentsline {chapter}{\numberline {3}Narzędzia, architektura i implementacja}{31}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Narzędzia}{31}{section.3.1}%
-\contentsline {subsection}{\numberline {3.1.1}Proces budowania}{31}{subsection.3.1.1}%
-\contentsline {paragraph}{engine}{32}{paragraph*.42}%
-\contentsline {paragraph}{main}{32}{paragraph*.43}%
-\contentsline {paragraph}{test}{32}{paragraph*.44}%
-\contentsline {paragraph}{asset\textunderscore \allowbreak pipeline}{32}{paragraph*.45}%
-\contentsline {paragraph}{copy\textunderscore \allowbreak assets}{32}{paragraph*.46}%
-\contentsline {paragraph}{run\textunderscore \allowbreak asset\textunderscore \allowbreak pipeline}{32}{paragraph*.47}%
-\contentsline {subsection}{\numberline {3.1.2}Biblioteki zewnętrzne}{32}{subsection.3.1.2}%
-\contentsline {section}{\numberline {3.2}Architektura}{33}{section.3.2}%
-\contentsline {section}{\numberline {3.3}Implementacja}{34}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}Wygenerowany kod}{34}{subsection.3.3.1}%
-\contentsline {subsubsection}{Jednostka constants}{35}{subsubsection*.49}%
-\contentsline {subsubsection}{Jednostka globals}{36}{subsubsection*.50}%
-\contentsline {subsubsection}{Jednostka macros}{37}{subsubsection*.51}%
-\contentsline {subsubsection}{Jednostka meta}{37}{subsubsection*.52}%
-\contentsline {subsubsection}{Jednostka descriptors}{38}{subsubsection*.53}%
-\contentsline {subsection}{\numberline {3.3.2}Rdzeń}{38}{subsection.3.3.2}%
-\contentsline {subsubsection}{Jednostka thirdparty}{38}{subsubsection*.54}%
-\contentsline {subsubsection}{Jednostka alloc}{38}{subsubsection*.55}%
-\contentsline {subsubsection}{Jednostka log}{38}{subsubsection*.56}%
-\contentsline {subsubsection}{Jednostka junk}{39}{subsubsection*.57}%
-\contentsline {subsubsection}{Jednostka platform}{40}{subsubsection*.58}%
-\contentsline {subsection}{\numberline {3.3.3}Zasoby}{40}{subsection.3.3.3}%
-\contentsline {chapter}{\numberline {4}Badania}{41}{chapter.4}%
-\contentsline {chapter}{\numberline {5}Podsumowanie}{42}{chapter.5}%
-\contentsline {chapter}{Wykaz literatury}{43}{chapter*.59}%
-\contentsline {chapter}{Spis rysunk\'ow}{44}{chapter*.60}%
-\contentsline {chapter}{Spis tablic}{45}{chapter*.61}%
+\contentsline {subsection}{\numberline {2.10.1}glTF}{31}{subsection.2.10.1}%
+\contentsline {section}{\numberline {2.11}Graf sceny}{31}{section.2.11}%
+\contentsline {section}{\numberline {2.12}Graf renderowania}{31}{section.2.12}%
+\contentsline {chapter}{\numberline {3}Narzędzia, architektura i implementacja}{32}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Narzędzia}{32}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Proces budowania}{32}{subsection.3.1.1}%
+\contentsline {paragraph}{engine}{33}{paragraph*.44}%
+\contentsline {paragraph}{main}{33}{paragraph*.45}%
+\contentsline {paragraph}{test}{33}{paragraph*.46}%
+\contentsline {paragraph}{asset\textunderscore \allowbreak pipeline}{33}{paragraph*.47}%
+\contentsline {paragraph}{copy\textunderscore \allowbreak assets}{33}{paragraph*.48}%
+\contentsline {paragraph}{run\textunderscore \allowbreak asset\textunderscore \allowbreak pipeline}{33}{paragraph*.49}%
+\contentsline {subsection}{\numberline {3.1.2}Biblioteki zewnętrzne}{33}{subsection.3.1.2}%
+\contentsline {section}{\numberline {3.2}Architektura}{34}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Implementacja}{35}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Wygenerowany kod}{35}{subsection.3.3.1}%
+\contentsline {subsubsection}{Jednostka constants}{36}{subsubsection*.51}%
+\contentsline {subsubsection}{Jednostka globals}{37}{subsubsection*.52}%
+\contentsline {subsubsection}{Jednostka macros}{38}{subsubsection*.53}%
+\contentsline {subsubsection}{Jednostka meta}{38}{subsubsection*.54}%
+\contentsline {subsubsection}{Jednostka descriptors}{39}{subsubsection*.55}%
+\contentsline {subsection}{\numberline {3.3.2}Rdzeń}{40}{subsection.3.3.2}%
+\contentsline {subsubsection}{Jednostka thirdparty}{40}{subsubsection*.56}%
+\contentsline {subsubsection}{Jednostka alloc}{41}{subsubsection*.57}%
+\contentsline {subsubsection}{Jednostka log}{41}{subsubsection*.58}%
+\contentsline {subsubsection}{Jednostka junk}{42}{subsubsection*.59}%
+\contentsline {subsubsection}{Jednostka platform}{43}{subsubsection*.60}%
+\contentsline {subsection}{\numberline {3.3.3}I/O}{43}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}Zasoby}{43}{subsection.3.3.4}%
+\contentsline {chapter}{\numberline {4}Badania}{44}{chapter.4}%
+\contentsline {chapter}{\numberline {5}Podsumowanie}{45}{chapter.5}%
+\contentsline {chapter}{Wykaz literatury}{47}{chapter*.61}%
+\contentsline {chapter}{Spis rysunk\'ow}{48}{chapter*.62}%
+\contentsline {chapter}{Spis tablic}{49}{chapter*.63}%
 \contentsfinish 
