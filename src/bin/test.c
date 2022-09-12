@@ -13,8 +13,10 @@ void gltf_loading() {
   device *vkd = device_create(config, assetDb);
   UT_string *sceneName;
   utstring_alloc(sceneName, GLTF_NAME);
-  UT_string *gltfPath = get_asset_file_path("gltf/" GLTF_NAME, GLTF_NAME ".gltf");
-  UT_string *sceneConfigPath = get_asset_file_path("gltf/" GLTF_NAME, GLTF_NAME ".ini");
+  UT_string *gltfPath =
+      get_file_path(globals.assetsDirname, "gltf/" GLTF_NAME "/" GLTF_NAME ".gltf");
+  UT_string *sceneConfigPath =
+      get_file_path(globals.assetsDirname, "gltf/" GLTF_NAME "/" GLTF_NAME ".ini");
   scene_data *gltfSceneData =
       scene_data_create_with_gltf_file(sceneName, gltfPath, sceneConfigPath, config, assetDb);
   scene_data *assetDbSceneData = scene_data_create_with_asset_db(config, assetDb, sceneName);

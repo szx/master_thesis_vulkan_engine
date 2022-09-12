@@ -118,10 +118,9 @@ UT_string *get_executable_dir_file_path(const char *dirName, const char *fileNam
   return path;
 }
 
-UT_string *get_asset_file_path(const char *dirName, const char *fileName) {
+UT_string *get_file_path(UT_string *dirPath, const char *fileName) {
   UT_string *path;
-  utstring_alloc(path, utstring_body(globals.assetsDirname));
-  append_to_path(path, dirName);
+  utstring_alloc(path, utstring_body(dirPath));
   append_to_path(path, fileName);
   return path;
 }

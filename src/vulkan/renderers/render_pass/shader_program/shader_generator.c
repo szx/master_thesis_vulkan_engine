@@ -23,11 +23,9 @@ void glsl_add_header(UT_string *s) {
 }
 
 void glsl_add_common_source(UT_string *s) {
-  UT_string *commonPath = get_asset_file_path("shaders", "common.glsl");
-  UT_string *commonGlslSource = read_text_file(commonPath);
+  UT_string *commonGlslSource = read_text_file(globals.assetsShaderCommonFilepath);
   utstring_printf(s, "%s\n", utstring_body(commonGlslSource));
   utstring_free(commonGlslSource);
-  utstring_free(commonPath);
 }
 
 void glsl_add_vertex_shader_input_variables_defines(UT_string *s, vertex_stream *stream) {
@@ -215,7 +213,7 @@ void glsl_add_body(UT_string *s, render_pass_desc renderPassDesc, shader_type sh
   }
   assert(filename != NULL);
 
-  UT_string *inputPath = get_asset_file_path("shaders", filename);
+  UT_string *inputPath = get_file_path(globals.assetsShaderDirpath, filename);
   UT_string *glslSource = read_text_file(inputPath);
   verify(utstring_len(glslSource) > 0);
   utstring_printf(s, "// %s\n%s\n", utstring_body(inputPath), utstring_body(glslSource));

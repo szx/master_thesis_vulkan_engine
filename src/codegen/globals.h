@@ -7,6 +7,8 @@ typedef struct globals_ {
   UT_string *assetsDirname;
   UT_string *assetDatabaseFilepath;
   UT_string *assetConfigFilepath;
+  UT_string *assetsShaderDirpath;
+  UT_string *assetsShaderCommonFilepath;
   UT_string *logFileName;
 } globals_;
 extern globals_ globals;

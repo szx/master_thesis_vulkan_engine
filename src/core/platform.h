@@ -55,8 +55,8 @@ void append_to_path(UT_string *path, const char *name);
 /// Returns new path to file in specified directory.
 UT_string *get_executable_dir_file_path(const char *dirName, const char *fileName);
 
-/// Returns new path to file in assets directory.
-UT_string *get_asset_file_path(const char *dirName, const char *fileName);
+/// Returns new path to file in directory.
+UT_string *get_file_path(UT_string *dirPath, const char *fileName);
 
 /// Returns new string with text file content.
 UT_string *read_text_file(UT_string *path);

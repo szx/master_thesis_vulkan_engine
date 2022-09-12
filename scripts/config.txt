@@ -2,6 +2,8 @@
 assetsDirname = assets
 assetDatabaseFilepath = ${assetsDirname}/data.db
 assetConfigFilepath =${assetsDirname}/config.ini
+assetsShaderDirpath =${assetsDirname}/shaders
+assetsShaderCommonFilepath =${assetsShaderDirpath}/common.glsl
 logFileName = log.txt
 
 [CONSTANTS]
