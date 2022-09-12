@@ -164,6 +164,8 @@ Analogiczne metody \textit{init()} i \textit{deinit()} tworzą i niszczą instan
 Opcjonalna metoda \textit{debug\_print()} loguje informacje o wewnętrznym stanie instancji użyteczne podczas debugowania.
 
 Relacje pomiędzy modułami silnika i ich najważniejszymi jednostkami są przedstawione na poniższym diagramie:
+
+// TODO: Ładniejszy diagram, relacje.
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[node distance=2mm]
@@ -192,7 +194,7 @@ Relacje pomiędzy modułami silnika i ich najważniejszymi jednostkami są przed
 		\node(core)[draw,dotted,fit=(alloc) (junk) (log) (platform) (thirdparty)] {};
 		
 		% data
-		\node (db) [file, below = 1cm of core] {db};
+		\node (db) [file, below = 1cm of core] {sql\_db};
 		\node (config) [file, below = of db] {config};
 		\node (assetdb) [file, below = of config] {asset\_db};
 		\node(data)[draw,dotted,fit=(db) (assetdb)] {};
@@ -242,15 +244,8 @@ Relacje pomiędzy modułami silnika i ich najważniejszymi jednostkami są przed
 		\def\x{render_pass}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
 		\def\x{render_pass_state}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
 		\def\x{batch}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
-		\node(rendering)[draw,dotted,fit=(renderer) (batch)] {};
-		
-		% legend
-		\path ([xshift=34mm,yshift=-2mm]current bounding box.south west)
-		node[matrix,anchor=south east,cells={nodes={font=\sffamily,anchor=west}},
-		draw,thick,inner sep=1ex]{
-			\draw[arrow](0,0) -- ++ (0.6,0); & \node{Użycie};\\
-			\draw[relation](0,0) -- ++ (0.6,0); & \node{Kompatybilność};\\
-		};
+		\def\x{main}; \node (\x) [executable, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\node(rendering)[draw,dotted,fit=(renderer) (renderer_cache) (render_pass_state) (main)] {};
 	
 		% labels
 		\node ()[above=0cm of codegen] {\textbf{Wygenerowany kod}};
@@ -686,18 +681,35 @@ Wartości mogą być liczbą całkowitą lub ciągiem znaków i dla brakującyc
 Odczyt i zapis odbywa się przy pomocy metod \textit{load()} i \textit{save()}.
 
 
-\subsubsection{Jednostka db}
-Obiekt \textit{db} reprezentujący połączenie z plikiem bazy danych SQLite.
+\subsubsection{Jednostka sql\_db}
+Obiekt \textit{sql\_db} reprezentujący połączenie z plikiem bazy danych SQLite.
 
 SQLite posiada dynamiczny i słaby system typowania posiadający 5 typów prostych:
 NULL, INTEGER (liczba całkowita maksymalnie 64-bitowa), REAL (64-bitowa liczba zmiennoprzecinkowa), TEXT ( ciąg znaków UTF-8/16) i BLOB: (blok pamięci).
 Obiekt \textit{db} rozszerza ten ubogi system typów nowymi typami złożonymi bezpośrednio odpowiadającymi typom języka C zdefiniowanych w konfiguracji generatora: BYTE (uint8\_t), INT (uint32\_t), FLOAT (float), VEC2(vec2), VEC3(vec3), VEC4(vec4), MAT4(mat4), TEXT(UT\_string *), i KEY(hash\_t).
 Dodatkowo każdy typ posiada wersję tablicową \textit{*\_ARRAY} (BYTE\_ARRAY, INT\_ARRAY itd.).
 
-Obiekt \textit{db} pozwala na przeprowadzanie standardowych operacji wyboru (ang. select) i umieszczania (ang. insert) rekordów do wybranej tabeli.
-Baza danych SQLite wciąż wewnętrznie używa typów prostych, ale wygenerowane przy użyciu X makro metody \textit{} automatycznie przeprowadza serializację i deserializację typów złożonych.
+Obiekt \textit{sql\_db} pozwala na przeprowadzanie standardowych operacji wyboru (ang. select) i umieszczania (ang. insert) rekordów do wybranej tabeli.
+Baza danych SQLite wciąż wewnętrznie używa typów prostych, ale wygenerowane przy użyciu X makro metody \textit{select\_*()} i \textit{insert\_*()} automatycznie przeprowadzają serializację i deserializację typów złożonych.
 
-// HIRO asset\_db
+
+\subsubsection{Jednostka asset\_db}
+Obiekt \textit{asset\_db} reprezentuje bazę zasobów.
+Używa on wewnętrznie obiektu \textit{sql\_db} i podobnie jak w nim użyto X makro do dodania metod wyboru i umieszczania wartości dla specyficznej tabeli, kolumny i klucza.
+Przykładowo poniższy funkcja kod wybiera wartość FLOAT z tabeli \textit{directLight}, kolumny \textit{intensity} i klucza \textit{key}:
+\lstset{language=C}
+\begin{lstlisting}
+float value =
+	asset_db_select_directLight_intensity_float(assetDb, key).value;
+\end{lstlisting}
+Analogicznie wygląda umieszczenie nowej wartości:
+\lstset{language=C}
+\begin{lstlisting}
+asset_db_insert_directLight_intensity_float(assetDb, key,
+	data_float_temp(value));
+\end{lstlisting}
+
+Obiekt ten jest intensywnie używany przez moduł zasobów do implementacji serializacji i deserializacji.
 
 \subsection{Zasoby}
 
@@ -707,6 +719,61 @@ Baza danych SQLite wciąż wewnętrznie używa typów prostych, ale wygenerowane
 \subsection{Vulkan}
 
 // TODO Vulkan to moduł zawierajacy 
+
+\subsubsection{Jednostka shader}
+Obiekt \textit{shader} reprezentuje pojedyńczy shader i jest odpowiedzialny za kompilację ich do formy używalnej przez Vulkan.
+
+Obiekt składa się z następujących elementów:
+\begin{itemize}
+	\item typ shadera,
+	\item kod źródłowy GLSL,
+	\item kod bajtowy SPIR-V,
+	\item moduł shadera,
+	\item obiekt \textit{shader\_reflect}.
+\end{itemize}
+
+Typ shadera zależy od tego, dla którego etapu potoku graficznego jest on przeznaczony.
+Wspierane są dwa typy: wierzchołków i fragmentów.
+
+Kod źródłowy GLSL must być znany podczas tworzenia - jest on uzyskiwany poprzez użycie obiektu \textit{shader\_generator}.
+
+Kod bajtowy SPIR-V jest uzyskiwany poprzez kompilację kodu źródłowego GLSL biblioteką \textit{shaderc}.
+Jej użycie ilustruje poniższy kod:
+\lstset{language=C}
+\begin{lstlisting}
+shaderc_compiler_t compiler = shaderc_compiler_initialize();
+
+shaderc_compile_options_t options = shaderc_compile_options_initialize();
+shaderc_compile_options_set_target_env(options, shaderc_target_env_vulkan, 0);
+
+const char *glslCode = ...;
+size_t glslLen = strlen(glslCode);
+shaderc_shader_kind shaderType = ...;
+const char *inputFileName = "shader";
+const char *entryPointName = "main";
+shaderc_compilation_result_t result = shaderc_compile_into_spv(
+compiler, glslCode, glslLen,
+shaderType, inputFileName, entryPointName, NULL);
+shaderc_compile_options_release(options);
+
+if (shaderc_result_get_num_errors(result)) {
+	const char *errorMsg = shaderc_result_get_error_message(result);
+	panic("compilation error: %s\n", errorMsg);
+}
+
+size_t spvSize = shaderc_result_get_length(result);
+uint32_t *spvCode = (uint32_t *)malloc(spvSize);
+core_memcpy(spvCode, (uint32_t *)shaderc_result_get_bytes(result), spvSize);
+
+shaderc_result_release(result);
+shaderc_compiler_release(compiler)
+\end{lstlisting}
+
+Moduł shadera jest on uzyskiwany poprzez kompilację kodu bajtowego SPIR-V funkcją vkCreateShaderModule(), który jest też używany do uzyskania obiektu \textit{shader\_reflect}.
+
+\subsubsection{Jednostka shader\_reflect}
+Obiekt \textit{shader\_reflect} reprezentuje mechanizm refleksji shadera pozwalający na badanie jego struktury.
+Operuje on na kodzie bajtowym SPIR-V i jest on używany podczas testów oraz do logowania informacji debugujących.
 
 \subsection{Scena}
 

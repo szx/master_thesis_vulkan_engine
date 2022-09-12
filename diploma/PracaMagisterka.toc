@@ -54,9 +54,10 @@
 \contentsline {subsection}{\numberline {2.3.4}Częściowe dowiązania deskryptorów}{26}{subsection.2.3.4}%
 \contentsline {subsection}{\numberline {2.3.5}Tablice deskryptorów czasu wykonania}{26}{subsection.2.3.5}%
 \contentsline {section}{\numberline {2.4}Przebiegi renderowania i potoki}{27}{section.2.4}%
-\contentsline {subsection}{\numberline {2.4.1}Rozszerzenie VK\textunderscore \allowbreak EXT\textunderscore \allowbreak dynamic\textunderscore \allowbreak rendering}{27}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.1}Moduły shaderów}{27}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Rozszerzenie VK\textunderscore \allowbreak EXT\textunderscore \allowbreak dynamic\textunderscore \allowbreak rendering}{27}{subsection.2.4.2}%
 \contentsline {section}{\numberline {2.5}Renderowanie bez dowiązań}{27}{section.2.5}%
-\contentsline {subsection}{\numberline {2.5.1}Tekstury bez dowiązań}{27}{subsection.2.5.1}%
+\contentsline {subsection}{\numberline {2.5.1}Tekstury bez dowiązań}{28}{subsection.2.5.1}%
 \contentsline {subsection}{\numberline {2.5.2}Geometria bez dowiązań}{29}{subsection.2.5.2}%
 \contentsline {section}{\numberline {2.6}Mapowanie tekstur}{29}{section.2.6}%
 \contentsline {section}{\numberline {2.7}Oświetlenie}{29}{section.2.7}%
@@ -91,14 +92,17 @@
 \contentsline {subsubsection}{Jednostka platform}{43}{subsubsection*.60}%
 \contentsline {subsection}{\numberline {3.3.3}I/O}{43}{subsection.3.3.3}%
 \contentsline {subsubsection}{Jednostka config}{44}{subsubsection*.61}%
-\contentsline {subsubsection}{Jednostka db}{44}{subsubsection*.62}%
+\contentsline {subsubsection}{Jednostka sql\textunderscore \allowbreak db}{44}{subsubsection*.62}%
+\contentsline {subsubsection}{Jednostka asset\textunderscore \allowbreak db}{45}{subsubsection*.63}%
 \contentsline {subsection}{\numberline {3.3.4}Zasoby}{45}{subsection.3.3.4}%
 \contentsline {subsection}{\numberline {3.3.5}Vulkan}{45}{subsection.3.3.5}%
-\contentsline {subsection}{\numberline {3.3.6}Scena}{45}{subsection.3.3.6}%
-\contentsline {subsection}{\numberline {3.3.7}Renderer}{45}{subsection.3.3.7}%
-\contentsline {chapter}{\numberline {4}Badania}{46}{chapter.4}%
-\contentsline {chapter}{\numberline {5}Podsumowanie}{47}{chapter.5}%
-\contentsline {chapter}{Wykaz literatury}{49}{chapter*.63}%
-\contentsline {chapter}{Spis rysunk\'ow}{50}{chapter*.64}%
-\contentsline {chapter}{Spis tablic}{51}{chapter*.65}%
+\contentsline {subsubsection}{Jednostka shader}{45}{subsubsection*.64}%
+\contentsline {subsubsection}{Jednostka shader\textunderscore \allowbreak reflect}{46}{subsubsection*.65}%
+\contentsline {subsection}{\numberline {3.3.6}Scena}{46}{subsection.3.3.6}%
+\contentsline {subsection}{\numberline {3.3.7}Renderer}{46}{subsection.3.3.7}%
+\contentsline {chapter}{\numberline {4}Badania}{47}{chapter.4}%
+\contentsline {chapter}{\numberline {5}Podsumowanie}{48}{chapter.5}%
+\contentsline {chapter}{Wykaz literatury}{50}{chapter*.66}%
+\contentsline {chapter}{Spis rysunk\'ow}{51}{chapter*.67}%
+\contentsline {chapter}{Spis tablic}{52}{chapter*.68}%
 \contentsfinish 

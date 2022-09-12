@@ -201,6 +201,7 @@ przestrzeni widoku do przestrzeni przycinania (ang. clip space).
 Funkcja get_orthographic_matrix oblicza macierz rzutu prostokątnego z przestrzeni widoku do przestrzeni przycinania (
 ang. clip space). Przestrzeń przycinania w Vulkanie jest prawoskrętna z flipped Y.
 -------------
+HIRO
 /src/assets Zawiera obiekty zasobów. Obiekt zasobów reprezentuje zasoby znajdujący się w bazie zasobów. Obiekty zasobów
 są obiektami POD (ang. Plain Old Object), ich jedynym zadaniem jest udostępnienie informacji o zasobach elementom
 silnika na wyższym poziomie.
@@ -331,18 +332,6 @@ znaków z alfabetem czcionki i rozmiar jednego glifu w pikselach.
 -------------
 /src/data Obiekty pozwalające na parsownie plików konfiguracyjnych i baz danych. Pierwszy moduł używający wygenerowanego
 kodu.
-
-------
-HIRO
-/src/data/db.h
-
-
-Biblioteka pozwala na przeprowadzanie standardowych operacji wyboru (ang. select) i wprowadzania (ang. insert).
-[LISTING]
-------
-/src/data/asset_db.h Definiuje obiekt bazę zasobów. Używa on wewnętrznie obiekt bazy danych SQLite i dodaje operacje
-wyboru i wprowadzania dla poszczególnych tabel i kolumn bazy zasobów:
-[LISTING]
 
 -------------
 
@@ -574,71 +563,6 @@ vec4 baseColorFactor = global[globalIdx].materials[materialId].baseColorFactor;
 uint baseColorTextureId = global[globalIdx].materials[materialId].baseColorTextureId;
 vec4 baseColorSample = texture(textures2D[baseColorTextureId], inTexCoord);
 ```
-
-## objects/shader.h
-
-### Obiekt shader
-
-Obiekt shader reprezentuje pojedyńczy shader i jest odpowiedzialny za kompilację ich do formy używanej przez Vulkan.
-
-### Shader
-
-Shader to program specyfikujący operacje wykonywane podczas etapu potoku graficznego dla każdego elementu przetwarzanego
-przez ten etapu potoku (np. wierzchołka albo fragmentu).
-
-W silniku shader składa się z następujących elementów:
-
-- typ shadera
-- kod źródłowy GLSL,
-- kod bajtowy SPIR-V,
-- moduł shadera Vulkan,
-- refleksja shadera.
-
-Typ shadera zależy od tego, dla którego etapu potoku graficznego jest on przeznaczony. Silnik wspiera dwa typy shaderów:
-
-- shader wierzchołków,
-- shader fragmentów.
-
-Kod źródłowy GLSL reprezentuje shader w formie tekstowej przy użyciu języka programowania potoku graficznego składniowo
-zbliżonego do jezyka C. Jest on uzyskiwany poprzez użycie obiektu *shader_generator*.
-
-Kod bajtowy SPIR-V reprezentuje shader w formie ustandaryzowanej binarnej reprezentacji pośredniej. Jest on uzyskiwany
-poprzez kompilację kodu źródłowego GLSL biblioteką zewnętrzną *shaderc*.
-
-```
-shaderc_compiler_t compiler = shaderc_compiler_initialize();
-
-shaderc_compile_options_t options = shaderc_compile_options_initialize();
-shaderc_compile_options_set_target_env(options, shaderc_target_env_vulkan, 0);
-
-const char *glslCode = ...;
-size_t glslLen = strlen(glslCode);
-shaderc_shader_kind shaderType = ...;
-const char *inputFileName = "shader";
-const char *entryPointName = "main";
-shaderc_compilation_result_t result = shaderc_compile_into_spv(
-    compiler, glslCode, glslLen,
-    shaderType, inputFileName, entryPointName, NULL);
-shaderc_compile_options_release(options);
-
-if (shaderc_result_get_num_errors(result)) {
-    const char *errorMsg = shaderc_result_get_error_message(result);
-    panic("compilation error: %s\n", errorMsg);
-}
-
-size_t spvSize = shaderc_result_get_length(result);
-uint32_t *spvCode = (uint32_t *)malloc(spvSize);
-core_memcpy(spvCode, (uint32_t *)shaderc_result_get_bytes(result), spvSize);
-
-shaderc_result_release(result);
-shaderc_compiler_release(compiler)
-```
-
-Moduł shadera Vulkan reprezentuje shader w formie, która może być używana bezpośrednio przez potok graficzny Vulkan.
-Jest on uzyskiwany poprzez kompilację kodu bajtowego SPIR-V funkcją vkCreateShaderModule().
-
-Obiekt shader_reflect reprezentuje mechanizm refleksji shadera. Pozwala on na badanie struktury skompilowanego shadera.
-Operuje on na kodzie bajtowym SPIR-V. Jest on używany podczas testów oraz do logowania informacji debugujących.
 
 ## objects/swap_chain.h
 

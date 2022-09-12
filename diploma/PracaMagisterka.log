@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  12 SEP 2022 21:37
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  12 SEP 2022 23:07
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1274,12 +1274,12 @@ Underfull \hbox (badness 10000) in paragraph at lines 5--12
 \openout2 = `chapters/0b_spis_tresci.aux'.
 
  (./chapters/0b_spis_tresci.tex (./PracaMagisterka.toc
-Overfull \hbox (0.56pt too wide) detected at line 66
+Overfull \hbox (0.56pt too wide) detected at line 67
 \TU/lmss/m/n/10 2.10. 
  []
 
 
-Overfull \hbox (0.56pt too wide) detected at line 67
+Overfull \hbox (0.56pt too wide) detected at line 68
 \TU/lmss/m/n/10 2.11. 
  []
 
@@ -1429,20 +1429,14 @@ Overfull \hbox (5.21303pt too wide) in paragraph at lines 893--894
 [][][][][][][][][][] 
  []
 
-[27]
+[27] [28]
 LaTeX Font Info:    Font shape `TU/lmss/bx/it' in size <10> not available
-(Font)              Font shape `TU/lmss/bx/sl' tried instead on input line 1075
+(Font)              Font shape `TU/lmss/bx/sl' tried instead on input line 1086
 .
- [28]
+ [29]
 File: images/blender.png Graphic file (type bmp)
 <images/blender.png>
- [29] [30]
-Overfull \hbox (126.89754pt too wide) in paragraph at lines 1151--1153
-\TU/lmss/m/n/10 wszystkich zasobach używanych przez silnik. // HIRO https://doc
-s.unity3d.com/2020.1/Documentation/Manual/AssetDatabase.html 
- []
-
-) [31]
+ [30]) [31]
 \openout2 = `chapters/3_technologie_algorytmy_narzedzia.aux'.
 
  (./chapters/3_technologie_algorytmy_narzedzia.tex
@@ -1517,35 +1511,62 @@ Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
 
-Overfull \hbox (14.69826pt too wide) in paragraph at lines 264--265
+Overfull \hbox (18.23123pt too wide) in paragraph at lines 259--260
  [][] 
  []
 
 [35]
-Overfull \hbox (0.50352pt too wide) in paragraph at lines 295--296
+Overfull \hbox (0.50352pt too wide) in paragraph at lines 290--291
 []\TU/lmss/m/sl/10 MAX_FRAMEBUFFER_ATTACHMENT_COUNT\TU/lmss/m/n/10 : $\OML/zplm
 /m/it/10 MAX[]ENDER[]ARGET[]OUNT \OT1/zplm/m/n/10 + \OT1/ppl/m/n/10 1 \OT1/zplm
 /m/n/10 + \OT1/ppl/m/n/10 1$\TU/lmss/m/n/10 ,
  []
 
 [36] [37]
-Overfull \hbox (47.21346pt too wide) in paragraph at lines 381--382
+Overfull \hbox (47.21346pt too wide) in paragraph at lines 376--377
 [][][][][][][][][][][][][][][][][][][][] 
  []
 
 [38]
-Overfull \hbox (7.90878pt too wide) in paragraph at lines 417--417
+Overfull \hbox (7.90878pt too wide) in paragraph at lines 412--412
 []\TU/lmtt/m/n/9 image = "key KEY, width INT, height INT, depth INT, channels I
 NT, type INT, data BYTE_ARRAY"[] 
  []
 
-[39] [40] [41] [42] [43] [44]) [45]
+[39] [40] [41] [42] [43] [44]
+Overfull \hbox (5.21303pt too wide) in paragraph at lines 703--704
+[][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (11.21309pt too wide) in paragraph at lines 746--747
+[][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (41.2134pt too wide) in paragraph at lines 747--749
+[][][][][][][][][][][][] 
+ []
+
+[45]
+Overfull \hbox (5.21303pt too wide) in paragraph at lines 760--761
+[][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (29.21327pt too wide) in paragraph at lines 766--768
+[][][][][][][][][][][][][][][][][][][] 
+ []
+
+) [46]
 \openout2 = `chapters/5_badania.aux'.
 
  (./chapters/5_badania.tex
 Rozdzia\l  4.
-) [46
+) [47
 
 
 
@@ -1555,7 +1576,7 @@ Rozdzia\l  4.
 
  (./chapters/6_podsumowanie.tex
 Rozdzia\l  5.
-) [47
+) [48
 
 
 
@@ -1574,23 +1595,23 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 9.37807pt on input line 3.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 7.29405pt on input line 3.
- [48
+ [49
 
 
 
 
-] [49] (./PracaMagisterka.lof)
+] [50] (./PracaMagisterka.lof)
 \tf@lof=\write7
 \openout7 = `PracaMagisterka.lof'.
 
- [50
+ [51
 
 ]
 (./PracaMagisterka.lot)
 \tf@lot=\write8
 \openout8 = `PracaMagisterka.lot'.
 
-) [51
+) [52
 
 ] (./PracaMagisterka.aux
 (./chapters/0a_streszczenie.aux) (./chapters/0b_spis_tresci.aux)
@@ -1599,18 +1620,18 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (./chapters/3_technologie_algorytmy_narzedzia.aux) (./chapters/5_badania.aux)
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
 Package rerunfilecheck Info: File `PracaMagisterka.out' has not changed.
-(rerunfilecheck)             Checksum: 1BFB599F8F66A84C181B90C4FD4BF804;8349.
+(rerunfilecheck)             Checksum: 883F7700DC25D32565625E3BD3701310;8495.
 Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 \openout1 = `PracaMagisterka.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 39875 strings out of 476191
- 823834 string characters out of 5812072
- 1600400 words of memory out of 5000000
- 59952 multiletter control sequences out of 15000+600000
+ 39937 strings out of 476191
+ 825342 string characters out of 5812072
+ 1600404 words of memory out of 5000000
+ 60014 multiletter control sequences out of 15000+600000
  488887 words of font info for 103 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  88i,15n,91p,1516b,6445s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on PracaMagisterka.pdf (51 pages).
+Output written on PracaMagisterka.pdf (52 pages).

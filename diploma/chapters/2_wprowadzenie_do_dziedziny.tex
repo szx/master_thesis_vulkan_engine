@@ -897,9 +897,20 @@ Indeksowanie poza długością tablicy czasu wykonania jest niezdefiniowanym zac
 
 \section{Przebiegi renderowania i potoki}
 
-// TODO vkPipeline - potok graficzny
+// TODO vkPipeline - potok, potok graficzny
 
-// TODO vkShaderModule - shadery
+\subsection{Moduły shaderów}
+
+Shader to program specyfikujący operacje wykonywane podczas etapu potoku dla każdego przetwarzanego przez niego elementu (np. wierzchołka, punktu sterującego, fragmentu lub grupy roboczej).
+
+Kod źródłowy GLSL reprezentuje shader w formie tekstowej przy użyciu języka programowania potoku graficznego składniowo zbliżonego do jezyka C.
+
+Kod bajtowy SPIR-V reprezentuje shader w formie ustandaryzowanej binarnej reprezentacji pośredniej. Jest on zwykle uzyskiwany poprzez kompilację kodu źródłowego w języku wyższego poziomu takiego jak GLSL.
+
+Moduł shaderów to obiekt \textit{vkShaderModule} uzyskiwany poprzez kompilację kodu bajtowego SPIR-V do kodu binarnego w ISA GPU używając funkcją \textit{vkCreateShaderModule()}.
+Po kompilacji moduł shadera jest w formie, która może być używana bezpośrednio przez potok.
+
+// HIRO diagram spirv->moduł
 
 // TODO vkRenderPass - przebieg renderowania, dołączenia koloru
 
@@ -1149,7 +1160,7 @@ Potok zasobów (ang. asset pipeline) to część silnika odpowiadająca za konwe
 Konwersja ta jest wymagana, ponieważ istnieją różne wymagania dotyczące formatów: zasoby wejściowe są zoptymalizowane pod kątem oszczędności miejsca na dysku i interoperacyjności między oprogramowaniem zewnętrznym, kiedy zasoby wyjściowe zwykle wymagają mniejszego zakresu możliwych funkcjonalności i powinny być w formacie dostosowanym do maksymalnie szybkiego wczytywania przez aplikację - szybkość ich zapisu jest mniej ważna ponieważ musi się odbyć tylko jeden raz na komputerach twórców oprogramowania uruchamiających potok zasobów.
 
 Baza zasobów (ang. asset database) to zasób wyjściowy mający na celu zgromadzenie informacji o wszystkich zasobach używanych przez silnik.
-// HIRO https://docs.unity3d.com/2020.1/Documentation/Manual/AssetDatabase.html
+// HIRO
 
 \subsection{glTF}
 
