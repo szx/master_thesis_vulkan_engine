@@ -24,7 +24,7 @@ typedef struct scene_data scene_data;
   void asset_##_name##_deinit(asset_##_name *entity);                                              \
                                                                                                    \
   data_key asset_##_name##_calculate_key(asset_##_name *entity);                                   \
-  void asset_##_name##_serialize(asset_##_name *entity, data_asset_db *assetDb);                   \
-  void asset_##_name##_deserialize(asset_##_name *entity, data_asset_db *assetDb, data_key key);   \
+  void asset_##_name##_serialize(asset_##_name *entity, asset_db *assetDb);                        \
+  void asset_##_name##_deserialize(asset_##_name *entity, asset_db *assetDb, data_key key);        \
                                                                                                    \
   void asset_##_name##_debug_print(asset_##_name *entity, int indent);

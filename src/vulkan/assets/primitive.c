@@ -50,78 +50,77 @@ data_key asset_primitive_calculate_key(asset_primitive *primitive) {
   return (data_key){value};
 }
 
-void asset_primitive_serialize(asset_primitive *primitive, data_asset_db *assetDb) {
+void asset_primitive_serialize(asset_primitive *primitive, asset_db *assetDb) {
   primitive->key = asset_primitive_calculate_key(primitive);
 
   asset_material_serialize(primitive->material, assetDb);
   assert(primitive->material != NULL);
-  data_asset_db_insert_primitive_material_key(assetDb, primitive->key, primitive->material->key);
+  asset_db_insert_primitive_material_key(assetDb, primitive->key, primitive->material->key);
 
-  data_asset_db_insert_primitive_topology_int(assetDb, primitive->key,
-                                              data_int_temp(primitive->topology));
+  asset_db_insert_primitive_topology_int(assetDb, primitive->key,
+                                         data_int_temp(primitive->topology));
 
   assert(primitive->positions != NULL);
-  data_asset_db_insert_primitive_positions_key(assetDb, primitive->key, primitive->positions->key);
+  asset_db_insert_primitive_positions_key(assetDb, primitive->key, primitive->positions->key);
   asset_vertex_attribute_serialize(primitive->positions, assetDb);
   assert(primitive->normals != NULL);
-  data_asset_db_insert_primitive_normals_key(assetDb, primitive->key, primitive->normals->key);
+  asset_db_insert_primitive_normals_key(assetDb, primitive->key, primitive->normals->key);
   asset_vertex_attribute_serialize(primitive->normals, assetDb);
   assert(primitive->colors != NULL);
-  data_asset_db_insert_primitive_colors_key(assetDb, primitive->key, primitive->colors->key);
+  asset_db_insert_primitive_colors_key(assetDb, primitive->key, primitive->colors->key);
   asset_vertex_attribute_serialize(primitive->colors, assetDb);
   assert(primitive->texCoords != NULL);
-  data_asset_db_insert_primitive_texCoords_key(assetDb, primitive->key, primitive->texCoords->key);
+  asset_db_insert_primitive_texCoords_key(assetDb, primitive->key, primitive->texCoords->key);
   asset_vertex_attribute_serialize(primitive->texCoords, assetDb);
   assert(primitive->tangents != NULL);
-  data_asset_db_insert_primitive_tangents_key(assetDb, primitive->key, primitive->tangents->key);
+  asset_db_insert_primitive_tangents_key(assetDb, primitive->key, primitive->tangents->key);
   asset_vertex_attribute_serialize(primitive->tangents, assetDb);
   assert(primitive->indices != NULL);
-  data_asset_db_insert_primitive_indices_key(assetDb, primitive->key, primitive->indices->key);
+  asset_db_insert_primitive_indices_key(assetDb, primitive->key, primitive->indices->key);
   asset_vertex_attribute_serialize(primitive->indices, assetDb);
 }
 
-void asset_primitive_deserialize(asset_primitive *primitive, data_asset_db *assetDb, data_key key) {
+void asset_primitive_deserialize(asset_primitive *primitive, asset_db *assetDb, data_key key) {
   primitive->key = key;
   primitive->material = scene_data_get_material_by_key(
       primitive->sceneData, assetDb,
-      data_asset_db_select_primitive_material_key(assetDb, primitive->key));
+      asset_db_select_primitive_material_key(assetDb, primitive->key));
 
-  primitive->topology = data_asset_db_select_primitive_topology_int(assetDb, primitive->key).value;
+  primitive->topology = asset_db_select_primitive_topology_int(assetDb, primitive->key).value;
   primitive->attributes = vertex_attribute_type_unknown;
 
   primitive->positions = scene_data_get_vertex_attribute_by_key(
       primitive->sceneData, assetDb,
-      data_asset_db_select_primitive_positions_key(assetDb, primitive->key));
+      asset_db_select_primitive_positions_key(assetDb, primitive->key));
   primitive->attributes |=
       utarray_len(primitive->positions->data) > 0 ? vertex_attribute_type_position : 0;
 
   primitive->normals = scene_data_get_vertex_attribute_by_key(
       primitive->sceneData, assetDb,
-      data_asset_db_select_primitive_normals_key(assetDb, primitive->key));
+      asset_db_select_primitive_normals_key(assetDb, primitive->key));
   primitive->attributes |=
       utarray_len(primitive->normals->data) > 0 ? vertex_attribute_type_normal : 0;
 
   primitive->colors = scene_data_get_vertex_attribute_by_key(
-      primitive->sceneData, assetDb,
-      data_asset_db_select_primitive_colors_key(assetDb, primitive->key));
+      primitive->sceneData, assetDb, asset_db_select_primitive_colors_key(assetDb, primitive->key));
   primitive->attributes |=
       utarray_len(primitive->colors->data) > 0 ? vertex_attribute_type_color : 0;
 
   primitive->texCoords = scene_data_get_vertex_attribute_by_key(
       primitive->sceneData, assetDb,
-      data_asset_db_select_primitive_texCoords_key(assetDb, primitive->key));
+      asset_db_select_primitive_texCoords_key(assetDb, primitive->key));
   primitive->attributes |=
       utarray_len(primitive->texCoords->data) > 0 ? vertex_attribute_type_texcoord : 0;
 
   primitive->tangents = scene_data_get_vertex_attribute_by_key(
       primitive->sceneData, assetDb,
-      data_asset_db_select_primitive_tangents_key(assetDb, primitive->key));
+      asset_db_select_primitive_tangents_key(assetDb, primitive->key));
   primitive->attributes |=
       utarray_len(primitive->tangents->data) > 0 ? vertex_attribute_type_tangent : 0;
 
   primitive->indices = scene_data_get_vertex_attribute_by_key(
       primitive->sceneData, assetDb,
-      data_asset_db_select_primitive_indices_key(assetDb, primitive->key));
+      asset_db_select_primitive_indices_key(assetDb, primitive->key));
 
   primitive->vertexCount = 0;
   uint32_t positionsCount = utarray_len(primitive->positions->data);

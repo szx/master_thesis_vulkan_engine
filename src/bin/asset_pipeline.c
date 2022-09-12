@@ -48,7 +48,7 @@ void write_default_asset_config() {
   data_config_destroy(config);
 }
 
-void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetInput) {
+void write_meshes_to_assets(asset_db *assetDb, asset_pipeline_input *assetInput) {
   log_info("processing gltf '%s' in '%s'", utstring_body(assetInput->sourceAssetName),
            utstring_body(assetInput->sourceAssetPath));
 
@@ -73,7 +73,7 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
   utstring_free(sceneConfigPath);
 }
 
-void write_cubemap_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetInput) {
+void write_cubemap_to_assets(asset_db *assetDb, asset_pipeline_input *assetInput) {
   log_info("processing cubemap '%s' in '%s.%s'", utstring_body(assetInput->sourceAssetName),
            utstring_body(assetInput->sourceAssetPath), utstring_body(assetInput->sourceAssetExt));
 
@@ -132,7 +132,7 @@ void write_cubemap_to_assets(data_asset_db *assetDb, asset_pipeline_input *asset
   asset_image_deinit(&cubemapImage);
 }
 
-void write_font_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetInput) {
+void write_font_to_assets(asset_db *assetDb, asset_pipeline_input *assetInput) {
   log_info("processing font '%s' in '%s'", utstring_body(assetInput->sourceAssetName),
            utstring_body(assetInput->sourceAssetPath));
 
@@ -240,24 +240,24 @@ int main(int argc, char *argv[]) {
     write_default_asset_config();
   } else if (strcmp("empty_assets", utstring_body(input->sourceAssetType)) == 0) {
     log_info("save empty asset database");
-    data_asset_db *assetDb = data_asset_db_create();
-    data_asset_db_save_empty(assetDb);
-    data_asset_db_destroy(assetDb);
+    asset_db *assetDb = asset_db_create();
+    asset_db_save_empty(assetDb);
+    asset_db_destroy(assetDb);
   } else if (strcmp("gltf", utstring_body(input->sourceAssetType)) == 0) {
     log_info("write meshes to asset database");
-    data_asset_db *assetDb = data_asset_db_create();
+    asset_db *assetDb = asset_db_create();
     write_meshes_to_assets(assetDb, input);
-    data_asset_db_destroy(assetDb);
+    asset_db_destroy(assetDb);
   } else if (strcmp("cubemap", utstring_body(input->sourceAssetType)) == 0) {
     log_info("write meshes to asset database");
-    data_asset_db *assetDb = data_asset_db_create();
+    asset_db *assetDb = asset_db_create();
     write_cubemap_to_assets(assetDb, input);
-    data_asset_db_destroy(assetDb);
+    asset_db_destroy(assetDb);
   } else if (strcmp("font", utstring_body(input->sourceAssetType)) == 0) {
     log_info("write font to asset database");
-    data_asset_db *assetDb = data_asset_db_create();
+    asset_db *assetDb = asset_db_create();
     write_font_to_assets(assetDb, input);
-    data_asset_db_destroy(assetDb);
+    asset_db_destroy(assetDb);
   }
   log_info("finished asset pipeline");
   asset_pipeline_input_destroy(input);

@@ -331,7 +331,7 @@ asset_object *parse_cgltf_node(scene_data *sceneData, cgltf_node *cgltfNode) {
 }
 
 asset_skybox *parse_config_skybox(scene_data *sceneData, data_config *sceneConfig,
-                                  data_asset_db *assetDb) {
+                                  asset_db *assetDb) {
   asset_skybox skybox; // FIXME: Deserialize smarter, key == skyboxName.
   asset_skybox_init(&skybox, sceneData);
   utstring_printf(skybox.name, "%s", utstring_body(sceneConfig->asset.skyboxName));
@@ -342,7 +342,7 @@ asset_skybox *parse_config_skybox(scene_data *sceneData, data_config *sceneConfi
 }
 
 scene_data *parse_cgltf_scene(UT_string *name, UT_string *path, UT_string *sceneConfigPath,
-                              data_config *assetConfig, data_asset_db *assetDb) {
+                              data_config *assetConfig, asset_db *assetDb) {
   cgltf_options options = {0};
   cgltf_data *cgltfData = NULL;
   cgltf_result result = cgltf_result_success;
@@ -382,7 +382,7 @@ scene_data *parse_cgltf_scene(UT_string *name, UT_string *path, UT_string *scene
 /* scene data */
 
 #define DEF_GET_VULKAN_ASSET_BY_KEY(_type, _var)                                                   \
-  asset_##_type *scene_data_get_##_type##_by_key(scene_data *sceneData, data_asset_db *assetDb,    \
+  asset_##_type *scene_data_get_##_type##_by_key(scene_data *sceneData, asset_db *assetDb,         \
                                                  data_key key) {                                   \
     asset_##_type *entity = NULL;                                                                  \
     dl_foreach_elem(asset_##_type *, existingEntity, sceneData->_var) {                            \
@@ -446,7 +446,7 @@ data_key scene_data_calculate_key(scene_data *sceneData) {
   return (data_key){value};
 }
 
-void scene_data_serialize(scene_data *sceneData, data_asset_db *assetDb) {
+void scene_data_serialize(scene_data *sceneData, asset_db *assetDb) {
   // scene_data_debug_print(sceneData);
   UT_array *objectKeys = NULL;
   utarray_alloc(objectKeys, sizeof(data_key));
@@ -454,12 +454,11 @@ void scene_data_serialize(scene_data *sceneData, data_asset_db *assetDb) {
     asset_object_serialize(rootObject, assetDb);
     utarray_push_back(objectKeys, &rootObject->key);
   }
-  data_asset_db_insert_scene_name_text(assetDb, sceneData->key, (data_text){sceneData->name});
-  data_asset_db_insert_scene_objects_key_array(assetDb, sceneData->key,
-                                               data_key_array_temp(objectKeys));
+  asset_db_insert_scene_name_text(assetDb, sceneData->key, (data_text){sceneData->name});
+  asset_db_insert_scene_objects_key_array(assetDb, sceneData->key, data_key_array_temp(objectKeys));
   utarray_free(objectKeys);
 
-  data_asset_db_insert_scene_skybox_key(assetDb, sceneData->key, sceneData->skybox->key);
+  asset_db_insert_scene_skybox_key(assetDb, sceneData->key, sceneData->skybox->key);
 
   UT_array *directLightKeys = NULL;
   utarray_alloc(directLightKeys, sizeof(data_key));
@@ -470,16 +469,15 @@ void scene_data_serialize(scene_data *sceneData, data_asset_db *assetDb) {
     asset_direct_light_serialize(directLight, assetDb);
     utarray_push_back(directLightKeys, &directLight->key);
   }
-  data_asset_db_insert_scene_directLights_key_array(assetDb, sceneData->key,
-                                                    data_key_array_temp(directLightKeys));
+  asset_db_insert_scene_directLights_key_array(assetDb, sceneData->key,
+                                               data_key_array_temp(directLightKeys));
   utarray_free(directLightKeys);
 }
 
-void scene_data_deserialize(scene_data *sceneData, data_asset_db *assetDb, data_key key) {
+void scene_data_deserialize(scene_data *sceneData, asset_db *assetDb, data_key key) {
   sceneData->key = key;
 
-  data_key_array objectKeyArray =
-      data_asset_db_select_scene_objects_key_array(assetDb, sceneData->key);
+  data_key_array objectKeyArray = asset_db_select_scene_objects_key_array(assetDb, sceneData->key);
   utarray_foreach_elem_deref (data_key, objectKey, objectKeyArray.values) {
     asset_object *object = scene_data_get_object_by_key(sceneData, assetDb, objectKey);
     utarray_push_back(sceneData->rootObjects, &object);
@@ -487,7 +485,7 @@ void scene_data_deserialize(scene_data *sceneData, data_asset_db *assetDb, data_
   data_key_array_deinit(&objectKeyArray);
 
   sceneData->skybox = scene_data_get_skybox_by_key(
-      sceneData, assetDb, data_asset_db_select_scene_skybox_key(assetDb, sceneData->key));
+      sceneData, assetDb, asset_db_select_scene_skybox_key(assetDb, sceneData->key));
 
   // FIXME: Deserialize smarter, key == fontName.
   asset_font font;
@@ -498,7 +496,7 @@ void scene_data_deserialize(scene_data *sceneData, data_asset_db *assetDb, data_
   asset_font_deinit(&font);
 
   data_key_array directLightKeyArray =
-      data_asset_db_select_scene_directLights_key_array(assetDb, sceneData->key);
+      asset_db_select_scene_directLights_key_array(assetDb, sceneData->key);
   utarray_foreach_elem_deref (data_key, directLightKey, directLightKeyArray.values) {
     asset_direct_light *directLight =
         scene_data_get_direct_light_by_key(sceneData, assetDb, directLightKey);
@@ -646,13 +644,13 @@ void scene_data_destroy(scene_data *sceneData) {
 
 scene_data *scene_data_create_with_gltf_file(UT_string *sceneName, UT_string *gltfPath,
                                              UT_string *sceneConfigPath, data_config *assetConfig,
-                                             data_asset_db *assetDb) {
+                                             asset_db *assetDb) {
   scene_data *sceneData =
       parse_cgltf_scene(sceneName, gltfPath, sceneConfigPath, assetConfig, assetDb);
   return sceneData;
 }
 
-scene_data *scene_data_create_with_asset_db(data_config *assetConfig, data_asset_db *assetDb,
+scene_data *scene_data_create_with_asset_db(data_config *assetConfig, asset_db *assetDb,
                                             UT_string *sceneName) {
   scene_data *sceneData = NULL;
   sceneData = scene_data_create(sceneName, assetConfig);

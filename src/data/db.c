@@ -1,7 +1,7 @@
 #include "db.h"
 
-data_db *data_db_create(UT_string *path) {
-  data_db *db = core_alloc(sizeof(data_db));
+sql_db *sql_db_create(UT_string *path) {
+  sql_db *db = core_alloc(sizeof(sql_db));
   utstring_new(db->path);
   utstring_concat(db->path, path);
   log_debug("opening SQLite database '%s'", utstring_body(db->path));
@@ -12,7 +12,7 @@ data_db *data_db_create(UT_string *path) {
   return db;
 }
 
-void data_db_destroy(data_db *db) {
+void sql_db_destroy(sql_db *db) {
   utstring_free(db->path);
   sqlite3_close(db->db);
   core_free(db);
@@ -205,7 +205,7 @@ DATA_DB_TYPES(def_data_type_array, )
   }
 
 #define def_data_select(_type, _value, ...)                                                        \
-  data##_##_type data_db_select_##_type(data_db *db, char *table, data_key key, char *column) {    \
+  data##_##_type sql_db_select_##_type(sql_db *db, char *table, data_key key, char *column) {      \
     data##_##_type data;                                                                           \
     SQLITE_PREPARE("SELECT key, %s FROM %s WHERE key = ?;", column, table);                        \
     sqlite3_bind_blob(_stmt, 1, &key.value, sizeof(key.value), NULL);                              \
@@ -222,8 +222,8 @@ DATA_DB_TYPES(def_data_select, )
 #undef def_data_select
 
 #define def_data_array_select(_type, _value, ...)                                                  \
-  data##_##_type##_array data_db_select_##_type##_array(data_db *db, char *table, data_key key,    \
-                                                        char *column) {                            \
+  data##_##_type##_array sql_db_select_##_type##_array(sql_db *db, char *table, data_key key,      \
+                                                       char *column) {                             \
     data##_##_type##_array data;                                                                   \
     SQLITE_PREPARE("SELECT key, %s FROM %s WHERE key = ?;", column, table);                        \
     sqlite3_bind_blob(_stmt, 1, &key.value, sizeof(key.value), NULL);                              \
@@ -248,8 +248,8 @@ DATA_DB_TYPES(def_data_array_select, )
 /* insert */
 
 #define def_data_insert(_type, _value, ...)                                                        \
-  void data_db_insert_##_type(data_db *db, char *table, data_key key, char *column,                \
-                              data_##_type data, bool updateIfExists) {                            \
+  void sql_db_insert_##_type(sql_db *db, char *table, data_key key, char *column,                  \
+                             data_##_type data, bool updateIfExists) {                             \
     const char *query;                                                                             \
     if (updateIfExists) {                                                                          \
       query = "INSERT INTO %s (key, %s) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET %s = ?;";    \
@@ -273,8 +273,8 @@ DATA_DB_TYPES(def_data_insert, )
 #undef def_data_insert
 
 #define def_data_array_insert(_type, _value, ...)                                                  \
-  void data_db_insert_##_type##_array(data_db *db, char *table, data_key key, char *column,        \
-                                      data_##_type##_array array, bool updateIfExists) {           \
+  void sql_db_insert_##_type##_array(sql_db *db, char *table, data_key key, char *column,          \
+                                     data_##_type##_array array, bool updateIfExists) {            \
     verify(utarray_eltsize(array.values) == sizeof(data_##_type)); /* FIXME: Forbid TEXT_ARRAY. */ \
     const char *query;                                                                             \
     if (updateIfExists) {                                                                          \
@@ -303,10 +303,10 @@ DATA_DB_TYPES(def_data_array_insert, )
 
 /* create */
 
-void data_db_create_key_value_table_for_multiple_values(data_db *db, char *table,
-                                                        const char *keyName, const char *keyType,
-                                                        const char *columnDefs[],
-                                                        size_t columnDefsCount) {
+void sql_db_create_key_value_table_for_multiple_values(sql_db *db, char *table, const char *keyName,
+                                                       const char *keyType,
+                                                       const char *columnDefs[],
+                                                       size_t columnDefsCount) {
   static UT_string *sql = NULL;
   SQLITE_EXEC("DROP TABLE IF EXISTS %s;", table);
 

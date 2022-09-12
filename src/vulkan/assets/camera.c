@@ -34,23 +34,23 @@ data_key asset_camera_calculate_key(asset_camera *camera) {
   return (data_key){value};
 }
 
-void asset_camera_serialize(asset_camera *camera, data_asset_db *assetDb) {
+void asset_camera_serialize(asset_camera *camera, asset_db *assetDb) {
   camera->key = asset_camera_calculate_key(camera);
-  data_asset_db_insert_camera_type_int(assetDb, camera->key, data_int_temp(camera->type));
-  data_asset_db_insert_camera_fovY_float(assetDb, camera->key, data_float_temp(camera->fovY));
-  data_asset_db_insert_camera_aspectRatio_float(assetDb, camera->key,
-                                                data_float_temp(camera->aspectRatio));
-  data_asset_db_insert_camera_nearZ_float(assetDb, camera->key, data_float_temp(camera->nearZ));
-  data_asset_db_insert_camera_farZ_float(assetDb, camera->key, data_float_temp(camera->farZ));
+  asset_db_insert_camera_type_int(assetDb, camera->key, data_int_temp(camera->type));
+  asset_db_insert_camera_fovY_float(assetDb, camera->key, data_float_temp(camera->fovY));
+  asset_db_insert_camera_aspectRatio_float(assetDb, camera->key,
+                                           data_float_temp(camera->aspectRatio));
+  asset_db_insert_camera_nearZ_float(assetDb, camera->key, data_float_temp(camera->nearZ));
+  asset_db_insert_camera_farZ_float(assetDb, camera->key, data_float_temp(camera->farZ));
 }
 
-void asset_camera_deserialize(asset_camera *camera, data_asset_db *assetDb, data_key key) {
+void asset_camera_deserialize(asset_camera *camera, asset_db *assetDb, data_key key) {
   camera->key = key;
-  camera->type = data_asset_db_select_camera_type_int(assetDb, camera->key).value;
-  camera->fovY = data_asset_db_select_camera_fovY_float(assetDb, camera->key).value;
-  camera->aspectRatio = data_asset_db_select_camera_aspectRatio_float(assetDb, camera->key).value;
-  camera->nearZ = data_asset_db_select_camera_nearZ_float(assetDb, camera->key).value;
-  data_float d = data_asset_db_select_camera_farZ_float(assetDb, camera->key);
+  camera->type = asset_db_select_camera_type_int(assetDb, camera->key).value;
+  camera->fovY = asset_db_select_camera_fovY_float(assetDb, camera->key).value;
+  camera->aspectRatio = asset_db_select_camera_aspectRatio_float(assetDb, camera->key).value;
+  camera->nearZ = asset_db_select_camera_nearZ_float(assetDb, camera->key).value;
+  data_float d = asset_db_select_camera_farZ_float(assetDb, camera->key);
   camera->farZ = d.value;
 }
 

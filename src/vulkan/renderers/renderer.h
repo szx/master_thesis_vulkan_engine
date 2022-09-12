@@ -9,8 +9,8 @@
 /// Creates and destroys Vulkan objects used to draw scene described by scene graph.
 typedef struct renderer {
   /* CPU state */
-  data_config *config;    ///< Pointer.
-  data_asset_db *assetDb; ///< Pointer.
+  data_config *config; ///< Pointer.
+  asset_db *assetDb;   ///< Pointer.
   scene_data *data;
   renderer_cache *rendererCache;
   scene_graph *sceneGraph;
@@ -23,7 +23,7 @@ typedef struct renderer {
 
 } renderer;
 
-renderer *renderer_create(data_config *config, data_asset_db *assetDb, swap_chain *vks,
+renderer *renderer_create(data_config *config, asset_db *assetDb, swap_chain *vks,
                           UT_string *sceneName);
 void renderer_destroy(renderer *renderer);
 

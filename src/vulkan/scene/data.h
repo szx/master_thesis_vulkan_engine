@@ -41,11 +41,11 @@ scene_data *scene_data_create(UT_string *name, data_config *assetConfig);
 void scene_data_destroy(scene_data *sceneData);
 
 data_key scene_data_calculate_key(scene_data *scene);
-void scene_data_serialize(scene_data *scene, data_asset_db *assetDb);
-void scene_data_deserialize(scene_data *scene, data_asset_db *assetDb, data_key key);
+void scene_data_serialize(scene_data *scene, asset_db *assetDb);
+void scene_data_deserialize(scene_data *scene, asset_db *assetDb, data_key key);
 
 #define GET_VULKAN_ASSET_BY_KEY_DECL(_type)                                                        \
-  asset_##_type *scene_data_get_##_type##_by_key(scene_data *sceneData, data_asset_db *assetDb,    \
+  asset_##_type *scene_data_get_##_type##_by_key(scene_data *sceneData, asset_db *assetDb,         \
                                                  data_key key);
 
 #define GET_VULKAN_DEFAULT_ASSET(_type)                                                            \
@@ -76,8 +76,8 @@ VULKAN_SCENE_ASSETS_DECLS(object)
 /* asset pipeline */
 scene_data *scene_data_create_with_gltf_file(UT_string *sceneName, UT_string *gltfPath,
                                              UT_string *sceneConfigPath, data_config *assetConfig,
-                                             data_asset_db *assetDb);
-scene_data *scene_data_create_with_asset_db(data_config *assetConfig, data_asset_db *assetDb,
+                                             asset_db *assetDb);
+scene_data *scene_data_create_with_asset_db(data_config *assetConfig, asset_db *assetDb,
                                             UT_string *sceneName);
 
 void scene_data_debug_print(scene_data *sceneData, int indent);

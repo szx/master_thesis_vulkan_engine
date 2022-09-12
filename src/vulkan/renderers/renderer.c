@@ -1,6 +1,6 @@
 #include "renderer.h"
 
-renderer *renderer_create(data_config *config, data_asset_db *assetDb, swap_chain *vks,
+renderer *renderer_create(data_config *config, asset_db *assetDb, swap_chain *vks,
                           UT_string *sceneName) {
   renderer *renderer = core_alloc(sizeof(struct renderer));
 

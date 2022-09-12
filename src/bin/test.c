@@ -9,7 +9,7 @@
 // Loading sponza.gltf.
 void gltf_loading() {
   data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_global);
-  data_asset_db *assetDb = data_asset_db_create();
+  asset_db *assetDb = asset_db_create();
   device *vkd = device_create(config, assetDb);
   UT_string *sceneName;
   utstring_alloc(sceneName, GLTF_NAME);
@@ -87,7 +87,7 @@ void gltf_loading() {
   scene_data_destroy(assetDbSceneData);
   scene_data_destroy(gltfSceneData);
   device_destroy(vkd);
-  data_asset_db_destroy(assetDb);
+  asset_db_destroy(assetDb);
   data_config_destroy(config);
 }
 
@@ -98,7 +98,7 @@ void render_pass_record_no_op(render_pass *renderPass, render_pass_frame_state *
 
 void shaderc_compiling() {
   data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_global);
-  data_asset_db *assetDb = data_asset_db_create();
+  asset_db *assetDb = asset_db_create();
   device *vkd = device_create(config, assetDb);
   swap_chain *vks = swap_chain_create(vkd);
 
@@ -152,7 +152,7 @@ void shaderc_compiling() {
   renderer_destroy(renderer);
   swap_chain_destroy(vks);
   device_destroy(vkd);
-  data_asset_db_destroy(assetDb);
+  asset_db_destroy(assetDb);
   data_config_destroy(config);
 }
 
@@ -188,7 +188,7 @@ void assert_graph(scene_graph *sceneGraph) {
 // Building scene graph.
 void scene_graph_building() {
   data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_global);
-  data_asset_db *assetDb = data_asset_db_create();
+  asset_db *assetDb = asset_db_create();
   device *vkd = device_create(config, assetDb);
 
   UT_string *sceneName;
@@ -288,7 +288,7 @@ void scene_graph_building() {
   scene_data_destroy(assetDbSceneData);
   utstring_free(sceneName);
   device_destroy(vkd);
-  data_asset_db_destroy(assetDb);
+  asset_db_destroy(assetDb);
   data_config_destroy(config);
 }
 

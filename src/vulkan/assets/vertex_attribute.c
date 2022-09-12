@@ -23,37 +23,36 @@ asset_vertex_attribute_calculate_key(asset_vertex_attribute *vertexAttribute) {
   return (data_key){value};
 }
 
-void asset_vertex_attribute_serialize(asset_vertex_attribute *vertexAttribute,
-                                             data_asset_db *assetDb) {
+void asset_vertex_attribute_serialize(asset_vertex_attribute *vertexAttribute, asset_db *assetDb) {
   vertexAttribute->key = asset_vertex_attribute_calculate_key(vertexAttribute);
 
   if (vertexAttribute->componentType == asset_vertex_attribute_component_uint32_t) {
-    data_asset_db_insert_vertexAttribute_valuesInt_int_array(
-        assetDb, vertexAttribute->key, data_int_array_temp(vertexAttribute->data));
+    asset_db_insert_vertexAttribute_valuesInt_int_array(assetDb, vertexAttribute->key,
+                                                        data_int_array_temp(vertexAttribute->data));
   } else if (vertexAttribute->componentType == asset_vertex_attribute_component_vec2) {
-    data_asset_db_insert_vertexAttribute_valuesVec2_vec2_array(
+    asset_db_insert_vertexAttribute_valuesVec2_vec2_array(
         assetDb, vertexAttribute->key, data_vec2_array_temp(vertexAttribute->data));
   } else if (vertexAttribute->componentType == asset_vertex_attribute_component_vec3) {
-    data_asset_db_insert_vertexAttribute_valuesVec3_vec3_array(
+    asset_db_insert_vertexAttribute_valuesVec3_vec3_array(
         assetDb, vertexAttribute->key, data_vec3_array_temp(vertexAttribute->data));
   } else if (vertexAttribute->componentType == asset_vertex_attribute_component_vec4) {
-    data_asset_db_insert_vertexAttribute_valuesVec4_vec4_array(
+    asset_db_insert_vertexAttribute_valuesVec4_vec4_array(
         assetDb, vertexAttribute->key, data_vec4_array_temp(vertexAttribute->data));
   }
 }
 
-void asset_vertex_attribute_deserialize(asset_vertex_attribute *vertexAttribute,
-                                               data_asset_db *assetDb, data_key key) {
+void asset_vertex_attribute_deserialize(asset_vertex_attribute *vertexAttribute, asset_db *assetDb,
+                                        data_key key) {
   vertexAttribute->key = key;
 
   data_int_array valuesInt =
-      data_asset_db_select_vertexAttribute_valuesInt_int_array(assetDb, vertexAttribute->key);
+      asset_db_select_vertexAttribute_valuesInt_int_array(assetDb, vertexAttribute->key);
   data_vec2_array valuesVec2 =
-      data_asset_db_select_vertexAttribute_valuesVec2_vec2_array(assetDb, vertexAttribute->key);
+      asset_db_select_vertexAttribute_valuesVec2_vec2_array(assetDb, vertexAttribute->key);
   data_vec3_array valuesVec3 =
-      data_asset_db_select_vertexAttribute_valuesVec3_vec3_array(assetDb, vertexAttribute->key);
+      asset_db_select_vertexAttribute_valuesVec3_vec3_array(assetDb, vertexAttribute->key);
   data_vec4_array valuesVec4 =
-      data_asset_db_select_vertexAttribute_valuesVec4_vec4_array(assetDb, vertexAttribute->key);
+      asset_db_select_vertexAttribute_valuesVec4_vec4_array(assetDb, vertexAttribute->key);
   if (utarray_len(valuesInt.values) > 0) {
     verify(utarray_len(valuesVec2.values) == 0 && utarray_len(valuesVec3.values) == 0);
     utarray_realloc(vertexAttribute->data, sizeof(uint32_t));

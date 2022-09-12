@@ -42,22 +42,22 @@ data_key asset_object_calculate_key(asset_object *object) {
   return (data_key){value};
 }
 
-void asset_object_serialize(asset_object *object, data_asset_db *assetDb) {
+void asset_object_serialize(asset_object *object, asset_db *assetDb) {
   object->key = asset_object_calculate_key(object);
 
   if (object->mesh) {
     asset_mesh_serialize(object->mesh, assetDb);
-    data_asset_db_insert_object_mesh_key(assetDb, object->key, object->mesh->key);
+    asset_db_insert_object_mesh_key(assetDb, object->key, object->mesh->key);
   }
 
   if (object->camera) {
     asset_camera_serialize(object->camera, assetDb);
-    data_asset_db_insert_object_camera_key(assetDb, object->key, object->camera->key);
+    asset_db_insert_object_camera_key(assetDb, object->key, object->camera->key);
   }
 
   data_mat4 transformMat;
   glm_mat4_copy(object->transform, transformMat.value);
-  data_asset_db_insert_object_transform_mat4(assetDb, object->key, transformMat);
+  asset_db_insert_object_transform_mat4(assetDb, object->key, transformMat);
 
   UT_array *childKeys = NULL;
   utarray_alloc(childKeys, sizeof(data_key));
@@ -65,18 +65,17 @@ void asset_object_serialize(asset_object *object, data_asset_db *assetDb) {
     asset_object_serialize(child, assetDb);
     utarray_push_back(childKeys, &child->key);
   }
-  data_asset_db_insert_object_children_key_array(assetDb, object->key,
-                                                 data_key_array_temp(childKeys));
+  asset_db_insert_object_children_key_array(assetDb, object->key, data_key_array_temp(childKeys));
   utarray_free(childKeys);
 }
 
-void asset_object_deserialize(asset_object *object, data_asset_db *assetDb, data_key key) {
+void asset_object_deserialize(asset_object *object, asset_db *assetDb, data_key key) {
   object->key = key;
 
-  glm_mat4_copy(data_asset_db_select_object_transform_mat4(assetDb, object->key).value,
+  glm_mat4_copy(asset_db_select_object_transform_mat4(assetDb, object->key).value,
                 object->transform);
 
-  data_key meshHash = data_asset_db_select_object_mesh_key(assetDb, object->key);
+  data_key meshHash = asset_db_select_object_mesh_key(assetDb, object->key);
   if (meshHash.value != 0) {
     object->mesh = core_alloc(sizeof(asset_mesh));
     asset_mesh_init(object->mesh, object->sceneData);
@@ -85,7 +84,7 @@ void asset_object_deserialize(asset_object *object, data_asset_db *assetDb, data
     log_debug("deserializing object without mesh");
   }
 
-  data_key cameraHash = data_asset_db_select_object_camera_key(assetDb, object->key);
+  data_key cameraHash = asset_db_select_object_camera_key(assetDb, object->key);
   if (cameraHash.value != 0) {
     object->camera = core_alloc(sizeof(asset_camera));
     asset_camera_init(object->camera, object->sceneData);
@@ -95,7 +94,7 @@ void asset_object_deserialize(asset_object *object, data_asset_db *assetDb, data
   }
 
   data_key_array childrenHashArray =
-      data_asset_db_select_object_children_key_array(assetDb, object->key);
+      asset_db_select_object_children_key_array(assetDb, object->key);
   utarray_foreach_elem_deref (data_key, childKey, childrenHashArray.values) {
     asset_object *child = scene_data_get_object_by_key(object->sceneData, assetDb, childKey);
     utarray_push_back(object->children, &child);

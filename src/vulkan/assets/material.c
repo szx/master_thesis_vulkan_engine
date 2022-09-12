@@ -40,47 +40,47 @@ data_key asset_material_calculate_key(asset_material *material) {
   return (data_key){value};
 }
 
-void asset_material_serialize(asset_material *material, data_asset_db *assetDb) {
+void asset_material_serialize(asset_material *material, asset_db *assetDb) {
   material->key = asset_material_calculate_key(material);
 
   asset_texture_serialize(material->baseColorTexture, assetDb);
-  data_asset_db_insert_material_baseColorTexture_key(assetDb, material->key,
-                                                     material->baseColorTexture->key);
+  asset_db_insert_material_baseColorTexture_key(assetDb, material->key,
+                                                material->baseColorTexture->key);
 
   asset_texture_serialize(material->metallicRoughnessTexture, assetDb);
-  data_asset_db_insert_material_metallicRoughnessTexture_key(
-      assetDb, material->key, material->metallicRoughnessTexture->key);
+  asset_db_insert_material_metallicRoughnessTexture_key(assetDb, material->key,
+                                                        material->metallicRoughnessTexture->key);
 
   asset_texture_serialize(material->normalMapTexture, assetDb);
-  data_asset_db_insert_material_normalMapTexture_key(assetDb, material->key,
-                                                     material->normalMapTexture->key);
+  asset_db_insert_material_normalMapTexture_key(assetDb, material->key,
+                                                material->normalMapTexture->key);
 
-  data_asset_db_insert_material_baseColorFactor_vec4(assetDb, material->key,
-                                                     data_vec4_temp(material->baseColorFactor));
-  data_asset_db_insert_material_metallicFactor_float(assetDb, material->key,
-                                                     data_float_temp(material->metallicFactor));
-  data_asset_db_insert_material_roughnessFactor_float(assetDb, material->key,
-                                                      data_float_temp(material->roughnessFactor));
+  asset_db_insert_material_baseColorFactor_vec4(assetDb, material->key,
+                                                data_vec4_temp(material->baseColorFactor));
+  asset_db_insert_material_metallicFactor_float(assetDb, material->key,
+                                                data_float_temp(material->metallicFactor));
+  asset_db_insert_material_roughnessFactor_float(assetDb, material->key,
+                                                 data_float_temp(material->roughnessFactor));
 }
 
-void asset_material_deserialize(asset_material *material, data_asset_db *assetDb, data_key key) {
+void asset_material_deserialize(asset_material *material, asset_db *assetDb, data_key key) {
   material->key = key;
-  glm_vec4_copy(data_asset_db_select_material_baseColorFactor_vec4(assetDb, material->key).value,
+  glm_vec4_copy(asset_db_select_material_baseColorFactor_vec4(assetDb, material->key).value,
                 material->baseColorFactor);
   material->metallicFactor =
-      data_asset_db_select_material_metallicFactor_float(assetDb, material->key).value;
+      asset_db_select_material_metallicFactor_float(assetDb, material->key).value;
   material->roughnessFactor =
-      data_asset_db_select_material_roughnessFactor_float(assetDb, material->key).value;
+      asset_db_select_material_roughnessFactor_float(assetDb, material->key).value;
 
   material->baseColorTexture = scene_data_get_texture_by_key(
       material->sceneData, assetDb,
-      data_asset_db_select_material_baseColorTexture_key(assetDb, material->key));
+      asset_db_select_material_baseColorTexture_key(assetDb, material->key));
   material->metallicRoughnessTexture = scene_data_get_texture_by_key(
       material->sceneData, assetDb,
-      data_asset_db_select_material_metallicRoughnessTexture_key(assetDb, material->key));
+      asset_db_select_material_metallicRoughnessTexture_key(assetDb, material->key));
   material->normalMapTexture = scene_data_get_texture_by_key(
       material->sceneData, assetDb,
-      data_asset_db_select_material_normalMapTexture_key(assetDb, material->key));
+      asset_db_select_material_normalMapTexture_key(assetDb, material->key));
 }
 
 void asset_material_debug_print(asset_material *material, int indent) {

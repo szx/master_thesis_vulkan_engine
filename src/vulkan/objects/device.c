@@ -4,11 +4,11 @@ void glfw_framebuffer_resize_callback(GLFWwindow *window, int width, int height)
 void glfw_key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 void glfw_mouse_callback(GLFWwindow *window, double x, double y);
 
-void create_window(device *vkd, data_config *config, data_asset_db *assetDb);
+void create_window(device *vkd, data_config *config, asset_db *assetDb);
 
 bool validation_layers_enabled();
 bool check_validation_layer_support(device *vkd);
-void create_instance(device *vkd, data_config *config, data_asset_db *assetDb);
+void create_instance(device *vkd, data_config *config, asset_db *assetDb);
 void create_debug_utils(device *vkd);
 void create_surface(device *vkd);
 
@@ -58,7 +58,7 @@ void swap_chain_support_deinit(swap_chain_support *support) {
   utarray_free(support->presentModes);
 }
 
-device *device_create(data_config *config, data_asset_db *assetDb) {
+device *device_create(data_config *config, asset_db *assetDb) {
   device *vkd = core_alloc(sizeof(device));
   swap_chain_support_init(&vkd->swapChainSupport);
   vkd->swapChainInfo.imageFormat = VK_FORMAT_UNDEFINED;
@@ -127,7 +127,7 @@ void glfw_mouse_callback(GLFWwindow *window, double x, double y) {
   vkd->input.mouse.y = y;
 }
 
-void create_window(device *vkd, data_config *config, data_asset_db *assetDb) {
+void create_window(device *vkd, data_config *config, asset_db *assetDb) {
   log_info("create_window");
   verify(glfwInit() == GLFW_TRUE);
   verify(glfwVulkanSupported() == GLFW_TRUE);
@@ -181,7 +181,7 @@ bool check_validation_layer_support(device *vkd) {
   return true;
 }
 
-void create_instance(device *vkd, data_config *config, data_asset_db *assetDb) {
+void create_instance(device *vkd, data_config *config, asset_db *assetDb) {
   if (validation_layers_enabled() && !check_validation_layer_support(vkd)) {
     panic("validation layers requested, but not available!");
   }

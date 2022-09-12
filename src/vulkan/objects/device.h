@@ -90,7 +90,7 @@ typedef struct device {
 
 } device;
 
-device *device_create(data_config *config, data_asset_db *assetDb);
+device *device_create(data_config *config, asset_db *assetDb);
 void device_destroy(device *vkd);
 
 void device_query_swap_chain_support(device *vkd);

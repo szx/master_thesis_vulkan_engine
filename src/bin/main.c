@@ -181,7 +181,7 @@ void render_pass_record_skybox_draw(render_pass *renderPass, render_pass_frame_s
 int main(int argc, char *argv[]) {
   platform_create(argc, argv);
   data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_global);
-  data_asset_db *assetDb = data_asset_db_create();
+  asset_db *assetDb = asset_db_create();
   device *vkd = device_create(config, assetDb);
   swap_chain *vks = swap_chain_create(vkd);
   renderer *renderer = renderer_create(config, assetDb, vks, config->global.settingsStartScene);
@@ -319,7 +319,7 @@ int main(int argc, char *argv[]) {
   renderer_destroy(renderer);
   swap_chain_destroy(vks);
   device_destroy(vkd);
-  data_asset_db_destroy(assetDb);
+  asset_db_destroy(assetDb);
   data_config_destroy(config);
   platform_destroy();
   return 0;

@@ -30,39 +30,37 @@ data_key asset_direct_light_calculate_key(asset_direct_light *directLight) {
   return (data_key){value};
 }
 
-void asset_direct_light_serialize(asset_direct_light *directLight, data_asset_db *assetDb) {
+void asset_direct_light_serialize(asset_direct_light *directLight, asset_db *assetDb) {
   directLight->key = asset_direct_light_calculate_key(directLight);
-  data_asset_db_insert_directLight_type_int(assetDb, directLight->key,
-                                            data_int_temp(directLight->type));
-  data_asset_db_insert_directLight_position_vec3(assetDb, directLight->key,
-                                                 data_vec3_temp(directLight->position));
-  data_asset_db_insert_directLight_innerConeAngle_float(
-      assetDb, directLight->key, data_float_temp(directLight->innerConeAngle));
-  data_asset_db_insert_directLight_outerConeAngle_float(
-      assetDb, directLight->key, data_float_temp(directLight->outerConeAngle));
-  data_asset_db_insert_directLight_intensity_float(assetDb, directLight->key,
-                                                   data_float_temp(directLight->intensity));
-  data_asset_db_insert_directLight_range_float(assetDb, directLight->key,
-                                               data_float_temp(directLight->range));
-  data_asset_db_insert_directLight_color_vec3(assetDb, directLight->key,
-                                              data_vec3_temp(directLight->color));
+  asset_db_insert_directLight_type_int(assetDb, directLight->key, data_int_temp(directLight->type));
+  asset_db_insert_directLight_position_vec3(assetDb, directLight->key,
+                                            data_vec3_temp(directLight->position));
+  asset_db_insert_directLight_innerConeAngle_float(assetDb, directLight->key,
+                                                   data_float_temp(directLight->innerConeAngle));
+  asset_db_insert_directLight_outerConeAngle_float(assetDb, directLight->key,
+                                                   data_float_temp(directLight->outerConeAngle));
+  asset_db_insert_directLight_intensity_float(assetDb, directLight->key,
+                                              data_float_temp(directLight->intensity));
+  asset_db_insert_directLight_range_float(assetDb, directLight->key,
+                                          data_float_temp(directLight->range));
+  asset_db_insert_directLight_color_vec3(assetDb, directLight->key,
+                                         data_vec3_temp(directLight->color));
 }
 
-void asset_direct_light_deserialize(asset_direct_light *directLight, data_asset_db *assetDb,
+void asset_direct_light_deserialize(asset_direct_light *directLight, asset_db *assetDb,
                                     data_key key) {
   directLight->key = key;
-  directLight->type = data_asset_db_select_directLight_type_int(assetDb, directLight->key).value;
-  glm_vec3_copy(data_asset_db_select_directLight_position_vec3(assetDb, directLight->key).value,
+  directLight->type = asset_db_select_directLight_type_int(assetDb, directLight->key).value;
+  glm_vec3_copy(asset_db_select_directLight_position_vec3(assetDb, directLight->key).value,
                 directLight->position);
   directLight->innerConeAngle =
-      data_asset_db_select_directLight_innerConeAngle_float(assetDb, directLight->key).value;
+      asset_db_select_directLight_innerConeAngle_float(assetDb, directLight->key).value;
   directLight->outerConeAngle =
-      data_asset_db_select_directLight_outerConeAngle_float(assetDb, directLight->key).value;
+      asset_db_select_directLight_outerConeAngle_float(assetDb, directLight->key).value;
   directLight->intensity =
-      data_asset_db_select_directLight_intensity_float(assetDb, directLight->key).value;
-  directLight->range =
-      data_asset_db_select_directLight_range_float(assetDb, directLight->key).value;
-  glm_vec3_copy(data_asset_db_select_directLight_color_vec3(assetDb, directLight->key).value,
+      asset_db_select_directLight_intensity_float(assetDb, directLight->key).value;
+  directLight->range = asset_db_select_directLight_range_float(assetDb, directLight->key).value;
+  glm_vec3_copy(asset_db_select_directLight_color_vec3(assetDb, directLight->key).value,
                 directLight->color);
 }
 

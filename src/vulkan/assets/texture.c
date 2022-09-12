@@ -38,27 +38,26 @@ data_key asset_image_calculate_key(asset_image *image) {
   return (data_key){value};
 }
 
-void asset_image_serialize(asset_image *image, data_asset_db *assetDb) {
+void asset_image_serialize(asset_image *image, asset_db *assetDb) {
   image->key = asset_image_calculate_key(image);
-  data_asset_db_insert_image_width_int(assetDb, image->key, data_int_temp(image->width));
-  data_asset_db_insert_image_height_int(assetDb, image->key, data_int_temp(image->height));
-  data_asset_db_insert_image_depth_int(assetDb, image->key, data_int_temp(image->depth));
-  data_asset_db_insert_image_channels_int(assetDb, image->key, data_int_temp(image->channels));
-  data_asset_db_insert_image_faceCount_int(assetDb, image->key, data_int_temp(image->faceCount));
-  data_asset_db_insert_image_type_int(assetDb, image->key, data_int_temp(image->type));
-  data_asset_db_insert_image_data_byte_array(assetDb, image->key,
-                                             data_byte_array_temp(image->data));
+  asset_db_insert_image_width_int(assetDb, image->key, data_int_temp(image->width));
+  asset_db_insert_image_height_int(assetDb, image->key, data_int_temp(image->height));
+  asset_db_insert_image_depth_int(assetDb, image->key, data_int_temp(image->depth));
+  asset_db_insert_image_channels_int(assetDb, image->key, data_int_temp(image->channels));
+  asset_db_insert_image_faceCount_int(assetDb, image->key, data_int_temp(image->faceCount));
+  asset_db_insert_image_type_int(assetDb, image->key, data_int_temp(image->type));
+  asset_db_insert_image_data_byte_array(assetDb, image->key, data_byte_array_temp(image->data));
 }
 
-void asset_image_deserialize(asset_image *image, data_asset_db *assetDb, data_key key) {
+void asset_image_deserialize(asset_image *image, asset_db *assetDb, data_key key) {
   image->key = key;
-  image->width = data_asset_db_select_image_width_int(assetDb, image->key).value;
-  image->height = data_asset_db_select_image_height_int(assetDb, image->key).value;
-  image->depth = data_asset_db_select_image_depth_int(assetDb, image->key).value;
-  image->channels = data_asset_db_select_image_channels_int(assetDb, image->key).value;
-  image->faceCount = data_asset_db_select_image_faceCount_int(assetDb, image->key).value;
-  image->type = data_asset_db_select_image_type_int(assetDb, image->key).value;
-  data_byte_array data = data_asset_db_select_image_data_byte_array(assetDb, image->key);
+  image->width = asset_db_select_image_width_int(assetDb, image->key).value;
+  image->height = asset_db_select_image_height_int(assetDb, image->key).value;
+  image->depth = asset_db_select_image_depth_int(assetDb, image->key).value;
+  image->channels = asset_db_select_image_channels_int(assetDb, image->key).value;
+  image->faceCount = asset_db_select_image_faceCount_int(assetDb, image->key).value;
+  image->type = asset_db_select_image_type_int(assetDb, image->key).value;
+  data_byte_array data = asset_db_select_image_data_byte_array(assetDb, image->key);
   utarray_resize(image->data, utarray_len(data.values));
   core_memcpy(image->data->d, data.values->d, utarray_size(image->data));
   data_byte_array_deinit(&data);
@@ -102,26 +101,22 @@ data_key asset_sampler_calculate_key(asset_sampler *sampler) {
   return (data_key){value};
 }
 
-void asset_sampler_serialize(asset_sampler *sampler, data_asset_db *assetDb) {
+void asset_sampler_serialize(asset_sampler *sampler, asset_db *assetDb) {
   sampler->key = asset_sampler_calculate_key(sampler);
-  data_asset_db_insert_sampler_magFilter_int(assetDb, sampler->key,
-                                             data_int_temp(sampler->magFilter));
-  data_asset_db_insert_sampler_minFilter_int(assetDb, sampler->key,
-                                             data_int_temp(sampler->minFilter));
-  data_asset_db_insert_sampler_addressWrapU_int(assetDb, sampler->key,
-                                                data_int_temp(sampler->addressModeU));
-  data_asset_db_insert_sampler_addressWrapV_int(assetDb, sampler->key,
-                                                data_int_temp(sampler->addressModeV));
+  asset_db_insert_sampler_magFilter_int(assetDb, sampler->key, data_int_temp(sampler->magFilter));
+  asset_db_insert_sampler_minFilter_int(assetDb, sampler->key, data_int_temp(sampler->minFilter));
+  asset_db_insert_sampler_addressWrapU_int(assetDb, sampler->key,
+                                           data_int_temp(sampler->addressModeU));
+  asset_db_insert_sampler_addressWrapV_int(assetDb, sampler->key,
+                                           data_int_temp(sampler->addressModeV));
 }
 
-void asset_sampler_deserialize(asset_sampler *sampler, data_asset_db *assetDb, data_key key) {
+void asset_sampler_deserialize(asset_sampler *sampler, asset_db *assetDb, data_key key) {
   sampler->key = key;
-  sampler->magFilter = data_asset_db_select_sampler_magFilter_int(assetDb, sampler->key).value;
-  sampler->minFilter = data_asset_db_select_sampler_minFilter_int(assetDb, sampler->key).value;
-  sampler->addressModeU =
-      data_asset_db_select_sampler_addressWrapU_int(assetDb, sampler->key).value;
-  sampler->addressModeV =
-      data_asset_db_select_sampler_addressWrapV_int(assetDb, sampler->key).value;
+  sampler->magFilter = asset_db_select_sampler_magFilter_int(assetDb, sampler->key).value;
+  sampler->minFilter = asset_db_select_sampler_minFilter_int(assetDb, sampler->key).value;
+  sampler->addressModeU = asset_db_select_sampler_addressWrapU_int(assetDb, sampler->key).value;
+  sampler->addressModeV = asset_db_select_sampler_addressWrapV_int(assetDb, sampler->key).value;
 }
 
 void asset_sampler_debug_print(asset_sampler *sampler, int indent) {
@@ -158,22 +153,22 @@ data_key asset_texture_calculate_key(asset_texture *texture) {
   return (data_key){value};
 }
 
-void asset_texture_serialize(asset_texture *texture, data_asset_db *assetDb) {
+void asset_texture_serialize(asset_texture *texture, asset_db *assetDb) {
   texture->key = asset_texture_calculate_key(texture);
 
   asset_image_serialize(texture->image, assetDb);
-  data_asset_db_insert_texture_image_key(assetDb, texture->key, texture->image->key);
+  asset_db_insert_texture_image_key(assetDb, texture->key, texture->image->key);
 
   asset_sampler_serialize(texture->sampler, assetDb);
-  data_asset_db_insert_texture_sampler_key(assetDb, texture->key, texture->sampler->key);
+  asset_db_insert_texture_sampler_key(assetDb, texture->key, texture->sampler->key);
 }
 
-void asset_texture_deserialize(asset_texture *texture, data_asset_db *assetDb, data_key key) {
+void asset_texture_deserialize(asset_texture *texture, asset_db *assetDb, data_key key) {
   texture->key = key;
   texture->image = scene_data_get_image_by_key(
-      texture->sceneData, assetDb, data_asset_db_select_texture_image_key(assetDb, texture->key));
+      texture->sceneData, assetDb, asset_db_select_texture_image_key(assetDb, texture->key));
   texture->sampler = scene_data_get_sampler_by_key(
-      texture->sceneData, assetDb, data_asset_db_select_texture_sampler_key(assetDb, texture->key));
+      texture->sceneData, assetDb, asset_db_select_texture_sampler_key(assetDb, texture->key));
 }
 
 void asset_texture_debug_print(asset_texture *texture, int indent) {
@@ -224,22 +219,21 @@ data_key asset_skybox_calculate_key(asset_skybox *skybox) {
   return (data_key){value};
 }
 
-void asset_skybox_serialize(asset_skybox *skybox, data_asset_db *assetDb) {
+void asset_skybox_serialize(asset_skybox *skybox, asset_db *assetDb) {
   skybox->key = asset_skybox_calculate_key(skybox);
 
-  data_asset_db_insert_skybox_name_text(assetDb, skybox->key, (data_text){skybox->name});
+  asset_db_insert_skybox_name_text(assetDb, skybox->key, (data_text){skybox->name});
   asset_texture_serialize(skybox->cubemapTexture, assetDb);
-  data_asset_db_insert_skybox_cubemapTexture_key(assetDb, skybox->key, skybox->cubemapTexture->key);
+  asset_db_insert_skybox_cubemapTexture_key(assetDb, skybox->key, skybox->cubemapTexture->key);
 }
 
-void asset_skybox_deserialize(asset_skybox *skybox, data_asset_db *assetDb, data_key key) {
+void asset_skybox_deserialize(asset_skybox *skybox, asset_db *assetDb, data_key key) {
   skybox->key = key;
 
   utstring_free(skybox->name);
-  skybox->name = data_asset_db_select_skybox_name_text(assetDb, skybox->key).value;
+  skybox->name = asset_db_select_skybox_name_text(assetDb, skybox->key).value;
   skybox->cubemapTexture = scene_data_get_texture_by_key(
-      skybox->sceneData, assetDb,
-      data_asset_db_select_skybox_cubemapTexture_key(assetDb, skybox->key));
+      skybox->sceneData, assetDb, asset_db_select_skybox_cubemapTexture_key(assetDb, skybox->key));
 }
 
 void asset_skybox_debug_print(asset_skybox *skybox, int indent) {
@@ -274,27 +268,26 @@ data_key asset_font_calculate_key(asset_font *font) {
   return (data_key){value};
 }
 
-void asset_font_serialize(asset_font *font, data_asset_db *assetDb) {
+void asset_font_serialize(asset_font *font, asset_db *assetDb) {
   font->key = asset_font_calculate_key(font);
 
-  data_asset_db_insert_font_name_text(assetDb, font->key, (data_text){font->name});
+  asset_db_insert_font_name_text(assetDb, font->key, (data_text){font->name});
   asset_texture_serialize(font->fontTexture, assetDb);
-  data_asset_db_insert_font_fontTexture_key(assetDb, font->key, font->fontTexture->key);
-  data_asset_db_insert_font_characters_text(assetDb, font->key, (data_text){font->characters});
-  data_asset_db_insert_font_characterSize_int(assetDb, font->key,
-                                              data_int_temp(font->characterSize));
+  asset_db_insert_font_fontTexture_key(assetDb, font->key, font->fontTexture->key);
+  asset_db_insert_font_characters_text(assetDb, font->key, (data_text){font->characters});
+  asset_db_insert_font_characterSize_int(assetDb, font->key, data_int_temp(font->characterSize));
 }
 
-void asset_font_deserialize(asset_font *font, data_asset_db *assetDb, data_key key) {
+void asset_font_deserialize(asset_font *font, asset_db *assetDb, data_key key) {
   font->key = key;
 
   utstring_free(font->name);
-  font->name = data_asset_db_select_font_name_text(assetDb, font->key).value;
+  font->name = asset_db_select_font_name_text(assetDb, font->key).value;
   font->fontTexture = scene_data_get_texture_by_key(
-      font->sceneData, assetDb, data_asset_db_select_font_fontTexture_key(assetDb, font->key));
+      font->sceneData, assetDb, asset_db_select_font_fontTexture_key(assetDb, font->key));
   utstring_free(font->characters);
-  font->characters = data_asset_db_select_font_characters_text(assetDb, font->key).value;
-  font->characterSize = data_asset_db_select_font_characterSize_int(assetDb, font->key).value;
+  font->characters = asset_db_select_font_characters_text(assetDb, font->key).value;
+  font->characterSize = asset_db_select_font_characterSize_int(assetDb, font->key).value;
 }
 
 void asset_font_debug_print(asset_font *font, int indent) {

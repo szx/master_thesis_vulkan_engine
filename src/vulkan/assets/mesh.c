@@ -20,7 +20,7 @@ data_key asset_mesh_calculate_key(asset_mesh *mesh) {
   return (data_key){value};
 }
 
-void asset_mesh_serialize(asset_mesh *mesh, data_asset_db *assetDb) {
+void asset_mesh_serialize(asset_mesh *mesh, asset_db *assetDb) {
   mesh->key = asset_mesh_calculate_key(mesh);
 
   UT_array *primitiveKeys = NULL;
@@ -30,16 +30,14 @@ void asset_mesh_serialize(asset_mesh *mesh, data_asset_db *assetDb) {
     assert(primitive->vertexCount > 0);
     utarray_push_back(primitiveKeys, &primitive->key);
   }
-  data_asset_db_insert_mesh_primitives_key_array(assetDb, mesh->key,
-                                                 data_key_array_temp(primitiveKeys));
+  asset_db_insert_mesh_primitives_key_array(assetDb, mesh->key, data_key_array_temp(primitiveKeys));
   utarray_free(primitiveKeys);
 }
 
-void asset_mesh_deserialize(asset_mesh *mesh, data_asset_db *assetDb, data_key key) {
+void asset_mesh_deserialize(asset_mesh *mesh, asset_db *assetDb, data_key key) {
   mesh->key = key;
 
-  data_key_array primitiveHashArray =
-      data_asset_db_select_mesh_primitives_key_array(assetDb, mesh->key);
+  data_key_array primitiveHashArray = asset_db_select_mesh_primitives_key_array(assetDb, mesh->key);
   utarray_foreach_elem_deref (data_key, primitiveKey, primitiveHashArray.values) {
     asset_primitive *primitive =
         scene_data_get_primitive_by_key(mesh->sceneData, assetDb, primitiveKey);
