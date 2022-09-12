@@ -43,7 +43,7 @@ void render_pass_shared_state_update(render_pass_shared_state *sharedState) {
       sharedState->renderState->rendererCache, sharedState->rendererCacheBatches,
       renderer_cache_primitive_element_source_type_scene_tree);
   batch_instancing_policy instancingPolicy =
-      (sharedState->renderState->config->asset.graphicsEnabledInstancing
+      (sharedState->renderState->config->global.graphicsEnabledInstancing
            ? batch_instancing_policy_matching_vertex_attributes
            : batch_instancing_policy_no_instancing);
   batches_update(sharedState->rendererCacheBatches, instancingPolicy);

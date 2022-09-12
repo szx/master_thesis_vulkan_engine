@@ -5,6 +5,9 @@
 void update_func(renderer *renderer, double fps, double dt) {
   device *vkd = renderer->vkd;
   render_state *renderState = renderer->renderState;
+  if (renderState->config->global.controlsEnabled == 0) {
+    return;
+  }
   render_pass_state *renderPassState = renderer->renderGraph->renderPassState;
   render_pass_camera_state *cameraState = renderPassState->sharedState.camera;
   render_pass_light_state *lightState = renderPassState->sharedState.lights;
@@ -177,11 +180,11 @@ void render_pass_record_skybox_draw(render_pass *renderPass, render_pass_frame_s
 
 int main(int argc, char *argv[]) {
   platform_create(argc, argv);
-  data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_asset);
+  data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_global);
   data_asset_db *assetDb = data_asset_db_create();
   device *vkd = device_create(config, assetDb);
   swap_chain *vks = swap_chain_create(vkd);
-  renderer *renderer = renderer_create(config, assetDb, vks, config->asset.settingsStartScene);
+  renderer *renderer = renderer_create(config, assetDb, vks, config->global.settingsStartScene);
 
   // TODO: HDR rendering (requires support for loading floating-point skyboxes)
   render_graph_add_image_resource(renderer->renderGraph, "depthBuffer",

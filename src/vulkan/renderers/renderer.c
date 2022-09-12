@@ -11,7 +11,7 @@ renderer *renderer_create(data_config *config, data_asset_db *assetDb, swap_chai
   renderer->vks = vks;
 
   renderer->rendererCache = renderer_cache_create(
-      renderer->data, renderer->config->asset.graphicsMaxPrimitiveElementCount);
+      renderer->data, renderer->config->global.graphicsMaxPrimitiveElementCount);
 
   renderer->sceneGraph = scene_graph_create(renderer->data, renderer->rendererCache);
 

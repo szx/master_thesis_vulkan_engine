@@ -42,7 +42,7 @@ void parse_arguments(int argc, char *argv[], asset_pipeline_input **assetInput) 
 }
 
 void write_default_asset_config() {
-  data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_asset);
+  data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_global);
   data_config_set_default_values(config);
   data_config_save(config);
   data_config_destroy(config);
@@ -60,7 +60,7 @@ void write_meshes_to_assets(data_asset_db *assetDb, asset_pipeline_input *assetI
   utstring_printf(sceneConfigPath, "/%s.ini", utstring_body(assetInput->sourceAssetName));
 
   data_config *assetConfig =
-      data_config_create(globals.assetConfigFilepath, data_config_type_asset);
+      data_config_create(globals.assetConfigFilepath, data_config_type_global);
 
   scene_data *sceneData = scene_data_create_with_gltf_file(assetInput->sourceAssetName, gltfPath,
                                                            sceneConfigPath, assetConfig, assetDb);

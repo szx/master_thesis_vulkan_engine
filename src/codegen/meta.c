@@ -6434,8 +6434,8 @@ const char *color_blending_type_debug_str(int value) {
   return "UNKNOWN color_blending_type";
 }
 const char *data_config_type_debug_str(int value) {
-  if (value == 0) { return "data_config_type_asset"; }
-  if (value == 1) { return "data_config_type_scene"; }
+  if (value == 0) { return "data_config_type_global"; }
+  if (value == 1) { return "data_config_type_global"; }
   if (value == 2) { return "data_config_type_count"; }
   return "UNKNOWN data_config_type";
 }

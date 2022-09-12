@@ -66,12 +66,12 @@ def codegen_macros(config: ConfigParser):
                     decls.append(f'  X({section}, {key}, "{value}", __VA_ARGS__) \\')
         decls.append(f'  END_OF_DATA_{macro_name}_CONFIG_STR_KEYS')
 
+    parse_ini_config('GLOBAL.CONFIG')
     parse_ini_config('ASSET.CONFIG')
-    parse_ini_config('SCENE.CONFIG')
     decls.append(f'\n#define END_OF_DATA_CONFIG_SCHEMA')
     decls.append(f'#define DATA_CONFIG_SCHEMA(X, ...) \\')
+    decls.append(f'  X(GLOBAL, global, __VA_ARGS__) \\')
     decls.append(f'  X(ASSET, asset, __VA_ARGS__) \\')
-    decls.append(f'  X(SCENE, scene, __VA_ARGS__) \\')
     decls.append(f'  END_OF_DATA_CONFIG_SCHEMA')
 
     # asset_db.h

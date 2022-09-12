@@ -8,7 +8,7 @@
 
 // Loading sponza.gltf.
 void gltf_loading() {
-  data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_asset);
+  data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_global);
   data_asset_db *assetDb = data_asset_db_create();
   device *vkd = device_create(config, assetDb);
   UT_string *sceneName;
@@ -97,7 +97,7 @@ void render_pass_record_no_op(render_pass *renderPass, render_pass_frame_state *
 }
 
 void shaderc_compiling() {
-  data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_asset);
+  data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_global);
   data_asset_db *assetDb = data_asset_db_create();
   device *vkd = device_create(config, assetDb);
   swap_chain *vks = swap_chain_create(vkd);
@@ -187,7 +187,7 @@ void assert_graph(scene_graph *sceneGraph) {
 
 // Building scene graph.
 void scene_graph_building() {
-  data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_asset);
+  data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_global);
   data_asset_db *assetDb = data_asset_db_create();
   device *vkd = device_create(config, assetDb);
 
@@ -196,7 +196,7 @@ void scene_graph_building() {
   scene_data *assetDbSceneData = scene_data_create_with_asset_db(config, assetDb, sceneName);
   // scene_data_debug_print(assetDbSceneData);
   renderer_cache *rendererCache =
-      renderer_cache_create(assetDbSceneData, config->asset.graphicsMaxPrimitiveElementCount);
+      renderer_cache_create(assetDbSceneData, config->global.graphicsMaxPrimitiveElementCount);
 
   scene_graph *sceneGraph = scene_graph_create(assetDbSceneData, rendererCache);
 

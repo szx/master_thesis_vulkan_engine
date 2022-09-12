@@ -133,10 +133,10 @@ void create_window(device *vkd, data_config *config, data_asset_db *assetDb) {
   verify(glfwVulkanSupported() == GLFW_TRUE);
   glfwDefaultWindowHints();
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-  verify(config->asset.graphicsWindowWidth > 0 && config->asset.graphicsWindowHeight > 0);
+  verify(config->global.graphicsWindowWidth > 0 && config->global.graphicsWindowHeight > 0);
   vkd->window =
-      glfwCreateWindow(config->asset.graphicsWindowWidth, config->asset.graphicsWindowHeight,
-                       utstring_body(config->asset.graphicsWindowTitle), NULL, NULL);
+      glfwCreateWindow(config->global.graphicsWindowWidth, config->global.graphicsWindowHeight,
+                       utstring_body(config->global.graphicsWindowTitle), NULL, NULL);
   glfwSetWindowUserPointer(vkd->window, vkd);
   glfwSetFramebufferSizeCallback(vkd->window, glfw_framebuffer_resize_callback);
   glfwSetKeyCallback(vkd->window, glfw_key_callback);
@@ -188,7 +188,7 @@ void create_instance(device *vkd, data_config *config, data_asset_db *assetDb) {
 
   VkApplicationInfo appInfo = {0};
   appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-  appInfo.pApplicationName = utstring_body(config->asset.graphicsWindowTitle);
+  appInfo.pApplicationName = utstring_body(config->global.graphicsWindowTitle);
   appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
   appInfo.pEngineName = "engine";
   appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);

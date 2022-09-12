@@ -334,7 +334,7 @@ asset_skybox *parse_config_skybox(scene_data *sceneData, data_config *sceneConfi
                                   data_asset_db *assetDb) {
   asset_skybox skybox; // FIXME: Deserialize smarter, key == skyboxName.
   asset_skybox_init(&skybox, sceneData);
-  utstring_printf(skybox.name, "%s", utstring_body(sceneConfig->scene.skyboxName));
+  utstring_printf(skybox.name, "%s", utstring_body(sceneConfig->asset.skyboxName));
   data_key skyboxKey = asset_skybox_calculate_key(&skybox);
   asset_skybox *result = scene_data_get_skybox_by_key(sceneData, assetDb, skyboxKey);
   asset_skybox_deinit(&skybox);
@@ -369,7 +369,7 @@ scene_data *parse_cgltf_scene(UT_string *name, UT_string *path, UT_string *scene
 
   cgltf_free(cgltfData);
 
-  data_config *sceneConfig = data_config_create(sceneConfigPath, data_config_type_scene);
+  data_config *sceneConfig = data_config_create(sceneConfigPath, data_config_type_asset);
 
   // parse skybox
   sceneData->skybox = parse_config_skybox(sceneData, sceneConfig, assetDb);
@@ -492,7 +492,7 @@ void scene_data_deserialize(scene_data *sceneData, data_asset_db *assetDb, data_
   // FIXME: Deserialize smarter, key == fontName.
   asset_font font;
   asset_font_init(&font, sceneData);
-  utstring_printf(font.name, "%s", utstring_body(sceneData->assetConfig->asset.graphicsFont));
+  utstring_printf(font.name, "%s", utstring_body(sceneData->assetConfig->global.graphicsFont));
   data_key fontKey = asset_font_calculate_key(&font);
   sceneData->font = scene_data_get_font_by_key(sceneData, assetDb, fontKey);
   asset_font_deinit(&font);

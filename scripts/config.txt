@@ -19,7 +19,7 @@ MAX_TEXT_CHARACTER_COUNT = 256
 MIN_DELTA_TIME = (1.0 / 60.0)
 WORLD_UP = 0, 1, 0
 
-[ASSET.CONFIG]
+[GLOBAL.CONFIG]
 graphics.WindowWidth = 640
 graphics.WindowHeight = 480
 graphics.WindowTitle = "cpptest"
@@ -28,6 +28,9 @@ graphics.MaxPrimitiveElementCount = 1000
 graphics.Font = "Go-Mono"
 controls.Enabled = 1
 settings.StartScene = "MetalRoughSpheresNoTextures"
+
+[ASSET.CONFIG]
+skybox.Name = "skybox1"
 
 [ASSET.DB]
 types = "BYTE:uint8_t, INT:uint32_t, FLOAT:float, VEC2:vec2, VEC3:vec3, VEC4:vec4, MAT4:mat4, TEXT:UT_string *, KEY:hash_t"
@@ -45,6 +48,3 @@ skybox = "key KEY, name TEXT, cubemapTexture KEY"
 font = "key KEY, name TEXT, fontTexture KEY, characters TEXT, characterSize INT"
 scene = "key KEY, name TEXT, objects KEY_ARRAY, directLights KEY_ARRAY, skybox KEY"
 
-[SCENE.CONFIG]
-skybox.Name = "skybox1"
-skybox.AmbientIntensity = 0
