@@ -140,8 +140,6 @@ Na potrzeby projektu wyróżniono następujące rodzaje zasobów:
 
 Wymienione powyżej rodzaje zasobów są opisane w następnych podrozdziałach.
 
-*Konfiguracja globalna* Plik ... ...
-
 ## Scena
 
 Moduł sceny jest odpowiedzialny za wygenerowanie ze sceny listy obiektów renderowania. Struktury:
@@ -335,13 +333,10 @@ znaków z alfabetem czcionki i rozmiar jednego glifu w pikselach.
 kodu.
 
 ------
-/src/data/config.h Parsowanie konfiguracji w formacie INI.
-------
-/src/data/db.h Definiuje obiekt bazę danych SQLite. SQLite posiada "dynamiczny" system typowania (ang. dynamic type
-system), który pozwala na słabe typowanie przy użyciu następujących typów proste: INT, TEXT, BLOB Biblioteka dodaje
-dodatkowe typy złożone: VEC3,... oraz ich wersje tablicowe: VEC3_ARRAY, ... - baza danych SQLite wciąż używa typów
-prostych, ale następuje serializacja i deserializacja typów złożonych.
-[LISTING]
+HIRO
+/src/data/db.h
+
+
 Biblioteka pozwala na przeprowadzanie standardowych operacji wyboru (ang. select) i wprowadzania (ang. insert).
 [LISTING]
 ------

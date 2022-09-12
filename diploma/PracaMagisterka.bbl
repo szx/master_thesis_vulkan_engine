@@ -679,6 +679,44 @@
       \verb http://graphics.stanford.edu/~seander/bithacks.html
       \endverb
     \endentry
+    \entry{SQLITE}{software}{}
+      \name{author}{1}{}{%
+        {{hash=aee751a5a83a89d9fa7342c7a085356d}{%
+           family={{D. Richard Hipp}},
+           familyi={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{aee751a5a83a89d9fa7342c7a085356d}
+      \strng{fullhash}{aee751a5a83a89d9fa7342c7a085356d}
+      \strng{bibnamehash}{aee751a5a83a89d9fa7342c7a085356d}
+      \strng{authorbibnamehash}{aee751a5a83a89d9fa7342c7a085356d}
+      \strng{authornamehash}{aee751a5a83a89d9fa7342c7a085356d}
+      \strng{authorfullhash}{aee751a5a83a89d9fa7342c7a085356d}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Baza danych SQLite}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://www.sqlite.org
+      \endverb
+      \verb{url}
+      \verb https://www.sqlite.org
+      \endverb
+    \endentry
+    \entry{SQLITEAPPFORMAT}{misc}{}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{labeltitlesource}{title}
+      \field{title}{SQLite As An Application File Format}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://www.sqlite.org/appfileformat.html
+      \endverb
+      \verb{url}
+      \verb https://www.sqlite.org/appfileformat.html
+      \endverb
+    \endentry
   \enddatalist
 \endrefsection
 \endinput

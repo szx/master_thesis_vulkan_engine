@@ -104,7 +104,6 @@ Poniższy diagram przedstawia proces budowania projektu w formie celów i ich za
 
 \paragraph{run\_asset\_pipeline} Niestandardowy cel realizujący potoku zasobów poprzez uruchomienie skryptu Python wielokrotne uruchamiającego narzędzie \textbf{asset\_pipeline} na zasobach wejściowych.
 
-// TODO więcej o celach
 
 \subsection{Biblioteki zewnętrzne}
 
@@ -144,8 +143,14 @@ UndefinedBehaviorSanitizer) wykrywające szeroką klasę błędów dotyczących 
 
 \section{Architektura}
 
-Silnik jest podzielony na moduły, które składają się z jednostek, przez które rozumie się parę plik nagłówkowy \textit{*.h} z odpowiadającym plikiem źródłowymi \textit{*.c} o tej samej nazwie.
-W imię zwięzłości dalej w pracy rozszerzenia plików będą pomijane jeśli można wywnioskować je z kontekstu.
+Silnik jest zaprojektowany w duchu \textbf{architektury modułowej} - funkcjonalność biblioteki jest rozdzielona na bloki zwane modułami, które mogą być rozwijane niezależnie od pozostałych modułów.
+
+Silnik był rozwijany metodą \textit{bottom-up} - jego pierwsza iteracja była pojedyńczym plikiem źródłowym wyświetlającym trójkąt \cite{VULKANTUTORIAL}, który w procesie dekompozycji i refaktoryzacji organicznie rozrósł się do 7 modułów znajdujących się w osobnych podkatalogach zawierających łącznie 9 skryptów Python \textit{.py}, 65 nagłówków \textit{*.h} i 63 plików źródłowych \textit{*.c}.
+
+Obecnie silnik składa się z następujących modułów:
+// TODO lista modułów, podkatalog i przeznaczenie
+
+Moduł jest dalej podzielony na \textbf{jednostki}, które zostały na potrzeby projektu zdefiniowana jako para składająca się z pliku nagłówkowego z odpowiadającym plikiem źródłowymi o tej samej nazwie.
 
 Pliki nagłówowe zawierają deklaracje funkcji, struktur oraz typów wyliczeniowych widocznych dla użytkownika końcowego i powinny być dołączone do programu przy użyciu dyrektywy \textit{\#include} preprocesora.
 Pliki źródłowe zawierają definicje deklaracji plika nagłówkowego i powinny być dołączone do programu używając argumentów kompilatora (jeśli dodawane są niezbudowane pliki źródłowe) bądź linkera (jeśli dodawane są zbudowane pliki biblioteczne), co jest automatycznie wykonywane przez CMake.
@@ -158,13 +163,7 @@ Obiekty mogą oferować metody \textit{create()} i \textit{destroy()}, które al
 Analogiczne metody \textit{init()} i \textit{deinit()} tworzą i niszczą instancję, której pamięć została wcześniej zaalokowaną (np. na stosie lub w tablicy).
 Opcjonalna metoda \textit{debug\_print()} loguje informacje o wewnętrznym stanie instancji użyteczne podczas debugowania.
 
-
-Aplikacja składa się z następujących modułów:
-// TODO lista modułów
-
-Poniższy diagram przedstawia moduły i klasy występujące w silniku:
-// TODO diagram klas
-Relacje pomiędzy modułami silnika i ich najważniejszymi klasami są przedstawione na poniższym diagramie:
+Relacje pomiędzy modułami silnika i ich najważniejszymi jednostkami są przedstawione na poniższym diagramie:
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[node distance=2mm]
@@ -258,7 +257,7 @@ Relacje pomiędzy modułami silnika i ich najważniejszymi klasami są przedstaw
 		\node ()[above=0cm of core] {\textbf{Rdzeń}};
 		\node ()[above=0cm of data] {\textbf{I/O}};
 		\node ()[below=0cm of assets] {\textbf{Zasoby}};
-		\node ()[above=0cm of objects] {\textbf{Obiekty Vulkan}};
+		\node ()[above=0cm of objects] {\textbf{Vulkan}};
 		\node ()[below=0cm of scene] {\textbf{Scena}};
 		\node ()[above=0cm of rendering] {\textbf{Renderer}};
 		
@@ -279,7 +278,7 @@ kodu źródłowego biblioteki.
 Język C nie posiada mechanizmów pozwalających na metaprogramowanie z wyjątkiem makr preprocessora, które mogą zaspokoić część potrzeb programisty chcącego przykładowo dodać nowy rodzaje pętli \cite{METACONTROLC}, ale nie pozwalają na bardziej skomplikowaną analizę i przekształcanie kodu, które muszą być wykonywane przez zewnętrzne narzędzia.
 
 Działanie skryptu jest sterowane konfiguracją generatora, który jest plikiem w formacie INI (zgodnym z biblioteką \textit{configparser} \cite{PYTHONCONFIGPARSER}) znajdującym się w katalogu ze skryptem.
-Format INI jest podzielony na sekcje, które zawierają pary klucz-wartość.
+Format INI nie posiada standardowej specyfikacji, ale tradycyjnie jest on plikiem tekstowym podzielonym na sekcje zawierające pary klucz-wartość.
 
 Skrypt parsuje pliki nagłówkowe języka C znajdujący się w katalogu /src z
 pominięciem katalogu /src/codegen, do którego skrypt zapisuje wygenerowane pliki nagłówkowe i źródłowe, które są kolejno dołączane w innych modułach silnika i dodawane jako argumenty kompilatora.
@@ -355,12 +354,15 @@ X makra ułatwiają utrzymywanie kodu poprzez deklaratywnego "jedynego źródła
 Obiekt globalny \textit{globals} reprezentujący wygenerowane zmienne.
 Ich wartości, w przeciwieństwie stałych, mogą być ustalone dopiero w czasie wykonywania.
 Obiekt jest używany do specyfikacji struktury różnych ścieżek katalogów i plików używanych przez silnik.
-Przykładowo zmienne zadeklarowane w poniższej sekcji konfiguracji generacji opisują ścieżki katalogu zasobów, konfiguracji globalnej, bazy zasobów i pliku logowania:
+
+Silnik używa poniższej sekcji konfiguracji generacji do opisania ścieżkek dla kolejno katalogu zasobów, konfiguracji globalnej, bazy zasobów, katalogu shaderów i ich współdzielonego kodu GLSL oraz pliku logowania:
 \begin{verbatim}
 [GLOBALS]
 assetsDirname = assets
 assetDatabaseFilepath = ${assetsDirname}/data.db
 assetConfigFilepath = ${assetsDirname}/config.ini
+assetsShaderDirpath =${assetsDirname}/shaders
+assetsShaderCommonFilepath =${assetsShaderDirpath}/common.glsl
 logFileName = log.txt
 \end{verbatim}
 Powyższa konfiguracja generuje poniższą metodę init():
@@ -373,6 +375,10 @@ void globals_create() {
 		get_executable_dir_file_path("", "assets/data.db");
 	globals.assetConfigFilepath =
 		get_executable_dir_file_path("", "assets/config.ini");
+	globals.assetsShaderDirpath =
+		get_executable_dir_file_path("", "assets/shaders");
+	globals.assetsShaderCommonFilepath =
+  		get_executable_dir_file_path("", "assets/shaders/common.glsl");
 	globals.logFileName =
 		get_executable_dir_file_path("", "log.txt");
 }
@@ -381,15 +387,15 @@ void globals_create() {
 \subsubsection{Jednostka macros}
 Zbiór X makr używanych przez moduł I/O obsługujący następujące zasoby wejściowe.
 
-Makra opisują wewnętrzną strukturę plików INI konfiguracji globalnej i zasobów: używane sekcje i ich dopuszczalne pary klucz-wartość z domyślnymi wartościami (liczby całkowite bądź ciągi znaków).
+Makra opisują wewnętrzną strukturę plików INI konfiguracji globalnej i konfiguracji zasobów: używane sekcje i ich dopuszczalne pary klucz-wartość z domyślnymi wartościami (liczby całkowite bądź ciągi znaków).
 Przykładowy fragment konfiguracji generatora opisujący konfiguracji globalnej:
 \begin{verbatim}
-[ASSET.CONFIG]
+[GLOBAL.CONFIG]
 graphics.WindowWidth = 640
 controls.Enabled = 1
 settings.StartScene = "sponza"
 \end{verbatim}
-Powyższa konfiguracja pozwala na sparsowanie poniższego pliku INI:
+Powyższa konfiguracja pozwala silnikowi na sparsowanie poniższego pliku INI:
 \begin{verbatim}
 [settings]
 StartScene = MetalRoughSpheresNoTextures
@@ -630,13 +636,83 @@ Funkcje \textit{write\_text\_file()} i \textit{read\_text\_file()} pozwalają na
 
 \subsection{I/O}
 
-Moduł I/O zawiera obiekty używane do wczytywania i zapisywania zasobów wyjściowych.
+Silnik wczytuje ze ścieżek zaszytych w zmiennych globalnych następujące zasoby wyjściowe:
+\begin{itemize}
+	\item konfiguracja globalna (plik tekstory INI),
+	\item kod GLSL shadera (plik tekstowy GLSL),
+	\item baza zasobów (baza danych).
+\end{itemize}
 
-// HIRO definicje zasobów w wprowadzeniu
-// HIRO db, config, asset\_db
+Wszystkie zasoby wejściowe które muszą być łatwo edytowalne przez użytkownika są plikami tekstowymi i są bezpośrednio kopiowane przez potok zasobów do katalogu budowania stając się zasobami wyjściowymi.
+Reszta zasobów wejściowych staje się częścią bazy zasobów będącej plikiem bazy danych SQLite.
+
+SQLite \cite{SQLITE} to biblioteka języka C implementująca silnik relacyjnej bazy danych SQL.
+Jest ona bardzo popularnym wyborem jako format pliku używany do utrwalania stanu aplikacji na dysku z wielu powodów, do których zalicza się prosta użycia, wysoka wydajności, bogata wewnętrzna struktura oferowana przez relacyjną bazę danych i formę łatwego do dystrybucji pojedyńczego samodzielnego pliku na dysku \cite{SQLITEAPPFORMAT}.
+
+Moduł I/O zawiera obiekty używane do wczytywania i zapisywania powyższych zasobów wraz z walidacją ich formatu i wewnętrznej struktury - interpretacją danych zajmują się dalsze moduły.
+
+\subsubsection{Jednostka config}
+Obiekt \textit{config} reprezentujący pojedyńczy plik INI zawierający jeden z dwóch rodzajów konfiguracji: konfigurację globalną lub konfigurację zasobów.
+
+\textbf{Konfiguracja globalna} jest ładowana na samym początku inicjalizacji silnika i pozwala użytkownikowi na sterowanie jego działania poprzez zmianę następujących zmiennych:
+\begin{itemize}
+	\item sekcja \textit{graphics}:
+	\begin{itemize}
+		\item \textit{WindowWidth}, \textit{WindowHeight}, \textit{WindowTitle}: szerokość, wysokość i tytuł okna,
+		\item \textit{EnabledInstancing}: włączenie instancjonowania,
+		\item \textit{MaxPrimitiveElementCount}: maksymalna liczba prymitywów renderowania,
+		\item \textit{Font}: czcionka,
+	\end{itemize}
+	\item sekcja \textit{controls}:
+	\begin{itemize}
+		\item \textit{Enabled}: obsługa danych wejściowych myszy i klawiatury,
+	\end{itemize}
+	\item sekcja \textit{settings}:
+	\begin{itemize}
+		\item \textit{StartScene}: nazwa sceny ładowanej z bazy zasobów.
+	\end{itemize}
+\end{itemize}
+
+\textbf{Konfiguracja zasobów} jest używana wyłącznie przez potok zasobów i zawiera dodatkowe informacje o przetwarzanym zasobie wejściowym takie jak:
+\begin{itemize}
+	\item sekcja \textit{skybox}:
+	\begin{itemize}
+		\item \textit{Name}: nazwa używanej tekstury skybox.
+	\end{itemize}
+\end{itemize}
+
+Konfiguracja jest zbiorem par klucz-wartość.
+Wartości mogą być liczbą całkowitą lub ciągiem znaków i dla brakujących klucze mają wartość domyślną.
+Odczyt i zapis odbywa się przy pomocy metod \textit{load()} i \textit{save()}.
+
+
+\subsubsection{Jednostka db}
+Obiekt \textit{db} reprezentujący połączenie z plikiem bazy danych SQLite.
+
+SQLite posiada dynamiczny i słaby system typowania posiadający 5 typów prostych:
+NULL, INTEGER (liczba całkowita maksymalnie 64-bitowa), REAL (64-bitowa liczba zmiennoprzecinkowa), TEXT ( ciąg znaków UTF-8/16) i BLOB: (blok pamięci).
+Obiekt \textit{db} rozszerza ten ubogi system typów nowymi typami złożonymi bezpośrednio odpowiadającymi typom języka C zdefiniowanych w konfiguracji generatora: BYTE (uint8\_t), INT (uint32\_t), FLOAT (float), VEC2(vec2), VEC3(vec3), VEC4(vec4), MAT4(mat4), TEXT(UT\_string *), i KEY(hash\_t).
+Dodatkowo każdy typ posiada wersję tablicową \textit{*\_ARRAY} (BYTE\_ARRAY, INT\_ARRAY itd.).
+
+Obiekt \textit{db} pozwala na przeprowadzanie standardowych operacji wyboru (ang. select) i umieszczania (ang. insert) rekordów do wybranej tabeli.
+Baza danych SQLite wciąż wewnętrznie używa typów prostych, ale wygenerowane przy użyciu X makro metody \textit{} automatycznie przeprowadza serializację i deserializację typów złożonych.
+
+// HIRO asset\_db
 
 \subsection{Zasoby}
 
-// HIRO Zasoby to moduł zawierajacy struktury reprezentujące ...
+// TODO Zasoby to moduł zawierajacy struktury reprezentujące ...
+// TODO Potok zasobów asset\_pipeline
 
-// TODO reszta modułów
+\subsection{Vulkan}
+
+// TODO Vulkan to moduł zawierajacy 
+
+\subsection{Scena}
+
+// TODO Scena to moduł zawierajacy 
+
+\subsection{Renderer}
+
+// TODO Renderer to moduł zawierajacy 
+
