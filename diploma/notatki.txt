@@ -336,6 +336,8 @@ kodu.
 -------------
 
 HIRO
+Wniosek do dziekanetu, znaleźć wzór,
+
 
 Vulkan [... 2d/3d, mipmap (lod), array layers, tiling]
 [OBRAZEK]
