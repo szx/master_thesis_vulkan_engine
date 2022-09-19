@@ -202,11 +202,6 @@ Funkcja get_orthographic_matrix oblicza macierz rzutu prostokątnego z przestrze
 ang. clip space). Przestrzeń przycinania w Vulkanie jest prawoskrętna z flipped Y.
 -------------
 HIRO
-/src/assets Zawiera obiekty zasobów. Obiekt zasobów reprezentuje zasoby znajdujący się w bazie zasobów. Obiekty zasobów
-są obiektami POD (ang. Plain Old Object), ich jedynym zadaniem jest udostępnienie informacji o zasobach elementom
-silnika na wyższym poziomie.
-[DIAGRAM]
-Struktura obiektów zasobów jest inspirowana strukturą zasobów w formacie glTF pokazaną na poniższym diagramie:
 [DIAGRAM https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#concepts-general]
 W formacie glTF scena składa się z węzłów, które są obiektami przeznaczonymi do wyrenderowania. Węzeł zawierać lokalną
 transformację przestrzeni oraz referencję od renderowanych zasobów.
@@ -334,10 +329,6 @@ znaków z alfabetem czcionki i rozmiar jednego glifu w pikselach.
 kodu.
 
 -------------
-
-HIRO
-Wniosek do dziekanetu, znaleźć wzór,
-
 
 Vulkan [... 2d/3d, mipmap (lod), array layers, tiling]
 [OBRAZEK]

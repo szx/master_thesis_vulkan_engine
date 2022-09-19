@@ -520,6 +520,34 @@
       \verb https://www.blender.org/
       \endverb
     \endentry
+    \entry{GLTFSPEC}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=638160ae56a17712d83fafc12a740c80}{%
+           family={Group},
+           familyi={G\bibinitperiod},
+           given={Khronos},
+           giveni={K\bibinitperiod}}}%
+      }
+      \strng{namehash}{638160ae56a17712d83fafc12a740c80}
+      \strng{fullhash}{638160ae56a17712d83fafc12a740c80}
+      \strng{bibnamehash}{638160ae56a17712d83fafc12a740c80}
+      \strng{authorbibnamehash}{638160ae56a17712d83fafc12a740c80}
+      \strng{authornamehash}{638160ae56a17712d83fafc12a740c80}
+      \strng{authorfullhash}{638160ae56a17712d83fafc12a740c80}
+      \field{extraname}{4}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{glTF 2.0 Specification}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html
+      \endverb
+      \verb{url}
+      \verb https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html
+      \endverb
+    \endentry
     \entry{UNARCH}{software}{}
       \name{author}{1}{}{%
         {{hash=c0529ab46fafe8e43d340cb2d8746b42}{%
@@ -639,8 +667,8 @@
       \strng{authorbibnamehash}{67aca50e6f272da40c98e8ba5efa5aa3}
       \strng{authornamehash}{67aca50e6f272da40c98e8ba5efa5aa3}
       \strng{authorfullhash}{67aca50e6f272da40c98e8ba5efa5aa3}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Rendering 'Rainbow Six | Siege'}

@@ -1123,22 +1123,7 @@ Poniższy diagram przedstawia tekstury bez dowiązań używając niejednolitych 
 \section{Potok zasobów}
 
 W kontekście silnika zasób (ang. asset) można zdefiniować jako ogół jego elementów, które nie są częścią jego kodu źródłowego i mogą być niezależnie od niego dodawane, usuwane i modyfikowane.
-Zasoby można podzielić na zasoby wejściowe i wyjściowe.
-
-Zasoby wejściowe mają formę plików w formacie przystosowanym do edycji przy użyciu zewnętrznego oprogramowania.
-Oczywistymi przykładami zasobów wejściowych są zasoby 3D obejmujące modele wraz z siatkami, teksturami, materiałami, transformacjami, animacjami, szkieletami i innymi elementami używanymi do renderowania, ale do zasobów wejściowych można też wliczyć tak różnorodne elementy jak oprawa dźwiękowa, efekty cząsteczkowe, pliki konfiguracyjne, shadery czy skrypty.
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[width=0.9\textwidth]{images/blender.png}
-	\caption{Interfejs programu Blender \cite{BLENDER} używanego do modelowania 3D}
-	\label{blendermodel}
-\end{figure}
-
-Liczba możliwych elementów składającymi się na zasób 3D skłoniła branżę do opracowania ustandaryzowanych formatów opisu sceny, wśród których szczególną popularność zdobyły \textit{USD} (Universal Scene Description), który jest rozwijany przez Pixar i pozwala na łatwą i kompletną wymianę informacji pomiędzy różnymi programami grafiki 3D, oraz \textit{glTF} (GL Transmission Format), który jest rozwijany przez Khronos i jest przystosowany do przechowywania ostatecznej wersji sceny w sposób prosty do sparsowania i wyrenderowania bądź dalszego przetworzenia.
-
-Zasoby wyjściowe mają formę plików w formacie przystosowanym do manipulacji przez aplikację. Przykładami zasobów wyjściowych są pliki z rozszerzeniami \textit{.uasset} i \textit{.umap} używane przez silnik Unreal Engine \cite{unrealengine} do przechowywania zasobów w zoptymalizowanym formacie binarnym czy pliki \textit{.streamdb} i \textit{.resources}, które według twórców narzędzia do ekstrakcji zasobów z gier UnArch \cite{UNARCH} są używane w grze Doom Eternal i zastąpiły pliki \textit{.pak} wcześniejszych gier od id Software.
-
-Przepływ pracy dla zasobów jest przedstawiony na poniższym diagramie:
+Ich przepływ pracy jest przedstawiony na poniższym diagramie:
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[node distance=0.5cm]
@@ -1162,13 +1147,163 @@ Przepływ pracy dla zasobów jest przedstawiony na poniższym diagramie:
 	\label{asset_workflow}
 \end{figure}
 
+\subsection{Zasoby wejściowe}
+
+Zasoby wejściowe mają formę plików w formacie przystosowanym do edycji przy użyciu zewnętrznego oprogramowania.
+Oczywistymi przykładami zasobów wejściowych są zasoby 3D obejmujące modele wraz z siatkami, teksturami, materiałami, transformacjami, animacjami, szkieletami i innymi elementami używanymi do renderowania, ale do zasobów wejściowych można też wliczyć tak różnorodne elementy jak oprawa dźwiękowa, efekty cząsteczkowe, pliki konfiguracyjne, shadery czy skrypty.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.9\textwidth]{images/blender.png}
+	\caption{Interfejs programu Blender \cite{BLENDER} używanego do modelowania 3D}
+	\label{blendermodel}
+\end{figure}
+
+
+\subsubsection{Formaty opisu sceny glTF}
+
+Liczba możliwych elementów składającymi się na zasób 3D skłoniła branżę do opracowania ustandaryzowanych formatów opisu sceny, wśród których szczególną popularność zdobyły:
+\begin{itemize}
+	\item \textit{FBX} (Filmbox): rozwijany od 2006 przez Autodesk zamknięty format szeroko używany w branży gier z powodu łatwego eksportu oferowanego przez programy Autodesk 3ds Max i Maya.
+	Jego zamknięta natura wymaga importowania albo przy pomocy oficjalnego SDK wymagającego akceptacji restrykcyjnego EULA, albo reimplementacji wymaganych części formatu inżynierią wsteczną.
+	\item \textit{USD} (Universal Scene Description): otwarty format rozwijany od 2016 przez Pixar pozwala na łatwą i kompletną wymianę informacji pomiędzy różnymi najnowocześniejszymi programami grafiki 3D używanymi przez Pixar do produkcji animacji.
+	Jego skompresowany i okrojony zamknięty wariant \textit{USDZ} jest używany przez Apple.
+	\item \textit{glTF} (Graphics Language Transmission Format): rozwijany od 2015 przez Khronos otwarty format przystosowany do przechowywania ostatecznej wersji sceny w sposób prosty do sparsowania i wyrenderowania bądź dalszego przetworzenia.
+	Wersja 2.0 wydana w 2021 zerwała kompatybilność wsteczną z wersją 1.0 i całkowicie ją zastąpiła.
+\end{itemize}
+
+Wśród wymienionych formatów jedynie glTF jest w pełni otwarty i łatwo importowany, dlatego jest on dobrym wyborem jako format zasobów 3D używanych przez silnik graficzny. Na przykład Godot \cite{godotengine} wspiera glTF jako główny i rekomendowany format opisy sceny.
+
+Zgodnie ze specyfikacją glTF \cite{GLTFSPEC} zasób jest reprezentowany przez:
+\begin{itemize}
+	\item plik tekstowy \textit{*.gltf} w formacie JSON zawierający pełny opis sceny i jej poszczególnych elementów,
+	\item pliki binarne \textit{*.bin} zawierający dane buforów zawierających geometrię bądź animacje,
+	\item pliki obrazów \textit{*.png} i \textit{*.jpg} opisujące tekstury,
+\end{itemize}
+Pliki binarne i obrazy mogą być osadzone bezpośrednio w obiecie JSON używając kodowania Base64.
+Możliwe jest też użycie binarnej wersji formatu glTF pozwalający na przechowywanie wszystkich danych w jednym binarnym pliku \textit{.glb}.
+
+Zasób glTF składa się z obiektu JSON zawierającego metadane oraz osobne tablice dla każdego typu elementu zasobu.
+Elementy mogą odnosić się do innych elementów używając ich indeksów w odpowiednich tablicach.
+Relacje pomiędzy różnymi typami elementów zostały pokazana na poniższym diagramie:
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[node distance=0.5cm]
+		\tikzstyle{entity} = [rectangle, minimum width=2cm, minimum height=0.5cm,text centered, draw=black]
+		\tikzstyle{refers} = [thick,->,>=stealth]
+		
+		\node (scene) [entity] {scene};
+		\node (node) [entity, below = of scene] {node};
+		\node (mesh) [entity, below = of node] {mesh};
+		\node (accessor) [entity, below = of mesh] {accessor};
+		\node (bufferView) [entity, below = of accessor] {bufferView};
+		\node (buffer) [entity, below = of bufferView] {buffer};
+		
+		\node (camera) [entity, above right = of node] {camera};
+		\node (skin) [entity, left = of node] {skin};
+		\node (animation) [entity, below = of skin] {animation};
+		
+		\node (material) [entity, right = of accessor] {material};
+		\node (texture) [entity, below = of material] {texture};
+		\node (image) [entity, below = of texture] {image};
+		\node (sampler) [entity, right = of image] {sampler};
+		
+		\draw [refers] (scene) edge[] (node);
+		\draw [refers] (node) edge[] (mesh);
+		\draw [refers] (mesh) edge[] (accessor);
+		\draw [refers] (accessor) edge[] (bufferView);
+		\draw [refers] (bufferView) edge[] (buffer);
+		\draw [refers] (node) edge[out=-5,in=5, loop] (node);
+		\draw [refers] (node) edge[] (camera);
+		\draw [refers] (mesh) edge[] (material);
+		\draw [refers] (material) edge[] (texture);
+		\draw [refers] (texture) edge[] (image);
+		\draw [refers] (texture) edge[] (sampler);
+		\draw [refers] (node) edge[] (skin);
+		\draw [refers] (skin) edge[] (node);
+		\draw [refers] (skin) edge[out=-10,in=180,looseness=0] (accessor);
+		\draw [refers] (animation) edge[] (node);
+		\draw [refers] (animation) edge[] (accessor);
+		
+	\end{tikzpicture}
+	\caption{Relacje pomiędzy rożnymi typami elementów w formacie glTF}
+	\label{gltf_concepts}
+\end{figure}
+
+// TODO Opisz poszczególne typy elementów?
+
+Przykładowo plik \textit{triangle.gltf} opisujący scenę zawierającą pojedyńczy trójkątą z geometrią składającą się z wierzchołków pozycji zawartych w pliku \textit{triangle.bin} wygląda następująco:
+
+\noindent\begin{minipage}{.35\textwidth}
+\lstset{language=JSON}
+\begin{lstlisting}
+{
+  "asset" : {
+    "version" : "2.0"
+  },
+  "scene" : 0,
+  
+  "scenes" : [
+  {
+    "nodes" : [ 0 ]
+  } ],
+  "nodes" : [
+  {
+    "mesh" : 0
+  } ],
+  "meshes" : [
+  {
+    "primitives" : [ {
+      "attributes" : {
+        "POSITION" : 0
+      }
+    } ]
+  } ],
+\end{lstlisting}
+\end{minipage}\hfill
+\begin{minipage}{.55\textwidth}
+\lstset{language=JSON}
+\begin{lstlisting}[frame=l]
+  "buffers" : [
+  {
+    "uri" : "triangle.bin",
+    "byteLength" : 36
+  } ],
+  "bufferViews" : [
+  {
+    "buffer" : 0,
+    "byteOffset" : 0,
+    "byteLength" : 36,
+    "target" : 34962
+  } ],
+  "accessors" : [
+  {
+    "bufferView" : 0,
+    "byteOffset" : 0,
+    "componentType" : 5126,
+    "count" : 3,
+    "type" : "VEC3",
+    "max" : [ 1.0, 1.0, 0.0 ],
+    "min" : [ 0.0, 0.0, 0.0 ]
+  } ]
+}
+\end{lstlisting}
+\end{minipage}
+
+\subsection{Zasoby wyjściowe}
+
+Zasoby wyjściowe mają formę plików w formacie przystosowanym do manipulacji przez aplikację. Przykładami zasobów wyjściowych są pliki z rozszerzeniami \textit{.uasset} i \textit{.umap} używane przez silnik Unreal Engine \cite{unrealengine} do przechowywania zasobów w zoptymalizowanym formacie binarnym czy pliki \textit{.streamdb} i \textit{.resources}, które według twórców narzędzia do ekstrakcji zasobów z gier UnArch \cite{UNARCH} są używane w grze Doom Eternal i zastąpiły pliki \textit{.pak} wcześniejszych gier od id Software.
+
+
+\subsection{Potok zasobów}
+
 Potok zasobów (ang. asset pipeline) to część silnika odpowiadająca za konwersję zasobów wejściowych na zasoby wyjściowe.
 Konwersja ta jest wymagana, ponieważ istnieją różne wymagania dotyczące formatów: zasoby wejściowe są zoptymalizowane pod kątem oszczędności miejsca na dysku i interoperacyjności między oprogramowaniem zewnętrznym, kiedy zasoby wyjściowe zwykle wymagają mniejszego zakresu możliwych funkcjonalności i powinny być w formacie dostosowanym do maksymalnie szybkiego wczytywania przez aplikację - szybkość ich zapisu jest mniej ważna ponieważ musi się odbyć tylko jeden raz na komputerach twórców oprogramowania uruchamiających potok zasobów.
 
+\subsection{Baza zasobów}
 Baza zasobów (ang. asset database) to zasób wyjściowy mający na celu zgromadzenie informacji o wszystkich zasobach używanych przez silnik.
 // HIRO
 
-\subsection{glTF}
+
 
 // TODO
 
