@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  19 SEP 2022 21:36
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  21 SEP 2022 22:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1542,32 +1542,74 @@ Overfull \hbox (5.21303pt too wide) in paragraph at lines 703--704
 [][][][][][][][][][][][][] 
  []
 
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+Missing character: There is no ; ("3B) in font nullfont!
+[48]
+! Missing $ inserted.
+<inserted text> 
+                $
+l.806 // HIRO opisz każdy asset_
+                                *
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
 
-Overfull \hbox (11.21309pt too wide) in paragraph at lines 754--755
+! Missing $ inserted.
+<inserted text> 
+                $
+l.807 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+[49]
+Overfull \hbox (11.21309pt too wide) in paragraph at lines 837--838
 [][][][][][][][][][][] 
  []
 
-[48]
-Overfull \hbox (41.2134pt too wide) in paragraph at lines 755--757
+
+Overfull \hbox (41.2134pt too wide) in paragraph at lines 838--840
 [][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (5.21303pt too wide) in paragraph at lines 768--769
+Overfull \hbox (5.21303pt too wide) in paragraph at lines 851--852
 [][][][][][][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (29.21327pt too wide) in paragraph at lines 774--776
+Overfull \hbox (29.21327pt too wide) in paragraph at lines 857--859
 [][][][][][][][][][][][][][][][][][][] 
  []
 
-) [49]
+[50]) [51]
 \openout2 = `chapters/5_badania.aux'.
 
  (./chapters/5_badania.tex
 Rozdzia\l  4.
-) [50
+) [52
 
 
 
@@ -1577,7 +1619,7 @@ Rozdzia\l  4.
 
  (./chapters/6_podsumowanie.tex
 Rozdzia\l  5.
-) [51
+) [53
 
 
 
@@ -1596,23 +1638,23 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 9.37807pt on input line 3.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 7.29405pt on input line 3.
- [52
+ [54
 
 
 
 
-] [53] (./PracaMagisterka.lof)
+] [55] (./PracaMagisterka.lof)
 \tf@lof=\write7
 \openout7 = `PracaMagisterka.lof'.
 
- [54
+ [56
 
 ]
 (./PracaMagisterka.lot)
 \tf@lot=\write8
 \openout8 = `PracaMagisterka.lot'.
 
-) [55
+) [57
 
 ] (./PracaMagisterka.aux
 (./chapters/0a_streszczenie.aux) (./chapters/0b_spis_tresci.aux)
@@ -1621,18 +1663,18 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (./chapters/3_technologie_algorytmy_narzedzia.aux) (./chapters/5_badania.aux)
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
 Package rerunfilecheck Info: File `PracaMagisterka.out' has not changed.
-(rerunfilecheck)             Checksum: FA9BE559793FE74761B5BFEE4C26EDD3;8970.
+(rerunfilecheck)             Checksum: 6721F2FDF6CC0E00438E11834EBB7472;8970.
 Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 \openout1 = `PracaMagisterka.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 40031 strings out of 476191
- 827096 string characters out of 5812072
- 1600582 words of memory out of 5000000
- 60108 multiletter control sequences out of 15000+600000
+ 40054 strings out of 476191
+ 827589 string characters out of 5812072
+ 1600661 words of memory out of 5000000
+ 60131 multiletter control sequences out of 15000+600000
  488887 words of font info for 103 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  88i,15n,91p,1516b,6445s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on PracaMagisterka.pdf (55 pages).
+Output written on PracaMagisterka.pdf (57 pages).

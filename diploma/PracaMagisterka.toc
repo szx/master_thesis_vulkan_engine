@@ -99,14 +99,16 @@
 \contentsline {subsubsection}{Jednostka sql\textunderscore \allowbreak db}{47}{subsubsection*.64}%
 \contentsline {subsubsection}{Jednostka asset\textunderscore \allowbreak db}{48}{subsubsection*.65}%
 \contentsline {subsection}{\numberline {3.3.4}Zasoby}{48}{subsection.3.3.4}%
-\contentsline {subsection}{\numberline {3.3.5}Vulkan}{48}{subsection.3.3.5}%
-\contentsline {subsubsection}{Jednostka shader}{48}{subsubsection*.66}%
-\contentsline {subsubsection}{Jednostka shader\textunderscore \allowbreak reflect}{49}{subsubsection*.67}%
-\contentsline {subsection}{\numberline {3.3.6}Scena}{49}{subsection.3.3.6}%
-\contentsline {subsection}{\numberline {3.3.7}Renderer}{49}{subsection.3.3.7}%
-\contentsline {chapter}{\numberline {4}Badania}{50}{chapter.4}%
-\contentsline {chapter}{\numberline {5}Podsumowanie}{51}{chapter.5}%
-\contentsline {chapter}{Wykaz literatury}{53}{chapter*.68}%
-\contentsline {chapter}{Spis rysunk\'ow}{54}{chapter*.69}%
-\contentsline {chapter}{Spis tablic}{55}{chapter*.70}%
+\contentsline {subsubsection}{Dane sceny scene\textunderscore \allowbreak data}{49}{subsubsection*.67}%
+\contentsline {subsubsection}{Obiekt zasobu węzła \textit {asset\textunderscore \allowbreak object}}{49}{subsubsection*.68}%
+\contentsline {subsection}{\numberline {3.3.5}Vulkan}{49}{subsection.3.3.5}%
+\contentsline {subsubsection}{Jednostka shader}{49}{subsubsection*.69}%
+\contentsline {subsubsection}{Jednostka shader\textunderscore \allowbreak reflect}{50}{subsubsection*.70}%
+\contentsline {subsection}{\numberline {3.3.6}Scena}{51}{subsection.3.3.6}%
+\contentsline {subsection}{\numberline {3.3.7}Renderer}{51}{subsection.3.3.7}%
+\contentsline {chapter}{\numberline {4}Badania}{52}{chapter.4}%
+\contentsline {chapter}{\numberline {5}Podsumowanie}{53}{chapter.5}%
+\contentsline {chapter}{Wykaz literatury}{55}{chapter*.71}%
+\contentsline {chapter}{Spis rysunk\'ow}{56}{chapter*.72}%
+\contentsline {chapter}{Spis tablic}{57}{chapter*.73}%
 \contentsfinish 

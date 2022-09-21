@@ -202,22 +202,10 @@ Funkcja get_orthographic_matrix oblicza macierz rzutu prostokątnego z przestrze
 ang. clip space). Przestrzeń przycinania w Vulkanie jest prawoskrętna z flipped Y.
 -------------
 HIRO
-[DIAGRAM https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#concepts-general]
-W formacie glTF scena składa się z węzłów, które są obiektami przeznaczonymi do wyrenderowania. Węzeł zawierać lokalną
-transformację przestrzeni oraz referencję od renderowanych zasobów.
-------
-/src/assets/common.h Definiuje interfejs współdzielony przez obiekty zasobów. Współdzielone pola:
 
-- klucz zasobu: otrzymany w wyniku użycia funkcji haszującej na polach obiektu jednoznacznie identyfikujących obiekt
-  jako unikalny zasób, rodzaj optymalizacji
-- wskaźnik do sceneData: każdy zasób zawiera wskaźnik do obiektu sceny któym jest zarządzany,
-- wskaźniki prev i next (intrusive doublylinked list). Współdzielone funkcje:
-- init: inicjalizacja
-- deinit: deinicjalizacja
-- calculate_key: oblicza klucz zasobu, wymagane ponowne obliczenie po każdej modyfikacji obiektu,
-- serialize: serializacja, zapis pól obiektu do bazy zasobów
-- deserialize: deserializacja, odczyt pól obiektu z bazy zasobów, używa klucza
-- debug_print: funkcja pomocnicza używana podczas debugowania, loguje pola obieku
+W formacie glTF scena składa się z węzłów, które są obiektami przeznaczonymi do wyrenderowania. Węzeł zawierać lokalną transformację przestrzeni oraz referencję od renderowanych zasobów.
+------
+HIRO
 
 ------
 /src/assets/camera.h Zasób reprezentujący parametry kamery. Dostępne są dwa rodzaje kamery:

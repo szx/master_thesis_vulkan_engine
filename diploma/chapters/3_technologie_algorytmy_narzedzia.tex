@@ -293,7 +293,7 @@ Poniżej wymieniono stałe, ich wartości oraz interpretacje:
 	\item \textit{MAX\_DIRECTIONAL\_LIGHT\_COUNT}: $1$, maksymalna liczbę świateł kierunkowych na scenie;
 	\item \textit{MAX\_POINT\_LIGHT\_COUNT}: $128$, maksymalna liczbę świateł punktowych na scenie;
 	\item \textit{MAX\_TEXT\_CHARACTER\_COUNT}: $256$, maksymalną liczbę znaków w renderowanym ciągu znaków;
-	\item \textit{MIN\_DELTA\_TIME}: $(1.0 / 60.0)$, minimalny czas pomiędzy wywołaniami fnukcji zwrotnej \textit{update} w pętli głównej, domyślnie $\frac{1}{60}$ sekundy (60 FPS);
+	\item \textit{MIN\_DELTA\_TIME}: $(1.0 / 60.0)$, minimalny czas pomiędzy wywołaniami funkcji zwrotnej \textit{update} w pętli głównej, domyślnie $\frac{1}{60}$ sekundy (60 FPS);
 	\item \textit{WORLD\_UP}: $0, 1, 0$; wektor interpretowany jako "w górę" w przestrzeni świata.
 \end{itemize}
 
@@ -713,14 +713,97 @@ Obiekt ten jest intensywnie używany przez moduł zasobów do implementacji seri
 
 \subsection{Zasoby}
 
-Moduł zawierajaca obiekty zasobów, które pozwalają na deserializację i serializację danych indywidualnych zasobów znajdujących się w bazie zasobów.
-Głównym zadaniem tego modułu jest udostępnienie informacji o zasobach elementom silnika na wyższym poziomie.
+Moduł zawierajaca obiekty zasobów, które pozwalają na serializację i deserializację indywidualnych zasobów z bazy zasobów do formy używalnej przez resztę kodu silnika.
 
-Struktura obiektów zasobów jest inspirowana formatem glTF i została pokazaną na poniższym diagramie:
-// HIRO diagram
-...
+Wszystkie obiekty zasobów mają nazwy w formie \textit{asset\_*} i współdzielą następujące pola i metody:
+\begin{itemize}
+	\item klucz zasobu: jednoznacznie identyfikuje obiekt jako unikalny zasób i jest otrzymywany poprzez użycie funkcji skrótu na jego polach.
+	\item wskaźnik do obiektu \textit{scene\_data} z modułu sceny: obiekty zasobów są zarządzane przez wskazywany obiekt zawierający dane sceny. Może być on używany podczas deserializacji.
+	\item wskaźniki \textit{prev} i \textit{next}: pozwalają na użycie obiektu w liście dwukierunkowej biblioteki \textit{uthash}.
+	\item \textit{calculate\_key()}: oblicza klucz zasobu, musi być wywoływany po każdej modyfikacji obiektu.
+	\item \textit{serialize()}: serializacja, czyli zapis pól do bazy zasobów.
+	Pola będące typami złożonymi wspieranymi przez obiekt \textit{asset\_db} są serializowane przy użyciu jego odpowiedniej metody \textit{insert\_*()} przyjmującej klucz zasobu.
+	Dla pól będących obiektami zasobów wywoływana jest ich metoda \textit{serialize()}.
+	\item \textit{deserialize()}: deserializacja, czyli odczyt pól z bazy zasobów.
+	Metoda przyjmuje klucz zasobu żądanego zasobu i w sposób analogiczny do serializacji wypełnia pola używając metod \textit{select\_*()} obiektu \textit{asset\_db} i metod \textit{deserialize()}.
+\end{itemize}
+Powyższy interfejs jest zdefiniowany przez makra w jednostce \textit{common} i jest używany w reszcie jednostek modułu do implementacji obiektów zasobów.
+Ich struktura jest inspirowana formatem glTF i została pokazaną na poniższym diagramie:
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[node distance=0.5cm]
+		\tikzstyle{entity} = [rectangle, minimum width=3cm, minimum height=0.5cm,text centered, draw=black]
+		\tikzstyle{refers} = [thick,->,>=stealth]
+		
+		\node (scene_data) [entity, right = 1cm of db] {scene\_data}; \def\y{scene_data};
+		
+		\def\x{asset_object}; \node (\x) [entity, below right = 1cm of scene_data] {\myesc{\x}}; \edef\y{\x};
+		\def\x{asset_mesh}; \node (\x) [entity, below right = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{asset_primitive}; \node (\x) [entity, below = of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{asset_vertex_attribute}; \node (\x) [entity, below = of \y] {\myesc{\x}}; \edef\y{\x};
+				
+		\def\x{asset_camera}; \node (\x) [entity, above right = of asset_object] {\myesc{\x}}; \edef\y{\x};
+		
+		\def\x{asset_direct_light}; \node (\x) [entity, below left = -0.2cm and 1cm of scene_data] {\myesc{\x}}; \edef\y{\x};
+		\def\x{asset_skybox}; \node (\x) [entity, below = 1cm of scene_data] {\myesc{\x}}; \edef\y{\x};
+		\def\x{asset_font}; \node (\x) [entity, below left = 1cm and 0.5cm of scene_data] {\myesc{\x}}; \edef\y{\x};
+		
+		\def\x{asset_material}; \node (\x) [entity, left = of asset_primitive] {\myesc{\x}}; \edef\y{\x};
+		\def\x{asset_texture}; \node (\x) [entity, left = 1.5cm of \y] {\myesc{\x}}; \edef\y{\x};
+		\def\x{asset_image}; \node (\x) [entity, below right = 0.5cm and -1.0cm of asset_texture] {\myesc{\x}}; \edef\y{\x};
+		\def\x{asset_sampler}; \node (\x) [entity, below left = 0.5cm and -1.0cm of asset_texture] {\myesc{\x}}; \edef\y{\x};
 
-// HIRO
+		\draw [refers] (scene_data) edge[] (asset_object);
+		\draw [refers] (scene_data) edge[] (asset_skybox);
+		\draw [refers] (scene_data) edge[] (asset_direct_light);
+		\draw [refers] (scene_data) edge[] (asset_font);
+
+		\draw [refers] (asset_object) edge[] (asset_mesh);
+		\draw [refers] (asset_mesh) edge[] (asset_primitive);
+		\draw [refers] (asset_primitive) edge[] (asset_vertex_attribute);
+		\draw [refers] (asset_primitive) edge[] (asset_material);
+		
+		\draw [refers] (asset_material) edge[] (asset_texture);
+		\draw [refers] (asset_texture) edge[] (asset_image);
+		\draw [refers] (asset_texture) edge[] (asset_sampler);
+		
+		\draw [refers] (asset_object) edge[] (asset_camera);
+		\draw [refers] (asset_object) edge[out=70,in=110, loop] (asset_object);
+		
+		\draw [refers] (asset_skybox) edge[] (asset_texture);
+		\draw [refers] (asset_font) edge[] (asset_texture);
+		
+	\end{tikzpicture}
+	\caption{Relacje pomiędzy obiektami zasobów w silniku}
+	\label{asset_data_relationships}
+\end{figure}
+
+\subsubsection{Dane sceny scene\_data}
+Dane scen są reprezentowane obiektem \textit{scene\_data}.
+Utrzymuje on dla każdego typu obiektu zasobu osobną listę dwukierunkową zawierającą wszystkie obiekty używane przez scenę oraz ich domyślne warianty - przykładowo domyślny obraz \textit{asset\_image} to obraz 2D o rozmiarze 1x1 mający 4 8-bitowe komponenty o wartości 255.
+
+Wśród wszystkich obiektów zasobów składających się na dane sceny dodatkowo wyróżnia się:
+\begin{itemize}
+	\item węzły główne: używane jako punkty początkowe podczas tworzenia grafu sceny,
+	\item używany skybox: może być zmieniony w konfiguracji zasobów,
+	\item aktywna czcionka: sterowana konfiguracją globalną,
+	\item domyślna kamera: używana w przypadku braku węzła z przypisaną kamerą.
+\end{itemize}
+
+Metody \textit{serialize()} i \textit{deserialize()} podobnie jak analogiczne metody obiektów zasobów pozwalają na zapis i odczyt danych sceny do bazy zasobów.
+
+Metoda \textit{create\_with\_gltf\_file()} jest wywoływane wyłącznie przez potok zasobów.
+Jego wejściem jest ścieżka do katalogu zawierającego zasób 3D w formacie \textit{glTF} wraz z konfiguracją zasobów.
+Oba zasoby wejściowe są parsowane przy użyciu biblioteki \textit{cgltf} i obiektu \textit{config}.
+Wynik parsowania jest używany do stworzenia i wypełnienia danych sceny.
+Ta metoda wraz z metodą \textit{serialize()} stanowi główną częścią potoku zasobów - obiekt stworzony na podstawie zasobów wejściowych jest serializowany do zasobu wyjściowego (bazy zasobów).
+
+Metoda \textit{create\_with\_asset\_db()} ... HIRO
+
+\subsubsection{Obiekt zasobu węzła \textit{asset\_object}}
+Obiekt \textit{asset\_object} ... HIRO
+
+// HIRO opisz każdy asset_*
 
 // TODO Potok zasobów asset\_pipeline
 
