@@ -100,15 +100,26 @@
 \contentsline {subsubsection}{Jednostka asset\textunderscore \allowbreak db}{48}{subsubsection*.65}%
 \contentsline {subsection}{\numberline {3.3.4}Zasoby}{48}{subsection.3.3.4}%
 \contentsline {subsubsection}{Dane sceny scene\textunderscore \allowbreak data}{49}{subsubsection*.67}%
-\contentsline {subsubsection}{Obiekt zasobu węzła \textit {asset\textunderscore \allowbreak object}}{49}{subsubsection*.68}%
-\contentsline {subsection}{\numberline {3.3.5}Vulkan}{49}{subsection.3.3.5}%
-\contentsline {subsubsection}{Jednostka shader}{50}{subsubsection*.69}%
-\contentsline {subsubsection}{Jednostka shader\textunderscore \allowbreak reflect}{51}{subsubsection*.70}%
-\contentsline {subsection}{\numberline {3.3.6}Scena}{51}{subsection.3.3.6}%
-\contentsline {subsection}{\numberline {3.3.7}Renderer}{51}{subsection.3.3.7}%
-\contentsline {chapter}{\numberline {4}Badania}{52}{chapter.4}%
-\contentsline {chapter}{\numberline {5}Podsumowanie}{53}{chapter.5}%
-\contentsline {chapter}{Wykaz literatury}{55}{chapter*.71}%
-\contentsline {chapter}{Spis rysunk\'ow}{56}{chapter*.72}%
-\contentsline {chapter}{Spis tablic}{57}{chapter*.73}%
+\contentsline {subsubsection}{Zasób węzła \textit {asset\textunderscore \allowbreak object}}{49}{subsubsection*.68}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak mesh}}{50}{subsubsection*.69}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak primitive}}{50}{subsubsection*.70}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak vertex\textunderscore \allowbreak attribute}}{50}{subsubsection*.71}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak camera}}{50}{subsubsection*.72}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak direct\textunderscore \allowbreak light}}{50}{subsubsection*.73}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak skybox}}{50}{subsubsection*.74}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak font}}{50}{subsubsection*.75}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak material}}{50}{subsubsection*.76}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak texture}}{50}{subsubsection*.77}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak image}}{50}{subsubsection*.78}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak sampler}}{50}{subsubsection*.79}%
+\contentsline {subsection}{\numberline {3.3.5}Vulkan}{51}{subsection.3.3.5}%
+\contentsline {subsubsection}{Jednostka shader}{51}{subsubsection*.80}%
+\contentsline {subsubsection}{Jednostka shader\textunderscore \allowbreak reflect}{52}{subsubsection*.81}%
+\contentsline {subsection}{\numberline {3.3.6}Scena}{52}{subsection.3.3.6}%
+\contentsline {subsection}{\numberline {3.3.7}Renderer}{52}{subsection.3.3.7}%
+\contentsline {chapter}{\numberline {4}Badania}{53}{chapter.4}%
+\contentsline {chapter}{\numberline {5}Podsumowanie}{54}{chapter.5}%
+\contentsline {chapter}{Wykaz literatury}{56}{chapter*.82}%
+\contentsline {chapter}{Spis rysunk\'ow}{57}{chapter*.83}%
+\contentsline {chapter}{Spis tablic}{58}{chapter*.84}%
 \contentsfinish 

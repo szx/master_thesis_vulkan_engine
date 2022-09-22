@@ -263,6 +263,7 @@ Materiał może dodatkowo definiować mapę normalnych (ang. normal map) jest u�
 przygotowanego w programie do modelowania 3D. Siatka jest tożsama z geometrią obiektu na scenie. Podział na siatkę i
 prymitywy ma na celu zmniejszenie redundancji - przykładowo siatka modelu auta może zawiarać 4 prymitywy koła.
 [OBRAZEK]
+
 /src/assets/vertex_attribute.h Zasób atrybutu wierzchołka. Wierzchołek składa się z kilku różnych atrybutów wierzchola,
 np. pozycji, normalnej, i koloru. Ten zasób reprezentuje dane atrybutu wierzchołka w postaci tablicy elementów.
 Wyróżniowo cztery rodzaje elementów:
@@ -292,16 +293,6 @@ rysowania. Geometria prymitywu składa się z:
   [DIAGRAM]
 
 ------
-
-HIRO
-W formacie glTF scena składa się z węzłów, które są obiektami przeznaczonymi do wyrenderowania. Węzeł zawierać lokalną transformację przestrzeni oraz referencję od renderowanych zasobów.
-
-/src/assets/object.h Zasób obiektu. Reprezentuje jeden element sceny. Zawiera referencje do:
-
-- zasobu siatki,
-- zasobu kamery,
-- zasobów obiektu, Zawiera macierz 4x4 z lokalną transformacją przestrzeni.
-
 /src/assets/texture.h Zasób bitmapy.
   Reprezentuje obraz w postaci nieskompresowaną bitmapy. Bitmapa to prostokątna tablica pikseli. Rozmiar bitmapy jest
   specyfikowany przy użyciu szerokości, wysokości, głębokości oraz liczby ścian (domyślnie 1 ściana, 6 ścian dla

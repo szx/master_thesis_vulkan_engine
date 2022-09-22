@@ -728,7 +728,23 @@ Wszystkie obiekty zasobów mają nazwy w formie \textit{asset\_*} i współdziel
 	Metoda przyjmuje klucz zasobu żądanego zasobu i w sposób analogiczny do serializacji wypełnia pola używając metod \textit{select\_*()} obiektu \textit{asset\_db} i metod \textit{deserialize()}.
 \end{itemize}
 Powyższy interfejs jest zdefiniowany przez makra w jednostce \textit{common} i jest używany w reszcie jednostek modułu do implementacji obiektów zasobów.
-Ich struktura jest inspirowana formatem glTF i została pokazaną na poniższym diagramie:
+
+Wspieranych jest następujących 12 rodzajów obiektów zasobów zawierające dane opisujące:
+\begin{itemize}
+	\item \textit{asset\_object}: węzeł sceny,
+	\item \textit{asset\_mesh}: siatkę,
+	\item \textit{asset\_primitive}: prymityw,
+	\item \textit{asset\_vertex\_attribute}: atrybut wierzchołka,
+	\item \textit{asset\_camera}: kamera,
+	\item \textit{asset\_direct\_light}: światło bezpośrednie,
+	\item \textit{asset\_skybox}: skybox,
+	\item \textit{asset\_font}: czcionka,
+	\item \textit{asset\_material}: materiał,
+	\item \textit{asset\_texture}: tekstura,
+	\item \textit{asset\_image}: obraz,
+	\item \textit{asset\_sampler}: próbnik.
+\end{itemize}
+Relacje pomiędzy nimi są inspirowane formatem glTF i zostały pokazane na poniższym diagramie:
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[node distance=0.5cm]
@@ -801,10 +817,49 @@ Ta metoda wraz z metodą \textit{serialize()} stanowi główną częścią potok
 
 Metoda \textit{create\_with\_asset\_db()} jest wywoływana w czasie wykonywania i wczytuje dane sceny o żądanej nazwie z bazy zasobów.
 
-\subsubsection{Obiekt zasobu węzła \textit{asset\_object}}
-Obiekt \textit{asset\_object} ... HIRO
+\subsubsection{Zasób węzła \textit{asset\_object}}
+Zasób węzła \textit{asset\_object} jest kontenerem zawierającym referencje do obiektów zasobów.
 
-// HIRO opisz każdy asset_*
+Węzeł zawiera macierz 4x4 z lokalną transformację przestrzeni oraz wskaźniki do zasobów (albo wartość NULL):
+\begin{itemize}
+	\item siatki,
+	\item kamery,
+	\item potomnych węzłów,
+\end{itemize}
+Ostateczna pozycja na scenie dla powyższych zasobów nie jest opisana bezpośrednio i musi zostać obliczana używając modelowania hierarchicznego przy pomocy grafu sceny - każdy zasób węzła jest używany do stworzenia odpowiedniego węzła grafu sceny.
+
+\subsubsection{Zasób siatki \textit{asset\_mesh}}
+Zasób siatki \textit{asset\_mesh} jest HIRO
+
+\subsubsection{Zasób siatki \textit{asset\_primitive}}
+Zasób prymitywu \textit{asset\_primitive} jest HIRO
+
+\subsubsection{Zasób siatki \textit{asset\_vertex\_attribute}}
+Zasób atributu wierzchołka \textit{asset\_vertex\_attribute} jest HIRO
+
+\subsubsection{Zasób siatki \textit{asset\_camera}}
+Zasób kamery \textit{asset\_camera} jest HIRO
+
+\subsubsection{Zasób siatki \textit{asset\_direct\_light}}
+Zasób światła bezpośredniego \textit{asset\_direct\_light} jest HIRO
+
+\subsubsection{Zasób siatki \textit{asset\_skybox}}
+Zasób skybox \textit{asset\_skybox} jest HIRO
+
+\subsubsection{Zasób siatki \textit{asset\_font}}
+Zasób czcionki \textit{asset\_font} jest HIRO
+
+\subsubsection{Zasób siatki \textit{asset\_material}}
+Zasób materiału \textit{asset\_material} jest HIRO
+
+\subsubsection{Zasób siatki \textit{asset\_texture}}
+Zasób tekstury \textit{asset\_texture} jest HIRO
+
+\subsubsection{Zasób siatki \textit{asset\_image}}
+Zasób obrazu \textit{asset\_image} jest HIRO
+
+\subsubsection{Zasób siatki \textit{asset\_sampler}}
+Zasób próbnika \textit{asset\_sampler} jest HIRO
 
 // TODO Potok zasobów asset\_pipeline
 
