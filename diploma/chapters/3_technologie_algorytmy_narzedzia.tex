@@ -779,8 +779,9 @@ Ich struktura jest inspirowana formatem glTF i została pokazaną na poniższym 
 \end{figure}
 
 \subsubsection{Dane sceny scene\_data}
-Dane scen są reprezentowane obiektem \textit{scene\_data}.
-Utrzymuje on dla każdego typu obiektu zasobu osobną listę dwukierunkową zawierającą wszystkie obiekty używane przez scenę oraz ich domyślne warianty - przykładowo domyślny obraz \textit{asset\_image} to obraz 2D o rozmiarze 1x1 mający 4 8-bitowe komponenty o wartości 255.
+Obiekt \textit{scene\_data} reprezentuje dane sceny wczytane z bazy zasobów. Jest one używany przez moduł sceny do konstrukcji grafu sceny \textit{scene\_graph}.
+
+Obiekt utrzymuje on dla każdego typu obiektu zasobu osobną listę dwukierunkową zawierającą wszystkie obiekty używane przez scenę oraz ich domyślne warianty - przykładowo domyślny obraz \textit{asset\_image} to obraz 2D o rozmiarze 1x1 mający 4 8-bitowe komponenty o wartości 255.
 
 Wśród wszystkich obiektów zasobów składających się na dane sceny dodatkowo wyróżnia się:
 \begin{itemize}
@@ -793,12 +794,12 @@ Wśród wszystkich obiektów zasobów składających się na dane sceny dodatko
 Metody \textit{serialize()} i \textit{deserialize()} podobnie jak analogiczne metody obiektów zasobów pozwalają na zapis i odczyt danych sceny do bazy zasobów.
 
 Metoda \textit{create\_with\_gltf\_file()} jest wywoływane wyłącznie przez potok zasobów.
-Jego wejściem jest ścieżka do katalogu zawierającego zasób 3D w formacie \textit{glTF} wraz z konfiguracją zasobów.
+Jej wejściem jest nazwa tworzonej sceny i ścieżka do katalogu zawierającego zasób 3D w formacie \textit{glTF} wraz z konfiguracją zasobów.
 Oba zasoby wejściowe są parsowane przy użyciu biblioteki \textit{cgltf} i obiektu \textit{config}.
 Wynik parsowania jest używany do stworzenia i wypełnienia danych sceny.
 Ta metoda wraz z metodą \textit{serialize()} stanowi główną częścią potoku zasobów - obiekt stworzony na podstawie zasobów wejściowych jest serializowany do zasobu wyjściowego (bazy zasobów).
 
-Metoda \textit{create\_with\_asset\_db()} ... HIRO
+Metoda \textit{create\_with\_asset\_db()} jest wywoływana w czasie wykonywania i wczytuje dane sceny o żądanej nazwie z bazy zasobów.
 
 \subsubsection{Obiekt zasobu węzła \textit{asset\_object}}
 Obiekt \textit{asset\_object} ... HIRO

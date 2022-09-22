@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  21 SEP 2022 22:30
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  22 SEP 2022 20:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1571,7 +1571,7 @@ Missing character: There is no ; ("3B) in font nullfont!
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.806 // HIRO opisz każdy asset_
+l.807 // HIRO opisz każdy asset_
                                 *
 I've inserted a begin-math/end-math symbol since I think
 you left one out. Proceed, with fingers crossed.
@@ -1579,28 +1579,28 @@ you left one out. Proceed, with fingers crossed.
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.807 
+l.808 
       
 I've inserted a begin-math/end-math symbol since I think
 you left one out. Proceed, with fingers crossed.
 
 [49]
-Overfull \hbox (11.21309pt too wide) in paragraph at lines 837--838
+Overfull \hbox (11.21309pt too wide) in paragraph at lines 838--839
 [][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (41.2134pt too wide) in paragraph at lines 838--840
+Overfull \hbox (41.2134pt too wide) in paragraph at lines 839--841
 [][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (5.21303pt too wide) in paragraph at lines 851--852
+Overfull \hbox (5.21303pt too wide) in paragraph at lines 852--853
 [][][][][][][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (29.21327pt too wide) in paragraph at lines 857--859
+Overfull \hbox (29.21327pt too wide) in paragraph at lines 858--860
 [][][][][][][][][][][][][][][][][][][] 
  []
 

@@ -203,10 +203,6 @@ ang. clip space). Przestrzeń przycinania w Vulkanie jest prawoskrętna z flippe
 -------------
 HIRO
 
-W formacie glTF scena składa się z węzłów, które są obiektami przeznaczonymi do wyrenderowania. Węzeł zawierać lokalną transformację przestrzeni oraz referencję od renderowanych zasobów.
-------
-HIRO
-
 ------
 /src/assets/camera.h Zasób reprezentujący parametry kamery. Dostępne są dwa rodzaje kamery:
 
@@ -296,11 +292,17 @@ rysowania. Geometria prymitywu składa się z:
   [DIAGRAM]
 
 ------
+
+HIRO
+W formacie glTF scena składa się z węzłów, które są obiektami przeznaczonymi do wyrenderowania. Węzeł zawierać lokalną transformację przestrzeni oraz referencję od renderowanych zasobów.
+
 /src/assets/object.h Zasób obiektu. Reprezentuje jeden element sceny. Zawiera referencje do:
 
 - zasobu siatki,
 - zasobu kamery,
-- zasobów obiektu, Zawiera macierz 4x4 z lokalną transformacją przestrzeni. /src/assets/texture.h Zasób bitmapy.
+- zasobów obiektu, Zawiera macierz 4x4 z lokalną transformacją przestrzeni.
+
+/src/assets/texture.h Zasób bitmapy.
   Reprezentuje obraz w postaci nieskompresowaną bitmapy. Bitmapa to prostokątna tablica pikseli. Rozmiar bitmapy jest
   specyfikowany przy użyciu szerokości, wysokości, głębokości oraz liczby ścian (domyślnie 1 ściana, 6 ścian dla
   tekstury sześciennych). Rozmiar piksela jest specyfikowany przy użyciu liczby kanałów - jeden kanał jest
@@ -312,9 +314,6 @@ rysowania. Geometria prymitywu składa się z:
 Zasób tekstury składa się z zasobu bitmapy i zasobu samplera. Wydzielono osobne zasoby dla zasobu skybox i zasobu
 czcionki. Zasob skybox nazwę skyboxa i zasób tekstury. Zasób czcionki posiada nazwę czcionki, zasób tekstury, ciąg
 znaków z alfabetem czcionki i rozmiar jednego glifu w pikselach.
--------------
-/src/data Obiekty pozwalające na parsownie plików konfiguracyjnych i baz danych. Pierwszy moduł używający wygenerowanego
-kodu.
 
 -------------
 

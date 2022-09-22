@@ -102,8 +102,8 @@
 \contentsline {subsubsection}{Dane sceny scene\textunderscore \allowbreak data}{49}{subsubsection*.67}%
 \contentsline {subsubsection}{Obiekt zasobu węzła \textit {asset\textunderscore \allowbreak object}}{49}{subsubsection*.68}%
 \contentsline {subsection}{\numberline {3.3.5}Vulkan}{49}{subsection.3.3.5}%
-\contentsline {subsubsection}{Jednostka shader}{49}{subsubsection*.69}%
-\contentsline {subsubsection}{Jednostka shader\textunderscore \allowbreak reflect}{50}{subsubsection*.70}%
+\contentsline {subsubsection}{Jednostka shader}{50}{subsubsection*.69}%
+\contentsline {subsubsection}{Jednostka shader\textunderscore \allowbreak reflect}{51}{subsubsection*.70}%
 \contentsline {subsection}{\numberline {3.3.6}Scena}{51}{subsection.3.3.6}%
 \contentsline {subsection}{\numberline {3.3.7}Renderer}{51}{subsection.3.3.7}%
 \contentsline {chapter}{\numberline {4}Badania}{52}{chapter.4}%
