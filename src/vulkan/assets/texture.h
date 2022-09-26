@@ -10,7 +10,7 @@
 
 typedef struct asset_image {
   /// Dimensions of one face.
-  uint32_t width, height, depth, channels;
+  uint32_t width, height, channels;
   /// Number of faces.
   uint32_t faceCount;
   /// Type of image.
@@ -48,7 +48,7 @@ typedef struct asset_texture {
 VULKAN_ASSET_FUNC_DECLS(texture)
 
 asset_texture *asset_texture_create_from_params(image_type type, uint32_t width, uint32_t height,
-                                                uint32_t depth, uint32_t channels);
+                                                uint32_t channels);
 
 /* skybox */
 

@@ -48,7 +48,7 @@ uint32_t render_pass_offscreen_texture_state_add_offscreen_texture(
 
   gBuffer->offscreenTextureAssets[idx] =
       asset_texture_create_from_params(imageType, gBuffer->renderState->vks->swapChainExtent.width,
-                                       gBuffer->renderState->vks->swapChainExtent.height, 1, 4);
+                                       gBuffer->renderState->vks->swapChainExtent.height, 4);
 
   gBuffer->offscreenTextureElements[idx] =
       textures_add_texture(gBuffer->renderState->textures, gBuffer->offscreenTextureAssets[idx],

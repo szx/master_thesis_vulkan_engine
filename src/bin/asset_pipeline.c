@@ -97,12 +97,10 @@ void write_cubemap_to_assets(asset_db *assetDb, asset_pipeline_input *assetInput
     }
     cubemapImage.width = w;
     cubemapImage.height = h;
-    cubemapImage.depth = 1;
     cubemapImage.channels = c;
     cubemapImage.faceCount = faceCount;
     cubemapImage.type = image_type_cubemap;
-    size_t faceSize =
-        cubemapImage.width * cubemapImage.height * cubemapImage.depth * cubemapImage.channels;
+    size_t faceSize = cubemapImage.width * cubemapImage.height * cubemapImage.channels;
     if (utarray_len(cubemapImage.data) == 0) {
       utarray_resize(cubemapImage.data, faceCount * faceSize);
     }
@@ -195,7 +193,6 @@ void write_font_to_assets(asset_db *assetDb, asset_pipeline_input *assetInput) {
   utarray_free(bitmap);
   fontImage.width = bitmapWidth;
   fontImage.height = bitmapHeight;
-  fontImage.depth = 1;
   fontImage.channels = 1;
   fontImage.faceCount = 1;
   fontImage.type = image_type_font_bitmap;

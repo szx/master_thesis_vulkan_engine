@@ -34,7 +34,7 @@ skybox.Name = "skybox1"
 
 [ASSET.DB]
 types = "BYTE:uint8_t, INT:uint32_t, FLOAT:float, VEC2:vec2, VEC3:vec3, VEC4:vec4, MAT4:mat4, TEXT:UT_string *, KEY:hash_t"
-image = "key KEY, width INT, height INT, depth INT, channels INT, faceCount INT, type INT, data BYTE_ARRAY"
+image = "key KEY, width INT, height INT, channels INT, faceCount INT, type INT, data BYTE_ARRAY"
 sampler = "key KEY, magFilter INT, minFilter INT, addressWrapU INT, addressWrapV INT"
 texture = "key KEY, image KEY, sampler KEY"
 material = "key KEY, baseColorFactor VEC4, metallicFactor FLOAT, roughnessFactor FLOAT, baseColorTexture KEY, metallicRoughnessTexture KEY, normalMapTexture KEY"

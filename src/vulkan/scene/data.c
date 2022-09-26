@@ -57,12 +57,10 @@ asset_image *parse_cgltf_image(scene_data *sceneData, cgltf_image *cgltfImage, i
   utstring_free(imagePath);
   image->width = w;
   image->height = h;
-  image->depth = 1;
   image->channels = c;
   image->faceCount = 1;
   image->type = type;
-  size_t imageSize =
-      image->width * image->height * image->depth * image->channels * image->faceCount;
+  size_t imageSize = image->width * image->height * image->channels * image->faceCount;
   utarray_resize(image->data, imageSize);
   core_memcpy(utarray_front(image->data), pixels, imageSize);
   core_free(pixels);

@@ -7,7 +7,6 @@ void asset_image_init(asset_image *image, scene_data *sceneData) {
   // NOTE: Default 1x1 RGBA image.
   image->width = 1;
   image->height = 1;
-  image->depth = 1;
   image->channels = 4;
   image->faceCount = 1;
   image->type = image_type_material_base_color;
@@ -28,7 +27,6 @@ data_key asset_image_calculate_key(asset_image *image) {
   HASH_START(hashState)
   HASH_UPDATE(hashState, &image->width, sizeof(image->width));
   HASH_UPDATE(hashState, &image->height, sizeof(image->height));
-  HASH_UPDATE(hashState, &image->depth, sizeof(image->depth));
   HASH_UPDATE(hashState, &image->channels, sizeof(image->channels));
   HASH_UPDATE(hashState, &image->faceCount, sizeof(image->faceCount));
   HASH_UPDATE(hashState, &image->type, sizeof(image->type));
@@ -42,7 +40,6 @@ void asset_image_serialize(asset_image *image, asset_db *assetDb) {
   image->key = asset_image_calculate_key(image);
   asset_db_insert_image_width_int(assetDb, image->key, data_int_temp(image->width));
   asset_db_insert_image_height_int(assetDb, image->key, data_int_temp(image->height));
-  asset_db_insert_image_depth_int(assetDb, image->key, data_int_temp(image->depth));
   asset_db_insert_image_channels_int(assetDb, image->key, data_int_temp(image->channels));
   asset_db_insert_image_faceCount_int(assetDb, image->key, data_int_temp(image->faceCount));
   asset_db_insert_image_type_int(assetDb, image->key, data_int_temp(image->type));
@@ -53,7 +50,6 @@ void asset_image_deserialize(asset_image *image, asset_db *assetDb, data_key key
   image->key = key;
   image->width = asset_db_select_image_width_int(assetDb, image->key).value;
   image->height = asset_db_select_image_height_int(assetDb, image->key).value;
-  image->depth = asset_db_select_image_depth_int(assetDb, image->key).value;
   image->channels = asset_db_select_image_channels_int(assetDb, image->key).value;
   image->faceCount = asset_db_select_image_faceCount_int(assetDb, image->key).value;
   image->type = asset_db_select_image_type_int(assetDb, image->key).value;
@@ -68,7 +64,6 @@ void asset_image_debug_print(asset_image *image, int indent) {
   log_debug(INDENT_FORMAT_STRING "hash=%zu", INDENT_FORMAT_ARGS(2), image->key);
   log_debug(INDENT_FORMAT_STRING "width=%zu", INDENT_FORMAT_ARGS(2), image->width);
   log_debug(INDENT_FORMAT_STRING "height=%zu", INDENT_FORMAT_ARGS(2), image->height);
-  log_debug(INDENT_FORMAT_STRING "depth=%zu", INDENT_FORMAT_ARGS(2), image->depth);
   log_debug(INDENT_FORMAT_STRING "channels=%zu", INDENT_FORMAT_ARGS(2), image->channels);
   log_debug(INDENT_FORMAT_STRING "faceCount=%zu", INDENT_FORMAT_ARGS(2), image->faceCount);
   log_debug(INDENT_FORMAT_STRING "type=%s", INDENT_FORMAT_ARGS(2),
@@ -179,7 +174,7 @@ void asset_texture_debug_print(asset_texture *texture, int indent) {
 }
 
 asset_texture *asset_texture_create_from_params(image_type type, uint32_t width, uint32_t height,
-                                                uint32_t depth, uint32_t channels) {
+                                                uint32_t channels) {
   asset_texture *texture = core_alloc(sizeof(asset_texture));
   asset_texture_init(texture, NULL);
 
@@ -187,7 +182,6 @@ asset_texture *asset_texture_create_from_params(image_type type, uint32_t width,
   asset_image_init(image, NULL);
   image->width = width;
   image->height = height;
-  image->depth = depth;
   image->channels = channels;
   image->type = type;
   texture->image = image;
