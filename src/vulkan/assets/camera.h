@@ -9,12 +9,14 @@
 typedef struct asset_camera {
   camera_type type;
   union {
-    float fovY;        ///< Vertical field of view (radians).
-    float aspectRatio; ///< Aspect ratio.
-  };
-  union {
-    float magX; ///< Horizontal magnification of view.
-    float magY; ///< Vertical magnification of view.
+    struct {
+      float fovY;        ///< Vertical field of view (radians).
+      float aspectRatio; ///< Aspect ratio.
+    };
+    struct {
+      float magX; ///< Horizontal magnification of view.
+      float magY; ///< Vertical magnification of view.
+    };
   };
   float nearZ; ///< Min depth range: distance from near clipping plane (along +Z axis!)
   float farZ;  ///< Max depth range: distance from far clipping plane (along +Z axis!)
