@@ -640,8 +640,8 @@
       \strng{authorbibnamehash}{6853e812ddbc24a593e70d94545fc29b}
       \strng{authornamehash}{6853e812ddbc24a593e70d94545fc29b}
       \strng{authorfullhash}{6853e812ddbc24a593e70d94545fc29b}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{The X Macro}
@@ -743,6 +743,62 @@
       \endverb
       \verb{url}
       \verb https://www.sqlite.org/appfileformat.html
+      \endverb
+    \endentry
+    \entry{GOMONOFONT}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=fc84d61e76c10b73ad2bb05de01d4802}{%
+           family={Nigel\bibnamedelima Tao},
+           familyi={N\bibinitperiod\bibinitdelim T\bibinitperiod},
+           given={Rob\bibnamedelima Pike},
+           giveni={R\bibinitperiod\bibinitdelim P\bibinitperiod},
+           suffix={Chuck\bibnamedelima Bigelow},
+           suffixi={C\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
+      }
+      \strng{namehash}{fc84d61e76c10b73ad2bb05de01d4802}
+      \strng{fullhash}{fc84d61e76c10b73ad2bb05de01d4802}
+      \strng{bibnamehash}{fc84d61e76c10b73ad2bb05de01d4802}
+      \strng{authorbibnamehash}{fc84d61e76c10b73ad2bb05de01d4802}
+      \strng{authornamehash}{fc84d61e76c10b73ad2bb05de01d4802}
+      \strng{authorfullhash}{fc84d61e76c10b73ad2bb05de01d4802}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Go fonts}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://go.dev/blog/go-fonts
+      \endverb
+      \verb{url}
+      \verb https://go.dev/blog/go-fonts
+      \endverb
+    \endentry
+    \entry{ADVANCEDSCENEGRAPH}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=f3fca3e75163059b5d4fdd28b0a51546}{%
+           family={Markus\bibnamedelima Tavenrath},
+           familyi={M\bibinitperiod\bibinitdelim T\bibinitperiod},
+           given={Christoph\bibnamedelima Kubisch},
+           giveni={C\bibinitperiod\bibinitdelim K\bibinitperiod}}}%
+      }
+      \strng{namehash}{f3fca3e75163059b5d4fdd28b0a51546}
+      \strng{fullhash}{f3fca3e75163059b5d4fdd28b0a51546}
+      \strng{bibnamehash}{f3fca3e75163059b5d4fdd28b0a51546}
+      \strng{authorbibnamehash}{f3fca3e75163059b5d4fdd28b0a51546}
+      \strng{authornamehash}{f3fca3e75163059b5d4fdd28b0a51546}
+      \strng{authorfullhash}{f3fca3e75163059b5d4fdd28b0a51546}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Advanced Scenegraph Rendering Pipeline}
+      \field{year}{2013}
+      \verb{urlraw}
+      \verb https://on-demand.gputechconf.com/gtc/2013/presentations/S3032-Advanced-Scenegraph-Rendering-Pipeline.pdf
+      \endverb
+      \verb{url}
+      \verb https://on-demand.gputechconf.com/gtc/2013/presentations/S3032-Advanced-Scenegraph-Rendering-Pipeline.pdf
       \endverb
     \endentry
   \enddatalist

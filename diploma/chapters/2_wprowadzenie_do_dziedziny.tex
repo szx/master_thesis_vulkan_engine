@@ -899,6 +899,16 @@ Indeksowanie poza długością tablicy czasu wykonania jest niezdefiniowanym zac
 
 // TODO vkPipeline - potok, potok graficzny
 
+
+Topologia definiuje sposób renderowania wierzchołków.
+
+Format wierzchołka (w tym rozdzielanie lub separacja atrybutów) ...
+Wierzchołek składa się z kilku różnych atrybutów wierzchołka, np. pozycji, normalnej, i koloru.
+
+Indeksów wierzchołków pozwalających na kompresję bufora geometrii używanego przez polecenia rysowania poprzez użycie bufora indeksów definiującego 
+
+// TODO
+
 \subsection{Moduły shaderów}
 
 Shader to program specyfikujący operacje wykonywane podczas etapu potoku dla każdego przetwarzanego przez niego elementu (np. wierzchołka, punktu sterującego, fragmentu lub grupy roboczej).
@@ -1108,13 +1118,30 @@ Poniższy diagram przedstawia tekstury bez dowiązań używając niejednolitych 
 
 \section{Mapowanie tekstur}
 
+// TODO filtrowanie w samplerze (powiększający, pomniejszający)
+
 // TODO mapowanie nierówności
 
 // TODO teksturowanie sześcienne
+Skybox to sześcian oteksturowany przy pomocy tekstury sześciennej przedstawiającej niebo.
 
 \section{Oświetlenie}
 
 // TODO model PBR
+
+Materiał to zbiór parameterów i tekstur używanych do przez shadery do renderowania powierzchni prymitywów.
+
+W formacie glTF materiał jest zdefiniowany przy użyciu modelu PBR metaliczności-chropowatości i posiada następujące właściwości:
+\begin{itemize}
+	\item kolor podstawowy (ang. base color): informacja o kolorze obiektu;
+	\item metaliczności (ang. metalness): określa metaliczność materiału, tj. czy materiał jest metalem czy dielektrykiem;
+	\item chropowatość (ang. roughness): określa chropowatość materiału, tj. czy materiał jest błyszczący czy matowy.
+\end{itemize}
+
+Kolor podstawowy jest obliczany poprzez przemnożenie dwóch parametrów materiału: współczynnika vec4 oraz tekstury RGBA.
+Podobnie używane są współczynniki chropowatości i metaliczności będące wartościami w przedziale $\left[0,1\right]$ mnożonymi przez tekstury metaliczności-chropowatości - wartości metalicznści są próbkowane z komponenu B, a wartości metalicznści z komponentu G.
+
+// TODO glTF shader
 
 \section{Cieniowanie odroczone}
 
@@ -1309,7 +1336,17 @@ Baza zasobów (ang. asset database) to zasób wyjściowy mający na celu zgromad
 
 \section{Graf sceny}
 
-// TODO hierarchical modeling
+Hierarchiczne modelowanie to technika reprezentowania złożonych obiektów polegająca na podzieleniu modelu na części i śledzeniu hierarchicznych relacji rodzic-dziecko pomiędzy nimi przy użyciu struktury zwanej grafem sceny.
+
+Każdy węzeł grafu sceny składa się z lokalnej transformacji przestrzeni świata, opcjonalnej referencji do renderowanej geometrii oraz listy węzłów potomne.
+Przemierzanie grafu pozwala na łatwe emitowanie poleceń rysowania:
+// HIRO listing
+
+// HIRO diagram graf sceny -> polecenia rysowania
+
+Ten sposób reprezentacji sceny bardzo popularny wśród aplikacji 3D i jest używany przez formaty FBX i glTF.
+
+// HIRO wydajność
 
 \section{Graf renderowania}
 

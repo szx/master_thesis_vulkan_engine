@@ -794,29 +794,6 @@ Relacje pomiędzy nimi są inspirowane formatem glTF i zostały pokazane na poni
 	\label{asset_data_relationships}
 \end{figure}
 
-\subsubsection{Dane sceny scene\_data}
-Obiekt \textit{scene\_data} reprezentuje dane sceny wczytane z bazy zasobów. Jest one używany przez moduł sceny do konstrukcji grafu sceny \textit{scene\_graph}.
-
-Obiekt utrzymuje on dla każdego typu obiektu zasobu osobną listę dwukierunkową zawierającą wszystkie obiekty używane przez scenę oraz ich domyślne warianty - przykładowo domyślny obraz \textit{asset\_image} to obraz 2D o rozmiarze 1x1 mający 4 8-bitowe komponenty o wartości 255.
-
-Wśród wszystkich obiektów zasobów składających się na dane sceny dodatkowo wyróżnia się:
-\begin{itemize}
-	\item węzły główne: używane jako punkty początkowe podczas tworzenia grafu sceny,
-	\item używany skybox: może być zmieniony w konfiguracji zasobów,
-	\item aktywna czcionka: sterowana konfiguracją globalną,
-	\item domyślna kamera: używana w przypadku braku węzła z przypisaną kamerą.
-\end{itemize}
-
-Metody \textit{serialize()} i \textit{deserialize()} podobnie jak analogiczne metody obiektów zasobów pozwalają na zapis i odczyt danych sceny do bazy zasobów.
-
-Metoda \textit{create\_with\_gltf\_file()} jest wywoływane wyłącznie przez potok zasobów.
-Jej wejściem jest nazwa tworzonej sceny i ścieżka do katalogu zawierającego zasób 3D w formacie \textit{glTF} wraz z konfiguracją zasobów.
-Oba zasoby wejściowe są parsowane przy użyciu biblioteki \textit{cgltf} i obiektu \textit{config}.
-Wynik parsowania jest używany do stworzenia i wypełnienia danych sceny.
-Ta metoda wraz z metodą \textit{serialize()} stanowi główną częścią potoku zasobów - obiekt stworzony na podstawie zasobów wejściowych jest serializowany do zasobu wyjściowego (bazy zasobów).
-
-Metoda \textit{create\_with\_asset\_db()} jest wywoływana w czasie wykonywania i wczytuje dane sceny o żądanej nazwie z bazy zasobów.
-
 \subsubsection{Zasób węzła \textit{asset\_object}}
 Zasób węzła \textit{asset\_object} jest kontenerem zawierającym referencje do obiektów zasobów.
 
@@ -829,39 +806,143 @@ Węzeł zawiera macierz 4x4 z lokalną transformację przestrzeni oraz wskaźnik
 Ostateczna pozycja na scenie dla powyższych zasobów nie jest opisana bezpośrednio i musi zostać obliczana używając modelowania hierarchicznego przy pomocy grafu sceny - każdy zasób węzła jest używany do stworzenia odpowiedniego węzła grafu sceny.
 
 \subsubsection{Zasób siatki \textit{asset\_mesh}}
-Zasób siatki \textit{asset\_mesh} jest HIRO
+Zasób siatki \textit{asset\_mesh} reprezentuje geometrię na scenie i składa się z listy prymitywów.
+Podział na siatkę i prymitywy ma na celu zmniejszenie redundancji - przykładowo siatka modelu auta może zawiarać 4 identyczne koła renderowanych 4 razy tym samym prymitywem.
+Siatka jest tożsama z geometrią pojedyńczego modelu przygotowanego w programie do modelowania 3D.
 
 \subsubsection{Zasób siatki \textit{asset\_primitive}}
-Zasób prymitywu \textit{asset\_primitive} jest HIRO
+Zasób prymitywu \textit{asset\_primitive} reprezentuje część siatku obiektu.
+Jeden prymityw zawiera wszystkie dane wymagane do wygenerowania jednego polecenia rysowania i składa się z następujących elementów:
+\begin{itemize}
+	\item rodzaj topologii (\textit{VkPrimitiveTopology}),
+	\item atrybuty wierzchołka,
+	\item indeksy wierzchołków,
+	\item materiał.
+\end{itemize}
+
+Prymityw zawiera po jednym zasobie atrybutu wierzchołka dla każdego wspieranego typu atrybutów (\textit{vertex\_attribute\_type}):
+\begin{itemize}
+	\item \textit{position}: pozycje,
+	\item \textit{normal}: normalne,
+	\item \textit{color}: kolory,
+	\item \textit{texcoord}: koordynaty tekstury,
+	\item \textit{tangent}: styczne.
+\end{itemize}
+Dodatkowo jeden zasób atrybutów jest używany do przechowywania indeksów wierzchołków.
+
+Zasoby zawierają jedynie dane potrzebne do konstrukcji wierzchołków siatki - ostatecznie używany format wierzchołka (w tym rozdzielanie lub separacja atrybutów), tylko przez strumień wierzchołków \textit{vertex\_stream} w module renderera.
 
 \subsubsection{Zasób siatki \textit{asset\_vertex\_attribute}}
-Zasób atributu wierzchołka \textit{asset\_vertex\_attribute} jest HIRO
+Zasób atributu wierzchołka \textit{asset\_vertex\_attribute} reprezentuje dane pojedyńczego atrybutu przechowywane w postaci tablicy komponentów, których typ to \textit{uint32\_t}, \textit{vec2}, \textit{vec3} lub \textit{vec4}.
 
 \subsubsection{Zasób siatki \textit{asset\_camera}}
-Zasób kamery \textit{asset\_camera} jest HIRO
+Zasób kamery \textit{asset\_camera} zawiera parametry, których część zależy od rodzaju używanego rzutu:
+\begin{itemize}
+	\item rzutowanie perspektywiczne:
+	\begin{itemize}
+		\item \textit{fovY}: pionowy kąt widzenia,
+		\item \textit{aspectRatio}: proporcje okna (stosunek szerokości do wysokości),
+	\end{itemize}
+	\item rzutowanie ortogonalne:
+		\begin{itemize}
+		\item \textit{magX}: poziome powiększenie widoku,
+		\item \textit{magY}: pionowe powiększenie widoku.
+	\end{itemize}
+\end{itemize}
+Dodatkowo pola \textit{nearZ} oraz \textit{farZ} definiują są odległości bliskiej i dalekiej płaszczyzny przycinania wzdłuż osi +Z.
+
+Powyższe parametry są używane do uzyskania macierzy rzutowania.
+Ostateczna pozycja i rotacja kamery (i tym samym macierz widoku) musi być wyliczana na podstawie wynikowej transformacji przestrzeni węzła z kamerą.
 
 \subsubsection{Zasób siatki \textit{asset\_direct\_light}}
-Zasób światła bezpośredniego \textit{asset\_direct\_light} jest HIRO
+Zasób światła bezpośredniego \textit{asset\_direct\_light} reprezentuje jedno światło na scenie.
+Jego struktura jest inspirowana rozszerzeniem \textit{KHR\_lights\_punctual} formatu glTF.
+Dostępne są dwa rodzaje świateł:
+\begin{itemize}
+	\item kierunkowe (ang. directional light),
+	\item punktowe (ang. point light).
+\end{itemize}
+Wszystkie rodzaje świateł posiadają parametry:
+\begin{itemize}
+	\item intensywność: jasność światła (float),
+	\item kolor: wartość RGB w liniowej przestrzeni kolorów (vec3).
+\end{itemize}
+Światło kierunkowe definiuje dodatkowy parametr kierunku będący wektorem w przestrzeni świata (vec3).
+Światło punktowe definiuje:
+\begin{itemize}
+	\item pozycja: punkt w przestrzeni świata (vec3),
+	\item zakres: promień sfery zdefiniowanej w pozycji światła. poza którą przez tłumienie intensywność osiąga zero (float).
+\end{itemize}
 
-\subsubsection{Zasób siatki \textit{asset\_skybox}}
-Zasób skybox \textit{asset\_skybox} jest HIRO
+\subsubsection{Zasoby skybox \textit{asset\_skybox}}
+Zasób skybox \textit{asset\_skybox} opisuje składa się z zasobu tekstury oraz nazwy używanej przez konfigurację globalną.
 
-\subsubsection{Zasób siatki \textit{asset\_font}}
-Zasób czcionki \textit{asset\_font} jest HIRO
+\subsubsection{Zasób czcionki \textit{asset\_font}}
+Zasób czcionki \textit{asset\_font} jest opisuje czcionkę bitmapową używaną do renderowania tekstu.
+Składa się z:
+\begin{itemize}
+	\item nazwa: używana przez konfigurację globalną,
+	\item zasób tekstury: sk,
+	\item alfabet: ciąg znaków ASCII,
+	\item rozmiar znaku: rozmiar jednego glifu w pikselach (uint32\_t).
+\end{itemize}
 
-\subsubsection{Zasób siatki \textit{asset\_material}}
-Zasób materiału \textit{asset\_material} jest HIRO
+Poniższy obraz przedstawia przykładową teksturę dla czcionki Go-Mono \cite{GOMONOFONT}:
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.5\textwidth]{images/font_texture.png}
+	\caption{Przykładowa tekstura dla czcionki Go-Mono \cite{GOMONOFONT}}
+	\label{font_texture}
+\end{figure}
 
-\subsubsection{Zasób siatki \textit{asset\_texture}}
-Zasób tekstury \textit{asset\_texture} jest HIRO
+\subsubsection{Zasób materiału \textit{asset\_material}}
+Zasób materiału \textit{asset\_material} reprezentuje parametry używanego podczas renderowania powierzchni
+prymitywów przy pomocy następujących parameterów:
+\begin{itemize}
+	\item \textit{baseColorFactor}: współczynnik koloru podstawowego (vec4);
+	\item \textit{metallicFactor}: współczynnik metaliczności zakres, $\left[0,1\right]$;
+	\item \textit{roughnessFactor}: współczynnik chropowatości $\left[0,1\right]$;
+	\item \textit{metallicRoughnessTexture}: tekstura metaliczności-chropowatości, opcjonalna;
+	\item \textit{normalMapTexture}: mapa normalnych, opcjonalna.
+\end{itemize}
 
-\subsubsection{Zasób siatki \textit{asset\_image}}
-Zasób obrazu \textit{asset\_image} jest HIRO
+\subsubsection{Zasób tekstury \textit{asset\_texture}}
+Zasób tekstury \textit{asset\_texture} reprezentuje próbkowalny obraz i składa się z zasobu obrazu oraz zasobu próbnika.
 
-\subsubsection{Zasób siatki \textit{asset\_sampler}}
-Zasób próbnika \textit{asset\_sampler} jest HIRO
+\subsubsection{Zasób obrazu \textit{asset\_image}}
+Zasób obrazu \textit{asset\_image} zawiera dane obrazu w postaci nieskompresowanej bitmapy.
+Bitmapa to prostokątna tablica pikseli opisywana przez następujące parametry:
+\begin{itemize}
+	\item szerokość i wysokość (uint32\_t);
+	\item liczba ścian: domyślnie 1 ściana, 6 ścian dla tekstur sześciennych (uint32\_t);
+	\item liczba kanałów: specyfikuje liczbę komponentów i tym samym rozmiar piksela, jeden kanał jest reprezentowany przez jeden bajt (uint32\_t).
+\end{itemize}
 
-// TODO Potok zasobów asset\_pipeline
+\subsubsection{Zasób próbnika \textit{asset\_sampler}}
+Zasób próbnika \textit{asset\_sampler} reprezentuje parametry używane do stworzenia próbnika obrazu:
+\begin{itemize}
+	\item \textit{magFilter}: filtr pomniejszający (VkFilter),
+	\item \textit{minFilter}: filtr powiększający (VkFilter),
+	\item \textit{addressModeU}: tryb adresowania współrzędnych tekstur poza przedziałem $\left[0,1\right]$ dla osi X (VkSamplerAddressMode),
+	\item \textit{addressModeV}: tryb adresowania współrzędnych tekstur poza przedziałem $\left[0,1\right]$ dla osi Y (VkSamplerAddressMode),
+\end{itemize}
+
+\subsubsection{Potok zasobów asset\_pipeline}
+Potok zasobów składa się z dwóch części:
+\begin{itemize}
+	\item narzędzia wiersza poleceń \textit{asset\_pipeline},
+	\item skryptu Python \textit{asset\_pipeline}.
+\end{itemize}
+
+Skrypt skanuje podkatalog z zasobami wejściowymi i wywołuje narzędzie z argumentami będącymi ścieżką zasoby wejściowego rodzajem konwertowanego zasobu wyjściowego.
+Przykładowo poniższy potok zasobów wywołuje narzędzie 5 razy tworząc pustą konfigurację globalną oraz pustą bazę zasobów wypełnioną zasobem skybox, zasobem czcionki Go-Mono oraz zasobami składającymi się na scenę Sponza opisanej plikiem glTF:
+\begin{verbatim}
+asset_pipeline empty_config
+asset_pipeline empty_assets
+asset_pipeline cubemap "skybox1" "/home/user/repo/cmake-build-debug/assets/cubemap/skybox1" png
+asset_pipeline font "Go-Mono" "/home/sszczyrb/repo/cmake-build-debug/assets/font/Go-Mono.ttf"
+asset_pipeline gltf "sponza" "/home/user/repo/cmake-build-debug/assets/gltf/sponza"
+\end{verbatim}
 
 \subsection{Vulkan}
 
@@ -924,9 +1005,99 @@ Operuje on na kodzie bajtowym SPIR-V i jest on używany podczas testów oraz do 
 
 \subsection{Scena}
 
-// TODO Scena to moduł zawierajacy 
+Moduł sceny jest odpowiedzialny za konwersję sceny z wysokopoziomowej formy używanej przez bazę zasobów do niskopoziomowej formy łatwo używalnej przez renderer do wyemitowania polecenia rysowania pośredniego.
+
+Implementacja została zainspirowana techniką modelowania hierarchicznego opracowana w firmie Nvidia \cite{ADVANCEDSCENEGRAPH}.
+
+Scena jest opisywana przy pomocy grafu sceny, którego węzeł zawieraja zasób prymitywu, lokalną trasformację przestrzeni świata oraz węzły potomne.
+W tradycyjnym podejściu do modelowania hierarchicznego 
+ znajdują się w  przy użyciu grafu sceny
+// HIRO
+
+Obiekty biorące udział w procesie konwersji sceny wraz z przepływem danych są przedstawione na poniższym diagramie:
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[node distance=0.5cm]
+		\tikzstyle{entity} = [rectangle, minimum width=3cm, minimum height=0.5cm,text centered, draw=black]
+		\tikzstyle{flows} = [thick,->,>=stealth]
+		
+		\node (scene_data) [entity] {scene\_data};
+		\node (scene_graph) [entity, below = of scene_data] {scene\_graph};
+		\node (scene_tree) [entity, below = of scene_graph] {scene\_tree};
+		\node (renderer_cache) [entity, below = of scene_tree] {renderer\_cache};
+		
+		\node (scene_graph_node) [entity, right = of scene_graph] {scene\_graph\_node};
+		\node (scene_graph_node_dots) [right = 1mm of scene_graph_node] {...};
+		\node (scene_tree_node) [entity, right = of scene_tree] {scene\_tree\_node};
+		\node (scene_tree_node_dots) [right = 1mm of scene_tree_node] {...};
+		
+		\node (renderer_cache_primitive_element) [entity, below = of renderer_cache] {renderer\_cache\_primitive\_element};
+		\node (renderer_cache_primitive_element_dots) [right = 1mm of renderer_cache_primitive_element] {...};
+		\node (renderer_cache_camera_element) [entity, below = of renderer_cache_primitive_element] {renderer\_cache\_camera\_element};
+		\node (renderer_cache_camera_element_dots) [right = 1mm of renderer_cache_camera_element] {...};
+		\node (renderer_cache_direct_light_element) [entity, below = of renderer_cache_camera_element] {renderer\_cache\_direct\_light\_element};
+		\node (renderer_cache_direct_light_element_dots) [right = 1mm of renderer_cache_direct_light_element] {...};
+		\node (renderer_cache_skybox_element) [entity, below = of renderer_cache_direct_light_element] {renderer\_cache\_skybox\_element};
+		\node (renderer_cache_skybox_element_dots) [right = 1mm of renderer_cache_skybox_element] {...};
+		\node(renderer_cache_elements)[draw,dotted,fit=(renderer_cache_primitive_element) (renderer_cache_camera_element) (renderer_cache_direct_light_element) (renderer_cache_skybox_element) (renderer_cache_direct_light_element_dots)] {};
+		
+		\node (vkCmdDrawIndexedIndirect) [entity, right = of renderer_cache_elements] {vkCmdDrawIndexedIndirect()};
+		
+		\draw [flows] (scene_data) edge[out=-90,in=90] (scene_graph);
+		\draw [flows] (scene_graph) edge[out=180,in=180] (renderer_cache);
+		\draw [flows] (scene_graph) edge[out=-90,in=90] (scene_tree);
+		\draw [flows] (scene_graph) edge[] (scene_graph_node);
+		\draw [flows] (scene_graph_node) edge[] (scene_tree_node);
+		\draw [flows] (scene_tree) edge[out=-90,in=90] (renderer_cache);
+		\draw [flows] (scene_tree) edge[] (scene_tree_node);
+		\draw [flows] (renderer_cache) edge[] (renderer_cache_elements);
+		\draw [flows] (renderer_cache_elements) edge[] (vkCmdDrawIndexedIndirect);
+		// HIRO nodes
+		
+	\end{tikzpicture}
+	\caption{Obiekty biorące udział w procesie konwersji sceny wraz z przepływem danych}
+	\label{scene_process}
+\end{figure}
+
+\subsubsection{Dane sceny scene\_data}
+Obiekt \textit{scene\_data} reprezentuje dane sceny wczytane z bazy zasobów. Jest one używany przez moduł sceny do konstrukcji grafu sceny \textit{scene\_graph}.
+
+Obiekt utrzymuje on dla każdego typu obiektu zasobu osobną listę dwukierunkową zawierającą wszystkie obiekty używane przez scenę oraz ich domyślne warianty - przykładowo domyślny obraz \textit{asset\_image} to obraz 2D o rozmiarze 1x1 mający 4 8-bitowe komponenty o wartości 255.
+
+Wśród wszystkich obiektów zasobów składających się na dane sceny dodatkowo wyróżnia się:
+\begin{itemize}
+	\item węzły główne: używane jako punkty początkowe podczas tworzenia grafu sceny,
+	\item używany skybox: może być zmieniony w konfiguracji zasobów,
+	\item aktywna czcionka: sterowana konfiguracją globalną,
+	\item domyślna kamera: używana w przypadku braku węzła z przypisaną kamerą.
+\end{itemize}
+
+Metody \textit{serialize()} i \textit{deserialize()} podobnie jak analogiczne metody obiektów zasobów pozwalają na zapis i odczyt danych sceny do bazy zasobów.
+
+Metoda \textit{create\_with\_gltf\_file()} jest wywoływane wyłącznie przez potok zasobów.
+Jej wejściem jest nazwa tworzonej sceny i ścieżka do katalogu zawierającego zasób 3D w formacie \textit{glTF} wraz z konfiguracją zasobów.
+Oba zasoby wejściowe są parsowane przy użyciu biblioteki \textit{cgltf} i obiektu \textit{config}.
+Wynik parsowania jest używany do stworzenia i wypełnienia danych sceny.
+Ta metoda wraz z metodą \textit{serialize()} stanowi główną częścią potoku zasobów - obiekt stworzony na podstawie zasobów wejściowych jest serializowany do zasobu wyjściowego (bazy zasobów).
+
+Metoda \textit{create\_with\_asset\_db()} jest wywoływana w czasie wykonywania i wczytuje dane sceny o żądanej nazwie z bazy zasobów.
+
+\subsubsection{Graf sceny scene\_graph}
+Obiekt \textit{scene\_graph} reprezentuje
+// HIRO
+
+\subsubsection{Drzewo sceny scene\_tree}
+Obiekt \textit{scene\_tree} reprezentuje
+// HIRO
 
 \subsection{Renderer}
 
 // TODO Renderer to moduł zawierajacy 
 
+// HIRO renderer\_cache
+
+// HIRO Stan renderowania renderer\_state
+
+// HIRO Graf renderowania render\_graph
+
+// HIRO renderer

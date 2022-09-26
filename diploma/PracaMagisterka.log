@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  22 SEP 2022 22:06
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  26 SEP 2022 23:21
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1431,7 +1431,7 @@ Overfull \hbox (5.21303pt too wide) in paragraph at lines 893--894
 
 [27] [28]
 LaTeX Font Info:    Font shape `TU/lmss/bx/it' in size <10> not available
-(Font)              Font shape `TU/lmss/bx/sl' tried instead on input line 1090
+(Font)              Font shape `TU/lmss/bx/sl' tried instead on input line 1100
 .
  [29] [30]
 File: images/blender.png Graphic file (type bmp)
@@ -1569,31 +1569,76 @@ Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 [49] [50]
-Overfull \hbox (11.21309pt too wide) in paragraph at lines 893--894
+File: images/font_texture.png Graphic file (type bmp)
+<images/font_texture.png>
+
+Overfull \hbox (6.48865pt too wide) in paragraph at lines 899--902
+[]\TU/lmss/m/n/10 Zasób materiału \TU/lmss/m/sl/10 asset_material \TU/lmss/m/n/
+10 reprezentuje parametry używanego podczas renderowania powierzchni
+ []
+
+[51]
+Overfull \hbox (0.71416pt too wide) in paragraph at lines 926--927
+[]\TU/lmss/m/sl/10 addressModeU\TU/lmss/m/n/10 : tryb adresowania współrzędnych
+ tekstur poza przedziałem $[]$ dla osi X (VkSam-
+ []
+
+
+Overfull \hbox (0.47417pt too wide) in paragraph at lines 927--928
+[]\TU/lmss/m/sl/10 addressModeV\TU/lmss/m/n/10 : tryb adresowania współrzędnych
+ tekstur poza przedziałem $[]$ dla osi Y (VkSam-
+ []
+
+
+Overfull \hbox (22.08368pt too wide) in paragraph at lines 945--945
+[]\TU/lmtt/m/n/9 asset_pipeline cubemap "skybox1" "/home/user/repo/cmake-build-
+debug/assets/cubemap/skybox1" png[] 
+ []
+
+
+Overfull \hbox (12.63368pt too wide) in paragraph at lines 945--945
+[]\TU/lmtt/m/n/9 asset_pipeline font "Go-Mono" "/home/sszczyrb/repo/cmake-build
+-debug/assets/font/Go-Mono.ttf"[] 
+ []
+
+[52]
+Overfull \hbox (11.21309pt too wide) in paragraph at lines 974--975
 [][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (41.2134pt too wide) in paragraph at lines 894--896
+Overfull \hbox (41.2134pt too wide) in paragraph at lines 975--977
 [][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (5.21303pt too wide) in paragraph at lines 907--908
+Overfull \hbox (5.21303pt too wide) in paragraph at lines 988--989
 [][][][][][][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (29.21327pt too wide) in paragraph at lines 913--915
+Overfull \hbox (29.21327pt too wide) in paragraph at lines 994--996
 [][][][][][][][][][][][][][][][][][][] 
  []
 
-[51]) [52]
+[53]
+Missing character: There is no / ("2F) in font nullfont!
+Missing character: There is no / ("2F) in font nullfont!
+Missing character: There is no H ("48) in font nullfont!
+Missing character: There is no I ("49) in font nullfont!
+Missing character: There is no R ("52) in font nullfont!
+Missing character: There is no O ("4F) in font nullfont!
+Missing character: There is no n ("6E) in font nullfont!
+Missing character: There is no o ("6F) in font nullfont!
+Missing character: There is no d ("64) in font nullfont!
+Missing character: There is no e ("65) in font nullfont!
+Missing character: There is no s ("73) in font nullfont!
+[54]) [55]
 \openout2 = `chapters/5_badania.aux'.
 
  (./chapters/5_badania.tex
 Rozdzia\l  4.
-) [53
+) [56
 
 
 
@@ -1603,7 +1648,7 @@ Rozdzia\l  4.
 
  (./chapters/6_podsumowanie.tex
 Rozdzia\l  5.
-) [54
+) [57
 
 
 
@@ -1622,23 +1667,23 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 9.37807pt on input line 3.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 7.29405pt on input line 3.
- [55
+ [58
 
 
 
 
-] [56] (./PracaMagisterka.lof)
+] [59] (./PracaMagisterka.lof)
 \tf@lof=\write7
 \openout7 = `PracaMagisterka.lof'.
 
- [57
+ [60
 
 ]
 (./PracaMagisterka.lot)
 \tf@lot=\write8
 \openout8 = `PracaMagisterka.lot'.
 
-) [58
+) [61
 
 ] (./PracaMagisterka.aux
 (./chapters/0a_streszczenie.aux) (./chapters/0b_spis_tresci.aux)
@@ -1646,28 +1691,19 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (./chapters/2_wprowadzenie_do_dziedziny.aux)
 (./chapters/3_technologie_algorytmy_narzedzia.aux) (./chapters/5_badania.aux)
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-
-Package rerunfilecheck Warning: File `PracaMagisterka.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `PracaMagisterka.out':
-(rerunfilecheck)             Before: 6721F2FDF6CC0E00438E11834EBB7472;8970
-(rerunfilecheck)             After:  3C9629050DBAF702AE0B91381710F2AE;8970.
+Package rerunfilecheck Info: File `PracaMagisterka.out' has not changed.
+(rerunfilecheck)             Checksum: 0D8996C8B0BE24756B2EA12CF08354B2;8970.
 Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 \openout1 = `PracaMagisterka.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 40054 strings out of 476191
- 827589 string characters out of 5812072
- 1600661 words of memory out of 5000000
- 60131 multiletter control sequences out of 15000+600000
+ 40171 strings out of 476191
+ 831946 string characters out of 5812072
+ 1601976 words of memory out of 5000000
+ 60247 multiletter control sequences out of 15000+600000
  488887 words of font info for 103 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  88i,15n,91p,1516b,6445s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on PracaMagisterka.pdf (58 pages).
+Output written on PracaMagisterka.pdf (61 pages).
