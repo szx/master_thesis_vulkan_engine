@@ -37,7 +37,9 @@ VkImageView device_create_image_view(device *vkd, VkImage image, VkImageViewType
                                      uint32_t mipLevels, uint32_t arrayLayers,
                                      const char *debugFormat, ...);
 
-VkSampler device_create_sampler(device *vkd, uint32_t mipLevelCount, const char *debugFormat, ...);
+VkSampler device_create_sampler(device *vkd, uint32_t mipLevelCount, VkFilter magFilter,
+                                VkFilter minFilter, VkSamplerAddressMode addressModeU,
+                                VkSamplerAddressMode addressModeV, const char *debugFormat, ...);
 
 void device_create_buffer(device *vkd, VkDeviceSize size, VkBufferUsageFlags usage,
                           VkMemoryPropertyFlags properties, VkBuffer *buffer,

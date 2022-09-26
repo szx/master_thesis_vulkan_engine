@@ -187,14 +187,16 @@ VkImageView device_create_image_view(device *vkd, VkImage image, VkImageViewType
   return imageView;
 }
 
-VkSampler device_create_sampler(device *vkd, uint32_t mipLevelCount, const char *debugFormat, ...) {
+VkSampler device_create_sampler(device *vkd, uint32_t mipLevelCount, VkFilter magFilter,
+                                VkFilter minFilter, VkSamplerAddressMode addressModeU,
+                                VkSamplerAddressMode addressModeV, const char *debugFormat, ...) {
   // TODO: Share sampler with same parameters.
   VkSamplerCreateInfo samplerInfo = {0};
   samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-  samplerInfo.magFilter = VK_FILTER_LINEAR;
-  samplerInfo.minFilter = VK_FILTER_LINEAR;
-  samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-  samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+  samplerInfo.magFilter = magFilter;
+  samplerInfo.minFilter = minFilter;
+  samplerInfo.addressModeU = addressModeU;
+  samplerInfo.addressModeV = addressModeV;
   samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
   samplerInfo.anisotropyEnable = VK_TRUE;
   samplerInfo.maxAnisotropy = vkd->limits.maxSamplerAnisotropy;

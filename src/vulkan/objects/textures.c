@@ -29,7 +29,10 @@ textures_texture_element *textures_texture_element_create(asset_texture *texture
                    element->texture->image->channels, debugName);
   image_update(element->image, element->texture);
 
-  element->sampler = device_create_sampler(vkd, element->image->mipLevelCount, "texture");
+  element->sampler = device_create_sampler(
+      vkd, element->image->mipLevelCount, element->texture->sampler->magFilter,
+      element->texture->sampler->minFilter, element->texture->sampler->addressModeV,
+      element->texture->sampler->addressModeU, "texture");
   static uint32_t textureIdx = 0;
   element->textureIdx = textureIdx++;
 
