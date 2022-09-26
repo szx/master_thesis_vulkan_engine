@@ -13,9 +13,6 @@ typedef struct asset_direct_light {
     vec3 direction;
   };
 
-  float innerConeAngle;
-  float outerConeAngle;
-
   float intensity;
   float range;
   vec3 color;

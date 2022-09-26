@@ -4,8 +4,6 @@
 void asset_direct_light_init(asset_direct_light *directLight, scene_data *sceneData) {
   directLight->type = direct_light_type_point;
   glm_vec3_copy(GLM_VEC3_ZERO, directLight->position);
-  directLight->innerConeAngle = 0;
-  directLight->outerConeAngle = 0;
   directLight->intensity = 0;
   directLight->range = 0;
   glm_vec3_copy(GLM_VEC3_ZERO, directLight->color);
@@ -20,8 +18,6 @@ data_key asset_direct_light_calculate_key(asset_direct_light *directLight) {
   HASH_START(hashState)
   HASH_UPDATE(hashState, &directLight->type, sizeof(directLight->type))
   HASH_UPDATE(hashState, &directLight->position, sizeof(directLight->position))
-  HASH_UPDATE(hashState, &directLight->innerConeAngle, sizeof(directLight->innerConeAngle))
-  HASH_UPDATE(hashState, &directLight->outerConeAngle, sizeof(directLight->outerConeAngle))
   HASH_UPDATE(hashState, &directLight->intensity, sizeof(directLight->intensity))
   HASH_UPDATE(hashState, &directLight->range, sizeof(directLight->range))
   HASH_UPDATE(hashState, &directLight->color, sizeof(directLight->color))
@@ -35,10 +31,6 @@ void asset_direct_light_serialize(asset_direct_light *directLight, asset_db *ass
   asset_db_insert_directLight_type_int(assetDb, directLight->key, data_int_temp(directLight->type));
   asset_db_insert_directLight_position_vec3(assetDb, directLight->key,
                                             data_vec3_temp(directLight->position));
-  asset_db_insert_directLight_innerConeAngle_float(assetDb, directLight->key,
-                                                   data_float_temp(directLight->innerConeAngle));
-  asset_db_insert_directLight_outerConeAngle_float(assetDb, directLight->key,
-                                                   data_float_temp(directLight->outerConeAngle));
   asset_db_insert_directLight_intensity_float(assetDb, directLight->key,
                                               data_float_temp(directLight->intensity));
   asset_db_insert_directLight_range_float(assetDb, directLight->key,
@@ -53,10 +45,6 @@ void asset_direct_light_deserialize(asset_direct_light *directLight, asset_db *a
   directLight->type = asset_db_select_directLight_type_int(assetDb, directLight->key).value;
   glm_vec3_copy(asset_db_select_directLight_position_vec3(assetDb, directLight->key).value,
                 directLight->position);
-  directLight->innerConeAngle =
-      asset_db_select_directLight_innerConeAngle_float(assetDb, directLight->key).value;
-  directLight->outerConeAngle =
-      asset_db_select_directLight_outerConeAngle_float(assetDb, directLight->key).value;
   directLight->intensity =
       asset_db_select_directLight_intensity_float(assetDb, directLight->key).value;
   directLight->range = asset_db_select_directLight_range_float(assetDb, directLight->key).value;
