@@ -69,60 +69,60 @@
 \contentsline {subsection}{\numberline {2.9.3}Potok zasobów}{34}{subsection.2.9.3}%
 \contentsline {subsection}{\numberline {2.9.4}Baza zasobów}{34}{subsection.2.9.4}%
 \contentsline {section}{\numberline {2.10}Graf sceny}{34}{section.2.10}%
-\contentsline {section}{\numberline {2.11}Graf renderowania}{34}{section.2.11}%
-\contentsline {chapter}{\numberline {3}Narzędzia, architektura i implementacja}{35}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Narzędzia}{35}{section.3.1}%
-\contentsline {subsection}{\numberline {3.1.1}Proces budowania}{35}{subsection.3.1.1}%
-\contentsline {paragraph}{engine}{36}{paragraph*.46}%
-\contentsline {paragraph}{main}{36}{paragraph*.47}%
-\contentsline {paragraph}{test}{36}{paragraph*.48}%
-\contentsline {paragraph}{asset\textunderscore \allowbreak pipeline}{36}{paragraph*.49}%
-\contentsline {paragraph}{copy\textunderscore \allowbreak assets}{36}{paragraph*.50}%
-\contentsline {paragraph}{run\textunderscore \allowbreak asset\textunderscore \allowbreak pipeline}{36}{paragraph*.51}%
-\contentsline {subsection}{\numberline {3.1.2}Biblioteki zewnętrzne}{36}{subsection.3.1.2}%
-\contentsline {section}{\numberline {3.2}Architektura}{37}{section.3.2}%
-\contentsline {section}{\numberline {3.3}Implementacja}{38}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}Wygenerowany kod}{38}{subsection.3.3.1}%
-\contentsline {subsubsection}{Jednostka constants}{39}{subsubsection*.53}%
-\contentsline {subsubsection}{Jednostka globals}{40}{subsubsection*.54}%
-\contentsline {subsubsection}{Jednostka macros}{41}{subsubsection*.55}%
-\contentsline {subsubsection}{Jednostka meta}{42}{subsubsection*.56}%
-\contentsline {subsubsection}{Jednostka descriptors}{42}{subsubsection*.57}%
-\contentsline {subsection}{\numberline {3.3.2}Rdzeń}{44}{subsection.3.3.2}%
-\contentsline {subsubsection}{Jednostka thirdparty}{44}{subsubsection*.58}%
-\contentsline {subsubsection}{Jednostka alloc}{44}{subsubsection*.59}%
-\contentsline {subsubsection}{Jednostka log}{44}{subsubsection*.60}%
-\contentsline {subsubsection}{Jednostka junk}{45}{subsubsection*.61}%
-\contentsline {subsubsection}{Jednostka platform}{46}{subsubsection*.62}%
-\contentsline {subsection}{\numberline {3.3.3}I/O}{46}{subsection.3.3.3}%
-\contentsline {subsubsection}{Jednostka config}{47}{subsubsection*.63}%
-\contentsline {subsubsection}{Jednostka sql\textunderscore \allowbreak db}{47}{subsubsection*.64}%
-\contentsline {subsubsection}{Jednostka asset\textunderscore \allowbreak db}{48}{subsubsection*.65}%
-\contentsline {subsection}{\numberline {3.3.4}Zasoby}{48}{subsection.3.3.4}%
-\contentsline {subsubsection}{Zasób węzła \textit {asset\textunderscore \allowbreak object}}{49}{subsubsection*.67}%
-\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak mesh}}{49}{subsubsection*.68}%
-\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak primitive}}{49}{subsubsection*.69}%
-\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak vertex\textunderscore \allowbreak attribute}}{50}{subsubsection*.70}%
-\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak camera}}{50}{subsubsection*.71}%
-\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak direct\textunderscore \allowbreak light}}{50}{subsubsection*.72}%
-\contentsline {subsubsection}{Zasoby skybox \textit {asset\textunderscore \allowbreak skybox}}{51}{subsubsection*.73}%
-\contentsline {subsubsection}{Zasób czcionki \textit {asset\textunderscore \allowbreak font}}{51}{subsubsection*.74}%
-\contentsline {subsubsection}{Zasób materiału \textit {asset\textunderscore \allowbreak material}}{51}{subsubsection*.76}%
-\contentsline {subsubsection}{Zasób tekstury \textit {asset\textunderscore \allowbreak texture}}{52}{subsubsection*.77}%
-\contentsline {subsubsection}{Zasób obrazu \textit {asset\textunderscore \allowbreak image}}{52}{subsubsection*.78}%
-\contentsline {subsubsection}{Zasób próbnika \textit {asset\textunderscore \allowbreak sampler}}{52}{subsubsection*.79}%
-\contentsline {subsubsection}{Potok zasobów asset\textunderscore \allowbreak pipeline}{52}{subsubsection*.80}%
-\contentsline {subsection}{\numberline {3.3.5}Vulkan}{52}{subsection.3.3.5}%
-\contentsline {subsubsection}{Jednostka shader}{52}{subsubsection*.81}%
-\contentsline {subsubsection}{Jednostka shader\textunderscore \allowbreak reflect}{54}{subsubsection*.82}%
-\contentsline {subsection}{\numberline {3.3.6}Scena}{54}{subsection.3.3.6}%
-\contentsline {subsubsection}{Dane sceny scene\textunderscore \allowbreak data}{54}{subsubsection*.84}%
-\contentsline {subsubsection}{Graf sceny scene\textunderscore \allowbreak graph}{55}{subsubsection*.85}%
-\contentsline {subsubsection}{Drzewo sceny scene\textunderscore \allowbreak tree}{55}{subsubsection*.86}%
-\contentsline {subsection}{\numberline {3.3.7}Renderer}{55}{subsection.3.3.7}%
-\contentsline {chapter}{\numberline {4}Badania}{56}{chapter.4}%
-\contentsline {chapter}{\numberline {5}Podsumowanie}{57}{chapter.5}%
-\contentsline {chapter}{Wykaz literatury}{59}{chapter*.87}%
-\contentsline {chapter}{Spis rysunk\'ow}{60}{chapter*.88}%
-\contentsline {chapter}{Spis tablic}{61}{chapter*.89}%
+\contentsline {section}{\numberline {2.11}Graf renderowania}{35}{section.2.11}%
+\contentsline {chapter}{\numberline {3}Narzędzia, architektura i implementacja}{36}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Narzędzia}{36}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Proces budowania}{36}{subsection.3.1.1}%
+\contentsline {paragraph}{engine}{37}{paragraph*.46}%
+\contentsline {paragraph}{main}{37}{paragraph*.47}%
+\contentsline {paragraph}{test}{37}{paragraph*.48}%
+\contentsline {paragraph}{asset\textunderscore \allowbreak pipeline}{37}{paragraph*.49}%
+\contentsline {paragraph}{copy\textunderscore \allowbreak assets}{37}{paragraph*.50}%
+\contentsline {paragraph}{run\textunderscore \allowbreak asset\textunderscore \allowbreak pipeline}{37}{paragraph*.51}%
+\contentsline {subsection}{\numberline {3.1.2}Biblioteki zewnętrzne}{37}{subsection.3.1.2}%
+\contentsline {section}{\numberline {3.2}Architektura}{38}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Implementacja}{39}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Wygenerowany kod}{39}{subsection.3.3.1}%
+\contentsline {subsubsection}{Jednostka constants}{40}{subsubsection*.53}%
+\contentsline {subsubsection}{Jednostka globals}{41}{subsubsection*.54}%
+\contentsline {subsubsection}{Jednostka macros}{42}{subsubsection*.55}%
+\contentsline {subsubsection}{Jednostka meta}{43}{subsubsection*.56}%
+\contentsline {subsubsection}{Jednostka descriptors}{43}{subsubsection*.57}%
+\contentsline {subsection}{\numberline {3.3.2}Rdzeń}{45}{subsection.3.3.2}%
+\contentsline {subsubsection}{Jednostka thirdparty}{45}{subsubsection*.58}%
+\contentsline {subsubsection}{Jednostka alloc}{45}{subsubsection*.59}%
+\contentsline {subsubsection}{Jednostka log}{45}{subsubsection*.60}%
+\contentsline {subsubsection}{Jednostka junk}{46}{subsubsection*.61}%
+\contentsline {subsubsection}{Jednostka platform}{47}{subsubsection*.62}%
+\contentsline {subsection}{\numberline {3.3.3}I/O}{47}{subsection.3.3.3}%
+\contentsline {subsubsection}{Jednostka config}{48}{subsubsection*.63}%
+\contentsline {subsubsection}{Jednostka sql\textunderscore \allowbreak db}{48}{subsubsection*.64}%
+\contentsline {subsubsection}{Jednostka asset\textunderscore \allowbreak db}{49}{subsubsection*.65}%
+\contentsline {subsection}{\numberline {3.3.4}Zasoby}{49}{subsection.3.3.4}%
+\contentsline {subsubsection}{Zasób węzła \textit {asset\textunderscore \allowbreak object}}{50}{subsubsection*.67}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak mesh}}{50}{subsubsection*.68}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak primitive}}{50}{subsubsection*.69}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak vertex\textunderscore \allowbreak attribute}}{51}{subsubsection*.70}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak camera}}{51}{subsubsection*.71}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak direct\textunderscore \allowbreak light}}{51}{subsubsection*.72}%
+\contentsline {subsubsection}{Zasoby skybox \textit {asset\textunderscore \allowbreak skybox}}{52}{subsubsection*.73}%
+\contentsline {subsubsection}{Zasób czcionki \textit {asset\textunderscore \allowbreak font}}{52}{subsubsection*.74}%
+\contentsline {subsubsection}{Zasób materiału \textit {asset\textunderscore \allowbreak material}}{52}{subsubsection*.76}%
+\contentsline {subsubsection}{Zasób tekstury \textit {asset\textunderscore \allowbreak texture}}{53}{subsubsection*.77}%
+\contentsline {subsubsection}{Zasób obrazu \textit {asset\textunderscore \allowbreak image}}{53}{subsubsection*.78}%
+\contentsline {subsubsection}{Zasób próbnika \textit {asset\textunderscore \allowbreak sampler}}{53}{subsubsection*.79}%
+\contentsline {subsubsection}{Potok zasobów asset\textunderscore \allowbreak pipeline}{53}{subsubsection*.80}%
+\contentsline {subsection}{\numberline {3.3.5}Vulkan}{53}{subsection.3.3.5}%
+\contentsline {subsubsection}{Jednostka shader}{53}{subsubsection*.81}%
+\contentsline {subsubsection}{Jednostka shader\textunderscore \allowbreak reflect}{55}{subsubsection*.82}%
+\contentsline {subsection}{\numberline {3.3.6}Scena}{55}{subsection.3.3.6}%
+\contentsline {subsubsection}{Dane sceny scene\textunderscore \allowbreak data}{55}{subsubsection*.84}%
+\contentsline {subsubsection}{Graf sceny scene\textunderscore \allowbreak graph}{56}{subsubsection*.85}%
+\contentsline {subsubsection}{Drzewo sceny scene\textunderscore \allowbreak tree}{56}{subsubsection*.86}%
+\contentsline {subsection}{\numberline {3.3.7}Renderer}{56}{subsection.3.3.7}%
+\contentsline {chapter}{\numberline {4}Badania}{57}{chapter.4}%
+\contentsline {chapter}{\numberline {5}Podsumowanie}{58}{chapter.5}%
+\contentsline {chapter}{Wykaz literatury}{60}{chapter*.87}%
+\contentsline {chapter}{Spis rysunk\'ow}{61}{chapter*.88}%
+\contentsline {chapter}{Spis tablic}{62}{chapter*.89}%
 \contentsfinish 

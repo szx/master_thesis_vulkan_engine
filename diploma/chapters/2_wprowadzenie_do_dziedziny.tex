@@ -899,6 +899,7 @@ Indeksowanie poza długością tablicy czasu wykonania jest niezdefiniowanym zac
 
 // TODO vkPipeline - potok, potok graficzny
 
+// HIRO globalna macierz przekształceń (macierz model-widok-rzutowanie), przestrzenie współrzędnych, Reverse-Z
 
 Topologia definiuje sposób renderowania wierzchołków.
 
@@ -1336,17 +1337,37 @@ Baza zasobów (ang. asset database) to zasób wyjściowy mający na celu zgromad
 
 \section{Graf sceny}
 
-Hierarchiczne modelowanie to technika reprezentowania złożonych obiektów polegająca na podzieleniu modelu na części i śledzeniu hierarchicznych relacji rodzic-dziecko pomiędzy nimi przy użyciu struktury zwanej grafem sceny.
+Wyrenderowanie sceny opisanej wysokopoziomowym formatem używanym przez program do grafiki 3D wymaga konwersji jej do listy poleceń rysowania biblioteki graficznej.
 
-Każdy węzeł grafu sceny składa się z lokalnej transformacji przestrzeni świata, opcjonalnej referencji do renderowanej geometrii oraz listy węzłów potomne.
-Przemierzanie grafu pozwala na łatwe emitowanie poleceń rysowania:
-// HIRO listing
+Wyemitowanie pojedyńczego polecenia rysowania wymaga ustalenia stanu renderowania używanego przez potok graficzny. W przypadku Vulkan API sprowadza się to do dowiązania zasobów bądź przekazania informacji deskryptorami i stałymi push dla następujących elementów renderowanego modelu:
+\begin{itemize}
+	\item geometria: \textit{vkCmdBindVertexBuffer()}, \textit{vkCmdBindIndexBuffer()};
+	\item materiał: \textit{vkCmdBindPipeline()}, \textit{vkCmdBindDescriptorSets()};
+	\item globalne przekształcenie (macierz model-widok-rzutowanie): \textit{vkCmdPushConstants()}, \textit{vkCmdBindDescriptorSets()}.
+\end{itemize}
+
+Proces konwersji sceny na polecenia rysowania zależy od jej formatu.
+// HIRO lista vs hierarchiczne modelowanie
+
+Hierarchiczne modelowanie to technika reprezentowania złożonych obiektów polegająca na podzieleniu modelu na części i śledzeniu hierarchicznych relacji rodzic-dziecko pomiędzy nimi przy użyciu struktury zwanej grafem sceny. Ten sposób reprezentacji sceny bardzo popularny wśród aplikacji 3D i jest używany przez formaty FBX i glTF.
+
+Każdy węzeł grafu sceny składa się z lokalnej transformacji przestrzeni świata, opcjonalnej referencji do renderowanej geometrii oraz listy węzłów potomne. Jeden z wezłów jest oznaczony jako korzeń.
+Emitowanie poleceń rysowania sprowadza się do rekurencyjengo przemierzania grafu sceny zaczynając od korzenia \cite{kosarevsky20213d}.
+Pseudokod:
+\begin{verbatim}
+RenderujGrafSceny(węzeł):
+  jeżeli węzeł.rodzic istnieje:
+    węzeł.globalnaTransformacja = węzeł.rodzic.globalnaTransformacja * węzeł.lokalnaTransformacja
+  w przeciwnym wypadku:
+    węzeł.globalnaTransformacja = węzeł.lokalnaTransformacja
+  WyemitujPolecenieRysowania(węzeł.geometria, węzeł.materiał, węzeł.globalnaTransformacja)
+  dla każdego węzła dziecko w węzeł.dzieci:
+    RenderujGrafSceny(dziecko)
+\end{verbatim}
 
 // HIRO diagram graf sceny -> polecenia rysowania
 
-Ten sposób reprezentacji sceny bardzo popularny wśród aplikacji 3D i jest używany przez formaty FBX i glTF.
-
-// HIRO wydajność
+// HIRO wydajność, draw call optimization
 
 \section{Graf renderowania}
 

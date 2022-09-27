@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  26 SEP 2022 23:21
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  27 SEP 2022 21:31
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1431,23 +1431,35 @@ Overfull \hbox (5.21303pt too wide) in paragraph at lines 893--894
 
 [27] [28]
 LaTeX Font Info:    Font shape `TU/lmss/bx/it' in size <10> not available
-(Font)              Font shape `TU/lmss/bx/sl' tried instead on input line 1100
+(Font)              Font shape `TU/lmss/bx/sl' tried instead on input line 1101
 .
  [29] [30]
 File: images/blender.png Graphic file (type bmp)
 <images/blender.png>
- [31] [32] [33]) [34]
+ [31] [32] [33]
+Overfull \hbox (2.51866pt too wide) in paragraph at lines 1346--1347
+[]\TU/lmss/m/n/10 globalne przekształcenie (macierz model-widok-rzutowanie): \T
+U/lmss/m/sl/10 vkCmdPushConstants()\TU/lmss/m/n/10 , \TU/lmss/m/sl/10 vkCmdBind
+-
+ []
+
+
+Overfull \hbox (31.53369pt too wide) in paragraph at lines 1366--1366
+[]    \TU/lmtt/m/n/9 węzeł.globalnaTransformacja = węzeł.rodzic.globalnaTransfo
+rmacja * węzeł.lokalnaTransformacja[] 
+ []
+
+[34]) [35]
 \openout2 = `chapters/3_technologie_algorytmy_narzedzia.aux'.
 
-
-(./chapters/3_technologie_algorytmy_narzedzia.tex
+ (./chapters/3_technologie_algorytmy_narzedzia.tex
 Rozdzia\l  3.
-[35
+[36
 
 
 
 
-] [36] [37]
+] [37] [38]
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
@@ -1519,30 +1531,30 @@ Overfull \hbox (18.23123pt too wide) in paragraph at lines 259--260
  [][] 
  []
 
-[38]
+[39]
 Overfull \hbox (0.50352pt too wide) in paragraph at lines 290--291
 []\TU/lmss/m/sl/10 MAX_FRAMEBUFFER_ATTACHMENT_COUNT\TU/lmss/m/n/10 : $\OML/zplm
 /m/it/10 MAX[]ENDER[]ARGET[]OUNT \OT1/zplm/m/n/10 + \OT1/ppl/m/n/10 1 \OT1/zplm
 /m/n/10 + \OT1/ppl/m/n/10 1$\TU/lmss/m/n/10 ,
  []
 
-[39] [40]
+[40] [41]
 Overfull \hbox (47.21346pt too wide) in paragraph at lines 376--377
 [][][][][][][][][][][][][][][][][][][][] 
  []
 
-[41]
+[42]
 Overfull \hbox (7.90878pt too wide) in paragraph at lines 412--412
 []\TU/lmtt/m/n/9 image = "key KEY, width INT, height INT, depth INT, channels I
 NT, type INT, data BYTE_ARRAY"[] 
  []
 
-[42] [43] [44] [45] [46] [47]
+[43] [44] [45] [46] [47] [48]
 Overfull \hbox (5.21303pt too wide) in paragraph at lines 703--704
 [][][][][][][][][][][][][] 
  []
 
-[48]
+[49]
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
@@ -1568,7 +1580,7 @@ Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
-[49] [50]
+[50] [51]
 File: images/font_texture.png Graphic file (type bmp)
 <images/font_texture.png>
 
@@ -1577,7 +1589,7 @@ Overfull \hbox (6.48865pt too wide) in paragraph at lines 899--902
 10 reprezentuje parametry używanego podczas renderowania powierzchni
  []
 
-[51]
+[52]
 Overfull \hbox (0.71416pt too wide) in paragraph at lines 926--927
 []\TU/lmss/m/sl/10 addressModeU\TU/lmss/m/n/10 : tryb adresowania współrzędnych
  tekstur poza przedziałem $[]$ dla osi X (VkSam-
@@ -1601,7 +1613,7 @@ Overfull \hbox (12.63368pt too wide) in paragraph at lines 945--945
 -debug/assets/font/Go-Mono.ttf"[] 
  []
 
-[52]
+[53]
 Overfull \hbox (11.21309pt too wide) in paragraph at lines 974--975
 [][][][][][][][][][][] 
  []
@@ -1621,7 +1633,7 @@ Overfull \hbox (29.21327pt too wide) in paragraph at lines 994--996
 [][][][][][][][][][][][][][][][][][][] 
  []
 
-[53]
+[54]
 Missing character: There is no / ("2F) in font nullfont!
 Missing character: There is no / ("2F) in font nullfont!
 Missing character: There is no H ("48) in font nullfont!
@@ -1633,12 +1645,12 @@ Missing character: There is no o ("6F) in font nullfont!
 Missing character: There is no d ("64) in font nullfont!
 Missing character: There is no e ("65) in font nullfont!
 Missing character: There is no s ("73) in font nullfont!
-[54]) [55]
+[55]) [56]
 \openout2 = `chapters/5_badania.aux'.
 
  (./chapters/5_badania.tex
 Rozdzia\l  4.
-) [56
+) [57
 
 
 
@@ -1648,7 +1660,7 @@ Rozdzia\l  4.
 
  (./chapters/6_podsumowanie.tex
 Rozdzia\l  5.
-) [57
+) [58
 
 
 
@@ -1667,23 +1679,23 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 9.37807pt on input line 3.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 7.29405pt on input line 3.
- [58
+ [59
 
 
 
 
-] [59] (./PracaMagisterka.lof)
+] [60] (./PracaMagisterka.lof)
 \tf@lof=\write7
 \openout7 = `PracaMagisterka.lof'.
 
- [60
+ [61
 
 ]
 (./PracaMagisterka.lot)
 \tf@lot=\write8
 \openout8 = `PracaMagisterka.lot'.
 
-) [61
+) [62
 
 ] (./PracaMagisterka.aux
 (./chapters/0a_streszczenie.aux) (./chapters/0b_spis_tresci.aux)
@@ -1698,12 +1710,12 @@ Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 40171 strings out of 476191
- 831946 string characters out of 5812072
- 1601976 words of memory out of 5000000
- 60247 multiletter control sequences out of 15000+600000
+ 40174 strings out of 476191
+ 832092 string characters out of 5812072
+ 1602038 words of memory out of 5000000
+ 60250 multiletter control sequences out of 15000+600000
  488887 words of font info for 103 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  88i,15n,91p,1516b,6445s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on PracaMagisterka.pdf (61 pages).
+Output written on PracaMagisterka.pdf (62 pages).

@@ -12,11 +12,11 @@
 \contentsline {figure}{\numberline {2.9}{\ignorespaces Interfejs programu Blender \blx@tocontentsinit {0}\cite {BLENDER} używanego do modelowania 3D\relax }}{32}{figure.caption.42}%
 \contentsline {figure}{\numberline {2.10}{\ignorespaces Relacje pomiędzy rożnymi typami elementów w formacie glTF\relax }}{33}{figure.caption.44}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Proces budowania w formie celów i ich zależności\relax }}{36}{figure.caption.45}%
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Relacje pomiędzy modułam silnika i ich najważniejszymi klasami\relax }}{38}{figure.caption.52}%
-\contentsline {figure}{\numberline {3.3}{\ignorespaces Relacje pomiędzy obiektami zasobów w silniku\relax }}{49}{figure.caption.66}%
-\contentsline {figure}{\numberline {3.4}{\ignorespaces Przykładowa tekstura dla czcionki Go-Mono \blx@tocontentsinit {0}\cite {GOMONOFONT}\relax }}{51}{figure.caption.75}%
-\contentsline {figure}{\numberline {3.5}{\ignorespaces Obiekty biorące udział w procesie konwersji sceny wraz z przepływem danych\relax }}{54}{figure.caption.83}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Proces budowania w formie celów i ich zależności\relax }}{37}{figure.caption.45}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Relacje pomiędzy modułam silnika i ich najważniejszymi klasami\relax }}{39}{figure.caption.52}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Relacje pomiędzy obiektami zasobów w silniku\relax }}{50}{figure.caption.66}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Przykładowa tekstura dla czcionki Go-Mono \blx@tocontentsinit {0}\cite {GOMONOFONT}\relax }}{52}{figure.caption.75}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Obiekty biorące udział w procesie konwersji sceny wraz z przepływem danych\relax }}{55}{figure.caption.83}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \contentsfinish 

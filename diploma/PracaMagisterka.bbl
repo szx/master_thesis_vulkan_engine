@@ -573,6 +573,42 @@
       \verb www.alprogramming.com
       \endverb
     \endentry
+    \entry{kosarevsky20213d}{book}{}
+      \name{author}{2}{}{%
+        {{hash=b87c076c5eafaca2aa598c9e5bb20e15}{%
+           family={Kosarevsky},
+           familyi={K\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod}}}%
+        {{hash=b8ebb9fdd3c6852b6d1a8db94ee3a867}{%
+           family={Latypov},
+           familyi={L\bibinitperiod},
+           given={V.},
+           giveni={V\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Packt Publishing}%
+      }
+      \strng{namehash}{eb071626442e2cf0c6bba8310837930b}
+      \strng{fullhash}{eb071626442e2cf0c6bba8310837930b}
+      \strng{bibnamehash}{eb071626442e2cf0c6bba8310837930b}
+      \strng{authorbibnamehash}{eb071626442e2cf0c6bba8310837930b}
+      \strng{authornamehash}{eb071626442e2cf0c6bba8310837930b}
+      \strng{authorfullhash}{eb071626442e2cf0c6bba8310837930b}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{9781838985301}
+      \field{title}{3D Graphics Rendering Cookbook: A comprehensive guide to exploring rendering algorithms in modern OpenGL and Vulkan}
+      \field{year}{2021}
+      \verb{urlraw}
+      \verb https://books.google.pl/books?id=Nys7EAAAQBAJ
+      \endverb
+      \verb{url}
+      \verb https://books.google.pl/books?id=Nys7EAAAQBAJ
+      \endverb
+    \endentry
     \entry{PEP405}{misc}{}
       \field{sortinit}{3}
       \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
@@ -614,8 +650,8 @@
       \endverb
     \endentry
     \entry{PYTHONCONFIGPARSER}{misc}{}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
       \field{labeltitlesource}{title}
       \field{title}{configparser — Configuration file parser}
       \field{year}{2022}
@@ -788,8 +824,8 @@
       \strng{authorbibnamehash}{f3fca3e75163059b5d4fdd28b0a51546}
       \strng{authornamehash}{f3fca3e75163059b5d4fdd28b0a51546}
       \strng{authorfullhash}{f3fca3e75163059b5d4fdd28b0a51546}
-      \field{sortinit}{4}
-      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Advanced Scenegraph Rendering Pipeline}
