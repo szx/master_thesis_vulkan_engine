@@ -1,3 +1,8 @@
+HIRO dodaj stronę tytułową (moja pg nie generuje)
+HIRO zamień fragmenty kodu na listingi i odwoływuj się po numerze
+HIRO mniej opisowach kod
+
+
 Praca magisterska podzielona na dwie części:
 Opis i analiza algorytmów graficznych i technik post-processingu używanych podczas renderowania sceny w nowoczesnych grach 3D (temat rzeka).
 

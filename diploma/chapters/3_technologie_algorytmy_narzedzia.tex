@@ -88,7 +88,7 @@ Poniższy diagram przedstawia proces budowania projektu w formie celów i ich za
 		\node (celeniestandardoweLabel)[above=0cm of celeniestandardowe] {\textbf{Cele niestandardowe}};
 		
 	\end{tikzpicture}
-	\caption{Proces budowania w formie celów i ich zależności}
+	\caption{Proces budowania w formie celów i ich zależności (opracowanie własne)}
 	\label{cmake}
 \end{figure}
 
@@ -143,14 +143,14 @@ UndefinedBehaviorSanitizer) wykrywające szeroką klasę błędów dotyczących 
 
 \section{Architektura}
 
-Silnik jest zaprojektowany w duchu \textbf{architektury modułowej} - funkcjonalność biblioteki jest rozdzielona na bloki zwane modułami, które mogą być rozwijane niezależnie od pozostałych modułów.
+Silnik jest zaprojektowany w duchu architektury modułowej - funkcjonalność biblioteki jest rozdzielona na bloki zwane modułami, które mogą być rozwijane niezależnie od pozostałych modułów.
 
-Silnik był rozwijany metodą \textit{bottom-up} - jego pierwsza iteracja była pojedyńczym plikiem źródłowym wyświetlającym trójkąt \cite{VULKANTUTORIAL}, który w procesie dekompozycji i refaktoryzacji organicznie rozrósł się do 7 modułów znajdujących się w osobnych podkatalogach zawierających łącznie 9 skryptów Python \textit{.py}, 65 nagłówków \textit{*.h} i 63 plików źródłowych \textit{*.c}.
+Silnik był rozwijany metodą \textit{bottom-up} - jego pierwsza iteracja była pojedynczym plikiem źródłowym wyświetlającym trójkąt \cite{VULKANTUTORIAL}, który w procesie dekompozycji i refaktoryzacji organicznie rozrósł się do 7 modułów znajdujących się w osobnych podkatalogach zawierających łącznie 9 skryptów Python \textit{.py}, 65 nagłówków \textit{*.h} i 63 plików źródłowych \textit{*.c}.
 
 Obecnie silnik składa się z następujących modułów:
 // TODO lista modułów, podkatalog i przeznaczenie
 
-Moduł jest dalej podzielony na \textbf{jednostki}, które zostały na potrzeby projektu zdefiniowana jako para składająca się z pliku nagłówkowego z odpowiadającym plikiem źródłowymi o tej samej nazwie.
+Moduł jest dalej podzielony na jednostki, które zostały na potrzeby projektu zdefiniowane jako para składająca się z pliku nagłówkowego z odpowiadającym plikiem źródłowymi o tej samej nazwie.
 
 Pliki nagłówowe zawierają deklaracje funkcji, struktur oraz typów wyliczeniowych widocznych dla użytkownika końcowego i powinny być dołączone do programu przy użyciu dyrektywy \textit{\#include} preprocesora.
 Pliki źródłowe zawierają definicje deklaracji plika nagłówkowego i powinny być dołączone do programu używając argumentów kompilatora (jeśli dodawane są niezbudowane pliki źródłowe) bądź linkera (jeśli dodawane są zbudowane pliki biblioteczne), co jest automatycznie wykonywane przez CMake.
@@ -257,7 +257,7 @@ Relacje pomiędzy modułami silnika i ich najważniejszymi jednostkami są przed
 		\node ()[above=0cm of rendering] {\textbf{Renderer}};
 		
 	\end{tikzpicture}
-	\caption{Relacje pomiędzy modułam silnika i ich najważniejszymi klasami}
+	\caption{Relacje pomiędzy modułam silnika i ich najważniejszymi klasami (opracowanie własne)}
 	\label{archit}
 \end{figure}
 
@@ -287,7 +287,7 @@ Poniżej wymieniono stałe, ich wartości oraz interpretacje:
 	\item \textit{FRAMES\_IN\_FLIGHT}: $2$, liczba klatek "w locie" (ang. in flight frames), czyli jednocześnie renderowanych przez GPU, domyślna wartość pozwala na podwójne buforowanie; 
 	\item \textit{MAX\_OFFSCREEN\_TEXTURE\_COUNT}: $16$, maksymalna liczbę tekstur pozaekranowych;
 	\item \textit{MAX\_RENDER\_TARGET\_COUNT}: $8$, maksymalną liczbę tekstur pozaekranowych, które mogą być używane jako cele renderowania podczas jednego przebiegu; 
-	\item \textit{MAX\_FRAMEBUFFER\_ATTACHMENT\_COUNT}: $MAX_RENDER_TARGET_COUNT + 1 + 1$, maksymalna liczba dołączeń używana przez potok graficzny - wystarcza na dołączenia celów renderowania, prezentowalnego obrazu i bufor głębi;
+	\item \textit{MAX\_FRAMEBUFFER\_ATTACHMENT\_COUNT}: \textit{MAX\_RENDER\_TARGET\_COUNT + 1 + 1}, maksymalna liczba dołączeń używana przez potok graficzny - wystarcza na dołączenia celów renderowania, prezentowalnego obrazu i bufor głębi;
 	\item \textit{MAX\_INDIRECT\_DRAW\_COMMAND\_COUNT}: $1024$, maksymalna liczba poleceń rysowania które mogą być wykonana przez jedno polecenie rysowania pośredniego;
 	\item \textit{MAX\_MATERIAL\_COUNT}: $128$, maksymalna liczba materiałów;
 	\item \textit{MAX\_DIRECTIONAL\_LIGHT\_COUNT}: $1$, maksymalna liczbę świateł kierunkowych na scenie;
@@ -343,7 +343,7 @@ int key_to_glfw_key(key value) {
 	}
 }
 \end{lstlisting}
-X makra ułatwiają utrzymywanie kodu poprzez deklaratywnego "jedynego źródła prawdy" i są intensywnie używane na wskroś silnika.
+X makra ułatwiają utrzymywanie kodu poprzez deklaratywnego "jedynego źródła prawdy"\  i są intensywnie używane na wskroś silnika.
 
 \subsubsection{Jednostka globals}
 Obiekt globalny \textit{globals} reprezentujący wygenerowane zmienne.
@@ -558,7 +558,7 @@ komunikat #3
 \end{verbatim}
 
 \subsubsection{Jednostka junk}
-Proste funkcje i makra które mogą być potencjalnie używane na wskroś wszystkich modułów w całej bibliotece, ale nie zostały uznane za wystarczająca skomplikowane, aby uzasadnić wydzielenia do osobnej jednostki.
+Proste funkcje i makra które mogą być potencjalnie używane we wszystkich modułach bibliteki, ale nie zostały uznane za wystarczająca skomplikowane, aby uzasadnić wydzielenia do osobnej jednostki.
 
 Jednostka definiuje stałe preprocesora \textit{PLATFORM\_*} używane do rozpoznania systemu operacyjnego, na którym budowany jest silnik (Linux, MacOS, Windows):
 \lstset{language=C}
@@ -605,8 +605,6 @@ if (type == directional) {
 }
 \end{lstlisting}
 
-Makro pomocnicze \textit{MACRO\_FOREACH()} jest używane w X makrach. // TODO więcej
-
 Jednostka definiuje też makra używające formy metaprogramowania w celu dodania nowych struktur kontrolnych \cite{METACONTROLC} upraszczających iterowanie po strukturach danych bibliteki \textit{uthash}:
 \lstset{language=C}
 \begin{lstlisting}
@@ -642,12 +640,12 @@ Wszystkie zasoby wejściowe które muszą być łatwo edytowalne przez użytkown
 Reszta zasobów wejściowych staje się częścią bazy zasobów będącej plikiem bazy danych SQLite.
 
 SQLite \cite{SQLITE} to biblioteka języka C implementująca silnik relacyjnej bazy danych SQL.
-Jest ona bardzo popularnym wyborem jako format pliku używany do utrwalania stanu aplikacji na dysku z wielu powodów, do których zalicza się prosta użycia, wysoka wydajności, bogata wewnętrzna struktura oferowana przez relacyjną bazę danych i formę łatwego do dystrybucji pojedyńczego samodzielnego pliku na dysku \cite{SQLITEAPPFORMAT}.
+Jest ona bardzo popularnym wyborem jako format pliku używany do utrwalania stanu aplikacji na dysku z wielu powodów, do których zalicza się prosta użycia, wysoka wydajności, bogata wewnętrzna struktura oferowana przez relacyjną bazę danych i formę łatwego do dystrybucji pojedynczego samodzielnego pliku na dysku \cite{SQLITEAPPFORMAT}.
 
 Moduł I/O zawiera obiekty używane do wczytywania i zapisywania powyższych zasobów wraz z walidacją ich formatu i wewnętrznej struktury - interpretacją danych zajmują się dalsze moduły.
 
 \subsubsection{Jednostka config}
-Obiekt \textit{config} reprezentujący pojedyńczy plik INI zawierający jeden z dwóch rodzajów konfiguracji: konfigurację globalną lub konfigurację zasobów.
+Obiekt \textit{config} reprezentujący pojedynczy plik INI zawierający jeden z dwóch rodzajów konfiguracji: konfigurację globalną lub konfigurację zasobów.
 
 \textbf{Konfiguracja globalna} jest ładowana na samym początku inicjalizacji silnika i pozwala użytkownikowi na sterowanie jego działania poprzez zmianę następujących zmiennych:
 \begin{itemize}
@@ -790,7 +788,7 @@ Relacje pomiędzy nimi są inspirowane formatem glTF i zostały pokazane na poni
 		\draw [refers] (asset_font) edge[] (asset_texture);
 		
 	\end{tikzpicture}
-	\caption{Relacje pomiędzy obiektami zasobów w silniku}
+	\caption{Relacje pomiędzy obiektami zasobów w silniku (opracowanie własne)}
 	\label{asset_data_relationships}
 \end{figure}
 
@@ -808,7 +806,7 @@ Ostateczna pozycja na scenie dla powyższych zasobów nie jest opisana bezpośre
 \subsubsection{Zasób siatki \textit{asset\_mesh}}
 Zasób siatki \textit{asset\_mesh} reprezentuje geometrię na scenie i składa się z listy prymitywów.
 Podział na siatkę i prymitywy ma na celu zmniejszenie redundancji - przykładowo siatka modelu auta może zawiarać 4 identyczne koła renderowanych 4 razy tym samym prymitywem.
-Siatka jest tożsama z geometrią pojedyńczego modelu przygotowanego w programie do modelowania 3D.
+Siatka jest tożsama z geometrią pojedynczego modelu przygotowanego w programie do modelowania 3D.
 
 \subsubsection{Zasób siatki \textit{asset\_primitive}}
 Zasób prymitywu \textit{asset\_primitive} reprezentuje część siatku obiektu.
@@ -833,7 +831,7 @@ Dodatkowo jeden zasób atrybutów jest używany do przechowywania indeksów wier
 Zasoby zawierają jedynie dane potrzebne do konstrukcji wierzchołków siatki - ostatecznie używany format wierzchołka (w tym rozdzielanie lub separacja atrybutów), tylko przez strumień wierzchołków \textit{vertex\_stream} w module renderera.
 
 \subsubsection{Zasób siatki \textit{asset\_vertex\_attribute}}
-Zasób atributu wierzchołka \textit{asset\_vertex\_attribute} reprezentuje dane pojedyńczego atrybutu przechowywane w postaci tablicy komponentów, których typ to \textit{uint32\_t}, \textit{vec2}, \textit{vec3} lub \textit{vec4}.
+Zasób atributu wierzchołka \textit{asset\_vertex\_attribute} reprezentuje dane pojedynczego atrybutu przechowywane w postaci tablicy komponentów, których typ to \textit{uint32\_t}, \textit{vec2}, \textit{vec3} lub \textit{vec4}.
 
 \subsubsection{Zasób siatki \textit{asset\_camera}}
 Zasób kamery \textit{asset\_camera} zawiera parametry, których część zależy od rodzaju używanego rzutu:
@@ -891,7 +889,7 @@ Poniższy obraz przedstawia przykładową teksturę dla czcionki Go-Mono \cite{G
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[width=0.5\textwidth]{images/font_texture.png}
-	\caption{Przykładowa tekstura dla czcionki Go-Mono \cite{GOMONOFONT}}
+	\caption{Przykładowa tekstura dla czcionki Go-Mono \cite{GOMONOFONT} (opracowanie własne)}
 	\label{font_texture}
 \end{figure}
 
@@ -949,7 +947,7 @@ asset_pipeline gltf "sponza" "/home/user/repo/cmake-build-debug/assets/gltf/spon
 // TODO Vulkan to moduł zawierajacy 
 
 \subsubsection{Jednostka shader}
-Obiekt \textit{shader} reprezentuje pojedyńczy shader i jest odpowiedzialny za kompilację ich do formy używalnej przez Vulkan.
+Obiekt \textit{shader} reprezentuje pojedynczy shader i jest odpowiedzialny za kompilację ich do formy używalnej przez Vulkan.
 
 Obiekt składa się z następujących elementów:
 \begin{itemize}
@@ -1055,7 +1053,7 @@ Obiekty biorące udział w procesie konwersji sceny wraz z przepływem danych s�
 		// HIRO nodes
 		
 	\end{tikzpicture}
-	\caption{Obiekty biorące udział w procesie konwersji sceny wraz z przepływem danych}
+	\caption{Obiekty biorące udział w procesie konwersji sceny wraz z przepływem danych (opracowanie własne)}
 	\label{scene_process}
 \end{figure}
 
