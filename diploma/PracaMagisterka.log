@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  28 SEP 2022 16:33
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  28 SEP 2022 21:29
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1623,17 +1623,23 @@ Missing character: There is no s ("73) in font nullfont!
 
  (./chapters/5_badania.tex
 Rozdzia\l  4.
-) [58
+File: images/render_metalroughspheres.png Graphic file (type bmp)
+<images/render_metalroughspheres.png>
+File: images/render_damagedhelmet.png Graphic file (type bmp)
+<images/render_damagedhelmet.png>
+File: images/render_sponza.png Graphic file (type bmp)
+<images/render_sponza.png>
+[58
 
 
 
 
-]
+]) [59]
 \openout2 = `chapters/6_podsumowanie.aux'.
 
  (./chapters/6_podsumowanie.tex
 Rozdzia\l  5.
-) [59
+) [60
 
 
 
@@ -1650,23 +1656,23 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 9.37807pt on input line 3.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 7.29405pt on input line 3.
- [60
+ [61
 
 
 
 
-] [61] (./PracaMagisterka.lof)
+] [62] (./PracaMagisterka.lof)
 \tf@lof=\write7
 \openout7 = `PracaMagisterka.lof'.
 
- [62
+ [63
 
 ]
 (./PracaMagisterka.lot)
 \tf@lot=\write8
 \openout8 = `PracaMagisterka.lot'.
 
-) [63
+) [64
 
 ] (./PracaMagisterka.aux
 (./chapters/0a_streszczenie.aux) (./chapters/0b_spis_tresci.aux)
@@ -1674,19 +1680,25 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (./chapters/2_wprowadzenie_do_dziedziny.aux)
 (./chapters/3_technologie_algorytmy_narzedzia.aux) (./chapters/5_badania.aux)
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
-Package rerunfilecheck Info: File `PracaMagisterka.out' has not changed.
-(rerunfilecheck)             Checksum: 378F3F26FD5FB15460E32AF645BA9C2E;8797.
+
+Package rerunfilecheck Warning: File `PracaMagisterka.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `PracaMagisterka.out':
+(rerunfilecheck)             Before: F3ABA0253867195B14C69181E1C5048F;8943
+(rerunfilecheck)             After:  330F589721337A4192BA135D04309D25;9089.
 Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 \openout1 = `PracaMagisterka.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 40348 strings out of 476191
- 834203 string characters out of 5812072
- 1602519 words of memory out of 5000000
- 60420 multiletter control sequences out of 15000+600000
+ 40376 strings out of 476191
+ 835093 string characters out of 5812072
+ 1602797 words of memory out of 5000000
+ 60445 multiletter control sequences out of 15000+600000
  488903 words of font info for 105 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 88i,15n,91p,1516b,6445s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 88i,15n,91p,1516b,6443s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on PracaMagisterka.pdf (63 pages).
+Output written on PracaMagisterka.pdf (64 pages).

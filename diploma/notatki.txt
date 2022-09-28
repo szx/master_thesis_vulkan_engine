@@ -1,5 +1,5 @@
 HIRO dodaj stronę tytułową (moja pg nie generuje)
-HIRO zamień fragmenty kodu na listingi i odwoływuj się po numerze
+HIRO odwoływuj się po numerze do listingów
 HIRO mniej opisowach kod
 
 

@@ -118,8 +118,10 @@
 \contentsline {subsubsection}{Drzewo sceny scene\textunderscore \allowbreak tree}{57}{subsubsection*.84}%
 \contentsline {subsection}{\numberline {3.3.7}Renderer}{57}{subsection.3.3.7}%
 \contentsline {chapter}{\numberline {4}Badania}{58}{chapter.4}%
-\contentsline {chapter}{\numberline {5}Podsumowanie}{59}{chapter.5}%
-\contentsline {chapter}{Wykaz literatury}{61}{chapter*.85}%
-\contentsline {chapter}{Spis rysunk\'ow}{62}{chapter*.86}%
-\contentsline {chapter}{Spis tablic}{63}{chapter*.87}%
+\contentsline {section}{\numberline {4.1}Przykładowe sceny}{58}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Przykładowe sceny}{59}{section.4.2}%
+\contentsline {chapter}{\numberline {5}Podsumowanie}{60}{chapter.5}%
+\contentsline {chapter}{Wykaz literatury}{62}{chapter*.88}%
+\contentsline {chapter}{Spis rysunk\'ow}{63}{chapter*.89}%
+\contentsline {chapter}{Spis tablic}{64}{chapter*.90}%
 \contentsfinish 

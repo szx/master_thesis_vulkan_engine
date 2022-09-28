@@ -3,7 +3,7 @@
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {2.1}{\ignorespaces Kolejność inicjalizacji podstawowych obiektów Vulkan (opracowanie własne)\relax }}{12}{figure.caption.10}%
 \contentsline {figure}{\numberline {2.2}{\ignorespaces Warstwowa architektura biblioteki Vulkan (opracowanie własne na podstawie \blx@tocontentsinit {0}\cite {VULKANLOADER})\relax }}{12}{figure.caption.12}%
-\contentsline {figure}{\numberline {2.3}{\ignorespaces Obraz 2D 1024x1024 z modelu Sponza \blx@tocontentsinit {0}\cite {GLTFSAMPLEMODELS} i jego 10 mipmap (opracowanie własne)\relax }}{16}{figure.caption.21}%
+\contentsline {figure}{\numberline {2.3}{\ignorespaces Obraz 2D 1024x1024 z sceny Sponza \blx@tocontentsinit {0}\cite {GLTFSAMPLEMODELS} i jego 10 mipmap (opracowanie własne)\relax }}{16}{figure.caption.21}%
 \contentsline {figure}{\numberline {2.4}{\ignorespaces Cykl życia obrazu łańcucha wymiany (opracowanie własne)\relax }}{18}{figure.caption.23}%
 \contentsline {figure}{\numberline {2.5}{\ignorespaces Relacje pomiędzy obiektami Vulkan używanymi do zarządzania deskryptorami (opracowanie własne)\relax }}{23}{figure.caption.34}%
 \contentsline {figure}{\numberline {2.6}{\ignorespaces Tradycyjne tekstury z dowiązaniami używające jednolitego indeksu w stałej push (opracowanie własne)\relax }}{29}{figure.caption.37}%
@@ -18,5 +18,8 @@
 \contentsline {figure}{\numberline {3.4}{\ignorespaces Przykładowa tekstura dla czcionki Go-Mono \blx@tocontentsinit {0}\cite {GOMONOFONT} (opracowanie własne)\relax }}{53}{figure.caption.73}%
 \contentsline {figure}{\numberline {3.5}{\ignorespaces Obiekty biorące udział w procesie konwersji sceny wraz z przepływem danych (opracowanie własne)\relax }}{56}{figure.caption.81}%
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Wynik renderowania sceny MetalRoughSpheres (opracowanie własne)\relax }}{58}{figure.caption.85}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Wynik renderowania sceny DamagedHelmet (opracowanie własne)\relax }}{59}{figure.caption.86}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Wynik renderowania sceny Sponza (opracowanie własne)\relax }}{59}{figure.caption.87}%
 \addvspace {10\p@ }
 \contentsfinish 
