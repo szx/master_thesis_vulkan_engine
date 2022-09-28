@@ -17,7 +17,7 @@ vec3 viewPosition = (global[globalIdx].viewMat * vec4(worldPosition, 1.0)).xyz;
 vec3 viewNormal = (global[globalIdx].viewMat * vec4(worldNormal, 1.0)).xyz;
 
 assert(worldPosition != vec3(0));
-debugPrintfEXT("worldPosition: %v3f, viewPosition: %v3f, projPosition: %v4f", worldPosition, viewPosition, global[globalIdx].projMat * vec4(viewPosition, 1.0));
+//debugPrintfEXT("worldPosition: %v3f, viewPosition: %v3f, projPosition: %v4f", worldPosition, viewPosition, global[globalIdx].projMat * vec4(viewPosition, 1.0));
 
 // NOTE: https://theorangeduck.com/page/pure-depth-ssao
 // NOTE: https://github.com/SaschaWillems/Vulkan/blob/master/data/shaders/glsl/ssao/ssao.frag
