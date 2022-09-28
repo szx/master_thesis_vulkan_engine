@@ -16,18 +16,18 @@ MAX_MATERIAL_COUNT = 128
 MAX_DIRECTIONAL_LIGHT_COUNT = 1
 MAX_POINT_LIGHT_COUNT = 128
 MAX_TEXT_CHARACTER_COUNT = 256
-MIN_DELTA_TIME = (1.0 / 60.0)
+MIN_DELTA_TIME = (1.0 / 30.0)
 WORLD_UP = 0, 1, 0
 
 [GLOBAL.CONFIG]
-graphics.WindowWidth = 640
-graphics.WindowHeight = 480
-graphics.WindowTitle = "cpptest"
+graphics.WindowWidth = 1600
+graphics.WindowHeight = 900
+graphics.WindowTitle = "engine"
 graphics.EnabledInstancing = 1
 graphics.MaxPrimitiveElementCount = 1000
 graphics.Font = "Go-Mono"
 controls.Enabled = 1
-settings.StartScene = "MetalRoughSpheresNoTextures"
+settings.StartScene = "MetalRoughSpheres"
 
 [ASSET.CONFIG]
 skybox.Name = "skybox1"

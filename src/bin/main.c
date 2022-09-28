@@ -136,7 +136,7 @@ void update_func(renderer *renderer, double fps, double dt) {
   }
   utstring_clear(fontState->text);
   if (fontState->debugTextEnabled) {
-    utstring_printf(fontState->text, "FPS: %.2f\ndt: %.2f", fps, dt);
+    utstring_printf(fontState->text, "FPS: %.2f\n", fps);
   }
 
   /* save scane */
@@ -193,25 +193,27 @@ int main(int argc, char *argv[]) {
   render_graph_add_image_resource(renderer->renderGraph, "gBuffer1", image_type_offscreen_f16);
   render_graph_add_image_resource(renderer->renderGraph, "gBuffer2", image_type_offscreen_f16);
   render_graph_add_image_resource(renderer->renderGraph, "ssaoRaw", image_type_offscreen_r8);
-  render_graph_add_image_resource(renderer->renderGraph, "ssaoBlurred", image_type_offscreen_r8);
 
-  render_graph_add_render_pass(
-      renderer->renderGraph,
-      (render_pass_desc){.vertexShader = "forward_vertex.glsl",
-                         .fragmentShader = "forward_fragment.glsl",
-                         .useOnscreenColorAttachment = true,
-                         .onscreenClearValue = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}},
-                         .offscreenColorAttachmentCount = 0,
-                         .offscreenDepthAttachment =
-                             {
-                                 .name = "depthBuffer",
-                                 .depthWriteEnable = true,
-                                 .depthTestEnable = true,
-                                 .depthTestOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
-                                 .clearValue = {0.0f, 0},
-                             },
-                         .colorBlendingType = color_blending_type_none,
-                         .recordFunc = render_pass_record_primitive_geometry_draws});
+  /*
+    // forward renderer
+    render_graph_add_render_pass(
+        renderer->renderGraph,
+        (render_pass_desc){.vertexShader = "forward_vertex.glsl",
+                           .fragmentShader = "forward_fragment.glsl",
+                           .useOnscreenColorAttachment = true,
+                           .onscreenClearValue = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}},
+                           .offscreenColorAttachmentCount = 0,
+                           .offscreenDepthAttachment =
+                               {
+                                   .name = "depthBuffer",
+                                   .depthWriteEnable = true,
+                                   .depthTestEnable = true,
+                                   .depthTestOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
+                                   .clearValue = {0.0f, 0},
+                               },
+                           .colorBlendingType = color_blending_type_none,
+                           .recordFunc = render_pass_record_primitive_geometry_draws});
+  */
 
   render_graph_add_render_pass(
       renderer->renderGraph,
