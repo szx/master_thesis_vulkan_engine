@@ -74,15 +74,15 @@ Nagłówek \textit{vulkan.h} dołącza funkcje, struktury, typy wyliczeniowe i s
 	\item \textit{Vk}: struktury i typy wyliczeniowe (np. \textit{VkPipeline} i  \textit{VkPipelineBindPoint}),
 	\item \textit{VK\_}: wyliczenia i stałe (np. \textit{VK\_PIPELINE\_BIND\_POINT\_GRAPHICS} i \textit{VK\_NULL\_HANDLE}),
 \end{itemize}
-W imię zwięzłości dalej w pracy części nazwy będą pomijane jeśli można je wywnioskować z kontekstu - przykładowo \textit{VK\_PIPELINE\_STAGE\_COLOR\_ATTACHMENT\_OUTPUT\_BIT} może być zapisywany jako etap potoku \textit{COLOR\_ATTACHMENT\_OUTPUT}.
+W imię zwięzłości dalej w pracy części nazwy będą pomijane jeśli można je wywnioskować z kontekstu. Przykładowo \textit{VK\_PIPELINE\_STAGE\_COLOR\_ATTACHMENT\_OUTPUT\_BIT} może być zapisywany jako etap potoku \textit{COLOR\_ATTACHMENT\_OUTPUT}.
 
 Funkcje \textit{vkCmd*()} są nazywane poleceniami.
 Mogą być one używane tylko pomiędzy wywołaniami funkcji \textit{vkBeginCommandBuffer()} i \textit{vkEndCommandBuffer()}. Ich wywołanie nagrywa polecenie, czyli dodaje instrukcje przeznaczone do wykonania na GPU do bufora poleceń.
 Przykładowo polecenie \textit{vkCmdCopyBufferToImage} nagrywa operację kopiowania bufora do obrazu.
 
-Funkcje \textit{vkEnumerate*()} i \textit{vkGet*()} służą do odpytywania właściwości obiektów - przykładowo funkcja \textit{vkGetPhysicalDeviceQueueFamilyProperties()} raportuje właściwości rodzin kolejek udostępnianych przez dane urządzenie fizyczne.
+Funkcje \textit{vkEnumerate*()} i \textit{vkGet*()} służą do odpytywania właściwości obiektów. Przykładowo funkcja \textit{vkGetPhysicalDeviceQueueFamilyProperties()} raportuje właściwości rodzin kolejek udostępnianych przez dane urządzenie fizyczne.
 
-Nowe elementy nagłówka wprowadzane przez rozszerzenia kończą się przyrostkami - przykładowo rozszerzenie \textit{VK\_NV\_device\_diagnostic\_checkpoints} wprowadza funkcję \textit{vkCmdSetCheckpointNV} używającą struktury \textit{VkCheckpointDataNV}.
+Nowe elementy nagłówka wprowadzane przez rozszerzenia kończą się przyrostkami. Przykładowo rozszerzenie \textit{VK\_NV\_device\_diagnostic\_checkpoints} wprowadza funkcję \textit{vkCmdSetCheckpointNV} używającą struktury \textit{VkCheckpointDataNV}.
 
 \subsubsection{Model obiektów}
 
@@ -90,7 +90,7 @@ Wszystkie obiekty Vulkan mogą być albo tworzone funkcją \textit{vkCreate*()
 
 Tworzenie obiektu wymaga przygotowania struktury informacji tworzenia \textit{Vk*CreateInfo}:
 \lstset{language=C}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Tworzenie obiektu Vulkan},captionpos=b]
 Vk*CreateInfo createInfo = {
 	.sType = VK_STRUCTURE_TYPE_*_CREATE_INFO;
 	.flags = ...,
@@ -104,7 +104,7 @@ assert(vkCreate*(..., &createInfo, ..., &object) == VK_SUCCESS);
 
 Alokacja obiektu wymaga przygotowania struktury informacji alokacji \textit{Vk*AllocateInfo}:
 \lstset{language=C}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Alokacja obiektu Vulkan},captionpos=b]
 Vk*Pool pool;
 
 Vk*AllocateInfo allocInfo = {
@@ -308,7 +308,7 @@ Każda kolejka należy do pewnej rodziny kolejek (\textit{VkQueueFlagBits}) sygn
 	\item \textit{SPARSE\_BINDING}: kolejka zasobów chronionych, wspiera funkcję \textit{vkQueueBindSparse()} dowiązującą do zasobu indywidualne strony pamięci,
 	\item \textit{PROTECTED}: kolejka pamięci chronionej, promowana w Vulkan 1.1, pozwala na ochronę pamięci zasobów.
 \end{itemize}
-Jedna kolejka może należeć do kilku rodzin - przykładowo kolejki graficzne i obliczeniowe zawsze wspierają operacje transferu.
+Jedna kolejka może należeć do kilku rodzin. Przykładowo kolejki graficzne i obliczeniowe zawsze wspierają operacje transferu.
 Sterowniki mogą wykonywać bufory poleceń wysłane do różnych kolejek asynchronicznie zapewniając skalowanie na wielordzeniowych GPU, dlatego warto pomyśleć o użyciu osobnych kolejek transferu, graficznych i obliczeniowych do kopiowania danych i przeplatania poleceń rysowania z obliczeniami GPGPU - pamiętając, że narzut związany z synchronizacją może zniwelować poprawy wydajności.
 
 Uchwyt kolejki urządzenia logicznego jest uzyskiwany używając funkcji \textit{vkGetDeviceQueue()}.
@@ -724,7 +724,7 @@ Po dowiązaniu zbiorów deskryptorów i stałych push do bufora poleceń dostęp
 
 Przykładowo kwalifikator układu dla pojedynczego deskryptora typu UNIFORM\_BUFFER z dowiązania o numerze $x$ ze zbioru o numerze $y$ ma następującą formę:
 \lstset{language=GLSL}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Kwalifikator układu dla bufora uniform},captionpos=b]
 struct bufferStruct {
 	vec3 field1;
 	mat4 field2;
@@ -737,7 +737,7 @@ layout(scalar, set = y, binding = x) uniform bufferBlock {
 
 Analogicznie kwalifikator układu dla tablicy deskryptorów typu COMBINED\_IMAGE\_SAMPLER o rozmiarze $r$ z dowiązania o numerze $x$ ze zbioru o numerze $y$ próbkowanych obrazów 2D ma następującą formę:
 \lstset{language=GLSL}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Kwalifikator układu dla tablicy tekstur},captionpos=b]
 layout(set = y, binding = x) uniform sampler2D texture[r];
 \end{lstlisting}
 
@@ -754,7 +754,7 @@ Każdy kolejny standard pozwala na ciaśniejsze upakowanie pól, co skutkuje mni
 Układ pamięci scalar wymaga wsparcia funkcjonalności urządzenia Vulkan 1.2 \textit{scalarBlockLayout}, które w czasie pisania pracy jest wspierane przez więcej niż $98\%$ urządzeń \cite{GPUINFO}.
 Dodatkowo kod GLSL shadera musi posiadać następującą dyrektywę preprocesora:
 \lstset{language=GLSL}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Dyrektywa preprocesora dla układu pamięci skalar},captionpos=b]
 #extension GL_EXT_scalar_block_layout : require
 \end{lstlisting}
 
@@ -808,12 +808,12 @@ W czasie pisania pracy powyższe funkcjonalności są wspierane przez więcej n
 Niejednolite dynamiczne indeksowanie wymaga zadeklarowania rozszerzenia SPIR-V \textit{SPV\_EXT\_descriptor\_indexing}.
 Może być to uczynione z poziomu kodu GLSL przez dodanie następującej dyrektywy preprocesora:
 \lstset{language=GLSL}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Dyrektywa preprocesora dla niejednolitych indeksów},captionpos=b]
 #extension GL_EXT_nonuniform_qualifier : require
 \end{lstlisting}
 Dodatkowo każde użycie niejednolitego indeksu powinno być oznaczone funkcją \textit{nonuniformEXT}:
 \lstset{language=GLSL}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Próbkowanei używając niejednolitego indeksu},captionpos=b]
 vec4 color = texture(textures2D[nonuniformEXT(index)], uv);
 \end{lstlisting}
 
@@ -875,12 +875,12 @@ Wsparcie nieograniczonych tablic deskryptorów wymaga funkcjonalności urządzen
 
 Użycie tej funkcjonalności odbywa się poprzez pominięcie rozmiaru tablicy w kwalifikatorze układu w kodzie GLSL:
 \lstset{language=GLSL}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Kwalifikator układu dla nieograniczonej tablicy tekstur},captionpos=b]
 layout(set = y, binding = x) uniform sampler2D texture[];
 \end{lstlisting}
 Dostęp do zmiennej w GLSL się nie zmienia, ale wygenerowany kod SPIR-V używa rozszerzenia \textit{SPV\_EXT\_descriptor\_indexing} i typu \textit{OpTypeRuntimeArray} zamiast \textit{OpTypeArray}:
 \lstset{language=SPIRV}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Kod SPIR-V wygenerowany dla nieograniczonej tablicy deskryptorów},captionpos=b]
 OpCapability Shader
 OpCapability RuntimeDescriptorArray
 OpExtension "SPV_EXT_descriptor_indexing"
@@ -1356,7 +1356,8 @@ Hierarchiczne modelowanie to technika reprezentowania złożonych obiektów pole
 Każdy węzeł grafu sceny składa się z lokalnej transformacji przestrzeni świata, opcjonalnej referencji do renderowanej geometrii oraz listy węzłów potomne. Jeden z wezłów jest oznaczony jako korzeń.
 Emitowanie poleceń rysowania sprowadza się do rekurencyjengo przemierzania grafu sceny zaczynając od korzenia \cite{kosarevsky20213d}.
 Pseudokod:
-\begin{verbatim}
+\lstset{language=verbatim}
+\begin{lstlisting}[caption={Emitowanie poleceń rysowania na podstawie grafu sceny},captionpos=b]
 RenderujGrafSceny(węzeł):
   jeżeli węzeł.rodzic istnieje:
     węzeł.globalnaTransformacja = węzeł.rodzic.globalnaTransformacja * węzeł.lokalnaTransformacja
@@ -1365,7 +1366,7 @@ RenderujGrafSceny(węzeł):
   WyemitujPolecenieRysowania(węzeł.geometria, węzeł.materiał, węzeł.globalnaTransformacja)
   dla każdego węzła dziecko w węzeł.dzieci:
     RenderujGrafSceny(dziecko)
-\end{verbatim}
+\end{lstlisting}
 
 // HIRO diagram graf sceny -> polecenia rysowania
 

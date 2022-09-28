@@ -47,12 +47,12 @@
 \contentsline {section}{\numberline {2.2}Rozszerzenie VK\textunderscore \allowbreak EXT\textunderscore \allowbreak descriptor\textunderscore \allowbreak indexing}{24}{section.2.2}%
 \contentsline {subsection}{\numberline {2.2.1}Niejednolite dynamiczne indeksowanie deskryptorów}{24}{subsection.2.2.1}%
 \contentsline {subsection}{\numberline {2.2.2}Aktualizacja deskryptorów po dowiązaniu}{25}{subsection.2.2.2}%
-\contentsline {subsection}{\numberline {2.2.3}Dowiązanie deskryptora o zmiennej wielkości}{25}{subsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.2.3}Dowiązanie deskryptora o zmiennej wielkości}{26}{subsection.2.2.3}%
 \contentsline {subsection}{\numberline {2.2.4}Częściowo dowiązane deskryptory}{26}{subsection.2.2.4}%
 \contentsline {subsection}{\numberline {2.2.5}Nieograniczone tablice deskryptorów}{26}{subsection.2.2.5}%
 \contentsline {section}{\numberline {2.3}Przebiegi renderowania i potoki}{27}{section.2.3}%
 \contentsline {subsection}{\numberline {2.3.1}Moduły shaderów}{27}{subsection.2.3.1}%
-\contentsline {subsection}{\numberline {2.3.2}Rozszerzenie VK\textunderscore \allowbreak EXT\textunderscore \allowbreak dynamic\textunderscore \allowbreak rendering}{27}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.2}Rozszerzenie VK\textunderscore \allowbreak EXT\textunderscore \allowbreak dynamic\textunderscore \allowbreak rendering}{28}{subsection.2.3.2}%
 \contentsline {section}{\numberline {2.4}Renderowanie bez dowiązań}{28}{section.2.4}%
 \contentsline {subsection}{\numberline {2.4.1}Tekstury bez dowiązań}{28}{subsection.2.4.1}%
 \contentsline {subsection}{\numberline {2.4.2}Geometria bez dowiązań}{30}{subsection.2.4.2}%
@@ -81,45 +81,45 @@
 \contentsline {section}{\numberline {3.3}Implementacja}{39}{section.3.3}%
 \contentsline {subsection}{\numberline {3.3.1}Wygenerowany kod}{39}{subsection.3.3.1}%
 \contentsline {subsubsection}{Jednostka constants}{40}{subsubsection*.51}%
-\contentsline {subsubsection}{Jednostka globals}{41}{subsubsection*.52}%
+\contentsline {subsubsection}{Jednostka globals}{42}{subsubsection*.52}%
 \contentsline {subsubsection}{Jednostka macros}{42}{subsubsection*.53}%
 \contentsline {subsubsection}{Jednostka meta}{43}{subsubsection*.54}%
 \contentsline {subsubsection}{Jednostka descriptors}{43}{subsubsection*.55}%
 \contentsline {subsection}{\numberline {3.3.2}Rdzeń}{45}{subsection.3.3.2}%
 \contentsline {subsubsection}{Jednostka thirdparty}{45}{subsubsection*.56}%
 \contentsline {subsubsection}{Jednostka alloc}{45}{subsubsection*.57}%
-\contentsline {subsubsection}{Jednostka log}{45}{subsubsection*.58}%
+\contentsline {subsubsection}{Jednostka log}{46}{subsubsection*.58}%
 \contentsline {subsubsection}{Jednostka junk}{46}{subsubsection*.59}%
 \contentsline {subsubsection}{Jednostka platform}{47}{subsubsection*.60}%
-\contentsline {subsection}{\numberline {3.3.3}I/O}{47}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.3}I/O}{48}{subsection.3.3.3}%
 \contentsline {subsubsection}{Jednostka config}{48}{subsubsection*.61}%
-\contentsline {subsubsection}{Jednostka sql\textunderscore \allowbreak db}{48}{subsubsection*.62}%
-\contentsline {subsubsection}{Jednostka asset\textunderscore \allowbreak db}{48}{subsubsection*.63}%
+\contentsline {subsubsection}{Jednostka sql\textunderscore \allowbreak db}{49}{subsubsection*.62}%
+\contentsline {subsubsection}{Jednostka asset\textunderscore \allowbreak db}{49}{subsubsection*.63}%
 \contentsline {subsection}{\numberline {3.3.4}Zasoby}{49}{subsection.3.3.4}%
 \contentsline {subsubsection}{Zasób węzła \textit {asset\textunderscore \allowbreak object}}{50}{subsubsection*.65}%
-\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak mesh}}{50}{subsubsection*.66}%
-\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak primitive}}{50}{subsubsection*.67}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak mesh}}{51}{subsubsection*.66}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak primitive}}{51}{subsubsection*.67}%
 \contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak vertex\textunderscore \allowbreak attribute}}{51}{subsubsection*.68}%
 \contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak camera}}{51}{subsubsection*.69}%
-\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak direct\textunderscore \allowbreak light}}{51}{subsubsection*.70}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak direct\textunderscore \allowbreak light}}{52}{subsubsection*.70}%
 \contentsline {subsubsection}{Zasoby skybox \textit {asset\textunderscore \allowbreak skybox}}{52}{subsubsection*.71}%
 \contentsline {subsubsection}{Zasób czcionki \textit {asset\textunderscore \allowbreak font}}{52}{subsubsection*.72}%
 \contentsline {subsubsection}{Zasób materiału \textit {asset\textunderscore \allowbreak material}}{52}{subsubsection*.74}%
-\contentsline {subsubsection}{Zasób tekstury \textit {asset\textunderscore \allowbreak texture}}{52}{subsubsection*.75}%
+\contentsline {subsubsection}{Zasób tekstury \textit {asset\textunderscore \allowbreak texture}}{53}{subsubsection*.75}%
 \contentsline {subsubsection}{Zasób obrazu \textit {asset\textunderscore \allowbreak image}}{53}{subsubsection*.76}%
 \contentsline {subsubsection}{Zasób próbnika \textit {asset\textunderscore \allowbreak sampler}}{53}{subsubsection*.77}%
-\contentsline {subsubsection}{Potok zasobów asset\textunderscore \allowbreak pipeline}{53}{subsubsection*.78}%
-\contentsline {subsection}{\numberline {3.3.5}Vulkan}{53}{subsection.3.3.5}%
-\contentsline {subsubsection}{Jednostka shader}{53}{subsubsection*.79}%
-\contentsline {subsubsection}{Jednostka shader\textunderscore \allowbreak reflect}{54}{subsubsection*.80}%
+\contentsline {subsubsection}{Potok zasobów asset\textunderscore \allowbreak pipeline}{54}{subsubsection*.78}%
+\contentsline {subsection}{\numberline {3.3.5}Vulkan}{54}{subsection.3.3.5}%
+\contentsline {subsubsection}{Jednostka shader}{54}{subsubsection*.79}%
+\contentsline {subsubsection}{Jednostka shader\textunderscore \allowbreak reflect}{55}{subsubsection*.80}%
 \contentsline {subsection}{\numberline {3.3.6}Scena}{55}{subsection.3.3.6}%
-\contentsline {subsubsection}{Dane sceny scene\textunderscore \allowbreak data}{55}{subsubsection*.82}%
+\contentsline {subsubsection}{Dane sceny scene\textunderscore \allowbreak data}{56}{subsubsection*.82}%
 \contentsline {subsubsection}{Graf sceny scene\textunderscore \allowbreak graph}{56}{subsubsection*.83}%
-\contentsline {subsubsection}{Drzewo sceny scene\textunderscore \allowbreak tree}{56}{subsubsection*.84}%
-\contentsline {subsection}{\numberline {3.3.7}Renderer}{56}{subsection.3.3.7}%
-\contentsline {chapter}{\numberline {4}Badania}{57}{chapter.4}%
-\contentsline {chapter}{\numberline {5}Podsumowanie}{58}{chapter.5}%
-\contentsline {chapter}{Wykaz literatury}{60}{chapter*.85}%
-\contentsline {chapter}{Spis rysunk\'ow}{61}{chapter*.86}%
-\contentsline {chapter}{Spis tablic}{62}{chapter*.87}%
+\contentsline {subsubsection}{Drzewo sceny scene\textunderscore \allowbreak tree}{57}{subsubsection*.84}%
+\contentsline {subsection}{\numberline {3.3.7}Renderer}{57}{subsection.3.3.7}%
+\contentsline {chapter}{\numberline {4}Badania}{58}{chapter.4}%
+\contentsline {chapter}{\numberline {5}Podsumowanie}{59}{chapter.5}%
+\contentsline {chapter}{Wykaz literatury}{61}{chapter*.85}%
+\contentsline {chapter}{Spis rysunk\'ow}{62}{chapter*.86}%
+\contentsline {chapter}{Spis tablic}{63}{chapter*.87}%
 \contentsfinish 

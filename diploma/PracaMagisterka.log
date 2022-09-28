@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  28 SEP 2022 01:17
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  28 SEP 2022 16:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1150,32 +1150,32 @@ Package biblatex Warning: 'babel/polyglossia' detected but 'csquotes' missing.
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
 \openout1 = `PracaMagisterka.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 102.
-LaTeX Font Info:    ... okay on input line 102.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 102.
-LaTeX Font Info:    ... okay on input line 102.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 102.
-LaTeX Font Info:    ... okay on input line 102.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 102.
-LaTeX Font Info:    ... okay on input line 102.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 102.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 126.
+LaTeX Font Info:    ... okay on input line 126.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 126.
+LaTeX Font Info:    ... okay on input line 126.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 126.
+LaTeX Font Info:    ... okay on input line 126.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 126.
+LaTeX Font Info:    ... okay on input line 126.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 126.
 LaTeX Font Info:    Trying to load font information for TS1+cmr on input line 1
-02.
+26.
 
 (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 102.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 102.
-LaTeX Font Info:    ... okay on input line 102.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 102.
-LaTeX Font Info:    ... okay on input line 102.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 102.
-LaTeX Font Info:    ... okay on input line 102.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 102.
-LaTeX Font Info:    ... okay on input line 102.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 102.
-LaTeX Font Info:    ... okay on input line 102.
+LaTeX Font Info:    ... okay on input line 126.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 126.
+LaTeX Font Info:    ... okay on input line 126.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 126.
+LaTeX Font Info:    ... okay on input line 126.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 126.
+LaTeX Font Info:    ... okay on input line 126.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 126.
+LaTeX Font Info:    ... okay on input line 126.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 126.
+LaTeX Font Info:    ... okay on input line 126.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
@@ -1233,9 +1233,9 @@ Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'PracaMagisterka.bbl' found.
 
 (./PracaMagisterka.bbl)
-Package biblatex Info: Reference section=0 on input line 102.
-Package biblatex Info: Reference segment=0 on input line 102.
-Package hyperref Info: Link coloring OFF on input line 102.
+Package biblatex Info: Reference section=0 on input line 126.
+Package biblatex Info: Reference segment=0 on input line 126.
+Package hyperref Info: Link coloring OFF on input line 126.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
@@ -1248,9 +1248,9 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
 \c@section@level=\count477
 )
-LaTeX Info: Redefining \ref on input line 102.
-LaTeX Info: Redefining \pageref on input line 102.
-LaTeX Info: Redefining \nameref on input line 102.
+LaTeX Info: Redefining \ref on input line 126.
+LaTeX Info: Redefining \pageref on input line 126.
+LaTeX Info: Redefining \nameref on input line 126.
 
 (./PracaMagisterka.out) (./PracaMagisterka.out)
 \@outlinefile=\write5
@@ -1375,16 +1375,13 @@ Overfull \hbox (4.57751pt too wide) in paragraph at lines 75--76
 NDLE\TU/lmss/m/n/10 ), 
  []
 
-[9]
-Overfull \hbox (1.79755pt too wide) in paragraph at lines 85--86
-\TU/lmss/m/n/10 rozszerzenie \TU/lmss/m/sl/10 VK_NV_device_diagnostic_checkpoin
-ts \TU/lmss/m/n/10 wprowadza funkcję \TU/lmss/m/sl/10 vkCmdSetCheckpointNV \TU/
-lmss/m/n/10 uży-
- []
-
-(/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
+[9] (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2020/03/24 1.8d listings language file
-) [10] [11]
+)
+Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on i
+nput line 93.
+ [10]
+[11]
 Overfull \hbox (21.03754pt too wide) in paragraph at lines 230--231
  [][] 
  []
@@ -1439,9 +1436,13 @@ U/lmss/m/sl/10 vkCmdPushConstants()\TU/lmss/m/n/10 , \TU/lmss/m/sl/10 vkCmdBind
  []
 
 
-Overfull \hbox (31.53369pt too wide) in paragraph at lines 1368--1368
-[]    \TU/lmtt/m/n/9 węzeł.globalnaTransformacja = węzeł.rodzic.globalnaTransfo
-rmacja * węzeł.lokalnaTransformacja[] 
+Overfull \hbox (82.45863pt too wide) in paragraph at lines 1363--1364
+[][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (45.70863pt too wide) in paragraph at lines 1366--1367
+[][][][][][][][][][][][][][][][][][][][][] 
  []
 
 [34]) [35]
@@ -1526,23 +1527,24 @@ Overfull \hbox (18.23123pt too wide) in paragraph at lines 259--260
  [][] 
  []
 
-[39] [40] [41]
-Overfull \hbox (47.21346pt too wide) in paragraph at lines 376--377
-[][][][][][][][][][][][][][][][][][][][] 
+[39]
+LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10> not available
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 306.
+ [40] [41] [42]
+Overfull \hbox (56.20863pt too wide) in paragraph at lines 413--414
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][] 
  []
 
-[42]
-Overfull \hbox (7.90878pt too wide) in paragraph at lines 412--412
-[]\TU/lmtt/m/n/9 image = "key KEY, width INT, height INT, depth INT, channels I
-NT, type INT, data BYTE_ARRAY"[] 
+
+Overfull \hbox (19.45863pt too wide) in paragraph at lines 414--415
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-[43] [44] [45] [46] [47] [48]
-Overfull \hbox (5.21303pt too wide) in paragraph at lines 701--702
-[][][][][][][][][][][][][] 
- []
-
-[49]
+[43] [44]
+LaTeX Font Info:    Font shape `TU/lmss/m/it' in size <9> not available
+(Font)              Font shape `TU/lmss/m/sl' tried instead on input line 523.
+ [45] [46] [47] [48] [49]
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
@@ -1572,53 +1574,36 @@ Missing character: There is no ; ("3B) in font nullfont!
 File: images/font_texture.png Graphic file (type bmp)
 <images/font_texture.png>
 
-Overfull \hbox (6.48865pt too wide) in paragraph at lines 897--900
+Overfull \hbox (6.48865pt too wide) in paragraph at lines 898--901
 []\TU/lmss/m/n/10 Zasób materiału \TU/lmss/m/sl/10 asset_material \TU/lmss/m/n/
 10 reprezentuje parametry używanego podczas renderowania powierzchni
  []
 
 [52]
-Overfull \hbox (0.71416pt too wide) in paragraph at lines 924--925
+Overfull \hbox (0.71416pt too wide) in paragraph at lines 925--926
 []\TU/lmss/m/sl/10 addressModeU\TU/lmss/m/n/10 : tryb adresowania współrzędnych
  tekstur poza przedziałem $[]$ dla osi X (VkSam-
  []
 
 
-Overfull \hbox (0.47417pt too wide) in paragraph at lines 925--926
+Overfull \hbox (0.47417pt too wide) in paragraph at lines 926--927
 []\TU/lmss/m/sl/10 addressModeV\TU/lmss/m/n/10 : tryb adresowania współrzędnych
  tekstur poza przedziałem $[]$ dla osi Y (VkSam-
  []
 
-
-Overfull \hbox (22.08368pt too wide) in paragraph at lines 943--943
-[]\TU/lmtt/m/n/9 asset_pipeline cubemap "skybox1" "/home/user/repo/cmake-build-
-debug/assets/cubemap/skybox1" png[] 
- []
-
-
-Overfull \hbox (12.63368pt too wide) in paragraph at lines 943--943
-[]\TU/lmtt/m/n/9 asset_pipeline font "Go-Mono" "/home/sszczyrb/repo/cmake-build
--debug/assets/font/Go-Mono.ttf"[] 
- []
-
 [53]
-Overfull \hbox (11.21309pt too wide) in paragraph at lines 972--973
-[][][][][][][][][][][] 
+Overfull \hbox (71.95863pt too wide) in paragraph at lines 942--943
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (41.2134pt too wide) in paragraph at lines 973--975
-[][][][][][][][][][][][] 
+Overfull \hbox (61.45863pt too wide) in paragraph at lines 943--944
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (5.21303pt too wide) in paragraph at lines 986--987
-[][][][][][][][][][][][][][][][][] 
- []
-
-
-Overfull \hbox (29.21327pt too wide) in paragraph at lines 992--994
-[][][][][][][][][][][][][][][][][][][] 
+Overfull \hbox (8.95863pt too wide) in paragraph at lines 944--945
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 [54]
@@ -1633,12 +1618,12 @@ Missing character: There is no o ("6F) in font nullfont!
 Missing character: There is no d ("64) in font nullfont!
 Missing character: There is no e ("65) in font nullfont!
 Missing character: There is no s ("73) in font nullfont!
-[55]) [56]
+[55] [56]) [57]
 \openout2 = `chapters/5_badania.aux'.
 
  (./chapters/5_badania.tex
 Rozdzia\l  4.
-) [57
+) [58
 
 
 
@@ -1648,7 +1633,7 @@ Rozdzia\l  4.
 
  (./chapters/6_podsumowanie.tex
 Rozdzia\l  5.
-) [58
+) [59
 
 
 
@@ -1657,8 +1642,6 @@ Rozdzia\l  5.
 \openout2 = `chapters/7_wykazy.aux'.
 
  (./chapters/7_wykazy.tex
-LaTeX Font Info:    Font shape `TU/lmss/m/it' in size <9> not available
-(Font)              Font shape `TU/lmss/m/sl' tried instead on input line 3.
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
 (Font)              scaled to size 9.37807pt on input line 3.
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
@@ -1667,23 +1650,23 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 9.37807pt on input line 3.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 7.29405pt on input line 3.
- [59
+ [60
 
 
 
 
-] [60] (./PracaMagisterka.lof)
+] [61] (./PracaMagisterka.lof)
 \tf@lof=\write7
 \openout7 = `PracaMagisterka.lof'.
 
- [61
+ [62
 
 ]
 (./PracaMagisterka.lot)
 \tf@lot=\write8
 \openout8 = `PracaMagisterka.lot'.
 
-) [62
+) [63
 
 ] (./PracaMagisterka.aux
 (./chapters/0a_streszczenie.aux) (./chapters/0b_spis_tresci.aux)
@@ -1698,12 +1681,12 @@ Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 40173 strings out of 476191
- 832076 string characters out of 5812072
- 1602406 words of memory out of 5000000
- 60249 multiletter control sequences out of 15000+600000
- 488887 words of font info for 103 fonts, out of 8000000 for 9000
+ 40348 strings out of 476191
+ 834203 string characters out of 5812072
+ 1602519 words of memory out of 5000000
+ 60420 multiletter control sequences out of 15000+600000
+ 488903 words of font info for 105 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  88i,15n,91p,1516b,6445s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on PracaMagisterka.pdf (62 pages).
+Output written on PracaMagisterka.pdf (63 pages).

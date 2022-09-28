@@ -302,7 +302,7 @@ Wygenerowane stałe mogą być używane przez shadery - ich definicje są umiesz
 X makro to przydatna technika preprocessora pozwalająca na pisanie kodu, który jest automatycznie aktualizowany po zmienie danych opisywanych przez X makro \cite{XMACRO}.
 Przykładowo poniższa funkcja wymaga manualnej aktualizacji po zmianie używanego typu wyliczeniowego:
 \lstset{language=C}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Przykładowy kod przed zastosowaniem X makro},captionpos=b]
 typedef enum key {
 	key_space,
 	key_enter,
@@ -319,7 +319,7 @@ int key_to_glfw_key(key value) {
 \end{lstlisting}
 Ten sam kod używający X makro:
 \lstset{language=C}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Przykładowy kod po zastosowaniu X makro},captionpos=b]
 
 #define END_OF_KEYS
 #define KEYS(X, ...)			\
@@ -351,18 +351,19 @@ Ich wartości, w przeciwieństwie stałych, mogą być ustalone dopiero w czasie
 Obiekt jest używany do specyfikacji struktury różnych ścieżek katalogów i plików używanych przez silnik.
 
 Silnik używa poniższej sekcji konfiguracji generacji do opisania ścieżkek dla kolejno katalogu zasobów, konfiguracji globalnej, bazy zasobów, katalogu shaderów i ich współdzielonego kodu GLSL oraz pliku logowania:
-\begin{verbatim}
+\lstset{language=verbatim}
+\begin{lstlisting}[caption={Konfiguracja generacji zmiennych},captionpos=b]
 [GLOBALS]
 assetsDirname = assets
 assetDatabaseFilepath = ${assetsDirname}/data.db
 assetConfigFilepath = ${assetsDirname}/config.ini
-assetsShaderDirpath =${assetsDirname}/shaders
-assetsShaderCommonFilepath =${assetsShaderDirpath}/common.glsl
+assetsShaderDirpath = ${assetsDirname}/shaders
+assetsShaderCommonFilepath = ${assetsShaderDirpath}/common.glsl
 logFileName = log.txt
-\end{verbatim}
+\end{lstlisting}
 Powyższa konfiguracja generuje poniższą metodę init():
 \lstset{language=C}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Wynik generacji zmiennych},captionpos=b]
 void globals_create() {
 	globals.assetsDirname =
 		get_executable_dir_file_path("", "assets");
@@ -384,14 +385,16 @@ Zbiór X makr używanych przez moduł I/O obsługujący następujące zasoby wej
 
 Makra opisują wewnętrzną strukturę plików INI konfiguracji globalnej i konfiguracji zasobów: używane sekcje i ich dopuszczalne pary klucz-wartość z domyślnymi wartościami (liczby całkowite bądź ciągi znaków).
 Przykładowy fragment konfiguracji generatora opisujący konfiguracji globalnej:
-\begin{verbatim}
+\lstset{language=verbatim}
+\begin{lstlisting}[caption={Konfiguracja generacji konfiguracji globalnej},captionpos=b]
 [GLOBAL.CONFIG]
 graphics.WindowWidth = 640
 controls.Enabled = 1
 settings.StartScene = "sponza"
-\end{verbatim}
+\end{lstlisting}
 Powyższa konfiguracja pozwala silnikowi na sparsowanie poniższego pliku INI:
-\begin{verbatim}
+\lstset{language=verbatim}
+\begin{lstlisting}[caption={Przykładowa konfiguracja globalna},captionpos=b]
 [settings]
 StartScene = MetalRoughSpheresNoTextures
 
@@ -400,16 +403,17 @@ WindowWidth = 1024
 
 [controls]
 Enabled = 1 
-\end{verbatim}
+\end{lstlisting}
 
 Podobnie opisywana jest struktura bazy zasobów: typy podstawowe i ich odpowiedniki w języku C oraz tabele i ich kolumny. Ilustruje to poniższy fragment konfiguracji generatora:
-\begin{verbatim}
+\lstset{language=verbatim}
+\begin{lstlisting}[caption={Fragment konfiguracji generatora opisujący strukturę bazy zasobów},captionpos=b]
 [ASSET.DB]
 types = "BYTE:uint8_t, INT:uint32_t, FLOAT:float, TEXT:UT_string *, KEY:hash_t"
 image = "key KEY, width INT, height INT, depth INT, channels INT, type INT, data BYTE_ARRAY"
 sampler = "key KEY, magFilter INT, minFilter INT, addressWrapU INT, addressWrapV INT"
 texture = "key KEY, image KEY, sampler KEY"
-\end{verbatim}
+\end{lstlisting}
 
 Struktura zasobów wejściowych zostanie dokładniej opisana w dalszym podrozdziale o module I/O.
 
@@ -418,7 +422,7 @@ Funkcje pomocnicze wygenerowane na podstawie nagłówków silnika i Vulkan SDK.
 
 Dla każdego napotkanego typu wyliczeniowego \textit{EnumName} jest generowana jedna z poniższych funkcji:
 \lstset{language=C}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Wygenerowane funkcje dla typów wyliczeniowych},captionpos=b]
 const char *EnumName_debug_str(int value);
 void EnumName_debug_print(int flags, int indent);
 \end{lstlisting}
@@ -439,7 +443,7 @@ W zależności od nazwy dzielą się one na 3 rodziny:
 \end{itemize}
 Przykłady powyższych struktur:
 \lstset{language=C}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Przykładowe struktury w nagłówku descriptor opisujące wewnętrzną strukturę deskryptorów},captionpos=b]
 // stała push 'draw'
 typedef struct draw_push_constant_struct {
 	uint currentFrameInFlight;
@@ -464,7 +468,7 @@ Dlatego dla każdej sparsowanej struktury \textit{*\_struct} jest generowana ana
 Generowana jest też funkcja \textit{glsl\_add\_*()} dodająca do ciągu znaków z kodem GLSL definicje struktury i kwalifikator układu.
 Przykładowe wejście i wyjście generacji dla bufora uniform \textit{instances}:
 \lstset{language=C}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Przykładowe wejście i wyjście generacji dla bufora uniform},captionpos=b]
 // descriptor.h:
 typedef struct instances_uniform_buffer_struct {
 	mat4 modelMat;
@@ -513,7 +517,7 @@ Plik źródłowy obsługuje część bibliotek zewnętrznych składających się
 W przeciwieństwie do tradycyjnych bibliotek języka C w których kod jest podzielony na pliki nagłówkowe i źródłowe, w tym przypadku dostęp do definicji tradycyjnie znajdujących sę z plikach źródłowych jest uzyskiwany poprzez ponowne dołączenie nagłówka przy użyciu dyrektywy \textit{\#include} po wcześniejszym zdefiniowaniu odpowiedniego symbolu preprocesora.
 Przykładowo biblioteka \textit{cgltf} wymaga ponownego dołączenia nagłówka w następujący sposób:
 \lstset{language=C}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Przykład dołączenia implementacji bibliteki \textit{cgltf}},captionpos=b]
 #define CGLTF_IMPLEMENTATION
 #include "cgltf.h"
 \end{lstlisting}
@@ -540,7 +544,7 @@ Logowanie komuniaktu odbywa się poprzez grupę funkcji \textit{log\_*()}, gdzie
 
 Przykładowy kod demonstrujący logowanie:
 \lstset{language=C}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Demonstracja logowania},captionpos=b]
 log_create();
 log_debug("komunikat #%d", 1);
 log_debug("komunikat #%d", 2);
@@ -549,20 +553,21 @@ log_destroy();
 \end{lstlisting}
 
 Powyższy kod powinien zapisać do pliku \textit{log.txt} w katalogu z plikiem wykonywalnym komunikaty podobne do poniższych:
-\begin{verbatim}
+\lstset{language=verbatim}
+\begin{lstlisting}[caption={Wynik logowania},captionpos=b]
 [DEBUG] (/home/user/repo/src/main.c:45) main:
 komunikat #1
 komunikat #2
 [FATAL] (/home/user/repo/src/main.c:47) main:
 komunikat #3
-\end{verbatim}
+\end{lstlisting}
 
 \subsubsection{Jednostka junk}
 Proste funkcje i makra które mogą być potencjalnie używane we wszystkich modułach bibliteki, ale nie zostały uznane za wystarczająca skomplikowane, aby uzasadnić wydzielenia do osobnej jednostki.
 
 Jednostka definiuje stałe preprocesora \textit{PLATFORM\_*} używane do rozpoznania systemu operacyjnego, na którym budowany jest silnik (Linux, MacOS, Windows):
 \lstset{language=C}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Stałe preprocesora używane do rozpoznania systemu operacyjnego},captionpos=b]
 #if defined(__linux) || defined(__linux__) || defined(linux)
 #define PLATFORM_LINUX
 #elif defined(__APPLE__)
@@ -579,7 +584,7 @@ Funkcja \textit{count\_bits()} zlicza bity w liczbie całkowitej używając meto
 
 Makra \textit{HASH\_*} ukrywają detale użycie funkcji skrótu biblioteki \textit{xxHash}:
 \lstset{language=C}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Przykład użycia funkcji skrótu},captionpos=b]
 hash_t hash;
 HASH_START(hashState)
 HASH_UPDATE(hashState, &num, sizeof(num))
@@ -595,7 +600,7 @@ Jego definicja zależy od konfiguracji: w \textit{Debug} sprowadza się do aserc
 Przykładowo określenie nieosiągnalności przypadku domyślny instrukcji switch bądź bloku else informuje o
 kompletności sprawdzanych warunków:
 \lstset{language=C}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Przykład użycia makra UNREACHABLE},captionpos=b]
 if (type == directional) {
 	...
 } else if (type == point) {
@@ -607,7 +612,7 @@ if (type == directional) {
 
 Jednostka definiuje też makra używające formy metaprogramowania w celu dodania nowych struktur kontrolnych \cite{METACONTROLC} upraszczających iterowanie po strukturach danych bibliteki \textit{uthash}:
 \lstset{language=C}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Przykład iteracji używając makra utarray\_foreach\_elem\_deref},captionpos=b]
 utarray_foreach_elem_deref (tree_node *, node, tree->nodes) {
 	tree_set_dirty(tree, node);
 }
@@ -696,13 +701,9 @@ Obiekt \textit{asset\_db} reprezentuje bazę zasobów.
 Używa on wewnętrznie obiektu \textit{sql\_db} i podobnie jak w nim użyto X makro do dodania metod wyboru i umieszczania wartości dla specyficznej tabeli, kolumny i klucza.
 Przykładowo poniższy funkcja kod wybiera wartość FLOAT z tabeli \textit{directLight}, kolumny \textit{intensity} i klucza \textit{key}:
 \lstset{language=C}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Deserializacja i serializacja wartości zmiennoprzecinkowej},captionpos=b]
 float value =
 	asset_db_select_directLight_intensity_float(assetDb, key).value;
-\end{lstlisting}
-Analogicznie wygląda umieszczenie nowej wartości:
-\lstset{language=C}
-\begin{lstlisting}
 asset_db_insert_directLight_intensity_float(assetDb, key,
 	data_float_temp(value));
 \end{lstlisting}
@@ -805,7 +806,7 @@ Ostateczna pozycja na scenie dla powyższych zasobów nie jest opisana bezpośre
 
 \subsubsection{Zasób siatki \textit{asset\_mesh}}
 Zasób siatki \textit{asset\_mesh} reprezentuje geometrię na scenie i składa się z listy prymitywów.
-Podział na siatkę i prymitywy ma na celu zmniejszenie redundancji - przykładowo siatka modelu auta może zawiarać 4 identyczne koła renderowanych 4 razy tym samym prymitywem.
+Podział na siatkę i prymitywy ma na celu zmniejszenie redundancji. Przykładowo siatka modelu auta może zawiarać 4 identyczne koła renderowanych 4 razy tym samym prymitywem.
 Siatka jest tożsama z geometrią pojedynczego modelu przygotowanego w programie do modelowania 3D.
 
 \subsubsection{Zasób siatki \textit{asset\_primitive}}
@@ -880,7 +881,7 @@ Zasób czcionki \textit{asset\_font} jest opisuje czcionkę bitmapową używaną
 Składa się z:
 \begin{itemize}
 	\item nazwa: używana przez konfigurację globalną,
-	\item zasób tekstury: sk,
+	\item zasób tekstury,
 	\item alfabet: ciąg znaków ASCII,
 	\item rozmiar znaku: rozmiar jednego glifu w pikselach (uint32\_t).
 \end{itemize}
@@ -934,13 +935,14 @@ Potok zasobów składa się z dwóch części:
 
 Skrypt skanuje podkatalog z zasobami wejściowymi i wywołuje narzędzie z argumentami będącymi ścieżką zasoby wejściowego rodzajem konwertowanego zasobu wyjściowego.
 Przykładowo poniższy potok zasobów wywołuje narzędzie 5 razy tworząc pustą konfigurację globalną oraz pustą bazę zasobów wypełnioną zasobem skybox, zasobem czcionki Go-Mono oraz zasobami składającymi się na scenę Sponza opisanej plikiem glTF:
-\begin{verbatim}
+\lstset{language=verbatim}
+\begin{lstlisting}[caption={Komeny wywoływane przez przykładowy potok zasobów},captionpos=b]
 asset_pipeline empty_config
 asset_pipeline empty_assets
 asset_pipeline cubemap "skybox1" "/home/user/repo/cmake-build-debug/assets/cubemap/skybox1" png
 asset_pipeline font "Go-Mono" "/home/sszczyrb/repo/cmake-build-debug/assets/font/Go-Mono.ttf"
 asset_pipeline gltf "sponza" "/home/user/repo/cmake-build-debug/assets/gltf/sponza"
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{Vulkan}
 
@@ -966,7 +968,7 @@ Kod źródłowy GLSL must być znany podczas tworzenia - jest on uzyskiwany popr
 Kod bajtowy SPIR-V jest uzyskiwany poprzez kompilację kodu źródłowego GLSL biblioteką \textit{shaderc}.
 Jej użycie ilustruje poniższy kod:
 \lstset{language=C}
-\begin{lstlisting}
+\begin{lstlisting}[caption={Kompilacja kodu źródłowego GLSL biblioteką \textit{shaderc}},captionpos=b]
 shaderc_compiler_t compiler = shaderc_compiler_initialize();
 
 shaderc_compile_options_t options = shaderc_compile_options_initialize();
@@ -1060,7 +1062,7 @@ Obiekty biorące udział w procesie konwersji sceny wraz z przepływem danych s�
 \subsubsection{Dane sceny scene\_data}
 Obiekt \textit{scene\_data} reprezentuje dane sceny wczytane z bazy zasobów. Jest one używany przez moduł sceny do konstrukcji grafu sceny \textit{scene\_graph}.
 
-Obiekt utrzymuje on dla każdego typu obiektu zasobu osobną listę dwukierunkową zawierającą wszystkie obiekty używane przez scenę oraz ich domyślne warianty - przykładowo domyślny obraz \textit{asset\_image} to obraz 2D o rozmiarze 1x1 mający 4 8-bitowe komponenty o wartości 255.
+Obiekt utrzymuje on dla każdego typu obiektu zasobu osobną listę dwukierunkową zawierającą wszystkie obiekty używane przez scenę oraz ich domyślne warianty. Przykładowo domyślny obraz \textit{asset\_image} to obraz 2D o rozmiarze 1x1 mający 4 8-bitowe komponenty o wartości 255.
 
 Wśród wszystkich obiektów zasobów składających się na dane sceny dodatkowo wyróżnia się:
 \begin{itemize}

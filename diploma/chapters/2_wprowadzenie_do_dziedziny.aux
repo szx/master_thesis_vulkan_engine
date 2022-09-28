@@ -11,6 +11,8 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1.1}Podstawy API}{9}{subsection.2.1.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{Konwencje nazewnictwa}{9}{subsubsection*.8}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{Model obiektów}{10}{subsubsection*.9}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {2.1}Tworzenie obiektu Vulkan}{10}{lstlisting.2.1}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {2.2}Alokacja obiektu Vulkan}{10}{lstlisting.2.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1.2}Szkielet aplikacji graficznej}{11}{subsection.2.1.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1.3}Inicjalizacja podstawowych obiektów}{11}{subsection.2.1.3}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {2.1}{\ignorespaces Kolejność inicjalizacji podstawowych obiektów Vulkan (opracowanie własne)\relax }}{12}{figure.caption.10}\protected@file@percent }
@@ -50,16 +52,23 @@
 \@writefile{lof}{\contentsline {figure}{\numberline {2.5}{\ignorespaces Relacje pomiędzy obiektami Vulkan używanymi do zarządzania deskryptorami (opracowanie własne)\relax }}{23}{figure.caption.34}\protected@file@percent }
 \newlabel{descriptor_relations}{{2.5}{23}{Relacje pomiędzy obiektami Vulkan używanymi do zarządzania deskryptorami (opracowanie własne)\relax }{figure.caption.34}{}}
 \@writefile{toc}{\contentsline {subsubsection}{Dostęp do zasobów w shaderach}{23}{subsubsection*.35}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {2.3}Kwalifikator układu dla bufora uniform}{23}{lstlisting.2.3}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {2.4}Kwalifikator układu dla tablicy tekstur}{23}{lstlisting.2.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{Układ pamięci scalar dla buforów i stałych push}{23}{subsubsection*.36}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {2.5}Dyrektywa preprocesora dla układu pamięci skalar}{24}{lstlisting.2.5}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {2.2}Rozszerzenie VK\textunderscore \allowbreak  EXT\textunderscore \allowbreak  descriptor\textunderscore \allowbreak  indexing}{24}{section.2.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2.1}Niejednolite dynamiczne indeksowanie deskryptorów}{24}{subsection.2.2.1}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {2.6}Dyrektywa preprocesora dla niejednolitych indeksów}{25}{lstlisting.2.6}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {2.7}Próbkowanei używając niejednolitego indeksu}{25}{lstlisting.2.7}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2.2}Aktualizacja deskryptorów po dowiązaniu}{25}{subsection.2.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.3}Dowiązanie deskryptora o zmiennej wielkości}{25}{subsection.2.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.3}Dowiązanie deskryptora o zmiennej wielkości}{26}{subsection.2.2.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2.4}Częściowo dowiązane deskryptory}{26}{subsection.2.2.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2.5}Nieograniczone tablice deskryptorów}{26}{subsection.2.2.5}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {2.8}Kwalifikator układu dla nieograniczonej tablicy tekstur}{26}{lstlisting.2.8}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {2.9}Kod SPIR-V wygenerowany dla nieograniczonej tablicy deskryptorów}{27}{lstlisting.2.9}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {2.3}Przebiegi renderowania i potoki}{27}{section.2.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.3.1}Moduły shaderów}{27}{subsection.2.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.2}Rozszerzenie VK\textunderscore \allowbreak  EXT\textunderscore \allowbreak  dynamic\textunderscore \allowbreak  rendering}{27}{subsection.2.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.2}Rozszerzenie VK\textunderscore \allowbreak  EXT\textunderscore \allowbreak  dynamic\textunderscore \allowbreak  rendering}{28}{subsection.2.3.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {2.4}Renderowanie bez dowiązań}{28}{section.2.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.4.1}Tekstury bez dowiązań}{28}{subsection.2.4.1}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {2.6}{\ignorespaces Tradycyjne tekstury z dowiązaniami używające jednolitego indeksu w stałej push (opracowanie własne)\relax }}{29}{figure.caption.37}\protected@file@percent }
@@ -83,6 +92,7 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.8.3}Potok zasobów}{34}{subsection.2.8.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.8.4}Baza zasobów}{34}{subsection.2.8.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {2.9}Graf sceny}{34}{section.2.9}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {2.10}Emitowanie poleceń rysowania na podstawie grafu sceny}{34}{lstlisting.2.10}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {2.10}Graf renderowania}{35}{section.2.10}\protected@file@percent }
 \@setckpt{chapters/2_wprowadzenie_do_dziedziny}{
 \setcounter{page}{36}
@@ -234,7 +244,7 @@
 \setcounter{Hy@AnnotLevel}{0}
 \setcounter{bookmark@seq@number}{40}
 \setcounter{float@type}{8}
-\setcounter{lstnumber}{24}
+\setcounter{lstnumber}{9}
 \setcounter{section@level}{0}
-\setcounter{lstlisting}{0}
+\setcounter{lstlisting}{10}
 }
