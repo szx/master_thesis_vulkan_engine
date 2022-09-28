@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  28 SEP 2022 21:29
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  28 SEP 2022 23:57
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1268,7 +1268,12 @@ Underfull \hbox (badness 10000) in paragraph at lines 5--12
 
 
 
-]) [2
+])
+Underfull \hbox (badness 10000) in paragraph at lines 18--127
+
+ []
+
+[2
 
 ]
 \openout2 = `chapters/0b_spis_tresci.aux'.
@@ -1523,27 +1528,27 @@ Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 
-Overfull \hbox (18.23123pt too wide) in paragraph at lines 259--260
+Overfull \hbox (18.23123pt too wide) in paragraph at lines 262--263
  [][] 
  []
 
-[39]
+[39] [40]
 LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10> not available
-(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 306.
- [40] [41] [42]
-Overfull \hbox (56.20863pt too wide) in paragraph at lines 413--414
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 309.
+ [41] [42]
+Overfull \hbox (56.20863pt too wide) in paragraph at lines 416--417
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
 ][][] 
  []
 
 
-Overfull \hbox (19.45863pt too wide) in paragraph at lines 414--415
+Overfull \hbox (19.45863pt too wide) in paragraph at lines 417--418
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 [43] [44]
 LaTeX Font Info:    Font shape `TU/lmss/m/it' in size <9> not available
-(Font)              Font shape `TU/lmss/m/sl' tried instead on input line 523.
+(Font)              Font shape `TU/lmss/m/sl' tried instead on input line 526.
  [45] [46] [47] [48] [49]
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
@@ -1570,43 +1575,43 @@ Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
-[50] [51]
+[50] [51] [52]
 File: images/font_texture.png Graphic file (type bmp)
 <images/font_texture.png>
 
-Overfull \hbox (6.48865pt too wide) in paragraph at lines 898--901
+Overfull \hbox (6.48865pt too wide) in paragraph at lines 901--904
 []\TU/lmss/m/n/10 Zasób materiału \TU/lmss/m/sl/10 asset_material \TU/lmss/m/n/
 10 reprezentuje parametry używanego podczas renderowania powierzchni
  []
 
-[52]
-Overfull \hbox (0.71416pt too wide) in paragraph at lines 925--926
+[53]
+Overfull \hbox (0.71416pt too wide) in paragraph at lines 928--929
 []\TU/lmss/m/sl/10 addressModeU\TU/lmss/m/n/10 : tryb adresowania współrzędnych
  tekstur poza przedziałem $[]$ dla osi X (VkSam-
  []
 
 
-Overfull \hbox (0.47417pt too wide) in paragraph at lines 926--927
+Overfull \hbox (0.47417pt too wide) in paragraph at lines 929--930
 []\TU/lmss/m/sl/10 addressModeV\TU/lmss/m/n/10 : tryb adresowania współrzędnych
  tekstur poza przedziałem $[]$ dla osi Y (VkSam-
  []
 
-[53]
-Overfull \hbox (71.95863pt too wide) in paragraph at lines 942--943
+
+Overfull \hbox (71.95863pt too wide) in paragraph at lines 945--946
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (61.45863pt too wide) in paragraph at lines 943--944
+Overfull \hbox (61.45863pt too wide) in paragraph at lines 946--947
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (8.95863pt too wide) in paragraph at lines 944--945
+Overfull \hbox (8.95863pt too wide) in paragraph at lines 947--948
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-[54]
+[54] [55]
 Missing character: There is no / ("2F) in font nullfont!
 Missing character: There is no / ("2F) in font nullfont!
 Missing character: There is no H ("48) in font nullfont!
@@ -1618,7 +1623,7 @@ Missing character: There is no o ("6F) in font nullfont!
 Missing character: There is no d ("64) in font nullfont!
 Missing character: There is no e ("65) in font nullfont!
 Missing character: There is no s ("73) in font nullfont!
-[55] [56]) [57]
+[56]) [57]
 \openout2 = `chapters/5_badania.aux'.
 
  (./chapters/5_badania.tex
@@ -1686,8 +1691,8 @@ Package rerunfilecheck Warning: File `PracaMagisterka.out' has changed.
 (rerunfilecheck)                or use package `bookmark'.
 
 Package rerunfilecheck Info: Checksums for `PracaMagisterka.out':
-(rerunfilecheck)             Before: F3ABA0253867195B14C69181E1C5048F;8943
-(rerunfilecheck)             After:  330F589721337A4192BA135D04309D25;9089.
+(rerunfilecheck)             Before: 08D58D99BD3EC545F538E6F3AA20FEA7;9216
+(rerunfilecheck)             After:  5CBD66F7CC431085619BE54F8D820B95;9342.
 Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 \openout1 = `PracaMagisterka.run.xml'.
 
@@ -1695,7 +1700,7 @@ Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 Here is how much of TeX's memory you used:
  40376 strings out of 476191
  835093 string characters out of 5812072
- 1602797 words of memory out of 5000000
+ 1602818 words of memory out of 5000000
  60445 multiletter control sequences out of 15000+600000
  488903 words of font info for 105 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191

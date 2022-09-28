@@ -1,7 +1,24 @@
 \chapter{Podsumowanie}
 \label{chap:summary}
 
-// TODO
+Efektem niniejszej pracy jest silnik graficzny pozwalający na renderowanie używając cieniowania odroczonego i innych technik graficznych.
+Zrealizowano zamierzone cele dotyczące funkcjonalności silnika oraz zademonstrowano jego działanie poprzez wyrenderowanie przykładowych scen. Przeprowadzono testy wydajnościowe.
 
-// TODO streaming
-// TODO tekstury emissive
+\section{Dalszy rozwój}
+
+Projekt w obecnym kształcie nie został wykorzystany w grze komputerowej i powinien być rozpatrywany w kategoriach prototypu.
+Rozwój funkcjonalności silnika nie jest zakończony i w czasie realizacji projektu pojawiło się wiele pomysłów na ulepszenia.
+
+Silnik był napisany i przetestowany wyłącznie na systemie Linux, ale wieloplatformowa natura używanych narzędzi i bibliotek powinna pozwolić na dokonanie kompilacji skrośnej.
+
+Renderer odroczony w obecnym kształcie obsługuje tylko nieprzeźroczyste obiekty. Rysowanie obiektów przeźroczystych mogłoby być rozwiązane dodatkowym przebiegiem renderowania wprzód dla posortowanych obiektów z mieszaniem alfa. Bardziej dokładna, lecz wolniejsza, przeźroczystość dla skomplikowanej geometrii może być osiągnięta używając technik przeźroczystości niezależnej od kolejności (ang. order-independent transparency, OIT).
+
+Wszystkie zasoby są jednokrotnie kopiowane z GPU do CPU przed rozpoczęciem pętli głównej renderowania.
+Bardziej efektywnym pamięciowo podejściem byłoby przesyłanie strumieniowe zasobów polegające na ładowaniu ich tylko gdy są rzeczywiście używane do renderowania.
+
+Z przesyłaniem strumieniowym dobrze współpracują techniki usuwania niewidocznych powierzchni.
+Najprostszą do implementacji jest odrzucanie na CPU obiektów poza bryłą widzenia pozwalające na niewysyłanie nierenderowanej geometrii do GPU.
+Znacznie bardziej skomplikowane, ale zgodne z duchem renderowania bez dowiązań, jest usuwanie niewidocznych powierzchni na GPU. Może być ono zrealizowane w Vulkan używając shaderów obliczeń modyfikujących bufory pośrednie używane przez polecenia rysowania.
+
+Model oświetlenia może być rozszerzony o powierzchnie emitujące światło poprzez dodanie tekstur emisyjnych.
+Podobnie tekstury skybox mogą być użyte do mapowania środowiskowego symulującego odbicia światła dla połyskliwych powierzchni.

@@ -28,8 +28,9 @@ praktycznie standardem podczas rozwoju wieloplatformowych projektów.
 Proces budowania silnika jest zdefiniowany w pliku *CMakeLists.txt* znajdującym się w katalogu głównym projektu.
 
 Kompilacja kodu źródłowego w języku C jest obsługiwana bezpośrednio przez CMake, które generuje standardowe pliki
-kompilacji (pliki Makefile w systemie Unix, projekty Microsoft Visual C++ w systemie Windows). Użyto prekompilowanych
-nagłówków do przyśpieszenia kompilacji bibliotek zewnętrznych.
+kompilacji (pliki Makefile w systemie Linux, projekty Microsoft Visual C++ w systemie Windows).
+Silnik był napisany i przetestowany wyłącznie na systemie Linux, ale wieloplatformowa natura używanych narzędzi i bibliotek powinna pozwolić na dokonanie kompilacji skrośnej.
+Użyto prekompilowanych nagłówków do przyśpieszenia kompilacji bibliotek zewnętrznych.
 
 Skrypty w języku Python są obsługiwane pośrednio przez CMake, które wykrywa zainstalowany interpreter języka Python i
 używa go do stworzenia tzw. środowiska wirtualnego w tymczasowym katalogu venv/ w głównym katalogu projektu. Podczas
@@ -146,6 +147,8 @@ UndefinedBehaviorSanitizer) wykrywające szeroką klasę błędów dotyczących 
 Silnik jest zaprojektowany w duchu architektury modułowej - funkcjonalność biblioteki jest rozdzielona na bloki zwane modułami, które mogą być rozwijane niezależnie od pozostałych modułów.
 
 Silnik był rozwijany metodą \textit{bottom-up} - jego pierwsza iteracja była pojedynczym plikiem źródłowym wyświetlającym trójkąt \cite{VULKANTUTORIAL}, który w procesie dekompozycji i refaktoryzacji organicznie rozrósł się do 7 modułów znajdujących się w osobnych podkatalogach zawierających łącznie 9 skryptów Python \textit{.py}, 65 nagłówków \textit{*.h} i 63 plików źródłowych \textit{*.c}.
+
+// HIRO cele dotyczące funkcjonalności
 
 Obecnie silnik składa się z następujących modułów:
 // TODO lista modułów, podkatalog i przeznaczenie
