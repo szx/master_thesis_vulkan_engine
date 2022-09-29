@@ -29,6 +29,9 @@
 % Napraw marginesy
 \renewcommand\_{\textunderscore\allowbreak}
 
+% includepdf
+\usepackage{pdfpages}
+
 % listingi
 
 \usepackage{listings}
@@ -124,6 +127,7 @@
 
 % Część właściwa pracy
 \begin{document}
+\includepdf[pages=-]{StronaTytulowaPG}
 \include{chapters/0a_streszczenie}
 \include{chapters/0b_spis_tresci}
 \include{chapters/0c_wykaz_skrotow}
