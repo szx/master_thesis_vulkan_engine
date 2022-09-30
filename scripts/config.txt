@@ -27,7 +27,7 @@ graphics.EnabledInstancing = 1
 graphics.MaxPrimitiveElementCount = 1000
 graphics.Font = "Go-Mono"
 controls.Enabled = 1
-settings.StartScene = "MetalRoughSpheres"
+settings.StartScene = "Sponza"
 
 [ASSET.CONFIG]
 skybox.Name = "skybox1"
