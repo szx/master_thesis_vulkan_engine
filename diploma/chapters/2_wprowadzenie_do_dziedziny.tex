@@ -768,14 +768,14 @@ W przeciwieństwie do swoich poprzedników, układ scalar ma bardzo proste wymag
 Powyższe zasady skutkują maksymalnym upakowaniem pól dla buforów używających tylko standardowych 32-bitowych skalarów mających to samo wyrównanie, co obejmuje większość shaderów nieużywających rozszerzeń takich jak \textit{GL\_EXT\_shader\_16bit\_storage} wprowadzające 16-bitowe skalary.
 
 
-\section{Rozszerzenie VK\_EXT\_descriptor\_indexing}
+\subsection{Rozszerzenie VK\_EXT\_descriptor\_indexing}
 
 Rozszerzenie \textit{VK\_EXT\_descriptor\_indexing} wprowadziło szereg dodatkowych funkcjonalności pozwalających na tworzenie dużych zbiorów
 deskryptorów zawierających wszystkie zasoby używane przez program.
 Celem tego jest umożliwienie technik renderowania bez dowiązań. Z powodu swojej użyteczności rozszerzenie to zostało promowane w Vulkan 1.2.
 W kolejnych sekcjach opisano nowe funkcjonalości.
 
-\subsection{Niejednolite dynamiczne indeksowanie deskryptorów}
+\subsubsection{Niejednolite dynamiczne indeksowanie deskryptorów}
 
 Deskryptory są traktowane przez shadery jako tablice, do których dostęp odbywa się używając indeksu.
 
@@ -819,7 +819,7 @@ vec4 color = texture(textures2D[nonuniformEXT(index)], uv);
 
 Wymóg jednolitości podczas indeksowania deskryptorów był spowodowany ograniczeniami poprzednich generacji GPU - w modelu renderowania OpenGL dostęp do dowiązanych tekstur odbywał się pośrednio poprzez jednostki teksturujące, które były widoczne przez wszystkie wywołania shaderów i nie pozwalały na zmianę dołączonych tekstur podczas wykonywania polecenia rysowania \cite{GPUGEM4}. 
 
-\subsection {Aktualizacja deskryptorów po dowiązaniu}
+\subsubsection {Aktualizacja deskryptorów po dowiązaniu}
 
 Domyślnie deskryptory nie mogą być aktualizowane po nagraniu ich dowiązania w buforze poleceń, przez co aplikacja musi mieć kompletną wiedzę o wszystkich używanych zasobach w trakcie nagrywania buforów poleceń.
 Nie dotyczy to jednak deskryptorów używających funkcjonalności aktualizacji po dowiązaniu, co pozwala na elastyczniejsze zarządzanie zasobami poprzez odroczenie aktualizacji zbiorów deskryptorów aż do momentu bezpośrednio przed wykonaniem bufora poleceń.
@@ -841,7 +841,7 @@ Użycie tej funkcjonalności odbywa się poprzez stworzenia puli deskryptorów z
 
 Aplikacja musi zapewnić odpowiednią synchronizację - aktualizowane deskryptory nie mogą być używane przez potok graficzny w momencie aktualizacji.
 
-\subsection {Dowiązanie deskryptora o zmiennej wielkości}
+\subsubsection {Dowiązanie deskryptora o zmiennej wielkości}
 
 Domyślnie wielkość dowiązania deskryptora jest stałą wartością określoną podczas stworzenia układu zbioru deskryptora.
 Ograniczenie to nie dotyczny dowiązań deskryptora o zmiennej wielkości.
@@ -853,7 +853,7 @@ Wsparcie dowiązań o zmiennej wielkości wymaga funkcjonalności urządzenia Vu
 Użycie tej funkcjonalności odbywa się poprzez stworzenia układu zbioru deskryptorów, którego ostatnie dowiązanie posiada flagę \textit{VARIABLE\_DESCRIPTOR\_COUNT} i zamiast liczby deskryptorów podawana jest jej górna granica.
 Rzeczywista liczba jest ustalana podczas tworzenia zbioru deskryptorów przy użyciu struktury \textit{VkDescriptorSetVariableDescriptorCountAllocateInfo} w łańcuchu \textit{pNext}.
 
-\subsection {Częściowo dowiązane deskryptory}
+\subsubsection {Częściowo dowiązane deskryptory}
 
 Domyślnie wszystkie deskryptory w dołączonym zbiorze deskryptorów nie mogą być w stanie nieprawidłowym i muszą koniecznie być zaktualizowane przez dowiązaniem - jest to nazywane wymogiem statycznego użycia deskryptorów.
 Ograniczenie to nie dotyczny częściowo dowiązanych deskryptorów.
@@ -864,7 +864,7 @@ Wsparcie dowiązań o zmiennej wielkości wymaga funkcjonalności urządzenia Vu
 
 Użycie tej funkcjonalności odbywa się poprzez stworzenia układu zbioru deskryptorów, którego dowiązanie posiada flagę \textit{PARTIALLY\_BOUND}.
 
-\subsection {Nieograniczone tablice deskryptorów}
+\subsubsection {Nieograniczone tablice deskryptorów}
 
 Domyślnie rozmiar tablicy deskryptorów musi być znany podczas kompilacji shaderów. Przykładowo w języku GLSL jest on podawany w kwalifikatorze układu.
 Wymaganie to nie dotyczy nieograniczonych tablic deskryptorów.
@@ -900,7 +900,7 @@ OpDecorate %textures2D Binding 2
 
 Tablica jest nieograniczona tylko z punktu widzenia kodu shadera - dowiązanie deskryptora wciąż posiada pewną wielkość zdefiniowaną podczas tworzenia zbioru deskryptorów. Dlatego też indeksowanie poza długością tablicy jest niezdefiniowanym zachowaniem.
 
-\section{Przebiegi renderowania i potoki}
+\subsection{Przebiegi renderowania i potoki}
 
 // TODO vkPipeline - potok, potok graficzny
 
@@ -915,7 +915,7 @@ Indeksów wierzchołków pozwalających na kompresję bufora geometrii używaneg
 
 // TODO
 
-\subsection{Moduły shaderów}
+\subsubsection{Moduły shaderów}
 
 Shader to program specyfikujący operacje wykonywane podczas etapu potoku dla każdego przetwarzanego przez niego elementu (np. wierzchołka, punktu sterującego, fragmentu lub grupy roboczej).
 
@@ -930,9 +930,17 @@ Po kompilacji moduł shadera jest w formie, która może być używana bezpośre
 
 // TODO vkRenderPass - przebieg renderowania, dołączenia koloru
 
-\subsection{Rozszerzenie VK\_EXT\_dynamic\_rendering}
+\subsubsection{Rozszerzenie VK\_EXT\_dynamic\_rendering}
 
 // TODO dynamiczne przebiegi renderowania
+
+\subsection{Rozszerzenie VK\_KHR\_performance\_query}
+
+Rozszerzenie \textit{VK\_EXT\_performance\_query} dodaje mechanizm umożliwiający aplikacjom i narzędziom do profilowania sprawdzanie wartości tzw. liczników wydajności (ang. performance counter), które są udostępniane przez GPU i pozwalają na badanie obciążenia GPU.
+
+Narzędzie RenderDoc \cite{RENDERDOC} pozwala na przechwycenie liczników wydajności dla każdego polecenia, co znacznie upraszcza proces profilowania.
+
+
 
 \section{Renderowanie bez dowiązań}
 
@@ -1147,6 +1155,16 @@ Podobnie używane są współczynniki chropowatości i metaliczności będące w
 // TODO glTF shader
 
 \section{Cieniowanie odroczone}
+
+// TODO forward vs deferred
+
+// TODO G-buffer
+
+Cieniowanie odroczone jest podzielone na dwa przebiegi renderowania:
+\begin{itemize}
+	\item przebieg geometrii: wypełnia poszczególne komponenty G-bufora,
+	\item przebieg oświetlenia: generuje właściwy obraz na podstawie komponentów G-bufora.
+\end{itemize}
 
 // TODO 
 

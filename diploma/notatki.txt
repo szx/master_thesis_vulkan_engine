@@ -1,4 +1,3 @@
-HIRO dodaj stronę tytułową (moja pg nie generuje)
 HIRO odwoływuj się po numerze do listingów
 HIRO mniej opisowach kod
 

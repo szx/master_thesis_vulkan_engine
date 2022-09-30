@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  29 SEP 2022 14:13
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  30 SEP 2022 02:08
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1341,12 +1341,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 18--131
 ]
 \openout2 = `chapters/0b_spis_tresci.aux'.
 
- (./chapters/0b_spis_tresci.tex (./PracaMagisterka.toc
-Overfull \hbox (0.56pt too wide) detected at line 69
-\TU/lmss/m/n/10 2.10. 
- []
-
-[4
+ (./chapters/0b_spis_tresci.tex (./PracaMagisterka.toc [4
 
 
 
@@ -1358,7 +1353,8 @@ Overfull \hbox (0.56pt too wide) detected at line 69
 ) [5]
 \openout2 = `chapters/0c_wykaz_skrotow.aux'.
 
- (./chapters/0c_wykaz_skrotow.tex) [6
+
+(./chapters/0c_wykaz_skrotow.tex) [6
 
 
 
@@ -1491,25 +1487,25 @@ Overfull \hbox (5.21303pt too wide) in paragraph at lines 898--899
 
 [28] [29]
 LaTeX Font Info:    Font shape `TU/lmss/bx/it' in size <10> not available
-(Font)              Font shape `TU/lmss/bx/sl' tried instead on input line 1103
+(Font)              Font shape `TU/lmss/bx/sl' tried instead on input line 1111
 .
  [30] [31]
 File: images/blender.png Graphic file (type bmp)
 <images/blender.png>
  [32] [33] [34]
-Overfull \hbox (2.51866pt too wide) in paragraph at lines 1348--1349
+Overfull \hbox (2.51866pt too wide) in paragraph at lines 1366--1367
 []\TU/lmss/m/n/10 globalne przekształcenie (macierz model-widok-rzutowanie): \T
 U/lmss/m/sl/10 vkCmdPushConstants()\TU/lmss/m/n/10 , \TU/lmss/m/sl/10 vkCmdBind
 -
  []
 
 
-Overfull \hbox (82.45863pt too wide) in paragraph at lines 1363--1364
+Overfull \hbox (82.45863pt too wide) in paragraph at lines 1381--1382
 [][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (45.70863pt too wide) in paragraph at lines 1366--1367
+Overfull \hbox (45.70863pt too wide) in paragraph at lines 1384--1385
 [][][][][][][][][][][][][][][][][][][][][] 
  []
 
@@ -1702,12 +1698,57 @@ File: images/render_sponza.png Graphic file (type bmp)
 
 
 
-]) [60]
+] [60]
+Underfull \hbox (badness 10000) in paragraph at lines 61--61
+[]\TU/lmss/m/n/10 Rozdzielczość
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 61--61
+[]\TU/lmss/m/n/10 Liczba
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 61--61
+[]\TU/lmss/m/n/10 FPS
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 61--61
+[]\TU/lmss/m/n/10 FPS
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 61--61
+[]\TU/lmss/m/n/10 L3 Shader
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 61--61
+\TU/lmss/m/n/10 Throughput
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 61--61
+[]\TU/lmss/m/n/10 Shader
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 61--61
+\TU/lmss/m/n/10 Memory
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 61--62
+[]\TU/lmss/m/n/10 Samplers
+ []
+
+) [61]
 \openout2 = `chapters/6_podsumowanie.aux'.
 
  (./chapters/6_podsumowanie.tex
 Rozdzia\l  5.
-) [61
+) [62
 
 
 
@@ -1724,23 +1765,23 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 9.37807pt on input line 3.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 7.29405pt on input line 3.
- [62
+ [63
 
 
 
 
-] [63] (./PracaMagisterka.lof)
+] [64] (./PracaMagisterka.lof)
 \tf@lof=\write7
 \openout7 = `PracaMagisterka.lof'.
 
- [64
+ [65
 
 ]
 (./PracaMagisterka.lot)
 \tf@lot=\write8
 \openout8 = `PracaMagisterka.lot'.
 
-) [65
+) [66
 
 ] (./PracaMagisterka.aux
 (./chapters/0a_streszczenie.aux) (./chapters/0b_spis_tresci.aux)
@@ -1748,19 +1789,25 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (./chapters/2_wprowadzenie_do_dziedziny.aux)
 (./chapters/3_technologie_algorytmy_narzedzia.aux) (./chapters/5_badania.aux)
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
-Package rerunfilecheck Info: File `PracaMagisterka.out' has not changed.
-(rerunfilecheck)             Checksum: 5CBD66F7CC431085619BE54F8D820B95;9342.
+
+Package rerunfilecheck Warning: File `PracaMagisterka.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `PracaMagisterka.out':
+(rerunfilecheck)             Before: 92E3D3E013EC45187A1E1D8619F11B3C;7937
+(rerunfilecheck)             After:  7AC2F066D55301252F7CF510641C647E;7847.
 Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 \openout1 = `PracaMagisterka.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 41173 strings out of 476191
- 849234 string characters out of 5812072
- 1616355 words of memory out of 5000000
- 61219 multiletter control sequences out of 15000+600000
+ 41174 strings out of 476191
+ 849259 string characters out of 5812072
+ 1616584 words of memory out of 5000000
+ 61220 multiletter control sequences out of 15000+600000
  488903 words of font info for 105 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  88i,17n,91p,1516b,6449s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on PracaMagisterka.pdf (65 pages).
+Output written on PracaMagisterka.pdf (66 pages).

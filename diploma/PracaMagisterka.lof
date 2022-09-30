@@ -6,20 +6,20 @@
 \contentsline {figure}{\numberline {2.3}{\ignorespaces Obraz 2D 1024x1024 z sceny Sponza \blx@tocontentsinit {0}\cite {GLTFSAMPLEMODELS} i jego 10 mipmap (opracowanie własne)\relax }}{17}{figure.caption.21}%
 \contentsline {figure}{\numberline {2.4}{\ignorespaces Cykl życia obrazu łańcucha wymiany (opracowanie własne)\relax }}{19}{figure.caption.23}%
 \contentsline {figure}{\numberline {2.5}{\ignorespaces Relacje pomiędzy obiektami Vulkan używanymi do zarządzania deskryptorami (opracowanie własne)\relax }}{24}{figure.caption.34}%
-\contentsline {figure}{\numberline {2.6}{\ignorespaces Tradycyjne tekstury z dowiązaniami używające jednolitego indeksu w stałej push (opracowanie własne)\relax }}{30}{figure.caption.37}%
-\contentsline {figure}{\numberline {2.7}{\ignorespaces Tekstury bez dowiązań używając niejednolitych indeksów instancji (opracowanie własne)\relax }}{31}{figure.caption.38}%
-\contentsline {figure}{\numberline {2.8}{\ignorespaces Przepływ pracy dla zasobów (opracowanie własne)\relax }}{32}{figure.caption.39}%
-\contentsline {figure}{\numberline {2.9}{\ignorespaces Interfejs programu Blender \blx@tocontentsinit {0}\cite {BLENDER} używanego do modelowania 3D (opracowanie własne)\relax }}{33}{figure.caption.40}%
-\contentsline {figure}{\numberline {2.10}{\ignorespaces Relacje pomiędzy rożnymi typami elementów w formacie glTF (opracowanie własne na podstawie \blx@tocontentsinit {0}\cite {GLTFSPEC})\relax }}{34}{figure.caption.42}%
+\contentsline {figure}{\numberline {2.6}{\ignorespaces Tradycyjne tekstury z dowiązaniami używające jednolitego indeksu w stałej push (opracowanie własne)\relax }}{30}{figure.caption.44}%
+\contentsline {figure}{\numberline {2.7}{\ignorespaces Tekstury bez dowiązań używając niejednolitych indeksów instancji (opracowanie własne)\relax }}{31}{figure.caption.45}%
+\contentsline {figure}{\numberline {2.8}{\ignorespaces Przepływ pracy dla zasobów (opracowanie własne)\relax }}{32}{figure.caption.46}%
+\contentsline {figure}{\numberline {2.9}{\ignorespaces Interfejs programu Blender \blx@tocontentsinit {0}\cite {BLENDER} używanego do modelowania 3D (opracowanie własne)\relax }}{33}{figure.caption.47}%
+\contentsline {figure}{\numberline {2.10}{\ignorespaces Relacje pomiędzy rożnymi typami elementów w formacie glTF (opracowanie własne na podstawie \blx@tocontentsinit {0}\cite {GLTFSPEC})\relax }}{34}{figure.caption.49}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Proces budowania w formie celów i ich zależności (opracowanie własne)\relax }}{38}{figure.caption.43}%
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Relacje pomiędzy modułam silnika i ich najważniejszymi klasami (opracowanie własne)\relax }}{40}{figure.caption.50}%
-\contentsline {figure}{\numberline {3.3}{\ignorespaces Relacje pomiędzy obiektami zasobów w silniku (opracowanie własne)\relax }}{52}{figure.caption.64}%
-\contentsline {figure}{\numberline {3.4}{\ignorespaces Przykładowa tekstura dla czcionki Go-Mono \blx@tocontentsinit {0}\cite {GOMONOFONT} (opracowanie własne)\relax }}{54}{figure.caption.73}%
-\contentsline {figure}{\numberline {3.5}{\ignorespaces Obiekty biorące udział w procesie konwersji sceny wraz z przepływem danych (opracowanie własne)\relax }}{57}{figure.caption.81}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Proces budowania w formie celów i ich zależności (opracowanie własne)\relax }}{38}{figure.caption.50}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Relacje pomiędzy modułam silnika i ich najważniejszymi klasami (opracowanie własne)\relax }}{40}{figure.caption.57}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Relacje pomiędzy obiektami zasobów w silniku (opracowanie własne)\relax }}{52}{figure.caption.71}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Przykładowa tekstura dla czcionki Go-Mono \blx@tocontentsinit {0}\cite {GOMONOFONT} (opracowanie własne)\relax }}{54}{figure.caption.80}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Obiekty biorące udział w procesie konwersji sceny wraz z przepływem danych (opracowanie własne)\relax }}{57}{figure.caption.88}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Wynik renderowania sceny MetalRoughSpheres (opracowanie własne)\relax }}{59}{figure.caption.85}%
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Wynik renderowania sceny DamagedHelmet (opracowanie własne)\relax }}{60}{figure.caption.86}%
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Wynik renderowania sceny Sponza (opracowanie własne)\relax }}{60}{figure.caption.87}%
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Wynik renderowania sceny MetalRoughSpheres (opracowanie własne)\relax }}{59}{figure.caption.92}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Wynik renderowania sceny DamagedHelmet (opracowanie własne)\relax }}{60}{figure.caption.93}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Wynik renderowania sceny Sponza (opracowanie własne)\relax }}{60}{figure.caption.94}%
 \addvspace {10\p@ }
 \contentsfinish 
