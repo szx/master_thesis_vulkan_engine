@@ -29,8 +29,8 @@ void render_pass_state_update(render_pass_state *renderPassState);
 uint32_t render_pass_state_add_offscreen_texture(render_pass_state *renderPassState,
                                                  const char *name, image_type imageType);
 
-void render_pass_state_set_unified_uniform_buffer(render_pass_state *renderPassState,
-                                                  global_uniform_buffer_element *global);
+void render_pass_state_set_unified_constant_buffer(render_pass_state *renderPassState,
+                                                   global_uniform_buffer_element *global);
 
 void render_pass_state_send_to_device(render_pass_state *renderPassState);
 

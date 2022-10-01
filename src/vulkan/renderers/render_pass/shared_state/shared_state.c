@@ -53,8 +53,8 @@ void render_pass_shared_state_send_to_device(render_pass_shared_state *sharedSta
   // No-op.
 }
 
-void render_pass_shared_state_set_unified_uniform_buffer(render_pass_shared_state *sharedState,
-                                                         global_uniform_buffer_element *global) {
+void render_pass_shared_state_set_unified_constant_buffer(render_pass_shared_state *sharedState,
+                                                          global_uniform_buffer_element *global) {
 
   render_pass_camera_state *camera = sharedState->camera;
   render_pass_camera_state_set_view_matrix(camera, global->viewMat);

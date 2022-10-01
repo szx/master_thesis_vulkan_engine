@@ -148,7 +148,7 @@ Silnik jest zaprojektowany w duchu architektury modułowej - funkcjonalność bi
 
 Silnik był rozwijany metodą \textit{bottom-up} - jego pierwsza iteracja była pojedynczym plikiem źródłowym wyświetlającym trójkąt \cite{VULKANTUTORIAL}, który w procesie dekompozycji i refaktoryzacji organicznie rozrósł się do 7 modułów znajdujących się w osobnych podkatalogach zawierających łącznie 9 skryptów Python \textit{.py}, 65 nagłówków \textit{*.h} i 63 plików źródłowych \textit{*.c}.
 
-// HIRO cele dotyczące funkcjonalności
+// TODO cele dotyczące funkcjonalności
 
 Obecnie silnik składa się z następujących modułów:
 // TODO lista modułów, podkatalog i przeznaczenie
@@ -166,9 +166,7 @@ Obiekty mogą oferować metody \textit{create()} i \textit{destroy()}, które al
 Analogiczne metody \textit{init()} i \textit{deinit()} tworzą i niszczą instancję, której pamięć została wcześniej zaalokowaną (np. na stosie lub w tablicy).
 Opcjonalna metoda \textit{debug\_print()} loguje informacje o wewnętrznym stanie instancji użyteczne podczas debugowania.
 
-Relacje pomiędzy modułami silnika i ich najważniejszymi jednostkami są przedstawione na poniższym diagramie:
-
-// TODO: Ładniejszy diagram, relacje.
+Poniższy diagram przedstawia moduły silnika i ich najważniejsze jednostki:
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[node distance=2mm]
@@ -203,7 +201,7 @@ Relacje pomiędzy modułami silnika i ich najważniejszymi jednostkami są przed
 		\node(data)[draw,dotted,fit=(db) (assetdb)] {};
 		
 		% assets
-		\node (assetcommon) [file2, right = 1cm of db] {asset\_common}; \def\y{assetcommon};
+		\node (assetcommon) [file2, right = 2cm of platform] {asset\_common}; \def\y{assetcommon};
 		\def\x{asset_camera}; \node (\x) [file2, below = of \y] {\myesc{\x}}; \edef\y{\x};
 		\def\x{asset_direct_light}; \node (\x) [file2, below = of \y] {\myesc{\x}}; \edef\y{\x};
 		\def\x{asset_material}; \node (\x) [file2, below = of \y] {\myesc{\x}}; \edef\y{\x};
@@ -220,7 +218,7 @@ Relacje pomiędzy modułami silnika i ich najważniejszymi jednostkami są przed
 		\node(assets)[draw,dotted,fit=(assetcommon) (asset_font)] {};
 	
 		% scene
-		\node (scene_data) [file, right = 1cm of thirdparty] {scene\_data}; \def\y{scene_data};
+		\node (scene_data) [file, right = 3.6cm of junk] {scene\_data}; \def\y{scene_data};
 		\def\x{scene_graph}; \node (\x) [file, right = of \y] {\myesc{\x}}; \edef\y{\x};
 		\def\x{scene_tree}; \node (\x) [file, right = of \y] {\myesc{\x}}; \edef\y{\x};
 		\node(scene)[draw,dotted,fit=(scene_data) (scene_tree)] {};
@@ -232,10 +230,10 @@ Relacje pomiędzy modułami silnika i ich najważniejszymi jednostkami są przed
 		\def\x{device}; \node (\x) [file, right = 1cm of buffer] {\myesc{\x}}; \edef\y{\x};
 		\def\x{swap_chain}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
 		\def\x{sync}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
-		\def\x{unified_uniform_buffer}; \node (\x) [file, below = 4mm of vertex_stream] {\myesc{\x}}; \edef\y{\x};
+		\def\x{unified_constant_buffer}; \node (\x) [file, below = 4mm of vertex_stream] {\myesc{\x}}; \edef\y{\x};
 		\def\x{textures}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
 		\def\x{unified_geometry_buffer}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
-		\def\x{descriptors};\node (\x) [file, right = 4mm of unified_uniform_buffer] {\myesc{\x}}; \edef\y{\x};
+		\def\x{descriptors};\node (\x) [file, right = 4mm of unified_constant_buffer] {\myesc{\x}}; \edef\y{\x};
 		\def\x{shader};\node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
 		\node(objects)[draw,dotted,fit=(device) (unified_geometry_buffer) (shader)] {};
 		
@@ -243,12 +241,12 @@ Relacje pomiędzy modułami silnika i ich najważniejszymi jednostkami są przed
 		\node (renderer) [file, right = 1cm of device] {renderer}; \def\y{renderer};
 		\def\x{render_state}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
 		\def\x{renderer_cache}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
-		\def\x{render_graph}; \node (\x) [file, right = of renderer] {\myesc{\x}}; \edef\y{\x};
+		\def\x{render_graph}; \node (\x) [file, right = of render_state] {\myesc{\x}}; \edef\y{\x};
 		\def\x{render_pass}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
 		\def\x{render_pass_state}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
-		\def\x{batch}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
-		\def\x{main}; \node (\x) [executable, below = of \y] {\myesc{\x}}; \edef\y{\x};
-		\node(rendering)[draw,dotted,fit=(renderer) (renderer_cache) (render_pass_state) (main)] {};
+		\def\x{batch}; \node (\x) [file, left = of render_pass_state] {\myesc{\x}}; \edef\y{\x};
+		\def\x{main}; \node (\x) [executable, right = 0.7cm of renderer] {\myesc{\x}}; \edef\y{\x};
+		\node(rendering)[draw,dotted,fit=(renderer) (renderer_cache) (render_pass_state) (main) (batch)] {};
 	
 		% labels
 		\node ()[above=0cm of codegen] {\textbf{Wygenerowany kod}};
@@ -1017,7 +1015,7 @@ W tradycyjnym podejściu do modelowania hierarchicznego
  znajdują się w  przy użyciu grafu sceny
 // HIRO
 
-Obiekty biorące udział w procesie konwersji sceny wraz z przepływem danych są przedstawione na poniższym diagramie:
+Obiekty biorące udział w procesie konwersji sceny na polecenia rysowania są przedstawione na poniższym diagramie:
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[node distance=0.5cm]
@@ -1055,10 +1053,9 @@ Obiekty biorące udział w procesie konwersji sceny wraz z przepływem danych s�
 		\draw [flows] (scene_tree) edge[] (scene_tree_node);
 		\draw [flows] (renderer_cache) edge[] (renderer_cache_elements);
 		\draw [flows] (renderer_cache_elements) edge[] (vkCmdDrawIndexedIndirect);
-		// HIRO nodes
 		
 	\end{tikzpicture}
-	\caption{Obiekty biorące udział w procesie konwersji sceny wraz z przepływem danych (opracowanie własne)}
+	\caption{Obiekty biorące udział w procesie konwersji sceny na polecenia rysowania (opracowanie własne)}
 	\label{scene_process}
 \end{figure}
 
@@ -1097,10 +1094,10 @@ Obiekt \textit{scene\_tree} reprezentuje
 
 // TODO Renderer to moduł zawierajacy 
 
-// HIRO renderer\_cache
+// TODO renderer\_cache
 
-// HIRO Stan renderowania renderer\_state
+// TODO Stan renderowania renderer\_state
 
-// HIRO Graf renderowania render\_graph
+// TODO Graf renderowania render\_graph
 
-// HIRO renderer
+// TODO renderer

@@ -38,8 +38,8 @@ void render_pass_shared_state_deinit(render_pass_shared_state *sharedState);
 void render_pass_shared_state_reinit_with_new_swap_chain(render_pass_shared_state *sharedState);
 
 void render_pass_shared_state_update(render_pass_shared_state *sharedState);
-void render_pass_shared_state_set_unified_uniform_buffer(render_pass_shared_state *sharedState,
-                                                         global_uniform_buffer_element *global);
+void render_pass_shared_state_set_unified_constant_buffer(render_pass_shared_state *sharedState,
+                                                          global_uniform_buffer_element *global);
 void render_pass_shared_state_send_to_device(render_pass_shared_state *sharedState);
 
 void render_pass_shared_state_debug_print(render_pass_shared_state *sharedState, int indent);

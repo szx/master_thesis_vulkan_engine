@@ -954,7 +954,7 @@ W Vulkan renderowanie bez dowiązań jest realizowane poprzez:
 \end{itemize}
 
 // HIRO BARDZIEJ SKRÓTOWO NIE MA CZASU
-// TODO unified geometry/uniform buffer
+// TODO unified geometry/constant buffer
 
 // TODO instancjonowanie, wielokrotne polecenia rysowania pośredniego,
 
@@ -1127,46 +1127,6 @@ Poniższy diagram przedstawia tekstury bez dowiązań używając niejednolitych 
 
 // TODO draw call batching używając jednolitego bufora geometrii i poleceń rysowania pośredniego
 
-\section{Mapowanie tekstur}
-
-// TODO filtrowanie w samplerze (powiększający, pomniejszający)
-
-// TODO mapowanie nierówności
-
-// TODO teksturowanie sześcienne
-Skybox to sześcian oteksturowany przy pomocy tekstury sześciennej przedstawiającej niebo.
-
-\section{Oświetlenie}
-
-// TODO model PBR
-
-Materiał to zbiór parameterów i tekstur używanych do przez shadery do renderowania powierzchni prymitywów.
-
-W formacie glTF materiał jest zdefiniowany przy użyciu modelu PBR metaliczności-chropowatości i posiada następujące właściwości:
-\begin{itemize}
-	\item kolor podstawowy (ang. base color): informacja o kolorze obiektu;
-	\item metaliczności (ang. metalness): określa metaliczność materiału, tj. czy materiał jest metalem czy dielektrykiem;
-	\item chropowatość (ang. roughness): określa chropowatość materiału, tj. czy materiał jest błyszczący czy matowy.
-\end{itemize}
-
-Kolor podstawowy jest obliczany poprzez przemnożenie dwóch parametrów materiału: współczynnika vec4 oraz tekstury RGBA.
-Podobnie używane są współczynniki chropowatości i metaliczności będące wartościami w przedziale $\left[0,1\right]$ mnożonymi przez tekstury metaliczności-chropowatości - wartości metalicznści są próbkowane z komponenu B, a wartości metalicznści z komponentu G.
-
-// TODO glTF shader
-
-\section{Cieniowanie odroczone}
-
-// TODO forward vs deferred
-
-// TODO G-buffer
-
-Cieniowanie odroczone jest podzielone na dwa przebiegi renderowania:
-\begin{itemize}
-	\item przebieg geometrii: wypełnia poszczególne komponenty G-bufora,
-	\item przebieg oświetlenia: generuje właściwy obraz na podstawie komponentów G-bufora.
-\end{itemize}
-
-// TODO 
 
 \section{Potok zasobów}
 
@@ -1359,37 +1319,78 @@ Baza zasobów (ang. asset database) to zasób wyjściowy mający na celu zgromad
 
 Wyrenderowanie sceny opisanej wysokopoziomowym formatem używanym przez program do grafiki 3D wymaga konwersji jej do listy poleceń rysowania biblioteki graficznej.
 
-Wyemitowanie pojedynczego polecenia rysowania wymaga ustalenia stanu renderowania używanego przez potok graficzny. W przypadku Vulkan API sprowadza się to do dowiązania zasobów bądź przekazania informacji deskryptorami i stałymi push dla następujących elementów renderowanego modelu:
+Wyemitowanie pojedynczego polecenia rysowania wymaga ustalenia stanu renderowania używanego przez potok graficzny. W przypadku Vulkan API sprowadza się to do dowiązania zasobów bądź przekazania informacji deskryptorami i stałymi push dla następujących elementów renderowanego obiektu:
 \begin{itemize}
 	\item geometria: \textit{vkCmdBindVertexBuffer()}, \textit{vkCmdBindIndexBuffer()};
 	\item materiał: \textit{vkCmdBindPipeline()}, \textit{vkCmdBindDescriptorSets()};
-	\item globalne przekształcenie (macierz model-widok-rzutowanie): \textit{vkCmdPushConstants()}, \textit{vkCmdBindDescriptorSets()}.
+	\item globalne przekształcenie (macierz modelu): \textit{vkCmdPushConstants()}, \textit{vkCmdBindDescriptorSets()}.
 \end{itemize}
 
 Proces konwersji sceny na polecenia rysowania zależy od jej formatu.
-// HIRO lista vs hierarchiczne modelowanie
-
-Hierarchiczne modelowanie to technika reprezentowania złożonych obiektów polegająca na podzieleniu modelu na części i śledzeniu hierarchicznych relacji rodzic-dziecko pomiędzy nimi przy użyciu struktury zwanej grafem sceny. Ten sposób reprezentacji sceny bardzo popularny wśród aplikacji 3D i jest używany przez formaty FBX i glTF.
+Nieskomplikowane sceny mogą być opisane przy pomocy listy renderowanych obiektów. Bardziej złożone sceny są zwykle reprezentowane przy użyciu hierarchicznego modelowania.
+Jest to technika reprezentowania złożonych scen polegająca na podzieleniu ich modelów na części i śledzeniu hierarchicznych relacji rodzic-dziecko pomiędzy nimi przy użyciu struktury zwanej grafem sceny. Ten sposób reprezentacji sceny bardzo popularny wśród aplikacji 3D i jest używany przez formaty FBX i glTF.
 
 Każdy węzeł grafu sceny składa się z lokalnej transformacji przestrzeni świata, opcjonalnej referencji do renderowanej geometrii oraz listy węzłów potomne. Jeden z wezłów jest oznaczony jako korzeń.
-Emitowanie poleceń rysowania sprowadza się do rekurencyjengo przemierzania grafu sceny zaczynając od korzenia \cite{kosarevsky20213d}.
-Pseudokod:
+Emitowanie poleceń rysowania sprowadza się do rekurencyjengo przemierzania grafu sceny zaczynając od korzenia \cite{kosarevsky20213d} i zostało przedstawione na listingu \ref{RenderujGrafSceny}:
 \lstset{language=verbatim}
-\begin{lstlisting}[caption={Emitowanie poleceń rysowania na podstawie grafu sceny},captionpos=b]
+\begin{lstlisting}[caption={Emitowanie poleceń rysowania na podstawie grafu sceny},captionpos=b,label={RenderujGrafSceny}]
 RenderujGrafSceny(węzeł):
   jeżeli węzeł.rodzic istnieje:
+    
     węzeł.globalnaTransformacja = węzeł.rodzic.globalnaTransformacja * węzeł.lokalnaTransformacja
   w przeciwnym wypadku:
     węzeł.globalnaTransformacja = węzeł.lokalnaTransformacja
-  WyemitujPolecenieRysowania(węzeł.geometria, węzeł.materiał, węzeł.globalnaTransformacja)
+  EmitujPolecenieRysowania(węzeł.geometria, węzeł.materiał, węzeł.globalnaTransformacja)
   dla każdego węzła dziecko w węzeł.dzieci:
     RenderujGrafSceny(dziecko)
 \end{lstlisting}
 
-// HIRO diagram graf sceny -> polecenia rysowania
-
+Polecenia rysowania wyemitowane algorytmem \ref{RenderujGrafSceny} nie są optymalne.
+Przykładowo HIRO
 // HIRO wydajność, draw call optimization
 
 \section{Graf renderowania}
 
 // TODO
+
+
+\section{Mapowanie tekstur}
+
+// TODO filtrowanie w samplerze (powiększający, pomniejszający)
+
+// TODO mapowanie nierówności
+
+// TODO teksturowanie sześcienne
+Skybox to sześcian oteksturowany przy pomocy tekstury sześciennej przedstawiającej niebo.
+
+\section{Oświetlenie}
+
+// TODO model PBR
+
+Materiał to zbiór parameterów i tekstur używanych do przez shadery do renderowania powierzchni prymitywów.
+
+W formacie glTF materiał jest zdefiniowany przy użyciu modelu PBR metaliczności-chropowatości i posiada następujące właściwości:
+\begin{itemize}
+	\item kolor podstawowy (ang. base color): informacja o kolorze obiektu;
+	\item metaliczności (ang. metalness): określa metaliczność materiału, tj. czy materiał jest metalem czy dielektrykiem;
+	\item chropowatość (ang. roughness): określa chropowatość materiału, tj. czy materiał jest błyszczący czy matowy.
+\end{itemize}
+
+Kolor podstawowy jest obliczany poprzez przemnożenie dwóch parametrów materiału: współczynnika vec4 oraz tekstury RGBA.
+Podobnie używane są współczynniki chropowatości i metaliczności będące wartościami w przedziale $\left[0,1\right]$ mnożonymi przez tekstury metaliczności-chropowatości - wartości metalicznści są próbkowane z komponenu B, a wartości metalicznści z komponentu G.
+
+// TODO glTF shader
+
+\section{Cieniowanie odroczone}
+
+// TODO forward vs deferred
+
+// TODO G-buffer
+
+Cieniowanie odroczone jest podzielone na dwa przebiegi renderowania:
+\begin{itemize}
+	\item przebieg geometrii: wypełnia poszczególne komponenty G-bufora,
+	\item przebieg oświetlenia: generuje właściwy obraz na podstawie komponentów G-bufora.
+\end{itemize}
+
+// TODO 

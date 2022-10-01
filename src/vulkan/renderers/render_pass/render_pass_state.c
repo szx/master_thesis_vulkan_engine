@@ -64,13 +64,13 @@ uint32_t render_pass_state_add_offscreen_texture(render_pass_state *renderPassSt
   return offscreenTextureIdx;
 }
 
-void render_pass_state_set_unified_uniform_buffer(render_pass_state *renderPassState,
-                                                  global_uniform_buffer_element *global) {
-  render_pass_shared_state_set_unified_uniform_buffer(&renderPassState->sharedState, global);
+void render_pass_state_set_unified_constant_buffer(render_pass_state *renderPassState,
+                                                   global_uniform_buffer_element *global) {
+  render_pass_shared_state_set_unified_constant_buffer(&renderPassState->sharedState, global);
 
   render_pass_frame_state *frameState = utarray_eltptr(
       renderPassState->frameStates, renderPassState->renderState->sync->currentFrameInFlight);
-  render_pass_frame_state_set_unified_uniform_buffer(frameState, global);
+  render_pass_frame_state_set_unified_constant_buffer(frameState, global);
 }
 
 void render_pass_state_send_to_device(render_pass_state *renderPassState) {

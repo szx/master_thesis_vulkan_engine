@@ -23,6 +23,7 @@
 #include "objects/swap_chain.h"
 #include "objects/sync.h"
 #include "objects/textures.h"
+#include "objects/unified_constant_buffer.h"
 #include "objects/unified_geometry_buffer.h"
 #include "objects/unified_uniform_buffer.h"
 #include "objects/vertex_stream.h"

@@ -17,7 +17,7 @@ renderer *renderer_create(data_config *config, asset_db *assetDb, swap_chain *vk
 
   renderer->renderState =
       render_state_create(renderer->vks, renderer->rendererCache, renderer->config,
-                          renderer_update_unified_uniform_buffer_callback);
+                          renderer_update_unified_constant_buffer_callback);
 
   renderer->renderGraph = render_graph_create(renderer->renderState);
 
@@ -57,16 +57,16 @@ void renderer_update(renderer *renderer) {
   render_state_update(renderer->renderState, renderer);
 }
 
-void renderer_update_unified_uniform_buffer_callback(void *data, size_t currentFrameInFlight,
-                                                     global_uniform_buffer_data *globalData,
-                                                     instances_uniform_buffer_data *instancesData) {
+void renderer_update_unified_constant_buffer_callback(
+    void *data, size_t currentFrameInFlight, global_uniform_buffer_data *globalData,
+    instances_uniform_buffer_data *instancesData) {
 
   renderer *renderer = data;
 
   // globals
   global_uniform_buffer_element *global =
       global_uniform_buffer_data_get_element(globalData, 0, currentFrameInFlight);
-  render_pass_state_set_unified_uniform_buffer(renderer->renderGraph->renderPassState, global);
+  render_pass_state_set_unified_constant_buffer(renderer->renderGraph->renderPassState, global);
 
   // instances
   // HIRO move to batches

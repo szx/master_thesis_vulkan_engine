@@ -31,9 +31,9 @@ void renderer_recreate_swap_chain(renderer *renderer);
 
 void renderer_update(renderer *renderer);
 
-void renderer_update_unified_uniform_buffer_callback(void *data, size_t currentFrameInFlight,
-                                                     global_uniform_buffer_data *globalData,
-                                                     instances_uniform_buffer_data *instancesData);
+void renderer_update_unified_constant_buffer_callback(void *data, size_t currentFrameInFlight,
+                                                      global_uniform_buffer_data *globalData,
+                                                      instances_uniform_buffer_data *instancesData);
 
 void renderer_send_to_device(renderer *renderer);
 

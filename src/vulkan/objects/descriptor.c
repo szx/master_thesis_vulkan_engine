@@ -1,7 +1,7 @@
 #include "descriptor.h"
 
 #include "textures.h"
-#include "unified_uniform_buffer.h"
+#include "unified_constant_buffer.h"
 
 #define def_uniform_buffer_data(_name, ...)                                                        \
   _name##_uniform_buffer_data *_name##_uniform_buffer_data_create(uint32_t count,                  \
@@ -218,7 +218,7 @@ void descriptor_binding_debug_print(descriptor_binding *binding, int indent) {
   }
 }
 
-descriptors *descriptors_create(device *vkd, unified_uniform_buffer *unifiedUniformBuffer,
+descriptors *descriptors_create(device *vkd, unified_constant_buffer *unifiedUniformBuffer,
                                 textures *textures) {
   descriptors *descriptors = core_alloc(sizeof(struct descriptors));
 

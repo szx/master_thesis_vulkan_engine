@@ -101,7 +101,7 @@ VULKAN_UNIFORM_BUFFERS(decl_uniform_buffer_data, )
 #undef decl_uniform_buffer_data
 
 typedef struct descriptors descriptors;
-typedef struct unified_uniform_buffer unified_uniform_buffer;
+typedef struct unified_constant_buffer unified_constant_buffer;
 typedef struct textures textures;
 
 /// Describes one descriptor binding in descriptor set.
@@ -134,9 +134,9 @@ void descriptor_binding_debug_print(descriptor_binding *binding, int indent);
 /// Uniform buffers use classic slot-based binding model.
 /// Textures use bindless model.
 typedef struct descriptors {
-  device *vkd;                                  ///< Pointer.
-  unified_uniform_buffer *unifiedUniformBuffer; ///< Pointer.
-  textures *textures;                           ///< Pointer.
+  device *vkd;                                   ///< Pointer.
+  unified_constant_buffer *unifiedUniformBuffer; ///< Pointer.
+  textures *textures;                            ///< Pointer.
 
   /* uniform buffers */
   /// Descriptor pool used to allocate descriptors for resources used by shaders.
@@ -162,7 +162,7 @@ typedef struct descriptors {
 
 } descriptors;
 
-descriptors *descriptors_create(device *vkd, unified_uniform_buffer *unifiedUniformBuffer,
+descriptors *descriptors_create(device *vkd, unified_constant_buffer *unifiedUniformBuffer,
                                 textures *textures);
 
 void descriptors_destroy(descriptors *descriptors);

@@ -31,8 +31,8 @@ void render_pass_frame_state_send_to_device(render_pass_frame_state *frameState)
   batches_buffer_send_to_device(&frameState->rendererCacheBatchesData);
 }
 
-void render_pass_frame_state_set_unified_uniform_buffer(render_pass_frame_state *frameState,
-                                                        global_uniform_buffer_element *global) {
+void render_pass_frame_state_set_unified_constant_buffer(render_pass_frame_state *frameState,
+                                                         global_uniform_buffer_element *global) {
 
   render_pass_offscreen_texture_state_set_g_buffer_elements(frameState->offscreenTextures,
                                                             &global->offscreenTextures);

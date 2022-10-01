@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  30 SEP 2022 02:08
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  2 OCT 2022 00:46
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1489,23 +1489,16 @@ Overfull \hbox (5.21303pt too wide) in paragraph at lines 898--899
 LaTeX Font Info:    Font shape `TU/lmss/bx/it' in size <10> not available
 (Font)              Font shape `TU/lmss/bx/sl' tried instead on input line 1111
 .
- [30] [31]
+ [30]
 File: images/blender.png Graphic file (type bmp)
 <images/blender.png>
- [32] [33] [34]
-Overfull \hbox (2.51866pt too wide) in paragraph at lines 1366--1367
-[]\TU/lmss/m/n/10 globalne przekształcenie (macierz model-widok-rzutowanie): \T
-U/lmss/m/sl/10 vkCmdPushConstants()\TU/lmss/m/n/10 , \TU/lmss/m/sl/10 vkCmdBind
--
- []
-
-
-Overfull \hbox (82.45863pt too wide) in paragraph at lines 1381--1382
+ [31] [32] [33] [34]
+Overfull \hbox (82.45863pt too wide) in paragraph at lines 1340--1341
 [][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (45.70863pt too wide) in paragraph at lines 1384--1385
+Overfull \hbox (35.20863pt too wide) in paragraph at lines 1343--1344
 [][][][][][][][][][][][][][][][][][][][][] 
  []
 
@@ -1587,27 +1580,27 @@ Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 
-Overfull \hbox (18.23123pt too wide) in paragraph at lines 262--263
+Overfull \hbox (19.62645pt too wide) in paragraph at lines 260--261
  [][] 
  []
 
-[40] [41]
+[40]
 LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10> not available
-(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 309.
- [42] [43]
-Overfull \hbox (56.20863pt too wide) in paragraph at lines 416--417
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 307.
+ [41] [42] [43]
+Overfull \hbox (56.20863pt too wide) in paragraph at lines 414--415
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
 ][][] 
  []
 
 
-Overfull \hbox (19.45863pt too wide) in paragraph at lines 417--418
+Overfull \hbox (19.45863pt too wide) in paragraph at lines 415--416
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 [44] [45]
 LaTeX Font Info:    Font shape `TU/lmss/m/it' in size <9> not available
-(Font)              Font shape `TU/lmss/m/sl' tried instead on input line 526.
+(Font)              Font shape `TU/lmss/m/sl' tried instead on input line 524.
  [46] [47] [48] [49] [50]
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
@@ -1634,55 +1627,43 @@ Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
-[51] [52] [53]
+[51] [52]
 File: images/font_texture.png Graphic file (type bmp)
 <images/font_texture.png>
 
-Overfull \hbox (6.48865pt too wide) in paragraph at lines 901--904
+Overfull \hbox (6.48865pt too wide) in paragraph at lines 899--902
 []\TU/lmss/m/n/10 Zasób materiału \TU/lmss/m/sl/10 asset_material \TU/lmss/m/n/
 10 reprezentuje parametry używanego podczas renderowania powierzchni
  []
 
-[54]
-Overfull \hbox (0.71416pt too wide) in paragraph at lines 928--929
+[53]
+Overfull \hbox (0.71416pt too wide) in paragraph at lines 926--927
 []\TU/lmss/m/sl/10 addressModeU\TU/lmss/m/n/10 : tryb adresowania współrzędnych
  tekstur poza przedziałem $[]$ dla osi X (VkSam-
  []
 
 
-Overfull \hbox (0.47417pt too wide) in paragraph at lines 929--930
+Overfull \hbox (0.47417pt too wide) in paragraph at lines 927--928
 []\TU/lmss/m/sl/10 addressModeV\TU/lmss/m/n/10 : tryb adresowania współrzędnych
  tekstur poza przedziałem $[]$ dla osi Y (VkSam-
  []
 
-
-Overfull \hbox (71.95863pt too wide) in paragraph at lines 945--946
+[54]
+Overfull \hbox (71.95863pt too wide) in paragraph at lines 943--944
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (61.45863pt too wide) in paragraph at lines 946--947
+Overfull \hbox (61.45863pt too wide) in paragraph at lines 944--945
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (8.95863pt too wide) in paragraph at lines 947--948
+Overfull \hbox (8.95863pt too wide) in paragraph at lines 945--946
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-[55] [56]
-Missing character: There is no / ("2F) in font nullfont!
-Missing character: There is no / ("2F) in font nullfont!
-Missing character: There is no H ("48) in font nullfont!
-Missing character: There is no I ("49) in font nullfont!
-Missing character: There is no R ("52) in font nullfont!
-Missing character: There is no O ("4F) in font nullfont!
-Missing character: There is no n ("6E) in font nullfont!
-Missing character: There is no o ("6F) in font nullfont!
-Missing character: There is no d ("64) in font nullfont!
-Missing character: There is no e ("65) in font nullfont!
-Missing character: There is no s ("73) in font nullfont!
-[57]) [58]
+[55] [56] [57]) [58]
 \openout2 = `chapters/5_badania.aux'.
 
  (./chapters/5_badania.tex
@@ -1699,48 +1680,113 @@ File: images/render_sponza.png Graphic file (type bmp)
 
 
 ] [60]
-Underfull \hbox (badness 10000) in paragraph at lines 61--61
+Underfull \hbox (badness 10000) in paragraph at lines 65--65
 []\TU/lmss/m/n/10 Rozdzielczość
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 61--61
+Underfull \hbox (badness 10000) in paragraph at lines 65--65
 []\TU/lmss/m/n/10 Liczba
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 61--61
+Overfull \hbox (0.56818pt too wide) in paragraph at lines 65--65
 []\TU/lmss/m/n/10 FPS
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 61--61
+Overfull \hbox (0.56818pt too wide) in paragraph at lines 65--65
 []\TU/lmss/m/n/10 FPS
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 61--61
+Overfull \hbox (1.09818pt too wide) in paragraph at lines 65--65
+\TU/lmss/m/n/10 Max| 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 65--65
 []\TU/lmss/m/n/10 L3 Shader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 61--61
+Underfull \hbox (badness 10000) in paragraph at lines 65--65
 \TU/lmss/m/n/10 Throughput
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 61--61
+Underfull \hbox (badness 10000) in paragraph at lines 65--65
 []\TU/lmss/m/n/10 Shader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 61--61
+Underfull \hbox (badness 10000) in paragraph at lines 65--65
 \TU/lmss/m/n/10 Memory
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 61--62
+Underfull \hbox (badness 10000) in paragraph at lines 65--65
+[]\TU/lmss/m/n/10 Sampler
+ []
+
+
+Overfull \hbox (0.57133pt too wide) in paragraph at lines 65--66
 []\TU/lmss/m/n/10 Samplers
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 65--66
+\TU/lmss/m/n/10 Busy
+ []
+
+
+Overfull \hbox (0.79134pt too wide) in paragraph at lines 69--70
+[]\TU/lmss/m/n/10 88.82873| 
+ []
+
+
+Overfull \hbox (0.79134pt too wide) in paragraph at lines 71--72
+[]\TU/lmss/m/n/10 50.89936| 
+ []
+
+
+Overfull \hbox (0.79134pt too wide) in paragraph at lines 73--74
+[]\TU/lmss/m/n/10 26.02086| 
+ []
+
+
+Overfull \hbox (0.79134pt too wide) in paragraph at lines 75--76
+[]\TU/lmss/m/n/10 20.69141| 
+ []
+
+
+Overfull \hbox (0.79134pt too wide) in paragraph at lines 77--78
+[]\TU/lmss/m/n/10 99.45081| 
+ []
+
+
+Overfull \hbox (0.79134pt too wide) in paragraph at lines 79--80
+[]\TU/lmss/m/n/10 89.91253| 
+ []
+
+
+Overfull \hbox (0.79134pt too wide) in paragraph at lines 81--82
+[]\TU/lmss/m/n/10 57.64096| 
+ []
+
+
+Overfull \hbox (0.79134pt too wide) in paragraph at lines 83--84
+[]\TU/lmss/m/n/10 26.82165| 
+ []
+
+
+Overfull \hbox (0.79134pt too wide) in paragraph at lines 85--86
+[]\TU/lmss/m/n/10 21.54303| 
+ []
+
+
+Overfull \hbox (23.79706pt too wide) in paragraph at lines 63--88
+ [][] 
  []
 
 ) [61]
@@ -1789,23 +1835,17 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (./chapters/2_wprowadzenie_do_dziedziny.aux)
 (./chapters/3_technologie_algorytmy_narzedzia.aux) (./chapters/5_badania.aux)
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
-
-Package rerunfilecheck Warning: File `PracaMagisterka.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `PracaMagisterka.out':
-(rerunfilecheck)             Before: 92E3D3E013EC45187A1E1D8619F11B3C;7937
-(rerunfilecheck)             After:  7AC2F066D55301252F7CF510641C647E;7847.
+Package rerunfilecheck Info: File `PracaMagisterka.out' has not changed.
+(rerunfilecheck)             Checksum: 50BCBD925C6F69B5C38479C737715D76;7998.
 Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 \openout1 = `PracaMagisterka.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 41174 strings out of 476191
- 849259 string characters out of 5812072
- 1616584 words of memory out of 5000000
- 61220 multiletter control sequences out of 15000+600000
+ 41176 strings out of 476191
+ 849300 string characters out of 5812072
+ 1612668 words of memory out of 5000000
+ 61222 multiletter control sequences out of 15000+600000
  488903 words of font info for 105 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  88i,17n,91p,1516b,6449s stack positions out of 5000i,500n,10000p,200000b,80000s

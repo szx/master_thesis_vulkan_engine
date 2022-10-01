@@ -39,7 +39,7 @@ void render_pass_frame_state_update(render_pass_frame_state *frameState);
 
 void render_pass_frame_state_send_to_device(render_pass_frame_state *frameState);
 
-void render_pass_frame_state_set_unified_uniform_buffer(render_pass_frame_state *frameState,
-                                                        global_uniform_buffer_element *global);
+void render_pass_frame_state_set_unified_constant_buffer(render_pass_frame_state *frameState,
+                                                         global_uniform_buffer_element *global);
 
 void render_pass_frame_state_debug_print(render_pass_frame_state *frameState, int indent);

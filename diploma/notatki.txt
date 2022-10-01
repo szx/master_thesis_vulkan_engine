@@ -757,9 +757,9 @@ Metody device_begin_rendering() i end_rendering() ...
 
 ...
 
-## objects/unified_uniform_buffer.h
+## objects/unified_constant_buffer.h
 
-### Obiekt unified_uniform_buffer
+### Obiekt unified_constant_buffer
 
 ...
 
