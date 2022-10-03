@@ -465,7 +465,7 @@ typedef struct global_uniform_buffer_struct {
 \end{lstlisting}
 
 Układ pamięci struktur zdefiniowanych w języku C nie są koniecznie kompatybilne układem pamięci wymaganymi przez GPU.
-Dlatego dla każdej sparsowanej struktury \textit{*\_struct} jest generowana analogiczna struktura \textit{*\_element}, w których użyto specyfikatorów \textit{alignas} i atrybutów \textit{packed} udostępnianych przez C11 i rozszerzenia GCC w celu wyrównania pól struktury w zgodzie ze standardem układu pamięci *scalar*.
+Dlatego dla każdej sparsowanej struktury \textit{*\_struct} jest generowana analogiczna struktura \textit{*\_element}, w których użyto specyfikatorów \textit{alignas} i atrybutów \textit{packed} udostępnianych przez C11 i rozszerzenia GCC w celu wyrównania pól struktury w zgodzie ze standardem układu pamięci scalar.
 Generowana jest też funkcja \textit{glsl\_add\_*()} dodająca do ciągu znaków z kodem GLSL definicje struktury i kwalifikator układu.
 Przykładowe wejście i wyjście generacji dla bufora uniform \textit{instances}:
 \lstset{language=C}
@@ -947,9 +947,195 @@ asset_pipeline gltf "sponza" "/home/user/repo/cmake-build-debug/assets/gltf/spon
 
 \subsection{Vulkan}
 
-// TODO Vulkan to moduł zawierajacy 
+Vulkan to moduł zawierający obiekty obsługujące API Vulkan.
+Jest on używany przez moduł renderera.
 
-\subsubsection{Jednostka shader}
+\subsubsection{Obiekt device}
+Obiekt \textit{device} reprezentuje urządzenie.
+Jest on podstawowym obiektem przygotowującym podstawowe funkcjonalności używane przez resztę obiektów modułu.
+
+
+Obiekt oferuje następujące funkcjonalności:
+\begin{itemize}
+	\item obsługa okna,
+	\item inicjalizacja Vulkan,
+	\item wykonywanie poleceń one-shot.
+\end{itemize}
+
+Okno jest tworzone przy użyciu biblioteki GLFW i jest reprezentowane obiektem \textit{GLFWwindow}.
+Poniższy listing ilustruje stworzenie okna i użycie go do zarejestrowania funkcji wywołań zwrotnych używane do wykrywania zmiany rozmiaru okna oraz przechwytywania danych wejściowych myszy i klawiatury.
+\lstset{language=C}
+\begin{lstlisting}[caption={Użycie biblioteki GLFW do stworzenia okna i rejestracji funkcji wywołań zwrotnich},captionpos=b]
+// Inicjalizacja biblioteki GLFW.
+assert(glfwInit() == GLFW_TRUE);
+assert(glfwVulkanSupported() == GLFW_TRUE);
+
+// Stworzenie okna.
+glfwDefaultWindowHints();
+glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+GLFWwindow *window = glfwCreateWindow(640, 480, "Window caption", NULL, NULL);
+
+// Rejestracja funkcji wywołania zwrotnego.
+glfwSetWindowUserPointer(window, callbackData);
+glfwSetFramebufferSizeCallback(window, framebuffer_resize_callback);
+glfwSetKeyCallback(window, key_callback);
+glfwSetCursorPosCallback(window, mouse_callback);
+
+// Wirtualny kursor myszy.
+glfwSetInputMode(vkd->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+\end{lstlisting}
+
+Obiekt inicjalizuje podstawowe obiekty Vulkan: instancja, powierzchnia okna, urządzenia fizyczne, urządzenie logiczne, kolejki oraz wskaźniki funkcji rozszerzeń.
+
+Instancja deklaruje użycie wersji Vulkan 1.2 oraz następujących rozszerzeń instancji:
+\begin{itemize}
+	\item \textit{VK\_KHR\_get\_physical\_device\_properties2};
+	\item rozszerzenia zwrócone przez funkcję \textit{glfwGetRequiredInstanceExtensions()} używane do stworzenia powierzchni okna (\textit{VK\_KHR\_surface} i dodatkowe rozszerzenie zależące od system okien);
+	\item w trybie debugowania VK\_EXT\_debug\_utils;
+\end{itemize}
+Dodatkowo w trybie debugowania używana jest warstwa walidacji \textit{VK\_LAYER\_KHRONOS\_validation} oraz komunikator debugowania dla instancji.
+
+Powierzchnia okna jest tworzona przy użyciu funkcji \textit{glfwCreateWindowSurface()}.
+
+Lista urządzeń fizycznych jest przefiltrowana do listy kandydatów przy użyciu następujących kryteriów wsparcia:
+\begin{itemize}
+\item wersja Vulkan: Vulkan 1.2;
+\item dostępne rodziny kolejek: graficzne i prezentacji;
+\item rozszerzenia urządzenia:
+	\begin{itemize}
+	\item \textit{VK\_KHR\_swapchain};
+	\item \textit{VK\_KHR\_dynamic\_rendering};
+	\item \textit{VK\_KHR\_shader\_non\_semantic\_info}: w trybie debugowania, używane przez debugPrintf;
+	\end{itemize}
+\item wcześniej utworzonej powierzchni okna;
+\item funkcjonalności urządzenia fizycznego:
+	\begin{itemize}
+	\item Vulkan 1.0 Core:
+		\begin{itemize}
+		\item samplerAnisotropy: filtrowanie anizotropowego podczas próbkowania;
+		\item shaderUniformBufferArrayDynamicIndexing: jednolite dynamiczne indeksowanie tablic buforów uniform;
+		\item shaderSampledImageArrayDynamicIndexing: jednolite dynamiczne indeksowanie tablic próbkowanych obrazów;
+		\item multiDrawIndirect: polecenia wielokrotnego rysowania pośredniego;
+		\item drawIndirectFirstInstance: polecenia rysowania pośredniego z offsetem indeksu instancji;
+		\end{itemize}
+	\item Vulkan 1.2 Core:
+		\begin{itemize}
+		\item descriptorIndexing: indeksowanie deskryptorów;
+		\item shaderSampledImageArrayNonUniformIndexing: niejednolite dynamiczne indeksowanie tablic próbkowanych obrazów;
+		\item descriptorBindingVariableDescriptorCount: dowiązania deskryptora o zmiennej wielkości;
+		\item descriptorBindingPartiallyBound: częściowe dowiązanie deskryptorów;
+		\item runtimeDescriptorArray: nieograniczone tablice deskryptorów;
+		\item scalarBlockLayout: układ pamięci scalar;
+		\end{itemize}
+	\item \textit{VK\_KHR\_dynamic\_rendering}:
+	\begin{itemize}
+		\item dynamicRendering: dynamiczne przebiegi renderowania.
+	\end{itemize}
+	\end{itemize}
+\end{itemize}
+Każde urządzenie fizyczne listy kandydatów ma nadawany ranking poprzez oceniane jego typu od najlepszego do najgorszego:
+\begin{itemize}
+	\item dyskretne GPU,
+	\item zintegrowane GPU,
+	\item wirtualne GPU,
+	\item CPU.
+\end{itemize}
+Urządzenie fizyczne z najwyższym rankingiem jest ostatecznie wybierane z listy kandydatów.
+
+Urządzenie logiczne jest tworzone wspierając funkcjonalności sprawdzanie podczas wyboru urządzenia fizycznego oraz albo po jednej kolejce graficznej i prezentacji, albo jedna kolejka "uniwersalna" wspierająca obie rodziny poleceń.
+
+Po stworzeniu urządzenia logicznego funkcja \textit{vkGetDeviceProcAddr()} jest uzywana do pobrania następujących funkcji rozszerzeń:
+\begin{itemize}
+	\item \textit{VK\_KHR\_dynamic\_rendering}
+	\begin{itemize}
+		\item vkCmdBeginRenderingKHR,
+		\item vkCmdEndRenderingKHR,
+	\end{itemize}
+	\item \textit{VK\_EXT\_debug\_utils}
+	\begin{itemize}
+		\item vkCmdBeginDebugUtilsLabelEXT,
+		\item vkCmdEndDebugUtilsLabelEXT,
+		\item vkCmdInsertDebugUtilsLabelEXT,
+		\item vkSetDebugUtilsObjectNameEXT.
+	\end{itemize} 
+\end{itemize}
+
+Polecenia one-shot są przeznaczone do jednokrotnego transferu dużych ilości danych z bazy zasobów do pamięci DEVICE\_LOCAL przez rozpoczęciem pętli głównej renderowania.
+
+
+Bufor poleceń one-shot jest alokowany podczas tworzenia obiektu device z z osobnej puli komend one-shot. Jest on przeznaczona do użycia z kolejką graficzną i stworzona z flagą TRANSIENT, która wskazuje sterownikowi graficznemu, że zaalokowane bufory komend będą krótkotrwałe i zresetowane bądź zwolnione w stosunkowo krótkim czasie, co teoretycznie pozwala sterownikowi na optymalizację metody alokacji pamięci.
+
+Nagrywanie poleceń one-shot rozpoczyna się wywołaniem metody \textit{begin\_one\_shot\_commands()} rozpoczynającej nagrywanie bufora poleceń funkcją \textit{vkBeginCommandBuffer()} z flagą użycia \textit{ONE\_TIME\_SUBMIT} wskazującą, że będzie on wykonany tylko jeden raz.
+
+Nagrywanie jak kończone wywołaniem metody \textit{end\_one\_shot\_commands()}, która wykonuje następujące czynności:
+\begin{itemize}
+	\item kończy nagrywanie bufora komend one-shot funkcją \textit{vkEndCommandBuffer()},
+	\item wysyła bufor poleceń do kolejki graficznej funkcją \textit{vkQueueSubmit()},
+	\item czeka na CPU aż kolejka zakończy wykonywanie poleceń na GPU funkcją \textit{vkQueueWaitIdle()},
+	\item resetuje bufor komend one-shot poprzez reset całej puli komend one-shot funkcją \textit{vkResetCommandPool()}.
+\end{itemize}
+Synchronizacja między krokiem 2. i 4. zapobiega próbie zresetowania bufora poleceń wciąż używanego przez GPU. Resetowanie puli poleceń automatycznie resetuje zaalokowane z niego bufory poleceń i jest uznawane za szybsze od manualnego resetowania buforów poleceń przez warstwy walidacji:
+\lstset{language=verbatim}
+\begin{lstlisting}[caption={Ostrzeżenie wydajnościowe wyemitowane przez warstwy walidacji},captionpos=b]
+Validation Performance Warning:
+[ UNASSIGNED-BestPractices-vkCreateCommandPool-command-buffer-reset ]
+Object 0: handle = 0x626000015100, type = VK_OBJECT_TYPE_DEVICE;
+| MessageID = 0x8728e724
+| vkCreateCommandPool(): VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER is set.
+Consider resetting entire pool instead.
+\end{lstlisting}
+
+// HIRO wykonywanie poleceń one-shot
+
+\subsubsection{Obiekt swap\_chain}
+Obiekt \textit{swap\_chain} reprezentuje łańcuch wymiany i zawiera następujące elementy:
+\begin{itemize}
+	\item obiekt \textit{VkSwapchain},
+	\item lista uchwytów prezentowalnych obrazów \textit{VkImage},
+	\item lista widoków prezentowalnych obrazów \textit{VkImageView}.
+\end{itemize}
+
+Preferowany tryb prezentacji to MAILBOX. Jeśli jest niedostępny, to wybierany jest zawsze wspierany tryb prezentacji FIFO.
+
+Preferowany format i przestrzeń kolorów to \textit{B8G8R8A8\_SRGB} i SRGB. Jeśli nie są dostępne, to wybierane są pierwszy dostępny.
+Formaty z rodziny BGRA i przestrzeń kolorów SRGB powierzchni okna są zawsze wspierane na systemie Windows i w czasie pisania pracy według portalu GPUInfo.org są one wspierane w ponad $96\%$ systemów Linux \cite{GPUINFO}.
+Obliczenia modelu oświetlenia będące wyjściem shaderów fragmentów odbywają się w liniowej przestrzeni kolorów. Użycie formatu \textit{B8G8R8A8\_SRGB} zamiast \textit{B8G8R8A8\_UNORM} pozwala na ominięcie ręcznej konwersji z przestrzeni liniowej do SRGB podczas renderowania bezpośrednio do prezentowalnej tekstury - konwersja zostanie automatycznie przeprowadzona przez sterownik.
+
+Lista uchwytów prezentowalnych obrazów jest wypełniania w pętli używając funkcji \textit{vkAcquireNextImageKHR()}.
+Następnie tworzone są widoki obrazów pozwalające przebiegom renderowania \textit{render\_pass} używać prezentowalne obrazy jako dołączenia koloru.
+
+
+\subsubsection{Obiekt buffer}
+Obiekt \textit{buffer} reprezentuje 
+// HIRO
+
+\subsubsection{Obiekt image}
+Obiekt \textit{image} reprezentuje 
+// HIRO
+ 
+\subsubsection{Obiekt unified\_constant\_buffer}
+Obiekt \textit{unified\_constant\_buffer} reprezentuje 
+// HIRO
+
+\subsubsection{Obiekt textures}
+Obiekt \textit{textures} reprezentuje 
+// HIRO
+
+\subsubsection{Obiekty unified\_geometry\_buffer i vertex\_stream}
+Obiekt \textit{unified\_geometry\_buffer} reprezentuje 
+// HIRO
+
+Obiekt \textit{vertex\_stream} // HIRO
+ 
+\subsubsection{Obiekt descriptors}
+Obiekt \textit{descriptors} reprezentuje 
+// HIRO
+
+\subsubsection{Obiekt sync}
+Obiekt \textit{sync} reprezentuje 
+// HIRO
+
+\subsubsection{Obiekt shader}
 Obiekt \textit{shader} reprezentuje pojedynczy shader i jest odpowiedzialny za kompilację ich do formy używalnej przez Vulkan.
 
 Obiekt składa się z następujących elementów:
@@ -1000,22 +1186,15 @@ shaderc_compiler_release(compiler)
 
 Moduł shadera jest on uzyskiwany poprzez kompilację kodu bajtowego SPIR-V funkcją vkCreateShaderModule(), który jest też używany do uzyskania obiektu \textit{shader\_reflect}.
 
-\subsubsection{Jednostka shader\_reflect}
 Obiekt \textit{shader\_reflect} reprezentuje mechanizm refleksji shadera pozwalający na badanie jego struktury.
 Operuje on na kodzie bajtowym SPIR-V i jest on używany podczas testów oraz do logowania informacji debugujących.
 
+
 \subsection{Scena}
 
-Moduł sceny jest odpowiedzialny za konwersję sceny z wysokopoziomowej formy używanej przez bazę zasobów do niskopoziomowej formy łatwo używalnej przez renderer do wyemitowania polecenia rysowania pośredniego.
+Moduł sceny jest odpowiedzialny za konwersję sceny z danych sceny \textit{scene\_data} do pamięci podręcznej renderera \textit{renderer\_cache} - wysokopoziomowa forma używanej przez bazę zasobów jest zamieniana na niskopoziomową formy łatwo używalnej przez renderer do emitowania poleceń rysowania pośredniego.
 
-Implementacja została zainspirowana techniką modelowania hierarchicznego opracowana w firmie Nvidia \cite{ADVANCEDSCENEGRAPH}.
-
-Scena jest opisywana przy pomocy grafu sceny, którego węzeł zawieraja zasób prymitywu, lokalną trasformację przestrzeni świata oraz węzły potomne.
-W tradycyjnym podejściu do modelowania hierarchicznego 
- znajdują się w  przy użyciu grafu sceny
-// HIRO
-
-Obiekty biorące udział w procesie konwersji sceny na polecenia rysowania są przedstawione na poniższym diagramie:
+Obiekty biorące udział w procesie konwersji sceny są przedstawione na poniższym diagramie:
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[node distance=0.5cm]
@@ -1055,7 +1234,7 @@ Obiekty biorące udział w procesie konwersji sceny na polecenia rysowania są p
 		\draw [flows] (renderer_cache_elements) edge[] (vkCmdDrawIndexedIndirect);
 		
 	\end{tikzpicture}
-	\caption{Obiekty biorące udział w procesie konwersji sceny na polecenia rysowania (opracowanie własne)}
+	\caption{Obiekty biorące udział w procesie konwersji sceny (opracowanie własne)}
 	\label{scene_process}
 \end{figure}
 
@@ -1082,13 +1261,25 @@ Ta metoda wraz z metodą \textit{serialize()} stanowi główną częścią potok
 
 Metoda \textit{create\_with\_asset\_db()} jest wywoływana w czasie wykonywania i wczytuje dane sceny o żądanej nazwie z bazy zasobów.
 
-\subsubsection{Graf sceny scene\_graph}
-Obiekt \textit{scene\_graph} reprezentuje
-// HIRO
+\subsubsection{Graf sceny scene\_graph i drzewo sceny scene\_tree}
+Obiekty \textit{scene\_graph} i \textit{scene\_tree} reprezentują kolejno graf i drzewo sceny.
+Są one tworzone na podstawie danych sceny używając metody \textit{create\_with\_scene\_data()}.
 
-\subsubsection{Drzewo sceny scene\_tree}
-Obiekt \textit{scene\_tree} reprezentuje
-// HIRO
+Implementacja została zainspirowana techniką modelowania hierarchicznego opracowana w firmie Nvidia \cite{ADVANCEDSCENEGRAPH}.
+Graf sceny jest konwersowany na formę pośrednią zwaną drzewem sceny w sposób zapewniający unikalną ścieżkę z korzenia drzewa do jego liści.
+Uprasza to klasyczny proces konwersji sceny algorytmem \ref{RenderujGrafSceny} - podczas przechodzenia drzewa sceny każdy węzeł może być napotkany tylko raz.
+Właściwośc ta pozwala na wprowadzenie do węzła stanu nagromadzonego (struktura \textit{scene\_tree\_node\_accumulated}) zawierającego aktualny wynik działania algorytmu.
+Konwersja sceny sprowadza się wtedy do całkowitej propagagacji stanu nagromadzonego od korzenia do liści, w których jest on całkowicie wypełniony i tym samym zawiera wszystkie informacje wymagane do wyemitowania polecenia rysowania.
+
+Przykładowo poniżej przedstawiono wygenerowane metodami \textit{debug\_print()} diagramy przedstawiające graf i drzewo sceny składającej się z dwóch trójkątów używających tej samej siatki, ale różniących się pozycją:
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1.0\textwidth]{images/scene_graph_tree.png}
+	\caption{Przykładowy graf i drzewo sceny zawierającej dwa trójkąty (opracowanie własne)}
+	\label{triangles_scene_graph}
+\end{figure}
+
+
 
 \subsection{Renderer}
 

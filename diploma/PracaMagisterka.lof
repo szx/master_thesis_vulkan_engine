@@ -16,10 +16,11 @@
 \contentsline {figure}{\numberline {3.2}{\ignorespaces Relacje pomiędzy modułam silnika i ich najważniejszymi klasami (opracowanie własne)\relax }}{40}{figure.caption.57}%
 \contentsline {figure}{\numberline {3.3}{\ignorespaces Relacje pomiędzy obiektami zasobów w silniku (opracowanie własne)\relax }}{51}{figure.caption.71}%
 \contentsline {figure}{\numberline {3.4}{\ignorespaces Przykładowa tekstura dla czcionki Go-Mono \blx@tocontentsinit {0}\cite {GOMONOFONT} (opracowanie własne)\relax }}{54}{figure.caption.80}%
-\contentsline {figure}{\numberline {3.5}{\ignorespaces Obiekty biorące udział w procesie konwersji sceny na polecenia rysowania (opracowanie własne)\relax }}{57}{figure.caption.88}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Obiekty biorące udział w procesie konwersji sceny (opracowanie własne)\relax }}{60}{figure.caption.96}%
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Przykładowy graf i drzewo sceny zawierającej dwa trójkąty (opracowanie własne)\relax }}{62}{figure.caption.99}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Wynik renderowania sceny MetalRoughSpheres (opracowanie własne)\relax }}{59}{figure.caption.92}%
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Wynik renderowania sceny DamagedHelmet (opracowanie własne)\relax }}{60}{figure.caption.93}%
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Wynik renderowania sceny Sponza (opracowanie własne)\relax }}{60}{figure.caption.94}%
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Wynik renderowania sceny MetalRoughSpheres (opracowanie własne)\relax }}{63}{figure.caption.100}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Wynik renderowania sceny DamagedHelmet (opracowanie własne)\relax }}{64}{figure.caption.101}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Wynik renderowania sceny Sponza (opracowanie własne)\relax }}{64}{figure.caption.102}%
 \addvspace {10\p@ }
 \contentsfinish 

@@ -1,51 +1,6 @@
 HIRO odwoływuj się po numerze do listingów
 HIRO mniej opisowach kod
 
-
-Praca magisterska podzielona na dwie części:
-Opis i analiza algorytmów graficznych i technik post-processingu używanych podczas renderowania sceny w nowoczesnych grach 3D (temat rzeka).
-
-Vertex shader: animacje szkieletowa
-Geometry shading: LOD - tworzenie nowej geometrii, usuwanie wierzchołków z odległej geometrii
-
-render pass - mgliste
-multi-pass rendering - ten sam obiekt jest renderowany kilka razy
-
-    A geometry pass, where data needed for shading is written to the G-buffer (depth, albedo (difusse), normals).
-    A lighting pass, where shading is performed using the information in the G-buffer.
-    
-Usuwanie niewidocznych powierzchni: view frustum culling (odrzucanie obiektów poza bryłą widzenia, nie wysylac geometrii do GPU), occlusion culling, podział przestrzeni (Binary Space Partitioning, Octtree drzewo ósemkowe i portale).
-
-Obsługa przezroczystości: Order-independent transparency bardzo dokładne i wolne, zwykle sortowanie front-to-back dla nieprzeźroczystych (Z-culling w early-Z), sortowanie back-to-front i alpha blending dla półprzeźroczystych.
-Techniki post-processingu: efekty nakładane po tym jak geometria jest wyrenderowana do obrazu 2d, HDR (high dynamic range, kolor fragmentu większe niż 1.0, tone mapping do 0.0-1.0), motion blur, bloom
-
-
-
-Vulkan 1.2: styczeń 2020
-VK_KHR_buffer_device_address: wskaźniki do buforów w shaderach
-
-
-1. Ustawienie stanów renderowania (w tym tekstur, shaderów i parametrów przekazanych do shaderów)
-2. Ustawienie aktywnego bufora wierzchołków, bufora indeksów
-3. Uruchomienie metody renderującej
-
-Kiedyś były display listy, ale od OpenGL 3 deprecated. Zmiana stanu jak np. blendingu wymaga patchowania fragment shadera po stronie sterownika.
-
-Wielowątkowość w Vulkanie - trzy wątki dla trzech ramek (triple buffering) nagrywają bufory (command pool osobny dla każdego wątku). Kilka wątków może nawet submitować te bufory do GPU, z zastrzerzeniem, że muszą wykonywać się na różnych command queue (kolejkach komend), w OpenGL jest jeden wątek renderujący odpowiedzialny . 
-
-Synchronizacja w Vulkanie: Semafory i fence dla command bufferów, pipeline barriery i eventy dla komend. execution barriers/memory barriers/image transition
-
-
-
-# Praca magisterska - draft
-
-1. Wybierz plik.
-2. Definicja / Dlaczego / Co dokładnie robi. ...
-
-TODO: wrong union in light, remove spot light, rename vertex component to vertex element, rename asset_image to
-asset_bitmap, move asset/ outside vulkan/, remove MAX_FRAMEBUFFER_ATTACHMENT_COUNT, remove STORAGE_BUFFER, move checking
-FILTER_LINEAR to image format params
-
 What? Why? How? Nieporuszono: podział przestrzeni i culling, multisampling Zagadnienia: wieloplatformowość, automatyczna
 generacja kodu, bazy danych Test: obrazy z HOST_VISIBlE Skróty: GPU, indirect rendering - pośrednie renderowania,
 fixed-function, buffor, image, texture - sampled image, binding - dowiązanie, bindless rendering - renderowanie bez
@@ -62,14 +17,6 @@ transition - przejście układu obrazu, execution dependency - zależność wyko
 storage buffer - bufor magazynowy
 
 -------------
-
-# 2. Podstawy teoretyczne
-
-...
-
-# 3. Implementacja
-
-Ten rozdział przedstawia szczegóły implementacji poszczególnych elementów silnika.
 
 ## Założenia
 
@@ -110,29 +57,11 @@ Moduł przebiegu renderowania jest odpowiedzialny za wyrenderowanie całości b�
 renderowania nagrywa polecenia do podanego bufora poleceń.
 [DIAGRAM]
 
-...
-
 ## Graf renderowania
 
 Moduł grafu renderowania jest odpowiedzialny za stworzenie przebiegów renderowania na podstawie wysokopoziomowego
 deklaratywne opisu renderowania dostarczonego przez programistę. ...
 
-# 4. Badania
-
-...
-
-# 5. Podsumowanie
-
-...
-
-# Bibliografia
-
-...
-[PEP] https://peps.python.org/pep-0405/
-[BLENDER] https://www.blender.org/
-[GLTF] https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html
-[GLTF_LIGHT] https://github.com/KhronosGroup/glTF/blob/main/extensions/2.0/Khronos/KHR_lights_punctual/README.md
-[SRAA] Subpixel Reconstruction Antialiasing for Deferred Shading
 
 # TODO
 
@@ -379,229 +308,11 @@ uint baseColorTextureId = global[globalIdx].materials[materialId].baseColorTextu
 vec4 baseColorSample = texture(textures2D[baseColorTextureId], inTexCoord);
 ```
 
-## objects/swap_chain.h
-
-### Obiekt swap_chain
-
-Obiekt swap_chain reprezentuje łańcuch wymiany. Metoda get_aspect_ratio() zwraca proporcje łańcucha wymiany (wysokość do
-szerokości).
-
-### Łancuch wymiany
-
-TODO implementacja
-
-### Łańcuch wymiany w silniku
-
-W silniku łańcuch wymiany składa się z następujących elementów:
-
-- obiekt VkSwapchainKHR,
-- uchwyty do prezentowalnych obrazy,
-- widoki obrazów.
-
-Preferowany tryb prezentacji to MAILBOX. Jeśli jest niedostępny, to wybierany jest zawsze wspierany tryb prezentacji
-FIFO.
-
-Preferowany format i przestrzeń kolorów to B8G8R8A8_SRGB i SRGB. Jeśli nie są dostępne, to wybierane są pierwsze
-dostępne.
-Formaty z rodziny BGRA i przestrzeń kolorów SRGB powierzchni okna są zawsze wspierane na systemie Windows i w czasie
-pisania pracy według portalu GPUInfo.org są one wspierane w ponad 96% systemów Linux.
-
-Obliczenia modelu oświetlenia będące wyjściem shaderów fragmentów odbywają się w liniowej przestrzeni kolorów. Użycie
-formatu B8G8R8A8_SRGB zamiast B8G8R8A8_UNORM pozwala na ominięcie ręcznej konwersji z przestrzeni liniowej do SRGB
-podczas renderowania bezpośrednio do prezentowalnej tekstury - konwersja zostanie przeprowadzona przez sterownik
-graficzny.
-
-Rozmiar obrazów jest równy rozmiarowi powierzchni okna.
-
-Mimo, że program posiada uchwyty obrazów, to wciąż są one zarządzane przez silnik prezentacji i przed użyciem muszą być
-udostępnione programowi przy użyciu funkcji vkAcquireNextImageKHR() zwracającej indesk w wcześniej przygotowanej tablicy
-uchwytów.
-
-#### Użycie łańcucha wymiany
-
-
-
 ## objects/device.h
 
 ### Obiekt device
 
-Obiekt device reprezentuje urządzenie. Jest on podstawowym obiektem przygotowującym podstawowe funkcjonalności używane
-przez inne obiekty systemu renderowania. ...
-
-W silniku obiekt device oferuje następujące funkcjonalności:
-
-- obsługa okna,
-- inicjalizacja Vulkan,
-- wykonywanie poleceń one-shot,
-
-#### Obsługa okna
-
-Okno jest tworzone przy użyciu GLFW i jest reprezentowane obiektem *GLFWwindow*.
-
-Przykładowy kod używający GLFW do stworzenia okna:
-
-```
-// Inicjalizacja biblioteki GLFW.
-assert(glfwInit() == GLFW_TRUE);
-assert(glfwVulkanSupported() == GLFW_TRUE);
-
-// Stworzenie okna.
-glfwDefaultWindowHints();
-glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-GLFWwindow *window = glfwCreateWindow(640, 480, "Window caption", NULL, NULL);
-
-// Rejestracja funkcji wywołania zwrotnego.
-glfwSetWindowUserPointer(window, callbackData);
-glfwSetFramebufferSizeCallback(window, framebuffer_resize_callback);
-glfwSetKeyCallback(window, key_callback);
-glfwSetCursorPosCallback(window, mouse_callback);
-
-// Wirtualny kursor myszy.
-glfwSetInputMode(vkd->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-```
-
-Zarejestrowane funkcje wywołania zwrotnego są używane do wykrywania zmiany rozmiaru okna oraz przekazywania danych
-wejściowych myszy i klawiatury do obiektu input.
-
-#### Inicjalizacja Vulkan
-
-TODO implementacja
-
-###### Instancja
-
-- podstawowe informacje o aplikacji: nazwa i wersja aplikacji oraz używanego silnika, najwyższa wersja Vulkan używana
-  przez aplikację (1.2),
-- włączone rozszerzenia instancji:
-  - VK_KHR_get_physical_device_properties2,
-  - dodatkowe rozszerzenia zwrócone przez funkcję glfwGetRequiredInstanceExtensions() używane do stworzenia powierzchni
-    okna (VK_KHR_surface i dodatkowe rozszerzenie zależące od systemu)
-  - w trybie debugowania VK_EXT_debug_utils używane przez obiekt debug.
-- włączone warstwy: w trybie debugowania warstwa walidacji i jej używane funkcjonalności,
-- komunikator debugowania dla instancji.
-
-###### Powierzchnia
-
-Powierzchnia jest tworzona przy użyciu funkcji glfwCreateWindowSurface().
-
-###### Urządzenie fizyczne
-
-Lista urządzeń fizycznych jest przefiltrowana do listy kandydatów przy użyciu następujących kryteriów wsparcia:
-
-- wersja Vulkan: Vulkan 1.2,
-- dostępne rodziny kolejek: graficzne i prezentacji,
-- rozszerzenia urządzenia:
-  - VK_KHR_swapchain,
-  - VK_KHR_dynamic_rendering
-  - VK_KHR_shader_non_semantic_info (w trybie debugowania, używane przez debugPrintf)
-- wcześniej utworzonej powierzchni,
-- funkcjonalności urządzenia fizycznego:
-  - Vulkan 1.0 Core:
-    - samplerAnisotropy: filtrowanie anizotropowego podczas próbkowania,
-    - shaderUniformBufferArrayDynamicIndexing: jednolite dynamiczne indeksowanie tablic buforów uniform,
-    - shaderSampledImageArrayDynamicIndexing: jednolite dynamiczne indeksowanie tablic próbkowanych obrazów,
-    - multiDrawIndirect: polecenia wielokrotnego rysowania pośredniego,
-    - drawIndirectFirstInstance: polecenia rysowania pośredniego z offsetem indeksu instancji
-  - Vulkan 1.2 Core:
-    - descriptorIndexing: indeksowanie deskryptorów,
-    - shaderSampledImageArrayNonUniformIndexing: niejednolite dynamiczne indeksowanie tablic próbkowanych obrazów,
-    - descriptorBindingVariableDescriptorCount: dowiązania deskryptora o zmiennej wielkości,
-    - descriptorBindingPartiallyBound: częściowe dowiązanie deskryptorów,
-    - runtimeDescriptorArray: tablice deskryptorów czasu wykonania,
-    - scalarBlockLayout: układ pamięci *scalar*,
-  - VK_KHR_dynamic_rendering:
-    - dynamicRendering: dynamiczne przebiegi renderowania.
-
-Każde urządzenie fizyczne listy kandydatów ma nadawany ranking poprzez oceniane jego typu od najlepszego do najgorszego:
-
-- dyskretne GPU,
-- zintegrowane GPU,
-- wirtualne GPU (oferowane przez środowisko wirtualizacji),
-- CPU (renderer programowy).
-
-Urządzenie fizyczne z najwyższym rankingiem jest ostatecznie wybierane z listy kandydatów.
-
-Po wybraniu urządzenia fizycznego zapamiętywane są następujące limity używane w
-dalszych częściach silnika:
-
-- obrazy i próbkowanie:
-  - maxSamplerAnisotropy: maksymalny stopień filtrowania anizotropowego,
-  - maxImageDimension2D: najwyższa obsługiwana wysokość lub szerokość obrazu 2D,
-- aktualizacja deskryptorów:
-  - maxUniformBufferRange: maksymalna wielkość bloku pamięci, którą można użyć do aktualizacji deskryptora bufora
-    uniform,
-  - minUniformBufferOffsetAlignment: minimalne wyrównanie offsetu bloku pamięci, które można użyć do aktualizacji
-    deskryptora bufora uniform,
-- tworzenie deskryptorów:
-  - maxDescriptorSetUpdateAfterBindUniformBuffers: maksymalna liczba buforów uniform w układzie potoku,
-  - maxDescriptorSetUpdateAfterBindSampledImages: maksymalna liczba próbkowanych obrazów w układzie potoku
-  - maxPerStageUpdateAfterBindResources: maksymalna liczba zasobów które mogą być dostępne dla pojedyńczego etapu
-    cieniowania w potoku graficznym,
-- rysowanie pośrednie:
-  - maxDrawIndirectCount: maksymalna liczba poleceń rysowania które mogą być wykonane przez jedno polecenie rysowania
-    pośredniego.
-
-###### Urządzenie logiczne
-
-- kolejki: albo po jednej kolejce graficznej i prezentacji, albo jedna kolejka "uniwersalna" wspierająca obie rodziny
-  poleceń,
-- funkcje urządzenia fizycznego: te same jak te, których wsparcie było sprawdzane podczas wybierania urządzenia
-  fizycznego,
-- rozszerzenia urządzenia: jw.,
-- warstwy walidacji.
-
-###### Kolejki
-
-Pobierane są po jednym uchwycie do koleki graficznej oraz kolejki prezentacji.
-
-##### Wskaźniki funkcji rozszerzeń
-
-```
-  vkd->cmdBeginRendering =
-      (PFN_vkCmdBeginRenderingKHR)vkGetInstanceProcAddr(vkd->instance, "vkCmdBeginRenderingKHR");
-```
-
-Pobieranie są wskaźniki do następujących funkcji rozszerzeń:
-
-- VK_KHR_dynamic_rendering
-  - vkCmdBeginRenderingKHR
-  - vkCmdEndRenderingKHR
-- VK_EXT_debug_utils
-  - vkCmdBeginDebugUtilsLabelEXT
-  - vkCmdEndDebugUtilsLabelEXT
-  - vkCmdInsertDebugUtilsLabelEXT
-  - vkSetDebugUtilsObjectNameEXT
-
-#### Wykonywanie poleceń one-shot
-
-Bufor poleceń one-shot jest przeznaczony do jednokrotnego transferu dużych ilości danych z bazy zasobów do pamięci
-DEVICE_LOCAL na GPU i musi być użyty przez rozpoczęciem pętli głównej renderowania - pamięć, która może być modyfikowana
-pomiędzy klatkami (np. bufory poleceń rysowania pośredniego) musi być pamięcią HOST_VISIBLE, która pozwala na mapowanie
-pamięci i tymsamym pominęcie użycia buforów poleceń.
-
-Bufor poleceń one-shot jest alokowany podczas tworzenia obiektu device z puli komend one-shot (VkCommandPool). Jest ona
-przeznaczona do użycia z kolejką graficzną i stworzona z flagą TRANSIENT, która wskazuje sterownikowi graficznemu, że
-zaalokowane bufory komend będą krótkotrwałe i zresetowane bądź zwolnione w stosunkowo krótkim czasie, co teoretycznie
-pozwala sterownikowi na optymalizację metody alokacji pamięci.
-
-Nagrywanie poleceń one-shot rozpoczyna się wywołaniem metody begin_one_shot_commands() rozpoczynającej nagrywanie bufora
-poleceń funkcją vkBeginCommandBuffer() z flagą użycia ONE_TIME_SUBMIT wskazującą, że będzie on wykonany tylko jeden raz.
-
-Nagrywanie jak kończone wywołaniem metody end_one_shot_commands(), która wykonuje następujące czynności:
-
-```
-1. Kończy nagrywanie bufora komend one-shot funkcją vkEndCommandBuffer(),
-2. Wysyła bufor poleceń do kolejki graficznej funkcją vkQueueSubmit(),
-3. Czeka na CPU aż kolejka zakończy wykonywanie poleceń na GPU funkcją vkQueueWaitIdle(),
-4. Resetuje bufor komend one-shot poprzez reset całej puli komend one-shot funkcją vkResetCommandPool().
-```
-
-Synchronizacja między krokiem 2. i 4. zapobiega próbie zresetowania bufora poleceń wciąż używanego przez GPU.
-Resetowanie puli poleceń automatycznie resetuje zaalokowane z niego bufory poleceń i jest uznawane za szybsze od
-manualnego resetowania buforów poleceń przez warstwy walidacji:
-
-```
-Validation Performance Warning: [ UNASSIGNED-BestPractices-vkCreateCommandPool-command-buffer-reset ] Object 0: handle = 0x626000015100, type = VK_OBJECT_TYPE_DEVICE; | MessageID = 0x8728e724 | vkCreateCommandPool(): VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER is set. Consider resetting entire pool instead.
-```
+HIRO
 
 Bufor poleceń one-shot może być wypełniony dowolnymi poleceniami graficznymi Vulkan, ale silnik oferuje następujące
 metody implementujące podstawowe operacje używane podczas transferu danych:
@@ -765,11 +476,11 @@ Metody device_begin_rendering() i end_rendering() ...
 
 # Definicje Vulkan
 
-## Dowiązanie koloru
+## Dołączenie koloru
 
 to widok obrazu używany przez potok graficzny do zapisywania końcowych wartości kolorów podczas etapu mieszania kolorów.
 
-## Dowiązanie głębi/szablonu
+## Dołączenie głębi/szablonu
 
 to widok obrazu używany przez potok graficzny do odczytywania i zapisywania wartości głebi/szablonu podczas testów
 głębi/szablonu w etapach wczesnych i późnych testów fragmentów.

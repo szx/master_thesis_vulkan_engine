@@ -12,48 +12,6 @@ void update_func(renderer *renderer, double fps, double dt) {
   render_pass_font_state *fontState = renderPassState->sharedState.font;
 
   if (renderState->config->global.controlsEnabled == 0) {
-    static bool cameraSet = false;
-    if (!cameraSet) {
-      log_info("debug");
-      fontState->debugTextEnabled = true;
-      render_pass_camera_state_select(cameraState, 0);
-      cameraState->user.transform[0][0] = 0.022193;
-      cameraState->user.transform[0][1] = 0.000000;
-      cameraState->user.transform[0][2] = -0.999754;
-      cameraState->user.transform[0][3] = 0.000000;
-      cameraState->user.transform[1][0] = -0.243004;
-      cameraState->user.transform[1][1] = 0.970010;
-      cameraState->user.transform[1][2] = -0.005394;
-      cameraState->user.transform[1][3] = 0.000000;
-      cameraState->user.transform[2][0] = 0.969771;
-      cameraState->user.transform[2][1] = 0.243064;
-      cameraState->user.transform[2][2] = 0.021528;
-      cameraState->user.transform[2][3] = 0.000000;
-      cameraState->user.transform[3][0] = -5.129714;
-      cameraState->user.transform[3][1] = 0.992357;
-      cameraState->user.transform[3][2] = 0.190652;
-      cameraState->user.transform[3][3] = 1.000000;
-      cameraSet = true;
-
-      for (int i = 0; i < 30; i++) {
-        vec3 position;
-        render_pass_camera_state_set_position(cameraState, position);
-
-        renderer_cache_direct_light_element *pointLightElement =
-            renderer_cache_direct_light_element_create(asset_direct_light_create_point_light(
-                lightState->renderState->rendererCache->sceneData, position, 10, 10,
-                (vec3){1, 1, 1}));
-        renderer_cache_add_direct_light_element(lightState->renderState->rendererCache,
-                                                pointLightElement);
-      }
-    }
-    utstring_clear(fontState->text);
-    utstring_printf(
-        fontState->text, "Lights: %d, FPS: %.2f\n",
-        lightState->renderState->unifiedUniformBuffer->globalData->elements[0].pointLightCount +
-            lightState->renderState->unifiedUniformBuffer->globalData->elements[0]
-                .directionalLightCount,
-        fps);
     return;
   }
   if (renderer->vkd->input.keyboard.release.esc) {

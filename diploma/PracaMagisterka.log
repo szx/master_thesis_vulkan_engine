@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  2 OCT 2022 00:46
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  3 OCT 2022 23:23
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1663,7 +1663,10 @@ Overfull \hbox (8.95863pt too wide) in paragraph at lines 945--946
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-[55] [56] [57]) [58]
+[55] [56] [57] [58] [59] [60]
+File: images/scene_graph_tree.png Graphic file (type bmp)
+<images/scene_graph_tree.png>
+) [61] [62]
 \openout2 = `chapters/5_badania.aux'.
 
  (./chapters/5_badania.tex
@@ -1674,12 +1677,12 @@ File: images/render_damagedhelmet.png Graphic file (type bmp)
 <images/render_damagedhelmet.png>
 File: images/render_sponza.png Graphic file (type bmp)
 <images/render_sponza.png>
-[59
+[63
 
 
 
 
-] [60]
+] [64]
 Underfull \hbox (badness 10000) in paragraph at lines 65--65
 []\TU/lmss/m/n/10 Rozdzielczość
  []
@@ -1789,12 +1792,12 @@ Overfull \hbox (23.79706pt too wide) in paragraph at lines 63--88
  [][] 
  []
 
-) [61]
+) [65]
 \openout2 = `chapters/6_podsumowanie.aux'.
 
  (./chapters/6_podsumowanie.tex
 Rozdzia\l  5.
-) [62
+) [66
 
 
 
@@ -1811,23 +1814,23 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 9.37807pt on input line 3.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 7.29405pt on input line 3.
- [63
+ [67
 
 
 
 
-] [64] (./PracaMagisterka.lof)
+] [68] (./PracaMagisterka.lof)
 \tf@lof=\write7
 \openout7 = `PracaMagisterka.lof'.
 
- [65
+ [69
 
 ]
 (./PracaMagisterka.lot)
 \tf@lot=\write8
 \openout8 = `PracaMagisterka.lot'.
 
-) [66
+) [70
 
 ] (./PracaMagisterka.aux
 (./chapters/0a_streszczenie.aux) (./chapters/0b_spis_tresci.aux)
@@ -1836,18 +1839,18 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (./chapters/3_technologie_algorytmy_narzedzia.aux) (./chapters/5_badania.aux)
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
 Package rerunfilecheck Info: File `PracaMagisterka.out' has not changed.
-(rerunfilecheck)             Checksum: 50BCBD925C6F69B5C38479C737715D76;7998.
+(rerunfilecheck)             Checksum: 7F89CA4E9F041209494AE2357E6A3C5D;8001.
 Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 \openout1 = `PracaMagisterka.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 41176 strings out of 476191
- 849300 string characters out of 5812072
- 1612668 words of memory out of 5000000
- 61222 multiletter control sequences out of 15000+600000
+ 41270 strings out of 476191
+ 851125 string characters out of 5812072
+ 1612764 words of memory out of 5000000
+ 61315 multiletter control sequences out of 15000+600000
  488903 words of font info for 105 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  88i,17n,91p,1516b,6449s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on PracaMagisterka.pdf (66 pages).
+Output written on PracaMagisterka.pdf (70 pages).
