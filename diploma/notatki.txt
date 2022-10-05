@@ -85,21 +85,9 @@ ang. clip space). Przestrzeń przycinania w Vulkanie jest prawoskrętna z flippe
 
 Vulkan [... 2d/3d, mipmap (lod), array layers, tiling]
 [OBRAZEK]
-Oba rodzaje zasobów muszą posiadać dowiązaną alokację pamięci.
 
-Użycie flag dobrze dopasowanych do użycia określonego przez rodzaj bufora jest wskazówką dla sterownika graficznego,
-którą może on użyć do bardziej optymalnego wewnętrzne zarządzanie stanem i pamięcią GPU.
+
 [LISTING alloc, create, bind buffer/image]
-
----
-/objects/image.h
-
-HIRO
-
-Format obrazu jest wybierany przy pomocy algorytmu opisanego w poniższym listingu. Algorytm generuje listę formatów
-spełniających wymagania specyfikowane przez rodzaj obrazu i liczbą kanałów równą lub większą od liczby kanałów używanej
-przez obraz. Ostateczny format to ten z z najmniejszą liczbą kanałów wciąż wspierany przez sterownik graficzny.
-[LISTING find_image_format]
 
 ----
 
@@ -257,34 +245,6 @@ metody implementujące podstawowe operacje używane podczas transferu danych:
 Metoda one_shot_transition_image_layout() zmienia układ całego obrazu - jego wszystkich warstw i poziomów mipmap. Używa
 ona do tego metody device_transition_image_layout_command().
 
-##### Układ obrazu
-
-Obrazy są przechowywane w pamięci GPU w układach zdefiniowanych przez sterownik graficzny. Każdy układ ogranicza zbiór
-możliwych operacji na obrazie w zamian za optymalizację dozwolonych operacji.
-
-Układ obrazu nie jest tym samym co jego kafelkowanie - rodzaj używanego kafelkowania nie może być zmieniany po
-utworzeniu obrazu, a układ obrazu jest zwykle często zmieniany podczas działania programu aby pozwolić GPU na
-optymalizację sposobu użycia obrazu.
-
-Przykładowe układy obrazu i dozwolone użycie:
-
-- UNDEFINED: zawartość pamięci obrazu jest niezdefiniowana,
-- GENERAL: wszystkie rodzaje dostępu,
-- COLOR_ATTACHMENT_OPTIMAL: dołączenie koloru,
-- DEPTH_STENCIL_ATTACHMENT_OPTIMAL:  dołączenie głębi/szablonu pozwalające na odczyt (testy głębi i szablonu) i zapis (
-  wyjście głębi),
-- DEPTH_STENCIL_READ_ONLY_OPTIMAL: dołączenie głębi/szablonu tylko do odczytu,
-- SHADER_READ_ONLY_OPTIMAL: odczyt w shaderach jako próbkowany obraz,
-- TRANSFER_SRC_OPTIMAL: obraz źródłowy w poleceniu transferu,
-- TRANSFER_DST_OPTIMAL: obraz docelowy w poleceniu transferu,
-- PRESENT_SRC_KHR: prezentowanie obrazu.
-
-W przeciwieństwie do poprzednich API takich jak OpenGL, Vulkan nie zmienia automatycznie układu obrazu, co zmusza
-programistę do samodzielnego śledzenia stanu układu obrazów i wykonywania przejść na poprawny układ przed użyciem ich
-przez polecenia.
-
-Graf renderowania jest odpowiedzialyn za śledzenie stanu układu obrazów na przestrzeni klatki i jest używany do
-nagrywania barier pamięci obrazu gwarantujących odpowiednie przejścia układu obrazów.
 
 ##### Metoda device_transition_image_layout_command()
 
@@ -403,19 +363,6 @@ Metody device_begin_rendering() i end_rendering() ...
 ### Obiekt unified_constant_buffer
 
 ...
-
-# Definicje Vulkan
-
-## Dołączenie koloru
-
-to widok obrazu używany przez potok graficzny do zapisywania końcowych wartości kolorów podczas etapu mieszania kolorów.
-
-## Dołączenie głębi/szablonu
-
-to widok obrazu używany przez potok graficzny do odczytywania i zapisywania wartości głebi/szablonu podczas testów
-głębi/szablonu w etapach wczesnych i późnych testów fragmentów.
-
-
 
 # TODO
 

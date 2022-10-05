@@ -1169,13 +1169,15 @@ Ich informacje tworzenia zależą od wejścia metody \textit{init()}: wysokości
 
 Typ obrazu przykłada się głównie na flagi użycia obrazu \textit{VkImageUsageFlags}.
 Tekstury pozaekranowe używają flag \textit{SAMPLED} i \textit{COLOR\_ATTACHMENT}.
-Reszta obrazów używa flag  \textit{SAMPLED}, \textit{TRANSFER\_SRC} i \textit{TRANSFER\_DST}.
+Reszta obrazów używa flag \textit{SAMPLED}, \textit{TRANSFER\_SRC} i \textit{TRANSFER\_DST}.
 
 Obrazy używają wyłącznie kafelkowania optymalnego, które jest wydajniejsze od kafelkowania liniowego i znacznie szerzej wspierane \cite{GPUINFO}.
 
 Obrazy posiadają jedną warstwę i jeden poziom mipmap z wyjątkiem tekstur sześciennych (sześć warstw) oraz tekstur koloru podstawowy materiału (maksymalna możliwa liczba poziomów mipmap).
 
-// HIRO format obrazu
+Format obrazu zależy od typu obrazu i liczby kanałów i jest ustalany funkcją \textit{find\_image\_format()}.
+Generuje ona listę formatów, które spełniają wymagania specyfikowane przez typ obrazu i posiadają liczbę komponentów równą lub większą liczbie kanałów używanej przez obraz.
+Ostateczny format to ten z najmniejszą liczbą komponentów wciąż wspierany przez sterownik, co pozwala na zaoszczędzienie pamięci GPU.
 
 Pamięć obrazu jest zawsze w pamięcią \textit{DEVICE\_LOCAL}, ponieważ transport z GPU do CPU nigdy nie zachodzi i ten typ pamięci powinien skutkować szybszym dostępem po stronie GPU.
 

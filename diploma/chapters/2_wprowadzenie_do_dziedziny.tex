@@ -335,11 +335,31 @@ Nazwy i etykiety są używane w wiadomościach debugujących i pokazywane przez 
 
 Vulkan wyróżnia dwa rodzaje zasobów: bufory (\textit{VkBuffer}) i obrazy (\textit{VkImage}).
 
+Oba rodzaje zasobów muszą posiadać dowiązaną alokację pamięci \textit{VkDeviceMemory}.
+// HIRO pamięć
+
+Odczyt i zapis danych z zasobu wymaga utworzenia widoku: \textit{VkBufferView} lub \textit{VkImageView}.
+// HIRO widok
+
 \subsubsection{Bufory}
 
 Bufor to ciągły blok pamięci który może być odczytany i zapisywany przez GPU. Jest on najprostszym zasobem oferowanym przez Vulkan.
-// HIRO bufory
 
+Stworzenie bufora wymaga ustalenia jego wielkości w bajtach oraz flag użycia bufora \textit{VkBufferUsageFlags}.
+
+Flagi użycia bufora określają jego dozwolone użycie.
+Przykładowo:
+\begin{itemize}
+	\item \textit{TRANSFER\_SRC}: może być źródłem polecenia transferu;
+	\item \textit{TRANSFER\_DST}: może być miejscem docelowym polecenia transferu;
+	\item \textit{UNIFORM\_TEXEL\_BUFFER}: może być użyty do stworzenia widoku bufora magazynowego używanego przez deskryptory typu \textit{UNIFORM\_TEXEL\_BUFFER};
+	\item \textit{STORAGE\_TEXEL\_BUFFER}: może być użyty do stworzenia widoku bufora magazynowego używanego przez deskryptory typu \textit{UNIFORM\_TEXEL\_BUFFER};
+	\item \textit{UNIFORM\_BUFFER}: może być buforem uniform opisanym deskryptorem typu \textit{UNIFORM\_BUFFER};
+	\item \textit{STORAGE\_BUFFER}: może być buforem magazynowym opisanym deskryptorem typu \textit{STORAGE\_BUFFER};
+	\item \textit{INDEX\_BUFFER}: może być dowiązany jako bufor indeksów poleceniem \textit{vkCmdBindIndexBuffer()};
+	\item \textit{VERTEX\_BUFFER}: może być dowiązany jako bufor wierzchołków poleceniem \textit{vkCmdBindVertexBuffer()};
+	\item \textit{INDIRECT\_BUFFER}: może być używany jako bufor poleceń rysowania pośredniego w poleceniach \textit{vkCmdDrawIndirect()} i \textit{vkCmdDrawIndexedIndirect()}.
+\end{itemize}
 
 \subsubsection{Obrazy}
 
@@ -353,19 +373,18 @@ Obraz podobnie jak bufor reprezentuje ciągły blok pamięci, ale jego wewnętrz
 	\item format (\textit{VkFormat}),
 	\item liczba próbek na teksel (\textit{VkSampleCountFlagBits}),
 	\item kafelkowanie (\textit{VkImageTiling}),
-	\item flagi użycia (\textit{VkUsageFlags}),
-	\item tryb udostępniania (\textit{VkSharingMode}),
+	\item flagi użycia (\textit{VkImageUsageFlags}),
 	\item początkowy układ (\textit{VkUsageFlags}).
 \end{itemize}
 
-// HIRO opisz powyższe
-
 Typ obrazu określa jego liczbę wymiarów (1D, 2D lub 3D).
+
 Rozmiar opisuje liczbę pikseli obrazu (tekseli) wzdłuż każdego wymaiaru (szerokość, wysokość i głębokość).
 
 Obraz Vulkan może być traktowany jako tablica identycznych obrazów, której pojedeńczy element jest zwany warstwą. Warstwy nie są liczone jako wymiar obrazu - obraz 2D z warstwami nie jest obrazem 3D.
 
-Flagi tworzenia pozwalają na definicję dodatkowych funkcjonalności. Przykładowo flaga \textit{CUBE\_COMPATIBLE} pozwala na traktowanie obrazu z 6 kwadratowymi warstwami jako obrazu sześciennego.
+Flagi tworzenia obrazu pozwalają na definicję dodatkowych funkcjonalności. Przykładowo flaga \textit{CUBE\_COMPATIBLE} pozwala na traktowanie obrazu z 6 kwadratowymi warstwami jako obrazu sześciennego.
+Takie obrazy są często uzywane w technice renderowania sklepienia nieba używając sześcianu oteksturowanego przy pomocy sześciennej tekstufry skybox przedstawiającej niebo.
 
 Mipmapa to kopia obrazu z każdym wymiarem zmniejszonym dwukrotnie.
 W obrazie z mipmapami pierwotny obraz jest traktowany jako mipmapa poziomu zerowego, z której generowane są mipmapy następonych poziomów aż do osiągnięcia wymiaru 1x1x1.
@@ -378,18 +397,6 @@ Przykładowo poniższy obraz przedstawia obraz 2D 1024x1024 z modelu Sponza \cit
 \end{figure}
 Obraz posiadający mipmapy zajmuje więcej pamięci, ale pozwala na użycie filtrowania mipmapowego, które jest popularną techniką zwiększającej prędkość i jakość renderowania poprzez wprowadzenie nowych metod filtrowania podczas próbkowania obrazu.
 
-Kafelkowanie obrazu (VkImageTiling) definiuje ułożenie tekselów w pamięci GPU i może być liniowe lub optymalne.
-W kafelkowaniu liniowym teksele są uszeregowane w pamięci wierszami (ang. row-major order) podobnie jak tablicach dwuwymiarowych języka C.
-Vulkan wspiera też kafelkowanie optymalne, w którym sterownik samodzielnie wybiera kafelkowanie obrazu na podstawie jego zawartości, co ma na celu zwiększenie prędkości dostępu poprzez poprawę lokalności przestrzennej w pamięci podręcznej GPU.
-
-// HIRO próbkowanie, filtrowanie mag, min, mipmap
-// HIRO tekstury pozeekranowe
-
-// HIRO pamięć
-// HIRO widok
-// HIRO bufory uniform i bufory magazynowe, obrazy, próbniki, obrazy magazynowe
-
-\paragraph{Format i przestrzeń kolorów}
 Format (\textit{VkFormat}) definiuje rozmiar, strukturę i sposób kodowania podczas zapisu i dekodowania podczas próbkowania pojedynczego piksela obrazu.
 Przestrzeń kolorów (VkColorSpaceKHR) definiuje metodę interpretacji pikseli obrazu przez silnik prezentacji podczas prezentacji obrazu.
 Przestrzeń kolorów liniowa (niesprecyzowana) jest używana w obliczeniach shaderów.
@@ -400,6 +407,51 @@ Przykładowe często używane formaty i ich użycie:
 	\item \textit{B8G8R8A8\_SRGB}: podobny do poprzedniego, ale podczas próbkowania GPU przeprowadza automatyczną konwersję z SRGB do przestrzeni liniowej (odwrotna konwersja podczas zapisu), używany przez prezentowalne obrazy łańcucha wymiany,
 	\item \textit{D32\_SFLOAT\_S8\_UINT}: 32-bity komponentu głębi (liczba zmiennoprzecinkową ze znakiem), 8-bitów komponentu szablonu (liczba całkowita bez znaku), używany przez bufory głębi.
 \end{itemize}
+
+Liczba próbek na teksel większa niż 1 jest wymagana podczas implementacji technik antyalisingu takich jak mutlisampling pozwalających na wygładzanie zrasteryzowanych prymitywów \cite{HughesDamEtAl13}.
+
+Kafelkowanie obrazu (VkImageTiling) definiuje ułożenie tekselów w pamięci GPU i może być liniowe lub optymalne.
+W kafelkowaniu liniowym teksele są uszeregowane w pamięci wierszami (ang. row-major order) podobnie jak tablicach dwuwymiarowych języka C.
+Vulkan wspiera też kafelkowanie optymalne, w którym sterownik samodzielnie wybiera kafelkowanie obrazu na podstawie jego zawartości, co ma na celu zwiększenie prędkości dostępu poprzez poprawę lokalności przestrzennej w pamięci podręcznej GPU.
+
+Flagi użycia obrazu określają jego zamierzone użycie.
+Przykładowo:
+\begin{itemize}
+	\item \textit{TRANSFER\_SRC}: może być źródłem polecenia transferu;
+	\item \textit{TRANSFER\_DST}: może być miejscem docelowym polecenia transferu;
+	\item \textit{SAMPLED}: może być użyty do stworzenia widoku próbkowalnego obrazu używanego przez deskryptory typu \textit{SAMPLED};
+	\item \textit{STORAGE}: może być użyty do stworzenia widoku obrazu magazynowego używanego przez deskryptory typu \textit{STORAGE};
+	\item \textit{COLOR\_ATTACHMENT}: może być dołączniem koloru potoku graficznego;
+	\item \textit{DEPTH\_STENCIL\_ATTACHMENT}: może być dołączniem głębi/szablonu potoku graficznego.
+\end{itemize}
+
+Obrazy istnieją w pamięci GPU w układach zdefiniowanych przez sterownik.
+Każdy układ ogranicza zbiór możliwych operacji na obrazie w zamian za optymalizację dozwolonych operacji.
+
+Układ obrazu nie jest tym samym co jego kafelkowanie - rodzaj używanego kafelkowania nie może być zmieniany po utworzeniu obrazu, a układ obrazu jest zwykle często zmieniany podczas działania programu aby pozwolić GPU na optymalizację sposobu użycia obrazu.
+
+Przykładowe układy obrazu i dozwolone użycie:
+\begin{itemize}
+	\item \textit{UNDEFINED}: zawartość pamięci obrazu jest niezdefiniowana, początkowy układ nowego obrazu;
+	\item \textit{GENERAL}: wszystkie rodzaje dostępu, nieoptymalny
+	\item \textit{COLOR\_ATTACHMENT\_OPTIMAL}: dołączenie koloru,
+	\item \textit{DEPTH\_STENCIL\_ATTACHMENT\_OPTIMAL}: dołączenie głębi/szablonu pozwalające na odczyt (testy głębi i szablonu) i zapis (wyjście głębi),
+	\item \textit{DEPTH\_STENCIL\_READ\_ONLY\_OPTIMAL}: dołączenie głębi/szablonu tylko do odczytu,
+	\item \textit{SHADER\_READ\_ONLY\_OPTIMAL}: odczyt w shaderach jako próbkowany obraz,
+	\item \textit{TRANSFER\_SRC\_OPTIMAL}: obraz źródłowy w poleceniu transferu,
+	\item \textit{TRANSFER\_DST\_OPTIMAL}: obraz docelowy w poleceniu transferu,
+	\item \textit{PRESENT\_SRC\_KHR}: prezentowanie obrazu łańcuchem wymiany.
+\end{itemize}
+Dozwolone układy obrazu mogą zależeć od wcześniej sprecyzowanych flag użycia. Przykładowo układ \textit{SHADER\_READ\_ONLY\_OPTIMAL} wymaga flagi użycia \textit{SAMPLED}.
+
+W przeciwieństwie do poprzednich API takich jak OpenGL, Vulkan nie zmienia automatycznie układu obrazu, co zmusza
+programistę do samodzielnego śledzenia stanu układu obrazów i wykonywania przejść na poprawny układ przed użyciem ich przez polecenia poprzez użycie odpowieniej bariery pamięci obrazu.
+
+
+\subsubsection{Próbniki}
+
+Teksele obrazy zwykle nie są bezpośrednio odczytywane w shaderach. Zamiast tego są one używane jako tekstury, do których dostęp odbywa się poprzez próbnik \textit{VkSampler} określający operacje filtrowania
+// HIRO VkSampler próbkowanie, filtrowanie mag, min, mipmap
 
 
 \subsection{Łańcuch wymiany}
@@ -606,15 +658,15 @@ Każde dowiązanie deskryptora jest opisane poprzez:
 \end{itemize}
 Typ deskryptora zależy od rodzaju opisywanego zasobu, przykładowo:
 \begin{itemize}
-	\item {\textit{UNIFORM\_BUFFER}}: bufor uniform,
-	\item {\textit{UNIFORM\_BUFFER\_DYNAMIC}}: dynamiczny bufor uniform, dodatkowy dynamiczny offset jest specyfikowany podczas dowiązywania zbioru deskryptorów,
-	\item {\textit{STORAGE\_BUFFER}}: bufor magazynowy,
-	\item {\textit{STORAGE\_BUFFER\_DYNAMIC}}: dynamiczny bufor magazynowy,
-	\item {\textit{SAMPLER}}: próbnik,
-	\item {\textit{SAMPLED\_IMAGE}}: widok próbkowalnego obrazu,
-	\item {\textit{STORAGE\_IMAGE}}: widok obrazu magazynowego,
-	\item {\textit{COMBINED\_IMAGE\_SAMPLER}}: próbkowany obraz, pojedynczy deskryptor jest skojarzony zarówno z próbnikiej, jaki i z widokiem obrazu,
-	\item {\textit{UNIFORM\_TEXEL\_BUFFER}}: widok bufora uniform,
+	\item {\textit{UNIFORM\_BUFFER}}: bufor uniform;
+	\item {\textit{UNIFORM\_BUFFER\_DYNAMIC}}: dynamiczny bufor uniform, dodatkowy dynamiczny offset jest specyfikowany podczas dowiązywania zbioru deskryptorów;
+	\item {\textit{STORAGE\_BUFFER}}: bufor magazynowy;
+	\item {\textit{STORAGE\_BUFFER\_DYNAMIC}}: dynamiczny bufor magazynowy;
+	\item {\textit{SAMPLER}}: próbnik;
+	\item {\textit{SAMPLED\_IMAGE}}: widok próbkowalnego obrazu, może być próbkowany w shaderze zmienną typu \textit{sampler2D};
+	\item {\textit{STORAGE\_IMAGE}}: widok obrazu magazynowego, może być odczytywany w shaderze zmienną typu \textit{image2D};
+	\item {\textit{COMBINED\_IMAGE\_SAMPLER}}: próbkowany obraz, pojedynczy deskryptor jest skojarzony zarówno z próbnikiej, jaki i z widokiem obrazu;
+	\item {\textit{UNIFORM\_TEXEL\_BUFFER}}: widok bufora uniform;
 	\item {\textit{STORAGE\_TEXEL\_BUFFER}}: widok bufora magazynowego.
 \end{itemize}
 
@@ -928,7 +980,13 @@ Po kompilacji moduł shadera jest w formie, która może być używana bezpośre
 
 // HIRO diagram spirv->moduł
 
-// TODO vkRenderPass - przebieg renderowania, dołączenia koloru
+
+\subsubsection {Przebieg renderowania}
+// TODO vkRenderPass - przebieg renderowania
+
+Dołączenie koloru to widok obrazu używany przez  do zapisywania końcowych wartości kolorów podczas etapu mieszania kolorów potoku graficznego.
+
+Dołączenie głębi/szablonu to widok obrazu używany przez potok graficzny do odczytywania i zapisywania wartości głebi/szablonu podczas testów głębi/szablonu w etapach wczesnych i późnych testów fragmentów potoku graficznego.
 
 \subsubsection{Rozszerzenie VK\_EXT\_dynamic\_rendering}
 
@@ -1336,7 +1394,6 @@ Emitowanie poleceń rysowania sprowadza się do rekurencyjengo przemierzania gra
 \begin{lstlisting}[caption={Emitowanie poleceń rysowania na podstawie grafu sceny},captionpos=b,label={RenderujGrafSceny}]
 RenderujGrafSceny(węzeł):
   jeżeli węzeł.rodzic istnieje:
-    
     węzeł.globalnaTransformacja = węzeł.rodzic.globalnaTransformacja * węzeł.lokalnaTransformacja
   w przeciwnym wypadku:
     węzeł.globalnaTransformacja = węzeł.lokalnaTransformacja
@@ -1346,22 +1403,16 @@ RenderujGrafSceny(węzeł):
 \end{lstlisting}
 
 Polecenia rysowania wyemitowane algorytmem \ref{RenderujGrafSceny} nie są optymalne.
-Przykładowo HIRO
+Przykładowo w scenie z samochodem jego cztery koła są renderowane przy pomocy czterech osobnych poleceń rysowania różniących się tylko pozycją, które mogą być 
+HIRO
 // HIRO wydajność, draw call optimization
 
 \section{Graf renderowania}
 
+Graf renderowania jest odpowiedzialny za śledzenie stanu układu obrazów na przestrzeni klatki i jest używany do
+nagrywania barier pamięci obrazu gwarantujących odpowiednie przejścia układu obrazów.
+
 // TODO
-
-
-\section{Mapowanie tekstur}
-
-// TODO filtrowanie w samplerze (powiększający, pomniejszający)
-
-// TODO mapowanie nierówności
-
-// TODO teksturowanie sześcienne
-Skybox to sześcian oteksturowany przy pomocy tekstury sześciennej przedstawiającej niebo.
 
 \section{Oświetlenie}
 
