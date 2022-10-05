@@ -93,76 +93,15 @@ którą może on użyć do bardziej optymalnego wewnętrzne zarządzanie stanem 
 
 ---
 /objects/image.h
-[OBRAZEK struktura]
-Silnik wspiera osiem rodzajów obrazów:
 
-- swap_chain
-- material_base_color, mapowanie tekstur
-- material_parameters
-- normal_map
-- cubemap
-- font_bitmap
-- offscreen_f16
-- offscreen_depth_buffer
-- offscreen_r8
-  [...obrazy offscreen]
-  [TABELA internal]
+HIRO
 
-Obraz składa się z trzech obiektów Vulkan: obraz VkImage, alokacja pamięci VkDeviceMemory i widok obrazu VkImageView.
-Vulkan nie pozwala na bezpośrednie używanie VkImage i wymaga utworzenia VkImageView. Stworzenie nowego obrazu wymaga
-podania rządanego rodzaju oraz szerokości, wysokości i liczby kanałów. Vulkan pozwala na bezpośrednią specyfikację
-kafelkowania obrazu (ang, image tiling). Vulkan wspiera kafelkowanie liniowe, w którym teksele obrazu są szeregowane w
-pamięci wierszami (ang. row-major order) podobnie jak w tablicach dwuwymiarowych w języku C. Vulkan wspiera też
-kafelkowanie optymalne, w którym teksele obrazu są umieszczone w pamięci w sposób zdefiniowany przez sterownik graficzny
-mający na celu bardziej wydajny dostęp do pamięci.
-[OBRAZEK tiling]
-Silnik używa wyłącznie kafelkowania optymalnego, które jest wydajniejsze od kafelkowania liniowego i jest w czasie
-pisania pracy według portalu GPUInfo.org szerzej wspierane. Silnik nie wspiera MSAA - współpraca MSAA z renderowaniem
-odroczonym jest możliwa [SRAA], ale wprowadzany przez nie poziom kompilacji implementacji renderowania odroczonego
-został uznany za zbyt duży, i dlatego jest poza zakresem tej pracy. Z tego powodu wszystkie obrazy, w tym te służące
-jako cele renderowania, , CPU nie używa obrazów używanych przez GPU do renderowania, dlatego też pamięć wszystkich
-rodzajów obrazów jest pamięcią DEVICE_LOCAL, co powinno skutkować najszybszym dostępem do obrazów przez GPU. Kopiowanie
-danych z CPU do GPU jest ważną operacją pozwalającą na wstępne wypełnienie obrazów danymi załadowanymi z bazy zasobów.
-[LISTING]
-W przypadku obrazów używanych do mapowania tekstur po skopiowaniu danych do mipmapy poziomu 0 silnik generuje resztę
-poziomów mipmap używając serii funkcji vkCmdBlitImage. Użycie tej funkcji wymaga obrazu w formacie wspierającym
-filtrowanie liniowe. Dodatkowo ta funkcja może być wykonywana używając tylko kolejki graficznej, dlatego też bufory
-poleceń one-shot nie mogą być wykonywane używając tylko kolejki transferowej, mimo możliwej większej wydajności.
-[LISTING mipmap]
 Format obrazu jest wybierany przy pomocy algorytmu opisanego w poniższym listingu. Algorytm generuje listę formatów
 spełniających wymagania specyfikowane przez rodzaj obrazu i liczbą kanałów równą lub większą od liczby kanałów używanej
 przez obraz. Ostateczny format to ten z z najmniejszą liczbą kanałów wciąż wspierany przez sterownik graficzny.
 [LISTING find_image_format]
 
 ----
-/objects/buffer.h
-[OBRAZEK struktura]
-Silnik wyróżnia cztery rodzaje buforów:
-
-- bufor wierzchołków,
-- bufor indeksów,
-- bufor poleceń rysowania pośredniego,
-- bufor uniform.
-
-Bufory wierzchołków, indeksów i poleceń rysowania pośredniego są źródłem danych odczytywanych przez stałe funkcji potoku
-graficznego. Bufory uniform są źródłem danych odczytywanych przez shadery. Bufor składa się z dwóch obiektów Vulkan:
-VkBuffer i VkDeviceMemory. Rodzaj bufora przekłada się na flagi stosowane podczas tworzenia obiektów Vulkan, co zostało
-podsumowane w poniższej tabeli:
-rodzaj bufora / flagi użycia bufora (VkBufferUsageFlags) / flagi właściwości pamięci (VkMemoryPropertyFlags)
-bufor wierzchołków / TRANSFER_DST | VERTEX_BUFFER / DEVICE_LOCAL bufor indeksów / TRANSFER_DST | INDEX_BUFFER /
-DEVICE_LOCAL bufor poleceń rysowania pośredniego / TRANSFER_DST | INDIRECT_BUFFER / HOST_VISIBLE | HOST_COHERENT bufor
-uniform / UNIFORM_BUFFER / HOST_VISIBLE | HOST_COHERENT
-
-Kopiowanie danych z CPU do bufora w GPU jest ważną operacją wykonywaną na początku każdej ramki mającą na celu
-wypełnienie pamięci GPU danymi używanymi przez polecenia renderowania. Może się ono odbyć na dwa sposoby w zależności od
-użytych flag właściwości pamięci. Dla pamięci HOST_VISIBLE silnik używa funkcji vkMapMemory() do uzyskania wskaźnika do
-regionu pamięci i bezpośredniego skopiowania pamięci przy użyciu CPU.
-[LISTING vkMapMemory]
-Dla innych rodzajów pamięci, które nie mogą być bezpośrednio zapisywane przez CPU (w tym DEVICE_LOCAL) silnik używa
-bufora tymczasowego i funkcji vkCmdCopyBuffer() w bufore poleceń one-shot.
-[LISTING staging]
-
----
 
 ## objects/descriptor.h
 
@@ -185,15 +124,6 @@ Zbiór deskryptorów jest dowiązywany tylko raz wraz z resztą stanu renderowan
 
 Sposób zarządzania deskryptorami w silniku został przestawiony na poniższym diagramie:
 [...set in engine]
-
-## objects/input.h
-
-Dane wejściowe myszy i klawiatury są obsługiwane całkowicie przy pomocy GLFW.
-
-GLFW pozwala na stosowania wirtualnej pozycji kursora. Kursor myszy jest ukryty i jego fizyczna pozycja w oknie jest
-centrowana co klatkę - program ma dostęp do wirtualnej pozycji, co pozwala na nieograniczony ruch myszy.
-
-Wirtualna pozycja kursowa jest używana do implemenacji sterowania kamerą.
 
 ## objects/textures.h
 
@@ -494,14 +424,8 @@ rysowania pośredniego z offsetem indeksu instancji MORE: dynamicRendering: dyna
 
 HIRO: debug_printf
 
-MORE: warstwy walidacji
-
 MORE: onscreen vs offscreen
 
 MORE: framebuffer attachment
 
 MORE: część globalna i część instancji ujednoliconego bufora uniform, dlatczego podział
-
-MORE: hierarchia obiektów, diagram, opisy
-
-MORE: model obiektów vulkan, creation i enumeration, typy pamięci

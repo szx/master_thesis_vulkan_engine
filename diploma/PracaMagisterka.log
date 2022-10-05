@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  3 OCT 2022 23:23
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  5 OCT 2022 02:03
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1145,25 +1145,52 @@ File: ppxetex.def 2022/01/29 v0.5u Pdfpages driver for XeTeX (AM)
 \c@AM@survey=\count472
 \AM@templatesizebox=\box93
 )
+(/usr/share/texlive/texmf-dist/tex/latex/tools/array.sty
+Package: array 2021/10/04 v2.5f Tabular extension package (FMi)
+\col@sep=\dimen305
+\ar@mcellbox=\box94
+\extrarowheight=\dimen306
+\NC@list=\toks47
+\extratabsurround=\skip98
+\backup@length=\skip99
+\ar@cellbox=\box95
+)
+(/usr/share/texlive/texmf-dist/tex/latex/ragged2e/ragged2e.sty
+Package: ragged2e 2021/12/15 v3.1 ragged2e Package
+\CenteringLeftskip=\skip100
+\RaggedLeftLeftskip=\skip101
+\RaggedRightLeftskip=\skip102
+\CenteringRightskip=\skip103
+\RaggedLeftRightskip=\skip104
+\RaggedRightRightskip=\skip105
+\CenteringParfillskip=\skip106
+\RaggedLeftParfillskip=\skip107
+\RaggedRightParfillskip=\skip108
+\JustifyingParfillskip=\skip109
+\CenteringParindent=\skip110
+\RaggedLeftParindent=\skip111
+\RaggedRightParindent=\skip112
+\JustifyingParindent=\skip113
+)
 (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.sty
 \lst@mode=\count473
-\lst@gtempboxa=\box94
-\lst@token=\toks47
+\lst@gtempboxa=\box96
+\lst@token=\toks48
 \lst@length=\count474
-\lst@currlwidth=\dimen305
+\lst@currlwidth=\dimen307
 \lst@column=\count475
 \lst@pos=\count476
-\lst@lostspace=\dimen306
-\lst@width=\dimen307
+\lst@lostspace=\dimen308
+\lst@width=\dimen309
 \lst@newlines=\count477
 \lst@lineno=\count478
-\lst@maxwidth=\dimen308
+\lst@maxwidth=\dimen310
 
 (/usr/share/texlive/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2020/03/24 1.8d (Carsten Heinz)
 \c@lstnumber=\count479
 \lst@skipnumbers=\count480
-\lst@framebox=\box95
+\lst@framebox=\box97
 )
 (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.cfg
 File: listings.cfg 2020/03/24 1.8d listings configuration
@@ -1186,32 +1213,32 @@ Package biblatex Warning: 'babel/polyglossia' detected but 'csquotes' missing.
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
 \openout1 = `PracaMagisterka.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 129.
-LaTeX Font Info:    ... okay on input line 129.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 129.
-LaTeX Font Info:    ... okay on input line 129.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 129.
-LaTeX Font Info:    ... okay on input line 129.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 129.
-LaTeX Font Info:    ... okay on input line 129.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 129.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 133.
+LaTeX Font Info:    ... okay on input line 133.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 133.
+LaTeX Font Info:    ... okay on input line 133.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 133.
+LaTeX Font Info:    ... okay on input line 133.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 133.
+LaTeX Font Info:    ... okay on input line 133.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 133.
 LaTeX Font Info:    Trying to load font information for TS1+cmr on input line 1
-29.
+33.
 
 (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 129.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 129.
-LaTeX Font Info:    ... okay on input line 129.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 129.
-LaTeX Font Info:    ... okay on input line 129.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 129.
-LaTeX Font Info:    ... okay on input line 129.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 129.
-LaTeX Font Info:    ... okay on input line 129.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 129.
-LaTeX Font Info:    ... okay on input line 129.
+LaTeX Font Info:    ... okay on input line 133.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 133.
+LaTeX Font Info:    ... okay on input line 133.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 133.
+LaTeX Font Info:    ... okay on input line 133.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 133.
+LaTeX Font Info:    ... okay on input line 133.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 133.
+LaTeX Font Info:    ... okay on input line 133.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 133.
+LaTeX Font Info:    ... okay on input line 133.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
@@ -1269,9 +1296,9 @@ Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'PracaMagisterka.bbl' found.
 
 (./PracaMagisterka.bbl)
-Package biblatex Info: Reference section=0 on input line 129.
-Package biblatex Info: Reference segment=0 on input line 129.
-Package hyperref Info: Link coloring OFF on input line 129.
+Package biblatex Info: Reference section=0 on input line 133.
+Package biblatex Info: Reference segment=0 on input line 133.
+Package hyperref Info: Link coloring OFF on input line 133.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
@@ -1284,9 +1311,9 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
 \c@section@level=\count483
 )
-LaTeX Info: Redefining \ref on input line 129.
-LaTeX Info: Redefining \pageref on input line 129.
-LaTeX Info: Redefining \nameref on input line 129.
+LaTeX Info: Redefining \ref on input line 133.
+LaTeX Info: Redefining \pageref on input line 133.
+LaTeX Info: Redefining \nameref on input line 133.
 
 (./PracaMagisterka.out) (./PracaMagisterka.out)
 \@outlinefile=\write5
@@ -1332,7 +1359,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 5--12
 
 
 ])
-Underfull \hbox (badness 10000) in paragraph at lines 18--131
+Underfull \hbox (badness 10000) in paragraph at lines 18--135
 
  []
 
@@ -1663,10 +1690,22 @@ Overfull \hbox (8.95863pt too wide) in paragraph at lines 945--946
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-[55] [56] [57] [58] [59] [60]
+[55] [56] [57]
+
+! LaTeX Error: Unknown float option `r'.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.1125 \begin{table}[!htr]
+                          
+Option `r' ignored and `p' used.
+
+[58] [59] [60] [61] [62]
 File: images/scene_graph_tree.png Graphic file (type bmp)
 <images/scene_graph_tree.png>
-) [61] [62]
+) [63]
 \openout2 = `chapters/5_badania.aux'.
 
  (./chapters/5_badania.tex
@@ -1677,29 +1716,29 @@ File: images/render_damagedhelmet.png Graphic file (type bmp)
 <images/render_damagedhelmet.png>
 File: images/render_sponza.png Graphic file (type bmp)
 <images/render_sponza.png>
-[63
+[64
 
 
 
 
-] [64]
+] [65]
 Underfull \hbox (badness 10000) in paragraph at lines 65--65
-[]\TU/lmss/m/n/10 Rozdzielczość
+[]|\TU/lmss/m/n/10 Rozdzielczość
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 65--65
-[]\TU/lmss/m/n/10 Liczba
+[]|\TU/lmss/m/n/10 Liczba
  []
 
 
 Overfull \hbox (0.56818pt too wide) in paragraph at lines 65--65
-[]\TU/lmss/m/n/10 FPS
+[]|\TU/lmss/m/n/10 FPS
  []
 
 
 Overfull \hbox (0.56818pt too wide) in paragraph at lines 65--65
-[]\TU/lmss/m/n/10 FPS
+[]|\TU/lmss/m/n/10 FPS
  []
 
 
@@ -1709,7 +1748,7 @@ Overfull \hbox (1.09818pt too wide) in paragraph at lines 65--65
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 65--65
-[]\TU/lmss/m/n/10 L3 Shader
+[]|\TU/lmss/m/n/10 L3 Shader
  []
 
 
@@ -1719,7 +1758,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 65--65
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 65--65
-[]\TU/lmss/m/n/10 Shader
+[]|\TU/lmss/m/n/10 Shader
  []
 
 
@@ -1729,12 +1768,12 @@ Underfull \hbox (badness 10000) in paragraph at lines 65--65
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 65--65
-[]\TU/lmss/m/n/10 Sampler
+[]|\TU/lmss/m/n/10 Sampler
  []
 
 
 Overfull \hbox (0.57133pt too wide) in paragraph at lines 65--66
-[]\TU/lmss/m/n/10 Samplers
+[]|\TU/lmss/m/n/10 Samplers
  []
 
 
@@ -1744,60 +1783,60 @@ Underfull \hbox (badness 10000) in paragraph at lines 65--66
 
 
 Overfull \hbox (0.79134pt too wide) in paragraph at lines 69--70
-[]\TU/lmss/m/n/10 88.82873| 
+[]|\TU/lmss/m/n/10 88.82873| 
  []
 
 
 Overfull \hbox (0.79134pt too wide) in paragraph at lines 71--72
-[]\TU/lmss/m/n/10 50.89936| 
+[]|\TU/lmss/m/n/10 50.89936| 
  []
 
 
 Overfull \hbox (0.79134pt too wide) in paragraph at lines 73--74
-[]\TU/lmss/m/n/10 26.02086| 
+[]|\TU/lmss/m/n/10 26.02086| 
  []
 
 
 Overfull \hbox (0.79134pt too wide) in paragraph at lines 75--76
-[]\TU/lmss/m/n/10 20.69141| 
+[]|\TU/lmss/m/n/10 20.69141| 
  []
 
 
 Overfull \hbox (0.79134pt too wide) in paragraph at lines 77--78
-[]\TU/lmss/m/n/10 99.45081| 
+[]|\TU/lmss/m/n/10 99.45081| 
  []
 
 
 Overfull \hbox (0.79134pt too wide) in paragraph at lines 79--80
-[]\TU/lmss/m/n/10 89.91253| 
+[]|\TU/lmss/m/n/10 89.91253| 
  []
 
 
 Overfull \hbox (0.79134pt too wide) in paragraph at lines 81--82
-[]\TU/lmss/m/n/10 57.64096| 
+[]|\TU/lmss/m/n/10 57.64096| 
  []
 
 
 Overfull \hbox (0.79134pt too wide) in paragraph at lines 83--84
-[]\TU/lmss/m/n/10 26.82165| 
+[]|\TU/lmss/m/n/10 26.82165| 
  []
 
 
 Overfull \hbox (0.79134pt too wide) in paragraph at lines 85--86
-[]\TU/lmss/m/n/10 21.54303| 
+[]|\TU/lmss/m/n/10 21.54303| 
  []
 
 
-Overfull \hbox (23.79706pt too wide) in paragraph at lines 63--88
+Overfull \hbox (28.59698pt too wide) in paragraph at lines 63--88
  [][] 
  []
 
-) [65]
+) [66]
 \openout2 = `chapters/6_podsumowanie.aux'.
 
  (./chapters/6_podsumowanie.tex
 Rozdzia\l  5.
-) [66
+) [67
 
 
 
@@ -1814,23 +1853,23 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 9.37807pt on input line 3.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 7.29405pt on input line 3.
- [67
+ [68
 
 
 
 
-] [68] (./PracaMagisterka.lof)
+] [69] (./PracaMagisterka.lof)
 \tf@lof=\write7
 \openout7 = `PracaMagisterka.lof'.
 
- [69
+ [70
 
 ]
 (./PracaMagisterka.lot)
 \tf@lot=\write8
 \openout8 = `PracaMagisterka.lot'.
 
-) [70
+) [71
 
 ] (./PracaMagisterka.aux
 (./chapters/0a_streszczenie.aux) (./chapters/0b_spis_tresci.aux)
@@ -1838,19 +1877,27 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (./chapters/2_wprowadzenie_do_dziedziny.aux)
 (./chapters/3_technologie_algorytmy_narzedzia.aux) (./chapters/5_badania.aux)
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
+
+LaTeX Warning: There were undefined references.
+
 Package rerunfilecheck Info: File `PracaMagisterka.out' has not changed.
-(rerunfilecheck)             Checksum: 7F89CA4E9F041209494AE2357E6A3C5D;8001.
+(rerunfilecheck)             Checksum: BC7EE6837FAAD32D0C35915EE8A18003;8001.
+
+Package biblatex Warning: Please (re)run Biber on the file:
+(biblatex)                PracaMagisterka
+(biblatex)                and rerun LaTeX afterwards.
+
 Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 \openout1 = `PracaMagisterka.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 41270 strings out of 476191
- 851125 string characters out of 5812072
- 1612764 words of memory out of 5000000
- 61315 multiletter control sequences out of 15000+600000
+ 41418 strings out of 476191
+ 854010 string characters out of 5812072
+ 1614403 words of memory out of 5000000
+ 61457 multiletter control sequences out of 15000+600000
  488903 words of font info for 105 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  88i,17n,91p,1516b,6449s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on PracaMagisterka.pdf (70 pages).
+Output written on PracaMagisterka.pdf (71 pages).

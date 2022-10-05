@@ -114,24 +114,24 @@
 \contentsline {subsubsection}{Obiekt device}{55}{subsubsection*.86}%
 \contentsline {subsubsection}{Obiekt swap\textunderscore \allowbreak chain}{58}{subsubsection*.87}%
 \contentsline {subsubsection}{Obiekt buffer}{58}{subsubsection*.88}%
-\contentsline {subsubsection}{Obiekt image}{58}{subsubsection*.89}%
-\contentsline {subsubsection}{Obiekt unified\textunderscore \allowbreak constant\textunderscore \allowbreak buffer}{58}{subsubsection*.90}%
-\contentsline {subsubsection}{Obiekt textures}{58}{subsubsection*.91}%
-\contentsline {subsubsection}{Obiekty unified\textunderscore \allowbreak geometry\textunderscore \allowbreak buffer i vertex\textunderscore \allowbreak stream}{59}{subsubsection*.92}%
-\contentsline {subsubsection}{Obiekt descriptors}{59}{subsubsection*.93}%
-\contentsline {subsubsection}{Obiekt sync}{59}{subsubsection*.94}%
-\contentsline {subsubsection}{Obiekt shader}{59}{subsubsection*.95}%
-\contentsline {subsection}{\numberline {3.3.6}Scena}{60}{subsection.3.3.6}%
-\contentsline {subsubsection}{Dane sceny scene\textunderscore \allowbreak data}{60}{subsubsection*.97}%
-\contentsline {subsubsection}{Graf sceny scene\textunderscore \allowbreak graph i drzewo sceny scene\textunderscore \allowbreak tree}{61}{subsubsection*.98}%
-\contentsline {subsection}{\numberline {3.3.7}Renderer}{61}{subsection.3.3.7}%
-\contentsline {chapter}{\numberline {4}Wyniki i testy wydajnościowe}{63}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Przykładowe sceny}{63}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Pomiary wydajnościowe}{64}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Analiza pomiarów}{65}{section.4.3}%
-\contentsline {chapter}{\numberline {5}Podsumowanie}{66}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Dalszy rozwój}{66}{section.5.1}%
-\contentsline {chapter}{Wykaz literatury}{68}{chapter*.104}%
-\contentsline {chapter}{Spis rysunk\'ow}{69}{chapter*.105}%
-\contentsline {chapter}{Spis tablic}{70}{chapter*.106}%
+\contentsline {subsubsection}{Obiekt image}{59}{subsubsection*.90}%
+\contentsline {subsubsection}{Obiekt unified\textunderscore \allowbreak constant\textunderscore \allowbreak buffer}{60}{subsubsection*.91}%
+\contentsline {subsubsection}{Obiekt textures}{60}{subsubsection*.92}%
+\contentsline {subsubsection}{Obiekty unified\textunderscore \allowbreak geometry\textunderscore \allowbreak buffer i vertex\textunderscore \allowbreak stream}{60}{subsubsection*.93}%
+\contentsline {subsubsection}{Obiekt descriptors}{60}{subsubsection*.94}%
+\contentsline {subsubsection}{Obiekt sync}{60}{subsubsection*.95}%
+\contentsline {subsubsection}{Obiekt shader}{60}{subsubsection*.96}%
+\contentsline {subsection}{\numberline {3.3.6}Scena}{61}{subsection.3.3.6}%
+\contentsline {subsubsection}{Dane sceny scene\textunderscore \allowbreak data}{62}{subsubsection*.98}%
+\contentsline {subsubsection}{Graf sceny scene\textunderscore \allowbreak graph i drzewo sceny scene\textunderscore \allowbreak tree}{63}{subsubsection*.99}%
+\contentsline {subsection}{\numberline {3.3.7}Renderer}{63}{subsection.3.3.7}%
+\contentsline {chapter}{\numberline {4}Wyniki i testy wydajnościowe}{64}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Przykładowe sceny}{64}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Pomiary wydajnościowe}{65}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Analiza pomiarów}{66}{section.4.3}%
+\contentsline {chapter}{\numberline {5}Podsumowanie}{67}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Dalszy rozwój}{67}{section.5.1}%
+\contentsline {chapter}{Wykaz literatury}{69}{chapter*.105}%
+\contentsline {chapter}{Spis rysunk\'ow}{70}{chapter*.106}%
+\contentsline {chapter}{Spis tablic}{71}{chapter*.107}%
 \contentsfinish 

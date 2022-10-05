@@ -729,7 +729,7 @@ Wszystkie obiekty zasobów mają nazwy w formie \textit{asset\_*} i współdziel
 \end{itemize}
 Powyższy interfejs jest zdefiniowany przez makra w jednostce \textit{common} i jest używany w reszcie jednostek modułu do implementacji obiektów zasobów.
 
-Wspieranych jest następujących 12 rodzajów obiektów zasobów zawierające dane opisujące:
+Wspierane są następujące rodzaje obiektów zasobów zawierające dane opisujące:
 \begin{itemize}
 	\item \textit{asset\_object}: węzeł sceny,
 	\item \textit{asset\_mesh}: siatkę,
@@ -963,9 +963,12 @@ Obiekt oferuje następujące funkcjonalności:
 \end{itemize}
 
 Okno jest tworzone przy użyciu biblioteki GLFW i jest reprezentowane obiektem \textit{GLFWwindow}.
-Poniższy listing ilustruje stworzenie okna i użycie go do zarejestrowania funkcji wywołań zwrotnych używane do wykrywania zmiany rozmiaru okna oraz przechwytywania danych wejściowych myszy i klawiatury.
+Listing \ref{deviceglfw} ilustruje stworzenie okna i użycie go do zarejestrowania funkcji wywołań zwrotnych używane do wykrywania zmiany rozmiaru okna oraz przechwytywania danych wejściowych myszy i klawiatury.
+Kursor myszy jest ukryty i jego fizyczna pozycja w oknie jest
+centrowana co klatkę - program ma dostęp do wirtualnej pozycji, co pozwala na nieograniczony ruch myszy.
+Wirtualna pozycja kursowa jest używana do implemenacji sterowania kamerą.
 \lstset{language=C}
-\begin{lstlisting}[caption={Użycie biblioteki GLFW do stworzenia okna i rejestracji funkcji wywołań zwrotnich},captionpos=b]
+\begin{lstlisting}[caption={Użycie biblioteki GLFW do stworzenia okna i rejestracji funkcji wywołań zwrotnich},captionpos=b,label={deviceglfw}]
 // Inicjalizacja biblioteki GLFW.
 assert(glfwInit() == GLFW_TRUE);
 assert(glfwVulkanSupported() == GLFW_TRUE);
@@ -1090,7 +1093,7 @@ Consider resetting entire pool instead.
 \subsubsection{Obiekt swap\_chain}
 Obiekt \textit{swap\_chain} reprezentuje łańcuch wymiany i zawiera następujące elementy:
 \begin{itemize}
-	\item obiekt \textit{VkSwapchain},
+	\item łańcuch wymiany \textit{VkSwapchain},
 	\item lista uchwytów prezentowalnych obrazów \textit{VkImage},
 	\item lista widoków prezentowalnych obrazów \textit{VkImageView}.
 \end{itemize}
@@ -1098,7 +1101,7 @@ Obiekt \textit{swap\_chain} reprezentuje łańcuch wymiany i zawiera następują
 Preferowany tryb prezentacji to MAILBOX. Jeśli jest niedostępny, to wybierany jest zawsze wspierany tryb prezentacji FIFO.
 
 Preferowany format i przestrzeń kolorów to \textit{B8G8R8A8\_SRGB} i SRGB. Jeśli nie są dostępne, to wybierane są pierwszy dostępny.
-Formaty z rodziny BGRA i przestrzeń kolorów SRGB powierzchni okna są zawsze wspierane na systemie Windows i w czasie pisania pracy według portalu GPUInfo.org są one wspierane w ponad $96\%$ systemów Linux \cite{GPUINFO}.
+Formaty z rodziny BGRA i przestrzeń kolorów SRGB powierzchni okna są zawsze wspierane na systemie Windows i w czasie pisania pracy są one wspierane w ponad $96\%$ systemów Linux \cite{GPUINFO}.
 Obliczenia modelu oświetlenia będące wyjściem shaderów fragmentów odbywają się w liniowej przestrzeni kolorów. Użycie formatu \textit{B8G8R8A8\_SRGB} zamiast \textit{B8G8R8A8\_UNORM} pozwala na ominięcie ręcznej konwersji z przestrzeni liniowej do SRGB podczas renderowania bezpośrednio do prezentowalnej tekstury - konwersja zostanie automatycznie przeprowadzona przez sterownik.
 
 Lista uchwytów prezentowalnych obrazów jest wypełniania w pętli używając funkcji \textit{vkAcquireNextImageKHR()}.
@@ -1106,12 +1109,81 @@ Następnie tworzone są widoki obrazów pozwalające przebiegom renderowania \te
 
 
 \subsubsection{Obiekt buffer}
-Obiekt \textit{buffer} reprezentuje 
-// HIRO
+Obiekt \textit{buffer} reprezentuje pojedynczy bufor Vulkan.
+Rozróżniane są następujące typy bufora (\textit{buffer\_type}):
+\begin{itemize}
+	\item \textit{geometry\_index}: bufor indeksów geometrii,
+	\item \textit{geometry\_vertex}: bufor wierzchołków geometrii,
+	\item \textit{uniform}: bufer uniform,
+	\item \textit{indirect\_draw}: bufor poleceń rysowania pośredniego.
+\end{itemize}
+Bufory wierzchołków, indeksów i poleceń rysowania pośredniego są źródłem danych odczytywanych przez stałe funkcji potoku graficznego.
+Bufory uniform są źródłem danych odczytywanych przez shadery.
+
+Bufor zawiera dwa obiekty Vulkan: bufor \textit{VkBuffer} oraz dowiązaną do niego alokację pamięci \textit{VkDeviceMemory}.
+Typ bufora przykłada się na flagi uzywane podczas ich tworzenia, co zostało podsumowane w tabeli \ref{params_buffer}.
+\begin{table}[!htr]
+	\centering
+	\begin{tabular}{ |p{3cm}||>{\RaggedRight}p{4cm}|>{\RaggedRight}p{4cm}|}
+		\hline
+		Typ bufora & flagi użycia bufora \mbox{\textit{VkBufferUsageFlags}} & flagi właściwości pamięci \textit{VkMemoryPropertyFlags} \\
+		\hline \hline
+		\textit{geometry\_index} & \mbox{TRANSFER\_DST} | \mbox{VERTEX\_BUFFER} & DEVICE\_LOCAL \\
+		\hline 
+		\textit{geometry\_vertex} & \mbox{TRANSFER\_DST} | \mbox{INDEX\_BUFFER} & DEVICE\_LOCAL \\
+		\hline 
+		\textit{uniform} & \mbox{UNIFORM\_BUFFER} &  \mbox{HOST\_VISIBLE} | \mbox{HOST\_COHERENT} \\
+		\hline 
+		\textit{indirect\_draw} & \mbox{TRANSFER\_DST} | \mbox{INDIRECT\_BUFFER} &  \mbox{HOST\_VISIBLE} | \mbox{HOST\_COHERENT}\\
+		\hline
+	\end{tabular}
+	\caption{Zależność flag obiektów Vulkan od typu bufora (opracowanie własne)} 
+	\label{params_buffer}
+\end{table}
+
+Obiekt utrzymuje listę elementów bufora \textit{buffer\_element}. Zawiera ona bloki pamięci CPU, które są kopiowane do GPU metodą \textit{send\_to\_device()}.
+Sposób transferu pamięci z CPU do GPU zależy od użytej flagi właściwości pamięci.
+Dla pamięci \textit{HOST\_VISIBLE} używane jest mapowanie pamięci - funkcja \textit{vkMapMemory()} zwraca wskaźnik CPU do regionu pamięci GPU, do którego bezpośrednio kopiowana jest pamięć używając fnukcji \textit{memcpy()}.
+Dla reszty rodzajów pamięci niemogących być bezpośrednio zapisywanych przez CPU (w tym pamięć DEVICE\_LOCAL) tworzony jest bufor tymczasowy \textit{VkBuffer}, do którego pamięć CPU jest kopiowana używając poleceniem one-shot \textit{vkCmdCopyBuffer()}.
+
 
 \subsubsection{Obiekt image}
-Obiekt \textit{image} reprezentuje 
-// HIRO
+Obiekt \textit{image} reprezentuje pojedynczy obraz Vulkan.
+Wspierane są następujące typy obrazu (\textit{image\_type}):
+\begin{itemize}
+	\item \textit{material\_base\_color}: tekstura koloru podstawowy materiału,
+	\item \textit{material\_parameters}: tekstura parametrów (metaliczności-chropowatości) materiału,
+	\item \textit{material\_normal\_map}: mapa normalnych materiału,
+	\item \textit{cubemap}: tekstura sześcienna,
+	\item \textit{font\_bitmap}: tekstura czcionki bitmapowej,
+	\item \textit{offscreen\_f16}: pozaekranowa tekstura o formacie \textit{R16\_SFLOAT},
+	\item \textit{offscreen\_depth\_buffer}: pozaekranowy bufor głębi,
+	\item \textit{offscreen\_r8}: pozaekranowa tekstura o formacie \textit{R8\_UNORM}.
+\end{itemize}
+
+Wszystkie rodzaje tekstur mogą być próbkowane w shaderach poprzez deskryptory.
+Tekstury pozaekranowe mogą być też używane jako cele renderowania, tj. dołączenia koloru i głębi/szablonu potoku graficzngo.
+
+Obraz utrzymuje trzy obiekty Vulkan: obraz \textit{VkImage}, dowiązaną do niego alokację pamięci \textit{VkDeviceMemory} oraz widok na niego \textit{VkImageView}.
+Ich informacje tworzenia zależą od wejścia metody \textit{init()}: wysokości, szerokości, liczby kanałów oraz typu obrazu.
+
+Typ obrazu przykłada się głównie na flagi użycia obrazu \textit{VkImageUsageFlags}.
+Tekstury pozaekranowe używają flag \textit{SAMPLED} i \textit{COLOR\_ATTACHMENT}.
+Reszta obrazów używa flag  \textit{SAMPLED}, \textit{TRANSFER\_SRC} i \textit{TRANSFER\_DST}.
+
+Obrazy używają wyłącznie kafelkowania optymalnego, które jest wydajniejsze od kafelkowania liniowego i znacznie szerzej wspierane \cite{GPUINFO}.
+
+Obrazy posiadają jedną warstwę i jeden poziom mipmap z wyjątkiem tekstur sześciennych (sześć warstw) oraz tekstur koloru podstawowy materiału (maksymalna możliwa liczba poziomów mipmap).
+
+// HIRO format obrazu
+
+Pamięć obrazu jest zawsze w pamięcią \textit{DEVICE\_LOCAL}, ponieważ transport z GPU do CPU nigdy nie zachodzi i ten typ pamięci powinien skutkować szybszym dostępem po stronie GPU.
+
+Typ stworzonego widoku \textit{VkImageViewType} to \textit{2D} pozwalajacy shaderom GLSL na probkowanie przy użyciu zmiennych shaderów o typie \textit{sampler2D}. Wyjątkiem są tekstury sześcienne, które wymagają widoku \textit{CUBE} pozwalającego na próbkowanie zmiennymi \textit{samplerCube}.
+
+Kopiowanie danych obrazu z CPU do GPU to ważna operacja pozwalającą na wstępne wypełnienie obrazów danymi załadowanymi z bazy zasobów. Nie jest ona wymagana dla obrazów niebędących teksturami pozaekranowymi.
+Jest ona wykonywana metodą \textit{send\_to\_device()}, która podobnie do obiektów \textit{buffer} używa poleceń one-shot do wypełnienia zamapowanego bufora tymczasowego danymi obrazu i skopiowania go poleceniem \textit{vkCmdCopyBufferToImage()} do pamięci GPU.
+Dodatkowo bufer poleceń one-shot jest używany do wygenerowania wymaganych poziomów mipmap.
  
 \subsubsection{Obiekt unified\_constant\_buffer}
 Obiekt \textit{unified\_constant\_buffer} reprezentuje 
@@ -1143,7 +1215,7 @@ Obiekt składa się z następujących elementów:
 	\item typ shadera,
 	\item kod źródłowy GLSL,
 	\item kod bajtowy SPIR-V,
-	\item moduł shadera,
+	\item moduł shadera \textit{vkShaderModule},
 	\item obiekt \textit{shader\_reflect}.
 \end{itemize}
 

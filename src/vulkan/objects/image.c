@@ -72,8 +72,8 @@ image *image_create(device *vkd, image_type type, uint32_t width, uint32_t heigh
     image->format = find_image_format(vkd, image->type, image->channels);
     image->tiling = VK_IMAGE_TILING_OPTIMAL;
     image->createFlags = 0;
-    image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
-                        VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+      image->usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT |
+                          VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
     image->aspectFlags = find_image_aspects(image->type);
     image->viewType = VK_IMAGE_VIEW_TYPE_2D;
     image->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
