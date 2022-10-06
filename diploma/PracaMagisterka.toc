@@ -28,110 +28,109 @@
 \contentsline {subsubsection}{Bufory}{16}{subsubsection*.19}%
 \contentsline {subsubsection}{Obrazy}{17}{subsubsection*.20}%
 \contentsline {subsubsection}{Próbniki}{19}{subsubsection*.22}%
-\contentsline {subsection}{\numberline {2.1.5}Łańcuch wymiany}{19}{subsection.2.1.5}%
-\contentsline {subsection}{\numberline {2.1.6}Bufory poleceń}{21}{subsection.2.1.6}%
-\contentsline {subsection}{\numberline {2.1.7}Synchronizacja}{21}{subsection.2.1.7}%
-\contentsline {subsubsection}{Bariery potoku}{21}{subsubsection*.24}%
-\contentsline {subsubsection}{Semafory}{22}{subsubsection*.25}%
-\contentsline {subsubsection}{Ogrodzenia}{22}{subsubsection*.26}%
-\contentsline {subsubsection}{Zdarzenia}{22}{subsubsection*.27}%
-\contentsline {subsection}{\numberline {2.1.8}Deskryptory i stałe push}{23}{subsection.2.1.8}%
-\contentsline {subsubsection}{Tworzenie deskryptorów}{23}{subsubsection*.28}%
-\contentsline {subsubsection}{Aktualizacja deskryptorów}{24}{subsubsection*.29}%
-\contentsline {subsubsection}{Stałe push}{24}{subsubsection*.30}%
-\contentsline {subsubsection}{Zadeklarowanie użycia deskryptorów w układzie potoku}{24}{subsubsection*.31}%
-\contentsline {subsubsection}{Dowiązanie deskryptorów do bufora poleceń}{25}{subsubsection*.32}%
-\contentsline {subsubsection}{Diagram użycia deskryptorów}{25}{subsubsection*.33}%
-\contentsline {subsubsection}{Dostęp do zasobów w shaderach}{25}{subsubsection*.35}%
-\contentsline {subsubsection}{Układ pamięci scalar dla buforów i stałych push}{26}{subsubsection*.36}%
-\contentsline {subsection}{\numberline {2.1.9}Rozszerzenie VK\textunderscore \allowbreak EXT\textunderscore \allowbreak descriptor\textunderscore \allowbreak indexing}{26}{subsection.2.1.9}%
-\contentsline {subsubsection}{Niejednolite dynamiczne indeksowanie deskryptorów}{26}{subsubsection*.37}%
-\contentsline {subsubsection}{Aktualizacja deskryptorów po dowiązaniu}{27}{subsubsection*.38}%
-\contentsline {subsubsection}{Dowiązanie deskryptora o zmiennej wielkości}{28}{subsubsection*.39}%
-\contentsline {subsubsection}{Częściowo dowiązane deskryptory}{28}{subsubsection*.40}%
-\contentsline {subsubsection}{Nieograniczone tablice deskryptorów}{28}{subsubsection*.41}%
-\contentsline {subsection}{\numberline {2.1.10}Przebiegi renderowania i potoki}{29}{subsection.2.1.10}%
-\contentsline {subsubsection}{Moduły shaderów}{29}{subsubsection*.42}%
-\contentsline {subsubsection}{Przebieg renderowania}{30}{subsubsection*.43}%
-\contentsline {subsubsection}{Rozszerzenie VK\textunderscore \allowbreak EXT\textunderscore \allowbreak dynamic\textunderscore \allowbreak rendering}{30}{subsubsection*.44}%
-\contentsline {subsection}{\numberline {2.1.11}Rozszerzenie VK\textunderscore \allowbreak KHR\textunderscore \allowbreak performance\textunderscore \allowbreak query}{30}{subsection.2.1.11}%
-\contentsline {section}{\numberline {2.2}Renderowanie bez dowiązań}{30}{section.2.2}%
-\contentsline {subsection}{\numberline {2.2.1}Tekstury bez dowiązań}{31}{subsection.2.2.1}%
-\contentsline {subsection}{\numberline {2.2.2}Geometria bez dowiązań}{32}{subsection.2.2.2}%
-\contentsline {section}{\numberline {2.3}Potok zasobów}{32}{section.2.3}%
-\contentsline {subsection}{\numberline {2.3.1}Zasoby wejściowe}{33}{subsection.2.3.1}%
-\contentsline {subsubsection}{Formaty opisu sceny glTF}{33}{subsubsection*.49}%
-\contentsline {subsection}{\numberline {2.3.2}Zasoby wyjściowe}{35}{subsection.2.3.2}%
-\contentsline {subsection}{\numberline {2.3.3}Potok zasobów}{35}{subsection.2.3.3}%
-\contentsline {subsection}{\numberline {2.3.4}Baza zasobów}{35}{subsection.2.3.4}%
-\contentsline {section}{\numberline {2.4}Graf sceny}{36}{section.2.4}%
-\contentsline {section}{\numberline {2.5}Graf renderowania}{36}{section.2.5}%
-\contentsline {section}{\numberline {2.6}Oświetlenie}{36}{section.2.6}%
-\contentsline {section}{\numberline {2.7}Cieniowanie odroczone}{37}{section.2.7}%
-\contentsline {chapter}{\numberline {3}Narzędzia, architektura i implementacja}{38}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Narzędzia}{38}{section.3.1}%
-\contentsline {subsection}{\numberline {3.1.1}Proces budowania}{38}{subsection.3.1.1}%
-\contentsline {paragraph}{engine}{39}{paragraph*.52}%
-\contentsline {paragraph}{main}{39}{paragraph*.53}%
-\contentsline {paragraph}{test}{39}{paragraph*.54}%
-\contentsline {paragraph}{asset\textunderscore \allowbreak pipeline}{39}{paragraph*.55}%
-\contentsline {paragraph}{copy\textunderscore \allowbreak assets}{39}{paragraph*.56}%
-\contentsline {paragraph}{run\textunderscore \allowbreak asset\textunderscore \allowbreak pipeline}{39}{paragraph*.57}%
-\contentsline {subsection}{\numberline {3.1.2}Biblioteki zewnętrzne}{39}{subsection.3.1.2}%
-\contentsline {section}{\numberline {3.2}Architektura}{40}{section.3.2}%
-\contentsline {section}{\numberline {3.3}Implementacja}{41}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}Wygenerowany kod}{41}{subsection.3.3.1}%
-\contentsline {subsubsection}{Jednostka constants}{42}{subsubsection*.59}%
-\contentsline {subsubsection}{Jednostka globals}{44}{subsubsection*.60}%
-\contentsline {subsubsection}{Jednostka macros}{44}{subsubsection*.61}%
-\contentsline {subsubsection}{Jednostka meta}{45}{subsubsection*.62}%
-\contentsline {subsubsection}{Jednostka descriptors}{45}{subsubsection*.63}%
-\contentsline {subsection}{\numberline {3.3.2}Rdzeń}{47}{subsection.3.3.2}%
-\contentsline {subsubsection}{Jednostka thirdparty}{47}{subsubsection*.64}%
-\contentsline {subsubsection}{Jednostka alloc}{47}{subsubsection*.65}%
-\contentsline {subsubsection}{Jednostka log}{48}{subsubsection*.66}%
-\contentsline {subsubsection}{Jednostka junk}{48}{subsubsection*.67}%
-\contentsline {subsubsection}{Jednostka platform}{49}{subsubsection*.68}%
-\contentsline {subsection}{\numberline {3.3.3}I/O}{50}{subsection.3.3.3}%
-\contentsline {subsubsection}{Jednostka config}{50}{subsubsection*.69}%
-\contentsline {subsubsection}{Jednostka sql\textunderscore \allowbreak db}{51}{subsubsection*.70}%
-\contentsline {subsubsection}{Jednostka asset\textunderscore \allowbreak db}{51}{subsubsection*.71}%
-\contentsline {subsection}{\numberline {3.3.4}Zasoby}{51}{subsection.3.3.4}%
-\contentsline {subsubsection}{Zasób węzła \textit {asset\textunderscore \allowbreak object}}{52}{subsubsection*.73}%
-\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak mesh}}{53}{subsubsection*.74}%
-\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak primitive}}{53}{subsubsection*.75}%
-\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak vertex\textunderscore \allowbreak attribute}}{53}{subsubsection*.76}%
-\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak camera}}{53}{subsubsection*.77}%
-\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak direct\textunderscore \allowbreak light}}{54}{subsubsection*.78}%
-\contentsline {subsubsection}{Zasoby skybox \textit {asset\textunderscore \allowbreak skybox}}{54}{subsubsection*.79}%
-\contentsline {subsubsection}{Zasób czcionki \textit {asset\textunderscore \allowbreak font}}{54}{subsubsection*.80}%
-\contentsline {subsubsection}{Zasób materiału \textit {asset\textunderscore \allowbreak material}}{54}{subsubsection*.82}%
-\contentsline {subsubsection}{Zasób tekstury \textit {asset\textunderscore \allowbreak texture}}{55}{subsubsection*.83}%
-\contentsline {subsubsection}{Zasób obrazu \textit {asset\textunderscore \allowbreak image}}{55}{subsubsection*.84}%
-\contentsline {subsubsection}{Zasób próbnika \textit {asset\textunderscore \allowbreak sampler}}{55}{subsubsection*.85}%
-\contentsline {subsubsection}{Potok zasobów asset\textunderscore \allowbreak pipeline}{56}{subsubsection*.86}%
-\contentsline {subsection}{\numberline {3.3.5}Vulkan}{56}{subsection.3.3.5}%
-\contentsline {subsubsection}{Obiekt device}{56}{subsubsection*.87}%
-\contentsline {subsubsection}{Obiekt swap\textunderscore \allowbreak chain}{59}{subsubsection*.88}%
-\contentsline {subsubsection}{Obiekt buffer}{59}{subsubsection*.89}%
-\contentsline {subsubsection}{Obiekt image}{60}{subsubsection*.91}%
-\contentsline {subsubsection}{Obiekt unified\textunderscore \allowbreak constant\textunderscore \allowbreak buffer}{61}{subsubsection*.92}%
-\contentsline {subsubsection}{Obiekt textures}{61}{subsubsection*.93}%
-\contentsline {subsubsection}{Obiekty unified\textunderscore \allowbreak geometry\textunderscore \allowbreak buffer i vertex\textunderscore \allowbreak stream}{61}{subsubsection*.94}%
-\contentsline {subsubsection}{Obiekt descriptors}{61}{subsubsection*.95}%
-\contentsline {subsubsection}{Obiekt sync}{61}{subsubsection*.96}%
-\contentsline {subsubsection}{Obiekt shader}{61}{subsubsection*.97}%
-\contentsline {subsection}{\numberline {3.3.6}Scena}{63}{subsection.3.3.6}%
-\contentsline {subsubsection}{Dane sceny scene\textunderscore \allowbreak data}{63}{subsubsection*.99}%
-\contentsline {subsubsection}{Graf sceny scene\textunderscore \allowbreak graph i drzewo sceny scene\textunderscore \allowbreak tree}{64}{subsubsection*.100}%
-\contentsline {subsection}{\numberline {3.3.7}Renderer}{64}{subsection.3.3.7}%
-\contentsline {chapter}{\numberline {4}Wyniki i testy wydajnościowe}{65}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Przykładowe sceny}{65}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Pomiary wydajnościowe}{66}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Analiza pomiarów}{67}{section.4.3}%
-\contentsline {chapter}{\numberline {5}Podsumowanie}{68}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Dalszy rozwój}{68}{section.5.1}%
-\contentsline {chapter}{Wykaz literatury}{70}{chapter*.106}%
-\contentsline {chapter}{Spis rysunk\'ow}{71}{chapter*.107}%
-\contentsline {chapter}{Spis tablic}{72}{chapter*.108}%
+\contentsline {subsection}{\numberline {2.1.5}Łańcuch wymiany}{20}{subsection.2.1.5}%
+\contentsline {subsection}{\numberline {2.1.6}Bufory poleceń}{22}{subsection.2.1.6}%
+\contentsline {subsection}{\numberline {2.1.7}Synchronizacja}{23}{subsection.2.1.7}%
+\contentsline {subsubsection}{Bariery potoku}{23}{subsubsection*.24}%
+\contentsline {subsubsection}{Semafory}{23}{subsubsection*.25}%
+\contentsline {subsubsection}{Ogrodzenia}{24}{subsubsection*.26}%
+\contentsline {subsubsection}{Zdarzenia}{24}{subsubsection*.27}%
+\contentsline {subsection}{\numberline {2.1.8}Deskryptory i stałe push}{24}{subsection.2.1.8}%
+\contentsline {subsubsection}{Tworzenie deskryptorów}{24}{subsubsection*.28}%
+\contentsline {subsubsection}{Aktualizacja deskryptorów}{25}{subsubsection*.29}%
+\contentsline {subsubsection}{Stałe push}{25}{subsubsection*.30}%
+\contentsline {subsubsection}{Zadeklarowanie użycia deskryptorów w układzie potoku}{26}{subsubsection*.31}%
+\contentsline {subsubsection}{Dowiązanie deskryptorów do bufora poleceń}{26}{subsubsection*.32}%
+\contentsline {subsubsection}{Diagram użycia deskryptorów}{26}{subsubsection*.33}%
+\contentsline {subsubsection}{Dostęp do zasobów w shaderach}{27}{subsubsection*.35}%
+\contentsline {subsubsection}{Układ pamięci scalar dla buforów i stałych push}{27}{subsubsection*.36}%
+\contentsline {subsection}{\numberline {2.1.9}Rozszerzenie VK\textunderscore \allowbreak EXT\textunderscore \allowbreak descriptor\textunderscore \allowbreak indexing}{28}{subsection.2.1.9}%
+\contentsline {subsubsection}{Niejednolite dynamiczne indeksowanie deskryptorów}{28}{subsubsection*.37}%
+\contentsline {subsubsection}{Aktualizacja deskryptorów po dowiązaniu}{29}{subsubsection*.38}%
+\contentsline {subsubsection}{Dowiązanie deskryptora o zmiennej wielkości}{30}{subsubsection*.39}%
+\contentsline {subsubsection}{Częściowo dowiązane deskryptory}{30}{subsubsection*.40}%
+\contentsline {subsubsection}{Nieograniczone tablice deskryptorów}{30}{subsubsection*.41}%
+\contentsline {subsection}{\numberline {2.1.10}Przebiegi renderowania i potoki}{31}{subsection.2.1.10}%
+\contentsline {subsubsection}{Moduły shaderów}{31}{subsubsection*.42}%
+\contentsline {subsubsection}{Przebieg renderowania}{32}{subsubsection*.43}%
+\contentsline {subsubsection}{Rozszerzenie VK\textunderscore \allowbreak EXT\textunderscore \allowbreak dynamic\textunderscore \allowbreak rendering}{32}{subsubsection*.44}%
+\contentsline {subsection}{\numberline {2.1.11}Rozszerzenie VK\textunderscore \allowbreak KHR\textunderscore \allowbreak performance\textunderscore \allowbreak query}{32}{subsection.2.1.11}%
+\contentsline {section}{\numberline {2.2}Renderowanie bez dowiązań}{32}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Tekstury bez dowiązań}{32}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Geometria bez dowiązań}{34}{subsection.2.2.2}%
+\contentsline {section}{\numberline {2.3}Potok zasobów}{34}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Zasoby wejściowe}{35}{subsection.2.3.1}%
+\contentsline {subsubsection}{Formaty opisu sceny glTF}{35}{subsubsection*.49}%
+\contentsline {subsection}{\numberline {2.3.2}Zasoby wyjściowe}{37}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Potok zasobów}{37}{subsection.2.3.3}%
+\contentsline {section}{\numberline {2.4}Graf sceny}{38}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Graf renderowania}{38}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Oświetlenie}{38}{section.2.6}%
+\contentsline {section}{\numberline {2.7}Cieniowanie odroczone}{39}{section.2.7}%
+\contentsline {chapter}{\numberline {3}Narzędzia, architektura i implementacja}{40}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Narzędzia}{40}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Proces budowania}{40}{subsection.3.1.1}%
+\contentsline {paragraph}{engine}{41}{paragraph*.52}%
+\contentsline {paragraph}{main}{41}{paragraph*.53}%
+\contentsline {paragraph}{test}{41}{paragraph*.54}%
+\contentsline {paragraph}{asset\textunderscore \allowbreak pipeline}{41}{paragraph*.55}%
+\contentsline {paragraph}{copy\textunderscore \allowbreak assets}{41}{paragraph*.56}%
+\contentsline {paragraph}{run\textunderscore \allowbreak asset\textunderscore \allowbreak pipeline}{41}{paragraph*.57}%
+\contentsline {subsection}{\numberline {3.1.2}Biblioteki zewnętrzne}{41}{subsection.3.1.2}%
+\contentsline {section}{\numberline {3.2}Architektura}{42}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Implementacja}{43}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Wygenerowany kod}{43}{subsection.3.3.1}%
+\contentsline {subsubsection}{Jednostka constants}{44}{subsubsection*.59}%
+\contentsline {subsubsection}{Jednostka globals}{46}{subsubsection*.60}%
+\contentsline {subsubsection}{Jednostka macros}{46}{subsubsection*.61}%
+\contentsline {subsubsection}{Jednostka meta}{47}{subsubsection*.62}%
+\contentsline {subsubsection}{Jednostka descriptors}{47}{subsubsection*.63}%
+\contentsline {subsection}{\numberline {3.3.2}Rdzeń}{49}{subsection.3.3.2}%
+\contentsline {subsubsection}{Jednostka thirdparty}{49}{subsubsection*.64}%
+\contentsline {subsubsection}{Jednostka alloc}{49}{subsubsection*.65}%
+\contentsline {subsubsection}{Jednostka log}{50}{subsubsection*.66}%
+\contentsline {subsubsection}{Jednostka junk}{50}{subsubsection*.67}%
+\contentsline {subsubsection}{Jednostka platform}{51}{subsubsection*.68}%
+\contentsline {subsection}{\numberline {3.3.3}I/O}{52}{subsection.3.3.3}%
+\contentsline {subsubsection}{Jednostka config}{52}{subsubsection*.69}%
+\contentsline {subsubsection}{Jednostka sql\textunderscore \allowbreak db}{53}{subsubsection*.70}%
+\contentsline {subsubsection}{Jednostka asset\textunderscore \allowbreak db}{53}{subsubsection*.71}%
+\contentsline {subsection}{\numberline {3.3.4}Zasoby}{53}{subsection.3.3.4}%
+\contentsline {subsubsection}{Zasób węzła \textit {asset\textunderscore \allowbreak object}}{54}{subsubsection*.73}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak mesh}}{55}{subsubsection*.74}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak primitive}}{55}{subsubsection*.75}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak vertex\textunderscore \allowbreak attribute}}{55}{subsubsection*.76}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak camera}}{55}{subsubsection*.77}%
+\contentsline {subsubsection}{Zasób siatki \textit {asset\textunderscore \allowbreak direct\textunderscore \allowbreak light}}{56}{subsubsection*.78}%
+\contentsline {subsubsection}{Zasoby skybox \textit {asset\textunderscore \allowbreak skybox}}{56}{subsubsection*.79}%
+\contentsline {subsubsection}{Zasób czcionki \textit {asset\textunderscore \allowbreak font}}{56}{subsubsection*.80}%
+\contentsline {subsubsection}{Zasób materiału \textit {asset\textunderscore \allowbreak material}}{56}{subsubsection*.82}%
+\contentsline {subsubsection}{Zasób tekstury \textit {asset\textunderscore \allowbreak texture}}{57}{subsubsection*.83}%
+\contentsline {subsubsection}{Zasób obrazu \textit {asset\textunderscore \allowbreak image}}{57}{subsubsection*.84}%
+\contentsline {subsubsection}{Zasób próbnika \textit {asset\textunderscore \allowbreak sampler}}{57}{subsubsection*.85}%
+\contentsline {subsubsection}{Potok zasobów asset\textunderscore \allowbreak pipeline}{58}{subsubsection*.86}%
+\contentsline {subsection}{\numberline {3.3.5}Vulkan}{58}{subsection.3.3.5}%
+\contentsline {subsubsection}{Obiekt device}{58}{subsubsection*.87}%
+\contentsline {subsubsection}{Obiekt swap\textunderscore \allowbreak chain}{61}{subsubsection*.88}%
+\contentsline {subsubsection}{Obiekt buffer}{61}{subsubsection*.89}%
+\contentsline {subsubsection}{Obiekt image}{62}{subsubsection*.91}%
+\contentsline {subsubsection}{Obiekt unified\textunderscore \allowbreak constant\textunderscore \allowbreak buffer}{63}{subsubsection*.92}%
+\contentsline {subsubsection}{Obiekt textures}{63}{subsubsection*.93}%
+\contentsline {subsubsection}{Obiekty unified\textunderscore \allowbreak geometry\textunderscore \allowbreak buffer i vertex\textunderscore \allowbreak stream}{63}{subsubsection*.94}%
+\contentsline {subsubsection}{Obiekt descriptors}{63}{subsubsection*.95}%
+\contentsline {subsubsection}{Obiekt sync}{63}{subsubsection*.96}%
+\contentsline {subsubsection}{Obiekt shader}{63}{subsubsection*.97}%
+\contentsline {subsection}{\numberline {3.3.6}Scena}{65}{subsection.3.3.6}%
+\contentsline {subsubsection}{Dane sceny scene\textunderscore \allowbreak data}{65}{subsubsection*.99}%
+\contentsline {subsubsection}{Graf sceny scene\textunderscore \allowbreak graph i drzewo sceny scene\textunderscore \allowbreak tree}{66}{subsubsection*.100}%
+\contentsline {subsection}{\numberline {3.3.7}Renderer}{66}{subsection.3.3.7}%
+\contentsline {chapter}{\numberline {4}Wyniki i testy wydajnościowe}{67}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Przykładowe sceny}{67}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Pomiary wydajnościowe}{68}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Analiza pomiarów}{69}{section.4.3}%
+\contentsline {chapter}{\numberline {5}Podsumowanie}{70}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Dalszy rozwój}{70}{section.5.1}%
+\contentsline {chapter}{Wykaz literatury}{72}{chapter*.106}%
+\contentsline {chapter}{Spis rysunk\'ow}{73}{chapter*.107}%
+\contentsline {chapter}{Spis tablic}{74}{chapter*.108}%
 \contentsfinish 

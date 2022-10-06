@@ -921,10 +921,10 @@ Bitmapa to prostokątna tablica pikseli opisywana przez następujące parametry:
 \subsubsection{Zasób próbnika \textit{asset\_sampler}}
 Zasób próbnika \textit{asset\_sampler} reprezentuje parametry używane do stworzenia próbnika obrazu:
 \begin{itemize}
-	\item \textit{magFilter}: filtr pomniejszający (VkFilter),
-	\item \textit{minFilter}: filtr powiększający (VkFilter),
-	\item \textit{addressModeU}: tryb adresowania współrzędnych tekstur poza przedziałem $\left[0,1\right]$ dla osi X (VkSamplerAddressMode),
-	\item \textit{addressModeV}: tryb adresowania współrzędnych tekstur poza przedziałem $\left[0,1\right]$ dla osi Y (VkSamplerAddressMode),
+	\item \textit{magFilter}: filtr powiększania (\textit{VkFilter}),
+	\item \textit{minFilter}: filtr pomniejszania (\textit{VkFilter}),
+	\item \textit{addressModeU}: tryb adresowania współrzędnych tekstur poza przedziałem $\left[0,1\right]$ dla osi X (\textit{VkSamplerAddressMode}),
+	\item \textit{addressModeV}: tryb adresowania współrzędnych tekstur poza przedziałem $\left[0,1\right]$ dla osi Y (\textit{VkSamplerAddressMode}),
 \end{itemize}
 
 \subsubsection{Potok zasobów asset\_pipeline}
@@ -1015,7 +1015,7 @@ Lista urządzeń fizycznych jest przefiltrowana do listy kandydatów przy użyci
 	\begin{itemize}
 	\item Vulkan 1.0 Core:
 		\begin{itemize}
-		\item samplerAnisotropy: filtrowanie anizotropowego podczas próbkowania;
+		\item samplerAnisotropy: filtrowanie anizotropowego;
 		\item shaderUniformBufferArrayDynamicIndexing: jednolite dynamiczne indeksowanie tablic buforów uniform;
 		\item shaderSampledImageArrayDynamicIndexing: jednolite dynamiczne indeksowanie tablic próbkowanych obrazów;
 		\item multiDrawIndirect: polecenia wielokrotnego rysowania pośredniego;

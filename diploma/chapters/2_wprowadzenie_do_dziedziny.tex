@@ -335,11 +335,10 @@ Nazwy i etykiety są używane w wiadomościach debugujących i pokazywane przez 
 
 Vulkan wyróżnia dwa rodzaje zasobów: bufory (\textit{VkBuffer}) i obrazy (\textit{VkImage}).
 
-Oba rodzaje zasobów muszą posiadać dowiązaną alokację pamięci \textit{VkDeviceMemory}.
-// HIRO pamięć
+Zasoby są widokami na pamięć GPU reprezentowaną przez alokację pamięci \textit{VkDeviceMemory}.
+Fragment alokacji pamięci musi zostać dowiązywny do nowo stworzonego zasobu przy użyciu funkcji \textit{vkBindImageMemory()} lub \textit{vkBindBufferMemory()}.
 
-Odczyt i zapis danych z zasobu wymaga utworzenia widoku: \textit{VkBufferView} lub \textit{VkImageView}.
-// HIRO widok
+W kolejnych sekcjach przybliżono właściwości buforów, obrazów, widoków oraz próbników. 
 
 \subsubsection{Bufory}
 
@@ -354,12 +353,15 @@ Przykładowo:
 	\item \textit{TRANSFER\_DST}: może być miejscem docelowym polecenia transferu;
 	\item \textit{UNIFORM\_TEXEL\_BUFFER}: może być użyty do stworzenia widoku bufora magazynowego używanego przez deskryptory typu \textit{UNIFORM\_TEXEL\_BUFFER};
 	\item \textit{STORAGE\_TEXEL\_BUFFER}: może być użyty do stworzenia widoku bufora magazynowego używanego przez deskryptory typu \textit{UNIFORM\_TEXEL\_BUFFER};
-	\item \textit{UNIFORM\_BUFFER}: może być buforem uniform opisanym deskryptorem typu \textit{UNIFORM\_BUFFER};
-	\item \textit{STORAGE\_BUFFER}: może być buforem magazynowym opisanym deskryptorem typu \textit{STORAGE\_BUFFER};
+	\item \textit{UNIFORM\_BUFFER}: może być buforem uniform (pozwalającym tylko na odczyt) opisanym deskryptorem typu \textit{UNIFORM\_BUFFER};
+	\item \textit{STORAGE\_BUFFER}: może być buforem magazynowym (pozwalajaćym na odczyt i zapis) opisanym deskryptorem typu \textit{STORAGE\_BUFFER};
 	\item \textit{INDEX\_BUFFER}: może być dowiązany jako bufor indeksów poleceniem \textit{vkCmdBindIndexBuffer()};
 	\item \textit{VERTEX\_BUFFER}: może być dowiązany jako bufor wierzchołków poleceniem \textit{vkCmdBindVertexBuffer()};
 	\item \textit{INDIRECT\_BUFFER}: może być używany jako bufor poleceń rysowania pośredniego w poleceniach \textit{vkCmdDrawIndirect()} i \textit{vkCmdDrawIndexedIndirect()}.
 \end{itemize}
+
+Widoki bufora \textit{VkBufferView} pozwala shaderom na traktowanie ich zawartości jako obrazy.
+Jednak z powodu ich prostoty dostęp do buforów w praktyce jest odbywa się bezpośrednio używając deskryptorów typu \textit{UNIFORM\_BUFFER} lub \textit{STORAGE\_BUFFER}.
 
 \subsubsection{Obrazy}
 
@@ -445,13 +447,35 @@ Przykładowe układy obrazu i dozwolone użycie:
 Dozwolone układy obrazu mogą zależeć od wcześniej sprecyzowanych flag użycia. Przykładowo układ \textit{SHADER\_READ\_ONLY\_OPTIMAL} wymaga flagi użycia \textit{SAMPLED}.
 
 W przeciwieństwie do poprzednich API takich jak OpenGL, Vulkan nie zmienia automatycznie układu obrazu, co zmusza
-programistę do samodzielnego śledzenia stanu układu obrazów i wykonywania przejść na poprawny układ przed użyciem ich przez polecenia poprzez użycie odpowieniej bariery pamięci obrazu.
+programistę do samodzielnego śledzenia stanu układu obrazów i wykonywania przejść na poprawny układ przed użyciem ich przez polecenia poprzez użycie odpowieniej bariery pamięci obrazu \textit{VkImageMemoryBarrier}.
 
+Obrazy, w przeciwieństwie do buforów, nie są używane bezpośrednio i zawsze wymagają utworzenia widoku \textit{VkImageView} opisującego używane części obrazu - warstwy i poziomy mipmap - oraz sposób interpretacji teksela - możliwe aliasowanie formatu obrazu lub remapowanie jego komponentów.
+
+Przykładami użycia widoków obrazów są aktualizacja deskryptorów i specyfiakcja dowiązań przebiegu renderowania.
 
 \subsubsection{Próbniki}
 
-Teksele obrazy zwykle nie są bezpośrednio odczytywane w shaderach. Zamiast tego są one używane jako tekstury, do których dostęp odbywa się poprzez próbnik \textit{VkSampler} określający operacje filtrowania
-// HIRO VkSampler próbkowanie, filtrowanie mag, min, mipmap
+Teksele obrazy (lub rzadziej bufora) zwykle nie są bezpośrednio odczytywane w shaderach.
+Zamiast tego próbkowalne obrazy są używane jako tekstury, które mogą być tylko odczytywane pośrednio używając próbników GPU.
+
+Próbnik GPU przyjmuje od shadera koordynaty tekstury i używa ich do obliczenia i zwrócenia próbki będącej wynikiem automatycznego procesu filtrowania tekstury mieszającego wartość adresowanego koordynatami tekstury teksela z jego sąsiadami w warstwie lub poziomach mipmap.
+Przykładowo większość GPU wspiera następujące metody filtracji:
+\begin{itemize}
+	\item najbliższego sąsiada: próbka jest równa tekselowi najbliższemu koordynatowi tekstury;
+	\item dwuliniowe: próbka jest średnią czterach najbliższych tekselów;
+	\item trójliniowe: rozszerzenie filtrowania dwuliniowego o liniową interpolację dwóch najbliższych poziomów mipmap;
+	\item anizotropowe: rozszerzenie filtrowanie trójliniowe uzględniające większą liczby poziomów mipmap, implementacja zależna od sterownika.
+\end{itemize}
+
+Stan próbnika GPU używanego przez shader jest zaszyty w obiekcie próbnika \textit{VkSampler} i jego następujące parametry tworzenia mogą być użyte do sterowania filtrowaniem:
+\begin{itemize}
+	\item \textit{magFilter}: filtr powiększania \textit{VkFilter};
+	\item \textit{minFilter}: filtr pomniejszania \textit{VkFilter};
+	\item \textit{mipmapMode}: tryb mipmapowania \textit{VkSamplerMipmapMode};
+	\item \textit{addressModeU}, \textit{addressModeV}, \textit{addressModeW}: tryb adresowania koordynatów tekstur poza przedziałem $\left[0,1\right]$ \textit{VkSamplerAddressMode};
+	\item \textit{anisotropyEnable}: włączenie filtrowania anizotropowego, wymaga funkcjonalności urządzenia Vulkan 1.0 \textit{samplerAnisotropy};
+	\item \textit{maxAnisotropy}: maksymalna wartość anizotropii, musi być mniejsza od limitu \textit{maxSamplerAnisotropy}.
+\end{itemize}
 
 
 \subsection{Łańcuch wymiany}
@@ -562,17 +586,46 @@ Najczęstszym sprawcą obu tych sytuacji jest zmiana rozmiaru okna.
 
 \subsection{Bufory poleceń}
 
-// TODO diagram stanu,
+Wszystkie operacje do wykonania na GPU są grupowany w obiektach Vulkan zwanych buforami poleceń \textit{VkCommandBuffer}.
 
-// TODO Rodzaje poleceń: zmiana stanu (dowiązywanie), rysowanie
+Bufory poleceń są alokowane z wcześniej stworzonej puli poleceń \textit{VkCommandPool}.
 
-// TODO ponowne użycie vs nagrywanie co klatkę
+Bufor poleceń jest zawsze w jednym z następujących stanów:
+\begin{itemize}
+	\item początkowy (ang. initial),
+	\item nagrywania (ang. recording),
+	\item wykonywalny (ang. executable),
+	\item oczekujący: (ang. pending),
+	\item nieprawidłowy (ang. invalid).
+\end{itemize}
+
+Nowo zaalokowany bufor poleceń jest całkowicie pusty - niezawiera poleceń i znajduje się w stanie początkowym.
+Bufory poleceń mogą być ponownie sprowadzone do stanu początkowego poprzez zresetowanie funkcją \textit{vkResetCommandBuffer()}.
+Podobnie zresetowanie całej puli poleceń funkcją \textit{vkResetCommandPool()} resetuje wszystkie zaalokowane z niej bufory poleceń.
+
+Bufor poleceń przechodzi w stan nagrywania poprzez wywołanie funkcji \textit{vkBeginCommandBuffer()}.
+W tym stanie polecenia \textit{vkCmd*()} mogą być używane do nagrywania (dodawania) operacji do wykonania na GPU.
+
+Nagrywane polecenia mogą być podzielone na dwa rodzaje: HIRO
+// HIRO Rodzaje poleceń: zmiana stanu (dowiązywanie), rysowanie
+
+Bufor poleceń przechodzi w stan wykonywalny po wywołaniu funkcji \textit{vkEndCommandBuffer()} kończącej nagrywanie. 
+
+// HIRO vkQueueSubmit() wysyłane do kolejki w celu wykonania na GPU
+
+
+
+
+// HIRO ponowne użycie vs nagrywanie co klatkę
 
 \subsection{Synchronizacja}
 
-// TODO wstęp o synchronizacji
+Sterowniki Vulkan, w przeciwieństwie do OpenGL, nie wykonują automatycznej synchronizacji pomiędzy operacjami używającymi zasobówi wymagają od programisty używania poniżej opisanych prymitywów synchronizacji.
 
 \subsubsection{Bariery potoku}
+
+Vulkan nie zapewnia silnych gwarancji dotyczących kolejności wykonywania operacji na GPU.
+Przykładowo polecenia w buforze poleceń rozpoczynają wykonywanie w kolejności nagrywania, ale nie muszą być kończone w tej samej kolejności, co może powodować wyścigi podczas dostępu do współdzielonych zasobów.
 
 Bariera potoku to prymityw synchronizacji definiowany poleceniem \textit{vkCmdPipelineBarrier()} pozwalający na zdefiniowanie zależności wykonania oraz zależności pamięci pomiędzy poleceniami przed i po barierze.
 
@@ -600,9 +653,6 @@ Istnieją trzy rodzaje barier w zależności od rodzaju pamięci zarządzanego p
 	\item {globalne bariery pamięci}: dla wszystkich istniejących obiektów,
 \end{itemize}
 
-// TODO użycie
-// TODO listingi?
-
 \subsubsection{Semafory}
 
 Semafory to obiekty \textit{VkSemaphore} pozwalające na synchronizację wykonywania buforów poleceń w tej samej lub pomiędzy kolejkami. GPU
@@ -614,7 +664,9 @@ graficzna i kolejką prezentacji w celu zagwarantowania, że prezentowalny obraz
 
 \subsubsection{Ogrodzenia}
 
-Ogrodzenia (ang. fence) to obiekty \textit{VkFence} pozwalające na synchonizację poleceń wykonywanych w kolejce na GPU z CPU.
+Vulkan pozwala na bardzo prostą synchronizację GPU z CPU poprzez funkcje \textit{vkQueueWaitIdle()} i \textit{vkDeviceWaitIdle()} blokujące wykonywanie programu aż do zakończenia wszystkich operacji wykonywanych na kolejce bądź całym urządzeniu.
+
+Ogrodzenia (ang. fence) to obiekty \textit{VkFence} pozwalające na bardziej drobnoziarnistą synchonizację poleceń wykonywanych w kolejce na GPU z CPU.
 Ogrodzenie może być sygnalizowane przez GPU po zakończeniu wykonywania funkcji używających GPU, CPU może zresetować ogrodzenie
 funkcją \textit{vkResetFences()} lub czekać na jego sygnalizację funkcją \textit{vkWaitForFences()} chwilowo blokując wykonywanie programu.
 
@@ -633,7 +685,7 @@ Deskryptor to blok pamięci z opisem pojedynczego zasobu używanego przez GPU. D
 
 \subsubsection{Tworzenie deskryptorów}
 
-Vulkan nie pozwala na tworzenie i używanie pojedynczych deskryptorów i wymaga grupowania ich w tablice poprzez zbiory deskryptorów  (obiekt \textit{VkDescriptorSet}).
+Vulkan nie pozwala na tworzenie i używanie pojedynczych deskryptorów i wymaga grupowania ich w tablice poprzez zbiory deskryptorów (\textit{VkDescriptorSet}).
 
 Stworzenie zbiorów deskryptorów wymaga wcześniejszego stworzenia dwóch obiektów: puli deskryptorów (\textit{VkDescriptorPool})
 oraz układu zbioru deskryptorów (\textit{VkDescriptorSetLayout}).
@@ -954,7 +1006,7 @@ Tablica jest nieograniczona tylko z punktu widzenia kodu shadera - dowiązanie d
 
 \subsection{Przebiegi renderowania i potoki}
 
-// TODO vkPipeline - potok, potok graficzny
+// HIRO vkPipeline - potok, potok graficzny
 
 // HIRO globalna macierz przekształceń (macierz model-widok-rzutowanie), przestrzenie współrzędnych, Reverse-Z
 
@@ -965,7 +1017,7 @@ Wierzchołek składa się z kilku różnych atrybutów wierzchołka, np. pozycji
 
 Indeksów wierzchołków pozwalających na kompresję bufora geometrii używanego przez polecenia rysowania poprzez użycie bufora indeksów definiującego 
 
-// TODO
+// HIRO
 
 \subsubsection{Moduły shaderów}
 
@@ -982,15 +1034,15 @@ Po kompilacji moduł shadera jest w formie, która może być używana bezpośre
 
 
 \subsubsection {Przebieg renderowania}
-// TODO vkRenderPass - przebieg renderowania
+// HIRO vkRenderPass - przebieg renderowania
 
-Dołączenie koloru to widok obrazu używany przez  do zapisywania końcowych wartości kolorów podczas etapu mieszania kolorów potoku graficznego.
+Dołączenie koloru to widok obrazu używany przez przebieg renderowania do zapisywania końcowych wartości kolorów podczas etapu mieszania kolorów potoku graficznego.
 
-Dołączenie głębi/szablonu to widok obrazu używany przez potok graficzny do odczytywania i zapisywania wartości głebi/szablonu podczas testów głębi/szablonu w etapach wczesnych i późnych testów fragmentów potoku graficznego.
+Dołączenie głębi/szablonu to widok obrazu używany przez przebieg renderowania do odczytywania i zapisywania wartości głebi/szablonu podczas testów głębi/szablonu w etapach wczesnych i późnych testów fragmentów potoku graficznego.
 
 \subsubsection{Rozszerzenie VK\_EXT\_dynamic\_rendering}
 
-// TODO dynamiczne przebiegi renderowania
+// HIRO dynamiczne przebiegi renderowania
 
 \subsection{Rozszerzenie VK\_KHR\_performance\_query}
 
@@ -1012,9 +1064,9 @@ W Vulkan renderowanie bez dowiązań jest realizowane poprzez:
 \end{itemize}
 
 // HIRO BARDZIEJ SKRÓTOWO NIE MA CZASU
-// TODO unified geometry/constant buffer
+// HIRO unified geometry/constant buffer
 
-// TODO instancjonowanie, wielokrotne polecenia rysowania pośredniego,
+// HIRO instancjonowanie, wielokrotne polecenia rysowania pośredniego,
 
 \subsection {Tekstury bez dowiązań}
 
@@ -1183,7 +1235,7 @@ Poniższy diagram przedstawia tekstury bez dowiązań używając niejednolitych 
 
 \subsection {Geometria bez dowiązań}
 
-// TODO draw call batching używając jednolitego bufora geometrii i poleceń rysowania pośredniego
+// HIRO draw call batching używając jednolitego bufora geometrii i poleceń rysowania pośredniego
 
 
 \section{Potok zasobów}
@@ -1357,7 +1409,9 @@ Przykładowo plik \textit{triangle.gltf} opisujący scenę zawierającą pojedyn
 
 \subsection{Zasoby wyjściowe}
 
-Zasoby wyjściowe mają formę plików w formacie przystosowanym do manipulacji przez aplikację. Przykładami zasobów wyjściowych są pliki z rozszerzeniami \textit{.uasset} i \textit{.umap} używane przez silnik Unreal Engine \cite{unrealengine} do przechowywania zasobów w zoptymalizowanym formacie binarnym czy pliki \textit{.streamdb} i \textit{.resources}, które według twórców narzędzia do ekstrakcji zasobów z gier UnArch \cite{UNARCH} są używane w grze Doom Eternal i zastąpiły pliki \textit{.pak} wcześniejszych gier od id Software.
+Zasoby wyjściowe mają formę plików w formacie przystosowanym do manipulacji przez aplikację.
+Baza zasobów (ang. asset database) to pojedynczy zasób wyjściowy mający na celu zgromadzenie informacji o wszystkich zasobach używanych przez silnik.
+Przykładami bazy zasobów są pliki z rozszerzeniami \textit{.uasset} i \textit{.umap} używane przez silnik Unreal Engine \cite{unrealengine} do przechowywania zasobów w zoptymalizowanym formacie binarnym czy pliki \textit{.streamdb} i \textit{.resources}, które według twórców narzędzia do ekstrakcji zasobów z gier UnArch \cite{UNARCH} są używane w grze Doom Eternal i zastąpiły pliki \textit{.pak} wcześniejszych gier od id Software.
 
 
 \subsection{Potok zasobów}
@@ -1365,13 +1419,6 @@ Zasoby wyjściowe mają formę plików w formacie przystosowanym do manipulacji 
 Potok zasobów (ang. asset pipeline) to część silnika odpowiadająca za konwersję zasobów wejściowych na zasoby wyjściowe.
 Konwersja ta jest wymagana, ponieważ istnieją różne wymagania dotyczące formatów: zasoby wejściowe są zoptymalizowane pod kątem oszczędności miejsca na dysku i interoperacyjności między oprogramowaniem zewnętrznym, kiedy zasoby wyjściowe zwykle wymagają mniejszego zakresu możliwych funkcjonalności i powinny być w formacie dostosowanym do maksymalnie szybkiego wczytywania przez aplikację - szybkość ich zapisu jest mniej ważna ponieważ musi się odbyć tylko jeden raz na komputerach twórców oprogramowania uruchamiających potok zasobów.
 
-\subsection{Baza zasobów}
-Baza zasobów (ang. asset database) to zasób wyjściowy mający na celu zgromadzenie informacji o wszystkich zasobach używanych przez silnik.
-// HIRO
-
-
-
-// TODO
 
 \section{Graf sceny}
 
@@ -1412,11 +1459,11 @@ HIRO
 Graf renderowania jest odpowiedzialny za śledzenie stanu układu obrazów na przestrzeni klatki i jest używany do
 nagrywania barier pamięci obrazu gwarantujących odpowiednie przejścia układu obrazów.
 
-// TODO
+// HIRO
 
 \section{Oświetlenie}
 
-// TODO model PBR
+// HIRO model PBR
 
 Materiał to kompletny opis właściwości powierzchni renderowanej geometrii będący zbiorem parameterów i tekstur używanych do przez shadery podczas prymitywów.
 
@@ -1430,13 +1477,13 @@ W formacie glTF materiał jest zdefiniowany przy użyciu modelu PBR metalicznoś
 Kolor podstawowy jest obliczany poprzez przemnożenie dwóch parametrów materiału: współczynnika vec4 oraz tekstury RGBA.
 Podobnie używane są współczynniki chropowatości i metaliczności będące wartościami w przedziale $\left[0,1\right]$ mnożonymi przez tekstury metaliczności-chropowatości - wartości metalicznści są próbkowane z komponenu B, a wartości metalicznści z komponentu G.
 
-// TODO glTF shader
+// HIRO glTF shader
 
 \section{Cieniowanie odroczone}
 
-// TODO forward vs deferred
+// HIRO forward vs deferred
 
-// TODO G-buffer
+// HIRO G-buffer
 
 Cieniowanie odroczone jest podzielone na dwa przebiegi renderowania:
 \begin{itemize}
@@ -1444,4 +1491,4 @@ Cieniowanie odroczone jest podzielone na dwa przebiegi renderowania:
 	\item przebieg oświetlenia: generuje właściwy obraz na podstawie komponentów G-bufora.
 \end{itemize}
 
-// TODO 
+// HIRO 
