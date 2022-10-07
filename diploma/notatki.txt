@@ -82,13 +82,6 @@ przestrzeni widoku do przestrzeni przycinania (ang. clip space).
 Funkcja get_orthographic_matrix oblicza macierz rzutu prostokątnego z przestrzeni widoku do przestrzeni przycinania (
 ang. clip space). Przestrzeń przycinania w Vulkanie jest prawoskrętna z flipped Y.
 -------------
-
-Vulkan [... 2d/3d, mipmap (lod), array layers, tiling]
-[OBRAZEK]
-
-
-[LISTING alloc, create, bind buffer/image]
-
 ----
 
 ## objects/descriptor.h

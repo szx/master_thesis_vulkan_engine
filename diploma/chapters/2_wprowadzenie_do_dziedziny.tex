@@ -605,18 +605,25 @@ Podobnie zresetowanie całej puli poleceń funkcją \textit{vkResetCommandPool()
 
 Bufor poleceń przechodzi w stan nagrywania poprzez wywołanie funkcji \textit{vkBeginCommandBuffer()}.
 W tym stanie polecenia \textit{vkCmd*()} mogą być używane do nagrywania (dodawania) operacji do wykonania na GPU.
+Efekty nagrywanych poleceń mogą być nieformalnie podzielone na:
+\begin{itemize}
+	\item zmianę wewnętrzny stanu GPU:
+	\begin{itemize}
+		\item zmiana dowiązanego obiektu \textit{vkCmdBind*()},
+		\item dynamiczne ustawienie stanu \textit{vkCmdSet*()},
+	\end{itemize}
+	\item wykonanie operacji GPU wspieranych przez rodzinę kolejki.
+\end{itemize}
 
-Nagrywane polecenia mogą być podzielone na dwa rodzaje: HIRO
-// HIRO Rodzaje poleceń: zmiana stanu (dowiązywanie), rysowanie
 
-Bufor poleceń przechodzi w stan wykonywalny po wywołaniu funkcji \textit{vkEndCommandBuffer()} kończącej nagrywanie. 
+Bufor poleceń przechodzi w stan wykonywalny po wywołaniu funkcji \textit{vkEndCommandBuffer()} kończącej nagrywanie.
 
-// HIRO vkQueueSubmit() wysyłane do kolejki w celu wykonania na GPU
+Bufor poleceń w stanie wykonywalnym może zostać wysłany funkcją \textit{VkQueueSubmit()} do kolejki w celu asynchronicznego wykonania na GPU.
+Bufor poleceń przechodzi ze stanu wykonywalnego do stanu oczekującego i po zakończeniu wykonywania na GPU wraca do stanu wykonywalnego.
 
+Modyfikacja bufora poleceń w stanie oczekującym, zniszczenie używanych przez jego zasobów bądź rozpoczęcie nagrywania z flagą użycia \textit{ONE\_TIME\_SUBMIT} powoduje przejście do stanu nieprawidłowego.
+Bufor poleceń w tym stanie może być tylko zresetowany bądź zwolnione.
 
-
-
-// HIRO ponowne użycie vs nagrywanie co klatkę
 
 \subsection{Synchronizacja}
 
@@ -1004,7 +1011,38 @@ OpDecorate %textures2D Binding 2
 
 Tablica jest nieograniczona tylko z punktu widzenia kodu shadera - dowiązanie deskryptora wciąż posiada pewną wielkość zdefiniowaną podczas tworzenia zbioru deskryptorów. Dlatego też indeksowanie poza długością tablicy jest niezdefiniowanym zachowaniem.
 
-\subsection{Przebiegi renderowania i potoki}
+
+
+\subsection{Potoki graficzne i przebiegi renderowania}
+
+Renderowanie w Vulkan wymaga wysłania do kolejki bufora poleceń wypełnionego poleceniami rysowania.
+
+Vulkan 1.2 oferuje następujące warianty polecenia rysowania:
+\begin{itemize}
+	\item \textit{vkCmdDraw()}: polecenie rysowania, którego parametrami są:
+	\begin{itemize}
+		\item \textit{vertexCount}: liczba wierzchołków do narysowania,
+		\item \textit{instanceCount}: liczba instancji do narysowania,
+		\item \textit{firstVertex}: indeks pierwszego wierzchołka,
+		\item \textit{firstInstance}: indeks pierwszej instancji,
+	\end{itemize}
+	\item \textit{vkCmdDrawIndexed()}: polecenie rysowania HIRO
+	\item \textit{vkCmdDrawIndirect()}: polecenie rysowania pośredniego HIRO
+	\item \textit{vkCmdDrawIndexedIndirect()}: HIRO
+	\item \textit{vkCmdDrawIndirectCount()}: HIRO
+	\item \textit{vkCmdDrawIndexedIndirectCount()}: HIRO
+\end{itemize}
+
+// HIRO instancjonowanie, wielokrotne polecenia rysowania pośredniego,
+
+Wśród powyższych 
+// HIRO wydajność, draw call optimization
+
+Pojedyńcze polecenie rysowania nie zawiera wszystkich informacji potrzebnych do wyrenderowania dowiązanych zasobów i wymaga wcześniejszego stworzenia dwóch obiektów: potoku graficznego i przebiegu renderowania.
+
+
+\subsubsection{Potok graficzny}
+// HIRO Potok graficzny to
 
 // HIRO vkPipeline - potok, potok graficzny
 
@@ -1017,9 +1055,11 @@ Wierzchołek składa się z kilku różnych atrybutów wierzchołka, np. pozycji
 
 Indeksów wierzchołków pozwalających na kompresję bufora geometrii używanego przez polecenia rysowania poprzez użycie bufora indeksów definiującego 
 
+
+
 // HIRO
 
-\subsubsection{Moduły shaderów}
+\paragraph{Moduły shaderów}
 
 Shader to program specyfikujący operacje wykonywane podczas etapu potoku dla każdego przetwarzanego przez niego elementu (np. wierzchołka, punktu sterującego, fragmentu lub grupy roboczej).
 
@@ -1040,9 +1080,11 @@ Dołączenie koloru to widok obrazu używany przez przebieg renderowania do zapi
 
 Dołączenie głębi/szablonu to widok obrazu używany przez przebieg renderowania do odczytywania i zapisywania wartości głebi/szablonu podczas testów głębi/szablonu w etapach wczesnych i późnych testów fragmentów potoku graficznego.
 
-\subsubsection{Rozszerzenie VK\_EXT\_dynamic\_rendering}
+\paragraph{Rozszerzenie VK\_EXT\_dynamic\_rendering}
 
 // HIRO dynamiczne przebiegi renderowania
+
+
 
 \subsection{Rozszerzenie VK\_KHR\_performance\_query}
 
@@ -1066,7 +1108,6 @@ W Vulkan renderowanie bez dowiązań jest realizowane poprzez:
 // HIRO BARDZIEJ SKRÓTOWO NIE MA CZASU
 // HIRO unified geometry/constant buffer
 
-// HIRO instancjonowanie, wielokrotne polecenia rysowania pośredniego,
 
 \subsection {Tekstury bez dowiązań}
 
