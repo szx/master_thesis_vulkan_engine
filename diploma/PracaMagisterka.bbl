@@ -111,6 +111,34 @@
       \verb https://advances.realtimerendering.com/
       \endverb
     \endentry
+    \entry{VULKANSPEC}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=5765836ecb1701c4dbd1ad291979f96b}{%
+           family={Group},
+           familyi={G\bibinitperiod},
+           given={The\bibnamedelimb Khronos\bibnamedelimb Vulkan\bibnamedelima Working},
+           giveni={T\bibinitperiod\bibinitdelim K\bibinitperiod\bibinitdelim V\bibinitperiod\bibinitdelim W\bibinitperiod}}}%
+      }
+      \strng{namehash}{5765836ecb1701c4dbd1ad291979f96b}
+      \strng{fullhash}{5765836ecb1701c4dbd1ad291979f96b}
+      \strng{bibnamehash}{5765836ecb1701c4dbd1ad291979f96b}
+      \strng{authorbibnamehash}{5765836ecb1701c4dbd1ad291979f96b}
+      \strng{authornamehash}{5765836ecb1701c4dbd1ad291979f96b}
+      \strng{authorfullhash}{5765836ecb1701c4dbd1ad291979f96b}
+      \field{extraname}{1}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Vulkan 1.2.225 - A Specification (with KHR extensions)}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://registry.khronos.org/vulkan/specs/1.2-khr-extensions/html/
+      \endverb
+      \verb{url}
+      \verb https://registry.khronos.org/vulkan/specs/1.2-khr-extensions/html/
+      \endverb
+    \endentry
     \entry{godotengine}{software}{}
       \name{author}{1}{}{%
         {{hash=74c424008b92315aa90a1cf69752b6fd}{%
@@ -123,8 +151,8 @@
       \strng{authorbibnamehash}{74c424008b92315aa90a1cf69752b6fd}
       \strng{authornamehash}{74c424008b92315aa90a1cf69752b6fd}
       \strng{authorfullhash}{74c424008b92315aa90a1cf69752b6fd}
-      \field{sortinit}{4}
-      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Godon Engine}
@@ -148,8 +176,8 @@
       \strng{authorbibnamehash}{f74dc6a40e6ed3e07e99f3e972a5394a}
       \strng{authornamehash}{f74dc6a40e6ed3e07e99f3e972a5394a}
       \strng{authorfullhash}{f74dc6a40e6ed3e07e99f3e972a5394a}
-      \field{sortinit}{5}
-      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Unreal Engine}
@@ -174,8 +202,8 @@
       \strng{authorbibnamehash}{612588e929004ece6146ca0f2586ad25}
       \strng{authornamehash}{612588e929004ece6146ca0f2586ad25}
       \strng{authorfullhash}{612588e929004ece6146ca0f2586ad25}
-      \field{sortinit}{6}
-      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
+      \field{sortinit}{7}
+      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Vulkan SDK}
@@ -187,37 +215,9 @@
       \verb https://www.lunarg.com/vulkan-sdk/
       \endverb
     \endentry
-    \entry{VULKANSPEC}{misc}{}
-      \name{author}{1}{}{%
-        {{hash=5765836ecb1701c4dbd1ad291979f96b}{%
-           family={Group},
-           familyi={G\bibinitperiod},
-           given={The\bibnamedelimb Khronos\bibnamedelimb Vulkan\bibnamedelima Working},
-           giveni={T\bibinitperiod\bibinitdelim K\bibinitperiod\bibinitdelim V\bibinitperiod\bibinitdelim W\bibinitperiod}}}%
-      }
-      \strng{namehash}{5765836ecb1701c4dbd1ad291979f96b}
-      \strng{fullhash}{5765836ecb1701c4dbd1ad291979f96b}
-      \strng{bibnamehash}{5765836ecb1701c4dbd1ad291979f96b}
-      \strng{authorbibnamehash}{5765836ecb1701c4dbd1ad291979f96b}
-      \strng{authornamehash}{5765836ecb1701c4dbd1ad291979f96b}
-      \strng{authorfullhash}{5765836ecb1701c4dbd1ad291979f96b}
-      \field{extraname}{1}
-      \field{sortinit}{7}
-      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{title}{Vulkan 1.2.225 - A Specification (with KHR extensions)}
-      \field{year}{2022}
-      \verb{urlraw}
-      \verb https://registry.khronos.org/vulkan/specs/1.2-khr-extensions/html/
-      \endverb
-      \verb{url}
-      \verb https://registry.khronos.org/vulkan/specs/1.2-khr-extensions/html/
-      \endverb
-    \endentry
     \entry{VULKANCTS}{misc}{}
-      \field{sortinit}{8}
-      \field{sortinithash}{a231b008ebf0ecbe0b4d96dcc159445f}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
       \field{labeltitlesource}{title}
       \field{title}{Khronos Vulkan, OpenGL, and OpenGL ES Conformance Tests}
       \field{year}{2022}
@@ -363,8 +363,8 @@
       \endverb
     \endentry
     \entry{SWIFTSHADER}{misc}{}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
       \field{labeltitlesource}{title}
       \field{title}{SwiftShader}
       \field{year}{2022}
@@ -387,8 +387,8 @@
       \strng{authorbibnamehash}{6d905bc60999b0708776a0bcd1615871}
       \strng{authornamehash}{6d905bc60999b0708776a0bcd1615871}
       \strng{authorfullhash}{6d905bc60999b0708776a0bcd1615871}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Debugger graficzny RenderDoc}
@@ -415,8 +415,8 @@
       \strng{authornamehash}{638160ae56a17712d83fafc12a740c80}
       \strng{authorfullhash}{638160ae56a17712d83fafc12a740c80}
       \field{extraname}{3}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{glTF Sample Models}
@@ -495,6 +495,42 @@
       \field{title}{GPU Pro 4: Advanced Rendering Techniques}
       \field{year}{2013}
     \endentry
+    \entry{kosarevsky20213d}{book}{}
+      \name{author}{2}{}{%
+        {{hash=b87c076c5eafaca2aa598c9e5bb20e15}{%
+           family={Kosarevsky},
+           familyi={K\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod}}}%
+        {{hash=b8ebb9fdd3c6852b6d1a8db94ee3a867}{%
+           family={Latypov},
+           familyi={L\bibinitperiod},
+           given={V.},
+           giveni={V\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Packt Publishing}%
+      }
+      \strng{namehash}{eb071626442e2cf0c6bba8310837930b}
+      \strng{fullhash}{eb071626442e2cf0c6bba8310837930b}
+      \strng{bibnamehash}{eb071626442e2cf0c6bba8310837930b}
+      \strng{authorbibnamehash}{eb071626442e2cf0c6bba8310837930b}
+      \strng{authornamehash}{eb071626442e2cf0c6bba8310837930b}
+      \strng{authorfullhash}{eb071626442e2cf0c6bba8310837930b}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{9781838985301}
+      \field{title}{3D Graphics Rendering Cookbook: A comprehensive guide to exploring rendering algorithms in modern OpenGL and Vulkan}
+      \field{year}{2021}
+      \verb{urlraw}
+      \verb https://books.google.pl/books?id=Nys7EAAAQBAJ
+      \endverb
+      \verb{url}
+      \verb https://books.google.pl/books?id=Nys7EAAAQBAJ
+      \endverb
+    \endentry
     \entry{BLENDER}{software}{}
       \name{author}{1}{}{%
         {{hash=38b863a4731f9082165e291d08953ee2}{%
@@ -535,8 +571,8 @@
       \strng{authornamehash}{638160ae56a17712d83fafc12a740c80}
       \strng{authorfullhash}{638160ae56a17712d83fafc12a740c80}
       \field{extraname}{4}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{glTF 2.0 Specification}
@@ -560,8 +596,8 @@
       \strng{authorbibnamehash}{c0529ab46fafe8e43d340cb2d8746b42}
       \strng{authornamehash}{c0529ab46fafe8e43d340cb2d8746b42}
       \strng{authorfullhash}{c0529ab46fafe8e43d340cb2d8746b42}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Narzędzie do ekstrakcji archiw gier UnArch}
@@ -573,45 +609,9 @@
       \verb www.alprogramming.com
       \endverb
     \endentry
-    \entry{kosarevsky20213d}{book}{}
-      \name{author}{2}{}{%
-        {{hash=b87c076c5eafaca2aa598c9e5bb20e15}{%
-           family={Kosarevsky},
-           familyi={K\bibinitperiod},
-           given={S.},
-           giveni={S\bibinitperiod}}}%
-        {{hash=b8ebb9fdd3c6852b6d1a8db94ee3a867}{%
-           family={Latypov},
-           familyi={L\bibinitperiod},
-           given={V.},
-           giveni={V\bibinitperiod}}}%
-      }
-      \list{publisher}{1}{%
-        {Packt Publishing}%
-      }
-      \strng{namehash}{eb071626442e2cf0c6bba8310837930b}
-      \strng{fullhash}{eb071626442e2cf0c6bba8310837930b}
-      \strng{bibnamehash}{eb071626442e2cf0c6bba8310837930b}
-      \strng{authorbibnamehash}{eb071626442e2cf0c6bba8310837930b}
-      \strng{authornamehash}{eb071626442e2cf0c6bba8310837930b}
-      \strng{authorfullhash}{eb071626442e2cf0c6bba8310837930b}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{isbn}{9781838985301}
-      \field{title}{3D Graphics Rendering Cookbook: A comprehensive guide to exploring rendering algorithms in modern OpenGL and Vulkan}
-      \field{year}{2021}
-      \verb{urlraw}
-      \verb https://books.google.pl/books?id=Nys7EAAAQBAJ
-      \endverb
-      \verb{url}
-      \verb https://books.google.pl/books?id=Nys7EAAAQBAJ
-      \endverb
-    \endentry
     \entry{PEP405}{misc}{}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
       \field{labeltitlesource}{title}
       \field{title}{PEP 405 – Python Virtual Environments}
       \field{year}{2011}
@@ -620,6 +620,161 @@
       \endverb
       \verb{url}
       \verb https://peps.python.org/pep-0405/
+      \endverb
+    \endentry
+    \entry{SQLITE}{software}{}
+      \name{author}{1}{}{%
+        {{hash=aee751a5a83a89d9fa7342c7a085356d}{%
+           family={{D. Richard Hipp}},
+           familyi={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{aee751a5a83a89d9fa7342c7a085356d}
+      \strng{fullhash}{aee751a5a83a89d9fa7342c7a085356d}
+      \strng{bibnamehash}{aee751a5a83a89d9fa7342c7a085356d}
+      \strng{authorbibnamehash}{aee751a5a83a89d9fa7342c7a085356d}
+      \strng{authornamehash}{aee751a5a83a89d9fa7342c7a085356d}
+      \strng{authorfullhash}{aee751a5a83a89d9fa7342c7a085356d}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Baza danych SQLite}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://www.sqlite.org
+      \endverb
+      \verb{url}
+      \verb https://www.sqlite.org
+      \endverb
+    \endentry
+    \entry{UTHASH}{misc}{}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{labeltitlesource}{title}
+      \field{title}{uthash: C macros for hash tables and more}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://github.com/troydhanson/uthash
+      \endverb
+      \verb{url}
+      \verb https://github.com/troydhanson/uthash
+      \endverb
+    \endentry
+    \entry{XXHASH}{misc}{}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{labeltitlesource}{title}
+      \field{title}{xxHash - Extremely fast hash algorithm}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://github.com/Cyan4973/xxHash
+      \endverb
+      \verb{url}
+      \verb https://github.com/Cyan4973/xxHash
+      \endverb
+    \endentry
+    \entry{CGLTF}{misc}{}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{labeltitlesource}{title}
+      \field{title}{clgtf: Single-file glTF 2.0 loader and writer written in C99}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://github.com/jkuhlmann/cgltf
+      \endverb
+      \verb{url}
+      \verb https://github.com/jkuhlmann/cgltf
+      \endverb
+    \endentry
+    \entry{CGLM}{misc}{}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{labeltitlesource}{title}
+      \field{title}{cglm: Highly Optimized Graphics Math (glm) for C}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://github.com/recp/cglm
+      \endverb
+      \verb{url}
+      \verb https://github.com/recp/cglm
+      \endverb
+    \endentry
+    \entry{STB}{misc}{}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{labeltitlesource}{title}
+      \field{title}{stb: single-file public domain libraries for C/C++}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://github.com/nothings/stb
+      \endverb
+      \verb{url}
+      \verb https://github.com/nothings/stb
+      \endverb
+    \endentry
+    \entry{C11REFERENCE}{misc}{}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{labeltitlesource}{title}
+      \field{title}{C11 Reference}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://en.cppreference.com/w/c/11/
+      \endverb
+      \verb{url}
+      \verb https://en.cppreference.com/w/c/11/
+      \endverb
+    \endentry
+    \entry{POSIXREFERENCE}{misc}{}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{labeltitlesource}{title}
+      \field{title}{POSIX (The GNU C Library)}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://www.gnu.org/software/libc/manual/html_node/POSIX.html
+      \endverb
+      \verb{url}
+      \verb https://www.gnu.org/software/libc/manual/html_node/POSIX.html
+      \endverb
+    \endentry
+    \entry{WINAPIREFERENCE}{misc}{}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{labeltitlesource}{title}
+      \field{title}{Windows API index}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://learn.microsoft.com/en-us/windows/win32/apiindex/windows-api-list
+      \endverb
+      \verb{url}
+      \verb https://learn.microsoft.com/en-us/windows/win32/apiindex/windows-api-list
+      \endverb
+    \endentry
+    \entry{PYTHONREFERENCE}{misc}{}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
+      \field{labeltitlesource}{title}
+      \field{title}{The Python Standard Library}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://docs.python.org/3/library/index.html#library-index
+      \endverb
+      \verb{url}
+      \verb https://docs.python.org/3/library/index.html#library-index
+      \endverb
+    \endentry
+    \entry{LIBCLANG}{misc}{}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
+      \field{labeltitlesource}{title}
+      \field{title}{libclang: Clang Python Bindings}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://pypi.org/project/libclang/
+      \endverb
+      \verb{url}
+      \verb https://pypi.org/project/libclang/
       \endverb
     \endentry
     \entry{METACONTROLC}{misc}{}
@@ -636,8 +791,8 @@
       \strng{authorbibnamehash}{e1f2616e32f74ae07dd3a6d988339af0}
       \strng{authornamehash}{e1f2616e32f74ae07dd3a6d988339af0}
       \strng{authorfullhash}{e1f2616e32f74ae07dd3a6d988339af0}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Metaprogramming custom control structures in C}
@@ -650,8 +805,8 @@
       \endverb
     \endentry
     \entry{PYTHONCONFIGPARSER}{misc}{}
-      \field{sortinit}{4}
-      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
       \field{labeltitlesource}{title}
       \field{title}{configparser — Configuration file parser}
       \field{year}{2022}
@@ -676,8 +831,8 @@
       \strng{authorbibnamehash}{6853e812ddbc24a593e70d94545fc29b}
       \strng{authornamehash}{6853e812ddbc24a593e70d94545fc29b}
       \strng{authorfullhash}{6853e812ddbc24a593e70d94545fc29b}
-      \field{sortinit}{4}
-      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{The X Macro}
@@ -703,8 +858,8 @@
       \strng{authorbibnamehash}{67aca50e6f272da40c98e8ba5efa5aa3}
       \strng{authornamehash}{67aca50e6f272da40c98e8ba5efa5aa3}
       \strng{authorfullhash}{67aca50e6f272da40c98e8ba5efa5aa3}
-      \field{sortinit}{4}
-      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Rendering 'Rainbow Six | Siege'}
@@ -730,8 +885,8 @@
       \strng{authorbibnamehash}{bfda6d7d5ae465404d023a20781181c9}
       \strng{authornamehash}{bfda6d7d5ae465404d023a20781181c9}
       \strng{authorfullhash}{bfda6d7d5ae465404d023a20781181c9}
-      \field{sortinit}{4}
-      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Bit Twiddling Hacks}
@@ -743,34 +898,9 @@
       \verb http://graphics.stanford.edu/~seander/bithacks.html
       \endverb
     \endentry
-    \entry{SQLITE}{software}{}
-      \name{author}{1}{}{%
-        {{hash=aee751a5a83a89d9fa7342c7a085356d}{%
-           family={{D. Richard Hipp}},
-           familyi={D\bibinitperiod}}}%
-      }
-      \strng{namehash}{aee751a5a83a89d9fa7342c7a085356d}
-      \strng{fullhash}{aee751a5a83a89d9fa7342c7a085356d}
-      \strng{bibnamehash}{aee751a5a83a89d9fa7342c7a085356d}
-      \strng{authorbibnamehash}{aee751a5a83a89d9fa7342c7a085356d}
-      \strng{authornamehash}{aee751a5a83a89d9fa7342c7a085356d}
-      \strng{authorfullhash}{aee751a5a83a89d9fa7342c7a085356d}
-      \field{sortinit}{4}
-      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{title}{Baza danych SQLite}
-      \field{year}{2022}
-      \verb{urlraw}
-      \verb https://www.sqlite.org
-      \endverb
-      \verb{url}
-      \verb https://www.sqlite.org
-      \endverb
-    \endentry
     \entry{SQLITEAPPFORMAT}{misc}{}
-      \field{sortinit}{4}
-      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{sortinit}{7}
+      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
       \field{labeltitlesource}{title}
       \field{title}{SQLite As An Application File Format}
       \field{year}{2022}
@@ -797,8 +927,8 @@
       \strng{authorbibnamehash}{fc84d61e76c10b73ad2bb05de01d4802}
       \strng{authornamehash}{fc84d61e76c10b73ad2bb05de01d4802}
       \strng{authorfullhash}{fc84d61e76c10b73ad2bb05de01d4802}
-      \field{sortinit}{4}
-      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{sortinit}{7}
+      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Go fonts}
@@ -824,8 +954,8 @@
       \strng{authorbibnamehash}{f3fca3e75163059b5d4fdd28b0a51546}
       \strng{authornamehash}{f3fca3e75163059b5d4fdd28b0a51546}
       \strng{authorfullhash}{f3fca3e75163059b5d4fdd28b0a51546}
-      \field{sortinit}{5}
-      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{sortinit}{7}
+      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Advanced Scenegraph Rendering Pipeline}

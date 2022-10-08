@@ -111,24 +111,24 @@ Poniższy diagram przedstawia proces budowania projektu w formie celów i ich za
 Projekt używa następujących zewnętrznych bibliotek programistycznych:
 
 \begin{itemize}
-	\item {\textit{Vulkan SDK 1.3.211.0}}:
+	\item {\textit{Vulkan SDK 1.3.211.0}} \cite{VULKANSDK}:
 	\begin{itemize}
 		\item pliki nagłówkowe dla Vulkan,
 		\item \textit{shaderc}: kompilacja shaderów z kodu źródłowego GLSL do kodu bajtowego SPIR,
 		\item \textit{SPIRV-Reflect}: mechanizm refleksji dla kodu bajtowego SPIR-V,
 	\end{itemize}
-	\item {\textit{glfw 3.4}}: międzyplatformowa obsługa tworzenia okien, obsługa wejścia klawiatury i myszy,
-	\item {\textit{sqlite 3.35.5}}: relacyjna baza danych SQL,
-	\item {\textit{uthash 2.3.0}}: proste struktury danych (tablica dynamiczna, lista dwukierunkowa, tablica mieszająca),
-	\item {\textit{xxHash 0.8.1}}: niekryptograficzny algorytm mieszający,
-	\item {\textit{cgltf 1.11}}: wczytywanie plików w formacie glTF,
-	\item {\textit{cglm 0.8.5}}: biblioteka matematyczna,
-	\item {\textit{stb\_image 2.27}}: wczytywanie obrazów,
-	\item {\textit{stb\_truetype 1.26}}: rasteryzacja tekstu czcionek,
-	\item {biblioteka standardowa języka C},
-	\item {API systemu operacyjnego}: pliki nagłówkowe POSIX albo WinAPI,
-	\item {biblioteka standardowa języka Python},
-	\item {\textit{libclang 12.0.0}}: analizowanie kodu C w skryptach Python.
+	\item {\textit{glfw 3.4}} \cite{GLFW}: międzyplatformowa obsługa tworzenia okien, obsługa wejścia klawiatury i myszy,
+	\item {\textit{sqlite 3.35.5}} \cite{SQLITE}: relacyjna baza danych SQL,
+	\item {\textit{uthash 2.3.0}} \cite{UTHASH}: proste struktury danych (tablica dynamiczna, lista dwukierunkowa, tablica mieszająca),
+	\item {\textit{xxHash 0.8.1}} \cite{XXHASH}: niekryptograficzny algorytm mieszający,
+	\item {\textit{cgltf 1.11}} \cite{CGLTF}: wczytywanie plików w formacie glTF,
+	\item {\textit{cglm 0.8.5}} \cite{CGLM}: biblioteka matematyczna,
+	\item {\textit{stb\_image 2.27}} \cite{STB}: wczytywanie obrazów,
+	\item {\textit{stb\_truetype 1.26}} \cite{STB}: rasteryzacja tekstu czcionek,
+	\item {biblioteka standardowa języka C} \cite{C11REFERENCE},
+	\item {API systemu operacyjnego}: pliki nagłówkowe POSIX \cite{POSIXREFERENCE} albo WinAPI \cite{WINAPIREFERENCE},
+	\item {biblioteka standardowa języka Python \cite{PYTHONREFERENCE}},
+	\item {\textit{libclang 12.0.0}} \cite{LIBCLANG}: analizowanie kodu C w skryptach Python.
 \end{itemize}
 
 Dodatkowo biblioteka zbudowana w konfiguracji \textit{Debug} statycznie linkuje biblioteki \textit{ASan} (AddressSanitizer) i \textit{UBSan} (
@@ -223,8 +223,8 @@ Poniższy diagram przedstawia moduły silnika i ich najważniejsze jednostki:
 		\def\x{scene_tree}; \node (\x) [file, right = of \y] {\myesc{\x}}; \edef\y{\x};
 		\node(scene)[draw,dotted,fit=(scene_data) (scene_tree)] {};
 		
-		% objects
-		\node (buffer) [file, right = 2cm of descriptors] {buffer}; \def\y{buffer};
+		% vulkan
+		\node (buffer) [file, right = 1.5cm of descriptors] {buffer}; \def\y{buffer};
 		\def\x{image}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
 		\def\x{vertex_stream};\node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
 		\def\x{device}; \node (\x) [file, right = 1cm of buffer] {\myesc{\x}}; \edef\y{\x};
@@ -233,12 +233,12 @@ Poniższy diagram przedstawia moduły silnika i ich najważniejsze jednostki:
 		\def\x{unified_constant_buffer}; \node (\x) [file, below = 4mm of vertex_stream] {\myesc{\x}}; \edef\y{\x};
 		\def\x{textures}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
 		\def\x{unified_geometry_buffer}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
-		\def\x{descriptors};\node (\x) [file, right = 4mm of unified_constant_buffer] {\myesc{\x}}; \edef\y{\x};
+		\def\x{descriptors};\node (\x) [file, right = 1mm of unified_constant_buffer] {\myesc{\x}}; \edef\y{\x};
 		\def\x{shader};\node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
 		\node(objects)[draw,dotted,fit=(device) (unified_geometry_buffer) (shader)] {};
 		
 		% renderer
-		\node (renderer) [file, right = 1cm of device] {renderer}; \def\y{renderer};
+		\node (renderer) [file, right = 7mm of device] {renderer}; \def\y{renderer};
 		\def\x{render_state}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
 		\def\x{renderer_cache}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
 		\def\x{render_graph}; \node (\x) [file, right = of render_state] {\myesc{\x}}; \edef\y{\x};
@@ -301,9 +301,9 @@ Poniżej wymieniono stałe, ich wartości oraz interpretacje:
 Wygenerowane stałe mogą być używane przez shadery - ich definicje są umieszczane na początku kodu GLSL shadera przed jego kompilacją - dlatego są one udostępiane w formie X makro \textit{CODEGEN\_CONSTANTS}.
 
 X makro to przydatna technika preprocessora pozwalająca na pisanie kodu, który jest automatycznie aktualizowany po zmienie danych opisywanych przez X makro \cite{XMACRO}.
-Przykładowo poniższa funkcja wymaga manualnej aktualizacji po zmianie używanego typu wyliczeniowego:
+Przykładowo funkcja przedstawiona na listingu \ref{xmacroBefore} wymaga manualnej aktualizacji po zmianie używanego typu wyliczeniowego.
 \lstset{language=C}
-\begin{lstlisting}[caption={Przykładowy kod przed zastosowaniem X makro},captionpos=b]
+\begin{lstlisting}[caption={Przykładowy kod przed zastosowaniem X makro},captionpos=b,label={xmacroBefore}]
 typedef enum key {
 	key_space,
 	key_enter,
@@ -318,9 +318,9 @@ int key_to_glfw_key(key value) {
 	}
 }
 \end{lstlisting}
-Ten sam kod używający X makro:
+Listing \ref{xmacroAfter} przedstawia użycie X makro do przepisania kodu z listingu \ref{xmacroBefore}:
 \lstset{language=C}
-\begin{lstlisting}[caption={Przykładowy kod po zastosowaniu X makro},captionpos=b]
+\begin{lstlisting}[caption={Przykładowy kod po zastosowaniu X makro},captionpos=b,label={xmacroAfter}]
 
 #define END_OF_KEYS
 #define KEYS(X, ...)			\
@@ -348,12 +348,12 @@ X makra ułatwiają utrzymywanie kodu poprzez deklaratywnego "jedynego źródła
 
 \subsubsection{Jednostka globals}
 Obiekt globalny \textit{globals} reprezentujący wygenerowane zmienne.
-Ich wartości, w przeciwieństwie stałych, mogą być ustalone dopiero w czasie wykonywania.
+Ich wartości, w przeciwieństwie do stałych, mogą być ustalone dopiero w czasie wykonywania.
 Obiekt jest używany do specyfikacji struktury różnych ścieżek katalogów i plików używanych przez silnik.
 
-Silnik używa poniższej sekcji konfiguracji generacji do opisania ścieżkek dla kolejno katalogu zasobów, konfiguracji globalnej, bazy zasobów, katalogu shaderów i ich współdzielonego kodu GLSL oraz pliku logowania:
+Listing \ref{configGenBefore} przedstawią sekcję konfiguracji generacji opisującą ścieżki dla katalogu zasobów, konfiguracji globalnej, bazy zasobów, katalogu shaderów i ich współdzielonego kodu GLSL oraz pliku logowania.
 \lstset{language=verbatim}
-\begin{lstlisting}[caption={Konfiguracja generacji zmiennych},captionpos=b]
+\begin{lstlisting}[caption={Konfiguracja generacji zmiennych},captionpos=b,label={configGenBefore}]
 [GLOBALS]
 assetsDirname = assets
 assetDatabaseFilepath = ${assetsDirname}/data.db
@@ -362,9 +362,9 @@ assetsShaderDirpath = ${assetsDirname}/shaders
 assetsShaderCommonFilepath = ${assetsShaderDirpath}/common.glsl
 logFileName = log.txt
 \end{lstlisting}
-Powyższa konfiguracja generuje poniższą metodę init():
+Listing \ref{configGenAfter} przedstawia wygenerowaną metodę \textit{init()}.
 \lstset{language=C}
-\begin{lstlisting}[caption={Wynik generacji zmiennych},captionpos=b]
+\begin{lstlisting}[caption={Wynik generacji zmiennych},captionpos=b,label={configGenAfter}]
 void globals_create() {
 	globals.assetsDirname =
 		get_executable_dir_file_path("", "assets");
@@ -385,17 +385,17 @@ void globals_create() {
 Zbiór X makr używanych przez moduł I/O obsługujący następujące zasoby wejściowe.
 
 Makra opisują wewnętrzną strukturę plików INI konfiguracji globalnej i konfiguracji zasobów: używane sekcje i ich dopuszczalne pary klucz-wartość z domyślnymi wartościami (liczby całkowite bądź ciągi znaków).
-Przykładowy fragment konfiguracji generatora opisujący konfiguracji globalnej:
+Listing \ref{macrosBefore} przedstawia przykładowy fragment konfiguracji generatora opisujący konfigurację globalną i pozwalający na sparsowanie pliku INI przedstawionego na listingu \ref{macrosAfter}.
 \lstset{language=verbatim}
-\begin{lstlisting}[caption={Konfiguracja generacji konfiguracji globalnej},captionpos=b]
+\begin{lstlisting}[caption={Konfiguracja generacji konfiguracji globalnej},captionpos=b,label={macrosBefore}]
 [GLOBAL.CONFIG]
 graphics.WindowWidth = 640
 controls.Enabled = 1
 settings.StartScene = "sponza"
 \end{lstlisting}
-Powyższa konfiguracja pozwala silnikowi na sparsowanie poniższego pliku INI:
+
 \lstset{language=verbatim}
-\begin{lstlisting}[caption={Przykładowa konfiguracja globalna},captionpos=b]
+\begin{lstlisting}[caption={Przykładowa konfiguracja globalna},captionpos=b,label={macrosAfter}]
 [settings]
 StartScene = MetalRoughSpheresNoTextures
 
@@ -406,9 +406,9 @@ WindowWidth = 1024
 Enabled = 1 
 \end{lstlisting}
 
-Podobnie opisywana jest struktura bazy zasobów: typy podstawowe i ich odpowiedniki w języku C oraz tabele i ich kolumny. Ilustruje to poniższy fragment konfiguracji generatora:
+Podobnie opisywana jest struktura bazy zasobów: typy podstawowe i ich odpowiedniki w języku C oraz tabele i ich kolumny. Ilustruje to fragment konfiguracji generatora przedstawiony na listingu \ref{macrosDB}.
 \lstset{language=verbatim}
-\begin{lstlisting}[caption={Fragment konfiguracji generatora opisujący strukturę bazy zasobów},captionpos=b]
+\begin{lstlisting}[caption={Fragment konfiguracji generatora opisujący strukturę bazy zasobów},captionpos=b,label={macrosDB}]
 [ASSET.DB]
 types = "BYTE:uint8_t, INT:uint32_t, FLOAT:float, TEXT:UT_string *, KEY:hash_t"
 image = "key KEY, width INT, height INT, depth INT, channels INT, type INT, data BYTE_ARRAY"
@@ -421,9 +421,9 @@ Struktura zasobów wejściowych zostanie dokładniej opisana w dalszym podrozdzi
 \subsubsection{Jednostka meta}
 Funkcje pomocnicze wygenerowane na podstawie nagłówków silnika i Vulkan SDK.
 
-Dla każdego napotkanego typu wyliczeniowego \textit{EnumName} jest generowana jedna z poniższych funkcji:
+Dla każdego napotkanego typu wyliczeniowego \textit{EnumName} jest generowana jedna z funkcji, których prototypy zostały przedstawione na listingu \ref{metaProtos}.
 \lstset{language=C}
-\begin{lstlisting}[caption={Wygenerowane funkcje dla typów wyliczeniowych},captionpos=b]
+\begin{lstlisting}[caption={Wygenerowane funkcje dla typów wyliczeniowych},captionpos=b,label={metaProtos}]
 const char *EnumName_debug_str(int value);
 void EnumName_debug_print(int flags, int indent);
 \end{lstlisting}
@@ -442,9 +442,9 @@ W zależności od nazwy dzielą się one na 3 rodziny:
 	\item \textit{*\_uniform\_buffer\_struct}: bufor uniform o nazwie \textit{*},
 	\item \textit{*\_helper\_struct}: struktura pomocnicza o nazwie \textit{*} używana w powyższych.
 \end{itemize}
-Przykłady powyższych struktur:
+Listing \ref{descriptorsBefore} przedstawia przykłady powyższych struktur.
 \lstset{language=C}
-\begin{lstlisting}[caption={Przykładowe struktury w nagłówku descriptor opisujące wewnętrzną strukturę deskryptorów},captionpos=b]
+\begin{lstlisting}[caption={Przykładowe struktury w nagłówku descriptor opisujące wewnętrzną strukturę deskryptorów},captionpos=b,label={descriptorsBefore}]
 // stała push 'draw'
 typedef struct draw_push_constant_struct {
 	uint currentFrameInFlight;
@@ -467,9 +467,9 @@ typedef struct global_uniform_buffer_struct {
 Układ pamięci struktur zdefiniowanych w języku C nie są koniecznie kompatybilne układem pamięci wymaganymi przez GPU.
 Dlatego dla każdej sparsowanej struktury \textit{*\_struct} jest generowana analogiczna struktura \textit{*\_element}, w których użyto specyfikatorów \textit{alignas} i atrybutów \textit{packed} udostępnianych przez C11 i rozszerzenia GCC w celu wyrównania pól struktury w zgodzie ze standardem układu pamięci scalar.
 Generowana jest też funkcja \textit{glsl\_add\_*()} dodająca do ciągu znaków z kodem GLSL definicje struktury i kwalifikator układu.
-Przykładowe wejście i wyjście generacji dla bufora uniform \textit{instances}:
+Listing \ref{descriptorsAfter} pokazuje przykładowe wejście i wyjście generacji dla bufora uniform \textit{instances}.
 \lstset{language=C}
-\begin{lstlisting}[caption={Przykładowe wejście i wyjście generacji dla bufora uniform},captionpos=b]
+\begin{lstlisting}[caption={Przykładowe wejście i wyjście generacji dla bufora uniform},captionpos=b,label={descriptorsAfter}]
 // descriptor.h:
 typedef struct instances_uniform_buffer_struct {
 	mat4 modelMat;
@@ -516,15 +516,15 @@ Nagłówek dołącza nagłówki bibliotek zewnętrznych i z powodów wydajności
 
 Plik źródłowy obsługuje część bibliotek zewnętrznych składających się jedynie z nagłówków (ang. header-only library).
 W przeciwieństwie do tradycyjnych bibliotek języka C w których kod jest podzielony na pliki nagłówkowe i źródłowe, w tym przypadku dostęp do definicji tradycyjnie znajdujących sę z plikach źródłowych jest uzyskiwany poprzez ponowne dołączenie nagłówka przy użyciu dyrektywy \textit{\#include} po wcześniejszym zdefiniowaniu odpowiedniego symbolu preprocesora.
-Przykładowo biblioteka \textit{cgltf} wymaga ponownego dołączenia nagłówka w następujący sposób:
+Listing \ref{thirdpartyCgltf} przedstawia wymagany sposób ponownego dołączenia nagłówka biblioteki \textit{cgltf}.
 \lstset{language=C}
-\begin{lstlisting}[caption={Przykład dołączenia implementacji bibliteki \textit{cgltf}},captionpos=b]
+\begin{lstlisting}[caption={Przykład dołączenia implementacji bibliteki \textit{cgltf}},captionpos=b,label={thirdpartyCgltf}]
 #define CGLTF_IMPLEMENTATION
 #include "cgltf.h"
 \end{lstlisting}
 
 \subsubsection{Jednostka alloc}
-Funkcje pomocnicze wspomagające zarządzanie pamięcią CPU, co objemuje alokację, dealokację, kopiowanie, duplikowanie i porównywanie bloków pamięci CPU.
+Funkcje pomocnicze wspomagające zarządzanie pamięcią CPU, co obejmuje alokację, dealokację, kopiowanie, duplikowanie i porównywanie bloków pamięci CPU.
 
 Funkcje te są potrzebne, ponieważ działanie odpowiednich funkcji oferowane przez bibliotekę standardową języka C, chociaż oferują żądaną funkcjonalność, opiera się na mechanizmie niezdefiniowanych zachowań (ang. undefined behaviour) dla niektórych argumentów (wskaźnik NULL, rozmiar 0) i zachowań OOM (ang. Out-of-memory).
 
@@ -543,9 +543,9 @@ Komunikaty są zapisywane do standardowego wyjścia (\textit{stdout} albo \texti
 
 Logowanie komuniaktu odbywa się poprzez grupę funkcji \textit{log\_*()}, gdzie \textit{*} to poziom logowania, zachowujące się tak samo jak funkcja \textit{printf} z biblioteki standardowej języka C - pierwszy argument to ciąg znaków z znakami formatującymi, reszta argumentów to formatowane wartości.
 
-Przykładowy kod demonstrujący logowanie:
+Listing \ref{logBefore} demonstruje logowanie i powinien zapisać do pliku \textit{log.txt} w katalogu z plikiem wykonywalnym komunikaty podobne do przedstawionych na listingu \ref{logAfter}:
 \lstset{language=C}
-\begin{lstlisting}[caption={Demonstracja logowania},captionpos=b]
+\begin{lstlisting}[caption={Demonstracja logowania},captionpos=b,label={logBefore}]
 log_create();
 log_debug("komunikat #%d", 1);
 log_debug("komunikat #%d", 2);
@@ -553,9 +553,8 @@ log_fatal("%s #%d", "komunikat", 3);
 log_destroy();
 \end{lstlisting}
 
-Powyższy kod powinien zapisać do pliku \textit{log.txt} w katalogu z plikiem wykonywalnym komunikaty podobne do poniższych:
 \lstset{language=verbatim}
-\begin{lstlisting}[caption={Wynik logowania},captionpos=b]
+\begin{lstlisting}[caption={Wynik logowania},captionpos=b,label={logAfter}]
 [DEBUG] (/home/user/repo/src/main.c:45) main:
 komunikat #1
 komunikat #2
@@ -566,9 +565,9 @@ komunikat #3
 \subsubsection{Jednostka junk}
 Proste funkcje i makra które mogą być potencjalnie używane we wszystkich modułach bibliteki, ale nie zostały uznane za wystarczająca skomplikowane, aby uzasadnić wydzielenia do osobnej jednostki.
 
-Jednostka definiuje stałe preprocesora \textit{PLATFORM\_*} używane do rozpoznania systemu operacyjnego, na którym budowany jest silnik (Linux, MacOS, Windows):
+Jednostka definiuje stałe preprocesora \textit{PLATFORM\_*} przedstawione na listingu \ref{junk1} używane do rozpoznania systemu operacyjnego, na którym budowany jest silnik (Linux, MacOS, Windows).
 \lstset{language=C}
-\begin{lstlisting}[caption={Stałe preprocesora używane do rozpoznania systemu operacyjnego},captionpos=b]
+\begin{lstlisting}[caption={Stałe preprocesora używane do rozpoznania systemu operacyjnego},captionpos=b,label={junk1}]
 #if defined(__linux) || defined(__linux__) || defined(linux)
 #define PLATFORM_LINUX
 #elif defined(__APPLE__)
@@ -583,9 +582,9 @@ Funkcja \textit{strstrip()} usuwa początkowe i końcowe białe znaki z ciągu z
 
 Funkcja \textit{count\_bits()} zlicza bity w liczbie całkowitej używając metody Briana Kernighana \cite{BITTWIDDLINGHACKS}. Przykładem użycia jest określenie liczby flag ustawionych w wyliczeniu.
 
-Makra \textit{HASH\_*} ukrywają detale użycie funkcji skrótu biblioteki \textit{xxHash}:
+Makra \textit{HASH\_*} ukrywają detale użycie funkcji skrótu biblioteki \textit{xxHash} i zostały przedstawione na listingu \ref{junk2}.
 \lstset{language=C}
-\begin{lstlisting}[caption={Przykład użycia funkcji skrótu},captionpos=b]
+\begin{lstlisting}[caption={Przykład użycia funkcji skrótu},captionpos=b,label={junk2}]
 hash_t hash;
 HASH_START(hashState)
 HASH_UPDATE(hashState, &num, sizeof(num))
@@ -598,10 +597,10 @@ log_debug("Hash value is %zu", hash);
 
 Makro \textit{UNREACHABLE} pozwala na optymalizację kodu poprzez oznaczenie punktów programu, które nigdy nie są napotykane przez przepływ sterowania.
 Jego definicja zależy od konfiguracji: w \textit{Debug} sprowadza się do asercji \textit{assert(0)}, a w \textit{Release} do funkcji wbudowanej kompilatora GCC \textit{\_\_builtin\_unreachable()}.
-Przykładowo określenie nieosiągnalności przypadku domyślny instrukcji switch bądź bloku else informuje o
-kompletności sprawdzanych warunków:
+Przykładowo określenie nieosiągnalności przypadku domyślnej instrukcji switch bądź bloku else informuje o
+kompletności sprawdzanych warunków, co zostało przedstawione na listingu \ref{junk3}.
 \lstset{language=C}
-\begin{lstlisting}[caption={Przykład użycia makra UNREACHABLE},captionpos=b]
+\begin{lstlisting}[caption={Przykład użycia makra UNREACHABLE},captionpos=b,label={junk3}]
 if (type == directional) {
 	...
 } else if (type == point) {
@@ -611,9 +610,9 @@ if (type == directional) {
 }
 \end{lstlisting}
 
-Jednostka definiuje też makra używające formy metaprogramowania w celu dodania nowych struktur kontrolnych \cite{METACONTROLC} upraszczających iterowanie po strukturach danych bibliteki \textit{uthash}:
+Jednostka definiuje też makra używające formy metaprogramowania w celu dodania nowych struktur kontrolnych \cite{METACONTROLC} upraszczających iterowanie po strukturach danych bibliteki \textit{uthash}, której użycie zostało przedstawione na listingu \ref{junk4}.
 \lstset{language=C}
-\begin{lstlisting}[caption={Przykład iteracji używając makra utarray\_foreach\_elem\_deref},captionpos=b]
+\begin{lstlisting}[caption={Przykład iteracji używając makra utarray\_foreach\_elem\_deref},captionpos=b,label={junk4}]
 utarray_foreach_elem_deref (tree_node *, node, tree->nodes) {
 	tree_set_dirty(tree, node);
 }
@@ -700,9 +699,10 @@ Baza danych SQLite wciąż wewnętrznie używa typów prostych, ale wygenerowane
 \subsubsection{Jednostka asset\_db}
 Obiekt \textit{asset\_db} reprezentuje bazę zasobów.
 Używa on wewnętrznie obiektu \textit{sql\_db} i podobnie jak w nim użyto X makro do dodania metod wyboru i umieszczania wartości dla specyficznej tabeli, kolumny i klucza.
-Przykładowo poniższy funkcja kod wybiera wartość FLOAT z tabeli \textit{directLight}, kolumny \textit{intensity} i klucza \textit{key}:
+
+Listing \ref{assetDbExample} demonstruje wybór i umieszczenie kod wartość FLOAT z tabeli \textit{directLight}, kolumny \textit{intensity} i klucza \textit{key}.
 \lstset{language=C}
-\begin{lstlisting}[caption={Deserializacja i serializacja wartości zmiennoprzecinkowej},captionpos=b]
+\begin{lstlisting}[caption={Deserializacja i serializacja wartości zmiennoprzecinkowej},captionpos=b,label={assetDbExample}]
 float value =
 	asset_db_select_directLight_intensity_float(assetDb, key).value;
 asset_db_insert_directLight_intensity_float(assetDb, key,
@@ -801,7 +801,7 @@ Węzeł zawiera macierz 4x4 z lokalną transformację przestrzeni oraz wskaźnik
 \begin{itemize}
 	\item siatki,
 	\item kamery,
-	\item potomnych węzłów,
+	\item potomnych węzłów.
 \end{itemize}
 Ostateczna pozycja na scenie dla powyższych zasobów nie jest opisana bezpośrednio i musi zostać obliczana używając modelowania hierarchicznego przy pomocy grafu sceny - każdy zasób węzła jest używany do stworzenia odpowiedniego węzła grafu sceny.
 
@@ -924,7 +924,7 @@ Zasób próbnika \textit{asset\_sampler} reprezentuje parametry używane do stwo
 	\item \textit{magFilter}: filtr powiększania (\textit{VkFilter}),
 	\item \textit{minFilter}: filtr pomniejszania (\textit{VkFilter}),
 	\item \textit{addressModeU}: tryb adresowania współrzędnych tekstur poza przedziałem $\left[0,1\right]$ dla osi X (\textit{VkSamplerAddressMode}),
-	\item \textit{addressModeV}: tryb adresowania współrzędnych tekstur poza przedziałem $\left[0,1\right]$ dla osi Y (\textit{VkSamplerAddressMode}),
+	\item \textit{addressModeV}: tryb adresowania współrzędnych tekstur poza przedziałem $\left[0,1\right]$ dla osi Y (\textit{VkSamplerAddressMode}).
 \end{itemize}
 
 \subsubsection{Potok zasobów asset\_pipeline}
@@ -935,9 +935,10 @@ Potok zasobów składa się z dwóch części:
 \end{itemize}
 
 Skrypt skanuje podkatalog z zasobami wejściowymi i wywołuje narzędzie z argumentami będącymi ścieżką zasoby wejściowego rodzajem konwertowanego zasobu wyjściowego.
-Przykładowo poniższy potok zasobów wywołuje narzędzie 5 razy tworząc pustą konfigurację globalną oraz pustą bazę zasobów wypełnioną zasobem skybox, zasobem czcionki Go-Mono oraz zasobami składającymi się na scenę Sponza opisanej plikiem glTF:
+
+Przykładowo potok zasobów może wywołać narzędzie 5 razy w sposób pokazany na listingu \ref{assetPipelineExample} tworząc pustą konfigurację globalną oraz pustą bazę zasobów wypełnioną zasobem skybox, zasobem czcionki Go-Mono oraz zasobami składającymi się na scenę Sponza opisanej plikiem glTF.
 \lstset{language=verbatim}
-\begin{lstlisting}[caption={Komeny wywoływane przez przykładowy potok zasobów},captionpos=b]
+\begin{lstlisting}[caption={Komendy wywoływane przez przykładowy potok zasobów},captionpos=b,label={assetPipelineExample}]
 asset_pipeline empty_config
 asset_pipeline empty_assets
 asset_pipeline cubemap "skybox1" "/home/user/repo/cmake-build-debug/assets/cubemap/skybox1" png
@@ -994,7 +995,7 @@ Instancja deklaruje użycie wersji Vulkan 1.2 oraz następujących rozszerzeń i
 \begin{itemize}
 	\item \textit{VK\_KHR\_get\_physical\_device\_properties2};
 	\item rozszerzenia zwrócone przez funkcję \textit{glfwGetRequiredInstanceExtensions()} używane do stworzenia powierzchni okna (\textit{VK\_KHR\_surface} i dodatkowe rozszerzenie zależące od system okien);
-	\item w trybie debugowania VK\_EXT\_debug\_utils;
+	\item w trybie debugowania VK\_EXT\_debug\_utils.
 \end{itemize}
 Dodatkowo w trybie debugowania używana jest warstwa walidacji \textit{VK\_LAYER\_KHRONOS\_validation} oraz komunikator debugowania dla instancji.
 
@@ -1077,9 +1078,9 @@ Nagrywanie jak kończone wywołaniem metody \textit{end\_one\_shot\_commands()},
 	\item czeka na CPU aż kolejka zakończy wykonywanie poleceń na GPU funkcją \textit{vkQueueWaitIdle()},
 	\item resetuje bufor komend one-shot poprzez reset całej puli komend one-shot funkcją \textit{vkResetCommandPool()}.
 \end{itemize}
-Synchronizacja między krokiem 2. i 4. zapobiega próbie zresetowania bufora poleceń wciąż używanego przez GPU. Resetowanie puli poleceń automatycznie resetuje zaalokowane z niego bufory poleceń i jest uznawane za szybsze od manualnego resetowania buforów poleceń przez warstwy walidacji:
+Synchronizacja między krokiem 2. i 4. zapobiega próbie zresetowania bufora poleceń wciąż używanego przez GPU. Resetowanie puli poleceń automatycznie resetuje zaalokowane z niego bufory poleceń i jest uznawane za szybsze od manualnego resetowania buforów poleceń przez warstwy walidacji, której ostrzeżenie przedstawia listing \ref{perfWarn1}
 \lstset{language=verbatim}
-\begin{lstlisting}[caption={Ostrzeżenie wydajnościowe wyemitowane przez warstwy walidacji},captionpos=b]
+\begin{lstlisting}[caption={Ostrzeżenie wydajnościowe wyemitowane przez warstwy walidacji},captionpos=b,label={perfWarn1}]
 Validation Performance Warning:
 [ UNASSIGNED-BestPractices-vkCreateCommandPool-command-buffer-reset ]
 Object 0: handle = 0x626000015100, type = VK_OBJECT_TYPE_DEVICE;
@@ -1226,10 +1227,9 @@ Wspierane są dwa typy: wierzchołków i fragmentów.
 
 Kod źródłowy GLSL must być znany podczas tworzenia - jest on uzyskiwany poprzez użycie obiektu \textit{shader\_generator}.
 
-Kod bajtowy SPIR-V jest uzyskiwany poprzez kompilację kodu źródłowego GLSL biblioteką \textit{shaderc}.
-Jej użycie ilustruje poniższy kod:
+Kod bajtowy SPIR-V jest uzyskiwany poprzez kompilację kodu źródłowego GLSL biblioteką \textit{shaderc}, której użycie ilustruje listing \ref{shadercExample}.
 \lstset{language=C}
-\begin{lstlisting}[caption={Kompilacja kodu źródłowego GLSL biblioteką \textit{shaderc}},captionpos=b]
+\begin{lstlisting}[caption={Kompilacja kodu źródłowego GLSL biblioteką \textit{shaderc}},captionpos=b,label={shadercExample}]
 shaderc_compiler_t compiler = shaderc_compiler_initialize();
 
 shaderc_compile_options_t options = shaderc_compile_options_initialize();
@@ -1352,7 +1352,7 @@ Przykładowo poniżej przedstawiono wygenerowane metodami \textit{debug\_print()
 	\caption{Przykładowy graf i drzewo sceny zawierającej dwa trójkąty (opracowanie własne)}
 	\label{triangles_scene_graph}
 \end{figure}
-
+// HIRO trochę przydałoby się rozszerzyć opis, co jest widoczne na rysunku, zwrócić uwagę na istotne elementy itp.
 
 
 \subsection{Renderer}

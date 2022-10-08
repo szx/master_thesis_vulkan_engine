@@ -4,7 +4,9 @@
 Efektem niniejszej pracy jest silnik graficzny pozwalający na renderowanie używając cieniowania odroczonego i innych technik graficznych.
 Zrealizowano zamierzone cele dotyczące funkcjonalności silnika oraz zademonstrowano jego działanie poprzez wyrenderowanie przykładowych scen. Przeprowadzono testy wydajnościowe.
 
-\section{Dalszy rozwój}
+// HIRO dobrze byłoby trochę bardziej rozbudować podsumowanie tego, co zostało konkretnie zaimplementowane (2-3 akapity)
+
+
 
 Projekt w obecnym kształcie nie został wykorzystany w grze komputerowej i powinien być rozpatrywany w kategoriach prototypu.
 Rozwój funkcjonalności silnika nie jest zakończony i w czasie realizacji projektu pojawiło się wiele pomysłów na ulepszenia.
@@ -20,7 +22,7 @@ Z przesyłaniem strumieniowym dobrze współpracują techniki usuwania niewidocz
 Najprostszą do implementacji jest odrzucanie na CPU obiektów poza bryłą widzenia pozwalające na niewysyłanie nierenderowanej geometrii do GPU.
 Znacznie bardziej skomplikowane, ale zgodne z duchem renderowania bez dowiązań, jest usuwanie niewidocznych powierzchni na GPU. Może być ono zrealizowane w Vulkan używając shaderów obliczeń modyfikujących bufory pośrednie używane przez polecenia rysowania.
 
-Użycie shaderów obliczeń bądź pozwoliłoby też na zastosowanie techniki programowalnego pobierania wierzchołków (ang. programmable vertex pulling) \cite{kosarevsky20213d}, w której etap asemblera wejścia potoku graficznego jest całkowicie pomijany i zastępowany odczytywaniem i dekodowaniem danych geometrii z zasobów shadera.
+Użycie shaderów obliczeń pozwoliłoby też na zastosowanie techniki programowalnego pobierania wierzchołków (ang. programmable vertex pulling) \cite{kosarevsky20213d}, w której etap asemblera wejścia potoku graficznego jest całkowicie pomijany i zastępowany odczytywaniem i dekodowaniem danych geometrii z zasobów shadera.
 Podejście to pozwoliłoby na eleminację ujednoliconego bufora geometrii oraz zastąpienie sztywnego definiowania formatów wierzchołków w potoku graficznym elastyczniejszym dekodującym kodem w shaderach. 
 
 Model oświetlenia może być rozszerzony o powierzchnie emitujące światło poprzez dodanie tekstur emisyjnych.

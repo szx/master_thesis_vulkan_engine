@@ -5,22 +5,23 @@
 \contentsline {figure}{\numberline {2.2}{\ignorespaces Warstwowa architektura biblioteki Vulkan (opracowanie własne na podstawie \blx@tocontentsinit {0}\cite {VULKANLOADER})\relax }}{13}{figure.caption.12}%
 \contentsline {figure}{\numberline {2.3}{\ignorespaces Obraz 2D 1024x1024 z sceny Sponza \blx@tocontentsinit {0}\cite {GLTFSAMPLEMODELS} i jego 10 mipmap (opracowanie własne)\relax }}{18}{figure.caption.21}%
 \contentsline {figure}{\numberline {2.4}{\ignorespaces Cykl życia obrazu łańcucha wymiany (opracowanie własne)\relax }}{21}{figure.caption.23}%
-\contentsline {figure}{\numberline {2.5}{\ignorespaces Relacje pomiędzy obiektami Vulkan używanymi do zarządzania deskryptorami (opracowanie własne)\relax }}{27}{figure.caption.34}%
-\contentsline {figure}{\numberline {2.6}{\ignorespaces Tradycyjne tekstury z dowiązaniami używające jednolitego indeksu w stałej push (opracowanie własne)\relax }}{34}{figure.caption.46}%
-\contentsline {figure}{\numberline {2.7}{\ignorespaces Tekstury bez dowiązań używając niejednolitych indeksów instancji (opracowanie własne)\relax }}{35}{figure.caption.47}%
-\contentsline {figure}{\numberline {2.8}{\ignorespaces Przepływ pracy dla zasobów (opracowanie własne)\relax }}{35}{figure.caption.48}%
-\contentsline {figure}{\numberline {2.9}{\ignorespaces Interfejs programu Blender \blx@tocontentsinit {0}\cite {BLENDER} używanego do modelowania 3D (opracowanie własne)\relax }}{36}{figure.caption.49}%
-\contentsline {figure}{\numberline {2.10}{\ignorespaces Relacje pomiędzy rożnymi typami elementów w formacie glTF (opracowanie własne na podstawie \blx@tocontentsinit {0}\cite {GLTFSPEC})\relax }}{37}{figure.caption.51}%
+\contentsline {figure}{\numberline {2.5}{\ignorespaces Relacje pomiędzy obiektami Vulkan używanymi do zarządzania deskryptorami (opracowanie własne)\relax }}{25}{figure.caption.30}%
+\contentsline {figure}{\numberline {2.6}{\ignorespaces Schemat blokowy potoku ze specyfikacji Vulkan \blx@tocontentsinit {0}\cite {VULKANSPEC}\relax }}{31}{figure.caption.39}%
+\contentsline {figure}{\numberline {2.7}{\ignorespaces Tradycyjne tekstury z dowiązaniami używające jednolitego indeksu w stałej push (opracowanie własne)\relax }}{36}{figure.caption.46}%
+\contentsline {figure}{\numberline {2.8}{\ignorespaces Tekstury bez dowiązań używając niejednolitych indeksów instancji (opracowanie własne)\relax }}{37}{figure.caption.47}%
+\contentsline {figure}{\numberline {2.9}{\ignorespaces Przepływ pracy dla zasobów (opracowanie własne)\relax }}{37}{figure.caption.48}%
+\contentsline {figure}{\numberline {2.10}{\ignorespaces Interfejs programu Blender \blx@tocontentsinit {0}\cite {BLENDER} używanego do modelowania 3D (opracowanie własne)\relax }}{38}{figure.caption.49}%
+\contentsline {figure}{\numberline {2.11}{\ignorespaces Relacje pomiędzy rożnymi typami elementów w formacie glTF (opracowanie własne na podstawie \blx@tocontentsinit {0}\cite {GLTFSPEC})\relax }}{39}{figure.caption.51}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Proces budowania w formie celów i ich zależności (opracowanie własne)\relax }}{42}{figure.caption.52}%
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Relacje pomiędzy modułam silnika i ich najważniejszymi klasami (opracowanie własne)\relax }}{44}{figure.caption.59}%
-\contentsline {figure}{\numberline {3.3}{\ignorespaces Relacje pomiędzy obiektami zasobów w silniku (opracowanie własne)\relax }}{55}{figure.caption.73}%
-\contentsline {figure}{\numberline {3.4}{\ignorespaces Przykładowa tekstura dla czcionki Go-Mono \blx@tocontentsinit {0}\cite {GOMONOFONT} (opracowanie własne)\relax }}{58}{figure.caption.82}%
-\contentsline {figure}{\numberline {3.5}{\ignorespaces Obiekty biorące udział w procesie konwersji sceny (opracowanie własne)\relax }}{66}{figure.caption.99}%
-\contentsline {figure}{\numberline {3.6}{\ignorespaces Przykładowy graf i drzewo sceny zawierającej dwa trójkąty (opracowanie własne)\relax }}{67}{figure.caption.102}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Proces budowania w formie celów i ich zależności (opracowanie własne)\relax }}{44}{figure.caption.52}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Relacje pomiędzy modułam silnika i ich najważniejszymi klasami (opracowanie własne)\relax }}{46}{figure.caption.59}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Relacje pomiędzy obiektami zasobów w silniku (opracowanie własne)\relax }}{57}{figure.caption.73}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Przykładowa tekstura dla czcionki Go-Mono \blx@tocontentsinit {0}\cite {GOMONOFONT} (opracowanie własne)\relax }}{60}{figure.caption.82}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Obiekty biorące udział w procesie konwersji sceny (opracowanie własne)\relax }}{68}{figure.caption.99}%
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Przykładowy graf i drzewo sceny zawierającej dwa trójkąty (opracowanie własne)\relax }}{69}{figure.caption.102}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Wynik renderowania sceny MetalRoughSpheres (opracowanie własne)\relax }}{68}{figure.caption.103}%
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Wynik renderowania sceny DamagedHelmet (opracowanie własne)\relax }}{69}{figure.caption.104}%
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Wynik renderowania sceny Sponza (opracowanie własne)\relax }}{69}{figure.caption.105}%
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Wynik renderowania sceny MetalRoughSpheres (opracowanie własne)\relax }}{71}{figure.caption.103}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Wynik renderowania sceny DamagedHelmet (opracowanie własne)\relax }}{72}{figure.caption.104}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Wynik renderowania sceny Sponza (opracowanie własne)\relax }}{72}{figure.caption.105}%
 \addvspace {10\p@ }
 \contentsfinish 

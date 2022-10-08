@@ -57,7 +57,7 @@ W pomiarach zostały uzględnione poniższe liczniki:
 Wartości wszystkich zmierzonych liczników mają stałą wartość z wyjątkiem \textit{GPU Time Elapsed ($\mu$)} i \textit{Samplers Busy (\%)} obarczonych błędem przypadkowym.
 
 Wyniki pomiarów wydajności prezentuje tabela \ref{results_sponza}.
-
+// HIRO FPS Avg
 \begin{table}[!ht]
 	\centering
 	\begin{tabular}{ |p{2cm}|p{1.1cm}||p{0.6cm}|p{0.6cm}||p{1.7cm}|p{1.8cm}|p{1.5cm}|p{1.3cm}|p{1.3cm}|}
@@ -97,3 +97,5 @@ Działanie renderera spowalnia wraz z zwiększającą się liczbą świateł or
 Spowolnienie spowodowane zmianią rozdzielczości może być wytłumaczone zmianą wielkości G-bufora i tym samym zwiększeniem liczby wykonywanych shaderów fragmentów.
 
 Zwiększenie liczby świateł zwiększa liczbę obiegów pętli w przebiegu oświetlania pobierających informacje o każdym świetle z bufora uniform, co tłumaczy rosnącą liczbę dostępów do pamięci i malejący udział procentowy czasu spędzonego na próbkowaniu G-bufora.
+
+// HIRO analizę pomiarów dobrze byłoby trochę rozbudować
