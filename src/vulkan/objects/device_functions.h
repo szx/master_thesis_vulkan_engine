@@ -141,7 +141,6 @@ typedef struct graphics_pipeline_create_info {
   uint32_t framebufferWidth;
   uint32_t framebufferHeight;
 
-  VkRenderPass renderPass;
   VkPipelineLayout pipelineLayout;
 } graphics_pipeline_create_info;
 

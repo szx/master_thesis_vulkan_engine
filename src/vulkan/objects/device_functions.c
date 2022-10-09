@@ -596,7 +596,7 @@ VkPipeline device_create_graphics_pipeline(device *vkd, graphics_pipeline_create
   pipelineInfo.pDepthStencilState = &depthStencil;
   pipelineInfo.pColorBlendState = &colorBlending;
   pipelineInfo.layout = createInfo.pipelineLayout;
-  pipelineInfo.renderPass = createInfo.renderPass;
+  pipelineInfo.renderPass = NULL;
   pipelineInfo.subpass = 0;
   pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 

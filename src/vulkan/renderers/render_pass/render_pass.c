@@ -70,13 +70,12 @@ VkPipeline get_graphics_pipeline(render_pass *renderPass, size_t currentFrameInF
       .framebufferWidth = renderPass->renderState->vks->swapChainExtent.width,
       .framebufferHeight = renderPass->renderState->vks->swapChainExtent.height,
 
-      .renderPass = NULL,
       .pipelineLayout = renderPass->renderState->descriptors->pipelineLayout,
   };
 
   *graphicsPipeline =
       device_create_graphics_pipeline(renderPass->renderState->vkd, createInfo, renderingInfo,
-                                      "renderPass (frameInFlight=#%u, swapChainImage=#%u)",
+                                      "graphicsPipeline (frameInFlight=#%u, swapChainImage=#%u)",
                                       currentFrameInFlight, swapChainImageIdx);
 
   core_free(vertexAttributeDescriptions);
