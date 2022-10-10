@@ -10,8 +10,9 @@
 /// Structured buffer on top on global uniform buffer.
 typedef struct unified_constant_buffer {
   /* CPU state */
-  global_uniform_buffer_data *globalData;
-  instances_uniform_buffer_data *instancesData;
+#define x(_name, ...) _name##_uniform_buffer_data *_name##Data;
+  VULKAN_UNIFORM_BUFFERS(x, )
+#undef x
 
   /* GPU state */
   buffer *buffer;

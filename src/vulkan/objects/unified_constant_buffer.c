@@ -6,19 +6,26 @@ unified_constant_buffer *unified_constant_buffer_create(device *vkd,
                                                         size_t maxPrimitiveElementCount) {
   unified_constant_buffer *uniformBuffer = core_alloc(sizeof(unified_constant_buffer));
 
+#define x(_name, ...) uniformBuffer->_name##Data = NULL;
+  VULKAN_UNIFORM_BUFFERS(x, )
+#undef x
+
   uniformBuffer->globalData = global_uniform_buffer_data_create(1, FRAMES_IN_FLIGHT);
   uniformBuffer->instancesData =
       instances_uniform_buffer_data_create(maxPrimitiveElementCount, FRAMES_IN_FLIGHT);
 
+#define x(_name, ...) assert(uniformBuffer->_name##Data != NULL);
+  VULKAN_UNIFORM_BUFFERS(x, )
+#undef x
+
   uniformBuffer->buffer = buffer_create(vkd, buffer_type_uniform);
-
-  uniformBuffer->globalData->bufferElement =
-      buffer_add(uniformBuffer->buffer, &uniformBuffer->globalData->elements,
-                 global_uniform_buffer_data_get_size(uniformBuffer->globalData));
-  uniformBuffer->instancesData->bufferElement =
-      buffer_add(uniformBuffer->buffer, &uniformBuffer->instancesData->elements,
-                 instances_uniform_buffer_data_get_size(uniformBuffer->instancesData));
-
+#define x(_name, ...)                                                                              \
+  uniformBuffer->_name##Data->bufferElement =                                                      \
+      buffer_add(uniformBuffer->buffer, &uniformBuffer->_name##Data->elements,                     \
+                 _name##_uniform_buffer_data_get_size(uniformBuffer->_name##Data));                \
+  ;
+  VULKAN_UNIFORM_BUFFERS(x, )
+#undef x
   buffer_make_resident(uniformBuffer->buffer);
 
   return uniformBuffer;
