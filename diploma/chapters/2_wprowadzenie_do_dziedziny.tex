@@ -386,7 +386,7 @@ Rozmiar opisuje liczbę pikseli obrazu (tekseli) wzdłuż każdego wymaiaru (sze
 Obraz Vulkan może być traktowany jako tablica identycznych obrazów, której pojedeńczy element jest zwany warstwą. Warstwy nie są liczone jako wymiar obrazu - obraz 2D z warstwami nie jest obrazem 3D.
 
 Flagi tworzenia obrazu pozwalają na definicję dodatkowych funkcjonalności. Przykładowo flaga \textit{CUBE\_COMPATIBLE} pozwala na traktowanie obrazu z 6 kwadratowymi warstwami jako obrazu sześciennego.
-Takie obrazy są często uzywane w technice renderowania sklepienia nieba używając sześcianu oteksturowanego przy pomocy sześciennej tekstufry skybox przedstawiającej niebo.
+Takie obrazy są często uzywane w technice renderowania sklepienia nieba używając sześcianu oteksturowanego przy pomocy sześciennej tekstury skybox przedstawiającej niebo.
 
 Mipmapa to kopia obrazu z każdym wymiarem zmniejszonym dwukrotnie.
 W obrazie z mipmapami pierwotny obraz jest traktowany jako mipmapa poziomu zerowego, z której generowane są mipmapy następonych poziomów aż do osiągnięcia wymiaru 1x1x1.
@@ -405,7 +405,7 @@ Przestrzeń kolorów liniowa (niesprecyzowana) jest używana w obliczeniach shad
 Przestrzeń kolorów SRGB jest przeznaczona do wyświetlania na monitorach i jest powszechnia używana w teksturach.
 Przykładowe często używane formaty i ich użycie:
 \begin{itemize}
-	\item \textit{R8G8B8A8\_UNORM}: 4 komponenty koloru B,G,R,A, z których każdy zajmuje 8 bitów i jest interpretowany jako znormalizowana wartość bez znaku (8-bitowa liczba zmienno przecinkowa pomiędzy 0 i 1), używany przez teksturę pozekranowa będącą dołączeniem koloru,
+	\item \textit{R8G8B8A8\_UNORM}: 4 komponenty koloru B,G,R,A, z których każdy zajmuje 8 bitów i jest interpretowany jako znormalizowana wartość bez znaku (8-bitowa liczba zmienno przecinkowa pomiędzy 0 i 1), używany przez tekstury pozekranowe,
 	\item \textit{B8G8R8A8\_SRGB}: podobny do poprzedniego, ale podczas próbkowania GPU przeprowadza automatyczną konwersję z SRGB do przestrzeni liniowej (odwrotna konwersja podczas zapisu), używany przez prezentowalne obrazy łańcucha wymiany,
 	\item \textit{D32\_SFLOAT\_S8\_UINT}: 32-bity komponentu głębi (liczba zmiennoprzecinkową ze znakiem), 8-bitów komponentu szablonu (liczba całkowita bez znaku), używany przez bufory głębi.
 \end{itemize}
@@ -423,8 +423,8 @@ Przykładowo:
 	\item \textit{TRANSFER\_DST}: może być miejscem docelowym polecenia transferu;
 	\item \textit{SAMPLED}: może być użyty do stworzenia widoku próbkowalnego obrazu używanego przez deskryptory typu \textit{SAMPLED};
 	\item \textit{STORAGE}: może być użyty do stworzenia widoku obrazu magazynowego używanego przez deskryptory typu \textit{STORAGE};
-	\item \textit{COLOR\_ATTACHMENT}: może być dołączniem koloru potoku graficznego;
-	\item \textit{DEPTH\_STENCIL\_ATTACHMENT}: może być dołączniem głębi/szablonu potoku graficznego.
+	\item \textit{COLOR\_ATTACHMENT}: może być dołączeniem koloru przebiegu renderowania;
+	\item \textit{DEPTH\_STENCIL\_ATTACHMENT}: może być dołączeniem głębi/szablonu przebiegu renderowania.
 \end{itemize}
 
 Obrazy istnieją w pamięci GPU w układach zdefiniowanych przez sterownik.
@@ -436,18 +436,15 @@ Przykładowe układy obrazu i dozwolone użycie:
 \begin{itemize}
 	\item \textit{UNDEFINED}: zawartość pamięci obrazu jest niezdefiniowana, początkowy układ nowego obrazu;
 	\item \textit{GENERAL}: wszystkie rodzaje dostępu, nieoptymalny
-	\item \textit{COLOR\_ATTACHMENT\_OPTIMAL}: dołączenie koloru,
-	\item \textit{DEPTH\_STENCIL\_ATTACHMENT\_OPTIMAL}: dołączenie głębi/szablonu pozwalające na odczyt (testy głębi i szablonu) i zapis (wyjście głębi),
-	\item \textit{DEPTH\_STENCIL\_READ\_ONLY\_OPTIMAL}: dołączenie głębi/szablonu tylko do odczytu,
+	\item \textit{COLOR\_ATTACHMENT\_OPTIMAL}: dołączenie koloru przebiegu renderowania,
+	\item \textit{DEPTH\_STENCIL\_ATTACHMENT\_OPTIMAL}: dołączenie głębi/szablonu przebiegu renderowania pozwalające na odczyt (testy głębi i szablonu) i zapis (wyjście głębi),
+	\item \textit{DEPTH\_STENCIL\_READ\_ONLY\_OPTIMAL}: dołączenie głębi/szablonu przebiegu renderowania pozwalające tylko na odczytu,
 	\item \textit{SHADER\_READ\_ONLY\_OPTIMAL}: odczyt w shaderach jako próbkowany obraz,
 	\item \textit{TRANSFER\_SRC\_OPTIMAL}: obraz źródłowy w poleceniu transferu,
 	\item \textit{TRANSFER\_DST\_OPTIMAL}: obraz docelowy w poleceniu transferu,
 	\item \textit{PRESENT\_SRC\_KHR}: prezentowanie obrazu łańcuchem wymiany.
 \end{itemize}
 Dozwolone układy obrazu mogą zależeć od wcześniej sprecyzowanych flag użycia. Przykładowo układ \textit{SHADER\_READ\_ONLY\_OPTIMAL} wymaga flagi użycia \textit{SAMPLED}.
-
-W przeciwieństwie do poprzednich API takich jak OpenGL, Vulkan nie zmienia automatycznie układu obrazu, co zmusza
-programistę do samodzielnego śledzenia stanu układu obrazów i wykonywania przejść na poprawny układ przed użyciem ich przez polecenia poprzez użycie odpowieniej bariery pamięci obrazu \textit{VkImageMemoryBarrier}.
 
 Obrazy, w przeciwieństwie do buforów, nie są używane bezpośrednio i zawsze wymagają utworzenia widoku \textit{VkImageView} opisującego używane części obrazu - warstwy i poziomy mipmap - oraz sposób interpretacji teksela - możliwe aliasowanie formatu obrazu lub remapowanie jego komponentów.
 
@@ -684,7 +681,7 @@ Jednym z wyjątków jest aktualizacja zbiorów deskryptorów zaalokowanych z pul
 \subsubsection{Stałe push}
 
 Stałe push to sposób przekazywania danych do shaderów będący szybszą i łatwiejszą 
-alternatywą dla deskryptorów. Nie wymagają one tworzenia i aktualizacji zasobów opartych na pamięci GPU - pamięć CPU stałej push jest bezpośrednio kopiowana i przechowywana w nagrywanym buforze poleceń komendą \textit{vkCmdPushConstants()}.
+alternatywą dla deskryptorów. Nie wymagają one tworzenia i aktualizacji zasobów opartych na pamięci GPU - pamięć CPU stałej push jest bezpośrednio kopiowana i przechowywana w nagrywanym buforze poleceń poleceniem \textit{vkCmdPushConstants()}.
 
 Niestety ta metoda ma poważne ograniczenie - minimalny rozmiar pamięci udostępniany shaderowi gwarantowany przez specyfikację Vulkan to tylko 128 bajtów, co odpowiada dwóm macierzom 4x4. Z tego powodu stałe push powinny być używane do przekazywania danych, które zmieniają się na tyle często, że narzut wydajnościowy synchronizacji modyfikowanych buforów uniform. Przykładem mogą być macierze transformacji albo indeksy tekstur używane przez polecenia rysowania.
 
@@ -712,17 +709,18 @@ Rodzina limitów \textit{maxDescriptorSet*}, gdzie \textit{*} to typ deskryptora
 \subsubsection{Dowiązanie deskryptorów do bufora poleceń}
 
 Przed użyciem zasobów opisanych zbiorem deskryptorów przez polecenia rysowania wymagane jest dowiązania ich do bufora
-poleceń przy użyciu komeny \textit{vkCmdBindDescriptorSets()}. Jednym z jej wejść jest \textit{numer zbioru}, który wraz z numerami
+poleceń przy użyciu polecenia \textit{vkCmdBindDescriptorSets()}. Jednym z jej wejść jest \textit{numer zbioru}, który wraz z numerami
 dowiązań służy do identyfikacji zasobu w shaderach.
 
 
 \subsubsection{Diagram użycia deskryptorów}
 
 Relacje pomiędzy obiektami, funkcjami i komendami używającymi deskryptorów i stałych push zostały przedstawione na diagramie \ref{descriptor_relations}.
-// HIRO kilka zdań, odnośnie tego, co jest widoczne na rysunku 
+Widać na nim, że układ zbioru deskryptorów używany do stworzenia zbioru deskryptorów musi być kompatybilny z zasobami używanymi aktualizacji.
+Relacja ta nie jest bezpośrednio wyrażona parametrami tworzenia - deskryptory mogą być aktualizowane dowolnymi zasobami, o ile ich typy są kompatybilne.
 \begin{figure}[H]
 	\centering
-	\begin{tikzpicture}[node distance=1cm]
+	\begin{tikzpicture}[node distance=0.6cm and 0.3cm]
 		\tikzstyle{object} = [rectangle, minimum width=3cm, minimum height=1cm,text centered, draw=black]
 		\tikzstyle{function} = [rectangle, rounded corners,text centered, draw=black]
 		\tikzstyle{arrow} = [thick,->,>=stealth]
@@ -746,7 +744,7 @@ Relacje pomiędzy obiektami, funkcjami i komendami używającymi deskryptorów i
 		\draw [arrow] (resources) -- (vkUpdateDescriptorSets);
 		\draw [relation] (resources) edge[out=135, in=45, looseness=0.4] (VkDescriptorSetLayout);
 		
-		\node (vkCmdBindDescriptorSets) [function, below = of VkDescriptorSet] {vkCmdBindDescriptorSets};
+		\node (vkCmdBindDescriptorSets) [function, below right = 0.6cm and -2.9cm of VkDescriptorSet] {vkCmdBindDescriptorSets};
 		\draw [arrow] (VkPipelineLayout) -- (vkCmdBindDescriptorSets);
 		\draw [arrow] (VkDescriptorSet) -- (vkCmdBindDescriptorSets);
 		
@@ -760,7 +758,7 @@ Relacje pomiędzy obiektami, funkcjami i komendami używającymi deskryptorów i
 		\draw [arrow] (vkCmdPushConstants) -- (VkCommandBuffer);
 		\draw [arrow] (vkCmdBindDescriptorSets) -- (VkCommandBuffer);
 		
-		 \path ([xshift=34mm,yshift=-2mm]current bounding box.south west)
+		 \path ([xshift=37mm,yshift=-5mm]current bounding box.south west)
 		node[matrix,anchor=south east,cells={nodes={font=\sffamily,anchor=west}},
 		draw,thick,inner sep=1ex]{
 			\draw[arrow](0,0) -- ++ (0.6,0); & \node{Użycie};\\
@@ -1057,22 +1055,26 @@ Przykłady:
 \item stan mieszania kolorów \textit{VkPipelineColorBlendStateCreateInfo} określający sposób mieszania kolorów będących wynikiem cieniowania fragmentów przed zapisem do dołączeń koloru.
 \end{itemize}
 
+Ostatecznie parametry tworzenia muszą też zawierać informacje dotyczące rodzaju przebiegów renderowania, z którymi potok graficzny jest kompatybilny. Zostanie to opisane w następnej sekcji.
+
 Utworzony potok graficzny jest dowiązywany poleceniem \textit{vkCmdBindPipeline()} i wpływa na wykonywanie wszystkich kolejnych nagranych poleceń rysowania.
 
 Sam potok graficzny nie wystarcza do rozpoczęcia procesu renderowania - wymagane jest ustalenie jego wyjścia używając przebiegu renderowania.
 
 
 \subsubsection {Przebieg renderowania}
-// HIRO vkRenderPass - przebieg renderowania
 
-Dołączenie koloru to widok obrazu używany przez przebieg renderowania do zapisywania końcowych wartości kolorów podczas etapu mieszania kolorów potoku graficznego.
+Polecenia rysowania muszą być nagrywane w ramach pojedynczego przebiegu renderowania definiującego zbiór widoków obrazów nazywanych dołączeniami (ang. attachements) służących jako cele renderowania wszystkich poleceń wykonywanych w ramach przebiegu.
 
-Dołączenie głębi/szablonu to widok obrazu używany przez przebieg renderowania do odczytywania i zapisywania wartości głebi/szablonu podczas testów głębi/szablonu w etapach wczesnych i późnych testów fragmentów potoku graficznego.
+Tradycyjny sposób definicji przebiegów renderowania w Vulkan wymaga stworzenia obiektów przebiegu renderowania \textit{VkRenderPass} i bufora ramki \textit{VkFramebuffer} kompatybilnych wzajemnie ze sobą oraz z potokiem \textit{VkPipeline}. Pozwala to na szczegołowy opis procesu renderowania pozwalajacy sterownikom na maksymalną optymalizację, ale jest skomplikowane i wymaga tworzenia osobnych przebiegów renderowania i buforów ramki dla każdej zmiany obrazów służących jako dołączenia.
 
-\paragraph{Rozszerzenie VK\_EXT\_dynamic\_rendering}
+Definicja pzrebiegów renderowania została uproszczona rozszerzeniem \textit{VK\_EXT\_dynamic\_rendering}. Wprowadziło one dynamiczne przebiegi renderowania niewymagające tworzenia dodatkowych obiektów Vulkan.
+Zamiast tego podczas tworzenia potoku graficznego do jego łańcucha \textit{pNext} dodawana jest struktura \textit{VkPipelineRenderingCreateInfoKHR} definiująca liczbę i formaty używanych dołączeń koloru i głębi/szablonu.
+Widoki obrazów służących jako dołączenia są specyfikowane dopiero podczas rozpoczęcia przebiegu renderowania poleceniem \textit{vkCmdBeginRenderingKHR()}.
 
-// HIRO dynamiczne przebiegi renderowania
-// HIRO  Podczas tworzenia potoku graficznego do łańcucha \textit{pNext} dodawana jest struktura \textit{VkPipelineRenderingCreateInfoKHR} ... HIRO
+Technika renderowania sceny przy użyciu kilku przebiegów renderowania jest nazywana renderowaniem wieloprzebiegowym (ang. multi-pass rendering).
+Podczas implementacji jej używając Vulkan należy pamiętać o zapewnieniu odpowiedniej synchronizacji pomiędzy nimi.
+Przykładowo aplikacja musi nagrać odpowiednią barierę pamięci pomiędzy dwoma przebiegami, jeśli drugi przebieg próbkuje teksturę będącą dołączeniem pierwszego przebiegu.
 
 
 \subsection{Rozszerzenie VK\_KHR\_performance\_query}
@@ -1154,22 +1156,22 @@ Renderowania bez dowiązań to grupa technik mająca na celu maksymalizacją cza
 
 W Vulkan renderowanie bez dowiązań jest realizowane poprzez:
 \begin{itemize}
-	\item maksymalne zmniejszenie liczby alokowanych deskryptorów,
-	\item eliminację dowiązywania pomiędzy poleceniami rysowania,
+	\item eliminację zmiany stanu pomiędzy poleceniami rysowania,
 	\item optymalizację poleceń rysowania,
-	\item umożliwienia GPU bezpośredniego dostępu do buforów i tekstur poprzez niejednolite dynamiczne indeksowanie deskryptorów.
+	\item umożliwienia GPU bezpośredniego dostępu do tekstur i buforów poprzez niejednolite dynamiczne indeksowanie deskryptorów.
 \end{itemize}
 
-// HIRO BARDZIEJ SKRÓTOWO NIE MA CZASU
 
-Podczas wykonywania polecenia rysowania nie jest możliwa zmiana używanego przez nie stanu GPU takiego jak dowiązany bufor wierzchołków, dlatego też w idelnie zoptymalizowanej scenie wszystkie używane zasoby powinny być dowiązane przed wykonaniem pojedynczego polecenia rysowania.
-// HIRO unified geometry/constant buffer
+Eliminacja zmiany stanu pomiędzy poleceniami rysowania sprowadza się do dowiązania wszystkich zasobów na początku bufora poleceń.
+Rozszerzenie \textit{VK\_EXT\_descriptor\_indexing} zostało zaprojektowane z myślą o tworzeniu jednego dużego zbioru deskryptorów dowiązywanego poleceniem \textit{vkCmdBindDescriptorSets()} i używanego przez wszystkie przebiegi renderowania.
+Bufory wierzchołków i indeksów mogą być skonsolidowane na CPU w pojedyncze duże bufory dowiązane poleceniami \textit{vkCmdBindVertexBuffers()} i \textit{vkCmdBindIndexBuffers()}.
+Polecenia rysowania mogą używać parametrów poleceń rysowania takich jak \textit{firstIndex} i \textit{vertexOffset} do uzyskania dostępu do różnych części buforów geometrii bez zmiany stanu GPU.
 
+Optymalizacja poleceń rysowania sprowadza się do nagrania polecenia wielokrotnego rysowania pośredniego \textit{vkCmdDrawIndexedIndirect()}. Używany przez niego bufor parametrów rysowania pośredniego może być zminimalizowany poprzez grupowanie poleceń - dwa polecenia renderujące ten sam prymityw mogą być zastąpione jednym poleceniem rysującym dwie instancje.
 
-\subsection {Tekstury bez dowiązań}
+Niestety użycie zawsze dowiązanego pojedynczego zbioru deskryptorów jest komplikowane przez wymóg jednolitości podczas indeksowania deskryptorów wywołujący problemy z renderowaniem scen wypełnionych obiektami używającymi różnych tekstur.
 
-Wymóg jednolitości podczas dynamicznego indeksowania deskryptorów wywołuje problemy z renderowaniem scen wypełnionych obiektami używającymi różnych tekstur.
-Podczas renderowania obiektów każda zmiana uzywanej tekstury wymaga nagrania nowego polecenia rysowania po zmianie używanych deskryptorów poprzez:
+Tradycyjnie podczas renderowania obiektów każda zmiana uzywanej tekstury wymaga nagrania nowego polecenia rysowania po zmianie używanych deskryptorów poprzez:
 \begin{itemize}
 	\item dowiązanie całkowicie nowego zbioru deskryptorów: bardzo kosztowaną operacją, ale wymaga wsparcia tylko statycznego indeksowania,
 	\item ponowne dowiązanie deskryptora dynamicznego bufora uniform ze zmienionym dynamicznym offsetem,
@@ -1179,12 +1181,11 @@ Podczas renderowania obiektów każda zmiana uzywanej tekstury wymaga nagrania n
 		\item zmianę bazowego indeksu instancji w poleceniu rysowania pojedynczej instancji: wbudowania zmienna shaderów \textit{gl\_InstanceIndex} jest niejednolita tylko dla poleceń rysowania renderujących wiecej niż jedną instancję.
 	\end{itemize}
 \end{itemize}
-
-Poniższy diagram przedstawia tradycyjne tekstury z dowiązaniami używające jednolitego indeksu w stałej push:
+Diagram \ref{bindful_texture_command_buffer} przedstawia tradycyjne tekstury z dowiązaniami używające jednolitego indeksu w stałej push.
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[node distance=1cm]
-		\tikzstyle{command} = [rectangle, minimum width=5cm, minimum height=1cm,text centered, draw=black]
+		\tikzstyle{command} = [rectangle, minimum width=5cm, minimum height=0.6cm,text centered, draw=black]
 		\tikzstyle{resource} = [rectangle, rounded corners,text centered, draw=black]
 		\tikzstyle{uses} = [thick,->,>=stealth]
 		\tikzstyle{binds} = [dotted,->,>=stealth]
@@ -1239,7 +1240,7 @@ Poniższy diagram przedstawia tradycyjne tekstury z dowiązaniami używające je
 		node[matrix,anchor=south east,cells={nodes={font=\sffamily,anchor=west}},
 		draw,thick,inner sep=1ex]{
 			\draw[uses](0,0) -- ++ (0.6,0); & \node{Użycie};\\
-			\draw[binds](0,0) -- ++ (0.6,0); & \node{Dowiązanie/Nagranie};\\
+			\draw[binds](0,0) -- ++ (0.6,0); & \node{Dowiązanie};\\
 		};
 		
 	\end{tikzpicture}
@@ -1247,13 +1248,13 @@ Poniższy diagram przedstawia tradycyjne tekstury z dowiązaniami używające je
 	\label{bindful_texture_command_buffer}
 \end{figure}
 
-Niejednolite dynamiczne indeksowanie pozwala na dowiązanie wszystkich używanych zasobów na początku bufora poleceń i wyemitowanie pojedynczego polecenia rysowania, którego shadery używją niejednolitego indeksu do pobrania indeksów używanych tekstur z bufora uniform opisującego obiekty na scenie.
-
-Poniższy diagram przedstawia tekstury bez dowiązań używając niejednolitych indeksów instancji:
+Optymalizacja poleceń rysowania wymaga innego podejścia nieopartego na jednolitym indeksowaniu.
+Niejednolite dynamiczne indeksowanie pozwala na dowiązanie wszystkich używanych zasobów na początku bufora poleceń i wyemitowanie pojedynczego polecenia rysowania, którego shadery używją niejednolitego indeksu instancji do pobrania indeksów używanych tekstur z bufora uniform opisującego obiekty na scenie.
+Diagram \ref{bindless_texture_command_buffer} przedstawia tekstury bez dowiązań używając niejednolitych indeksów instancji.
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[node distance=1cm]
-		\tikzstyle{command} = [rectangle, minimum width=5cm, minimum height=1cm,text centered, draw=black]
+		\tikzstyle{command} = [rectangle, minimum width=5cm, minimum height=0.9cm,text centered, draw=black]
 		\tikzstyle{resource} = [rectangle, rounded corners,text centered, draw=black]
 		\tikzstyle{uses} = [thick,->,>=stealth]
 		\tikzstyle{generates} = [dashed,->,>=stealth]
@@ -1331,9 +1332,7 @@ Poniższy diagram przedstawia tekstury bez dowiązań używając niejednolitych 
 	\label{bindless_texture_command_buffer}
 \end{figure}
 
-\subsection {Geometria bez dowiązań}
 
-// HIRO draw call batching używając jednolitego bufora geometrii i poleceń rysowania pośredniego
 
 
 \section{Potok zasobów}
@@ -1550,39 +1549,123 @@ Przykładowo w scenie z samochodem jego cztery koła są renderowane przy pomocy
 
 \section{Graf renderowania}
 
-Graf renderowania jest odpowiedzialny za śledzenie stanu układu obrazów na przestrzeni klatki i jest używany do
-nagrywania barier pamięci obrazu gwarantujących odpowiednie przejścia układu obrazów.
+W przeciwieństwie do poprzednich API takich jak OpenGL, Vulkan nie zmienia automatycznie układu obrazu, co zmusza
+programistę do samodzielnego śledzenia stanu układu obrazów i wykonywania przejść na poprawny układ przed użyciem ich przez polecenia poprzez użycie odpowieniej bariery pamięci obrazu \textit{VkImageMemoryBarrier}.
 
-// HIRO
+Dodatkowo renderowania wieloprzebiegowe wymaga zapewnienie zależności pamięci pomiędzy przebiegami renderowania odczytujacymi i zapisującymi te same zasoby poprzez ręczne nagrywanie odpowiednich barrier pamięci.
 
-\section{Oświetlenie}
+Problem ten został rozwiązany w silniku Frostbite poprzez wprowadzenie struktury zwanej grafem renderowania \cite{FRAMEGRAPH} bądącej wysokopoziomową reprezentacją procesu renderowania pojedynczej klatki.
 
-// HIRO model PBR
+Graf renderowania jest skierowanym grafem acyklicznym, którego węzły to przemiennie przebiegi renderowania i zasoby.
+Krawędzie reprezentują zależności odczytu i zapisu zasobów przez przebiegi. W przypadku tradycyjnego potoku graficznego zasoby to obrazy, które są próbkowane i używane jako dołączenia.
 
-Materiał to kompletny opis właściwości powierzchni renderowanej geometrii będący zbiorem parameterów i tekstur używanych do przez shadery podczas prymitywów.
+Rysunek \ref{render_graph_example} pokazuje przykładowy graf renderowania ilustrujący renderowanie odroczone. Zawiera on dwa przebiegi geometrii i oświetlenia, które odczytują i zapisują obrazy G-bufora, bufor głębi oraz prezentowalny obraz.
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[node distance=1cm]
+		\tikzstyle{pass} = [rectangle, minimum width=3cm, minimum height=1cm,text centered, draw=black]
+		\tikzstyle{resource} = [rectangle, rounded corners, minimum width=3cm, text centered, draw=black]
+		\tikzstyle{arrow} = [thick,->,>=stealth]
+		\tikzstyle{relation} = [densely dotted]
 
-W formacie glTF materiał jest zdefiniowany przy użyciu modelu PBR metaliczności-chropowatości i posiada następujące właściwości:
+		\node (geometryPass) [pass] {Przebieg geometrii};
+		\node (gBuffor2) [resource, right = of geometryPass] {Obraz G-bufor \#2};
+		\node (gBuffor1) [resource, above = 3mm of gBuffor2] {Obraz G-bufor \#1};
+		\node (gBuffor3) [resource, below = 3mm of gBuffor2] {Obraz G-bufor \#3};
+		\node (depthResource) [resource, below = 3mm of gBuffor3] {Bufor głębi};
+		\node (lightingPass) [pass, right = of gBuffor2] {Przebieg oświetlenia};
+		\node (presentableImage) [resource, right = of lightingPass] {Prezentowalny obraz};
+		
+		\draw [arrow] (geometryPass) edge[out=0,in=180,looseness=0] (gBuffor1);
+		\draw [arrow] (geometryPass) edge[out=0,in=180,looseness=0] (gBuffor2);
+		\draw [arrow] (geometryPass) edge[out=0,in=180,looseness=0] (gBuffor3);
+		\draw [arrow] (geometryPass) edge[out=0,in=180,looseness=0] (depthResource);
+		
+		\draw [arrow] (gBuffor1) edge[out=0,in=180,looseness=0] (lightingPass);
+		\draw [arrow] (gBuffor2) edge[out=0,in=180,looseness=0] (lightingPass);
+		\draw [arrow] (gBuffor3) edge[out=0,in=180,looseness=0] (lightingPass);
+		\draw [arrow] (depthResource) edge[out=0,in=180,looseness=0] (lightingPass);
+		
+		\draw [arrow] (lightingPass) edge[out=0,in=180,looseness=0] (presentableImage);
+		
+	\end{tikzpicture}
+	\caption{Przykładowy graf renderowania ilustrujący renderowanie odroczone (opracowanie własne)}
+	\label{render_graph_example}
+\end{figure}
+
+Użycie grafu renderowania można podzielić na trzy etapy:
+\begin{itemize}
+	\item konstrukcja: dodanie wszystkich przebiegów renderowania, używanych zasobów oraz zależności między nimi;
+	\item kompilacja: analiza skonstruowanego grafu mająca na celu obliczenie zmian stanu zasobów pomiędzy przebiegami;
+	\item wykonanie: użycie skompilowanego grafu do nagrania poleceń rysowania.
+\end{itemize}
+
+W Vulkan graf renderowania może być używany do śledzenia użycia obrazów przez przebiegi renderownia oraz nagrania do bufora poleceń przebiegów renderowania nagrywania wraz z barierami pamięci obrazu gwarantującymi odpowiednie przejścia układu obrazów i zależności pamięci.
+
+
+
+\section{Fizycznie poprawny rendering}
+
+Fizycznie poprawny rendering (ang. Physically Based Rendering, PBR) to metodologia renderowania mająca na celu zwiększenie realizmu renderowanych scen poprzez użycie materiałów i modeli oświetlenia odwzorowujących rzeczywistość.
+ 
+Materiał to kompletny opis właściwości powierzchni renderowanej geometrii będący zbiorem parameterów i tekstur używanych do przez shadery podczas renderowania prymitywów.
+
+Renderowana scena może definiować różne rodzaje świateł.
+Najprostszym typem światła jest światło otoczenia padające równomiernie na wszystkie powierzchnie prymitywów.
+Światło bezpośrednie pada na obszar powierzchni prymitywu bezpośrednio ze źródła światła.
+Światło pośrednie jest światłem odbitym od innych powierzchni na scenie i z powodu kosztowności jego obliczania jest albo pomijane, albo przybliżane używając okluzji otoczenia (ang. ambient occlusion).
+
+Materiał i informacje o światłach na scenie są używane przez zaimplementowany w shaderach model oświetlenia to obliczenia ostatecznego koloru powierzchni prymitywu.
+Model oświetlanie PBR, w przeciwieństwie do tradycyjnych modelów takich jak Blinn-Phong, stara się przestrzegać praw fizyki.
+
+Nie istnieje jedna standardowa implementacja PBR, ale specyfikacja glTF \cite{GLTFSPEC} definiuje prosty model materiałów PBR.
+Materiał w formacie glTF jest zdefiniowany przy użyciu modelu metaliczności-chropowatości posiadającego następujące właściwości:
 \begin{itemize}
 	\item kolor podstawowy (ang. base color): informacja o kolorze obiektu;
 	\item metaliczności (ang. metalness): określa metaliczność materiału, tj. czy materiał jest metalem czy dielektrykiem;
 	\item chropowatość (ang. roughness): określa chropowatość materiału, tj. czy materiał jest błyszczący czy matowy.
 \end{itemize}
-
 Kolor podstawowy jest obliczany poprzez przemnożenie dwóch parametrów materiału: współczynnika vec4 oraz tekstury RGBA.
 Podobnie używane są współczynniki chropowatości i metaliczności będące wartościami w przedziale $\left[0,1\right]$ mnożonymi przez tekstury metaliczności-chropowatości - wartości metalicznści są próbkowane z komponenu B, a wartości metalicznści z komponentu G.
 
-// HIRO glTF shader
+Khronos udostępnia referencyjną implementację PBR używaną przez glTF przeznaczoną do celów edukacyjnych \cite{GLTFSAMPLEVIEWER}. Jest ona łatwa do zrozumienia i może być łatwo rozszerzony o dodatkowe funkcjonalności takie jak mapowanie nierówności.
 
-\section{Cieniowanie odroczone}
 
-// HIRO forward vs deferred
 
-// HIRO G-buffer
+\section{Renderowanie odroczone i efekty post-processingu}
 
-Cieniowanie odroczone jest podzielone na dwa przebiegi renderowania:
+Scena może być wyrenderowana w ramach jednego przebiegu renderowania używającego potoku graficznego zaczynającego od pobrania wierzchołków geometrii i kończącego na zapisaniu ostatecznego koloru do dołączenia koloru będącego prezentowalnym obrazem.
+Ta techika renderowania jest nazywana renderowaniem wprzód (ang. forward rendering) i jest tradycyjnym oraz intuicyjnym sposobem myślenia o renderowaniu.
+
+Niestety renderowanie wprzód posiada wadę widoczną podczas renderowania skomplikowanych scen zawierających obiekty z geometrią zasłaniającą inne obiekty, dla których następuje spadek wydajności spowodowany przerysowaniem (ang. overdraw).
+Przerysowanie to sytuacja, w której ostateczny kolor jest wielokrotnie nadpisywany przez shader fragmentów wykonywane dla prymitywów zasłaniających ten sam teksel dołączenia koloru.
+Przerysowanie jest problematyczne zwłaszcza dla przebiegów renderowania używających kosztownych shaderów fragmentów, np. obliczających modele oświetlenia dla dużej liczby świateł na scenie.
+
+Problem przerysowania może zostać rozwiązany przy użyciu techniki renderowania odroczonego (ang. deferred rendering).
+Renderowanie odroczone rozbija przebieg renderowania wprzód na dwa następujące przebiegi renderowania:
 \begin{itemize}
 	\item przebieg geometrii: wypełnia poszczególne komponenty G-bufora,
 	\item przebieg oświetlenia: generuje właściwy obraz na podstawie komponentów G-bufora.
 \end{itemize}
+Rysunek \ref{render_graph_example} zawiera graf renderujący ilustrujący cieniowanie odroczone.
 
-// HIRO 
+G-bufor to zbiór tekstur pozaekranowych zmiennoprzecinkowych zawierających mniej kosztowne obliczeniowo informacje o powierzchni wyrenderowanej geometrii.
+Przykładowo G-bufor może zawierać kolor podstawowy powierzchni, normalną oraz położenie w przestrzeni świata.
+
+Ważne jest, żeby shader fragmentów używany podczas renderowania sceny do G-bufora był mały i wydajny, dzięki czemu wystąpienie przerysowania nie spowoduje znaczącego spadku wydajności - przebieg geometrii nie wykonuje kosztownych obliczeń oświetlenia.
+
+Po zakończeniu przebiegu geometrii G-bufor może zostać użyty do wyrenderowania ostatecznego obrazu.
+Potok graficzny przebiegu oświetlania zaczyna się od polecenia rysowania pełnoekranowego trójkąta, dzięki czemu emitujowane jest dokładnie jedno wywołanie shadera fragmentów dla każdego teksela dowiązania koloru - kosztowny shader fragmentów obliczający oświetlenie jest obliczany tylko jeden raz i jest niezależny od stopnia skomplikowania geometrii sceny.
+
+Opisana wyżej technika renderowania pełnoekranowanego trójkąta wywołującego shader fragmentów dla każdego teksela dowiązania koloru jest podstawą efektów post-processingu.
+Są one przebiegami renderowania występującymi po zakończeniu rysowania właściwej sceny mających na celu poprawienie wyglądu ostatecznie prezentowanego obrazu.
+
+W grafice komputerowej znane jest wiele efektów post-processingu, poniżej wymieniono popularniejsze:
+\begin{itemize}
+	\item SSAO (ang. screen space ambient occlusion): przybliżona okluzja otoczenia imitująca światło pośrednie,
+	\item rozmycie ruchu (ang. motion blur): rozmazanie obrazu spowodowane nagłym ruchem kamery,
+	\item rozkwit (ang. bloom): poświata dookoła jasnych powierzchni,
+	\item mgła:
+	\item skybox: renderowania sklepienia nieba używając oteksturowanego sześcianu.
+\end{itemize}
+
