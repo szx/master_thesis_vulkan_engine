@@ -1,30 +1,9 @@
 #include "render_pass.h"
 
-size_t get_cache_len(render_pass *renderPass) {
-  size_t frameInFlightCount = FRAMES_IN_FLIGHT;
-  size_t swapChainImageCount = utarray_len(renderPass->renderState->vks->swapChainImages);
-  return frameInFlightCount * swapChainImageCount;
-}
-
-size_t get_cache_index(render_pass *renderPass, size_t currentFrameInFlight,
-                       size_t swapChainImageIdx) {
-  size_t frameInFlightCount = FRAMES_IN_FLIGHT;
-  size_t swapChainImageCount = utarray_len(renderPass->renderState->vks->swapChainImages);
-  if (frameInFlightCount < swapChainImageCount) {
-    return swapChainImageIdx * frameInFlightCount + currentFrameInFlight;
-  }
-  if (frameInFlightCount >= swapChainImageCount) {
-    return currentFrameInFlight * swapChainImageCount + swapChainImageIdx;
-  }
-  UNREACHABLE;
-}
-
 VkPipeline get_graphics_pipeline(render_pass *renderPass, size_t currentFrameInFlight,
                                  size_t swapChainImageIdx, rendering_info renderingInfo) {
-  size_t cacheIndex = get_cache_index(renderPass, currentFrameInFlight, swapChainImageIdx);
-  VkPipeline *graphicsPipeline = utarray_eltptr(renderPass->_graphicsPipelines, cacheIndex);
-  if (*graphicsPipeline != VK_NULL_HANDLE) {
-    return *graphicsPipeline;
+  if (renderPass->graphicsPipeline != VK_NULL_HANDLE) {
+    return renderPass->graphicsPipeline;
   }
 
   uint32_t colorAttachmentCount = renderPass->desc.colorAttachmentCount;
@@ -73,7 +52,7 @@ VkPipeline get_graphics_pipeline(render_pass *renderPass, size_t currentFrameInF
       .pipelineLayout = renderPass->renderState->descriptors->pipelineLayout,
   };
 
-  *graphicsPipeline =
+  renderPass->graphicsPipeline =
       device_create_graphics_pipeline(renderPass->renderState->vkd, createInfo, renderingInfo,
                                       "graphicsPipeline (frameInFlight=#%u, swapChainImage=#%u)",
                                       currentFrameInFlight, swapChainImageIdx);
@@ -81,7 +60,7 @@ VkPipeline get_graphics_pipeline(render_pass *renderPass, size_t currentFrameInF
   core_free(vertexAttributeDescriptions);
   core_free(shaderStages);
 
-  return *graphicsPipeline;
+  return renderPass->graphicsPipeline;
 }
 
 render_pass *render_pass_create(render_pass_desc desc, render_state *renderState,
@@ -103,20 +82,11 @@ void render_pass_init(render_pass *renderPass, render_pass_desc desc, render_sta
 
   renderPass->desc = desc;
   renderPass->shaderProgram = render_pass_shader_program_create(renderState, renderPass->desc);
-
-  /* cache */
-  utarray_alloc(renderPass->_graphicsPipelines, sizeof(VkPipeline));
-  utarray_resize(renderPass->_graphicsPipelines, get_cache_len(renderPass));
-  utarray_foreach_elem_it (VkPipeline *, graphicsPipeline, renderPass->_graphicsPipelines) {
-    *graphicsPipeline = VK_NULL_HANDLE;
-  }
+  renderPass->graphicsPipeline = VK_NULL_HANDLE;
 }
 
 void render_pass_deinit(render_pass *renderPass) {
-  utarray_foreach_elem_it (VkPipeline *, graphicsPipeline, renderPass->_graphicsPipelines) {
-    vkDestroyPipeline(renderPass->renderState->vkd->device, *graphicsPipeline, vka);
-  }
-  utarray_free(renderPass->_graphicsPipelines);
+  vkDestroyPipeline(renderPass->renderState->vkd->device, renderPass->graphicsPipeline, vka);
   render_pass_shader_program_destroy(renderPass->shaderProgram);
 }
 

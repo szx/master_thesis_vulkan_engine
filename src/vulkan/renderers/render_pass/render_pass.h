@@ -14,9 +14,7 @@ typedef struct render_pass {
 
   render_pass_desc desc;
   render_pass_shader_program *shaderProgram;
-
-  /* cache */
-  UT_array *_graphicsPipelines; // VkPipeline array
+  VkPipeline graphicsPipeline;
 
 } render_pass;
 
