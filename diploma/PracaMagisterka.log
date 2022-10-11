@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  10 OCT 2022 03:10
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  11 OCT 2022 02:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1109,88 +1109,107 @@ decorations.text.code.tex
 )
 Package: xstring 2021/07/21 v1.84 String manipulations (CT)
 )
+(/usr/share/texlive/texmf-dist/tex/latex/tools/longtable.sty
+Package: longtable 2021-09-01 v4.17 Multi-page Table package (DPC)
+\LTleft=\skip95
+\LTright=\skip96
+\LTpre=\skip97
+\LTpost=\skip98
+\LTchunksize=\count467
+\LTcapwidth=\dimen298
+\LT@head=\box92
+\LT@firsthead=\box93
+\LT@foot=\box94
+\LT@lastfoot=\box95
+\LT@gbox=\box96
+\LT@cols=\count468
+\LT@rows=\count469
+\c@LT@tables=\count470
+\c@LT@chunks=\count471
+\LT@p@ftn=\toks45
+)
 (/usr/share/texlive/texmf-dist/tex/latex/pdfpages/pdfpages.sty
 Package: pdfpages 2022/01/29 v0.5u Insert pages of external PDF documents (AM)
 
 (/usr/share/texlive/texmf-dist/tex/latex/tools/calc.sty
 Package: calc 2017/05/25 v4.3 Infix arithmetic (KKT,FJ)
-\calc@Acount=\count467
-\calc@Bcount=\count468
-\calc@Adimen=\dimen298
-\calc@Bdimen=\dimen299
-\calc@Askip=\skip95
-\calc@Bskip=\skip96
+\calc@Acount=\count472
+\calc@Bcount=\count473
+\calc@Adimen=\dimen299
+\calc@Bdimen=\dimen300
+\calc@Askip=\skip99
+\calc@Bskip=\skip100
 LaTeX Info: Redefining \setlength on input line 80.
 LaTeX Info: Redefining \addtolength on input line 81.
-\calc@Ccount=\count469
-\calc@Cskip=\skip97
+\calc@Ccount=\count474
+\calc@Cskip=\skip101
 )
 (/usr/share/texlive/texmf-dist/tex/latex/eso-pic/eso-pic.sty
 Package: eso-pic 2020/10/14 v3.0a eso-pic (RN)
-\ESO@tempdima=\dimen300
-\ESO@tempdimb=\dimen301
+\ESO@tempdima=\dimen301
+\ESO@tempdimb=\dimen302
 )
-\AM@pagewidth=\dimen302
-\AM@pageheight=\dimen303
-\AM@fboxrule=\dimen304
+\AM@pagewidth=\dimen303
+\AM@pageheight=\dimen304
+\AM@fboxrule=\dimen305
 
 (/usr/share/texlive/texmf-dist/tex/latex/pdfpages/ppxetex.def
 File: ppxetex.def 2022/01/29 v0.5u Pdfpages driver for XeTeX (AM)
 )
-\pdfpages@includegraphics@status=\count470
-\AM@pagebox=\box92
-\AM@global@opts=\toks45
-\AM@pagecnt=\count471
-\AM@toc@title=\toks46
-\c@AM@survey=\count472
-\AM@templatesizebox=\box93
+\pdfpages@includegraphics@status=\count475
+\AM@pagebox=\box97
+\AM@global@opts=\toks46
+\AM@pagecnt=\count476
+\AM@toc@title=\toks47
+\c@AM@survey=\count477
+\AM@templatesizebox=\box98
 )
 (/usr/share/texlive/texmf-dist/tex/latex/tools/array.sty
 Package: array 2021/10/04 v2.5f Tabular extension package (FMi)
-\col@sep=\dimen305
-\ar@mcellbox=\box94
-\extrarowheight=\dimen306
-\NC@list=\toks47
-\extratabsurround=\skip98
-\backup@length=\skip99
-\ar@cellbox=\box95
+\col@sep=\dimen306
+\ar@mcellbox=\box99
+\extrarowheight=\dimen307
+\NC@list=\toks48
+\extratabsurround=\skip102
+\backup@length=\skip103
+\ar@cellbox=\box100
 )
 (/usr/share/texlive/texmf-dist/tex/latex/ragged2e/ragged2e.sty
 Package: ragged2e 2021/12/15 v3.1 ragged2e Package
-\CenteringLeftskip=\skip100
-\RaggedLeftLeftskip=\skip101
-\RaggedRightLeftskip=\skip102
-\CenteringRightskip=\skip103
-\RaggedLeftRightskip=\skip104
-\RaggedRightRightskip=\skip105
-\CenteringParfillskip=\skip106
-\RaggedLeftParfillskip=\skip107
-\RaggedRightParfillskip=\skip108
-\JustifyingParfillskip=\skip109
-\CenteringParindent=\skip110
-\RaggedLeftParindent=\skip111
-\RaggedRightParindent=\skip112
-\JustifyingParindent=\skip113
+\CenteringLeftskip=\skip104
+\RaggedLeftLeftskip=\skip105
+\RaggedRightLeftskip=\skip106
+\CenteringRightskip=\skip107
+\RaggedLeftRightskip=\skip108
+\RaggedRightRightskip=\skip109
+\CenteringParfillskip=\skip110
+\RaggedLeftParfillskip=\skip111
+\RaggedRightParfillskip=\skip112
+\JustifyingParfillskip=\skip113
+\CenteringParindent=\skip114
+\RaggedLeftParindent=\skip115
+\RaggedRightParindent=\skip116
+\JustifyingParindent=\skip117
 )
 (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.sty
-\lst@mode=\count473
-\lst@gtempboxa=\box96
-\lst@token=\toks48
-\lst@length=\count474
-\lst@currlwidth=\dimen307
-\lst@column=\count475
-\lst@pos=\count476
-\lst@lostspace=\dimen308
-\lst@width=\dimen309
-\lst@newlines=\count477
-\lst@lineno=\count478
-\lst@maxwidth=\dimen310
+\lst@mode=\count478
+\lst@gtempboxa=\box101
+\lst@token=\toks49
+\lst@length=\count479
+\lst@currlwidth=\dimen308
+\lst@column=\count480
+\lst@pos=\count481
+\lst@lostspace=\dimen309
+\lst@width=\dimen310
+\lst@newlines=\count482
+\lst@lineno=\count483
+\lst@maxwidth=\dimen311
 
 (/usr/share/texlive/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2020/03/24 1.8d (Carsten Heinz)
-\c@lstnumber=\count479
-\lst@skipnumbers=\count480
-\lst@framebox=\box97
+\c@lstnumber=\count484
+\lst@skipnumbers=\count485
+\lst@framebox=\box102
 )
 (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.cfg
 File: listings.cfg 2020/03/24 1.8d listings configuration
@@ -1204,8 +1223,8 @@ File: lstmisc.sty 2020/03/24 1.8d (Carsten Heinz)
 Package biblatex Warning: 'babel/polyglossia' detected but 'csquotes' missing.
 (biblatex)                Loading 'csquotes' recommended.
 
-\@quotelevel=\count481
-\@quotereset=\count482
+\@quotelevel=\count486
+\@quotereset=\count487
 (./PracaMagisterka.aux (./chapters/0a_streszczenie.aux)
 (./chapters/0b_spis_tresci.aux) (./chapters/0c_wykaz_skrotow.aux)
 (./chapters/1_wstep.aux) (./chapters/2_wprowadzenie_do_dziedziny.aux)
@@ -1213,32 +1232,32 @@ Package biblatex Warning: 'babel/polyglossia' detected but 'csquotes' missing.
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
 \openout1 = `PracaMagisterka.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 135.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 138.
+LaTeX Font Info:    ... okay on input line 138.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 138.
+LaTeX Font Info:    ... okay on input line 138.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 138.
+LaTeX Font Info:    ... okay on input line 138.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 138.
+LaTeX Font Info:    ... okay on input line 138.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 138.
 LaTeX Font Info:    Trying to load font information for TS1+cmr on input line 1
-35.
+38.
 
 (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
+LaTeX Font Info:    ... okay on input line 138.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 138.
+LaTeX Font Info:    ... okay on input line 138.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 138.
+LaTeX Font Info:    ... okay on input line 138.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 138.
+LaTeX Font Info:    ... okay on input line 138.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 138.
+LaTeX Font Info:    ... okay on input line 138.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 138.
+LaTeX Font Info:    ... okay on input line 138.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
@@ -1280,9 +1299,14 @@ Package caption Info: subfig package v1.3 is loaded.
 Package caption Info: float package is loaded.
 Package caption Info: hyperref package is loaded.
 Package caption Info: listings package is loaded.
+Package caption Info: longtable package is loaded.
+(/usr/share/texlive/texmf-dist/tex/latex/caption/ltcaption.sty
+Package: ltcaption 2020/05/30 v1.4b longtable captions (AR)
+)
 Package caption Info: End \AtBeginDocument code.
 Package biblatex Info: Trying to load language 'polish'...
 Package biblatex Info: ... file 'polish.lbx' found.
+
 (/usr/share/texlive/texmf-dist/tex/latex/biblatex/lbx/polish.lbx
 File: polish.lbx 2022/02/02 v3.17 biblatex localization (PK/MW)
 )
@@ -1296,9 +1320,9 @@ Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'PracaMagisterka.bbl' found.
 
 (./PracaMagisterka.bbl)
-Package biblatex Info: Reference section=0 on input line 135.
-Package biblatex Info: Reference segment=0 on input line 135.
-Package hyperref Info: Link coloring OFF on input line 135.
+Package biblatex Info: Reference section=0 on input line 138.
+Package biblatex Info: Reference segment=0 on input line 138.
+Package hyperref Info: Link coloring OFF on input line 138.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
@@ -1309,11 +1333,11 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 (/usr/share/texlive/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count483
+\c@section@level=\count488
 )
-LaTeX Info: Redefining \ref on input line 135.
-LaTeX Info: Redefining \pageref on input line 135.
-LaTeX Info: Redefining \nameref on input line 135.
+LaTeX Info: Redefining \ref on input line 138.
+LaTeX Info: Redefining \pageref on input line 138.
+LaTeX Info: Redefining \nameref on input line 138.
 
 (./PracaMagisterka.out) (./PracaMagisterka.out)
 \@outlinefile=\write5
@@ -1329,7 +1353,7 @@ Package: lscape 2020/05/28 v3.02 Landscape Pages (DPC)
 Package pdflscape Info: Auto-detected driver: dvipdfm (xetex) on input line 98.
 
 )
-\c@lstlisting=\count484
+\c@lstlisting=\count489
 File: StronaTytulowaPG.pdf Graphic file (type pdf)
 <use StronaTytulowaPG.pdf>
 File: StronaTytulowaPG.pdf Graphic file (type pdf)
@@ -1359,7 +1383,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 5--12
 
 
 ])
-Underfull \hbox (badness 10000) in paragraph at lines 18--137
+Underfull \hbox (badness 10000) in paragraph at lines 18--140
 
  []
 
@@ -1660,7 +1684,32 @@ Overfull \hbox (0.47417pt too wide) in paragraph at lines 927--928
  tekstur poza przedziałem $[]$ dla osi Y (\TU/lmss/m/sl/10 VkSam-
  []
 
-[62] [63] [64] [65]
+[62] [63] [64]
+Overfull \hbox (5.60074pt too wide) in paragraph at lines 1120--1120
+[]  
+ []
+
+
+Overfull \hbox (5.60074pt too wide) in paragraph at lines 1122--1122
+[]|[] 
+ []
+
+
+Overfull \hbox (5.60074pt too wide) in paragraph at lines 1124--1124
+[]  
+ []
+
+
+Overfull \hbox (5.60074pt too wide) in paragraph at lines 1132--1132
+[]|[] 
+ []
+
+
+Overfull \hbox (5.60074pt too wide) in paragraph at lines 1132--1132
+[]  
+ []
+
+[65] [66] [67]
 
 ! LaTeX Error: Unknown float option `r'.
 
@@ -1668,14 +1717,14 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.1126 \begin{table}[!htr]
+l.1175 \begin{table}[!htr]
                           
 Option `r' ignored and `p' used.
 
-[66] [67] [68] [69]
+[68] [69] [70] [71] [72] [73]
 File: images/scene_graph_tree.png Graphic file (type bmp)
 <images/scene_graph_tree.png>
- [70]) [71]
+) [74] [75]
 \openout2 = `chapters/5_badania.aux'.
 
  (./chapters/5_badania.tex
@@ -1686,12 +1735,12 @@ File: images/render_damagedhelmet.png Graphic file (type bmp)
 <images/render_damagedhelmet.png>
 File: images/render_sponza.png Graphic file (type bmp)
 <images/render_sponza.png>
-[72
+[76
 
 
 
 
-] [73]
+] [77]
 Underfull \hbox (badness 10000) in paragraph at lines 65--65
 []|\TU/lmss/m/n/10 Rozdzielczość
  []
@@ -1801,12 +1850,12 @@ Overfull \hbox (28.59698pt too wide) in paragraph at lines 63--88
  [][] 
  []
 
-) [74]
+) [78]
 \openout2 = `chapters/6_podsumowanie.aux'.
 
  (./chapters/6_podsumowanie.tex
 Rozdzia\l  5.
-) [75
+) [79
 
 
 
@@ -1823,23 +1872,23 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 9.37807pt on input line 3.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 7.29405pt on input line 3.
- [76
+ [80
 
 
 
 
-] [77] (./PracaMagisterka.lof)
+] [81] (./PracaMagisterka.lof)
 \tf@lof=\write7
 \openout7 = `PracaMagisterka.lof'.
 
- [78
+ [82
 
 ]
 (./PracaMagisterka.lot)
 \tf@lot=\write8
 \openout8 = `PracaMagisterka.lot'.
 
-) [79
+) [83
 
 ] (./PracaMagisterka.aux
 (./chapters/0a_streszczenie.aux) (./chapters/0b_spis_tresci.aux)
@@ -1850,25 +1899,19 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
-
-Package rerunfilecheck Warning: File `PracaMagisterka.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `PracaMagisterka.out':
-(rerunfilecheck)             Before: 47EB4A26BFBCF7EA051E7A1CF8E152EF;7387
-(rerunfilecheck)             After:  37349B17707D17CE9ADA8A2B6A6715E3;7526.
+Package rerunfilecheck Info: File `PracaMagisterka.out' has not changed.
+(rerunfilecheck)             Checksum: 37349B17707D17CE9ADA8A2B6A6715E3;7526.
 Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 \openout1 = `PracaMagisterka.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 41549 strings out of 476191
- 857423 string characters out of 5812072
- 1685589 words of memory out of 5000000
- 61587 multiletter control sequences out of 15000+600000
+ 41745 strings out of 476191
+ 860796 string characters out of 5812072
+ 1688422 words of memory out of 5000000
+ 61777 multiletter control sequences out of 15000+600000
  488903 words of font info for 105 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  88i,17n,91p,1516b,6449s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on PracaMagisterka.pdf (79 pages).
+Output written on PracaMagisterka.pdf (83 pages).

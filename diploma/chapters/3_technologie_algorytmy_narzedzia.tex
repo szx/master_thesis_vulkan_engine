@@ -148,10 +148,10 @@ Silnik jest zaprojektowany w duchu architektury modułowej - funkcjonalność bi
 
 Silnik był rozwijany metodą \textit{bottom-up} - jego pierwsza iteracja była pojedynczym plikiem źródłowym wyświetlającym trójkąt \cite{VULKANTUTORIAL}, który w procesie dekompozycji i refaktoryzacji organicznie rozrósł się do 7 modułów znajdujących się w osobnych podkatalogach zawierających łącznie 9 skryptów Python \textit{.py}, 65 nagłówków \textit{*.h} i 63 plików źródłowych \textit{*.c}.
 
-// TODO cele dotyczące funkcjonalności
+// HIRO cele dotyczące funkcjonalności
 
 Obecnie silnik składa się z następujących modułów:
-// TODO lista modułów, podkatalog i przeznaczenie
+// HIRO lista modułów, podkatalog i przeznaczenie
 
 Moduł jest dalej podzielony na jednostki, które zostały na potrzeby projektu zdefiniowane jako para składająca się z pliku nagłówkowego z odpowiadającym plikiem źródłowymi o tej samej nazwie.
 
@@ -233,7 +233,7 @@ Poniższy diagram przedstawia moduły silnika i ich najważniejsze jednostki:
 		\def\x{unified_constant_buffer}; \node (\x) [file, below = 4mm of vertex_stream] {\myesc{\x}}; \edef\y{\x};
 		\def\x{textures}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
 		\def\x{unified_geometry_buffer}; \node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
-		\def\x{descriptors};\node (\x) [file, right = 1mm of unified_constant_buffer] {\myesc{\x}}; \edef\y{\x};
+		\def\x{descriptor};\node (\x) [file, right = 1mm of unified_constant_buffer] {\myesc{\x}}; \edef\y{\x};
 		\def\x{shader};\node (\x) [file, below = of \y] {\myesc{\x}}; \edef\y{\x};
 		\node(objects)[draw,dotted,fit=(device) (unified_geometry_buffer) (shader)] {};
 		
@@ -285,7 +285,7 @@ Razem wszystkie wygenerowane pliki tworzą jednostki modułu wygenerowanego kodu
 Zawiera wygenerowane stałe: wartości zdefiniowane w sekcji \textit{CONSTANTS} konfiguracji generatora używane przez resztę modułów, które zostały uznane za zbyt niepraktyczne aby pozwolić na ich modyfikację przy użyciu konfiguracji globalnej.
 Poniżej wymieniono stałe, ich wartości oraz interpretacje:
 \begin{itemize}
-	\item \textit{FRAMES\_IN\_FLIGHT}: $2$, liczba klatek "w locie" (ang. in flight frames), czyli jednocześnie renderowanych przez GPU, domyślna wartość pozwala na podwójne buforowanie; 
+	\item \textit{FRAMES\_IN\_FLIGHT}: $2$, liczba klatek w locie (ang. in flight frames), czyli jednocześnie renderowanych przez GPU, domyślna wartość pozwala na podwójne buforowanie; 
 	\item \textit{MAX\_OFFSCREEN\_TEXTURE\_COUNT}: $16$, maksymalna liczbę tekstur pozaekranowych;
 	\item \textit{MAX\_RENDER\_TARGET\_COUNT}: $8$, maksymalną liczbę tekstur pozaekranowych, które mogą być używane jako cele renderowania podczas jednego przebiegu; 
 	\item \textit{MAX\_FRAMEBUFFER\_ATTACHMENT\_COUNT}: \textit{MAX\_RENDER\_TARGET\_COUNT + 1 + 1}, maksymalna liczba dołączeń używana przez potok graficzny - wystarcza na dołączenia celów renderowania, prezentowalnego obrazu i bufor głębi;
@@ -948,10 +948,12 @@ asset_pipeline gltf "sponza" "/home/user/repo/cmake-build-debug/assets/gltf/spon
 
 \subsection{Vulkan}
 
-Vulkan to moduł zawierający obiekty obsługujące API Vulkan.
-Jest on używany przez moduł renderera.
+Vulkan to moduł zapewniający obiekty abstrahujące API Vulkan przeznaczone do użycia przez moduł renderera.
 
-\subsubsection{Obiekt device}
+Moduł implementuje też mechanizm jednolitych buforów inspirowany grą \textit{Tom Clancy's Rainbow Six Siege} \cite{RAINBOWSIXSIEGE}.
+Używa on automatycznie wygenerowanego kodu z jednostki descriptors i pozwala na wymaganą przez techniki renderowania bez dowiązań konsolidację zasobów buforów i obrazów w pojedyncze zasoby opisane jednym zbiorem deskryptorów.
+
+\subsubsection{Urządzenie device}
 Obiekt \textit{device} reprezentuje urządzenie.
 Jest on podstawowym obiektem przygotowującym podstawowe funkcjonalności używane przez resztę obiektów modułu.
 
@@ -1089,9 +1091,56 @@ Object 0: handle = 0x626000015100, type = VK_OBJECT_TYPE_DEVICE;
 Consider resetting entire pool instead.
 \end{lstlisting}
 
-// HIRO wykonywanie poleceń one-shot
+Bufor poleceń one-shot może być wypełniony dowolnymi poleceniami graficznymi i transferu, ale obiekt oferuje metody pomocnicze wykonujące podstawowe operacji używane podczas transferu danych.
 
-\subsubsection{Obiekt swap\_chain}
+Metody \textit{one\_shot\_copy\_buffer\_to\_buffer()} i \textit{one\_shot\_copy\_buffer\_to\_image()} kopiują dane w obrębie GPU z bufora do bufora lub obrazu używając poleceń transferu \textit{vkCmdCopyBuffer()} i \textit{vkCmdCopyBufferToImage()}. Metoda \textit{one\_shot\_copy\_buffer\_to\_image()} wymaga układu docelowego obrazu \textit{TRANSFER\_DST\_OPTIMAL}.
+
+Metoda \textit{one\_shot\_generate\_mipmaps()} generuje poziomy mipmap dla tekstur 2D. Baza zasobów nie przechowuje poziomów mipmap, dlatego metoda jest wywoływania po transferze danych zasobu obrazu do pierwszego poziomu mipmapy obrazu w celu automatycznej generacji reszty poziomów. Metoda zakłada układ obrazu \textit{TRANSFER\_DST\_OPTIMAL} i pozostawia go w układzie \textit{SHADER\_READ\_ONLY\_OPTIMAL}.
+
+Metoda \textit{one\_shot\_transition\_image\_layout()} zmienia układ całego obrazu, tj. jego wszystkich warstw i poziomów mipmap. Używa ona do tego metody \textit{transition\_image\_layout\_command()}.
+
+Metoda \textit{transition\_image\_layout\_command()} przeprowadza dla części obrazu przejście ze starego układu na nowy układ poprzez nagranie bariery pamięci obrazu \textit{VkImageMemoryBarrier}.
+Użycie bariery potoku wymaga zdefiniowania całej zależności pamięci, dlatego każde przejście układu obrazów wymaga zdefiniowania jak dokładnie obraz będzie używany po przejściu i zakodowania tej wiedzy używając źródłowych i docelowych etapów potoku oraz zakresów dostępów.
+Z tego powodu implementacja metody musi być świadoma późniejszego użycie obrazu po przejściu, co zostało podsumowane w tabeli \ref{transition_logic}.
+\begin{center}
+	\begin{longtable}{ |>{\RaggedRight}p{7cm}||>{\RaggedRight}p{7cm}|}
+		\hline
+		przejście układu obrazu \newline użycie obrazu po przejściu & zależność pamięci (zakresy dostępu, etapy potoku) \\
+		\hline \hline
+		\mbox{UNDEFINED} -> \mbox{TRANSFER\_DST\_OPTIMAL} \newline inicjalizacja poleceniem transferu & 0 -> \mbox{TRANSFER\_WRITE}, \mbox{TOP\_OF\_PIPE} -> \mbox{TRANSFER} \\
+		\hline
+		\mbox{TRANSFER\_DST\_OPTIMAL} -> \mbox{TRANSFER\_SRC\_OPTIMAL} \newline źródło polecenia transferu po inicjalizacji (generacje mipmap) & \mbox{TRANSFER\_WRITE} -> \mbox{TRANSFER\_READ},\newline \mbox{TRANSFER} -> \mbox{TRANSFER} \\
+		\hline
+		\mbox{TRANSFER\_SRC\_OPTIMAL} -> \mbox{SHADER\_READ\_ONLY\_OPTIMAL} \newline odczyt przez shader fragmentów (po generacji mipmap) & \mbox{TRANSFER\_READ} -> \mbox{SHADER\_READ},\newline \mbox{TRANSFER} -> \mbox{FRAGMENT\_SHADER} \\
+		\hline 
+		\mbox{TRANSFER\_DST\_OPTIMAL} -> \mbox{SHADER\_READ\_ONLY\_OPTIMAL} \newline odczyt przez shader fragmentów  (brak generacji mipmap) & \mbox{TRANSFER\_WRITE} -> \mbox{SHADER\_READ},\newline \mbox{TRANSFER} -> \mbox{FRAGMENT\_SHADER} \\
+		\hline 
+		\mbox{UNDEFINED} -> \mbox{COLOR\_ATTACHMENT\_OPTIMAL} \newline dołączenie koloru (pierwszy raz z klatce) & \mbox{0} -> \mbox{COLOR\_ATTACHMENT\_WRITE},\newline \mbox{TOP\_OF\_PIPE} -> \mbox{COLOR\_ATTACHMENT\_OUTPUT} \\
+		\hline 
+		\mbox{UNDEFINED} -> \mbox{DEPTH\_STENCIL\_ATTACHMENT\_OPTIMAL} \newline dołączenie głebi/szablonu (odczyt i zapis, pierwszy raz z klatce) & \mbox{0} -> \mbox{DEPTH\_STENCIL\_ATTACHMENT\_READ} | \mbox{DEPTH\_STENCIL\_ATTACHMENT\_WRITE},\newline \mbox{TOP\_OF\_PIPE} -> \mbox{EARLY\_FRAGMENT\_TESTS} | \mbox{LATE\_FRAGMENT\_TESTS} \\
+		\hline 
+		\mbox{DEPTH\_STENCIL\_ATTACHMENT\_OPTIMAL} -> \mbox{DEPTH\_STENCIL\_READ\_ONLY\_OPTIMAL} \newline dołączenie głebi/szablonu (tylko do odczytu, wcześniej odczyt i zapis) & \mbox{DEPTH\_STENCIL\_ATTACHMENT\_WRITE} -> \mbox{DEPTH\_STENCIL\_ATTACHMENT\_READ} | \mbox{SHADER\_READ},\newline \mbox{EARLY\_FRAGMENT\_TESTS} | \mbox{LATE\_FRAGMENT\_TESTS} -> \mbox{EARLY\_FRAGMENT\_TESTS} | \mbox{FRAGMENT\_SHADER} \\
+		\hline
+		\mbox{DEPTH\_STENCIL\_READ\_ONLY\_OPTIMAL} -> \mbox{DEPTH\_STENCIL\_ATTACHMENT\_OPTIMAL} \newline dołączenie głebi/szablonu (odczyt i zapis, wcześniej tylko do odczytu) & \mbox{DEPTH\_STENCIL\_ATTACHMENT\_READ} | \mbox{SHADER\_READ} -> \mbox{DEPTH\_STENCIL\_ATTACHMENT\_WRITE},\newline \mbox{EARLY\_FRAGMENT\_TESTS} | \mbox{FRAGMENT\_SHADER} -> \mbox{EARLY\_FRAGMENT\_TESTS} | \mbox{FRAGMENT\_SHADER} \\
+		\hline
+		\mbox{COLOR\_ATTACHMENT\_OPTIMAL} -> \mbox{SHADER\_READ\_ONLY\_OPTIMAL} \newline dołączenie koloru (tylko do odczytu, wcześniej odczyt i zapis) & \mbox{COLOR\_ATTACHMENT\_WRITE} -> \mbox{SHADER\_READ},\newline  \mbox{COLOR\_ATTACHMENT\_OUTPUT} -> \mbox{FRAGMENT\_SHADER} \\
+		\hline
+		\mbox{SHADER\_READ\_ONLY\_OPTIMAL} -> \mbox{COLOR\_ATTACHMENT\_OPTIMAL} \newline dołączenie koloru (odczyt i zapis, wcześniej tylko do odczytu) & \mbox{SHADER\_READ} -> \mbox{COLOR\_ATTACHMENT\_WRITE},\newline  \mbox{FRAGMENT\_SHADER} -> \mbox{COLOR\_ATTACHMENT\_OUTPUT} \\
+		\hline
+		\mbox{COLOR\_ATTACHMENT\_OPTIMAL} -> \mbox{COLOR\_ATTACHMENT\_OPTIMAL} \newline dołączenie koloru (odczyt i zapis w poprzednim i obecnym przebiegu renderowania) & \mbox{COLOR\_ATTACHMENT\_WRITE} -> \mbox{COLOR\_ATTACHMENT\_READ} | \mbox{COLOR\_ATTACHMENT\_WRITE},\newline  \mbox{COLOR\_ATTACHMENT\_OUTPUT} -> \mbox{COLOR\_ATTACHMENT\_OUTPUT} \\
+		\hline
+		\mbox{DEPTH\_STENCIL\_ATTACHMENT\_OPTIMAL} -> \mbox{DEPTH\_STENCIL\_ATTACHMENT\_OPTIMAL} \newline dołączenie głębi/szablonu (odczyt i zapis w poprzednim i obecnym przebiegu renderowania) & \mbox{DEPTH\_STENCIL\_ATTACHMENT\_WRITE} -> \mbox{DEPTH\_STENCIL\_ATTACHMENT\_READ} | \mbox{DEPTH\_STENCIL\_ATTACHMENT\_WRITE},\newline  \mbox{LATE\_FRAGMENT\_TESTS} -> \mbox{EARLY\_FRAGMENT\_TESTS} | \mbox{LATE\_FRAGMENT\_TESTS} \\
+		\hline
+		\mbox{COLOR\_ATTACHMENT\_OPTIMAL} -> \mbox{PRESENT\_SRC\_KHR} \newline prezentacja obrazu & \mbox{COLOR\_ATTACHMENT\_WRITE} -> \mbox{MEMORY\_READ},\newline  \mbox{COLOR\_ATTACHMENT\_OUTPUT} -> \mbox{BOTTOM\_OF\_PIPE} \\
+		\hline
+		
+	\caption{Logika przejść układu i zależności pamięci obrazu (opracowanie własne)} 
+	\label{transition_logic}
+	\end{longtable}
+\end{center}
+Metoda jest używana w poleceniach one-shot oraz przez graf renderowania do zapewnienia przejść układu i zależności pamięci obrazów pomiędzy przebiegami renderowania.
+
+\subsubsection{Łańcuch wymiany swap\_chain}
 Obiekt \textit{swap\_chain} reprezentuje łańcuch wymiany i zawiera następujące elementy:
 \begin{itemize}
 	\item łańcuch wymiany \textit{VkSwapchain},
@@ -1099,7 +1148,7 @@ Obiekt \textit{swap\_chain} reprezentuje łańcuch wymiany i zawiera następują
 	\item lista widoków prezentowalnych obrazów \textit{VkImageView}.
 \end{itemize}
 
-Preferowany tryb prezentacji to MAILBOX. Jeśli jest niedostępny, to wybierany jest zawsze wspierany tryb prezentacji FIFO.
+Preferowany tryb prezentacji to \textit{MAILBOX}. Jeśli jest niedostępny, to wybierany jest zawsze wspierany tryb prezentacji \textit{FIFO}.
 
 Preferowany format i przestrzeń kolorów to \textit{B8G8R8A8\_SRGB} i SRGB. Jeśli nie są dostępne, to wybierane są pierwszy dostępny.
 Formaty z rodziny BGRA i przestrzeń kolorów SRGB powierzchni okna są zawsze wspierane na systemie Windows i w czasie pisania pracy są one wspierane w ponad $96\%$ systemów Linux \cite{GPUINFO}.
@@ -1109,7 +1158,7 @@ Lista uchwytów prezentowalnych obrazów jest wypełniania w pętli używając f
 Następnie tworzone są widoki obrazów pozwalające przebiegom renderowania \textit{render\_pass} używać prezentowalne obrazy jako dołączenia koloru.
 
 
-\subsubsection{Obiekt buffer}
+\subsubsection{Bufor buffer}
 Obiekt \textit{buffer} reprezentuje pojedynczy bufor Vulkan.
 Rozróżniane są następujące typy bufora (\textit{buffer\_type}):
 \begin{itemize}
@@ -1145,10 +1194,10 @@ Typ bufora przykłada się na flagi uzywane podczas ich tworzenia, co zostało p
 Obiekt utrzymuje listę elementów bufora \textit{buffer\_element}. Zawiera ona bloki pamięci CPU, które są kopiowane do GPU metodą \textit{send\_to\_device()}.
 Sposób transferu pamięci z CPU do GPU zależy od użytej flagi właściwości pamięci.
 Dla pamięci \textit{HOST\_VISIBLE} używane jest mapowanie pamięci - funkcja \textit{vkMapMemory()} zwraca wskaźnik CPU do regionu pamięci GPU, do którego bezpośrednio kopiowana jest pamięć używając fnukcji \textit{memcpy()}.
-Dla reszty rodzajów pamięci niemogących być bezpośrednio zapisywanych przez CPU (w tym pamięć DEVICE\_LOCAL) tworzony jest bufor tymczasowy \textit{VkBuffer}, do którego pamięć CPU jest kopiowana używając poleceniem one-shot \textit{vkCmdCopyBuffer()}.
+Dla reszty rodzajów pamięci niemogących być bezpośrednio zapisywanych przez CPU (w tym pamięć DEVICE\_LOCAL) tworzony jest bufor tymczasowy \textit{VkBuffer}, do którego pamięć CPU jest kopiowana używając polecenia one-shot \textit{one\_shot\_copy\_buffer\_to\_buffer()}.
 
 
-\subsubsection{Obiekt image}
+\subsubsection{Obraz image}
 Obiekt \textit{image} reprezentuje pojedynczy obraz Vulkan.
 Wspierane są następujące typy obrazu (\textit{image\_type}):
 \begin{itemize}
@@ -1185,32 +1234,127 @@ Pamięć obrazu jest zawsze w pamięcią \textit{DEVICE\_LOCAL}, ponieważ trans
 Typ stworzonego widoku \textit{VkImageViewType} to \textit{2D} pozwalajacy shaderom GLSL na probkowanie przy użyciu zmiennych shaderów o typie \textit{sampler2D}. Wyjątkiem są tekstury sześcienne, które wymagają widoku \textit{CUBE} pozwalającego na próbkowanie zmiennymi \textit{samplerCube}.
 
 Kopiowanie danych obrazu z CPU do GPU to ważna operacja pozwalającą na wstępne wypełnienie obrazów danymi załadowanymi z bazy zasobów. Nie jest ona wymagana dla obrazów niebędących teksturami pozaekranowymi.
-Jest ona wykonywana metodą \textit{send\_to\_device()}, która podobnie do obiektów \textit{buffer} używa poleceń one-shot do wypełnienia zamapowanego bufora tymczasowego danymi obrazu i skopiowania go poleceniem \textit{vkCmdCopyBufferToImage()} do pamięci GPU.
+Jest ona wykonywana metodą \textit{send\_to\_device()}, która podobnie do obiektów \textit{buffer} używa poleceń one-shot do wypełnienia zamapowanego bufora tymczasowego danymi obrazu i skopiowania go poleceniem one-shot \textit{one\_shot\_copy\_buffer\_to\_image()} do pamięci GPU.
 Dodatkowo bufer poleceń one-shot jest używany do wygenerowania wymaganych poziomów mipmap.
  
-\subsubsection{Obiekt unified\_constant\_buffer}
-Obiekt \textit{unified\_constant\_buffer} reprezentuje 
-// HIRO
+\subsubsection{Jednolity bufor stałych unified\_constant\_buffer}
+Obiekt \textit{unified\_constant\_buffer} reprezentuje jednolity bufor stałych - jeden duży bufor uniform zawierający wszystkie informacje używane przez shadery.
 
-\subsubsection{Obiekt textures}
-Obiekt \textit{textures} reprezentuje 
-// HIRO
+Obiekt zawiera struktury \textit{*\_uniform\_buffer\_data} z wygenerowanego nagłówka \textit{descriptors} pozwalające aplikacji na aktualizację wewnętrznej struktury bufora uniform z poziomu języka C z poszanowaniem zasad układu pamięci scalar.
 
-\subsubsection{Obiekty unified\_geometry\_buffer i vertex\_stream}
+Dodatkowo obiekt utrzymuje dwie kopie danych bufora i pozwala na aktualizację tylko tej kopii używanej przez obecną klatekę. Podwaja to rozmiar zaalokowanej pamięci GPU, ale pozwala na renderowanie klatek w locie.
+
+Metoda \textit{update()} używa wejściowego wskaźnika funkcji do aktualizacji struktur \textit{*\_uniform\_buffer\_data}, które są następnie kopiowane do pamięci GPU bufora uniform metodą \textit{send\_to\_device()}.
+
+Obecnie jednolity bufor stałych ma następującą strukturę:
+\begin{itemize}
+	\item dane instancji \textit{instances}:
+	Tablica przeznaczona do indeksowana zmienną shadera \textit{gl\_InstanceIndex} pozwalająca na otrzymanie danych renderowanego prymitywu:
+	\begin{itemize}
+		\item \textit{mat4 modelMat}: macierz modelu,
+		\item \textit{uint materialId}: identyfikator materiału.
+	\end{itemize}
+	Rozmiar tablicy jest sterowany konfiguracją globlaną (\textit{MaxPrimitiveElementCount}).
+	
+	\item dane globalne \textit{global}:
+	Dane współdzielone przez wszystkie polecenia rysowania:
+	\begin{itemize}
+		\item macierze widoku i rzutowania,
+		\item tablica danych materiałów,
+		\item tablice danych świateł bezpośrednich,
+		\item dane skybox: identyfikator tekstury skybox,
+		\item czcionka i tekst debugowania,
+		\item dane używane do renderowania tekstu debugowania,
+		\item identyfikatory tesktur pozaekranowych.
+	\end{itemize}
+\end{itemize}
+
+Konsolidacja buforów uniform jest techniką renderowanie bez dowiązań.
+Większość przebiegów renderowania używa tylko części danych jednolitego bufora stałych, ale jest on zawsze w całości dowiązany przez deskryptory \textit{descriptors} na początku klatki i tym samym dostępny w całym potoku graficznym.
+
+\subsubsection{Tekstury textures}
+Obiekt \textit{textures} zarządza wszystkimi teksturami, które są tylko do odczytu i nie są pozaekranowe, i używającymi ich materiałami.
+
+Tekstura składa się z następujących elementów:
+\begin{itemize}
+	\item zasób tekstury,
+	\item obraz,
+	\item próbnik,
+	\item identyfikator tekstury.
+\end{itemize}
+Tekstury są przechowywane w tablicy mieszającej, której kluczem jest jej zasób, co pozwala na uniknięcie duplikacji pamięci.
+
+Metoda \textit{add\_texture()} tworzny nową teksturę na podstawie wejściowego zasobu tekstury.
+Obraz i próbnik są tworzone na podstawie danych zawartych w zasobie tekstury.
+Identyfikator tekstury to 32-bitowa liczba całkowita. Pierwszy identyfikator to zero, każdy następny jest uzyskiwany poprzez inkrementację. Maksymalna liczba stworzonych tekstur jest równa maksymalnej liczbie deskryptorów próbkowanych obrazów.
+
+Metoda \textit{send\_to\_device()} wysyła obrazy tekstur do GPU. 
+
+Dostęp do tekstur w shaderach odbywa się przy użyciu tablicy deskryptorów próbkowanych obrazów znajdującą się w ostatnim dowiązaniu deskryptorów \textit{descriptors}.
+Identyfikator tekstury jest indeksem w tej tablicy używanym przez shadery i podczas aktualizacji deskryptorów.
+
+Funkcja \textit{glsl\_add\_textures()} dodaje kwalifikatory układu do kodu GLSL shadera pozwalające na dostęp do tablicy tekstur z dowiązania o numerze $x$, których forma została przedstawiona na listingu \ref{textureQualifers}.
+\lstset{language=GLSL}
+\begin{lstlisting}[caption={Kwalifikatory układu dla tekstur \textit{textures}},captionpos=b,label={textureQualifers}]
+layout(set = 0, binding = x) uniform sampler2D textures2D[];
+layout(set = 0, binding = x) uniform samplerCube texturesCube[];
+\end{lstlisting}
+Można zauważyć, że definiowane są dwie zmienne shadera posiadajające identyczne numery zbioru i dowiązania deskryptorów, ale różne typy zmiennych shadera.
+Ta sytuacja jest dozwolona przez specyfikację Vulkan z zastrzeżeniem, że shader może używać jedynie tych zmiennych shadera, których typ odpowiada rodzajowi dowiązanego deskryptora.
+Przykładowo, jeśli indeks \textit{i} w tablicy deskryptorów tekstur opisuje teksturę 2D, to dostęp do niej w
+shaderze musi się odbywać przy użyciu wyrażenia \textit{textures2D[i]} - użycie wyrażenia \textit{texturesCube[i]} jest niezdefiniowanym zachowaniem.
+Technika ta eliminuje potrzebę tworzenia i zarządzania osobnymi dowiązaniami deskryptorów dla różnych rodzajów tekstur i pozwala na unifikację próbkowania. Dostęp do tekstury wymaga jedynie wiedzy o jego identyfikatorze \textit{i} i rodzaju, co zostało przedstawione na listingu \ref{textureSampling}.
+\lstset{language=GLSL}
+\begin{lstlisting}[caption={Przykład próbkowania tekstur},captionpos=b,label={textureSampling}]
+vec4 tex2DSample = texture(textures2D[i], vec2(0));
+vec4 texCubeSample = texture(texturesCube[], vec3(0));
+\end{lstlisting}
+
+Materiał składa się z następujących elementów:
+\begin{itemize}
+	\item zasób materiału,
+	\item tekstury materiału:
+	\begin{itemize}
+		\item tekstura koloru podstawowego,
+		\item tekstura metaliczności-chropowatości,
+		\item mapa normalnych,
+	\end{itemize}
+	\item identyfikator materiału.
+\end{itemize}
+
+Metoda \textit{add\_material()} tworzy materiał w sposób analogiczny do metody \textit{add\_texture()}.
+
+Dostęp do materiałów w shaderach odbywa się poprzez użycie identyfikatora materiału do indeksowania tablicy \textit{materials} w danych globalnych ujednoliconego bufora stałych.
+Listing \ref{textureSampling} przedstawia przykładowy sposób dostępu do materiału podczas renderowania przykładowej sceny.
+\lstset{language=GLSL}
+\begin{lstlisting}[caption={Przykład dostępu do materiału podczas renderowania przykładowej sceny},captionpos=b,label={textureSampling}]
+uint globalIdx = getGlobalIdx();
+uint instanceId = getInstanceId();
+uint materialId = getMaterialId(instanceId);
+vec4 baseColorFactor = global[globalIdx].materials[materialId].baseColorFactor;
+uint baseColorTextureId = global[globalIdx].materials[materialId].baseColorTextureId;
+vec4 baseColorSample = texture(textures2D[baseColorTextureId], inTexCoord);
+\end{lstlisting} 
+
+
+\subsubsection{Jednolity bufer geometrii unified\_geometry\_buffer}
 Obiekt \textit{unified\_geometry\_buffer} reprezentuje 
 // HIRO
 
 Obiekt \textit{vertex\_stream} // HIRO
  
-\subsubsection{Obiekt descriptors}
-Obiekt \textit{descriptors} reprezentuje 
+\subsubsection{Deskryptory descriptor}
+Obiekt \textit{descriptor} reprezentuje 
 // HIRO
 
-\subsubsection{Obiekt sync}
+\subsubsection{Synchronizacja sync}
 Obiekt \textit{sync} reprezentuje 
 // HIRO
 
-\subsubsection{Obiekt shader}
+\subsubsection{Generator shaderów shader\_generator}
+
+// HIRO shader\_generator
+
 Obiekt \textit{shader} reprezentuje pojedynczy shader i jest odpowiedzialny za kompilację ich do formy używalnej przez Vulkan.
 
 Obiekt składa się z następujących elementów:
@@ -1262,6 +1406,7 @@ Moduł shadera jest on uzyskiwany poprzez kompilację kodu bajtowego SPIR-V funk
 
 Obiekt \textit{shader\_reflect} reprezentuje mechanizm refleksji shadera pozwalający na badanie jego struktury.
 Operuje on na kodzie bajtowym SPIR-V i jest on używany podczas testów oraz do logowania informacji debugujących.
+
 
 
 \subsection{Scena}
@@ -1357,12 +1502,16 @@ Przykładowo poniżej przedstawiono wygenerowane metodami \textit{debug\_print()
 
 \subsection{Renderer}
 
-// TODO Renderer to moduł zawierajacy 
+// HIRO Renderer to moduł zawierajacy 
 
-// TODO renderer\_cache
+// HIRO pamięć podręczna renderera renderer\_cache
 
-// TODO Stan renderowania renderer\_state
+// HIRO Stan renderowania renderer\_state
 
-// TODO Graf renderowania render\_graph
+// HIRO Graf renderowania render\_graph
 
-// TODO renderer
+// HIRO Przebieg renderowania render\_pass
+
+// HIRO renderer
+
+// HIRO Renderer przykładowych scen main

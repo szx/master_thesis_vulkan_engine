@@ -110,67 +110,7 @@ Sposób zarządzania deskryptorami w silniku został przestawiony na poniższym 
 
 ### Obiekt textures
 
-Obiekt textures zarządza wszystkimi teksturami i materiałami. Metoda update() jest funkcją no-op. Metoda
-send_to_device() wysyła obrazy tekstur do GPU. Metody add_texture() i add_material() tworzą nowe tekstury i materiały.
-Są one niszczone wraz z instancją obiektu. Funkcja glsl_add_textures() dodaje kwalifikatory układu do kodu GLSL shadera
-pozwalające na dostęp do tekstur.
-
-### Tekstura
-
-Tekstura to obraz, który może być próbkowany przez shadery.
-
-W silniku tekstura składa się z następujących elementów:
-
-- zasób tekstury,
-- obraz,
-- próbnik,
-- identyfikator tekstury.
-
-### Tworzenie tekstury
-
-Tekstura jest tworzona przy pomocy metdy add_texture(), której wejściem jest zasób tekstury.
-
-Stworzone tekstury są przechowywane w tablicy mieszającej w strukturze vulkan_textures, której kluczem jest zasób
-tekstury. Pozwala to na uniknięcie duplikacji pamięci podczas tworzenia tekstur.
-
-Obraz i próbnik są tworzone na podstawie danych zawartych w zasobie tekstury.
-
-Identyfikator tekstury to 32-bitowa liczba całkowita. Pierwszy identyfikator to zero, każdy następny jest uzyskiwany
-poprzez inkrementację. Maksymalna liczba stworzonych tekstur jest równa maksymalnej liczbie deskryptorów próbkowanych
-obrazów.
-
-### Dostęp do tekstur w shaderach
-
-Dostęp do tekstur w shaderach odbywa się przy użyciu globalnej tablicy tekstur, która jest pojedyńczą tablicą
-deskryptorów próbkowanych obrazów znajdującą się w ostatnim dowiązaniu globalnego zbioru deskryptorów.
-
-Identyfikator tekstury jest indeksem w tej tablicy. Jest on używany do aktualizacji deskryptora obrazem i próbnikiem
-tekstury.
-
-Kwalifikatory układu w shaderach GLSL dla tablicy deskryptorów próbkowanych obrazów 2D są mają następującą formę:
-
-```
-layout(set = 0, binding = {numer ostatniego dowiązania}) uniform sampler2D textures2D[];
-layout(set = 0, binding = {numer ostatniego dowiązania}) uniform samplerCube texturesCube[];
-```
-
-Powyższy kod definiuje dwie zmienne shadera, które posiadają identyczne numery zbioru i dowiązania deskryptorów oraz
-różne typy zmiennych shadera.
-
-Ta sytuacja jest dozwolona przez specyfikację Vulkana (sekcja **5.6.3. DescriptorSet and Binding Assignment**) z
-zastrzeżeniem, że shader może używać jedynie tych zmiennych shadera, których typ odpowiada rodzajowi dowiązanego
-deskryptora. Przykładowo, jeśli indeks *i* w tablicy deskryptorów tekstur opisuje teksturę 2D, to dostęp do niej w
-shaderze musi się odbywać przy użyciu wyrażenia *textures2D[i]* - użycie wyrażenia *texturesCube[i]* jest
-niezdefiniowanym zachowaniem.
-
-Technika ta eliminuje potrzebę tworzenia i zarządzania osobnymi dowiązaniami deskryptorów dla różnych rodzajów tekstur i
-pozwala na unifikację próbkowania tekstur - dostęp do tekstury wymaga jedynie wiedzy o jego identyfikatorze *i* i
-rodzaju:
-
-```
-vec4 tex2DSample = texture(textures2D[i], vec2(0));
-vec4 texCubeSample = texture(texturesCube[], vec3(0));
-```
+HIRO
 
 ### Materiał
 
@@ -198,21 +138,7 @@ poprzez inkrementację. Maksymalna liczba stworzonych materiałów jest równa s
 
 ### Dostęp do materiałów w shaderach
 
-Dostęp do materiałów w shaderach odbywa się przy użyciu części globalnej ujednoliconego bufora uniform. Zawiera on
-tablicę struktur *material_helper_element*, w której identyfikator materiału pozwala na dostęp do jego parametrów i
-identyfikatorów tekstur:
 
-```
-struct material_helper_element {
-  uint baseColorTextureId;
-  vec4 baseColorFactor;
-  uint metallicRoughnessTextureId;
-  uint normalMapTextureId;
-  float metallicFactor;
-  float roughnessFactor;
-};
-...
-material_helper_element materials [MAX_MATERIAL_COUNT];
 ...
 vec4 baseColorFactor = global[globalIdx].materials[materialId].baseColorFactor;
 uint baseColorTextureId = global[globalIdx].materials[materialId].baseColorTextureId;
@@ -223,71 +149,8 @@ vec4 baseColorSample = texture(textures2D[baseColorTextureId], inTexCoord);
 
 ### Obiekt device
 
-HIRO
-
-Bufor poleceń one-shot może być wypełniony dowolnymi poleceniami graficznymi Vulkan, ale silnik oferuje następujące
-metody implementujące podstawowe operacje używane podczas transferu danych:
-
-- one_shot_transition_image_layout(),
-- one_shot_copy_buffer_to_buffer(),
-- one_shot_copy_buffer_to_image(),
-- one_shot_generate_mipmaps().
-
-##### Metoda one_shot_transition_image_layout()
-
-Metoda one_shot_transition_image_layout() zmienia układ całego obrazu - jego wszystkich warstw i poziomów mipmap. Używa
-ona do tego metody device_transition_image_layout_command().
-
-
-##### Metoda device_transition_image_layout_command()
-
-Metoda device_transition_image_layout_command() nagrywa barierę pamięci obrazu przeprowadzającą przejście ze *starego
-układu obrazu* na *nowy układ obrazu*. Użycie bariery potoku wymaga zdefiniowania całej zależności pamięci, dlatego
-każde przejście układu obrazów wymaga zdefiniowania jak dokładnie obraz będzie używany po przejściu i zakodowania tej
-wiedzy używając źródłowych i docelowych etapów potoku oraz zakresów dostępów.
-
-Poniższa tabela ilustruje logikę przejść używanych przez silnik:
-
-| stary układ obrazu | nowy układ obrazu | uzycie obrazu po przejściu | źródłowy etap potoku | docelowy etap potoku | źródłowy zakres dostępu | docelowy zakres dostępu |
-| --- | --- | --- | --- | --- | --- | --- |
-| UNDEFINED | TRANSFER_DST_OPTIMAL | nowy obraz jest inicjalizowy poleceniem transferu | 0 | TRANSFER_WRITE | TOP_OF_PIPE | TRANSFER |
-| TRANSFER_DST_OPTIMAL | TRANSFER_SRC_OPTIMAL | zainicjalizowany obraz jest źródłem polecenia transferu (generacje mipmap) | TRANSFER_WRITE | TRANSFER_READ | TRANSFER | TRANSFER |
-| TRANSFER_SRC_OPTIMAL | SHADER_READ_ONLY_OPTIMAL | obraz jest odczytywany przez shader fragmentów | TRANSFER_READ | SHADER_READ | TRANSFER | FRAGMENT_SHADER |
-| TRANSFER_DST_OPTIMAL | SHADER_READ_ONLY_OPTIMAL | obraz jest odczytywany przez shader fragmentów | TRANSFER_WRITE | SHADER_READ | TRANSFER | FRAGMENT_SHADER |
-| UNDEFINED | COLOR_ATTACHMENT_OPTIMAL | obraz jest dołączeniem koloru pierwszy raz z klatce | 0 |  COLOR_ATTACHMENT_WRITE | TOP_OF_PIPE | COLOR_ATTACHMENT_OUTPUT |
-| UNDEFINED | DEPTH_STENCIL_ATTACHMENT_OPTIMAL | obraz jest dołączeniem głebi/szablonu pierwszy raz z klatce | 0 |  DEPTH_STENCIL_ATTACHMENT_READ, DEPTH_STENCIL_ATTACHMENT_WRITE | TOP_OF_PIPE | EARLY_FRAGMENT_TESTS, LATE_FRAGMENT_TESTS |
-| DEPTH_STENCIL_ATTACHMENT_OPTIMAL | DEPTH_STENCIL_READ_ONLY_OPTIMAL | obraz staje się dołączeniem głebi/szablonu tylko do odczytu | DEPTH_STENCIL_ATTACHMENT_WRITE |  DEPTH_STENCIL_ATTACHMENT_READ, SHADER_READ | EARLY_FRAGMENT_TESTS, LATE_FRAGMENT_TESTS | EARLY_FRAGMENT_TESTS, FRAGMENT_SHADER |
-| DEPTH_STENCIL_READ_ONLY_OPTIMAL | DEPTH_STENCIL_ATTACHMENT_OPTIMAL | obraz przestaje być dołączeniem głebi/szablonu tylko do odczytu | DEPTH_STENCIL_ATTACHMENT_READ, SHADER_READ | DEPTH_STENCIL_ATTACHMENT_WRITE | EARLY_FRAGMENT_TESTS, FRAGMENT_SHADER | EARLY_FRAGMENT_TESTS, LATE_FRAGMENT_TESTS |
-| COLOR_ATTACHMENT_OPTIMAL | SHADER_READ_ONLY_OPTIMAL | obraz staje się dołączeniem koloru tylko do odczytu | COLOR_ATTACHMENT_WRITE | SHADER_READ | COLOR_ATTACHMENT_OUTPUT | FRAGMENT_SHADER |
-| SHADER_READ_ONLY_OPTIMAL | COLOR_ATTACHMENT_OPTIMAL | obraz przestaje być dołączeniem koloru tylko do odczytu | SHADER_READ | COLOR_ATTACHMENT_WRITE | FRAGMENT_SHADER | COLOR_ATTACHMENT_OUTPUT |
-| COLOR_ATTACHMENT_OPTIMAL | COLOR_ATTACHMENT_OPTIMAL | obraz jest ponowanie dołączeniem koloru w następnym przebiegu renderowania | COLOR_ATTACHMENT_WRITE | COLOR_ATTACHMENT_READ, COLOR_ATTACHMENT_WRITE | COLOR_ATTACHMENT_OUTPUT | COLOR_ATTACHMENT_OUTPUT |
-| DEPTH_STENCIL_ATTACHMENT_OPTIMAL | DEPTH_STENCIL_ATTACHMENT_OPTIMAL | obraz jest ponownie dołączeniem głębi/szablonu w następnym przebiegu renderowania | DEPTH_STENCIL_ATTACHMENT_WRITE | DEPTH_STENCIL_ATTACHMENT_READ, DEPTH_STENCIL_ATTACHMENT_WRITE | LATE_FRAGMENT_TESTS | EARLY_FRAGMENT_TESTS, LATE_FRAGMENT_TESTS |
-| COLOR_ATTACHMENT_OPTIMAL | PRESENT_SRC_KHR | obraz staje się prezentowalny i gotowy do przekazania silnikowi prezentacji | COLOR_ATTACHMENT_WRITE | MEMORY_READ | COLOR_ATTACHMENT_OUTPUT | BOTTOM_OF_PIPE |
-
-##### Metody one_shot_copy_buffer_to_buffer() i one_shot_copy_buffer_to_image()
-
-Metody one_shot_copy_buffer_to_buffer() i one_shot_copy_buffer_to_image() kopiują dane w obrębie GPU z bufora do bufora
-lub obrazu używając poleceń transferu vkCmdCopyBuffer() i vkCmdCopyBufferToImage(). Metoda
-one_shot_copy_buffer_to_image() wymaga wcześniejszej przejścia układu obrazu do TRANSFER_DST.
-
-Te metody są przeznaczone do użycia wraz z buforem tymczasowym do kopiowanie danych z pamięci CPU do pamięci
-DEVICE_LOCAL używając pośredniczącej pamięci HOST_VISIBLE. Pseudokod:
-
-```
-1. Stwórz bufor tymczasowy z flagą użycia TRANSFER_SRC (bufer może być używany jako źródło w operacji transferu) i dowiązaną pamięcią HOST_VISIBLE,
-2. Mapuj pamięć bufora tymczasowego funkcją vkMapMemory(),
-3. Skopiuj pamięć CPU do pamięci HOST_VISIBLE bufora tymczasowego,
-4. Odmapuj pamięć bufora tymczasowego funkcją vkUpmapMemory(),
-5. Jeśli kopiowanie do obrazu, to zmień jego układ z UNDEFINED do TRANSFER_DST metodą one_shot_transition_image_layout(),
-6. Skopiuj pamięć HOST_VISIBLE bufora tymczasowego do pamięci DEVICE_LOCAL bufora lub obrazu używając bufora poleceń one-shot,
-7. Zniszcz bufor tymczasowy i jego pamięć.
-```
-
 ##### Metoda one_shot_generate_mipmaps()
 
-Metoda generate_mipmaps() generuje poziomy mipmap dla tekstur 2D. Baza zasobów nie przechowuje mipmap, dlatego metoda
-jest wywoływania po transferze danych zasobu obrazu do pierwszego poziomu mipmapy obrazu w celu automatycznej generacji
-reszty poziomów. Metoda zakłada układ obrazu TRANSFER_DST i pozostawia go w układzie SHADER_READ_ONLY_OPTIMAL.
 Pseudokod:
 
 ```
@@ -359,8 +222,9 @@ Metody device_begin_rendering() i end_rendering() ...
 
 # TODO
 
-MORE: multiDrawIndirect: polecenia wielokrotnego rysowania pośredniego MORE: drawIndirectFirstInstance: polecenia
-rysowania pośredniego z offsetem indeksu instancji MORE: dynamicRendering: dynamiczne przebiegi renderowania
+MORE: multiDrawIndirect: polecenia wielokrotnego rysowania pośredniego MORE:
+drawIndirectFirstInstance: polecenia
+rysowania pośredniego z offsetem indeksu instancji
 
 HIRO: debug_printf
 

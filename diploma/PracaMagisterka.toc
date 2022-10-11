@@ -107,26 +107,26 @@
 \contentsline {subsubsection}{Zasób próbnika \textit {asset\textunderscore \allowbreak sampler}}{61}{subsubsection*.86}%
 \contentsline {subsubsection}{Potok zasobów asset\textunderscore \allowbreak pipeline}{62}{subsubsection*.87}%
 \contentsline {subsection}{\numberline {3.3.5}Vulkan}{62}{subsection.3.3.5}%
-\contentsline {subsubsection}{Obiekt device}{62}{subsubsection*.88}%
-\contentsline {subsubsection}{Obiekt swap\textunderscore \allowbreak chain}{65}{subsubsection*.89}%
-\contentsline {subsubsection}{Obiekt buffer}{66}{subsubsection*.90}%
-\contentsline {subsubsection}{Obiekt image}{66}{subsubsection*.92}%
-\contentsline {subsubsection}{Obiekt unified\textunderscore \allowbreak constant\textunderscore \allowbreak buffer}{67}{subsubsection*.93}%
-\contentsline {subsubsection}{Obiekt textures}{67}{subsubsection*.94}%
-\contentsline {subsubsection}{Obiekty unified\textunderscore \allowbreak geometry\textunderscore \allowbreak buffer i vertex\textunderscore \allowbreak stream}{67}{subsubsection*.95}%
-\contentsline {subsubsection}{Obiekt descriptors}{67}{subsubsection*.96}%
-\contentsline {subsubsection}{Obiekt sync}{68}{subsubsection*.97}%
-\contentsline {subsubsection}{Obiekt shader}{68}{subsubsection*.98}%
-\contentsline {subsection}{\numberline {3.3.6}Scena}{69}{subsection.3.3.6}%
-\contentsline {subsubsection}{Dane sceny scene\textunderscore \allowbreak data}{69}{subsubsection*.100}%
-\contentsline {subsubsection}{Graf sceny scene\textunderscore \allowbreak graph i drzewo sceny scene\textunderscore \allowbreak tree}{70}{subsubsection*.101}%
-\contentsline {subsection}{\numberline {3.3.7}Renderer}{71}{subsection.3.3.7}%
-\contentsline {chapter}{\numberline {4}Wyniki i testy wydajnościowe}{72}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Przykładowe sceny}{72}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Pomiary wydajnościowe}{73}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Analiza pomiarów}{74}{section.4.3}%
-\contentsline {chapter}{\numberline {5}Podsumowanie}{75}{chapter.5}%
-\contentsline {chapter}{Wykaz literatury}{77}{chapter*.107}%
-\contentsline {chapter}{Spis rysunk\'ow}{78}{chapter*.108}%
-\contentsline {chapter}{Spis tablic}{79}{chapter*.109}%
+\contentsline {subsubsection}{Urządzenie device}{62}{subsubsection*.88}%
+\contentsline {subsubsection}{Łańcuch wymiany swap\textunderscore \allowbreak chain}{67}{subsubsection*.89}%
+\contentsline {subsubsection}{Bufor buffer}{68}{subsubsection*.90}%
+\contentsline {subsubsection}{Obraz image}{68}{subsubsection*.92}%
+\contentsline {subsubsection}{Jednolity bufor stałych unified\textunderscore \allowbreak constant\textunderscore \allowbreak buffer}{69}{subsubsection*.93}%
+\contentsline {subsubsection}{Tekstury textures}{70}{subsubsection*.94}%
+\contentsline {subsubsection}{Jednolity bufer geometrii unified\textunderscore \allowbreak geometry\textunderscore \allowbreak buffer}{71}{subsubsection*.95}%
+\contentsline {subsubsection}{Deskryptory descriptor}{72}{subsubsection*.96}%
+\contentsline {subsubsection}{Synchronizacja sync}{72}{subsubsection*.97}%
+\contentsline {subsubsection}{Generator shaderów shader\textunderscore \allowbreak generator}{72}{subsubsection*.98}%
+\contentsline {subsection}{\numberline {3.3.6}Scena}{73}{subsection.3.3.6}%
+\contentsline {subsubsection}{Dane sceny scene\textunderscore \allowbreak data}{73}{subsubsection*.100}%
+\contentsline {subsubsection}{Graf sceny scene\textunderscore \allowbreak graph i drzewo sceny scene\textunderscore \allowbreak tree}{74}{subsubsection*.101}%
+\contentsline {subsection}{\numberline {3.3.7}Renderer}{74}{subsection.3.3.7}%
+\contentsline {chapter}{\numberline {4}Wyniki i testy wydajnościowe}{76}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Przykładowe sceny}{76}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Pomiary wydajnościowe}{77}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Analiza pomiarów}{78}{section.4.3}%
+\contentsline {chapter}{\numberline {5}Podsumowanie}{79}{chapter.5}%
+\contentsline {chapter}{Wykaz literatury}{81}{chapter*.107}%
+\contentsline {chapter}{Spis rysunk\'ow}{82}{chapter*.108}%
+\contentsline {chapter}{Spis tablic}{83}{chapter*.109}%
 \contentsfinish 
