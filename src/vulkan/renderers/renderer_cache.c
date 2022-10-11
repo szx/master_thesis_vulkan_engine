@@ -288,13 +288,13 @@ void renderer_cache_remove_direct_light_element(
   DL_DELETE(rendererCache->directLightElements, directLightElement);
 }
 
-void renderer_cache_add_skybox(renderer_cache *rendererCache,
-                               renderer_cache_skybox_element *skyboxElement) {
+void renderer_cache_add_skybox_element(renderer_cache *rendererCache,
+                                       renderer_cache_skybox_element *skyboxElement) {
   rendererCache->skyboxElement = skyboxElement;
 }
 
-void renderer_cache_add_font(renderer_cache *rendererCache,
-                             renderer_cache_font_element *fontElement) {
+void renderer_cache_add_font_element(renderer_cache *rendererCache,
+                                     renderer_cache_font_element *fontElement) {
   rendererCache->fontElement = fontElement;
 }
 

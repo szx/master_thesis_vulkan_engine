@@ -159,11 +159,11 @@ void scene_graph_create_with_scene_data(scene_graph *sceneGraph, scene_data *sce
   log_debug("adding renderer cache skybox element");
   renderer_cache_skybox_element *skyboxElement =
       renderer_cache_skybox_element_create(sceneData->skybox);
-  renderer_cache_add_skybox(sceneGraph->sceneTree->rendererCache, skyboxElement);
+  renderer_cache_add_skybox_element(sceneGraph->sceneTree->rendererCache, skyboxElement);
 
   log_debug("adding renderer cache font element");
   renderer_cache_font_element *fontElement = renderer_cache_font_element_create(sceneData->font);
-  renderer_cache_add_font(sceneGraph->sceneTree->rendererCache, fontElement);
+  renderer_cache_add_font_element(sceneGraph->sceneTree->rendererCache, fontElement);
 
   assert(sceneGraph->root);
 }

@@ -32,7 +32,6 @@
 #include "objects/textures.h"
 #include "objects/swap_chain.h"
 #include "objects/unified_geometry_buffer.h"
-#include "objects/unified_uniform_buffer.h"
 #include "objects/image.h"
 #include "objects/input.h"
 #include "objects/unified_constant_buffer.h"
