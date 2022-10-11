@@ -88,6 +88,17 @@ VkDescriptorSetLayout create_descriptor_set_layout(device *vkd, descriptor_bindi
   return descriptorSetLayout;
 }
 
+VkDescriptorSetLayout *get_descriptor_set_layouts(descriptors *descriptors, size_t *count) {
+  size_t descriptorSetLayoutCount = 1;
+  *count = descriptorSetLayoutCount;
+
+  VkDescriptorSetLayout *descriptorSetLayouts =
+      core_alloc(descriptorSetLayoutCount * sizeof(VkPipelineShaderStageCreateInfo));
+  descriptorSetLayouts[0] = descriptors->descriptorSetLayout;
+
+  return descriptorSetLayouts;
+}
+
 VkDescriptorSet create_descriptor_set(device *vkd, VkDescriptorSetLayout descriptorSetLayout,
                                       VkDescriptorPool descriptorPool, descriptor_binding *bindings,
                                       size_t bindingCount, bool bindless, const char *debugFormat,
@@ -284,7 +295,7 @@ descriptors *descriptors_create(device *vkd, unified_constant_buffer *unifiedUni
   // create pipeline layout
   size_t descriptorSetLayoutCount = 0;
   VkDescriptorSetLayout *descriptorSetLayouts =
-      descriptors_get_descriptor_set_layouts(descriptors, &descriptorSetLayoutCount);
+      get_descriptor_set_layouts(descriptors, &descriptorSetLayoutCount);
   assert(descriptorSetLayoutCount > 0);
 
   size_t pushConstantRangeCount = 1;
@@ -324,18 +335,6 @@ void descriptors_record_bind_commands(descriptors *descriptors, VkCommandBuffer 
 
   vkCmdPushConstants(commandBuffer, descriptors->pipelineLayout, VK_SHADER_STAGE_ALL, 0,
                      sizeof(drawPushConstant), &drawPushConstant);
-}
-
-VkDescriptorSetLayout *descriptors_get_descriptor_set_layouts(descriptors *descriptors,
-                                                              size_t *count) {
-  size_t descriptorSetLayoutCount = 1;
-  *count = descriptorSetLayoutCount;
-
-  VkDescriptorSetLayout *descriptorSetLayouts =
-      core_alloc(descriptorSetLayoutCount * sizeof(VkPipelineShaderStageCreateInfo));
-  descriptorSetLayouts[0] = descriptors->descriptorSetLayout;
-
-  return descriptorSetLayouts;
 }
 
 void descriptors_debug_print(descriptors *descriptors, int indent) {

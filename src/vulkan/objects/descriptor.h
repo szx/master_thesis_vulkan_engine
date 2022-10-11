@@ -173,7 +173,5 @@ void descriptors_send_to_device(descriptors *descriptors);
 
 void descriptors_record_bind_commands(descriptors *descriptors, VkCommandBuffer commandBuffer,
                                       draw_push_constant_element drawPushConstant);
-VkDescriptorSetLayout *descriptors_get_descriptor_set_layouts(descriptors *descriptors,
-                                                              size_t *count);
 
 void descriptors_debug_print(descriptors *descriptors, int indent);
