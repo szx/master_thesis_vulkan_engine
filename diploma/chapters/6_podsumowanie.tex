@@ -2,10 +2,14 @@
 \label{chap:summary}
 
 Efektem niniejszej pracy jest silnik graficzny pozwalający na renderowanie używając cieniowania odroczonego i innych technik graficznych.
-Zrealizowano zamierzone cele dotyczące funkcjonalności silnika oraz zademonstrowano jego działanie poprzez wyrenderowanie przykładowych scen. Przeprowadzono testy wydajnościowe.
 
-// HIRO dobrze byłoby trochę bardziej rozbudować podsumowanie tego, co zostało konkretnie zaimplementowane (2-3 akapity)
+Zaimplementowano potok zasobów pozwalający na konwersję scen w formacie \textit{glTF} do bazy SQLite przechowującej wszystkie zasoby używane przez silnik.
 
+Zastosowano bibliotekę graficzną Vulkan do realizacji technik renderowania bez dowiązań.
+
+Zaimplementowano graf renderowania pozwalający na wysokopoziomowy opis użycia potoku graficznego w formie przebiegów renderowania operujących na teksturach pozaekranowych.
+
+Zademonstrowano działanie silnika poprzez zdefiniowanie grafu renderowania odroczonego i użycie go do wyrenderowania przykładowych scen. Przeprowadzono testy wydajnościowe.
 
 
 Projekt w obecnym kształcie nie został wykorzystany w grze komputerowej i powinien być rozpatrywany w kategoriach prototypu.

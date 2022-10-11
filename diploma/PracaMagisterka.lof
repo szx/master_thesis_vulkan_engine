@@ -16,13 +16,14 @@
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {3.1}{\ignorespaces Proces budowania w formie celów i ich zależności (opracowanie własne)\relax }}{45}{figure.caption.52}%
 \contentsline {figure}{\numberline {3.2}{\ignorespaces Relacje pomiędzy modułam silnika i ich najważniejszymi klasami (opracowanie własne)\relax }}{47}{figure.caption.59}%
-\contentsline {figure}{\numberline {3.3}{\ignorespaces Relacje pomiędzy obiektami zasobów w silniku (opracowanie własne)\relax }}{58}{figure.caption.73}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Relacje pomiędzy obiektami zasobów w silniku (opracowanie własne)\relax }}{59}{figure.caption.73}%
 \contentsline {figure}{\numberline {3.4}{\ignorespaces Przykładowa tekstura dla czcionki Go-Mono \blx@tocontentsinit {0}\cite {GOMONOFONT} (opracowanie własne)\relax }}{61}{figure.caption.82}%
-\contentsline {figure}{\numberline {3.5}{\ignorespaces Obiekty biorące udział w procesie konwersji sceny (opracowanie własne)\relax }}{73}{figure.caption.99}%
-\contentsline {figure}{\numberline {3.6}{\ignorespaces Przykładowy graf i drzewo sceny zawierającej dwa trójkąty (opracowanie własne)\relax }}{75}{figure.caption.102}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Obiekty biorące udział w procesie konwersji sceny (opracowanie własne)\relax }}{75}{figure.caption.100}%
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Przykładowy graf sceny zawierającej dwa trójkąty (opracowanie własne)\relax }}{76}{figure.caption.103}%
+\contentsline {figure}{\numberline {3.7}{\ignorespaces Przykładowe drzewo sceny zawierającej dwa trójkąty (opracowanie własne)\relax }}{77}{figure.caption.104}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Wynik renderowania sceny MetalRoughSpheres (opracowanie własne)\relax }}{76}{figure.caption.103}%
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Wynik renderowania sceny DamagedHelmet (opracowanie własne)\relax }}{77}{figure.caption.104}%
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Wynik renderowania sceny Sponza (opracowanie własne)\relax }}{77}{figure.caption.105}%
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Wynik renderowania sceny MetalRoughSpheres (opracowanie własne)\relax }}{79}{figure.caption.106}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Wynik renderowania sceny DamagedHelmet (opracowanie własne)\relax }}{80}{figure.caption.107}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Wynik renderowania sceny Sponza (opracowanie własne)\relax }}{80}{figure.caption.108}%
 \addvspace {10\p@ }
 \contentsfinish 

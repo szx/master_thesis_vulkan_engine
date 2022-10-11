@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  11 OCT 2022 02:55
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  12 OCT 2022 01:10
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1631,12 +1631,12 @@ Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
-[47]
+[47] [48]
 LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10> not available
-(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 307.
- [48] [49] [50] [51] [52]
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 315.
+ [49] [50] [51] [52]
 LaTeX Font Info:    Font shape `TU/lmss/m/it' in size <9> not available
-(Font)              Font shape `TU/lmss/m/sl' tried instead on input line 524.
+(Font)              Font shape `TU/lmss/m/sl' tried instead on input line 532.
  [53] [54] [55] [56] [57]
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
@@ -1663,44 +1663,34 @@ Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
 Missing character: There is no ; ("3B) in font nullfont!
-[58] [59]
+[58] [59] [60]
 File: images/font_texture.png Graphic file (type bmp)
 <images/font_texture.png>
 
-Overfull \hbox (6.48865pt too wide) in paragraph at lines 899--902
+Overfull \hbox (6.48865pt too wide) in paragraph at lines 907--910
 []\TU/lmss/m/n/10 Zasób materiału \TU/lmss/m/sl/10 asset_material \TU/lmss/m/n/
 10 reprezentuje parametry używanego podczas renderowania powierzchni
  []
 
-[60]
-Overfull \hbox (0.71416pt too wide) in paragraph at lines 926--927
+[61]
+Overfull \hbox (0.71416pt too wide) in paragraph at lines 934--935
 []\TU/lmss/m/sl/10 addressModeU\TU/lmss/m/n/10 : tryb adresowania współrzędnych
  tekstur poza przedziałem $[]$ dla osi X (\TU/lmss/m/sl/10 VkSam-
  []
 
-[61]
-Overfull \hbox (0.47417pt too wide) in paragraph at lines 927--928
+
+Overfull \hbox (0.47417pt too wide) in paragraph at lines 935--936
 []\TU/lmss/m/sl/10 addressModeV\TU/lmss/m/n/10 : tryb adresowania współrzędnych
  tekstur poza przedziałem $[]$ dla osi Y (\TU/lmss/m/sl/10 VkSam-
  []
 
-[62] [63] [64]
-Overfull \hbox (5.60074pt too wide) in paragraph at lines 1120--1120
+[62] [63] [64] [65]
+Overfull \hbox (5.60074pt too wide) in paragraph at lines 1128--1128
 []  
  []
 
 
-Overfull \hbox (5.60074pt too wide) in paragraph at lines 1122--1122
-[]|[] 
- []
-
-
-Overfull \hbox (5.60074pt too wide) in paragraph at lines 1124--1124
-[]  
- []
-
-
-Overfull \hbox (5.60074pt too wide) in paragraph at lines 1132--1132
+Overfull \hbox (5.60074pt too wide) in paragraph at lines 1130--1130
 []|[] 
  []
 
@@ -1709,7 +1699,17 @@ Overfull \hbox (5.60074pt too wide) in paragraph at lines 1132--1132
 []  
  []
 
-[65] [66] [67]
+
+Overfull \hbox (5.60074pt too wide) in paragraph at lines 1140--1140
+[]|[] 
+ []
+
+
+Overfull \hbox (5.60074pt too wide) in paragraph at lines 1140--1140
+[]  
+ []
+
+[66] [67]
 
 ! LaTeX Error: Unknown float option `r'.
 
@@ -1717,14 +1717,23 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.1175 \begin{table}[!htr]
+l.1183 \begin{table}[!htr]
                           
 Option `r' ignored and `p' used.
 
-[68] [69] [70] [71] [72] [73]
-File: images/scene_graph_tree.png Graphic file (type bmp)
-<images/scene_graph_tree.png>
-) [74] [75]
+[68] [69] [70]
+Overfull \hbox (8.73865pt too wide) in paragraph at lines 1312--1313
+[]\TU/lmss/m/n/10 Metody \TU/lmss/m/sl/10 get_vertex_buffer_binding_count()\TU/
+lmss/m/n/10 , \TU/lmss/m/sl/10 get_vertex_buffer_binding_description() \TU/lmss
+/m/n/10 i \TU/lmss/m/sl/10 get_vertex_
+ []
+
+[71] [72] [73] [74] [75]
+File: images/scene_graph.png Graphic file (type bmp)
+<images/scene_graph.png>
+File: images/scene_tree.png Graphic file (type bmp)
+<images/scene_tree.png>
+ [76] [77]) [78]
 \openout2 = `chapters/5_badania.aux'.
 
  (./chapters/5_badania.tex
@@ -1735,12 +1744,12 @@ File: images/render_damagedhelmet.png Graphic file (type bmp)
 <images/render_damagedhelmet.png>
 File: images/render_sponza.png Graphic file (type bmp)
 <images/render_sponza.png>
-[76
+[79
 
 
 
 
-] [77]
+] [80]
 Underfull \hbox (badness 10000) in paragraph at lines 65--65
 []|\TU/lmss/m/n/10 Rozdzielczość
  []
@@ -1850,12 +1859,12 @@ Overfull \hbox (28.59698pt too wide) in paragraph at lines 63--88
  [][] 
  []
 
-) [78]
+) [81]
 \openout2 = `chapters/6_podsumowanie.aux'.
 
  (./chapters/6_podsumowanie.tex
 Rozdzia\l  5.
-) [79
+) [82
 
 
 
@@ -1872,23 +1881,23 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 9.37807pt on input line 3.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 7.29405pt on input line 3.
- [80
+ [83
 
 
 
 
-] [81] (./PracaMagisterka.lof)
+] [84] (./PracaMagisterka.lof)
 \tf@lof=\write7
 \openout7 = `PracaMagisterka.lof'.
 
- [82
+ [85
 
 ]
 (./PracaMagisterka.lot)
 \tf@lot=\write8
 \openout8 = `PracaMagisterka.lot'.
 
-) [83
+) [86
 
 ] (./PracaMagisterka.aux
 (./chapters/0a_streszczenie.aux) (./chapters/0b_spis_tresci.aux)
@@ -1896,22 +1905,19 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (./chapters/2_wprowadzenie_do_dziedziny.aux)
 (./chapters/3_technologie_algorytmy_narzedzia.aux) (./chapters/5_badania.aux)
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
 Package rerunfilecheck Info: File `PracaMagisterka.out' has not changed.
-(rerunfilecheck)             Checksum: 37349B17707D17CE9ADA8A2B6A6715E3;7526.
+(rerunfilecheck)             Checksum: 0E8D976FCA055F9391F5812BDE92AFA0;7526.
 Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 \openout1 = `PracaMagisterka.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 41745 strings out of 476191
- 860796 string characters out of 5812072
- 1688422 words of memory out of 5000000
- 61777 multiletter control sequences out of 15000+600000
+ 41766 strings out of 476191
+ 861139 string characters out of 5812072
+ 1697675 words of memory out of 5000000
+ 61797 multiletter control sequences out of 15000+600000
  488903 words of font info for 105 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  88i,17n,91p,1516b,6449s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on PracaMagisterka.pdf (83 pages).
+Output written on PracaMagisterka.pdf (86 pages).

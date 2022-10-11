@@ -146,12 +146,19 @@ UndefinedBehaviorSanitizer) wykrywające szeroką klasę błędów dotyczących 
 
 Silnik jest zaprojektowany w duchu architektury modułowej - funkcjonalność biblioteki jest rozdzielona na bloki zwane modułami, które mogą być rozwijane niezależnie od pozostałych modułów.
 
+Obecne silnik składa się z następujących modułów:
+\begin{itemize}
+	\item Wygenerowany kod: mechanizmy metaprogramowania;
+	\item Rdzeń: funkcje pomocnicze;
+	\item I/O: wczytywanie bazy zasobów i konfiguracji;
+	\item Zasoby: serializacja i deserializacja danych sceny z bazy zasobów;
+	\item Vulkan: obsługa API Vulkan;
+	\item Scena: operacje na grafie sceny;
+	\item Renderer: graf renderowania i główna pętla programu.
+\end{itemize}
+Dodatkowo budowany jest plik wykonywalny demonstujący użycie silnika do wyrenderowanie przykładowej sceny używając grafu renderowania odroczonego.
+
 Silnik był rozwijany metodą \textit{bottom-up} - jego pierwsza iteracja była pojedynczym plikiem źródłowym wyświetlającym trójkąt \cite{VULKANTUTORIAL}, który w procesie dekompozycji i refaktoryzacji organicznie rozrósł się do 7 modułów znajdujących się w osobnych podkatalogach zawierających łącznie 9 skryptów Python \textit{.py}, 65 nagłówków \textit{*.h} i 63 plików źródłowych \textit{*.c}.
-
-// HIRO cele dotyczące funkcjonalności
-
-Obecnie silnik składa się z następujących modułów:
-// HIRO lista modułów, podkatalog i przeznaczenie
 
 Moduł jest dalej podzielony na jednostki, które zostały na potrzeby projektu zdefiniowane jako para składająca się z pliku nagłówkowego z odpowiadającym plikiem źródłowymi o tej samej nazwie.
 
@@ -166,7 +173,8 @@ Obiekty mogą oferować metody \textit{create()} i \textit{destroy()}, które al
 Analogiczne metody \textit{init()} i \textit{deinit()} tworzą i niszczą instancję, której pamięć została wcześniej zaalokowaną (np. na stosie lub w tablicy).
 Opcjonalna metoda \textit{debug\_print()} loguje informacje o wewnętrznym stanie instancji użyteczne podczas debugowania.
 
-Poniższy diagram przedstawia moduły silnika i ich najważniejsze jednostki:
+Diagram \ref{archit} przedstawia moduły silnika i ich najważniejsze jednostki.
+
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[node distance=2mm]
@@ -713,7 +721,7 @@ Obiekt ten jest intensywnie używany przez moduł zasobów do implementacji seri
 
 \subsection{Zasoby}
 
-Moduł zawierajaca obiekty zasobów, które pozwalają na serializację i deserializację indywidualnych zasobów z bazy zasobów do formy używalnej przez resztę kodu silnika.
+Moduł zawierajacy obiekty zasobów, które pozwalają na serializację i deserializację indywidualnych zasobów z bazy zasobów do formy używalnej przez resztę kodu silnika.
 
 Wszystkie obiekty zasobów mają nazwy w formie \textit{asset\_*} i współdzielą następujące pola i metody:
 \begin{itemize}
@@ -1272,6 +1280,38 @@ Obecnie jednolity bufor stałych ma następującą strukturę:
 Konsolidacja buforów uniform jest techniką renderowanie bez dowiązań.
 Większość przebiegów renderowania używa tylko części danych jednolitego bufora stałych, ale jest on zawsze w całości dowiązany przez deskryptory \textit{descriptors} na początku klatki i tym samym dostępny w całym potoku graficznym.
 
+
+\subsubsection{Jednolity bufer geometrii unified\_geometry\_buffer}
+Obiekt \textit{unified\_geometry\_buffer} reprezentuje jednolity bufor geometrii - bufor wierzchołków i bufor indeksów zawierający całą geometrię używaną przez polecenia rysowania.
+
+Metoda \textit{record\_bind\_command} dowiązuje do bufora poleceń bufory wierzchołków i indeksów poleceniami \textit{vkCmdBindVertexBuffers()} i \textit{vkCmdBindIndexBuffers()}.
+
+Metody \textit{update()} i \textit{send\_to\_device()} są używane do aktualizacji i transferu do GPU zawartości buforów używajac obiektu \textit{vertex\_stream}.
+
+
+\subsubsection{Strumień wierzchołków vertex\_stream}
+Obiekt \textit{vertex\_stream} reprezentuje strumień wierzchołków zawierający całą geometrię sceny.
+
+Obiekt składa się z dwóch tablic: wierzchołków (tablica \textit{vertex}) i ich indeksy (tablica \textit{uint32\_t}).
+
+Metoda \textit{add\_geometry()} pozwala na dodanie do strumienia wierzchołka tablic zawierających poszczególne atrybuty i indeksy.
+Metoda jest używana przez pamięć podręczną renderowania \textit{render\_cache} do zebrania geometrii wszystkich renderowanych prymitywów w pojedyńczy blok pamięci CPU przekazywany jednolitemu buforowi geometrii.
+
+Silnik używa przekładanych atrybutów (ang. interleaved attributes) - wszystkie atrybuty wierzchołka są przechowywane w ramach jednej struktury \textit{vertex} przedstawionej na listingu \ref{vertexStreamVertex}.
+\lstset{language=C}
+\begin{lstlisting}[caption={Struktura wierzchołka \textit{vertex}},captionpos=b,label={vertexStreamVertex}]
+typedef struct vertex {
+	vec3 position;
+	vec3 normal;
+	vec3 color;
+	vec2 texCoord;
+	vec4 tangent;
+} vertex;
+\end{lstlisting}
+
+Metody \textit{get\_vertex\_buffer\_binding\_count()}, \textit{get\_vertex\_buffer\_binding\_description()} i \textit{get\_vertex\_buffer\_attribute\_descriptions()} zwracają struktury Vulkan używane podczas tworzenia potoku graficznego kompatybilnego ze strumieniem wierzchołków.
+
+
 \subsubsection{Tekstury textures}
 Obiekt \textit{textures} zarządza wszystkimi teksturami, które są tylko do odczytu i nie są pozaekranowe, i używającymi ich materiałami.
 
@@ -1296,8 +1336,8 @@ Identyfikator tekstury jest indeksem w tej tablicy używanym przez shadery i pod
 Funkcja \textit{glsl\_add\_textures()} dodaje kwalifikatory układu do kodu GLSL shadera pozwalające na dostęp do tablicy tekstur z dowiązania o numerze $x$, których forma została przedstawiona na listingu \ref{textureQualifers}.
 \lstset{language=GLSL}
 \begin{lstlisting}[caption={Kwalifikatory układu dla tekstur \textit{textures}},captionpos=b,label={textureQualifers}]
-layout(set = 0, binding = x) uniform sampler2D textures2D[];
-layout(set = 0, binding = x) uniform samplerCube texturesCube[];
+	layout(set = 0, binding = x) uniform sampler2D textures2D[];
+	layout(set = 0, binding = x) uniform samplerCube texturesCube[];
 \end{lstlisting}
 Można zauważyć, że definiowane są dwie zmienne shadera posiadajające identyczne numery zbioru i dowiązania deskryptorów, ale różne typy zmiennych shadera.
 Ta sytuacja jest dozwolona przez specyfikację Vulkan z zastrzeżeniem, że shader może używać jedynie tych zmiennych shadera, których typ odpowiada rodzajowi dowiązanego deskryptora.
@@ -1306,8 +1346,8 @@ shaderze musi się odbywać przy użyciu wyrażenia \textit{textures2D[i]} - uż
 Technika ta eliminuje potrzebę tworzenia i zarządzania osobnymi dowiązaniami deskryptorów dla różnych rodzajów tekstur i pozwala na unifikację próbkowania. Dostęp do tekstury wymaga jedynie wiedzy o jego identyfikatorze \textit{i} i rodzaju, co zostało przedstawione na listingu \ref{textureSampling}.
 \lstset{language=GLSL}
 \begin{lstlisting}[caption={Przykład próbkowania tekstur},captionpos=b,label={textureSampling}]
-vec4 tex2DSample = texture(textures2D[i], vec2(0));
-vec4 texCubeSample = texture(texturesCube[], vec3(0));
+	vec4 tex2DSample = texture(textures2D[i], vec2(0));
+	vec4 texCubeSample = texture(texturesCube[], vec3(0));
 \end{lstlisting}
 
 Materiał składa się z następujących elementów:
@@ -1325,35 +1365,39 @@ Materiał składa się z następujących elementów:
 Metoda \textit{add\_material()} tworzy materiał w sposób analogiczny do metody \textit{add\_texture()}.
 
 Dostęp do materiałów w shaderach odbywa się poprzez użycie identyfikatora materiału do indeksowania tablicy \textit{materials} w danych globalnych ujednoliconego bufora stałych.
-Listing \ref{textureSampling} przedstawia przykładowy sposób dostępu do materiału podczas renderowania przykładowej sceny.
+Listing \ref{textureMaterialSampling} przedstawia przykładowy sposób dostępu do materiału podczas renderowania przykładowej sceny.
 \lstset{language=GLSL}
-\begin{lstlisting}[caption={Przykład dostępu do materiału podczas renderowania przykładowej sceny},captionpos=b,label={textureSampling}]
-uint globalIdx = getGlobalIdx();
-uint instanceId = getInstanceId();
-uint materialId = getMaterialId(instanceId);
-vec4 baseColorFactor = global[globalIdx].materials[materialId].baseColorFactor;
-uint baseColorTextureId = global[globalIdx].materials[materialId].baseColorTextureId;
-vec4 baseColorSample = texture(textures2D[baseColorTextureId], inTexCoord);
+\begin{lstlisting}[caption={Przykład dostępu do materiału podczas renderowania przykładowej sceny},captionpos=b,label={textureMaterialSampling}]
+	uint globalIdx = getGlobalIdx();
+	uint instanceId = getInstanceId();
+	uint materialId = getMaterialId(instanceId);
+	vec4 baseColorFactor = global[globalIdx].materials[materialId].baseColorFactor;
+	uint baseColorTextureId = global[globalIdx].materials[materialId].baseColorTextureId;
+	vec4 baseColorSample = texture(textures2D[baseColorTextureId], inTexCoord);
 \end{lstlisting} 
 
-
-\subsubsection{Jednolity bufer geometrii unified\_geometry\_buffer}
-Obiekt \textit{unified\_geometry\_buffer} reprezentuje 
-// HIRO
-
-Obiekt \textit{vertex\_stream} // HIRO
  
-\subsubsection{Deskryptory descriptor}
-Obiekt \textit{descriptor} reprezentuje 
-// HIRO
+\subsubsection{Deskryptory descriptors}
+Obiekt \textit{descriptors} reprezentuje deskryptory udostępniające przebiegom renderowania tekstury i jednolity bufor stałych. Obiekt zarządza też stałymi push.
 
-\subsubsection{Synchronizacja sync}
-Obiekt \textit{sync} reprezentuje 
-// HIRO
+Obiekt zawiera wskaźniki do obiektów \textit{textures} i \textit{unified\_constant\_buffer} używanych do tworzenia i aktualizacji obiektów Vulkan pozwalających na użycie deskryptorów:
+\begin{itemize}
+	\item pula deskryptorów \textit{VkDescriptorPool},
+	\item układ zbioru deskryptorów \textit{VkDescriptorSetLayout},
+	\item zbiór deskryptorów \textit{VkDescriptorSet},
+	\item układ potoku \textit{VkPipelineLayout}.
+\end{itemize} 
 
-\subsubsection{Generator shaderów shader\_generator}
+Zgodnie z duchem renderowania bez dowiązań tworzony jest jeden globalny zbiór deskryptorów mający trzy dowiązania. Dwa pierwsze dowiązania zawierają pojedyncze deskryptory buforów uniform opisujące fragmenty jednolitego bufora stałych zawierające dane instancji i dane globalne. 
+Ostatnie dowiązanie zawiera nieograniczoną tablicę tekstur.
 
-// HIRO shader\_generator
+Metoda \textit{send\_to\_device()} aktualizuje każde dowiązanie zbioru deskryptorów wywołaniami funkcji \textit{vkUpdateDescriptorSets()}.
+
+Metoda \textit{record\_bind\_commands()} dowiązuje zbiór deskryptorów poleceniem \textit{vkCmdBindDescriptorSets()} oraz nagrywa wejściowe stałe push poleceniem \textit{vkCmdPushConstants()}.
+
+
+
+\subsubsection{Shader shader}
 
 Obiekt \textit{shader} reprezentuje pojedynczy shader i jest odpowiedzialny za kompilację ich do formy używalnej przez Vulkan.
 
@@ -1369,7 +1413,7 @@ Obiekt składa się z następujących elementów:
 Typ shadera zależy od tego, dla którego etapu potoku graficznego jest on przeznaczony.
 Wspierane są dwa typy: wierzchołków i fragmentów.
 
-Kod źródłowy GLSL must być znany podczas tworzenia - jest on uzyskiwany poprzez użycie obiektu \textit{shader\_generator}.
+Kod źródłowy GLSL must być znany podczas tworzenia - jest on uzyskiwany poprzez użycie obiektu \textit{shader\_generator} z modułu renderowania.
 
 Kod bajtowy SPIR-V jest uzyskiwany poprzez kompilację kodu źródłowego GLSL biblioteką \textit{shaderc}, której użycie ilustruje listing \ref{shadercExample}.
 \lstset{language=C}
@@ -1406,6 +1450,21 @@ Moduł shadera jest on uzyskiwany poprzez kompilację kodu bajtowego SPIR-V funk
 
 Obiekt \textit{shader\_reflect} reprezentuje mechanizm refleksji shadera pozwalający na badanie jego struktury.
 Operuje on na kodzie bajtowym SPIR-V i jest on używany podczas testów oraz do logowania informacji debugujących.
+
+
+
+\subsubsection{Synchronizacja sync}
+Obiekt \textit{sync} zawiera obiekty Vulkan które są używane do renderowania klatek w locie, ale nie mogą być pomiędzy nimi współdzielone i muszą być przetrzymywane w tablicach zawierających \textit{FRAMES\_IN\_FLIGHT} kopii.
+Są to:
+\begin{itemize}
+	\item semafory \textit{imageAvailableSemaphores} sygnalizujące, że prezentowalny obraz zwrócony przez funkcję \textit{vkAcquireNextImageKHR()} jest gotowy do renderowania;
+	\item semafory \textit{renderFinishedSemaphores} sygnalizujące, że wykonywany bufor zakończył renderowanie do prezentowalnego obrazu, który może zostać zaprezentowany funkcją \textit{vkQueuePresentKHR()};
+	\item ogrodzenia \textit{inFlightFences} sygnalizowane po zakończeniu renderowania klatki i używane do ograniczenia ich liczby do \textit{FRAMES\_IN\_FLIGHT} jednocześnie renderowanych klatek;
+	\item pule poleceń i bufory poleceń, które są równolegle nagrywane i wysyłane do kolejki w pętli głównej programu.
+\end{itemize}
+
+Pole \textit{currentFrameInFlight} jest indeksem używanym do śledzenia która kopia powinna być używana w obecnej klatce.
+Metoda \textit{advance\_to\_next\_frame()} wywoływana na początku klatki inkrementuje \textit{currentFrameInFlight} i dzieli modulo \textit{FRAMES\_IN\_FLIGHT}.
 
 
 
@@ -1485,32 +1544,89 @@ Obiekty \textit{scene\_graph} i \textit{scene\_tree} reprezentują kolejno graf 
 Są one tworzone na podstawie danych sceny używając metody \textit{create\_with\_scene\_data()}.
 
 Implementacja została zainspirowana techniką modelowania hierarchicznego opracowana w firmie Nvidia \cite{ADVANCEDSCENEGRAPH}.
-Graf sceny jest konwersowany na formę pośrednią zwaną drzewem sceny w sposób zapewniający unikalną ścieżkę z korzenia drzewa do jego liści.
+Graf sceny jest konwertowany na formę pośrednią zwaną drzewem sceny w sposób zapewniający unikalną ścieżkę z korzenia drzewa do jego liści.
 Uprasza to klasyczny proces konwersji sceny algorytmem \ref{RenderujGrafSceny} - podczas przechodzenia drzewa sceny każdy węzeł może być napotkany tylko raz.
 Właściwośc ta pozwala na wprowadzenie do węzła stanu nagromadzonego (struktura \textit{scene\_tree\_node\_accumulated}) zawierającego aktualny wynik działania algorytmu.
 Konwersja sceny sprowadza się wtedy do całkowitej propagagacji stanu nagromadzonego od korzenia do liści, w których jest on całkowicie wypełniony i tym samym zawiera wszystkie informacje wymagane do wyemitowania polecenia rysowania.
 
-Przykładowo poniżej przedstawiono wygenerowane metodami \textit{debug\_print()} diagramy przedstawiające graf i drzewo sceny składającej się z dwóch trójkątów używających tej samej siatki, ale różniących się pozycją:
+Diagramy \ref{triangles_scene_graph} i \ref{triangles_scene_tree} przedstawiają wygenerowane metodami \textit{debug\_print()} graf i drzewo sceny składającej się z dwóch trójkątów używających tej samej siatki, ale różniących się pozycją.
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=1.0\textwidth]{images/scene_graph_tree.png}
-	\caption{Przykładowy graf i drzewo sceny zawierającej dwa trójkąty (opracowanie własne)}
+	\includegraphics[width=0.6\textwidth]{images/scene_graph.png}
+	\caption{Przykładowy graf sceny zawierającej dwa trójkąty (opracowanie własne)}
 	\label{triangles_scene_graph}
 \end{figure}
-// HIRO trochę przydałoby się rozszerzyć opis, co jest widoczne na rysunku, zwrócić uwagę na istotne elementy itp.
+Graf sceny składa się z czterech węzłów \textit{scene\_graph\_node}: korzenia oraz dwóch węzłów utworzonych na podstawie zasobów obiektów wskazujących na ten sam węzeł z zasobem prymitywu.
+Węzły grafu sceny obserwują utworzone na ich podstawie podczas procesu konwersji węzły drzewa sceny, co pozwala na aktualizację i propagację ich stanu nagromadzonego po zmianiach w węźle grafu sceny bez konieczności całkowitego odtworzenia drzewa sceny.
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1.0\textwidth]{images/scene_tree.png}
+	\caption{Przykładowe drzewo sceny zawierającej dwa trójkąty (opracowanie własne)}
+	\label{triangles_scene_tree}
+\end{figure}
+Drzewo sceny składa się z pięciu węzłów \textit{scene\_tree\_node} posiadających stan nagromadzony:
+\begin{itemize}
+	\item korzeń: stan posiada lokalnym przekształceniem będącym macierz obrotu zmieniająca prawoskrętną przestrzeń modelu glTF na lewoskrętną przestrzeń używaną przez silnik;
+	\item dwa węzły utworzone na podstawie węzłów z zasobami obiektów: stan posiada lokalne przekształcenie zmieniające pozycję trójkątów;
+	\item dwa liście utworzone na podstawie węzłów z zasobami prymitywu: stan posiada wskaźnik do zasobu prymitywu.
+\end{itemize}
+Po zakończeniu propagacji stanu nagromadzonego liście posiadają informacje o prymitywie i jego globalnym przekształceniu.
+Liście drzewa sceny są dodawane do pamięci podręcznej renderera.
 
 
 \subsection{Renderer}
 
-// HIRO Renderer to moduł zawierajacy 
+Główny moduł silnika odpowiedzialny za stworzenie stanu renderowania oraz grafu renderowania oraz implementację używającej ich pętli głównej programu.
 
-// HIRO pamięć podręczna renderera renderer\_cache
+\subsubsection{Pamięć podręczna renderera renderer\_cache}
+Pamięć podręczna renderera \textit{renderer\_cache} jest niskopoziomową reprezentacją sceny pośredniczącą pomiędzy modułami sceny i renderara.
+
+Obiekt jest złożony z list elementów \textit{renderer\_cache\_*\_element}:
+\begin{itemize}
+	\item \textit{renderer\_cache\_primitive\_element}: prymityw HIRO;
+	\item \textit{renderer\_cache\_camera\_element}: HIRO;
+	\item \textit{renderer\_direct\_light\_element}: HIRO;
+	\item \textit{renderer\_skybox\_element}: HIRO;
+	\item \textit{renderer\_font\_element}: HIRO.
+\end{itemize}
+
+Inicjalizację obiektu mozna podzielić na dwie fazy:
+\begin{itemize}
+	\item graf sceny wypełniania pamięć podręcznej renderara informacjami o scenie,
+	\item pamięć podręczna renderara wypełnia stan renderara zasobami i poleceniami rysowania.
+\end{itemize}
+
+
+
+Stan każdego elementu można podzielić na dwie cześci:
+\begin{itemize}
+	\item stan CPU: wypełniony od razu po dodaniu elementu przez graf sceny metodą \textit{add\_*\_element()}.,
+	\item stan GPU: wypełniony po aktualizacji stanu GPU renderara.
+\end{itemize}
+
+Obiekt jest używany do aktualizacji stanu renderera:
+\begin{itemize}
+	\item Metoda \textit{update\_geometry()} dodaje geometrię prymitywów do jednolitego bufora geometrii.
+	\item Metoda \textit{update\_textures()} dodaje tekstury używane przez elementy do tekstur \textit{textures}.
+	\item Metoda \textit{add\_new\_primitive\_elements\_to\_batches()} dodaje polecenia rysowania prymitywów.
+\end{itemize}
+Aktualizacja stanu renderara elementem jest odzwierciedlana aktualizacją stani GPU elementu.
+Przykładowo wywołanie metody \textit{update\_geometry()} aktualizuje strukturę vertex\_stream\_element elementów prymitywów offsetami wierzchołków i indeksów prymitywu w strumieniu wierzchołków.
+
+
+// HIRO 
+
+// HIRO Grupy poleceń rysowania batches
 
 // HIRO Stan renderowania renderer\_state
 
 // HIRO Graf renderowania render\_graph
 
 // HIRO Przebieg renderowania render\_pass
+
+// HIRO Program shaderów shader\_program 
+
+// HIRO Generator shaderów shader\_generator
 
 // HIRO renderer
 

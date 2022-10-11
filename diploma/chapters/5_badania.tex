@@ -42,7 +42,7 @@ Zbadano wydajność implementacji cieniowania odroczonego poprzez renderowania s
 	\item liczby świateł punktowych: 1, 30, 75, 10, 100.
 \end{itemize}
 
-Zmierzono liczbę klatek na sekundę poprzez obserwację maksymalnych i minimalnych wartości wyświetlanych podczas działania programu licznik FPS silnika w lewym górnym rogu okna, które są zbliżone do wartościi reportowanych przez warstwę \textit{VK\_LAYER\_MESA\_overlay}.
+Zmierzono liczbę klatek na sekundę poprzez obserwację maksymalnych i minimalnych wartości wyświetlanych podczas działania programu licznik FPS silnika w lewym górnym rogu okna, które są zbliżone do wartości reportowanych przez warstwę \textit{VK\_LAYER\_MESA\_overlay}.
 
 Zmierzono udział poszczególnych etapów potoku graficznego podczas wykonywania poleceń rysowania poprzez przechwycenie 10 klatki aplikacji narzędziem RenderDoc i zbadanie liczników wydajności.
 Po porównianiu wartości liczników wydajności z przechwyconych klatek okazało się, że największe zmierzone zmiany, które nie mogą być wytłumaczone błędem przypadkowym spowodowanym nieprzewidywalnością działania potoku graficznego GPU, zachodzą tylko dla liczników wydajności najdłużej wykonującego się polecenia rysowania w przebiegu oświetlenia G-bufora:
