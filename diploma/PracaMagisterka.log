@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  12 OCT 2022 01:10
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  13 OCT 2022 01:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1749,122 +1749,152 @@ File: images/render_sponza.png Graphic file (type bmp)
 
 
 
-] [80]
-Underfull \hbox (badness 10000) in paragraph at lines 65--65
+]
+Underfull \hbox (badness 10000) in paragraph at lines 52--52
 []|\TU/lmss/m/n/10 Rozdzielczość
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 65--65
+Underfull \hbox (badness 10000) in paragraph at lines 52--52
 []|\TU/lmss/m/n/10 Liczba
  []
 
 
-Overfull \hbox (0.56818pt too wide) in paragraph at lines 65--65
+Overfull \hbox (1.19316pt too wide) in paragraph at lines 52--52
+[]|\TU/lmss/m/n/10 0.1%
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 52--52
+[]|\TU/lmss/m/n/10 1%
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 52--52
+[]|\TU/lmss/m/n/10 97%
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 52--53
 []|\TU/lmss/m/n/10 FPS
  []
 
 
-Overfull \hbox (0.56818pt too wide) in paragraph at lines 65--65
-[]|\TU/lmss/m/n/10 FPS
+Overfull \hbox (2.86316pt too wide) in paragraph at lines 54--54
+[]|\TU/lmss/m/n/10 162.4| 
  []
 
 
-Overfull \hbox (1.09818pt too wide) in paragraph at lines 65--65
-\TU/lmss/m/n/10 Max| 
+Overfull \hbox (2.86316pt too wide) in paragraph at lines 54--55
+[]|\TU/lmss/m/n/10 118.2| 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 65--65
+Overfull \hbox (2.86316pt too wide) in paragraph at lines 56--56
+[]|\TU/lmss/m/n/10 131.4| 
+ []
+
+
+Overfull \hbox (2.86316pt too wide) in paragraph at lines 56--57
+[]|\TU/lmss/m/n/10 102.8| 
+ []
+
+[80]
+Underfull \hbox (badness 10000) in paragraph at lines 96--96
+[]|\TU/lmss/m/n/10 Rozdzielczość
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 96--96
+[]|\TU/lmss/m/n/10 Liczba
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 96--96
 []|\TU/lmss/m/n/10 L3 Shader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 65--65
+Underfull \hbox (badness 10000) in paragraph at lines 96--96
 \TU/lmss/m/n/10 Throughput
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 65--65
+Underfull \hbox (badness 10000) in paragraph at lines 96--96
 []|\TU/lmss/m/n/10 Shader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 65--65
+Underfull \hbox (badness 10000) in paragraph at lines 96--96
 \TU/lmss/m/n/10 Memory
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 65--65
+Underfull \hbox (badness 10000) in paragraph at lines 96--96
 []|\TU/lmss/m/n/10 Sampler
  []
 
 
-Overfull \hbox (0.57133pt too wide) in paragraph at lines 65--66
+Overfull \hbox (0.57133pt too wide) in paragraph at lines 96--97
 []|\TU/lmss/m/n/10 Samplers
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 65--66
+Underfull \hbox (badness 10000) in paragraph at lines 96--97
 \TU/lmss/m/n/10 Busy
  []
 
 
-Overfull \hbox (0.79134pt too wide) in paragraph at lines 69--70
+Overfull \hbox (0.79134pt too wide) in paragraph at lines 100--101
 []|\TU/lmss/m/n/10 88.82873| 
  []
 
 
-Overfull \hbox (0.79134pt too wide) in paragraph at lines 71--72
+Overfull \hbox (0.79134pt too wide) in paragraph at lines 102--103
 []|\TU/lmss/m/n/10 50.89936| 
  []
 
 
-Overfull \hbox (0.79134pt too wide) in paragraph at lines 73--74
+Overfull \hbox (0.79134pt too wide) in paragraph at lines 104--105
 []|\TU/lmss/m/n/10 26.02086| 
  []
 
 
-Overfull \hbox (0.79134pt too wide) in paragraph at lines 75--76
+Overfull \hbox (0.79134pt too wide) in paragraph at lines 106--107
 []|\TU/lmss/m/n/10 20.69141| 
  []
 
 
-Overfull \hbox (0.79134pt too wide) in paragraph at lines 77--78
+Overfull \hbox (0.79134pt too wide) in paragraph at lines 108--109
 []|\TU/lmss/m/n/10 99.45081| 
  []
 
 
-Overfull \hbox (0.79134pt too wide) in paragraph at lines 79--80
+Overfull \hbox (0.79134pt too wide) in paragraph at lines 110--111
 []|\TU/lmss/m/n/10 89.91253| 
  []
 
 
-Overfull \hbox (0.79134pt too wide) in paragraph at lines 81--82
+Overfull \hbox (0.79134pt too wide) in paragraph at lines 112--113
 []|\TU/lmss/m/n/10 57.64096| 
  []
 
 
-Overfull \hbox (0.79134pt too wide) in paragraph at lines 83--84
+Overfull \hbox (0.79134pt too wide) in paragraph at lines 114--115
 []|\TU/lmss/m/n/10 26.82165| 
  []
 
 
-Overfull \hbox (0.79134pt too wide) in paragraph at lines 85--86
+Overfull \hbox (0.79134pt too wide) in paragraph at lines 116--117
 []|\TU/lmss/m/n/10 21.54303| 
  []
 
-
-Overfull \hbox (28.59698pt too wide) in paragraph at lines 63--88
- [][] 
- []
-
-) [81]
+[81]) [82]
 \openout2 = `chapters/6_podsumowanie.aux'.
 
  (./chapters/6_podsumowanie.tex
 Rozdzia\l  5.
-) [82
+) [83
 
 
 
@@ -1881,23 +1911,23 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 9.37807pt on input line 3.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 7.29405pt on input line 3.
- [83
+ [84
 
 
 
 
-] [84] (./PracaMagisterka.lof)
+] [85] (./PracaMagisterka.lof)
 \tf@lof=\write7
 \openout7 = `PracaMagisterka.lof'.
 
- [85
+ [86
 
 ]
 (./PracaMagisterka.lot)
 \tf@lot=\write8
 \openout8 = `PracaMagisterka.lot'.
 
-) [86
+) [87
 
 ] (./PracaMagisterka.aux
 (./chapters/0a_streszczenie.aux) (./chapters/0b_spis_tresci.aux)
@@ -1906,18 +1936,18 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (./chapters/3_technologie_algorytmy_narzedzia.aux) (./chapters/5_badania.aux)
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
 Package rerunfilecheck Info: File `PracaMagisterka.out' has not changed.
-(rerunfilecheck)             Checksum: 0E8D976FCA055F9391F5812BDE92AFA0;7526.
+(rerunfilecheck)             Checksum: 4EB3A4C2E17AFC04C8EC005FA1EC8F00;7526.
 Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 \openout1 = `PracaMagisterka.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 41766 strings out of 476191
- 861139 string characters out of 5812072
- 1697675 words of memory out of 5000000
- 61797 multiletter control sequences out of 15000+600000
+ 41776 strings out of 476191
+ 861536 string characters out of 5812072
+ 1697938 words of memory out of 5000000
+ 61807 multiletter control sequences out of 15000+600000
  488903 words of font info for 105 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  88i,17n,91p,1516b,6449s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on PracaMagisterka.pdf (86 pages).
+Output written on PracaMagisterka.pdf (87 pages).

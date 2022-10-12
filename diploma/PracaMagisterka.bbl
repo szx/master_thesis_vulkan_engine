@@ -665,8 +665,8 @@
       \endverb
     \endentry
     \entry{PEP405}{misc}{}
-      \field{sortinit}{4}
-      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
       \field{labeltitlesource}{title}
       \field{title}{PEP 405 – Python Virtual Environments}
       \field{year}{2011}
@@ -768,8 +768,8 @@
       \endverb
     \endentry
     \entry{C11REFERENCE}{misc}{}
-      \field{sortinit}{5}
-      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
       \field{labeltitlesource}{title}
       \field{title}{C11 Reference}
       \field{year}{2022}
@@ -940,8 +940,8 @@
       \strng{authorbibnamehash}{bfda6d7d5ae465404d023a20781181c9}
       \strng{authornamehash}{bfda6d7d5ae465404d023a20781181c9}
       \strng{authorfullhash}{bfda6d7d5ae465404d023a20781181c9}
-      \field{sortinit}{6}
-      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
+      \field{sortinit}{7}
+      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Bit Twiddling Hacks}
@@ -1009,8 +1009,8 @@
       \strng{authorbibnamehash}{f3fca3e75163059b5d4fdd28b0a51546}
       \strng{authornamehash}{f3fca3e75163059b5d4fdd28b0a51546}
       \strng{authorfullhash}{f3fca3e75163059b5d4fdd28b0a51546}
-      \field{sortinit}{7}
-      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
+      \field{sortinit}{8}
+      \field{sortinithash}{a231b008ebf0ecbe0b4d96dcc159445f}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Advanced Scenegraph Rendering Pipeline}
@@ -1020,6 +1020,85 @@
       \endverb
       \verb{url}
       \verb https://on-demand.gputechconf.com/gtc/2013/presentations/S3032-Advanced-Scenegraph-Rendering-Pipeline.pdf
+      \endverb
+    \endentry
+    \entry{MANGOHUD}{software}{}
+      \name{author}{1}{}{%
+        {{hash=b20e9f60d98c0b794a42fa2743d064b1}{%
+           family={{FlightlessMango}},
+           familyi={F\bibinitperiod}}}%
+      }
+      \strng{namehash}{b20e9f60d98c0b794a42fa2743d064b1}
+      \strng{fullhash}{b20e9f60d98c0b794a42fa2743d064b1}
+      \strng{bibnamehash}{b20e9f60d98c0b794a42fa2743d064b1}
+      \strng{authorbibnamehash}{b20e9f60d98c0b794a42fa2743d064b1}
+      \strng{authornamehash}{b20e9f60d98c0b794a42fa2743d064b1}
+      \strng{authorfullhash}{b20e9f60d98c0b794a42fa2743d064b1}
+      \field{sortinit}{8}
+      \field{sortinithash}{a231b008ebf0ecbe0b4d96dcc159445f}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{MangoHud: A Vulkan and OpenGL overlay for monitoring FPS, temperatures, CPU/GPU load and more.}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://github.com/flightlessmango/MangoHud
+      \endverb
+      \verb{url}
+      \verb https://github.com/flightlessmango/MangoHud
+      \endverb
+    \endentry
+    \entry{NVSTUTTER}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=f637e6f0c313a6bb26a6a3406d2fc12f}{%
+           family={Iain\bibnamedelima Cantlay},
+           familyi={I\bibinitperiod\bibinitdelim C\bibinitperiod},
+           given={Lars\bibnamedelima Nordskog},
+           giveni={L\bibinitperiod\bibinitdelim N\bibinitperiod}}}%
+      }
+      \strng{namehash}{f637e6f0c313a6bb26a6a3406d2fc12f}
+      \strng{fullhash}{f637e6f0c313a6bb26a6a3406d2fc12f}
+      \strng{bibnamehash}{f637e6f0c313a6bb26a6a3406d2fc12f}
+      \strng{authorbibnamehash}{f637e6f0c313a6bb26a6a3406d2fc12f}
+      \strng{authornamehash}{f637e6f0c313a6bb26a6a3406d2fc12f}
+      \strng{authorfullhash}{f637e6f0c313a6bb26a6a3406d2fc12f}
+      \field{sortinit}{8}
+      \field{sortinithash}{a231b008ebf0ecbe0b4d96dcc159445f}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Analysing Stutter – Mining More from Percentiles}
+      \field{year}{2014}
+      \verb{urlraw}
+      \verb https://developer.nvidia.com/content/analysing-stutter-%E2%80%93-mining-more-percentiles-0
+      \endverb
+      \verb{url}
+      \verb https://developer.nvidia.com/content/analysing-stutter-%E2%80%93-mining-more-percentiles-0
+      \endverb
+    \endentry
+    \entry{SaschaWillems}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=bfb3d736b7e5e44d323660c9e659d5d3}{%
+           family={Willems},
+           familyi={W\bibinitperiod},
+           given={Sascha},
+           giveni={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{bfb3d736b7e5e44d323660c9e659d5d3}
+      \strng{fullhash}{bfb3d736b7e5e44d323660c9e659d5d3}
+      \strng{bibnamehash}{bfb3d736b7e5e44d323660c9e659d5d3}
+      \strng{authorbibnamehash}{bfb3d736b7e5e44d323660c9e659d5d3}
+      \strng{authornamehash}{bfb3d736b7e5e44d323660c9e659d5d3}
+      \strng{authorfullhash}{bfb3d736b7e5e44d323660c9e659d5d3}
+      \field{sortinit}{8}
+      \field{sortinithash}{a231b008ebf0ecbe0b4d96dcc159445f}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Vulkan C++ examples and demos}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://github.com/SaschaWillems/Vulkan
+      \endverb
+      \verb{url}
+      \verb https://github.com/SaschaWillems/Vulkan
       \endverb
     \endentry
   \enddatalist

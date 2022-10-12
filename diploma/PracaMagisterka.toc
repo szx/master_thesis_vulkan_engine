@@ -126,9 +126,9 @@
 \contentsline {chapter}{\numberline {4}Wyniki i testy wydajnościowe}{79}{chapter.4}%
 \contentsline {section}{\numberline {4.1}Przykładowe sceny}{79}{section.4.1}%
 \contentsline {section}{\numberline {4.2}Pomiary wydajnościowe}{80}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Analiza pomiarów}{81}{section.4.3}%
-\contentsline {chapter}{\numberline {5}Podsumowanie}{82}{chapter.5}%
-\contentsline {chapter}{Wykaz literatury}{84}{chapter*.110}%
-\contentsline {chapter}{Spis rysunk\'ow}{85}{chapter*.111}%
-\contentsline {chapter}{Spis tablic}{86}{chapter*.112}%
+\contentsline {section}{\numberline {4.3}Analiza pomiarów}{82}{section.4.3}%
+\contentsline {chapter}{\numberline {5}Podsumowanie}{83}{chapter.5}%
+\contentsline {chapter}{Wykaz literatury}{85}{chapter*.111}%
+\contentsline {chapter}{Spis rysunk\'ow}{86}{chapter*.112}%
+\contentsline {chapter}{Spis tablic}{87}{chapter*.113}%
 \contentsfinish 
