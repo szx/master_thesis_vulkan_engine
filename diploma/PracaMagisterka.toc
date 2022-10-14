@@ -116,19 +116,26 @@
 \contentsline {subsubsection}{Strumień wierzchołków vertex\textunderscore \allowbreak stream}{71}{subsubsection*.95}%
 \contentsline {subsubsection}{Tekstury textures}{71}{subsubsection*.96}%
 \contentsline {subsubsection}{Deskryptory descriptors}{72}{subsubsection*.97}%
-\contentsline {subsubsection}{Shader shader}{73}{subsubsection*.98}%
+\contentsline {subsubsection}{Shader}{73}{subsubsection*.98}%
 \contentsline {subsubsection}{Synchronizacja sync}{74}{subsubsection*.99}%
 \contentsline {subsection}{\numberline {3.3.6}Scena}{74}{subsection.3.3.6}%
 \contentsline {subsubsection}{Dane sceny scene\textunderscore \allowbreak data}{75}{subsubsection*.101}%
 \contentsline {subsubsection}{Graf sceny scene\textunderscore \allowbreak graph i drzewo sceny scene\textunderscore \allowbreak tree}{75}{subsubsection*.102}%
 \contentsline {subsection}{\numberline {3.3.7}Renderer}{77}{subsection.3.3.7}%
-\contentsline {subsubsection}{Pamięć podręczna renderera renderer\textunderscore \allowbreak cache}{77}{subsubsection*.105}%
-\contentsline {chapter}{\numberline {4}Wyniki i testy wydajnościowe}{79}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Przykładowe sceny}{79}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Pomiary wydajnościowe}{80}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Analiza pomiarów}{82}{section.4.3}%
-\contentsline {chapter}{\numberline {5}Podsumowanie}{83}{chapter.5}%
-\contentsline {chapter}{Wykaz literatury}{85}{chapter*.111}%
-\contentsline {chapter}{Spis rysunk\'ow}{86}{chapter*.112}%
-\contentsline {chapter}{Spis tablic}{87}{chapter*.113}%
+\contentsline {subsubsection}{Renderer}{77}{subsubsection*.105}%
+\contentsline {subsubsection}{Pamięć podręczna renderera renderer\textunderscore \allowbreak cache}{78}{subsubsection*.106}%
+\contentsline {subsubsection}{Grupy poleceń rysowania batches}{79}{subsubsection*.107}%
+\contentsline {subsubsection}{Stan renderera renderer\textunderscore \allowbreak state i stan przebiegów renderowania render\textunderscore \allowbreak pass\textunderscore \allowbreak state}{79}{subsubsection*.108}%
+\contentsline {subsubsection}{Graf renderowania render\textunderscore \allowbreak graph}{80}{subsubsection*.109}%
+\contentsline {subsubsection}{Przebieg renderowania render\textunderscore \allowbreak pass}{82}{subsubsection*.110}%
+\contentsline {subsubsection}{Generator shaderów render\textunderscore \allowbreak pass\textunderscore \allowbreak shader\textunderscore \allowbreak generator}{82}{subsubsection*.111}%
+\contentsline {subsubsection}{Przykładowa scena main}{82}{subsubsection*.112}%
+\contentsline {chapter}{\numberline {4}Wyniki i testy wydajnościowe}{85}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Przykładowe sceny}{85}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Pomiary wydajnościowe}{86}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Analiza pomiarów}{88}{section.4.3}%
+\contentsline {chapter}{\numberline {5}Podsumowanie}{89}{chapter.5}%
+\contentsline {chapter}{Wykaz literatury}{91}{chapter*.119}%
+\contentsline {chapter}{Spis rysunk\'ow}{92}{chapter*.120}%
+\contentsline {chapter}{Spis tablic}{93}{chapter*.121}%
 \contentsfinish 

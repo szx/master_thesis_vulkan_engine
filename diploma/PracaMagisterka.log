@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  13 OCT 2022 01:20
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2022.8.22)  14 OCT 2022 05:31
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1733,7 +1733,26 @@ File: images/scene_graph.png Graphic file (type bmp)
 <images/scene_graph.png>
 File: images/scene_tree.png Graphic file (type bmp)
 <images/scene_tree.png>
- [76] [77]) [78]
+ [76] [77] [78]
+
+! LaTeX Error: Lonely \item--perhaps a missing list environment.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.1646 \item M
+              etoda \textit{add\_new\_primitive\_elements\_to\_batches()} do...
+
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Underfull \hbox (badness 10000) detected at line 1646
+[][]
+ []
+
+[79] [80] [81] [82] [83]) [84]
 \openout2 = `chapters/5_badania.aux'.
 
  (./chapters/5_badania.tex
@@ -1744,7 +1763,7 @@ File: images/render_damagedhelmet.png Graphic file (type bmp)
 <images/render_damagedhelmet.png>
 File: images/render_sponza.png Graphic file (type bmp)
 <images/render_sponza.png>
-[79
+[85
 
 
 
@@ -1799,7 +1818,7 @@ Overfull \hbox (2.86316pt too wide) in paragraph at lines 56--57
 []|\TU/lmss/m/n/10 102.8| 
  []
 
-[80]
+[86]
 Underfull \hbox (badness 10000) in paragraph at lines 96--96
 []|\TU/lmss/m/n/10 Rozdzielczość
  []
@@ -1889,12 +1908,12 @@ Overfull \hbox (0.79134pt too wide) in paragraph at lines 116--117
 []|\TU/lmss/m/n/10 21.54303| 
  []
 
-[81]) [82]
+[87]) [88]
 \openout2 = `chapters/6_podsumowanie.aux'.
 
  (./chapters/6_podsumowanie.tex
 Rozdzia\l  5.
-) [83
+) [89
 
 
 
@@ -1911,23 +1930,23 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 9.37807pt on input line 3.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 7.29405pt on input line 3.
- [84
+ [90
 
 
 
 
-] [85] (./PracaMagisterka.lof)
+] [91] (./PracaMagisterka.lof)
 \tf@lof=\write7
 \openout7 = `PracaMagisterka.lof'.
 
- [86
+ [92
 
 ]
 (./PracaMagisterka.lot)
 \tf@lot=\write8
 \openout8 = `PracaMagisterka.lot'.
 
-) [87
+) [93
 
 ] (./PracaMagisterka.aux
 (./chapters/0a_streszczenie.aux) (./chapters/0b_spis_tresci.aux)
@@ -1936,18 +1955,18 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (./chapters/3_technologie_algorytmy_narzedzia.aux) (./chapters/5_badania.aux)
 (./chapters/6_podsumowanie.aux) (./chapters/7_wykazy.aux))
 Package rerunfilecheck Info: File `PracaMagisterka.out' has not changed.
-(rerunfilecheck)             Checksum: 4EB3A4C2E17AFC04C8EC005FA1EC8F00;7526.
+(rerunfilecheck)             Checksum: A5FCE73F68F9814BEBB01ECD43458EA0;7526.
 Package logreq Info: Writing requests to 'PracaMagisterka.run.xml'.
 \openout1 = `PracaMagisterka.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 41776 strings out of 476191
- 861536 string characters out of 5812072
- 1697938 words of memory out of 5000000
- 61807 multiletter control sequences out of 15000+600000
+ 41975 strings out of 476191
+ 865834 string characters out of 5812072
+ 1710387 words of memory out of 5000000
+ 62006 multiletter control sequences out of 15000+600000
  488903 words of font info for 105 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  88i,17n,91p,1516b,6449s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on PracaMagisterka.pdf (87 pages).
+Output written on PracaMagisterka.pdf (93 pages).

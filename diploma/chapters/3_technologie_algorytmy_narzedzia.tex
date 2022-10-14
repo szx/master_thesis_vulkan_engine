@@ -658,7 +658,7 @@ Jest ona bardzo popularnym wyborem jako format pliku używany do utrwalania stan
 Moduł I/O zawiera obiekty używane do wczytywania i zapisywania powyższych zasobów wraz z walidacją ich formatu i wewnętrznej struktury - interpretacją danych zajmują się dalsze moduły.
 
 \subsubsection{Jednostka config}
-Obiekt \textit{config} reprezentujący pojedynczy plik INI zawierający jeden z dwóch rodzajów konfiguracji: konfigurację globalną lub konfigurację zasobów.
+Obiekt \textit{data\_config} reprezentujący pojedynczy plik INI zawierający jeden z dwóch rodzajów konfiguracji: konfigurację globalną lub konfigurację zasobów.
 
 \textbf{Konfiguracja globalna} jest ładowana na samym początku inicjalizacji silnika i pozwala użytkownikowi na sterowanie jego działania poprzez zmianę następujących zmiennych:
 \begin{itemize}
@@ -1162,7 +1162,7 @@ Preferowany format i przestrzeń kolorów to \textit{B8G8R8A8\_SRGB} i SRGB. Je�
 Formaty z rodziny BGRA i przestrzeń kolorów SRGB powierzchni okna są zawsze wspierane na systemie Windows i w czasie pisania pracy są one wspierane w ponad $96\%$ systemów Linux \cite{GPUINFO}.
 Obliczenia modelu oświetlenia będące wyjściem shaderów fragmentów odbywają się w liniowej przestrzeni kolorów. Użycie formatu \textit{B8G8R8A8\_SRGB} zamiast \textit{B8G8R8A8\_UNORM} pozwala na ominięcie ręcznej konwersji z przestrzeni liniowej do SRGB podczas renderowania bezpośrednio do prezentowalnej tekstury - konwersja zostanie automatycznie przeprowadzona przez sterownik.
 
-Lista uchwytów prezentowalnych obrazów jest wypełniania w pętli używając funkcji \textit{vkAcquireNextImageKHR()}.
+Lista uchwytów prezentowalnych obrazów jest wypełniania w pętli używając funkcji \textit{vkGetSwapchainImagesKHR()}.
 Następnie tworzone są widoki obrazów pozwalające przebiegom renderowania \textit{render\_pass} używać prezentowalne obrazy jako dołączenia koloru.
 
 
@@ -1397,7 +1397,7 @@ Metoda \textit{record\_bind\_commands()} dowiązuje zbiór deskryptorów polecen
 
 
 
-\subsubsection{Shader shader}
+\subsubsection{Shader}
 
 Obiekt \textit{shader} reprezentuje pojedynczy shader i jest odpowiedzialny za kompilację ich do formy używalnej przez Vulkan.
 
@@ -1576,58 +1576,331 @@ Liście drzewa sceny są dodawane do pamięci podręcznej renderera.
 
 \subsection{Renderer}
 
-Główny moduł silnika odpowiedzialny za stworzenie stanu renderowania oraz grafu renderowania oraz implementację używającej ich pętli głównej programu.
+Główny moduł silnika odpowiedzialny za właściwy proces renderowania.
+Moduł renderera jest używany do zaimplementowania aplikacji renderującej przykładową scenę.
+
+
+\subsubsection{Renderer}
+Obiekt \textit{renderer} to główny obiekt modułu odpowiedzialny za integrację wszystkich obiektów silnika w celu rozpoczęcia pętli głównej programu i wyrenderowanie sceny.
+Obiekt tworzy i używa następujące obiekty:
+\begin{itemize}
+	\item konfiguracja globalna \textit{data\_config},
+	\item baza zasobów \textit{asset\_db},
+	\item dane sceny \textit{scene\_data},
+	\item graf sceny \textit{scene\_graph},
+	\item pamięć podręczna renderowania \textit{renderer\_cache},
+	\item urządzenie \textit{device},
+	\item łańcuch wymiany \textit{swap\_chain},
+	\item stan renderera \textit{render\_state},
+	\item graf renderowania \textit{render\_graph}.
+\end{itemize}
+
+Po stworzeniu obiektu aplikacja musi skonstruować i skompilować początkowo pusty graf renderowania.
+Następnie może ona rozpocząć pętlę główną programu metodą \textit{run\_main\_loop()}, która renderuje pojedyńczą klatkę w locie używając następujących kroków:
+\begin{itemize}
+	\item zaktualizuj stan renderera wejściową funkcją zwrotną \textit{updateFunc};
+	\item czekaj aż ogrodzenie \textit{inFlightFences} obecnej klatki w locie zasygnalizuje zakończenie wykonywania poprzednio nagranego bufora poleceń i gotowość do ponownego nagrywania;
+	\item pobierz prezentowalny obraz funkcją \textit{vkAcquireNextImageKHR()};
+	\item odtwórz łańcuch wymiany jeśli jest nieaktualny i pomiń resztę iteracji pętli;
+	\item zaktualizuj i skopiuj do GPU stan renderera i graf rendererowania używając ich metod \textit{update()} i \textit{send\_to\_device()};
+	\item zresetuj bufor poleceń i rozpocznij nagrywanie;
+	\item dowiąż stan renderera (jednolite bufory, zbiór deskryptorów i stałe push);
+	\item nagraj przebiegi renderowania używając grafu renderowania;
+	\item zakończ nagrywania;
+	\item wyślij bufor poleceń do kolejki graficznej funkcją \textit{vkQueueSubmit()} zapewniając synchronizację poprzez oczekiwanie na semafor \textit{imageAvailableSemaphores} oraz sygnalizację semafor \textit{renderFinishedSemaphores} i zresetowanego ogrodzenia \textit{inFlightFences};
+	\item prezentuj wynik renderowania funkcją \textit{vkQueuePresentKHR()} zapewniając synchronizację poprzez oczekiwanie na semafor \textit{renderFinishedSemaphores}
+	\item odtwórz łańcuch wymiany jeśli jest nieaktualny;
+	\item przejdź do kolejnej klatki w locie (metoda \textit{advance\_to\_next\_frame()} obiektu \textit{sync}).
+\end{itemize}
+
+W dalszych sekcjach przybliżono obiekty renderera i używającą go przykładową aplikację.
+
 
 \subsubsection{Pamięć podręczna renderera renderer\_cache}
-Pamięć podręczna renderera \textit{renderer\_cache} jest niskopoziomową reprezentacją sceny pośredniczącą pomiędzy modułami sceny i renderara.
+Pamięć podręczna renderera \textit{renderer\_cache} jest niskopoziomową reprezentacją sceny pośredniczącą pomiędzy modułami sceny i renderera.
+Obiekt jest podstawowym źródłem informacji o scenie używanym przez resztę obiektów modułu.
+
+Inicjalizację pamięci podręcznej renderera mozna podzielić na dwie fazy - graf sceny wypełniania obiekt informacjami o scenie, który jest następnie używany do wypełnienia obiektów używanych przez renderer:
+\begin{itemize}
+	\item stan renderera,
+	\item stany przebiegów renderowania,
+	\item grup poleceniami rysowania.
+\end{itemize}
 
 Obiekt jest złożony z list elementów \textit{renderer\_cache\_*\_element}:
 \begin{itemize}
-	\item \textit{renderer\_cache\_primitive\_element}: prymityw HIRO;
-	\item \textit{renderer\_cache\_camera\_element}: HIRO;
-	\item \textit{renderer\_direct\_light\_element}: HIRO;
-	\item \textit{renderer\_skybox\_element}: HIRO;
-	\item \textit{renderer\_font\_element}: HIRO.
+	\item \textit{renderer\_cache\_primitive\_element}: element prymitywu;
+	\item \textit{renderer\_cache\_camera\_element}: element kamery;
+	\item \textit{renderer\_direct\_light\_element}: element światła bezpośrednie;
+	\item \textit{renderer\_skybox\_element}: element skybox;
+	\item \textit{renderer\_font\_element}: element czcionki.
 \end{itemize}
-
-Inicjalizację obiektu mozna podzielić na dwie fazy:
-\begin{itemize}
-	\item graf sceny wypełniania pamięć podręcznej renderara informacjami o scenie,
-	\item pamięć podręczna renderara wypełnia stan renderara zasobami i poleceniami rysowania.
-\end{itemize}
-
-
-
-Stan każdego elementu można podzielić na dwie cześci:
-\begin{itemize}
-	\item stan CPU: wypełniony od razu po dodaniu elementu przez graf sceny metodą \textit{add\_*\_element()}.,
-	\item stan GPU: wypełniony po aktualizacji stanu GPU renderara.
-\end{itemize}
+Elementy są dodawane przez graf sceny używając metod \textit{add\_*\_element()}.
 
 Obiekt jest używany do aktualizacji stanu renderera:
 \begin{itemize}
 	\item Metoda \textit{update\_geometry()} dodaje geometrię prymitywów do jednolitego bufora geometrii.
 	\item Metoda \textit{update\_textures()} dodaje tekstury używane przez elementy do tekstur \textit{textures}.
-	\item Metoda \textit{add\_new\_primitive\_elements\_to\_batches()} dodaje polecenia rysowania prymitywów.
 \end{itemize}
-Aktualizacja stanu renderara elementem jest odzwierciedlana aktualizacją stani GPU elementu.
-Przykładowo wywołanie metody \textit{update\_geometry()} aktualizuje strukturę vertex\_stream\_element elementów prymitywów offsetami wierzchołków i indeksów prymitywu w strumieniu wierzchołków.
+
+\item Metoda \textit{add\_new\_primitive\_elements\_to\_batches()} dodaje polecenia rysowania prymitywów do grup poleceniami rysowania.
+
+Aktualizacja stanu renderera i grup poleceń rysowania przy użyciu powyższych metod jest odzwierciedlana aktualizacją stanu elementu.
+Przykładowo wywołanie metody \textit{update\_geometry()} aktualizuje strukturę \textit{vertex\_stream\_element} elementów prymitywów offsetami buforów strumienia wierzchołków.
+Podobnie metoda \textit{update\_textures()} dodaje tekstury elementu skybox, których identyfikatory są zapamiętywane w elementach.
+
+Zachowanie to pozwala stanom przebiegów renderowania na aktualizację jednolitego bufora stałych informacjami o scenie.
+Przykładowo element skybox jest używany do aktualizacji zmiennej \textit{skyboxCubemapTextureId} używanej przez shadery renderujące skybox.
 
 
-// HIRO 
+\subsubsection{Grupy poleceń rysowania batches}
+Grupa poleceń rysowania \textit{batches} reprezentuje jedno optymalizowane polecenia rysowania utworzone na podstawie elementów prymitywów dodanych metodą \textit{add\_primitive\_element()}.
 
-// HIRO Grupy poleceń rysowania batches
+Metoda \textit{update()} sortuje i konsoliduje dodane elementy prymitywów tworząc tablicę pojedynczych grup poleceń rysowania \textit{batch}.
+Pojedyncza grupa poleceń \textit{batch} zawiera wszystkie informacje wymagane do nagrania pojedynczego polecenia rysowania \textit{vkCmdDrawIndexed()} rysującego $n$ kopii mających tą samą geometrię, ale różniących się materiałem i macierzą modelu.
 
-// HIRO Stan renderowania renderer\_state
+Metoda \textit{record\_draw\_command()} nagrywa do wejściowego bufora poleceń pojedyncze polecenie wielokrotnego rysowania pośredniego \textit{vkCmdDrawIndexedIndirect}, której bufora paremetrów jest wypełniany wcześniej stworzoną tablicą obiektów \textit{batch}.
+Bufor parametrów jest przekazywany do metody strukturą \textit{batches\_buffer}, która jest zarządzana przez stan przebiegów renderowania.
 
-// HIRO Graf renderowania render\_graph
 
-// HIRO Przebieg renderowania render\_pass
+\subsubsection{Stan renderera renderer\_state i stan przebiegów renderowania render\_pass\_state}
+Stan renderera \textit{renderer\_state} zawiera wszystkie obiekty renderera, które są niezależne od stanu przebiegów renderowania.
+Są to:
+\begin{itemize}
+	\item strumień wierzchołków \textit{vertex\_stream},
+	\item jednolity bufor geometrii \textit{unified\_geometry\_buffer} (dane globalne współdzielone przez klatki w locie),
+	\item teksture \textit{textures},
+	\item jednolity bufor stałych \textit{unified\_constant\_buffer},
+	\item deskryptory \textit{descriptors},
+	\item synchronizacja \textit{sync}.
+\end{itemize}
 
-// HIRO Program shaderów shader\_program 
+Podział ten jest spowodowany obsługą odtwarzania łańcucha wymiany - większość stanu przebiegów renderowania, w przeciwieństwie od stanu renderera, zależy od wielkości łańcucha wymiany i dlatego musi być niszczony i ponownie tworzony przez renderer wraz z łańuchem wymiany.
 
-// HIRO Generator shaderów shader\_generator
+Metody \textit{update()} i \textit{send\_to\_device()} wywołuje analogiczne metody obiektów renderera.
 
-// HIRO renderer
+Stan przebiegów renderowania \textit{render\_pass\_state} jest obiektem analogicznym do stanu renderera i odpowiada za aktualizację jednolitego bufora stałych (dane instancji oraz dane globalne zależne od obecnej klatki w locie) oraz zarządzanie buforami parametrów poleceń rysowania pośredniego.
 
-// HIRO Renderer przykładowych scen main
+
+\subsubsection{Graf renderowania render\_graph}
+Graf renderowania \textit{render\_graph} opisuje proces renderowania klatki w formie przebiegów renderowania i używanych przez nie obrazów.
+Obiekt jest też odpowiedzialny za zarządzanie wszystkimi przebiegami renderowania \textit{render\_pass} i współdzielonym przez nie stanem przebiegów renderowania \textit{render\_pass\_state}.
+
+Metoda \textit{add\_image\_resource()} jest używana przez aplikację do dodania wszystkich obrazów, które będą używane przez przebiegi renderowania. Wyjątkiem są prezentowalne obrazy, które są dodawane automatycznie.
+
+Dodane obrazy są przechowywane w liście struktur \textit{render\_graph\_resource} posiadającej:
+\begin{itemize}
+	\item nazwę zasobu;
+	\item typ obrazu;
+	\item identyfikator tekstury pozaekranowej: obsługa klatek w locie wymaga wewnętrznej duplikacji używanych tekstury pozaekranowych, dlatego indeks obrazu nalezącego do obecnej klatki jest przekazywany w jednolitym buforze stałych do shaderów chcących je próbkować;
+	\item harmonogram użycia \textit{image\_render\_pass\_usage\_timeline}
+\end{itemize}
+
+Harmonogram użycia obrazu \textit{image\_render\_pass\_usage\_timeline} opisuje sposób użycia (odczyt, zapis, odczyt i zapis), format i wartość czyszczenia obrazu na wskroś przebiegów renderowania.
+Jest on wypełniony podczas kompilacji i używany do nagrania wymaganych przejść układów obrazów pomiędzy przebiegami renderowania.
+
+Listing \ref{render_graph_images} przedstawia kod przykładowej aplikacji dodający obrazy (G-bufor, bufor głębi i bufor okluzji otoczenia) do grafu renderowania.
+\lstset{language=C}
+\begin{lstlisting}[caption={Dodawanie obrazów do grafu renderowania przykładowej aplikacji},captionpos=b,label={render_graph_images}]
+render_graph_add_image_resource(renderer->renderGraph, "depthBuffer",
+image_type_offscreen_depth_buffer);
+render_graph_add_image_resource(renderer->renderGraph, "gBuffer0", image_type_offscreen_f16);
+render_graph_add_image_resource(renderer->renderGraph, "gBuffer1", image_type_offscreen_f16);
+render_graph_add_image_resource(renderer->renderGraph, "gBuffer2", image_type_offscreen_f16);
+render_graph_add_image_resource(renderer->renderGraph, "aoBuffer", image_type_offscreen_r8);
+\end{lstlisting}
+
+Metoda \textit{add\_render\_pass()} jest używana przez aplikację do dodawania następujących po sobie przebiegów renderowania opisywanych strukturą \textit{render\_pass\_desc}.
+
+Dodane przebiegi renderowania są przechowywane jako węzły grafu renderowania \textit{render\_graph\_render\_pass\_element} posiadające:
+\begin{itemize}
+	\item przebieg renderowania \textit{render\_pass};
+	\item wskaźniki do zasobów \textit{render\_graph\_resource}, które będą używane przez przebieg renderowania:
+	\begin{itemize}
+		\item prezentowalny obraz: dołączenie koloru);
+		\item tekstury pozaekranowe: dołączenia koloru lub próbkowany przez shader);
+		\item bufor głębi: dołączenie głębi/szablonu używane do testów głębi z możliwością aktualizacji lub próbkowany przez shader;
+	\end{itemize}
+	\item stan kompilacji: struktura \textit{rendering\_info} używana nagrania przejść układów powyższych obrazów i rozpoczęcia przebiegu renderowania poleceniem \textit{vkCmdBeginRenderingKHR()}.
+\end{itemize}
+Wszystkie powyższe obiekty są tworzone na podstawie opisu przebiegu renderowania \textit{render\_pass\_desc}. Listing \ref{render_graph_deferred_geometry} przedstawia kod przykładowej aplikacji dodający przebieg geometrii, który:
+\begin{itemize}
+	\item używa shadera wierzchołków \textit{deferred\_geometry\_vertex.glsl};
+	\item używa shadera fragmentów \textit{deferred\_geometry\_fragment.glsl};
+	\item nie renderuje do prezentowalnego obrazu;
+	\item używa trzech obrazów G-bufora, które są czyszczone wartością $0,0,0,1$ jeśli są używane po raz pierwszy oraz używane jako dowiązania kolorów;
+	\item używa bufora głębi jako dołączenia głębi/szablonu, czyszczonego wartością $0,0$, używanego do testów głębi z operatorem porównania "większy lub równy" i włączonym zapisem;
+	\item brak mieszania kolorów;
+	\item nagrywa zoptymalizowane polecenie rysowania wszystkich elementów prymitywów podręcznej pamięci renderera.
+\end{itemize}
+\lstset{language=C}
+\begin{lstlisting}[caption={Dodawanie przebiegu geometrii do grafu renderowania przykładowej aplikacji},captionpos=b,label={render_graph_deferred_geometry}]
+
+void render_pass_record_primitive_geometry_draws(render_pass *renderPass, render_pass_frame_state *frameState, VkCommandBuffer commandBuffer) {
+	batches_record_draw_command(renderPass->renderPassState->sharedState.rendererCacheBatches,
+	commandBuffer, &frameState->rendererCacheBatchesData);
+}
+
+render_graph_add_render_pass(renderer->renderGraph, (render_pass_desc){
+	.vertexShader = "deferred_geometry_vertex.glsl",
+	.fragmentShader = "deferred_geometry_fragment.glsl",
+	.useOnscreenColorAttachment = false,
+	.offscreenColorAttachmentCount = 3,
+	.offscreenColorAttachments =
+	{
+		{.name = "gBuffer0", .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
+		{.name = "gBuffer1", .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
+		{.name = "gBuffer2", .clearValue = {{0.0f, 0.0f, 0.0f, 1.0f}}},
+	},
+	.offscreenDepthAttachment =
+	{
+		.name = "depthBuffer",
+		.depthWriteEnable = true,
+		.depthTestEnable = true,
+		.depthTestOp = VK_COMPARE_OP_GREATER_OR_EQUAL,
+		.clearValue = {0.0f, 0.0f},
+	},
+	.colorBlendingType = color_blending_type_none,
+	.recordFunc = render_pass_record_primitive_geometry_draws});
+\end{lstlisting}
+
+Metoda \textit{compile()} kompiluje graf renderowania.
+Dla każdego węzła metoda oblicza harmonogramy użycia dla używanych przez niego obrazów i następnie używa ich do wypełnienia stanu kompilacji celami renderowania z wymaganymi przez nie przejściami układów obrazów.
+
+Metoda \textit{record\_commands()} iteruje po węzłach używając ich stanu kompilacji do nagrania przebiegów renderowania.
+
+Metody \textit{update()} i \textit{send\_to\_device()} aktualizuje i kopiuje do GPU stan przebiegów renderowania.
+
+
+\subsubsection{Przebieg renderowania render\_pass}
+Przebieg renderowania \textit{render\_pass} jest tworzony na podstawie opisu przebiegu renderowania \textit{render\_pass\_desc} i składa się z:
+\begin{itemize}
+	\item potoku graficznego \textit{VkPipeline},
+	\item programu shaderów \textit{render\_pass\_shader\_program};
+\end{itemize}
+
+Potok graficzny jest tworzony na podstawie opisu \textit{render\_pass\_desc} oraz stanu renderowania (stan wejścia wierzchołków zależny od \textit{vertex\_stream}).
+Moduły shaderów używane przez potok są tworzone przez program shaderów wywołujący generator shaderów \textit{render\_pass\_shader\_generator}.
+
+Metoda \textit{record()} nagrywa dynamiczny przebieg renderowania z dowiązanym potokiem graficznym i poleceniami rysowania zdefiniowanymi polem \textit{recordFunc} opisu \textit{render\_pass\_desc}.
+
+
+\subsubsection{Generator shaderów render\_pass\_shader\_generator}
+Generator shaderów \textit{render\_pass\_shader\_generator} generuje kod źródłowy GLSL pojedynczego shadera.
+
+Generacja kodu źródłowego sprowadza się do konkatenacji:
+\begin{itemize}
+	\item dyrektyw preprocesora deklarujących używane rozszerzenia,
+	\item stałych preprocesora opisujących:
+	\begin{itemize}
+		\item używane atrybuty wierzchołka (\textit{IN\_POSITION}, \textit{IN\_NORMAL} itp.),
+		\item typ shadera (\textit{SHADER\_VERTEX}, \textit{SHADER\_FRAGMENT}),
+		\item wygenerowane stałe (np. \textit{MAX\_DIRECTIONAL\_LIGHT\_COUNT}),
+		\item nazwy używanych tekstur pozaekranowych (np. \textit{OFFSCREEN\_TEXTURE\_gBuffer1}),
+	\end{itemize}
+	\item kwalifikatorów układów dla stałych push, buforów uniform i tablicy tekstur,
+	\item zmiennych wejściowych i wyjściowych,
+	\item współdzielonego kodu GLSL wczytanego z pliku tekstowego \textit{common.glsl},
+	\item funkcji \textit{main()}:
+	\begin{itemize}
+		\item zmienne z indeksami tekstur pozaekranowych,
+		\item kod GLSL wczytany z pliku tekstowego zdefiniowanego w opisie \textit{render\_pass\_desc}.
+	\end{itemize}
+\end{itemize}
+
+
+\subsubsection{Przykładowa scena main}
+Plik wykonwywealny \textit{main} demonstruje działanie silnika poprzez wyrenderowanie sceny zdefiniowanej w konfiguracji globalnej używając grafu renderowania.
+
+Diagram \ref{render_graph_final} przedstawia używany graf renderowania opisujący cieniowane odrocznone zintegrowane z okluzję otoczenia \cite{PureDepthSSAO} i dwoma efektami post-processingu: skybox i tekst debugujący.
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[node distance=1cm]
+		\tikzstyle{pass} = [rectangle, minimum width=3.5cm, minimum height=1cm,text centered, draw=black]
+		\tikzstyle{resource} = [rectangle, rounded corners, minimum width=3.5cm, minimum height=1cm, text centered, draw=black]
+		\tikzstyle{arrow} = [thick,->,>=stealth]
+		\tikzstyle{relation} = [densely dotted,->]
+		
+		\node (gBuffor2) [resource] {Obraz G-bufor \#2};
+		\node (gBuffor1) [resource, above = 6mm of gBuffor2] {Obraz G-bufor \#1};
+		\node (gBuffor3) [resource, below = 6mm of gBuffor2] {Obraz G-bufor \#3};
+		\node (depthResource) [resource, below = 6mm of gBuffor3] {Bufor głębi};
+		\node (aoResource) [resource, below = 6mm of depthResource] {Bufor AO};
+		\node (presentableImage) [resource, below = 6mm of aoResource] {Prezentowalny obraz};
+		
+		\node (geometryPass) [pass, right = 3cm of gBuffor1] {Przebieg geometrii};
+		\node (aoPass) [pass, below = of geometryPass] {Okluzja otoczenia};		
+		\node (lightingPass) [pass, below = of aoPass] {Przebieg oświetlenia};
+		\node (skyboxPass) [pass, below = of lightingPass] {Skybox};
+		\node (debugTextPass) [pass, below = of skyboxPass] {Tekst debugowania};
+		
+		\draw [relation] (geometryPass) edge (aoPass);
+		\draw [relation] (aoPass) edge (lightingPass);
+		\draw [relation] (lightingPass) edge (skyboxPass);
+		\draw [relation] (skyboxPass) edge (debugTextPass);
+		
+		\draw [arrow] (geometryPass) edge[out=180-10,in=0,looseness=0] (gBuffor1);
+		\draw [arrow] (geometryPass) edge[out=180-5,in=0,looseness=0] (gBuffor2);
+		\draw [arrow] (geometryPass) edge[out=180+0,in=0+5,looseness=0] (gBuffor3);
+		\draw [arrow] (geometryPass) edge[out=180+5,in=0+10,looseness=0] (depthResource);
+		
+		\draw [arrow] (gBuffor1) 		edge[out=0-5,in=180-10,looseness=0] (aoPass);
+		\draw [arrow] (gBuffor3) 		edge[out=0,in=180-5,looseness=0] (aoPass);
+		\draw [arrow] (depthResource) 	edge[out=0+5,in=180+0,looseness=0] (aoPass);
+		\draw [arrow] (aoPass) 			edge[out=180+5,in=0+5,looseness=0] (aoResource);
+		
+		\draw [arrow] (gBuffor1) edge[out=0-10,in=180-10,looseness=0] (lightingPass);
+		\draw [arrow] (gBuffor2) edge[out=0,in=180-5,looseness=0] (lightingPass);
+		\draw [arrow] (gBuffor3) edge[out=0-5,in=180+0,looseness=0] (lightingPass);
+		\draw [arrow] (depthResource) edge[out=0,in=180+5,looseness=0] (lightingPass);
+		\draw [arrow] (aoResource) edge[out=0,in=180+10,looseness=0] (lightingPass);
+		\draw [arrow] (lightingPass) edge[out=180+15,in=0+10,looseness=0] (presentableImage);
+		
+		\draw [arrow] (depthResource) edge[out=0-5,in=180-5,looseness=0] (skyboxPass);
+		\draw [arrow] (presentableImage) edge[out=0+5,in=180+0,looseness=0] (skyboxPass);
+		\draw [arrow] (skyboxPass) edge[out=180+5,in=0,looseness=0] (presentableImage);
+		
+		\draw [arrow] (presentableImage) edge[out=0-5,in=180-5,looseness=0] (debugTextPass);
+		\draw [arrow] (debugTextPass) edge[out=180+5,in=0-10,looseness=0] (presentableImage);
+		
+	\end{tikzpicture}
+	\caption{Graf renderowania przykładowej sceny (opracowanie własne)}
+	\label{render_graph_final}
+\end{figure}
+
+Listing \ref{main_final} przedstawia kod funkcji \textit{main()} przykładowej aplikacji uruchamiający renderer.
+\lstset{language=C}
+\begin{lstlisting}[caption={Uruchomienie renderera w funkcji \textit{main()} przykładowej aplikacji},captionpos=b,label={main_final}]
+void render_pass_record_draws(render_pass *renderPass, render_pass_frame_state *frameState, VkCommandBuffer commandBuffer) {
+	batches_record_draw_command(renderPass->renderPassState->sharedState.rendererCacheBatches, commandBuffer, &frameState->rendererCacheBatchesData);
+}
+
+void update_func(renderer *renderer, double fps, double dt) {
+	device *vkd = renderer->vkd;
+	render_state *renderState = renderer->renderState;
+	if (renderState->config->global.controlsEnabled == 1) { ... }
+}
+
+int main(int argc, char *argv[]) {
+	platform_create(argc, argv);
+	renderer *renderer = renderer_create();
+	
+	render_graph_add_image_resource(renderer->renderGraph, "gBuffer0", image_type_offscreen_f16);
+	...
+	render_graph_add_render_pass(
+		renderer->renderGraph,
+		(render_pass_desc){
+			...
+			.recordFunc = render_pass_record_primitive_geometry_draws
+		}
+	);
+	...
+	
+	renderer_run_main_loop(renderer, update_func);
+	
+	renderer_destroy(renderer);
+	platform_destroy();
+	return 0;
+}
+\end{lstlisting}
+

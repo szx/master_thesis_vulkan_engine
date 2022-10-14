@@ -1022,6 +1022,33 @@
       \verb https://on-demand.gputechconf.com/gtc/2013/presentations/S3032-Advanced-Scenegraph-Rendering-Pipeline.pdf
       \endverb
     \endentry
+    \entry{PureDepthSSAO}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=b5744c694fdd70102c28a3dfac1577c4}{%
+           family={Holden},
+           familyi={H\bibinitperiod},
+           given={Daniel},
+           giveni={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{b5744c694fdd70102c28a3dfac1577c4}
+      \strng{fullhash}{b5744c694fdd70102c28a3dfac1577c4}
+      \strng{bibnamehash}{b5744c694fdd70102c28a3dfac1577c4}
+      \strng{authorbibnamehash}{b5744c694fdd70102c28a3dfac1577c4}
+      \strng{authornamehash}{b5744c694fdd70102c28a3dfac1577c4}
+      \strng{authorfullhash}{b5744c694fdd70102c28a3dfac1577c4}
+      \field{sortinit}{8}
+      \field{sortinithash}{a231b008ebf0ecbe0b4d96dcc159445f}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Pure Depth SSAO}
+      \field{year}{2011}
+      \verb{urlraw}
+      \verb https://theorangeduck.com/page/pure-depth-ssao
+      \endverb
+      \verb{url}
+      \verb https://theorangeduck.com/page/pure-depth-ssao
+      \endverb
+    \endentry
     \entry{MANGOHUD}{software}{}
       \name{author}{1}{}{%
         {{hash=b20e9f60d98c0b794a42fa2743d064b1}{%
