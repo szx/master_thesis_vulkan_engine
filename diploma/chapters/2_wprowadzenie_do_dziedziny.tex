@@ -6,7 +6,7 @@ W tym rozdziale przybliżono bibliotekę Vulkan oraz techniki renderowania, któ
 
 \section{Vulkan}
 
-Biblioteki graficzne pozwalaja aplikacji na użycie ich API do uzyskania dostępu do akceleracji sprzętowej, czyli przeniesienia obliczeń wymaganych przez renderowanie z CPU do specjalnie pod nie zoptymalizowanego GPU.
+Biblioteki graficzne pozwalają aplikacji na użycie ich API do uzyskania dostępu do akceleracji sprzętowej, czyli przeniesienia obliczeń wymaganych przez renderowanie z CPU do specjalnie pod nie zoptymalizowanego GPU.
 
 Biblioteka graficzna mająca na celu równe wsparcie wielu platform rozwijanych przez różnych IHV (\textit{Independent Hardware Vendor}, niezależny dostawca sprzętu) wymaga drobiazgowego ustandaryzowania i dokumentacji.
 W czasie pisania pracy istnieją trzy popularne standardy: Direct3D od firmy Microsoft oraz OpenGL i Vulkan od konsorcjum non-profit Khronos.
@@ -18,21 +18,21 @@ Zawiera on m.in. specyfikację, nagłówki API, biblioteki SPIR-V oraz warstwy, 
 
 Specyfikacja Vulkan \cite{VULKANSPEC} to ponad 1000 stron zwięzłej i precyzyjnej specyfikacji API przeznaczonej do użytku zarówno przez implementatorów sterowników, jak i programistów aplikacji.
 
-Khronos utrzymuje listę urządzeń, które zaliczyły zestaw testów zgodności Vulkan CTS \cite{VULKANCTS} i spełniają wymagania wieloplatformowości (w odróżnieniu takich API jak DirectX wspieranego tylko przez system Windows i konsole Xbox \cite{HughesDamEtAl13} czy Metal wspierane przeez urządzenia firmy Apple).
+Khronos utrzymuje listę urządzeń, które zaliczyły zestaw testów zgodności Vulkan CTS \cite{VULKANCTS} i spełniają wymagania wieloplatformowości (w odróżnieniu takich API jak DirectX wspieranego tylko przez system Windows i konsole Xbox \cite{HughesDamEtAl13} czy Metal wspierane przez urządzenia firmy Apple).
 
 Nowa funkcjonalność jest dodawana, podobnie jak w OpenGL, używając opcjonalnych rozszerzeń podstawowej specyfikacji. Są one proponowane przez członków Khronos i często są specyficzne dla urządzeń.
 Przykładowo rozszerzenie \textit{VK\_NV\_mesh\_shader} pozwala na użycie shaderów siatki na GPU firmy Nvidia.
 
 Rozszerzenia są podzielone na trzy kategorie różniące się stopniem adaptacji.
 
-Rozszerzenia mogą być rozwijane tylko przez pojedynczego dostawcę (można to poznać po nazwie zawierającej \textit{NV}, \textit{AMD}, \textit{QCOM}, \textit{VALVE} itp.) i ich wspracie jest zwykle ograniczone do produkowanych przez nich urządzeń.
+Rozszerzenia mogą być rozwijane tylko przez pojedynczego dostawcę (można to poznać po nazwie zawierającej \textit{NV}, \textit{AMD}, \textit{QCOM}, \textit{VALVE} itp.) i ich wsparcie jest zwykle ograniczone do ich produktów (np. GPU, gier komputerowych lub narzędzi do debugowania).
 
 Rozszerzenia \textit{EXT} zostały częściowo ustandaryzowane i są wspierane przez wielu dostawców.
 
 Dostatecznie popularne rozszerzenie może stać się podstawą rozszerzenia \textit{KHR}, od którego oczekuje się wsparcia przez większość sterowników.
 Przykładowo na podstawie rozszerzenia \textit{VK\_NV\_ray\_tracing} stworzono rozszerzenie \textit{VK\_KHR\_ray\_tracing\_pipeline}.
 
-Rozszerzenia mogą być promowana w nowej wersji Vulkan stając się częścią postawowej specyfikacji.
+Rozszerzenia mogą być promowana w nowej wersji Vulkan stając się częścią podstawowej specyfikacji.
 Przykładowo rozszerzenie \textit{VK\_EXT\_scalar\_block\_layout} zostało promowane w Vulkan 1.2.
 
 \paragraph{Biblioteki SPIR-V}
@@ -43,13 +43,13 @@ Vulkan SDK oferuje zestaw gotowych narzędzi i bibliotek pozwalających na kompi
 
 \paragraph{Warstwy}
 
-Vulkan jest niskopioziomowy i skomplikowany w użyciu - słynny tutorial wymaga ponad 1000 linijek kodu C++ do renderowania pojedynczego trójkąta  \cite{VULKANTUTORIAL}.
+Vulkan jest niskopoziomowy i skomplikowany w użyciu - słynny tutorial wymaga ponad 1000 linijek kodu C++ do renderowania pojedynczego trójkąta  \cite{VULKANTUTORIAL}.
 Sterowniki nie sprawdzają większości błędów i wymagają od programisty chcącego uniknąć niezdefiniowanych zachowań przestrzegania zasad poprawnego użycia API.
 
-Na szczęście Vulkan wspiera tworzenie warstw - małych bibliotek dynamicznych pośredniczących pomiędzy apikacją i sterownikiem, które przechwytują wywołania API i pozwala na dodanie do nich dodatkowej logiki.
+Na szczęście Vulkan wspiera tworzenie warstw - małych bibliotek dynamicznych pośredniczących pomiędzy aplikacją i sterownikiem, które przechwytują wywołania API i pozwala na dodanie do nich dodatkowej logiki.
 Vulkan SDK oferuje oficjalne warstwy mające uprościć proces debugowania.
 
-Warstwa walidacji \textit{VK\_LAYER\_KHRONOS\_validation} wykrywaja i raportuje nieprawidłowe i niewydajne użycie API.
+Warstwa walidacji \textit{VK\_LAYER\_KHRONOS\_validation} wykrywa oraz raportuje nieprawidłowe i niewydajne użycie API.
 
 Warstwy rozszerzeń implementują funkcje rozszerzeń niewspieranych przez sterownik. Przykładowo warstwa \textit{VK\_LAYER\_KHRONOS\_synchronization2} implementuje rozszerzenie \textit{VK\_KHR\_synchronization2}, które upraszcza użycie API synchronizacji.
 
@@ -60,14 +60,13 @@ Warstwy mają negatywny wpływ na wydajność, który jest zwłaszcza widoczny w
 \subsection{Podstawy API}
 
 Vulkan jest API obiektowym - wszystkie używane koncepty są reprezentowane przez obiekty Vulkan tworzone i niszczone przez aplikację, która ma do nich dostęp poprzez uchwyty.
-W przeciwieństwie do OpenGL używającego globalnej maszyny stanów, Vulkan jest bezstanowy, używany stan jest całkowiecie zaszyty w obiektach i wszystkie funkcje API operują tylko na stanie obiektów przekazanych do nich w postaci parametrów i mogą być wywoływane współbieżnie z wielu wątków.
-Wyjątkiem są parametry zdefiniowane jako \textit{zewnętrznie synchronizowane}, dla których aplikacja musi zagwarantować, że tylko jeden wątek używa obiektu takiego parametu w danym momencie.
+W przeciwieństwie do OpenGL używającego globalnej maszyny stanów, Vulkan jest bezstanowy, używany stan jest całkowicie zaszyty w obiektach i wszystkie funkcje API operują tylko na stanie obiektów przekazanych do nich w postaci parametrów i mogą być wywoływane współbieżnie z wielu wątków.
+Wyjątkiem są parametry zdefiniowane jako \textit{zewnętrznie synchronizowane}, dla których aplikacja musi zagwarantować, że tylko jeden wątek używa obiektu takiego parametru w danym momencie.
 Przykładowo większość funkcji \textit{vkCmd*} wymaga zewnętrznej synchronizacji obiektu bufora poleceń \textit{VkCommandBuffer}, co oznacza, że ich wywoływanie powinno się odbywać najlepiej w ramach jednego wątku.
 
-API Vulkan posiada regularną i przewidywalną strukturę nazewnictwa oraz użycia obieków, którego elementy zostały opisane poniżej.
+API Vulkan posiada regularną i przewidywalną strukturę nazewnictwa oraz użycia obiektów, którego elementy zostały opisane poniżej.
 
 \subsubsection{Konwencje nazewnictwa}
-Konwencje nazewnictwa API Vulkan posiadają regularną i przewidywalną strukturę.
 Nagłówek \textit{vulkan.h} dołącza funkcje, struktury, typy wyliczeniowe i stałe preprocesora języka C mające następujące przedrostki:
 \begin{itemize}
 	\item \textit{vk}: funkcje (np. \textit{vkBeginCommandBuffer}),
@@ -121,7 +120,7 @@ assert(vkAllocate*(..., &allocInfo, ..., &object) == VK_SUCCESS);
 Stworzone obiekty są niszczone funkcją \textit{vkDestroy*()}.
 Zaalokowane obiekty są zwalniane funkcją \textit{vkFree*()} lub poprzez zniszczenie puli obiektów.
 
-Struktury Vulkan często wspierają łańcuch \textit{pNext} - wskaźnik \textit{void*} na kolejną strukturę w liście jednokierunkowej lub \textit{NULL}. Jest on używany przez rozszerzenia dodające nowe struktury i może być iterowany w wygodny sposób używając struktur \textit{VkBaseInStructure} i \textit{VkBaseOutStructure} - typ stuktury może być wywnioskowany używając jej pierwszego pola \textit{sType}.
+Struktury Vulkan często wspierają łańcuch \textit{pNext} - wskaźnik \textit{void*} na kolejną strukturę w liście jednokierunkowej lub \textit{NULL}. Jest on używany przez rozszerzenia dodające nowe struktury i może być iterowany w wygodny sposób używając struktur \textit{VkBaseInStructure} i \textit{VkBaseOutStructure} - typ struktury może być wywnioskowany używając jej pierwszego pola \textit{sType}.
 
 \subsection{Szkielet aplikacji graficznej}
 
@@ -134,7 +133,7 @@ W strukturze wszystkich aplikacji graficznych można wyróżnić następujące o
 	\item Przygotowanie obiektów służących do prezentacji wyników renderowania: powierzchnia okna (\textit{VkSurface}), łańcuch wymiany (\textit{VkSwapchain}), prezentowalne obrazy (\textit{VkImage}) i ich widoki (\textit{VkImageView}) oraz kolejka prezentacji (\textit{VkQueue}),
 	\item Transfer zasobów z CPU do GPU opisanych w zbiorach deskryptorów (\textit{VkDescriptorSet}),
 	\item Stworzenie obiektów opisujących proces renderowania: potoki (\textit{VkPipeline}) z shaderami (\textit{VkShaderModule}) oraz przebiegi renderowania (\textit{VkRenderPass}),
-	\item Wykonanie procesu renderowania w pętli głównej programu: pobranie nieużywanego prezentowalnego obrazu, nagranie i wykonanie buforów poleceń (\textit{VkCommandBuffer}) realizujących pożądane techniki renderowania oraz prezentacja wyrenderowaniego obrazu.
+	\item Wykonanie procesu renderowania w pętli głównej programu: pobranie nieużywanego prezentowalnego obrazu, nagranie i wykonanie buforów poleceń (\textit{VkCommandBuffer}) realizujących pożądane techniki renderowania oraz prezentacja wyrenderowanego obrazu.
 \end{itemize}
 
 W kolejnych sekcjach pracy przybliżono wspomniane powyżej obiekty Vulkan i zaprezentowano metody ich użycia.
@@ -142,7 +141,7 @@ W kolejnych sekcjach pracy przybliżono wspomniane powyżej obiekty Vulkan i zap
 
 \subsection{Inicjalizacja podstawowych obiektów}
 
-Wszyskie programy używające API Vulkan wymagają wcześniejszego stworzenia obiektów w następującej kolejności:
+Wszystkie programy używające API Vulkan wymagają wcześniejszego stworzenia obiektów w następującej kolejności:
 \begin{itemize}
 	\item instancji (\textit{VkInstance}),
 	\item powierzchni okna (\textit{VkSurface}),
@@ -251,12 +250,12 @@ Ten krok może być pominięty dla programów używających Vulkan w trybie \tex
 wyniku renderowania na ekranie. W innym wypadku powierzchnia musi być stworzona przed urządzeniem fizycznym, ponieważ
 jest używana do sprawdzania, czy wybrane urządzenie fizyczne będzie wspierało stworzenie łańcucha wymiany dla powierzchni okna.
 
-Stworzenie powierzchni okna odbywa się przy użyciu WSI (Windowing System Integration, integracja systemu okien), który jest zbiórem rozszerzeń udostępnianych przez środowisko uruchomieniowe programu pozwalających na integrację API Vulkan z systemem okien w celu wyświetlenia wyników renderowania.
+Stworzenie powierzchni okna odbywa się przy użyciu WSI (Windowing System Integration, integracja systemu okien), który jest zbiorem rozszerzeń udostępnianych przez środowisko uruchomieniowe programu pozwalających na integrację API Vulkan z systemem okien w celu wyświetlenia wyników renderowania.
 Użycie WSI wymaga trzech rozszerzeń instancji:
 \begin{itemize}
 	\item \textit{VK\_KHR\_surface}: udostępnia obiekt VkSurface bez funkcji tworzenia,
 	\item \textit{VK\_KHR\_swapchain}: udostępnia obiekt VkSwapchain,
-	\item \textit{VK\_KHR\_*\_surface}, gdzie \textit{*} to nazwa systemu okien (przykładowo \textit{VK\_KHR\_win32\_surface} dla Windows): udostępnia specyficzne funkcje instancji pozwalajace na stworzenie VkSurface.
+	\item \textit{VK\_KHR\_*\_surface}, gdzie \textit{*} to nazwa systemu okien (przykładowo \textit{VK\_KHR\_win32\_surface} dla Windows): udostępnia specyficzne funkcje instancji pozwalające na stworzenie VkSurface.
 \end{itemize}
 Tworzenie okna jest często obsługiwane przez bibliotekę multimedialną taką jak GLFW \cite{GLFW} czy SDL \cite{SDL}, które posiadają funkcjonalność abstrahującą proces tworzenia powierzchni okna - każda wspierana platforma wymaga osobnej implementacji używającej odpowiedniego rozszerzenia WSI w parze z API systemu okien.
 
@@ -277,7 +276,7 @@ Właściwości (\textit{VkPhysicalDeviceProperties}) zawierają wspieraną wersj
 Z kolei funkcjonalności \textit{VkPhysicalDeviceFeatures} zawierają długą listę wartości logicznych, które opisują dokładnie możliwości urządzenia. Przykładowo wartość \textit{tessellationShader} oznacza wsparcie shaderów wyliczania teselacji.
 
 Funkcja instancji \textit{vkEnumeratePhysicalDevices()} zwraca listę dostępnych urządzeń fizycznych.
-Funkcje \textit{vkGetPhysicalDeviceProperties2()} i \textit{vkGetPhysicalDeviceFeatures2()}\footnote{Te funkcje są częścią rozszerzenia instancji \textit{VK\_KHR\_get\_physical\_device\_properties2}, które zostało promowane w Vulkan 1.1. W przeciwieństwie do wcześniejszych funkcji \textit{vkGetPhysicalDeviceProperties()} i \textit{vkGetPhysicalDeviceFeatures()} używają one tzw. łańcucha \textit{pNext} i wspierają odpytywanie właściwości i funkcjonalności wprowadzonych przez późniejsze wesje Vulkan oraz rozszerzenia.} pozwalają na określenie kolejno właściwości i funkcjonalności urządzenia fizycznego.
+Funkcje \textit{vkGetPhysicalDeviceProperties2()} i \textit{vkGetPhysicalDeviceFeatures2()}\footnote{Te funkcje są częścią rozszerzenia instancji \textit{VK\_KHR\_get\_physical\_device\_properties2}, które zostało promowane w Vulkan 1.1. W przeciwieństwie do wcześniejszych funkcji \textit{vkGetPhysicalDeviceProperties()} i \textit{vkGetPhysicalDeviceFeatures()} używają one tzw. łańcucha \textit{pNext} i wspierają odpytywanie właściwości i funkcjonalności wprowadzonych przez późniejsze wersje Vulkan oraz rozszerzenia.} pozwalają na określenie kolejno właściwości i funkcjonalności urządzenia fizycznego.
 Funkcja \textit{vkEnumerateDeviceExtensionProperties()} zwraca listę wspieranych rozszerzeń urządzenia.
 
 Aplikacja musi wybrać z listy kandydatów urządzenie fizyczne, które wspiera wszystkie właściwości i funkcjonalności używane podczas działania aplikacji. Należy też wziąć pod uwagę wymagania wydajnościowe - gra komputerowa powinna wybrać GPU zamiast renderera programowego.
@@ -296,8 +295,8 @@ Dodatkowo w imię kompatybilności wstecznej powinno się ponownie podać list�
 
 Podczas tworzenia urządzenia logicznego sterownik graficzny automatycznie tworzy żądane kolejki.
 
-Kolejki są używane do wykonywania na urządzeniu fizycznym poleceń zawartych w buforach poleceń wysłanych do kolejki funkcją \textit{vkQueueSubmit()}. Funkcja zwraca kontrolę do aplikacji nieczekając na zakończenie wykonywania bufora poleceń na GPU - wymagana jest synchronizacja GPU z CPU przy pomocy tzw. ogrodzeń (ang. fence).
-Wykonanie buforów poleceń może się odbywać poza kolejnością lub nakładać i wymaga synchronizacji GPU z GPU przy pomocy semafor (ang. semaphore).
+Kolejki są używane do wykonywania na urządzeniu fizycznym poleceń zawartych w buforach poleceń wysłanych do kolejki funkcją \textit{vkQueueSubmit()}. Funkcja zwraca kontrolę do aplikacji, nie czekając na zakończenie wykonywania bufora poleceń na GPU - wymagana jest synchronizacja GPU z CPU przy pomocy tzw. ogrodzeń (ang. fence).
+Wykonanie buforów poleceń może się odbywać poza kolejnością lub nakładać i wymaga synchronizacji przy pomocy semafor (ang. semaphore).
 Podobnie nie ma silnej gwarancji porządkowania wykonywania poleceń należącego do pojedynczego bufora i wymaga jawnej synchronizacji używając barier potoku lub zdarzeń.
 
 Każda kolejka należy do pewnej rodziny kolejek (\textit{VkQueueFlagBits}) sygnalizując tym wsparcie pewnego rodzaju poleceń:
@@ -323,8 +322,8 @@ Funkcja \textit{vkGetDeviceProcAddr()} pozwala na pominięcie loadera, co gwaran
 \subsubsection{Rozszerzenie VK\_EXT\_debug\_utils}
 
 Podczas inicjalizacji Vulkan warto rozważyć użycie rozszerzenia \textit{VK\_EXT\_debug\_utils}, które pozwala na stworzenie komunikatora debugowania (ang. debug messanger) przechwytującego wszystkie komunikaty wygenerowane przez loader, warstwy i sterownik Vulkan.
-Przechwycone komunikaty debugowania wraz z priorytetami są przekazywne do wywołania zwrotnego zdefiniowanego przez programistę, które może przykładowo logować wiadomość.
-Użycie debuggera wspierającego warunkowe punkty przerwania (ang. conditional breakpoint) dla wiadomości o priorytecie \textit{error} lub \textit{fatal} pozwala na zatrzymanie działania programu tuż po zgłoszeniu błędu przez warstwy walidacji, co upraszcza proces debugownia.
+Przechwycone komunikaty debugowania wraz z priorytetami są przekazywane do wywołania zwrotnego zdefiniowanego przez programistę, które może przykładowo logować wiadomość.
+Użycie debuggera wspierającego warunkowe punkty przerwania (ang. conditional breakpoint) dla wiadomości o priorytecie \textit{error} lub \textit{fatal} pozwala na zatrzymanie działania programu tuż po zgłoszeniu błędu przez warstwy walidacji, co upraszcza proces debugowania.
 
 Rozszerzenie pozwala też na dodawanie nazw do obiektów Vulkan funkcją \textit{vkSetDebugUtilsObjectNameEXT()} oraz etykiet do regionów buforów poleceń funkcjami \textit{vkCmdInsertDebugUtilsLabelEXT()}, \textit{vkCmdBeginDebugUtilsLabelEXT()} i \textit{vkCmdEndDebugUtilsLabelEXT()}.
 
@@ -336,7 +335,7 @@ Nazwy i etykiety są używane w wiadomościach debugujących i pokazywane przez 
 Vulkan wyróżnia dwa rodzaje zasobów: bufory (\textit{VkBuffer}) i obrazy (\textit{VkImage}).
 
 Zasoby są widokami na pamięć GPU reprezentowaną przez alokację pamięci \textit{VkDeviceMemory}.
-Fragment alokacji pamięci musi zostać dowiązywny do nowo stworzonego zasobu przy użyciu funkcji \textit{vkBindImageMemory()} lub \textit{vkBindBufferMemory()}.
+Fragment alokacji pamięci musi zostać dowiązany do nowo stworzonego zasobu przy użyciu funkcji \textit{vkBindImageMemory()} lub \textit{vkBindBufferMemory()}.
 
 W kolejnych sekcjach przybliżono właściwości buforów, obrazów, widoków oraz próbników. 
 
@@ -354,7 +353,7 @@ Przykładowo:
 	\item \textit{UNIFORM\_TEXEL\_BUFFER}: może być użyty do stworzenia widoku bufora magazynowego używanego przez deskryptory typu \textit{UNIFORM\_TEXEL\_BUFFER};
 	\item \textit{STORAGE\_TEXEL\_BUFFER}: może być użyty do stworzenia widoku bufora magazynowego używanego przez deskryptory typu \textit{UNIFORM\_TEXEL\_BUFFER};
 	\item \textit{UNIFORM\_BUFFER}: może być buforem uniform (pozwalającym tylko na odczyt) opisanym deskryptorem typu \textit{UNIFORM\_BUFFER};
-	\item \textit{STORAGE\_BUFFER}: może być buforem magazynowym (pozwalajaćym na odczyt i zapis) opisanym deskryptorem typu \textit{STORAGE\_BUFFER};
+	\item \textit{STORAGE\_BUFFER}: może być buforem magazynowym (pozwalającym na odczyt i zapis) opisanym deskryptorem typu \textit{STORAGE\_BUFFER};
 	\item \textit{INDEX\_BUFFER}: może być dowiązany jako bufor indeksów poleceniem \textit{vkCmdBindIndexBuffer()};
 	\item \textit{VERTEX\_BUFFER}: może być dowiązany jako bufor wierzchołków poleceniem \textit{vkCmdBindVertexBuffer()};
 	\item \textit{INDIRECT\_BUFFER}: może być używany jako bufor parametrów rysowania pośredniego w poleceniach \textit{vkCmdDrawIndirect()} i \textit{vkCmdDrawIndexedIndirect()}.
@@ -381,15 +380,15 @@ Obraz, podobnie jak bufor, reprezentuje ciągły blok pamięci, ale jego wewnęt
 
 Typ obrazu określa jego liczbę wymiarów (1D, 2D lub 3D).
 
-Rozmiar opisuje liczbę pikseli obrazu (tekseli) wzdłuż każdego wymaiaru (szerokość, wysokość i głębokość).
+Rozmiar opisuje liczbę pikseli obrazu (tekseli) wzdłuż każdego wymiaru (szerokość, wysokość i głębokość).
 
-Obraz Vulkan może być traktowany jako tablica identycznych obrazów, której pojedeńczy element jest zwany warstwą. Warstwy nie są liczone jako wymiar obrazu - obraz 2D z warstwami nie jest obrazem 3D.
+Obraz Vulkan może być traktowany jako tablica identycznych obrazów, której pojedynczy element jest zwany warstwą. Warstwy nie są liczone jako wymiar obrazu - obraz 2D z warstwami nie jest obrazem 3D.
 
 Flagi tworzenia obrazu pozwalają na definicję dodatkowych funkcjonalności. Przykładowo flaga \textit{CUBE\_COMPATIBLE} pozwala na traktowanie obrazu z 6 kwadratowymi warstwami jako obrazu sześciennego.
-Takie obrazy są często uzywane w technice renderowania sklepienia nieba używając sześcianu oteksturowanego przy pomocy sześciennej tekstury skybox przedstawiającej niebo.
+Takie obrazy są często używane w technice renderowania sklepienia nieba używając sześcianu oteksturowanego przy pomocy sześciennej tekstury skybox przedstawiającej niebo.
 
 Mipmapa to kopia obrazu z każdym wymiarem zmniejszonym dwukrotnie.
-W obrazie z mipmapami pierwotny obraz jest traktowany jako mipmapa poziomu zerowego, z której generowane są mipmapy następonych poziomów aż do osiągnięcia wymiaru 1x1x1.
+W obrazie z mipmapami pierwotny obraz jest traktowany jako mipmapa poziomu zerowego, z której generowane są mipmapy następnych poziomów aż do osiągnięcia wymiaru 1x1x1.
 Przykładowo obraz \ref{mipmap} przedstawia obraz 2D 1024x1024 z modelu Sponza \cite{GLTFSAMPLEMODELS} i jego 10 automatycznie wygenerowanych mipmap.
 \begin{figure}[htbp]
 	\centering
@@ -402,15 +401,15 @@ Obraz posiadający mipmapy zajmuje więcej pamięci, ale pozwala na użycie filt
 Format (\textit{VkFormat}) definiuje rozmiar, strukturę i sposób kodowania podczas zapisu i dekodowania podczas próbkowania pojedynczego piksela obrazu.
 Przestrzeń kolorów (VkColorSpaceKHR) definiuje metodę interpretacji pikseli obrazu przez silnik prezentacji podczas prezentacji obrazu.
 Przestrzeń kolorów liniowa (niesprecyzowana) jest używana w obliczeniach shaderów.
-Przestrzeń kolorów SRGB jest przeznaczona do wyświetlania na monitorach i jest powszechnia używana w teksturach.
+Przestrzeń kolorów SRGB jest przeznaczona do wyświetlania na monitorach i jest powszechnie używana w teksturach.
 Przykładowe często używane formaty i ich użycie:
 \begin{itemize}
-	\item \textit{R8G8B8A8\_UNORM}: 4 komponenty koloru B,G,R,A, z których każdy zajmuje 8 bitów i jest interpretowany jako znormalizowana wartość bez znaku (8-bitowa liczba zmienno przecinkowa pomiędzy 0 i 1), używany przez tekstury pozekranowe,
+	\item \textit{R8G8B8A8\_UNORM}: 4 komponenty koloru B,G,R,A, z których każdy zajmuje 8 bitów i jest interpretowany jako znormalizowana wartość bez znaku (8-bitowa liczba zmiennoprzecinkowa pomiędzy 0 i 1), używany przez tekstury pozaekranowe,
 	\item \textit{B8G8R8A8\_SRGB}: podobny do poprzedniego, ale podczas próbkowania GPU przeprowadza automatyczną konwersję z SRGB do przestrzeni liniowej (odwrotna konwersja podczas zapisu), używany przez prezentowalne obrazy łańcucha wymiany,
 	\item \textit{D32\_SFLOAT\_S8\_UINT}: 32-bity komponentu głębi (liczba zmiennoprzecinkową ze znakiem), 8-bitów komponentu szablonu (liczba całkowita bez znaku), używany przez bufory głębi.
 \end{itemize}
 
-Liczba próbek na teksel większa niż 1 jest wymagana podczas implementacji technik antyalisingu takich jak mutlisampling pozwalających na wygładzanie zrasteryzowanych prymitywów \cite{HughesDamEtAl13}.
+Liczba próbek na teksel większa niż 1 jest wymagana podczas implementacji technik antyaliasingu takich jak multisampling pozwalających na wygładzanie zrasteryzowanych prymitywów \cite{HughesDamEtAl13}.
 
 Kafelkowanie obrazu (VkImageTiling) definiuje ułożenie tekselów w pamięci GPU i może być liniowe lub optymalne.
 W kafelkowaniu liniowym teksele są uszeregowane w pamięci wierszami (ang. row-major order) podobnie jak tablicach dwuwymiarowych języka C.
@@ -421,7 +420,7 @@ Przykładowo:
 \begin{itemize}
 	\item \textit{TRANSFER\_SRC}: może być źródłem polecenia transferu;
 	\item \textit{TRANSFER\_DST}: może być miejscem docelowym polecenia transferu;
-	\item \textit{SAMPLED}: może być użyty do stworzenia widoku próbkowalnego obrazu używanego przez deskryptory typu \textit{SAMPLED};
+	\item \textit{SAMPLED}: może być użyty do stworzenia widoku próbkowanego obrazu używanego przez deskryptory typu \textit{SAMPLED};
 	\item \textit{STORAGE}: może być użyty do stworzenia widoku obrazu magazynowego używanego przez deskryptory typu \textit{STORAGE};
 	\item \textit{COLOR\_ATTACHMENT}: może być dołączeniem koloru przebiegu renderowania;
 	\item \textit{DEPTH\_STENCIL\_ATTACHMENT}: może być dołączeniem głębi/szablonu przebiegu renderowania.
@@ -448,20 +447,20 @@ Dozwolone układy obrazu mogą zależeć od wcześniej sprecyzowanych flag użyc
 
 Obrazy, w przeciwieństwie do buforów, nie są używane bezpośrednio i zawsze wymagają utworzenia widoku \textit{VkImageView} opisującego używane części obrazu - warstwy i poziomy mipmap - oraz sposób interpretacji teksela - możliwe aliasowanie formatu obrazu lub remapowanie jego komponentów.
 
-Przykładami użycia widoków obrazów są aktualizacja deskryptorów i specyfiakcja dowiązań przebiegu renderowania.
+Przykładami użycia widoków obrazów są aktualizacja deskryptorów i specyfikacja dowiązań przebiegu renderowania.
 
 \subsubsection{Próbniki}
 
-Teksele obrazy (lub rzadziej bufora) zwykle nie są bezpośrednio odczytywane w shaderach.
-Zamiast tego próbkowalne obrazy są używane jako tekstury, które mogą być tylko odczytywane pośrednio używając próbników GPU.
+Teksele obrazu (lub rzadziej bufora) zwykle nie są bezpośrednio odczytywane w shaderach.
+Zamiast tego próbkowane obrazy są używane jako tekstury, które mogą być tylko odczytywane pośrednio używając próbników GPU.
 
-Próbnik GPU przyjmuje od shadera koordynaty tekstury i używa ich do obliczenia i zwrócenia próbki będącej wynikiem automatycznego procesu filtrowania tekstury mieszającego wartość adresowanego koordynatami tekstury teksela z jego sąsiadami w warstwie lub poziomach mipmap.
+Próbnik GPU przyjmuje od shadera koordynaty tekstury i używa ich do obliczenia i zwrócenia próbki będącej wynikiem automatycznego procesu filtrowania tekstury mieszającego wartość adresowanego współrzędnymi tekstury teksela z jego sąsiadami w warstwie lub poziomach mipmap.
 Przykładowo większość GPU wspiera następujące metody filtracji:
 \begin{itemize}
-	\item najbliższego sąsiada: próbka jest równa tekselowi najbliższemu koordynatowi tekstury;
-	\item dwuliniowe: próbka jest średnią czterach najbliższych tekselów;
+	\item najbliższego sąsiada: próbka jest równa tekselowi najbliższemu współrzędnym tekstury;
+	\item dwuliniowe: próbka jest średnią czterech najbliższych tekselów;
 	\item trójliniowe: rozszerzenie filtrowania dwuliniowego o liniową interpolację dwóch najbliższych poziomów mipmap;
-	\item anizotropowe: rozszerzenie filtrowanie trójliniowe uzględniające większą liczby poziomów mipmap, implementacja zależna od sterownika.
+	\item anizotropowe: rozszerzenie filtrowanie trójliniowe uwzględniające większą liczby poziomów mipmap, implementacja zależna od sterownika.
 \end{itemize}
 
 Stan próbnika GPU używanego przez shader jest zaszyty w obiekcie próbnika \textit{VkSampler} i jego następujące parametry tworzenia mogą być użyte do sterowania filtrowaniem:
@@ -469,7 +468,7 @@ Stan próbnika GPU używanego przez shader jest zaszyty w obiekcie próbnika \te
 	\item \textit{magFilter}: filtr powiększania \textit{VkFilter};
 	\item \textit{minFilter}: filtr pomniejszania \textit{VkFilter};
 	\item \textit{mipmapMode}: tryb mipmapowania \textit{VkSamplerMipmapMode};
-	\item \textit{addressModeU}, \textit{addressModeV}, \textit{addressModeW}: tryb adresowania koordynatów tekstur poza przedziałem $\left[0,1\right]$ \textit{VkSamplerAddressMode};
+	\item \textit{addressModeU}, \textit{addressModeV}, \textit{addressModeW}: tryb adresowania współrzędnych tekstur poza przedziałem $\left[0,1\right]$ \textit{VkSamplerAddressMode};
 	\item \textit{anisotropyEnable}: włączenie filtrowania anizotropowego, wymaga funkcjonalności urządzenia Vulkan 1.0 \textit{samplerAnisotropy};
 	\item \textit{maxAnisotropy}: maksymalna wartość anizotropii, musi być mniejsza od limitu \textit{maxSamplerAnisotropy}.
 \end{itemize}
@@ -477,7 +476,7 @@ Stan próbnika GPU używanego przez shader jest zaszyty w obiekcie próbnika \te
 
 \subsection{Łańcuch wymiany}
 
-Łańcuch wymiany jest reprezentowany przez obiekt \textit{VkSwapchainKHR} będący częścia rozszerzenia WSI \textit{VK\_KHR\_swapchain}. Można o nim myśleć jako o tablicy prezentowalnych obrazów udostępnianych aplikacji.
+Łańcuch wymiany jest reprezentowany przez obiekt \textit{VkSwapchainKHR} będący częścią rozszerzenia WSI \textit{VK\_KHR\_swapchain}. Można o nim myśleć jako o tablicy prezentowalnych obrazów udostępnianych aplikacji.
 
 Prezentowalny obraz to obraz należący do powierzchni okna, który może być używany do prezentacji obrazu, czyli aktualizacji powierzchni okna zawartością procesu renderowania.
 
@@ -493,7 +492,7 @@ Program nie może bezpośrednio prezentować obrazu. Zamiast tego musi on:
 	\item Oddać wyrenderowany obraz łańcuchowi wymiany funkcją \textit{vkQueuePresentKHR()}.
 \end{itemize}
 Każdy z tych kroków wymaga synchronizacji z krokiem następnym przy użyciu semaforów. Funkcja \textit{vkAcquireNextImageKHR()} sygnalizuje \textit{semafor dostępności obrazu}, na który czeka funkcja \textit{vkQueueSubmit()}. GPU zaczyna renderowanie dopiero wtedy, gdy prezentowany obraz nie jest używany przez okno.
-Funkcja \textit{vkQueueSubmit()} sygnalizuje \textit{semafor zakończena renderowania}, na który czeka funkcja \textit{vkQueuePresentKHR()} - okno może zacząć prezentować wynik renderowania dopiero wtedy, gdy GPU zakończył wykonywanie poleceń.
+Funkcja \textit{vkQueueSubmit()} sygnalizuje \textit{semafor zakończenia renderowania}, na który czeka funkcja \textit{vkQueuePresentKHR()} - okno może zacząć prezentować wynik renderowania dopiero wtedy, gdy GPU zakończył wykonywanie poleceń.
 
 Prezentacja funkcją \textit{vkQueuePresentKHR()} wymaga użycia uchwytu kolejki prezentacji, która jest dowolną kolejką wspierająca prezentację.
 Nie istnieje osobna rodzina kolejek prezentacji, zwykle kolejki graficzne deklarują wsparcie, które może zostać potwierdzone funkcją \textit{vkGetPhysicalDeviceSurfaceSupportKHR()}.
@@ -561,23 +560,23 @@ Diagram \ref{swap_chain} ilustruje cykl życia obrazu łańcucha wymiany.
 \end{figure}
 
 Informacje tworzenia łańcucha wymiany muszą być wspierane przez powierzchnię okna.
-Wymaganie jest ustalenie trybu prezentacji (funkcja \textit{vkGetPhysicalDeviceSurfacePresentModesKHR()}), liczba prezentowalnych obrazów i ich rozmiar (funkcja \textit{vkGetPhysicalDeviceSurfaceFormatsKHR()}) oraz ich formatu i przestrzeń kolorów (funkcja \textit{vkGetPhysicalDeviceSurfaceCapabilitiesKHR()}).
+Wymagane jest ustalenie trybu prezentacji (funkcja \textit{vkGetPhysicalDeviceSurfacePresentModesKHR()}), liczba prezentowalnych obrazów i ich rozmiar (funkcja \textit{vkGetPhysicalDeviceSurfaceFormatsKHR()}) oraz ich formatu i przestrzeń kolorów (funkcja \textit{vkGetPhysicalDeviceSurfaceCapabilitiesKHR()}).
 
-Trybu prezentacji (\textit{VkPresentModeKHR}) definiuje dokładny mechanizm działania silnika prezentacji:
+Tryb prezentacji (\textit{VkPresentModeKHR}) definiuje dokładny mechanizm działania silnika prezentacji:
 \begin{itemize}
 	\item \textit{IMMEDIATE}: wyrenderowane obrazy są natychmiastowo prezentowane. Brak synchronizacji pionowej może powodować rozrywanie obrazu.
 	\item \textit{FIFO}: łańcuch wymiany zachowuje się jak kolejka FIFO. Przed odświeżeniem ekranu obraz z przodu kolejki jest usuwany i prezentowany. Wyrenderowane obrazy są dodawane na koniec kolejki. Jeśli kolejka jest pełna, to program jest blokowany na funkcji \textit{vkQueuePresentKHR()} i musi czekać na zwolnienie miejsca w kolejce. Ten tryb zapewnia synchronizację pionową i jego dostępność jest gwarantowana przez specyfikację Vulkan. Jednak w sytuacji, w której GPU renderuje obrazy szybciej, niż ekran je prezentuje, program jest blokowany.
 	\item \textit{FIFO\_RELAXED}: podobny do \textit{FIFO}, ale prezentacja obrazu może pomijać synchronizację pionowa wywołując rozrywanie gdy kolejka jest pełna, ale zmniejszając czas blokowania aplikacji,
-	\item \textit{MAILBOX}: podobny do \textit{FIFO}, ale zamiast blokowania programu gdy kolejka jest pełna, starsze obrazy w kolejce są zastępowane przez nowsze. Ten tryb zapewnia synchronizację pionową i zgodnie ze specyfiakcją Vulkan gwarantuje, że program nie jest blokowany podczas prezentacji oraz może zawsze pobrać nieużywany obraz z łańcucha wymiany, ale tylko pod warunkiem, że liczba prezentowalnych obrazów jest większa od minimalnej liczby wymaganej przez powierzchnię okna.
+	\item \textit{MAILBOX}: podobny do \textit{FIFO}, ale zamiast blokowania programu gdy kolejka jest pełna, starsze obrazy w kolejce są zastępowane przez nowsze. Ten tryb zapewnia synchronizację pionową i zgodnie ze specyfikacją Vulkan gwarantuje, że program nie jest blokowany podczas prezentacji oraz może zawsze pobrać nieużywany obraz z łańcucha wymiany, ale tylko pod warunkiem, że liczba prezentowalnych obrazów jest większa od minimalnej liczby wymaganej przez powierzchnię okna.
 \end{itemize}
 
 Po stworzeniu łańcucha obrazów aplikacja może pobrać tablicę uchwytów jego prezentowalnych obrazów funkcją \textit{vkGetSwapchainImagesKHR()} - należy oczywiście pamiętać, że pomimo posiadania uchwytu obrazu może być on używany dopiero, gdy jego indeks jest zwrócony przez funkcję \textit{vkAcquireNextImageKHR()}.
 Następnie należy utworzyć widoki prezentowalnych obrazów, które będą później używane do renderowania do nich.
 
 Istnieją sytuacja, w których łańcuch wymiany musi być odtworzony (zniszczony i stworzony).
-Fukcje \textit{vkAcquireNextImageKHR()} i \textit{vkQueuePresentKHR()} mogą zwrócić rezultat
+Funkcje \textit{vkAcquireNextImageKHR()} i \textit{vkQueuePresentKHR()} mogą zwrócić rezultat
 ERROR\_OUT\_OF\_DATE\_KHR oznaczający, że powierzchnia okna zmieniła się w taki sposób, że nie jest już kompatybilna z łańcuchem wymiany.
-Aplikacja może chciać odtworzyć łańcuch wymiany także dla rezultatu \textit{SUBOPTIMAL\_KHR} oznaczającego, że rozmiar obrazów łańcucha wymiany przestał dokładnie pokrywać się z powierzchnią okna i prezentacja musi przeprowadzać dodatkowe operacje skalowania.
+Aplikacja może chcieć odtworzyć łańcuch wymiany także dla rezultatu \textit{SUBOPTIMAL\_KHR} oznaczającego, że rozmiar obrazów łańcucha wymiany przestał dokładnie pokrywać się z powierzchnią okna i prezentacja musi przeprowadzać dodatkowe operacje skalowania.
 Najczęstszym sprawcą obu tych sytuacji jest zmiana rozmiaru okna.
 
 
@@ -596,7 +595,7 @@ Bufor poleceń jest zawsze w jednym z następujących stanów:
 	\item nieprawidłowy (ang. invalid).
 \end{itemize}
 
-Nowo zaalokowany bufor poleceń jest całkowicie pusty - niezawiera poleceń i znajduje się w stanie początkowym.
+Nowo zaalokowany bufor poleceń jest całkowicie pusty - nie zawiera poleceń i znajduje się w stanie początkowym.
 Bufory poleceń mogą być ponownie sprowadzone do stanu początkowego poprzez zresetowanie funkcją \textit{vkResetCommandBuffer()}.
 Podobnie zresetowanie całej puli poleceń funkcją \textit{vkResetCommandPool()} resetuje wszystkie zaalokowane z niej bufory poleceń.
 
@@ -604,7 +603,7 @@ Bufor poleceń przechodzi w stan nagrywania poprzez wywołanie funkcji \textit{v
 W tym stanie polecenia \textit{vkCmd*()} mogą być używane do nagrywania (dodawania) operacji do wykonania na GPU.
 Efekty nagrywanych poleceń mogą być nieformalnie podzielone na:
 \begin{itemize}
-	\item zmianę wewnętrzny stanu GPU:
+	\item zmianę wewnętrznego stanu GPU:
 	\begin{itemize}
 		\item zmiana dowiązanego obiektu \textit{vkCmdBind*()},
 		\item dynamiczne ustawienie stanu \textit{vkCmdSet*()},
@@ -618,8 +617,8 @@ Bufor poleceń przechodzi w stan wykonywalny po wywołaniu funkcji \textit{vkEnd
 Bufor poleceń w stanie wykonywalnym może zostać wysłany funkcją \textit{VkQueueSubmit()} do kolejki w celu asynchronicznego wykonania na GPU.
 Bufor poleceń przechodzi ze stanu wykonywalnego do stanu oczekującego i po zakończeniu wykonywania na GPU wraca do stanu wykonywalnego.
 
-Modyfikacja bufora poleceń w stanie oczekującym, zniszczenie używanych przez jego zasobów bądź rozpoczęcie nagrywania z flagą użycia \textit{ONE\_TIME\_SUBMIT} powoduje przejście do stanu nieprawidłowego.
-Bufor poleceń w tym stanie może być tylko zresetowany bądź zwolnione.
+Modyfikacja bufora poleceń w stanie oczekującym, zniszczenie używanych zasobów bądź rozpoczęcie nagrywania z flagą użycia \textit{ONE\_TIME\_SUBMIT} powoduje przejście do stanu nieprawidłowego.
+Bufor poleceń w tym stanie może być tylko zresetowany bądź zwolniony.
 
 
 
@@ -652,26 +651,26 @@ Każde dowiązanie deskryptora jest opisane poprzez:
 	zasobu,
 	\item \textit{typ deskryptora},
 	\item \textit{liczba deskryptorów},
-	\item {\textit{zbiór etapów cieniowania}}: określa które shadery w potoku graficznym mają dostep do zasobów.
+	\item {\textit{zbiór etapów cieniowania}}: określa, które shadery w potoku graficznym mają dostęp do zasobów.
 \end{itemize}
-Typ deskryptora zależy od rodzaju opisywanego zasobu, przykładowo:
+Typ deskryptora zależy od rodzaju opisywanego zasobu/przykładowo:
 \begin{itemize}
 	\item {\textit{UNIFORM\_BUFFER}}: bufor uniform;
 	\item {\textit{UNIFORM\_BUFFER\_DYNAMIC}}: dynamiczny bufor uniform, dodatkowy dynamiczny offset jest specyfikowany podczas dowiązywania zbioru deskryptorów;
 	\item {\textit{STORAGE\_BUFFER}}: bufor magazynowy;
 	\item {\textit{STORAGE\_BUFFER\_DYNAMIC}}: dynamiczny bufor magazynowy;
 	\item {\textit{SAMPLER}}: próbnik;
-	\item {\textit{SAMPLED\_IMAGE}}: widok próbkowalnego obrazu, może być próbkowany w shaderze zmienną typu \textit{sampler2D};
+	\item {\textit{SAMPLED\_IMAGE}}: widok próbkowanego obrazu, może być próbkowany w shaderze zmienną typu \textit{sampler2D};
 	\item {\textit{STORAGE\_IMAGE}}: widok obrazu magazynowego, może być odczytywany w shaderze zmienną typu \textit{image2D};
-	\item {\textit{COMBINED\_IMAGE\_SAMPLER}}: próbkowany obraz, pojedynczy deskryptor jest skojarzony zarówno z próbnikiej, jaki i z widokiem obrazu;
+	\item {\textit{COMBINED\_IMAGE\_SAMPLER}}: próbkowany obraz, pojedynczy deskryptor jest skojarzony zarówno z próbnikiem, jaki i z widokiem obrazu;
 	\item {\textit{UNIFORM\_TEXEL\_BUFFER}}: widok bufora uniform;
 	\item {\textit{STORAGE\_TEXEL\_BUFFER}}: widok bufora magazynowego.
 \end{itemize}
 
 \subsubsection{Aktualizacja deskryptorów}
 
-Po stworzeniu zbioru deskryptorów zawartość jego deskryptorów jest niezdefiniowna i musi być zaktualizowana funkcją
-\textit{vkUpdateDescriptorSets()}. Jej wejściem jest \textit{tablica struktur VkWriteDescriptorSet}, której każdy pojedynczy element opisuje
+Po stworzeniu zbioru deskryptorów zawartość jego deskryptorów jest niezdefiniowana i musi być zaktualizowana funkcją
+\textit{vkUpdateDescriptorSets()}. Jej wejściem jest tablica struktur \textit{VkWriteDescriptorSet}, której każdy pojedynczy element opisuje
 który wycinek tablicy wybranego dowiązania w zbiorze deskryptorów powinien być zaktualizowany informacjami o zasobach.
 
 Aktualizacja zbioru deskryptorów odbywa się na CPU natychmiastowo po wywołaniu \textit{vkUpdateDescriptorSets()} i jest możliwa
@@ -683,7 +682,9 @@ Jednym z wyjątków jest aktualizacja zbiorów deskryptorów zaalokowanych z pul
 Stałe push to sposób przekazywania danych do shaderów będący szybszą i łatwiejszą 
 alternatywą dla deskryptorów. Nie wymagają one tworzenia i aktualizacji zasobów opartych na pamięci GPU - pamięć CPU stałej push jest bezpośrednio kopiowana i przechowywana w nagrywanym buforze poleceń poleceniem \textit{vkCmdPushConstants()}.
 
-Niestety ta metoda ma poważne ograniczenie - minimalny rozmiar pamięci udostępniany shaderowi gwarantowany przez specyfikację Vulkan to tylko 128 bajtów, co odpowiada dwóm macierzom 4x4. Z tego powodu stałe push powinny być używane do przekazywania danych, które zmieniają się na tyle często, że narzut wydajnościowy synchronizacji modyfikowanych buforów uniform. Przykładem mogą być macierze transformacji albo indeksy tekstur używane przez polecenia rysowania.
+Niestety ta metoda ma poważne ograniczenie - minimalny rozmiar pamięci udostępniany shaderowi gwarantowany przez specyfikację Vulkan to tylko 128 bajtów, co odpowiada dwóm macierzom 4x4.
+Z tego powodu stałe push powinny być używane do przekazywania małej ilości często zmienianych pomiędzy poleceniami danych.
+Przykładem mogą być macierze transformacji albo indeksy tekstur używane przez polecenia rysowania.
 
 
 \subsubsection{Zadeklarowanie użycia deskryptorów w układzie potoku}
@@ -702,7 +703,7 @@ Zakres stałej push składa się z:
 	\item offset i rozmiar pamięci, który może być używany przez powyższe etapy cieniowania.
 \end{itemize}
 
-Liczba poszczególnych typów deskryptorów uzwględnionych w potoku renderowania jest ograniczona limitami urządzenia fizycznego.
+Liczba poszczególnych typów deskryptorów uwzględnionych w potoku renderowania jest ograniczona limitami urządzenia fizycznego.
 Limit \textit{maxPerStageResources} to maksymalna liczba zasobów, które mogą być dostępne dla pojedynczego etapu cieniowania.
 Rodzina limitów \textit{maxDescriptorSet*}, gdzie \textit{*} to typ deskryptora, kontroluje maksymalną liczbę deskryptorów danego typu w układzie potoku.
 
@@ -773,7 +774,7 @@ Relacja ta nie jest bezpośrednio wyrażona parametrami tworzenia - deskryptory 
 
 \subsubsection{Dostęp do zasobów w shaderach}
 
-Po dowiązaniu zbiorów deskryptorów i stałych push do bufora poleceń dostęp do zasobów z poziomu kodzu GLSL shadera odbywa się poprzez zmienną posiadającą odpowiednie kwalifikatory układu.
+Po dowiązaniu zbiorów deskryptorów i stałych push do bufora poleceń dostęp do zasobów z poziomu kodu GLSL shadera odbywa się poprzez zmienną posiadającą odpowiednie kwalifikatory układu.
 
 Przykładowo kwalifikator układu dla pojedynczego deskryptora typu UNIFORM\_BUFFER z dowiązania o numerze $x$ ze zbioru o numerze $y$ ma formę przedstawioną na listingu \ref{kwbuf}.
 \lstset{language=GLSL}
@@ -826,7 +827,7 @@ Powyższe zasady skutkują maksymalnym upakowaniem pól dla buforów używający
 Rozszerzenie \textit{VK\_EXT\_descriptor\_indexing} wprowadziło szereg dodatkowych funkcjonalności pozwalających na tworzenie dużych zbiorów
 deskryptorów zawierających wszystkie zasoby używane przez program.
 Celem tego jest umożliwienie technik renderowania bez dowiązań. Z powodu swojej użyteczności rozszerzenie to zostało promowane w Vulkan 1.2.
-W kolejnych sekcjach opisano nowe funkcjonalości.
+W kolejnych sekcjach opisano nowe funkcjonalności.
 
 \subsubsection{Niejednolite dynamiczne indeksowanie deskryptorów}
 
@@ -841,7 +842,7 @@ Przykładem tego rodzaju indeksowania jest użycie indeksu tekstury w stałej pu
 Wymaga ona wsparcia następujących funkcjonalności urządzenia Vulkan 1.0:
 \begin{itemize}
 	\item {\textit{shaderUniformBufferArrayDynamicIndexing}}: tablice buforów uniform,
-	\item {\textit{shaderSampledImageArrayDynamicIndexing}}: tablice próbkowalnych obrazów,
+	\item {\textit{shaderSampledImageArrayDynamicIndexing}}: tablice próbkowanych obrazów,
 	\item {\textit{shaderStorageBufferArrayDynamicIndexing}}: tablice buforów magazynowych,
 	\item {\textit{shaderStorageImageArrayDynamicIndexing}}: tablice obrazów magazynowych.
 \end{itemize}
@@ -880,7 +881,7 @@ Nie dotyczy to jednak deskryptorów używających funkcjonalności aktualizacji 
 Wsparcie aktualizacji po dowiązaniu dla wybranego typu deskryptora wymaga odpowiedniej funkcjonalności urządzenia Vulkan 1.2:
 \begin{itemize}
 	\item {\textit{descriptorBindingUniformBufferUpdateAfterBind}}: bufory uniform,
-	\item {\textit{descriptorBindingSampledImageUpdateAfterBind}}: próbkowalne obrazów,
+	\item {\textit{descriptorBindingSampledImageUpdateAfterBind}}: próbkowane obrazy,
 	\item {\textit{descriptorBindingStorageBufferUpdateAfterBind}}: bufory magazynowe,
 	\item {\textit{descriptorBindingStorageImageUpdateAfterBind}}: obrazy magazynowe.
 \end{itemize}
@@ -897,9 +898,9 @@ Aplikacja musi zapewnić odpowiednią synchronizację - aktualizowane deskryptor
 \subsubsection {Dowiązanie deskryptora o zmiennej wielkości}
 
 Domyślnie wielkość dowiązania deskryptora jest stałą wartością określoną podczas stworzenia układu zbioru deskryptora.
-Ograniczenie to nie dotyczny dowiązań deskryptora o zmiennej wielkości.
+Ograniczenie to nie dotyczy dowiązań deskryptora o zmiennej wielkości.
 
-Dzięki tej funkcjonalości wielkość zbioru deskryptorów jest niezależna od układu zbioru deskryptorów i jest specyfikowana dopiero podczas tworzenia zbioru deskryptorów, co pozwala to obsługę sytuacji, w której dokładna liczba deskryptorów wymaganych do opisania zasobów nie jest znana podczas tworzenia układu zbioru deskryptoru.
+Dzięki tej funkcjonalności wielkość zbioru deskryptorów jest niezależna od układu zbioru deskryptorów i jest specyfikowana dopiero podczas tworzenia zbioru deskryptorów, co pozwala na obsługę sytuacji, w której dokładna liczba deskryptorów wymaganych do opisania zasobów nie jest znana podczas tworzenia układu zbioru deskryptorów.
 
 Wsparcie dowiązań o zmiennej wielkości wymaga funkcjonalności urządzenia Vulkan 1.2 \textit{descriptorBindingVariableDescriptorCount}, która w czasie pisania pracy jest wspierana przez ponad $90\%$ urządzeń \cite{GPUINFO}.
 
@@ -909,9 +910,9 @@ Rzeczywista liczba jest ustalana podczas tworzenia zbioru deskryptorów przy uż
 \subsubsection {Częściowo dowiązane deskryptory}
 
 Domyślnie wszystkie deskryptory w dołączonym zbiorze deskryptorów nie mogą być w stanie nieprawidłowym i muszą koniecznie być zaktualizowane przez dowiązaniem - jest to nazywane wymogiem statycznego użycia deskryptorów.
-Ograniczenie to nie dotyczny częściowo dowiązanych deskryptorów.
+Ograniczenie to nie dotyczy częściowo dowiązanych deskryptorów.
 
-Dzięki tej funkcjonalności deskryptory muszą być dynamicznie używane: deskryptory nieużywane przez shadery mogą być nieprawidłowe i dodatkowo mogą być nawet aktualizowane gdy zbior deskryptorów jest używany przez GPU - pamiętając, że dostęp przy użyciu nieprawidłowego deskryptora jest wciąż niezdefiniowanym zachowaniem i aplikacja musi zapewnić odpowiednią synchronizację CPU-GPU.
+Dzięki tej funkcjonalności deskryptory muszą być dynamicznie używane: deskryptory nieużywane przez shadery mogą być nieprawidłowe i dodatkowo mogą być nawet aktualizowane gdy zbiór deskryptorów jest używany przez GPU - pamiętając, że dostęp przy użyciu nieprawidłowego deskryptora jest wciąż niezdefiniowanym zachowaniem i aplikacja musi zapewnić odpowiednią synchronizację CPU-GPU.
 
 Wsparcie dowiązań o zmiennej wielkości wymaga funkcjonalności urządzenia Vulkan 1.2 \textit{descriptorBindingPartiallyBound}, która w czasie pisania pracy jest wspierana przez ponad $94\%$ urządzeń \cite{GPUINFO}.
 
@@ -971,7 +972,7 @@ Vulkan 1.2 oferuje następujące sześć wariantów polecenia rysowania:
 		\item \textit{firstVertex}: indeks pierwszego wierzchołka,
 		\item \textit{firstInstance}: indeks pierwszej instancji.
 	\end{itemize}
-	Specyfikacja \textit{instanceCount} większej niż 1 pozwala na wyrenderowanie kilku kopii tej samej siatki w tym samym czasie. Shader wierzchołków może uzyskać dostęp do indeksu obecnie renderowaniej instancji używając zmiennej \textit{gl\_InstanceIndex}, która może zostać użyta do indeksowanie desktyptorów z danymi specyficznymi dla instancji takich jak macierz modelu.
+	Specyfikacja \textit{instanceCount} większej niż 1 pozwala na wyrenderowanie kilku kopii tej samej siatki w tym samym czasie. Shader wierzchołków może uzyskać dostęp do indeksu obecnie renderowanej instancji używając zmiennej \textit{gl\_InstanceIndex}, która może zostać użyta do indeksowanie deskryptorów z danymi specyficznymi dla instancji takich jak macierz modelu.
 	Ta technika jest użyteczna podczas renderowania powtarzających się elementów sceny takich jak trawy czy drzewa. 
 
 	\item \textit{vkCmdDrawIndexed()}: Rozszerzenie \textit{vkCmdDraw()} używające dowiązanego bufora indeksów do indeksowania dowiązanego bufora wierzchołków.
@@ -980,7 +981,7 @@ Vulkan 1.2 oferuje następujące sześć wariantów polecenia rysowania:
 	\item \textit{vkCmdDrawIndirect()}: Polecenie rysowanie pośredniego.
 	Zachowuje się podobnie do \textit{vkCmdDraw()}, ale jego parametry nie są zaszyte w poleceniu i są odczytywane przez GPU pośrednio z bufora parametrów rysowania pośredniego zawierającego tablicę struktur \textit{VkDrawIndirectCommand}, którego rozmiar jest przekazywany parametrem \textit{drawCount}.
 	Użycie \textit{drawCount} większego niż 1 wymaga funkcjonalności urządzenia \textit{multiDrawIndirect} i skutkuje poleceniem wielokrotnego rysowania pośredniego.
-	Takie polecenie potencjalnie kompresuję kilka następujących bezpośrednio po sobie poleceń \textit{vkCmdDraw()} używających niezmienionego stanu GPU, co pozwala na renderowanie skomplikowanych scen przy użyciu jednego polecenia rysowania.
+	Takie polecenie potencjalnie odpowiada kilku następujących bezpośrednio po sobie poleceniom \textit{vkCmdDraw()} używających niezmienionego stanu GPU, co pozwala na renderowanie skomplikowanych scen przy użyciu jednego polecenia rysowania.
 	Dodatkowo znajdujący się w pamięci GPU bufor parametrów może być wypełniany używając operacji GPGPU (np. poleceniem \textit{vkCmdDispatch()}), co pozwala na przyśpieszenie renderowania poprzez ograniczenie transferów z CPU do GPU.
 	
 	\item \textit{vkCmdDrawIndexedIndirect()}: Wariant łączący polecenia \textit{vkCmdDrawIndirect()} i \textit{vkCmdDrawIndexed()}.
@@ -996,12 +997,12 @@ Vulkan 1.2 oferuje następujące sześć wariantów polecenia rysowania:
 Wydajność renderowania może być zwiększona poprzez zmniejszenie całkowitej liczby poleceń rysowania, które muszą być wykonane przez GPU. Ten proces jest często nazywany optymalizacją poleceń rysowania (ang. draw call optimization), w którym niezoptymalizowane polecenia rysowania są konwertowane na grupy (ang. batch) możliwe do wyrenderowania jednym zoptymalizowanym poleceniem rysowania.
 W Vulkan ten proces jest realizowany poprzez użycie funkcjonalności poleceń rysowania takich jak instancjonowanie czy wielokrotne rysowanie pośrednie.
 
-Pojedyńcze polecenie rysowania nie zawiera wszystkich informacji potrzebnych do wyrenderowania dowiązanych zasobów i wymaga wcześniejszego stworzenia dwóch obiektów: potoku graficznego i przebiegu renderowania.
+Pojedyncze polecenie rysowania nie zawiera wszystkich informacji potrzebnych do wyrenderowania dowiązanych zasobów i wymaga wcześniejszego stworzenia dwóch obiektów: potoku graficznego i przebiegu renderowania.
 
 
 \subsubsection{Potok graficzny}
 
-Termin "potok" może się odnosić do abstrakcyjnego modelu potoku opisującego proces przetwarzania poleceń na GPU oraz od obiektu \textit{VkPipeline} zawierającego jego wstępnie skonfigurowany stan.
+Termin ,,potok'' może się odnosić do abstrakcyjnego modelu potoku opisującego proces przetwarzania poleceń na GPU oraz od obiektu \textit{VkPipeline} zawierającego jego wstępnie skonfigurowany stan.
 
 Vulkan 1.2 wspiera trzy rodzaje potoków pozwalające na przetwarzanie odpowiedniego rodzaju poleceń: potok graficzny, potok obliczeniowy oraz potok śledzenia promieni.
 
@@ -1015,7 +1016,7 @@ Każde etap potoku jest albo etapem cieniowania, albo etapy funkcji stałych. Di
 \end{figure}
 
 Każdy etap cieniowania wykonuje pewien shader - program specyfikujący operacje wykonywane dla każdego przetwarzanego przez elementu (np. wierzchołka, punktu sterującego, fragmentu lub grupy roboczej).
-Kod źródłowy GLSL reprezentuje shader w formie tekstowej przy użyciu języka programowania potoku graficznego składniowo zbliżonego do jezyka C.
+Kod źródłowy GLSL reprezentuje shader w formie tekstowej przy użyciu języka programowania potoku graficznego składniowo zbliżonego do języka C.
 Kod bajtowy SPIR-V reprezentuje shader w formie ustandaryzowanej binarnej reprezentacji pośredniej. Jest on zwykle uzyskiwany poprzez kompilację kodu źródłowego w języku wyższego poziomu takiego jak GLSL.
 Moduł shaderów to obiekt \textit{vkShaderModule} uzyskiwany poprzez kompilację kodu bajtowego SPIR-V do kodu binarnego w ISA GPU używając funkcją \textit{vkCreateShaderModule()}.
 Po kompilacji moduł shadera jest w formie, która może być używana bezpośrednio przez etapy cieniowania.
@@ -1028,7 +1029,7 @@ Przykładowo:
 	\item \textit{VERTEX\_SHADER}: shader wierzchołków,
 	\item \textit{TESSELLATION\_CONTROL\_SHADER}: shader sterowania teselacją,
 	\item \textit{TESSELLATION\_EVALUATION\_SHADER}: shader wyliczania teselacją,
-	\item \textit{GEOMETRY\_SHADER}: shader geometri,
+	\item \textit{GEOMETRY\_SHADER}: shader geometrii,
 	\item \textit{EARLY\_FRAGMENT\_TESTS}: wczesne testy fragmentów (testy głębi i szablonu przed cieniowaniem fragmentów),
 	\item \textit{FRAGMENT\_SHADER}: shader fragmentów,
 	\item \textit{LATE\_FRAGMENT\_TESTS}: późne testy fragmentów (testy głębi i szablonu po cieniowaniu fragmentów),
@@ -1036,8 +1037,8 @@ Przykładowo:
 \end{itemize}
 Dodatkowe prymitywy synchronizacji często używają następujących etapów nienależących do potoku graficznego:
 \begin{itemize}
-	\item \textit{TOP\_OF\_PIPE}: pseudoetap przed rozpoczęciem wykonywania polecenia,
-	\item \textit{BOTTOM\_OF\_PIPE}: pseudoetap po zakończeniu wykonywania polecenia,
+	\item \textit{TOP\_OF\_PIPE}: pseudo-etap przed rozpoczęciem wykonywania polecenia,
+	\item \textit{BOTTOM\_OF\_PIPE}: pseudo-etap po zakończeniu wykonywania polecenia,
 	\item \textit{TRANSFER}: wykonywanie poleceń transferu.
 \end{itemize}
 
@@ -1049,9 +1050,9 @@ Działanie etapów funkcji stałych jest sterowane parametrami tworzenia zawiera
 Przykłady:
 \begin{itemize}
 \item stan wejścia wierzchołków \textit{VkPipelineVertexInputStateCreateInfo} opisujący sposób odczytu wierzchołków z dowiązanych buforów oraz jego wewnętrzną strukturę widzianą przez shadery w postaci atrybutów wierzchołka;
-\item stan składania prymitywów wejściowych \textit{VkPipelineInputAssemblyStateCreateInfo} sterujący łaczeniem odczytanych wierzchołków w prymitywy używając topologi \textit{VkPrimitiveTopology} i trybu restartu prymitywów;
+\item stan składania prymitywów wejściowych \textit{VkPipelineInputAssemblyStateCreateInfo} sterujący łączeniem odczytanych wierzchołków w prymitywy używając topologi \textit{VkPrimitiveTopology} i trybu restartu prymitywów;
 \item stan rasteryzacji \textit{VkPipelineRasterizationStateCreateInfo} pozwalający na specyfikację takich parametrów jak kierunek rysowania (ang. winding order) trójkąta czy grubość linii;
-\item stan głębkości/szablonu \textit{VkPipelineDepthStencilStateCreateInfo} definiujący testy głębokości i szablonu;
+\item stan głębokości/szablonu \textit{VkPipelineDepthStencilStateCreateInfo} definiujący testy głębokości i szablonu;
 \item stan mieszania kolorów \textit{VkPipelineColorBlendStateCreateInfo} określający sposób mieszania kolorów będących wynikiem cieniowania fragmentów przed zapisem do dołączeń koloru.
 \end{itemize}
 
@@ -1066,9 +1067,9 @@ Sam potok graficzny nie wystarcza do rozpoczęcia procesu renderowania - wymagan
 
 Polecenia rysowania muszą być nagrywane w ramach pojedynczego przebiegu renderowania definiującego zbiór widoków obrazów nazywanych dołączeniami (ang. attachements) służących jako cele renderowania wszystkich poleceń wykonywanych w ramach przebiegu.
 
-Tradycyjny sposób definicji przebiegów renderowania w Vulkan wymaga stworzenia obiektów przebiegu renderowania \textit{VkRenderPass} i bufora ramki \textit{VkFramebuffer} kompatybilnych wzajemnie ze sobą oraz z potokiem \textit{VkPipeline}. Pozwala to na szczegołowy opis procesu renderowania pozwalajacy sterownikom na maksymalną optymalizację, ale jest skomplikowane i wymaga tworzenia osobnych przebiegów renderowania i buforów ramki dla każdej zmiany obrazów służących jako dołączenia.
+Tradycyjny sposób definicji przebiegów renderowania w Vulkan wymaga stworzenia obiektów przebiegu renderowania \textit{VkRenderPass} i bufora ramki \textit{VkFramebuffer} kompatybilnych wzajemnie ze sobą oraz z potokiem \textit{VkPipeline}. Pozwala to na szczegółowy opis procesu renderowania pozwalający sterownikom na maksymalną optymalizację, ale jest skomplikowane i wymaga tworzenia osobnych przebiegów renderowania i buforów ramki dla każdej zmiany obrazów służących jako dołączenia.
 
-Definicja pzrebiegów renderowania została uproszczona rozszerzeniem \textit{VK\_EXT\_dynamic\_rendering}. Wprowadziło one dynamiczne przebiegi renderowania niewymagające tworzenia dodatkowych obiektów Vulkan.
+Definicja przebiegów renderowania została uproszczona rozszerzeniem \textit{VK\_EXT\_dynamic\_rendering}. Wprowadziło one dynamiczne przebiegi renderowania niewymagające tworzenia dodatkowych obiektów Vulkan.
 Zamiast tego podczas tworzenia potoku graficznego do jego łańcucha \textit{pNext} dodawana jest struktura \textit{VkPipelineRenderingCreateInfoKHR} definiująca liczbę i formaty używanych dołączeń koloru i głębi/szablonu.
 Widoki obrazów służących jako dołączenia są specyfikowane dopiero podczas rozpoczęcia przebiegu renderowania poleceniem \textit{vkCmdBeginRenderingKHR()}.
 
@@ -1088,7 +1089,7 @@ Narzędzie RenderDoc \cite{RENDERDOC} pozwala na przechwycenie liczników wydajn
 
 \subsection{Synchronizacja}
 
-Sterowniki Vulkan, w przeciwieństwie do OpenGL, nie wykonują automatycznej synchronizacji pomiędzy operacjami używającymi zasobówi wymagają od programisty używania poniżej opisanych prymitywów synchronizacji.
+Sterowniki Vulkan, w przeciwieństwie do OpenGL, nie wykonują automatycznej synchronizacji pomiędzy operacjami używającymi zasobowi wymagają od programisty używania poniżej opisanych prymitywów synchronizacji.
 
 \subsubsection{Bariery potoku}
 
@@ -1106,15 +1107,14 @@ Przykładowo zależność wykonania pomiędzy etapami
 wykonywania shadera fragmentów.
 
 Zależność pamięci to zależność wykonania z dodatkową gwarancją, że rezultat zapisów wyspecyfikowanych przez pewien \textit{źródłowy
-	zakres dostępów} (określony używając \textit{VkAccessFlags}) wygenerowanych przez wcześniejszy zestaw poleceń jest udostępiony
+	zakres dostępów} (określony używając \textit{VkAccessFlags}) wygenerowanych przez wcześniejszy zestaw poleceń jest udostępniony
 późniejszemu zestawowi poleceń dla pewnego \textit{docelowego zakresu dostępów}.
 
 Przykładowo zależność pamięci pomiędzy etapami
 \textit{COLOR\_ATTACHMENT\_OUTPUT} i \textit{FRAGMENT\_SHADER} z zakresami dostępów \textit{COLOR\_ATTACHMENT\_WRITE} i \textit{SHADER\_READ} gwarantuje, że zapis
 do dołączeń kolorów zostanie skończony i będzie mógł być odczytany przez shader fragmentów.
 
-Istnieją trzy rodzaje barier w zależności od rodzaju pamięci zarządzanego przez zależności pamięci:
-
+Istnieją trzy rodzaje barier, które różnią się typem pamięci opisywanym przez zależność pamięci:
 \begin{itemize}
 	\item {bariery pamięci obrazów}: dla zakresu obrazu, dodatkowo pozwala na tranzycje układu obrazu,
 	\item {bariery pamięci buforów}: dla zakresu bufora,
@@ -1134,7 +1134,7 @@ graficzna i kolejką prezentacji w celu zagwarantowania, że prezentowalny obraz
 
 Vulkan pozwala na bardzo prostą synchronizację GPU z CPU poprzez funkcje \textit{vkQueueWaitIdle()} i \textit{vkDeviceWaitIdle()} blokujące wykonywanie programu aż do zakończenia wszystkich operacji wykonywanych na kolejce bądź całym urządzeniu.
 
-Ogrodzenia (ang. fence) to obiekty \textit{VkFence} pozwalające na bardziej drobnoziarnistą synchonizację poleceń wykonywanych w kolejce na GPU z CPU.
+Ogrodzenia (ang. fence) to obiekty \textit{VkFence} pozwalające na bardziej drobnoziarnistą synchronizację poleceń wykonywanych w kolejce na GPU z CPU.
 Ogrodzenie może być sygnalizowane przez GPU po zakończeniu wykonywania funkcji używających GPU, CPU może zresetować ogrodzenie
 funkcją \textit{vkResetFences()} lub czekać na jego sygnalizację funkcją \textit{vkWaitForFences()} chwilowo blokując wykonywanie programu.
 
@@ -1143,7 +1143,7 @@ Przykładowo ogrodzenia są używane do zagwarantowania, że program nie używa 
 \subsubsection{Zdarzenia}
 Zdarzenia (ang. event) to obiekty \textit{VkEvent} pozwalające na ogólną synchronizację wykonywanych poleceń z innymi poleceniami bądź CPU.
 Funkcja \textit{vkCmdSetEvents()} sygnalizuje zdarzenie po rozpoczęciu wykonywania źródłowych etapów potoku zależności wykonania. Wraz z funkcją \textit{vkCmdWaitEvents()} pozwala na specyfikację pełnej zależności pamięci.
-Aplikacja może manualnie sygnalizować, resetować i czekać na zdarzenia na funkcjami \textit{vkSetEvents()}, \textit{vkResetEvent()} i \textit{vkGetEventStatus()}, co pozwala na blokowanie GPU przez CPU i jest jedyną funkcjonalnością niemożliwą do zaimplementowania przez poprzednio opisane prymitywy synchronizacji, które powinny być optymalniejsze od elastyczniejszych zdarzeń.
+Aplikacja może manualnie sygnalizować, resetować i czekać na zdarzenia na funkcjami \textit{vkSetEvents()}, \textit{vkResetEvent()} i \textit{vkGetEventStatus()}, co pozwala na blokowanie GPU przez CPU i jest jedyną funkcjonalnością niemożliwą do zaimplementowania przez poprzednio opisane prymitywy synchronizacji, które powinny być wydajniejsze od elastyczniejszych zdarzeń.
 
 
 
@@ -1169,16 +1169,16 @@ Polecenia rysowania mogą używać parametrów poleceń rysowania takich jak \t
 
 Optymalizacja poleceń rysowania sprowadza się do nagrania polecenia wielokrotnego rysowania pośredniego \textit{vkCmdDrawIndexedIndirect()}. Używany przez niego bufor parametrów rysowania pośredniego może być zminimalizowany poprzez grupowanie poleceń - dwa polecenia renderujące ten sam prymityw mogą być zastąpione jednym poleceniem rysującym dwie instancje.
 
-Niestety użycie zawsze dowiązanego pojedynczego zbioru deskryptorów jest komplikowane przez wymóg jednolitości podczas indeksowania deskryptorów wywołujący problemy z renderowaniem scen wypełnionych obiektami używającymi różnych tekstur.
+Niestety użycie pojedynczego zoptymalizowanego polecenia rysowania renderującego scenę zawierającą obiekty różniące się teksturami jest utrudniane przez wymóg jednolitości indeksowania deskryptorów.
 
-Tradycyjnie podczas renderowania obiektów każda zmiana uzywanej tekstury wymaga nagrania nowego polecenia rysowania po zmianie używanych deskryptorów poprzez:
+Tradycyjnie podczas renderowania obiektów każda zmiana używanej tekstury wymaga nagrania nowego polecenia rysowania, które jest informowane o zmianie używanych tekstur poprzez:
 \begin{itemize}
 	\item dowiązanie całkowicie nowego zbioru deskryptorów: bardzo kosztowaną operacją, ale wymaga wsparcia tylko statycznego indeksowania,
 	\item ponowne dowiązanie deskryptora dynamicznego bufora uniform ze zmienionym dynamicznym offsetem,
 	\item zmianę jednolitego indeksu używanego do indeksowania deskryptorów poprzez:
 	\begin{itemize}
 		\item nagranie nowej stałej push,
-		\item zmianę bazowego indeksu instancji w poleceniu rysowania pojedynczej instancji: wbudowania zmienna shaderów \textit{gl\_InstanceIndex} jest niejednolita tylko dla poleceń rysowania renderujących wiecej niż jedną instancję.
+		\item zmianę bazowego indeksu instancji w poleceniu rysowania pojedynczej instancji: wbudowania zmienna shaderów \textit{gl\_InstanceIndex} jest niejednolita tylko dla poleceń rysowania renderujących więcej niż jedną instancję.
 	\end{itemize}
 \end{itemize}
 Diagram \ref{bindful_texture_command_buffer} przedstawia tradycyjne tekstury z dowiązaniami używające jednolitego indeksu w stałej push.
@@ -1249,7 +1249,7 @@ Diagram \ref{bindful_texture_command_buffer} przedstawia tradycyjne tekstury z d
 \end{figure}
 
 Optymalizacja poleceń rysowania wymaga innego podejścia nieopartego na jednolitym indeksowaniu.
-Niejednolite dynamiczne indeksowanie pozwala na dowiązanie wszystkich używanych zasobów na początku bufora poleceń i wyemitowanie pojedynczego polecenia rysowania, którego shadery używją niejednolitego indeksu instancji do pobrania indeksów używanych tekstur z bufora uniform opisującego obiekty na scenie.
+Niejednolite dynamiczne indeksowanie pozwala na dowiązanie wszystkich używanych zasobów na początku bufora poleceń i wyemitowanie pojedynczego polecenia rysowania, którego shadery używają niejednolitego indeksu instancji do pobrania indeksów używanych tekstur z bufora uniform opisującego obiekty na scenie.
 Diagram \ref{bindless_texture_command_buffer} przedstawia tekstury bez dowiązań używając niejednolitych indeksów instancji.
 \begin{figure}[H]
 	\centering
@@ -1379,7 +1379,7 @@ Oczywistymi przykładami zasobów wejściowych są zasoby 3D obejmujące modele 
 Liczba możliwych elementów składającymi się na zasób 3D skłoniła branżę do opracowania ustandaryzowanych formatów opisu sceny, wśród których szczególną popularność zdobyły:
 \begin{itemize}
 	\item \textit{FBX} (Filmbox): rozwijany od 2006 przez Autodesk zamknięty format szeroko używany w branży gier z powodu łatwego eksportu oferowanego przez programy Autodesk 3ds Max i Maya.
-	Jego zamknięta natura wymaga importowania albo przy pomocy oficjalnego SDK wymagającego akceptacji restrykcyjnego EULA, albo reimplementacji wymaganych części formatu inżynierią wsteczną.
+	Jego zamknięta natura wymaga importowania albo przy pomocy oficjalnego SDK wymagającego akceptacji restrykcyjnego EULA, albo samodzielnej implementacji wymaganych części formatu inżynierią wsteczną.
 	\item \textit{USD} (Universal Scene Description): otwarty format rozwijany od 2016 przez Pixar pozwala na łatwą i kompletną wymianę informacji pomiędzy różnymi najnowocześniejszymi programami grafiki 3D używanymi przez Pixar do produkcji animacji.
 	Jego skompresowany i okrojony zamknięty wariant \textit{USDZ} jest używany przez Apple.
 	\item \textit{glTF} (Graphics Language Transmission Format): rozwijany od 2015 przez Khronos otwarty format przystosowany do przechowywania ostatecznej wersji sceny w sposób prosty do sparsowania i wyrenderowania bądź dalszego przetworzenia.
@@ -1394,7 +1394,7 @@ Zgodnie ze specyfikacją glTF \cite{GLTFSPEC} zasób jest reprezentowany przez:
 	\item pliki binarne \textit{*.bin} zawierający dane buforów zawierających geometrię bądź animacje,
 	\item pliki obrazów \textit{*.png} i \textit{*.jpg} opisujące tekstury,
 \end{itemize}
-Pliki binarne i obrazy mogą być osadzone bezpośrednio w obiecie JSON używając kodowania Base64.
+Pliki binarne i obrazy mogą być osadzone bezpośrednio w obiekcie JSON używając kodowania Base64.
 Możliwe jest też użycie binarnej wersji formatu glTF pozwalający na przechowywanie wszystkich danych w jednym binarnym pliku \textit{.glb}.
 
 Zasób glTF składa się z obiektu JSON zawierającego metadane oraz osobne tablice dla każdego typu elementu zasobu.
@@ -1444,7 +1444,7 @@ Relacje pomiędzy różnymi typami elementów zostały pokazana na poniższym di
 	\label{gltf_concepts}
 \end{figure}
 
-Listing \ref{gltfExample} zawiera przykładowy plik \textit{triangle.gltf} opisujący scenę zawierającą pojedynczy trójkątą z geometrią składającą się z wierzchołków pozycji zawartych w pliku \textit{triangle.bin}.
+Listing \ref{gltfExample} zawiera przykładowy plik \textit{triangle.gltf} opisujący scenę zawierającą pojedynczy trójkąt z geometrią składającą się z wierzchołków pozycji zawartych w pliku \textit{triangle.bin}.
 
 \noindent\begin{minipage}{.35\textwidth}
 \lstset{language=JSON}
@@ -1530,8 +1530,8 @@ Proces konwersji sceny na polecenia rysowania zależy od jej formatu.
 Nieskomplikowane sceny mogą być opisane przy pomocy listy renderowanych obiektów. Bardziej złożone sceny są zwykle reprezentowane przy użyciu hierarchicznego modelowania.
 Jest to technika reprezentowania złożonych scen polegająca na podzieleniu ich modelów na części i śledzeniu hierarchicznych relacji rodzic-dziecko pomiędzy nimi przy użyciu struktury zwanej grafem sceny. Ten sposób reprezentacji sceny bardzo popularny wśród aplikacji 3D i jest używany przez formaty FBX i glTF.
 
-Każdy węzeł grafu sceny składa się z lokalnej transformacji przestrzeni świata, opcjonalnej referencji do renderowanej geometrii oraz listy węzłów potomne. Jeden z wezłów jest oznaczony jako korzeń.
-Emitowanie poleceń rysowania sprowadza się do rekurencyjengo przemierzania grafu sceny zaczynając od korzenia \cite{kosarevsky20213d} i zostało przedstawione na listingu \ref{RenderujGrafSceny}:
+Każdy węzeł grafu sceny składa się z lokalnej transformacji przestrzeni świata, opcjonalnej referencji do renderowanej geometrii oraz listy węzłów potomnych. Jeden z węzłów jest oznaczony jako korzeń.
+Emitowanie poleceń rysowania sprowadza się do rekurencyjnego przemierzania grafu sceny zaczynając od korzenia \cite{kosarevsky20213d} i zostało przedstawione na listingu \ref{RenderujGrafSceny}:
 \lstset{language=verbatim}
 \begin{lstlisting}[caption={Emitowanie poleceń rysowania na podstawie grafu sceny},captionpos=b,label={RenderujGrafSceny}]
 RenderujGrafSceny(węzeł):
@@ -1544,17 +1544,17 @@ RenderujGrafSceny(węzeł):
     RenderujGrafSceny(dziecko)
 \end{lstlisting}
 
-Liczba poleceń rysowania wyemitowanych algorytmem \ref{RenderujGrafSceny} może być zoptymalizana.
+Liczba poleceń rysowania wyemitowanych algorytmem \ref{RenderujGrafSceny} może być zoptymalizowana.
 Przykładowo w scenie z samochodem jego cztery koła są renderowane przy pomocy czterech osobnych poleceń rysowania różniących się tylko pozycją, które mogą być narysowanie używając jednego polecenia rysującego cztery instancje geometrii.
 
 \section{Graf renderowania}
 
 W przeciwieństwie do poprzednich API takich jak OpenGL, Vulkan nie zmienia automatycznie układu obrazu, co zmusza
-programistę do samodzielnego śledzenia stanu układu obrazów i wykonywania przejść na poprawny układ przed użyciem ich przez polecenia poprzez użycie odpowieniej bariery pamięci obrazu \textit{VkImageMemoryBarrier}.
+programistę do samodzielnego śledzenia stanu układu obrazów i wykonywania przejść na poprawny układ przed użyciem ich przez polecenia poprzez użycie odpowiedniej bariery pamięci obrazu \textit{VkImageMemoryBarrier}.
 
-Dodatkowo renderowania wieloprzebiegowe wymaga zapewnienie zależności pamięci pomiędzy przebiegami renderowania odczytujacymi i zapisującymi te same zasoby poprzez ręczne nagrywanie odpowiednich barrier pamięci.
+Dodatkowo renderowanie wieloprzebiegowe wymaga zapewnienia zależności pamięci pomiędzy przebiegami renderowania odczytującymi i zapisującymi te same zasoby poprzez ręczne nagrywanie odpowiednich barier pamięci.
 
-Problem ten został rozwiązany w silniku Frostbite poprzez wprowadzenie struktury zwanej grafem renderowania \cite{FRAMEGRAPH} bądącej wysokopoziomową reprezentacją procesu renderowania pojedynczej klatki.
+Problem ten został rozwiązany w silniku Frostbite poprzez wprowadzenie struktury zwanej grafem renderowania \cite{FRAMEGRAPH} będącej wysokopoziomową reprezentacją procesu renderowania pojedynczej klatki.
 
 Graf renderowania jest skierowanym grafem acyklicznym, którego węzły to przemiennie przebiegi renderowania i zasoby.
 Krawędzie reprezentują zależności odczytu i zapisu zasobów przez przebiegi. W przypadku tradycyjnego potoku graficznego zasoby to obrazy, które są próbkowane i używane jako dołączenia.
@@ -1600,15 +1600,15 @@ Użycie grafu renderowania można podzielić na trzy etapy:
 	\item wykonanie: użycie skompilowanego grafu do nagrania poleceń rysowania.
 \end{itemize}
 
-W Vulkan graf renderowania może być używany do śledzenia użycia obrazów przez przebiegi renderownia oraz nagrania do bufora poleceń przebiegów renderowania nagrywania wraz z barierami pamięci obrazu gwarantującymi odpowiednie przejścia układu obrazów i zależności pamięci.
+W Vulkan graf renderowania może być używany do śledzenia użycia obrazów przez przebiegi renderowania oraz nagrania do bufora poleceń przebiegów renderowania nagrywania wraz z barierami pamięci obrazu gwarantującymi odpowiednie przejścia układu obrazów i zależności pamięci.
 
 
 
-\section{Fizycznie poprawny rendering}
+\section{Renderowanie oparte na fizyce}
 
-Fizycznie poprawny rendering (ang. Physically Based Rendering, PBR) to metodologia renderowania mająca na celu zwiększenie realizmu renderowanych scen poprzez użycie materiałów i modeli oświetlenia odwzorowujących rzeczywistość.
+Renderowanie oparte na fizyce (ang. Physically Based Rendering, PBR) to metodologia renderowania mająca na celu zwiększenie realizmu renderowanych scen poprzez użycie materiałów i modeli oświetlenia odwzorowujących rzeczywistość.
  
-Materiał to kompletny opis właściwości powierzchni renderowanej geometrii będący zbiorem parameterów i tekstur używanych do przez shadery podczas renderowania prymitywów.
+Materiał to kompletny opis właściwości powierzchni renderowanej geometrii będący zbiorem parametrów i tekstur używanych do przez shadery podczas renderowania prymitywów.
 
 Renderowana scena może definiować różne rodzaje świateł.
 Najprostszym typem światła jest światło otoczenia padające równomiernie na wszystkie powierzchnie prymitywów.
@@ -1616,7 +1616,7 @@ Najprostszym typem światła jest światło otoczenia padające równomiernie na
 Światło pośrednie jest światłem odbitym od innych powierzchni na scenie i z powodu kosztowności jego obliczania jest albo pomijane, albo przybliżane używając okluzji otoczenia (ang. ambient occlusion).
 
 Materiał i informacje o światłach na scenie są używane przez zaimplementowany w shaderach model oświetlenia to obliczenia ostatecznego koloru powierzchni prymitywu.
-Model oświetlanie PBR, w przeciwieństwie do tradycyjnych modelów takich jak Blinn-Phong, stara się przestrzegać praw fizyki.
+Model oświetlanie PBR, w przeciwieństwie do tradycyjnych modelów takich jak Blinn-Phong \cite{HughesDamEtAl13}, stara się przestrzegać praw fizyki.
 
 Nie istnieje jedna standardowa implementacja PBR, ale specyfikacja glTF \cite{GLTFSPEC} definiuje prosty model materiałów PBR.
 Materiał w formacie glTF jest zdefiniowany przy użyciu modelu metaliczności-chropowatości posiadającego następujące właściwości:
@@ -1626,7 +1626,7 @@ Materiał w formacie glTF jest zdefiniowany przy użyciu modelu metaliczności-c
 	\item chropowatość (ang. roughness): określa chropowatość materiału, tj. czy materiał jest błyszczący czy matowy.
 \end{itemize}
 Kolor podstawowy jest obliczany poprzez przemnożenie dwóch parametrów materiału: współczynnika vec4 oraz tekstury RGBA.
-Podobnie używane są współczynniki chropowatości i metaliczności będące wartościami w przedziale $\left[0,1\right]$ mnożonymi przez tekstury metaliczności-chropowatości - wartości metalicznści są próbkowane z komponenu B, a wartości metalicznści z komponentu G.
+Podobnie używane są współczynniki chropowatości i metaliczności będące wartościami w przedziale $\left[0,1\right]$ mnożonymi przez tekstury metaliczności-chropowatości - wartości metaliczności są próbkowane z komponentu B, a wartości metaliczności z komponentu G.
 
 Khronos udostępnia referencyjną implementację PBR używaną przez glTF przeznaczoną do celów edukacyjnych \cite{GLTFSAMPLEVIEWER}. Jest ona łatwa do zrozumienia i może być łatwo rozszerzony o dodatkowe funkcjonalności takie jak mapowanie nierówności.
 
@@ -1635,7 +1635,7 @@ Khronos udostępnia referencyjną implementację PBR używaną przez glTF przezn
 \section{Renderowanie odroczone i efekty post-processingu}
 
 Scena może być wyrenderowana w ramach jednego przebiegu renderowania używającego potoku graficznego zaczynającego od pobrania wierzchołków geometrii i kończącego na zapisaniu ostatecznego koloru do dołączenia koloru będącego prezentowalnym obrazem.
-Ta techika renderowania jest nazywana renderowaniem wprzód (ang. forward rendering) i jest tradycyjnym oraz intuicyjnym sposobem myślenia o renderowaniu.
+Ta technika renderowania jest nazywana renderowaniem wprzód (ang. forward rendering) i jest tradycyjnym oraz intuicyjnym sposobem myślenia o renderowaniu.
 
 Niestety renderowanie wprzód posiada wadę widoczną podczas renderowania skomplikowanych scen zawierających obiekty z geometrią zasłaniającą inne obiekty, dla których następuje spadek wydajności spowodowany przerysowaniem (ang. overdraw).
 Przerysowanie to sytuacja, w której ostateczny kolor jest wielokrotnie nadpisywany przez shader fragmentów wykonywane dla prymitywów zasłaniających ten sam teksel dołączenia koloru.
@@ -1647,7 +1647,7 @@ Renderowanie odroczone rozbija przebieg renderowania wprzód na dwa następując
 	\item przebieg geometrii: wypełnia poszczególne komponenty G-bufora,
 	\item przebieg oświetlenia: generuje właściwy obraz na podstawie komponentów G-bufora.
 \end{itemize}
-Rysunek \ref{render_graph_example} zawiera graf renderujący ilustrujący cieniowanie odroczone.
+Rysunek \ref{render_graph_example} zawiera graf renderowania ilustrujący cieniowanie odroczone.
 
 G-bufor to zbiór tekstur pozaekranowych zmiennoprzecinkowych zawierających mniej kosztowne obliczeniowo informacje o powierzchni wyrenderowanej geometrii.
 Przykładowo G-bufor może zawierać kolor podstawowy powierzchni, normalną oraz położenie w przestrzeni świata.
@@ -1655,7 +1655,7 @@ Przykładowo G-bufor może zawierać kolor podstawowy powierzchni, normalną ora
 Ważne jest, żeby shader fragmentów używany podczas renderowania sceny do G-bufora był mały i wydajny, dzięki czemu wystąpienie przerysowania nie spowoduje znaczącego spadku wydajności - przebieg geometrii nie wykonuje kosztownych obliczeń oświetlenia.
 
 Po zakończeniu przebiegu geometrii G-bufor może zostać użyty do wyrenderowania ostatecznego obrazu.
-Potok graficzny przebiegu oświetlania zaczyna się od polecenia rysowania pełnoekranowego trójkąta, dzięki czemu emitujowane jest dokładnie jedno wywołanie shadera fragmentów dla każdego teksela dowiązania koloru - kosztowny shader fragmentów obliczający oświetlenie jest obliczany tylko jeden raz i jest niezależny od stopnia skomplikowania geometrii sceny.
+Potok graficzny przebiegu oświetlania zaczyna się od polecenia rysowania pełnoekranowego trójkąta, dzięki czemu emitowane jest dokładnie jedno wywołanie shadera fragmentów dla każdego teksela dowiązania koloru - kosztowny shader fragmentów obliczający oświetlenie jest obliczany tylko jeden raz i jest niezależny od stopnia skomplikowania geometrii sceny.
 
 Opisana wyżej technika renderowania pełnoekranowanego trójkąta wywołującego shader fragmentów dla każdego teksela dowiązania koloru jest podstawą efektów post-processingu.
 Są one przebiegami renderowania występującymi po zakończeniu rysowania właściwej sceny mających na celu poprawienie wyglądu ostatecznie prezentowanego obrazu.

@@ -27,7 +27,7 @@ Najprostszą do implementacji jest odrzucanie na CPU obiektów poza bryłą widz
 Znacznie bardziej skomplikowane, ale zgodne z duchem renderowania bez dowiązań, jest usuwanie niewidocznych powierzchni na GPU. Może być ono zrealizowane w Vulkan używając shaderów obliczeń modyfikujących bufory pośrednie używane przez polecenia rysowania.
 
 Użycie shaderów obliczeń pozwoliłoby też na zastosowanie techniki programowalnego pobierania wierzchołków (ang. programmable vertex pulling) \cite{kosarevsky20213d}, w której etap asemblera wejścia potoku graficznego jest całkowicie pomijany i zastępowany odczytywaniem i dekodowaniem danych geometrii z zasobów shadera.
-Podejście to pozwoliłoby na eleminację ujednoliconego bufora geometrii oraz zastąpienie sztywnego definiowania formatów wierzchołków w potoku graficznym elastyczniejszym dekodującym kodem w shaderach. 
+Podejście to pozwoliłoby na eliminację ujednoliconego bufora geometrii oraz zastąpienie sztywnego definiowania formatów wierzchołków w potoku graficznym elastyczniejszym dekodującym kodem w shaderach. 
 
 Model oświetlenia może być rozszerzony o powierzchnie emitujące światło poprzez dodanie tekstur emisyjnych.
 Podobnie tekstury skybox mogą być użyte do mapowania środowiskowego symulującego odbicia światła dla połyskliwych powierzchni.

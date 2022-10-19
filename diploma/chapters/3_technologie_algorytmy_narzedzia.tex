@@ -3,10 +3,10 @@
 
 \section{Narzędzia}
 
-Silnik została napisany jako biblioteka w języku C w standardzie C11. Budowanie biblioteki ze źródeł wymaga generacji
-dodatkowego kodu przy pomocy skryptów w języku Python w wersji 3.9.7.
+Silnik została napisany jako biblioteka w języku C w standardzie C11 \cite{C11REFERENCE}. Budowanie biblioteki ze źródeł wymaga generacji
+dodatkowego kodu przy pomocy skryptów w języku Python w wersji 3.9.7 \cite{PYTHONREFERENCE}.
 
-Silnik został w całości opracowany na przy użyciu środowiska programistycznego CLion w wersji 2021.2.3.
+Silnik został w całości opracowany na przy użyciu środowiska programistycznego CLion w wersji 2021.2.3 \cite{CLION}.
 
 Proces testowania i debugowania odbywał się na maszynie o następującej konfiguracji:
 \begin{itemize}
@@ -15,13 +15,11 @@ Proces testowania i debugowania odbywał się na maszynie o następującej konfi
 	\item {GPU}: Intel UHD Graphics 730 (Rocket Lake GT1).
 \end{itemize}
 
-Podczas pracy stosowano rozproszony system kontroli wersji git. Repozytorium jest utrzymywane na serwisie GitHub.
+Podczas pracy stosowano rozproszony system kontroli wersji git. Repozytorium jest utrzymywane na serwisie GitHub \cite{GITHUB}.
 
-Pliki \textit{.clang-tidy} i \textit{.clang-format} znajdujące się w strukturze plików projektu pozwalają na automatyczne formatowanie
-kodu źródłowego zgodnie ze uprzednio zdefiniowanym standardem kodowania.
+Pliki \textit{.clang-tidy} i \textit{.clang-format} znajdujące się w strukturze plików projektu pozwalają na automatyczne formatowanie kodu źródłowego zgodnie ze uprzednio zdefiniowanym standardem kodowania.
 
-Proces budowania projektu jest zautomatyzowany przy użyciu narzędzia CMake, które w przypadku języków C i C++ jest
-praktycznie standardem podczas rozwoju wieloplatformowych projektów.
+Proces budowania projektu jest zautomatyzowany przy użyciu narzędzia CMake \cite{CMAKE}, które w przypadku języków C i C++ jest praktycznie standardem podczas rozwoju wieloplatformowych projektów.
 
 \subsection{Proces budowania}
 
@@ -44,12 +42,12 @@ wymaga wcześniejszego zbudowania wszystkich innych celów od których zależy b
 
 Wyróżniane są trzy rodzaje celów:
 \begin{itemize}
-	\item {plik wykonywalny}
-	\item {biblioteka}: statyczna lub dynamiczna
-	\item {cel niestandardowy}: używany do uruchamiania zewnętrznych programów podczas procesu kompilacji, np. generatorów kodu
+	\item {plik wykonywalny};
+	\item {biblioteka}: statyczna lub dynamiczna;
+	\item {cel niestandardowy}: używany do uruchamiania zewnętrznych programów podczas procesu kompilacji, np. generatorów kodu.
 \end{itemize}
 
-Poniższy diagram przedstawia proces budowania projektu w formie celów i ich zależności:
+Diagram \ref{cmake} przedstawia proces budowania projektu w formie celów i ich zależności.
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[node distance=2cm]
@@ -117,7 +115,7 @@ Projekt używa następujących zewnętrznych bibliotek programistycznych:
 		\item \textit{shaderc}: kompilacja shaderów z kodu źródłowego GLSL do kodu bajtowego SPIR,
 		\item \textit{SPIRV-Reflect}: mechanizm refleksji dla kodu bajtowego SPIR-V,
 	\end{itemize}
-	\item {\textit{glfw 3.4}} \cite{GLFW}: międzyplatformowa obsługa tworzenia okien, obsługa wejścia klawiatury i myszy,
+	\item {\textit{glfw 3.4}} \cite{GLFW}: wieloplatformowa obsługa tworzenia okien, obsługa wejścia klawiatury i myszy,
 	\item {\textit{sqlite 3.35.5}} \cite{SQLITE}: relacyjna baza danych SQL,
 	\item {\textit{uthash 2.3.0}} \cite{UTHASH}: proste struktury danych (tablica dynamiczna, lista dwukierunkowa, tablica mieszająca),
 	\item {\textit{xxHash 0.8.1}} \cite{XXHASH}: niekryptograficzny algorytm mieszający,
@@ -162,7 +160,7 @@ Silnik był rozwijany metodą \textit{bottom-up} - jego pierwsza iteracja była 
 
 Moduł jest dalej podzielony na jednostki, które zostały na potrzeby projektu zdefiniowane jako para składająca się z pliku nagłówkowego z odpowiadającym plikiem źródłowymi o tej samej nazwie.
 
-Pliki nagłówowe zawierają deklaracje funkcji, struktur oraz typów wyliczeniowych widocznych dla użytkownika końcowego i powinny być dołączone do programu przy użyciu dyrektywy \textit{\#include} preprocesora.
+Pliki nagłówkowe zawierają deklaracje funkcji, struktur oraz typów wyliczeniowych widocznych dla użytkownika końcowego i powinny być dołączone do programu przy użyciu dyrektywy \textit{\#include} preprocesora.
 Pliki źródłowe zawierają definicje deklaracji plika nagłówkowego i powinny być dołączone do programu używając argumentów kompilatora (jeśli dodawane są niezbudowane pliki źródłowe) bądź linkera (jeśli dodawane są zbudowane pliki biblioteczne), co jest automatycznie wykonywane przez CMake.
 
 Struktury są zorganizowane w sposób obiektowy.
@@ -279,7 +277,7 @@ Ta sekcja opisuje szczegóły implementacyjne poszczególnych modułów silnika.
 Silnik używa kodu w języku C wygenerowanego przez automatyczny generator kodu będący skryptem Python uruchamianym przez CMake na początku procesu budowania przed rozpoczęciem kompilacji właściwego
 kodu źródłowego biblioteki.
 
-Język C nie posiada mechanizmów pozwalających na metaprogramowanie z wyjątkiem makr preprocessora, które mogą zaspokoić część potrzeb programisty chcącego przykładowo dodać nowy rodzaje pętli \cite{METACONTROLC}, ale nie pozwalają na bardziej skomplikowaną analizę i przekształcanie kodu, które muszą być wykonywane przez zewnętrzne narzędzia.
+Język C nie posiada mechanizmów pozwalających na metaprogramowanie z wyjątkiem makr preprocesora, które mogą zaspokoić część potrzeb programisty chcącego przykładowo dodać nowy rodzaje pętli \cite{METACONTROLC}, ale nie pozwalają na bardziej skomplikowaną analizę i przekształcanie kodu, które muszą być wykonywane przez zewnętrzne narzędzia.
 
 Działanie skryptu jest sterowane konfiguracją generatora, który jest plikiem w formacie INI (zgodnym z biblioteką \textit{configparser} \cite{PYTHONCONFIGPARSER}) znajdującym się w katalogu ze skryptem.
 Format INI nie posiada standardowej specyfikacji, ale tradycyjnie jest on plikiem tekstowym podzielonym na sekcje zawierające pary klucz-wartość.
@@ -306,12 +304,12 @@ Poniżej wymieniono stałe, ich wartości oraz interpretacje:
 	\item \textit{WORLD\_UP}: $0, 1, 0$; wektor interpretowany jako "w górę" w przestrzeni świata.
 \end{itemize}
 
-Wygenerowane stałe mogą być używane przez shadery - ich definicje są umieszczane na początku kodu GLSL shadera przed jego kompilacją - dlatego są one udostępiane w formie X makro \textit{CODEGEN\_CONSTANTS}.
+Wygenerowane stałe mogą być używane przez shadery - ich definicje są umieszczane na początku kodu GLSL shadera przed jego kompilacją - dlatego są one udostępniane w formie X-makro \textit{CODEGEN\_CONSTANTS}.
 
-X makro to przydatna technika preprocessora pozwalająca na pisanie kodu, który jest automatycznie aktualizowany po zmienie danych opisywanych przez X makro \cite{XMACRO}.
+X-makro to przydatna technika preprocesora pozwalająca na pisanie kodu, który jest automatycznie aktualizowany po zmianie danych opisywanych przez X-makro \cite{XMACRO}.
 Przykładowo funkcja przedstawiona na listingu \ref{xmacroBefore} wymaga manualnej aktualizacji po zmianie używanego typu wyliczeniowego.
 \lstset{language=C}
-\begin{lstlisting}[caption={Przykładowy kod przed zastosowaniem X makro},captionpos=b,label={xmacroBefore}]
+\begin{lstlisting}[caption={Przykładowy kod przed zastosowaniem X-makro},captionpos=b,label={xmacroBefore}]
 typedef enum key {
 	key_space,
 	key_enter,
@@ -326,9 +324,9 @@ int key_to_glfw_key(key value) {
 	}
 }
 \end{lstlisting}
-Listing \ref{xmacroAfter} przedstawia użycie X makro do przepisania kodu z listingu \ref{xmacroBefore}:
+Listing \ref{xmacroAfter} przedstawia użycie X-makro do przepisania kodu z listingu \ref{xmacroBefore}:
 \lstset{language=C}
-\begin{lstlisting}[caption={Przykładowy kod po zastosowaniu X makro},captionpos=b,label={xmacroAfter}]
+\begin{lstlisting}[caption={Przykładowy kod po zastosowaniu X-makro},captionpos=b,label={xmacroAfter}]
 
 #define END_OF_KEYS
 #define KEYS(X, ...)			\
@@ -352,7 +350,7 @@ int key_to_glfw_key(key value) {
 	}
 }
 \end{lstlisting}
-X makra ułatwiają utrzymywanie kodu poprzez deklaratywnego "jedynego źródła prawdy"\  i są intensywnie używane na wskroś silnika.
+
 
 \subsubsection{Jednostka globals}
 Obiekt globalny \textit{globals} reprezentujący wygenerowane zmienne.
@@ -390,7 +388,7 @@ void globals_create() {
 \end{lstlisting}
 
 \subsubsection{Jednostka macros}
-Zbiór X makr używanych przez moduł I/O obsługujący następujące zasoby wejściowe.
+Zbiór X-makr używanych przez moduł I/O obsługujący następujące zasoby wejściowe.
 
 Makra opisują wewnętrzną strukturę plików INI konfiguracji globalnej i konfiguracji zasobów: używane sekcje i ich dopuszczalne pary klucz-wartość z domyślnymi wartościami (liczby całkowite bądź ciągi znaków).
 Listing \ref{macrosBefore} przedstawia przykładowy fragment konfiguracji generatora opisujący konfigurację globalną i pozwalający na sparsowanie pliku INI przedstawionego na listingu \ref{macrosAfter}.
@@ -472,7 +470,7 @@ typedef struct global_uniform_buffer_struct {
 } global_uniform_buffer_struct;
 \end{lstlisting}
 
-Układ pamięci struktur zdefiniowanych w języku C nie są koniecznie kompatybilne układem pamięci wymaganymi przez GPU.
+Układ pamięci struktur zdefiniowanych w języku C nie jest koniecznie kompatybilny z układem pamięci wymaganym przez GPU.
 Dlatego dla każdej sparsowanej struktury \textit{*\_struct} jest generowana analogiczna struktura \textit{*\_element}, w których użyto specyfikatorów \textit{alignas} i atrybutów \textit{packed} udostępnianych przez C11 i rozszerzenia GCC w celu wyrównania pól struktury w zgodzie ze standardem układu pamięci scalar.
 Generowana jest też funkcja \textit{glsl\_add\_*()} dodająca do ciągu znaków z kodem GLSL definicje struktury i kwalifikator układu.
 Listing \ref{descriptorsAfter} pokazuje przykładowe wejście i wyjście generacji dla bufora uniform \textit{instances}.
@@ -506,12 +504,12 @@ void glsl_add_instances_uniform_buffer(
 	utstring_printf(s, ";\n};\n");
 }
 \end{lstlisting}
-Generacja jest kończona X makraami wyliczającymi nazwy wszystkich sparsowanych rodzin struktur. 
+Generacja jest kończona X-makrami wyliczającymi nazwy wszystkich sparsowanych rodzin struktur. 
 
 Dzięki automatycznej generacji kodu modyfikacja sposobu organizacji pamięci GPU buforów sprowadza się do modyfikacji struktur w nagłówku \textit{descriptors}, co pozwala na szybkie testowanie nowych parametrów i metod dostępu do nich podczas pisania shaderów.
 Mechanizm ten został zainspirowany implementacją jednolitych buforów w grze \textit{Tom Clancy's Rainbow Six Siege} \cite{RAINBOWSIXSIEGE}.
 
-Wygenerowane struktury, funkcje i X makra są używane podczas kopiowania danych z CPU do pamięci GPU oraz generacji shaderów, co zostanie dokładniej opisane w dalszym podrozdziale o module Vulkan.
+Wygenerowane struktury, funkcje i X-makra są używane podczas kopiowania danych z CPU do pamięci GPU oraz generacji shaderów, co zostanie dokładniej opisane w dalszym podrozdziale o module Vulkan.
 
 \subsection{Rdzeń}
 
@@ -523,10 +521,10 @@ Jednostka odpowiedzialna za udostępnienia bibliotek zewnętrznych reszcie kodu.
 Nagłówek dołącza nagłówki bibliotek zewnętrznych i z powodów wydajnościowych podczas procesu budowania jest traktowany jako nagłówek prekompilowany (ang. precompiled header, PCH).
 
 Plik źródłowy obsługuje część bibliotek zewnętrznych składających się jedynie z nagłówków (ang. header-only library).
-W przeciwieństwie do tradycyjnych bibliotek języka C w których kod jest podzielony na pliki nagłówkowe i źródłowe, w tym przypadku dostęp do definicji tradycyjnie znajdujących sę z plikach źródłowych jest uzyskiwany poprzez ponowne dołączenie nagłówka przy użyciu dyrektywy \textit{\#include} po wcześniejszym zdefiniowaniu odpowiedniego symbolu preprocesora.
+W przeciwieństwie do tradycyjnych bibliotek języka C w których kod jest podzielony na pliki nagłówkowe i źródłowe, w tym przypadku dostęp do definicji tradycyjnie znajdujących się z plikach źródłowych jest uzyskiwany poprzez ponowne dołączenie nagłówka przy użyciu dyrektywy \textit{\#include} po wcześniejszym zdefiniowaniu odpowiedniego symbolu preprocesora.
 Listing \ref{thirdpartyCgltf} przedstawia wymagany sposób ponownego dołączenia nagłówka biblioteki \textit{cgltf}.
 \lstset{language=C}
-\begin{lstlisting}[caption={Przykład dołączenia implementacji bibliteki \textit{cgltf}},captionpos=b,label={thirdpartyCgltf}]
+\begin{lstlisting}[caption={Przykład dołączenia implementacji biblioteki \textit{cgltf}},captionpos=b,label={thirdpartyCgltf}]
 #define CGLTF_IMPLEMENTATION
 #include "cgltf.h"
 \end{lstlisting}
@@ -534,22 +532,22 @@ Listing \ref{thirdpartyCgltf} przedstawia wymagany sposób ponownego dołączeni
 \subsubsection{Jednostka alloc}
 Funkcje pomocnicze wspomagające zarządzanie pamięcią CPU, co obejmuje alokację, dealokację, kopiowanie, duplikowanie i porównywanie bloków pamięci CPU.
 
-Funkcje te są potrzebne, ponieważ działanie odpowiednich funkcji oferowane przez bibliotekę standardową języka C, chociaż oferują żądaną funkcjonalność, opiera się na mechanizmie niezdefiniowanych zachowań (ang. undefined behaviour) dla niektórych argumentów (wskaźnik NULL, rozmiar 0) i zachowań OOM (ang. Out-of-memory).
+Funkcje te są potrzebne, ponieważ działanie odpowiednich funkcji oferowane przez bibliotekę standardową języka C, chociaż oferują żądaną funkcjonalność, opiera się na mechanizmie niezdefiniowanych zachowań (ang. undefined behaviour) dla niektórych argumentów (wskaźnik NULL, rozmiar 0) i zachowań OOM (ang. out-of-memory, brak pamięci).
 
 Funkcje pomocnicze są wrapperami z dodatkowymi instrukcjami warunkowymi sprawdzającymi, czy wywołanie funkcji nie skutkuje niezdefiniowanym zachowaniem.
 
-Jednostka definiuje też makra ułatwiające zarządzanie pamięcią struktur danych bibliteki \textit{uthash}.
+Jednostka definiuje też makra ułatwiające zarządzanie pamięcią struktur danych biblioteki \textit{uthash}.
 
 
 \subsubsection{Jednostka log}
-Obiekt globalny \textit{log} reprezentujący system logowana komunikatów wygenerowanych podczas działania kodu mający na celu w uproszczenie procesu debuggowania.
+Obiekt globalny \textit{log} reprezentujący system logowana komunikatów wygenerowanych podczas działania kodu mający na celu w uproszczenie procesu debugowania.
 
 Komunikat jest ciągiem znaków z przypisanym poziomem logowania określającym jego ważność z domyślnie wspieranymi wartościami \textit{debug}, \textit{info}, \textit{warn}, \textit{error} i \textit{fatal}.
 Komunikaty \textit{debug} są logowane tylko w konfiguracji \textit{Debug}.
 
-Komunikaty są zapisywane do standardowego wyjścia (\textit{stdout} albo \textit{stderr}) oraz do pliku tekstowego na dysku, którego nazwa zaostała zdefiniowana w wygenrowanych zmiennych (domyślnie \textit{log.txt}).
+Komunikaty są zapisywane do standardowego wyjścia (\textit{stdout} albo \textit{stderr}) oraz do pliku tekstowego na dysku, którego nazwa została zdefiniowana w wygenerowanych zmiennych (domyślnie \textit{log.txt}).
 
-Logowanie komuniaktu odbywa się poprzez grupę funkcji \textit{log\_*()}, gdzie \textit{*} to poziom logowania, zachowujące się tak samo jak funkcja \textit{printf} z biblioteki standardowej języka C - pierwszy argument to ciąg znaków z znakami formatującymi, reszta argumentów to formatowane wartości.
+Logowanie komunikatu odbywa się poprzez grupę funkcji \textit{log\_*()}, gdzie \textit{*} to poziom logowania, zachowujące się tak samo jak funkcja \textit{printf()} z biblioteki standardowej języka C - pierwszy argument to ciąg znaków z znakami formatującymi, reszta argumentów to formatowane wartości.
 
 Listing \ref{logBefore} demonstruje logowanie i powinien zapisać do pliku \textit{log.txt} w katalogu z plikiem wykonywalnym komunikaty podobne do przedstawionych na listingu \ref{logAfter}:
 \lstset{language=C}
@@ -571,7 +569,7 @@ komunikat #3
 \end{lstlisting}
 
 \subsubsection{Jednostka junk}
-Proste funkcje i makra które mogą być potencjalnie używane we wszystkich modułach bibliteki, ale nie zostały uznane za wystarczająca skomplikowane, aby uzasadnić wydzielenia do osobnej jednostki.
+Proste funkcje i makra które mogą być potencjalnie używane we wszystkich modułach biblioteki, ale nie zostały uznane za wystarczająca skomplikowane, aby uzasadnić wydzielenia do osobnej jednostki.
 
 Jednostka definiuje stałe preprocesora \textit{PLATFORM\_*} przedstawione na listingu \ref{junk1} używane do rozpoznania systemu operacyjnego, na którym budowany jest silnik (Linux, MacOS, Windows).
 \lstset{language=C}
@@ -605,7 +603,7 @@ log_debug("Hash value is %zu", hash);
 
 Makro \textit{UNREACHABLE} pozwala na optymalizację kodu poprzez oznaczenie punktów programu, które nigdy nie są napotykane przez przepływ sterowania.
 Jego definicja zależy od konfiguracji: w \textit{Debug} sprowadza się do asercji \textit{assert(0)}, a w \textit{Release} do funkcji wbudowanej kompilatora GCC \textit{\_\_builtin\_unreachable()}.
-Przykładowo określenie nieosiągnalności przypadku domyślnej instrukcji switch bądź bloku else informuje o
+Przykładowo określenie nieosiągalności przypadku domyślnej instrukcji switch bądź bloku else informuje o
 kompletności sprawdzanych warunków, co zostało przedstawione na listingu \ref{junk3}.
 \lstset{language=C}
 \begin{lstlisting}[caption={Przykład użycia makra UNREACHABLE},captionpos=b,label={junk3}]
@@ -618,7 +616,7 @@ if (type == directional) {
 }
 \end{lstlisting}
 
-Jednostka definiuje też makra używające formy metaprogramowania w celu dodania nowych struktur kontrolnych \cite{METACONTROLC} upraszczających iterowanie po strukturach danych bibliteki \textit{uthash}, której użycie zostało przedstawione na listingu \ref{junk4}.
+Jednostka definiuje też makra używające formy metaprogramowania w celu dodania nowych struktur kontrolnych \cite{METACONTROLC} upraszczających iterowanie po strukturach danych biblioteki \textit{uthash}, której użycie zostało przedstawione na listingu \ref{junk4}.
 \lstset{language=C}
 \begin{lstlisting}[caption={Przykład iteracji używając makra utarray\_foreach\_elem\_deref},captionpos=b,label={junk4}]
 utarray_foreach_elem_deref (tree_node *, node, tree->nodes) {
@@ -633,7 +631,7 @@ Głowna część rdzenia implementująca obiekt globalny \textit{platform} odpow
 Funkcja \textit{panic()} pozwala na zamknięcie programu z kodem wyjścia oznaczającym nieudane wykonanie po wystąpieniu fatalnego błędu.
 Jest ona używana przez makro \textit{verify()}, które podobnie do makra \textit{assert()} pozwala na testowanie warunku logicznego i przerwanie działania programu gdy przyjmuje on wartość fałsz, ale w przeciwieństwie do niego działa też w konfiguracji \textit{Release}.
 
-Funkcje \textit{get\_executable\_dir\_path()} i \textit{get\_path\_dirname()} pozwalają na odkrycie ścieźki z katalogiem zawierającym plik wykonywalny, co jest potrzebne do pełnego określenia struktury plików opisanych przez wygenerowane stałe.
+Funkcje \textit{get\_executable\_dir\_path()} i \textit{get\_path\_dirname()} pozwalają na odkrycie ścieżki z katalogiem zawierającym plik wykonywalny, co jest potrzebne do pełnego określenia struktury plików opisanych przez wygenerowane stałe.
 Na systemie Linux używana jest funkcja \textit{readlink()} do odczytania pliku \textit{/proc/self/exe}
 oraz funkcja \textit{dirname()}.
 Na systemie Windows używana jest funkcja \textit{GetModuleFileName()} oraz funkcja \textit{PathRemoveFileSpec()}.
@@ -644,7 +642,7 @@ Funkcje \textit{write\_text\_file()} i \textit{read\_text\_file()} pozwalają na
 
 Silnik wczytuje ze ścieżek zaszytych w zmiennych globalnych następujące zasoby wyjściowe:
 \begin{itemize}
-	\item konfiguracja globalna (plik tekstory INI),
+	\item konfiguracja globalna (plik tekstowy INI),
 	\item kod GLSL shadera (plik tekstowy GLSL),
 	\item baza zasobów (baza danych).
 \end{itemize}
@@ -701,12 +699,12 @@ Obiekt \textit{db} rozszerza ten ubogi system typów nowymi typami złożonymi b
 Dodatkowo każdy typ posiada wersję tablicową \textit{*\_ARRAY} (BYTE\_ARRAY, INT\_ARRAY itd.).
 
 Obiekt \textit{sql\_db} pozwala na przeprowadzanie standardowych operacji wyboru (ang. select) i umieszczania (ang. insert) rekordów do wybranej tabeli.
-Baza danych SQLite wciąż wewnętrznie używa typów prostych, ale wygenerowane przy użyciu X makro metody \textit{select\_*()} i \textit{insert\_*()} automatycznie przeprowadzają serializację i deserializację typów złożonych.
+Baza danych SQLite wciąż wewnętrznie używa typów prostych, ale wygenerowane przy użyciu X-makro metody \textit{select\_*()} i \textit{insert\_*()} automatycznie przeprowadzają serializację i deserializację typów złożonych.
 
 
 \subsubsection{Jednostka asset\_db}
 Obiekt \textit{asset\_db} reprezentuje bazę zasobów.
-Używa on wewnętrznie obiektu \textit{sql\_db} i podobnie jak w nim użyto X makro do dodania metod wyboru i umieszczania wartości dla specyficznej tabeli, kolumny i klucza.
+Używa on wewnętrznie obiektu \textit{sql\_db} i podobnie jak w nim użyto X-makro do dodania metod wyboru i umieszczania wartości dla specyficznej tabeli, kolumny i klucza.
 
 Listing \ref{assetDbExample} demonstruje wybór i umieszczenie kod wartość FLOAT z tabeli \textit{directLight}, kolumny \textit{intensity} i klucza \textit{key}.
 \lstset{language=C}
@@ -752,7 +750,7 @@ Wspierane są następujące rodzaje obiektów zasobów zawierające dane opisuj�
 	\item \textit{asset\_image}: obraz,
 	\item \textit{asset\_sampler}: próbnik.
 \end{itemize}
-Relacje pomiędzy nimi są inspirowane formatem glTF i zostały pokazane na poniższym diagramie:
+Relacje pomiędzy nimi są inspirowane formatem glTF i zostały pokazane na diagramie \ref{asset_data_relationships}.
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[node distance=0.5cm]
@@ -815,11 +813,11 @@ Ostateczna pozycja na scenie dla powyższych zasobów nie jest opisana bezpośre
 
 \subsubsection{Zasób siatki \textit{asset\_mesh}}
 Zasób siatki \textit{asset\_mesh} reprezentuje geometrię na scenie i składa się z listy prymitywów.
-Podział na siatkę i prymitywy ma na celu zmniejszenie redundancji. Przykładowo siatka modelu auta może zawiarać 4 identyczne koła renderowanych 4 razy tym samym prymitywem.
+Podział na siatkę i prymitywy ma na celu zmniejszenie redundancji. Przykładowo siatka modelu auta może zawierać 4 identyczne koła renderowanych 4 razy tym samym prymitywem.
 Siatka jest tożsama z geometrią pojedynczego modelu przygotowanego w programie do modelowania 3D.
 
 \subsubsection{Zasób siatki \textit{asset\_primitive}}
-Zasób prymitywu \textit{asset\_primitive} reprezentuje część siatku obiektu.
+Zasób prymitywu \textit{asset\_primitive} reprezentuje część siatki obiektu.
 Jeden prymityw zawiera wszystkie dane wymagane do wygenerowania jednego polecenia rysowania i składa się z następujących elementów:
 \begin{itemize}
 	\item rodzaj topologii (\textit{VkPrimitiveTopology}),
@@ -841,7 +839,7 @@ Dodatkowo jeden zasób atrybutów jest używany do przechowywania indeksów wier
 Zasoby zawierają jedynie dane potrzebne do konstrukcji wierzchołków siatki - ostatecznie używany format wierzchołka (w tym rozdzielanie lub separacja atrybutów), tylko przez strumień wierzchołków \textit{vertex\_stream} w module renderera.
 
 \subsubsection{Zasób siatki \textit{asset\_vertex\_attribute}}
-Zasób atributu wierzchołka \textit{asset\_vertex\_attribute} reprezentuje dane pojedynczego atrybutu przechowywane w postaci tablicy komponentów, których typ to \textit{uint32\_t}, \textit{vec2}, \textit{vec3} lub \textit{vec4}.
+Zasób atrybutu wierzchołka \textit{asset\_vertex\_attribute} reprezentuje dane pojedynczego atrybutu przechowywane w postaci tablicy komponentów, których typ to \textit{uint32\_t}, \textit{vec2}, \textit{vec3} lub \textit{vec4}.
 
 \subsubsection{Zasób siatki \textit{asset\_camera}}
 Zasób kamery \textit{asset\_camera} zawiera parametry, których część zależy od rodzaju używanego rzutu:
@@ -895,7 +893,7 @@ Składa się z:
 	\item rozmiar znaku: rozmiar jednego glifu w pikselach (uint32\_t).
 \end{itemize}
 
-Poniższy obraz przedstawia przykładową teksturę dla czcionki Go-Mono \cite{GOMONOFONT}:
+Rysunek \ref{font_texture} przedstawia przykładową teksturę dla czcionki Go-Mono \cite{GOMONOFONT}.
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[width=0.5\textwidth]{images/font_texture.png}
@@ -915,7 +913,7 @@ prymitywów przy pomocy następujących parameterów:
 \end{itemize}
 
 \subsubsection{Zasób tekstury \textit{asset\_texture}}
-Zasób tekstury \textit{asset\_texture} reprezentuje próbkowalny obraz i składa się z zasobu obrazu oraz zasobu próbnika.
+Zasób tekstury \textit{asset\_texture} reprezentuje próbkowany obraz i składa się z zasobu obrazu oraz zasobu próbnika.
 
 \subsubsection{Zasób obrazu \textit{asset\_image}}
 Zasób obrazu \textit{asset\_image} zawiera dane obrazu w postaci nieskompresowanej bitmapy.
@@ -977,7 +975,7 @@ Okno jest tworzone przy użyciu biblioteki GLFW i jest reprezentowane obiektem \
 Listing \ref{deviceglfw} ilustruje stworzenie okna i użycie go do zarejestrowania funkcji wywołań zwrotnych używane do wykrywania zmiany rozmiaru okna oraz przechwytywania danych wejściowych myszy i klawiatury.
 Kursor myszy jest ukryty i jego fizyczna pozycja w oknie jest
 centrowana co klatkę - program ma dostęp do wirtualnej pozycji, co pozwala na nieograniczony ruch myszy.
-Wirtualna pozycja kursowa jest używana do implemenacji sterowania kamerą.
+Wirtualna pozycja kursowa jest używana do implementacji sterowania kamerą.
 \lstset{language=C}
 \begin{lstlisting}[caption={Użycie biblioteki GLFW do stworzenia okna i rejestracji funkcji wywołań zwrotnich},captionpos=b,label={deviceglfw}]
 // Inicjalizacja biblioteki GLFW.
@@ -1056,7 +1054,7 @@ Każde urządzenie fizyczne listy kandydatów ma nadawany ranking poprzez ocenia
 \end{itemize}
 Urządzenie fizyczne z najwyższym rankingiem jest ostatecznie wybierane z listy kandydatów.
 
-Urządzenie logiczne jest tworzone wspierając funkcjonalności sprawdzanie podczas wyboru urządzenia fizycznego oraz albo po jednej kolejce graficznej i prezentacji, albo jedna kolejka "uniwersalna" wspierająca obie rodziny poleceń.
+Urządzenie logiczne jest tworzone wspierając funkcjonalności sprawdzanie podczas wyboru urządzenia fizycznego oraz albo po jednej kolejce graficznej i prezentacji, albo jedna kolejka ,,uniwersalna'' wspierająca obie rodziny poleceń.
 
 Po stworzeniu urządzenia logicznego funkcja \textit{vkGetDeviceProcAddr()} jest uzywana do pobrania następujących funkcji rozszerzeń:
 \begin{itemize}
@@ -1077,7 +1075,7 @@ Po stworzeniu urządzenia logicznego funkcja \textit{vkGetDeviceProcAddr()} jest
 Polecenia one-shot są przeznaczone do jednokrotnego transferu dużych ilości danych z bazy zasobów do pamięci DEVICE\_LOCAL przez rozpoczęciem pętli głównej renderowania.
 
 
-Bufor poleceń one-shot jest alokowany podczas tworzenia obiektu device z z osobnej puli komend one-shot. Jest on przeznaczona do użycia z kolejką graficzną i stworzona z flagą TRANSIENT, która wskazuje sterownikowi graficznemu, że zaalokowane bufory komend będą krótkotrwałe i zresetowane bądź zwolnione w stosunkowo krótkim czasie, co teoretycznie pozwala sterownikowi na optymalizację metody alokacji pamięci.
+Bufor poleceń one-shot jest alokowany podczas tworzenia obiektu \textit{device} z osobnej puli komend one-shot. Jest on przeznaczona do użycia z kolejką graficzną i stworzona z flagą TRANSIENT, która wskazuje sterownikowi graficznemu, że zaalokowane bufory komend będą krótkotrwałe i zresetowane bądź zwolnione w stosunkowo krótkim czasie, co teoretycznie pozwala sterownikowi na optymalizację metody alokacji pamięci.
 
 Nagrywanie poleceń one-shot rozpoczyna się wywołaniem metody \textit{begin\_one\_shot\_commands()} rozpoczynającej nagrywanie bufora poleceń funkcją \textit{vkBeginCommandBuffer()} z flagą użycia \textit{ONE\_TIME\_SUBMIT} wskazującą, że będzie on wykonany tylko jeden raz.
 
@@ -1179,7 +1177,7 @@ Bufory wierzchołków, indeksów i poleceń rysowania pośredniego są źródłe
 Bufory uniform są źródłem danych odczytywanych przez shadery.
 
 Bufor zawiera dwa obiekty Vulkan: bufor \textit{VkBuffer} oraz dowiązaną do niego alokację pamięci \textit{VkDeviceMemory}.
-Typ bufora przykłada się na flagi uzywane podczas ich tworzenia, co zostało podsumowane w tabeli \ref{params_buffer}.
+Typ bufora przekłada się na flagi używane podczas ich tworzenia, co zostało podsumowane w tabeli \ref{params_buffer}.
 \begin{table}[!htr]
 	\centering
 	\begin{tabular}{ |p{3cm}||>{\RaggedRight}p{4cm}|>{\RaggedRight}p{4cm}|}
@@ -1201,7 +1199,7 @@ Typ bufora przykłada się na flagi uzywane podczas ich tworzenia, co zostało p
 
 Obiekt utrzymuje listę elementów bufora \textit{buffer\_element}. Zawiera ona bloki pamięci CPU, które są kopiowane do GPU metodą \textit{send\_to\_device()}.
 Sposób transferu pamięci z CPU do GPU zależy od użytej flagi właściwości pamięci.
-Dla pamięci \textit{HOST\_VISIBLE} używane jest mapowanie pamięci - funkcja \textit{vkMapMemory()} zwraca wskaźnik CPU do regionu pamięci GPU, do którego bezpośrednio kopiowana jest pamięć używając fnukcji \textit{memcpy()}.
+Dla pamięci \textit{HOST\_VISIBLE} używane jest mapowanie pamięci - funkcja \textit{vkMapMemory()} zwraca wskaźnik CPU do regionu pamięci GPU, do którego bezpośrednio kopiowana jest pamięć używając funkcji \textit{memcpy()}.
 Dla reszty rodzajów pamięci niemogących być bezpośrednio zapisywanych przez CPU (w tym pamięć DEVICE\_LOCAL) tworzony jest bufor tymczasowy \textit{VkBuffer}, do którego pamięć CPU jest kopiowana używając polecenia one-shot \textit{one\_shot\_copy\_buffer\_to\_buffer()}.
 
 
@@ -1220,12 +1218,12 @@ Wspierane są następujące typy obrazu (\textit{image\_type}):
 \end{itemize}
 
 Wszystkie rodzaje tekstur mogą być próbkowane w shaderach poprzez deskryptory.
-Tekstury pozaekranowe mogą być też używane jako cele renderowania, tj. dołączenia koloru i głębi/szablonu potoku graficzngo.
+Tekstury pozaekranowe mogą być też używane jako cele renderowania, tj. dołączenia koloru i głębi/szablonu potoku graficznego.
 
 Obraz utrzymuje trzy obiekty Vulkan: obraz \textit{VkImage}, dowiązaną do niego alokację pamięci \textit{VkDeviceMemory} oraz widok na niego \textit{VkImageView}.
 Ich informacje tworzenia zależą od wejścia metody \textit{init()}: wysokości, szerokości, liczby kanałów oraz typu obrazu.
 
-Typ obrazu przykłada się głównie na flagi użycia obrazu \textit{VkImageUsageFlags}.
+Typ obrazu przekłada się głównie na flagi użycia obrazu \textit{VkImageUsageFlags}.
 Tekstury pozaekranowe używają flag \textit{SAMPLED} i \textit{COLOR\_ATTACHMENT}.
 Reszta obrazów używa flag \textit{SAMPLED}, \textit{TRANSFER\_SRC} i \textit{TRANSFER\_DST}.
 
@@ -1235,22 +1233,22 @@ Obrazy posiadają jedną warstwę i jeden poziom mipmap z wyjątkiem tekstur sz
 
 Format obrazu zależy od typu obrazu i liczby kanałów i jest ustalany funkcją \textit{find\_image\_format()}.
 Generuje ona listę formatów, które spełniają wymagania specyfikowane przez typ obrazu i posiadają liczbę komponentów równą lub większą liczbie kanałów używanej przez obraz.
-Ostateczny format to ten z najmniejszą liczbą komponentów wciąż wspierany przez sterownik, co pozwala na zaoszczędzienie pamięci GPU.
+Ostateczny format to ten z najmniejszą liczbą komponentów wciąż wspierany przez sterownik, co pozwala na zaoszczędzenie pamięci GPU.
 
 Pamięć obrazu jest zawsze w pamięcią \textit{DEVICE\_LOCAL}, ponieważ transport z GPU do CPU nigdy nie zachodzi i ten typ pamięci powinien skutkować szybszym dostępem po stronie GPU.
 
-Typ stworzonego widoku \textit{VkImageViewType} to \textit{2D} pozwalajacy shaderom GLSL na probkowanie przy użyciu zmiennych shaderów o typie \textit{sampler2D}. Wyjątkiem są tekstury sześcienne, które wymagają widoku \textit{CUBE} pozwalającego na próbkowanie zmiennymi \textit{samplerCube}.
+Typ stworzonego widoku \textit{VkImageViewType} to \textit{2D} pozwalający shaderom GLSL na probkowanie przy użyciu zmiennych shaderów o typie \textit{sampler2D}. Wyjątkiem są tekstury sześcienne, które wymagają widoku \textit{CUBE} pozwalającego na próbkowanie zmiennymi \textit{samplerCube}.
 
 Kopiowanie danych obrazu z CPU do GPU to ważna operacja pozwalającą na wstępne wypełnienie obrazów danymi załadowanymi z bazy zasobów. Nie jest ona wymagana dla obrazów niebędących teksturami pozaekranowymi.
-Jest ona wykonywana metodą \textit{send\_to\_device()}, która podobnie do obiektów \textit{buffer} używa poleceń one-shot do wypełnienia zamapowanego bufora tymczasowego danymi obrazu i skopiowania go poleceniem one-shot \textit{one\_shot\_copy\_buffer\_to\_image()} do pamięci GPU.
-Dodatkowo bufer poleceń one-shot jest używany do wygenerowania wymaganych poziomów mipmap.
+Jest ona wykonywana metodą \textit{send\_to\_device()}, która podobnie do obiektów \textit{buffer} używa poleceń one-shot do wypełnienia zmapowanego bufora tymczasowego danymi obrazu i skopiowania go poleceniem one-shot \textit{one\_shot\_copy\_buffer\_to\_image()} do pamięci GPU.
+Dodatkowo bufor poleceń one-shot jest używany do wygenerowania wymaganych poziomów mipmap.
  
 \subsubsection{Jednolity bufor stałych unified\_constant\_buffer}
 Obiekt \textit{unified\_constant\_buffer} reprezentuje jednolity bufor stałych - jeden duży bufor uniform zawierający wszystkie informacje używane przez shadery.
 
 Obiekt zawiera struktury \textit{*\_uniform\_buffer\_data} z wygenerowanego nagłówka \textit{descriptors} pozwalające aplikacji na aktualizację wewnętrznej struktury bufora uniform z poziomu języka C z poszanowaniem zasad układu pamięci scalar.
 
-Dodatkowo obiekt utrzymuje dwie kopie danych bufora i pozwala na aktualizację tylko tej kopii używanej przez obecną klatekę. Podwaja to rozmiar zaalokowanej pamięci GPU, ale pozwala na renderowanie klatek w locie.
+Dodatkowo obiekt utrzymuje dwie kopie danych bufora i pozwala na aktualizację tylko tej kopii używanej przez obecną klatkę. Podwaja to rozmiar zaalokowanej pamięci GPU, ale pozwala na renderowanie klatek w locie.
 
 Metoda \textit{update()} używa wejściowego wskaźnika funkcji do aktualizacji struktur \textit{*\_uniform\_buffer\_data}, które są następnie kopiowane do pamięci GPU bufora uniform metodą \textit{send\_to\_device()}.
 
@@ -1273,7 +1271,7 @@ Obecnie jednolity bufor stałych ma następującą strukturę:
 		\item dane skybox: identyfikator tekstury skybox,
 		\item czcionka i tekst debugowania,
 		\item dane używane do renderowania tekstu debugowania,
-		\item identyfikatory tesktur pozaekranowych.
+		\item identyfikatory tekstur pozaekranowych.
 	\end{itemize}
 \end{itemize}
 
@@ -1286,7 +1284,7 @@ Obiekt \textit{unified\_geometry\_buffer} reprezentuje jednolity bufor geometrii
 
 Metoda \textit{record\_bind\_command} dowiązuje do bufora poleceń bufory wierzchołków i indeksów poleceniami \textit{vkCmdBindVertexBuffers()} i \textit{vkCmdBindIndexBuffers()}.
 
-Metody \textit{update()} i \textit{send\_to\_device()} są używane do aktualizacji i transferu do GPU zawartości buforów używajac obiektu \textit{vertex\_stream}.
+Metody \textit{update()} i \textit{send\_to\_device()} są używane do aktualizacji i transferu do GPU zawartości buforów używając obiektu \textit{vertex\_stream}.
 
 
 \subsubsection{Strumień wierzchołków vertex\_stream}
@@ -1295,7 +1293,7 @@ Obiekt \textit{vertex\_stream} reprezentuje strumień wierzchołków zawierają
 Obiekt składa się z dwóch tablic: wierzchołków (tablica \textit{vertex}) i ich indeksy (tablica \textit{uint32\_t}).
 
 Metoda \textit{add\_geometry()} pozwala na dodanie do strumienia wierzchołka tablic zawierających poszczególne atrybuty i indeksy.
-Metoda jest używana przez pamięć podręczną renderowania \textit{render\_cache} do zebrania geometrii wszystkich renderowanych prymitywów w pojedyńczy blok pamięci CPU przekazywany jednolitemu buforowi geometrii.
+Metoda jest używana przez pamięć podręczną renderowania \textit{render\_cache} do zebrania geometrii wszystkich renderowanych prymitywów w pojedynczy blok pamięci CPU przekazywany jednolitemu buforowi geometrii.
 
 Silnik używa przekładanych atrybutów (ang. interleaved attributes) - wszystkie atrybuty wierzchołka są przechowywane w ramach jednej struktury \textit{vertex} przedstawionej na listingu \ref{vertexStreamVertex}.
 \lstset{language=C}
@@ -1324,7 +1322,7 @@ Tekstura składa się z następujących elementów:
 \end{itemize}
 Tekstury są przechowywane w tablicy mieszającej, której kluczem jest jej zasób, co pozwala na uniknięcie duplikacji pamięci.
 
-Metoda \textit{add\_texture()} tworzny nową teksturę na podstawie wejściowego zasobu tekstury.
+Metoda \textit{add\_texture()} tworzy nową teksturę na podstawie wejściowego zasobu tekstury.
 Obraz i próbnik są tworzone na podstawie danych zawartych w zasobie tekstury.
 Identyfikator tekstury to 32-bitowa liczba całkowita. Pierwszy identyfikator to zero, każdy następny jest uzyskiwany poprzez inkrementację. Maksymalna liczba stworzonych tekstur jest równa maksymalnej liczbie deskryptorów próbkowanych obrazów.
 
@@ -1339,7 +1337,7 @@ Funkcja \textit{glsl\_add\_textures()} dodaje kwalifikatory układu do kodu GLSL
 	layout(set = 0, binding = x) uniform sampler2D textures2D[];
 	layout(set = 0, binding = x) uniform samplerCube texturesCube[];
 \end{lstlisting}
-Można zauważyć, że definiowane są dwie zmienne shadera posiadajające identyczne numery zbioru i dowiązania deskryptorów, ale różne typy zmiennych shadera.
+Można zauważyć, że definiowane są dwie zmienne shadera posiadające identyczne numery zbioru i dowiązania deskryptorów, ale różne typy zmiennych shadera.
 Ta sytuacja jest dozwolona przez specyfikację Vulkan z zastrzeżeniem, że shader może używać jedynie tych zmiennych shadera, których typ odpowiada rodzajowi dowiązanego deskryptora.
 Przykładowo, jeśli indeks \textit{i} w tablicy deskryptorów tekstur opisuje teksturę 2D, to dostęp do niej w
 shaderze musi się odbywać przy użyciu wyrażenia \textit{textures2D[i]} - użycie wyrażenia \textit{texturesCube[i]} jest niezdefiniowanym zachowaniem.
@@ -1413,7 +1411,7 @@ Obiekt składa się z następujących elementów:
 Typ shadera zależy od tego, dla którego etapu potoku graficznego jest on przeznaczony.
 Wspierane są dwa typy: wierzchołków i fragmentów.
 
-Kod źródłowy GLSL must być znany podczas tworzenia - jest on uzyskiwany poprzez użycie obiektu \textit{shader\_generator} z modułu renderowania.
+Kod źródłowy GLSL musi być znany podczas tworzenia - jest on uzyskiwany poprzez użycie obiektu \textit{shader\_generator} z modułu renderowania.
 
 Kod bajtowy SPIR-V jest uzyskiwany poprzez kompilację kodu źródłowego GLSL biblioteką \textit{shaderc}, której użycie ilustruje listing \ref{shadercExample}.
 \lstset{language=C}
@@ -1472,7 +1470,7 @@ Metoda \textit{advance\_to\_next\_frame()} wywoływana na początku klatki inkre
 
 Moduł sceny jest odpowiedzialny za konwersję sceny z danych sceny \textit{scene\_data} do pamięci podręcznej renderera \textit{renderer\_cache} - wysokopoziomowa forma używanej przez bazę zasobów jest zamieniana na niskopoziomową formy łatwo używalnej przez renderer do emitowania poleceń rysowania pośredniego.
 
-Obiekty biorące udział w procesie konwersji sceny są przedstawione na poniższym diagramie:
+Obiekty biorące udział w procesie konwersji sceny są przedstawione na diagramie \ref{scene_process}.
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[node distance=0.5cm]
@@ -1546,8 +1544,8 @@ Są one tworzone na podstawie danych sceny używając metody \textit{create\_wit
 Implementacja została zainspirowana techniką modelowania hierarchicznego opracowana w firmie Nvidia \cite{ADVANCEDSCENEGRAPH}.
 Graf sceny jest konwertowany na formę pośrednią zwaną drzewem sceny w sposób zapewniający unikalną ścieżkę z korzenia drzewa do jego liści.
 Uprasza to klasyczny proces konwersji sceny algorytmem \ref{RenderujGrafSceny} - podczas przechodzenia drzewa sceny każdy węzeł może być napotkany tylko raz.
-Właściwośc ta pozwala na wprowadzenie do węzła stanu nagromadzonego (struktura \textit{scene\_tree\_node\_accumulated}) zawierającego aktualny wynik działania algorytmu.
-Konwersja sceny sprowadza się wtedy do całkowitej propagagacji stanu nagromadzonego od korzenia do liści, w których jest on całkowicie wypełniony i tym samym zawiera wszystkie informacje wymagane do wyemitowania polecenia rysowania.
+Właściwość ta pozwala na wprowadzenie do węzła stanu nagromadzonego (struktura \textit{scene\_tree\_node\_accumulated}) zawierającego aktualny wynik działania algorytmu.
+Konwersja sceny sprowadza się wtedy do całkowitej propagacji stanu nagromadzonego od korzenia do liści, w których jest on całkowicie wypełniony i tym samym zawiera wszystkie informacje wymagane do wyemitowania polecenia rysowania.
 
 Diagramy \ref{triangles_scene_graph} i \ref{triangles_scene_tree} przedstawiają wygenerowane metodami \textit{debug\_print()} graf i drzewo sceny składającej się z dwóch trójkątów używających tej samej siatki, ale różniących się pozycją.
 \begin{figure}[htbp]
@@ -1557,7 +1555,7 @@ Diagramy \ref{triangles_scene_graph} i \ref{triangles_scene_tree} przedstawiają
 	\label{triangles_scene_graph}
 \end{figure}
 Graf sceny składa się z czterech węzłów \textit{scene\_graph\_node}: korzenia oraz dwóch węzłów utworzonych na podstawie zasobów obiektów wskazujących na ten sam węzeł z zasobem prymitywu.
-Węzły grafu sceny obserwują utworzone na ich podstawie podczas procesu konwersji węzły drzewa sceny, co pozwala na aktualizację i propagację ich stanu nagromadzonego po zmianiach w węźle grafu sceny bez konieczności całkowitego odtworzenia drzewa sceny.
+Węzły grafu sceny obserwują utworzone na ich podstawie podczas procesu konwersji węzły drzewa sceny, co pozwala na aktualizację i propagację ich stanu nagromadzonego po zmianach w węźle grafu sceny bez konieczności całkowitego odtworzenia drzewa sceny.
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[width=1.0\textwidth]{images/scene_tree.png}
@@ -1596,13 +1594,13 @@ Obiekt tworzy i używa następujące obiekty:
 \end{itemize}
 
 Po stworzeniu obiektu aplikacja musi skonstruować i skompilować początkowo pusty graf renderowania.
-Następnie może ona rozpocząć pętlę główną programu metodą \textit{run\_main\_loop()}, która renderuje pojedyńczą klatkę w locie używając następujących kroków:
+Następnie może ona rozpocząć pętlę główną programu metodą \textit{run\_main\_loop()}, która renderuje pojedyncza klatkę w locie używając następujących kroków:
 \begin{itemize}
 	\item zaktualizuj stan renderera wejściową funkcją zwrotną \textit{updateFunc};
 	\item czekaj aż ogrodzenie \textit{inFlightFences} obecnej klatki w locie zasygnalizuje zakończenie wykonywania poprzednio nagranego bufora poleceń i gotowość do ponownego nagrywania;
 	\item pobierz prezentowalny obraz funkcją \textit{vkAcquireNextImageKHR()};
 	\item odtwórz łańcuch wymiany jeśli jest nieaktualny i pomiń resztę iteracji pętli;
-	\item zaktualizuj i skopiuj do GPU stan renderera i graf rendererowania używając ich metod \textit{update()} i \textit{send\_to\_device()};
+	\item zaktualizuj i skopiuj do GPU stan renderera i graf renderowania używając ich metod \textit{update()} i \textit{send\_to\_device()};
 	\item zresetuj bufor poleceń i rozpocznij nagrywanie;
 	\item dowiąż stan renderera (jednolite bufory, zbiór deskryptorów i stałe push);
 	\item nagraj przebiegi renderowania używając grafu renderowania;
@@ -1620,7 +1618,7 @@ W dalszych sekcjach przybliżono obiekty renderera i używającą go przykładow
 Pamięć podręczna renderera \textit{renderer\_cache} jest niskopoziomową reprezentacją sceny pośredniczącą pomiędzy modułami sceny i renderera.
 Obiekt jest podstawowym źródłem informacji o scenie używanym przez resztę obiektów modułu.
 
-Inicjalizację pamięci podręcznej renderera mozna podzielić na dwie fazy - graf sceny wypełniania obiekt informacjami o scenie, który jest następnie używany do wypełnienia obiektów używanych przez renderer:
+Inicjalizację pamięci podręcznej renderera można podzielić na dwie fazy - graf sceny wypełniania obiekt informacjami o scenie, który jest następnie używany do wypełnienia obiektów używanych przez renderer:
 \begin{itemize}
 	\item stan renderera,
 	\item stany przebiegów renderowania,
@@ -1659,7 +1657,7 @@ Grupa poleceń rysowania \textit{batches} reprezentuje jedno optymalizowane pole
 Metoda \textit{update()} sortuje i konsoliduje dodane elementy prymitywów tworząc tablicę pojedynczych grup poleceń rysowania \textit{batch}.
 Pojedyncza grupa poleceń \textit{batch} zawiera wszystkie informacje wymagane do nagrania pojedynczego polecenia rysowania \textit{vkCmdDrawIndexed()} rysującego $n$ kopii mających tą samą geometrię, ale różniących się materiałem i macierzą modelu.
 
-Metoda \textit{record\_draw\_command()} nagrywa do wejściowego bufora poleceń pojedyncze polecenie wielokrotnego rysowania pośredniego \textit{vkCmdDrawIndexedIndirect}, której bufora paremetrów jest wypełniany wcześniej stworzoną tablicą obiektów \textit{batch}.
+Metoda \textit{record\_draw\_command()} nagrywa do wejściowego bufora poleceń pojedyncze polecenie wielokrotnego rysowania pośredniego \textit{vkCmdDrawIndexedIndirect}, której bufora parametrów jest wypełniany wcześniej stworzoną tablicą obiektów \textit{batch}.
 Bufor parametrów jest przekazywany do metody strukturą \textit{batches\_buffer}, która jest zarządzana przez stan przebiegów renderowania.
 
 
@@ -1669,13 +1667,13 @@ Są to:
 \begin{itemize}
 	\item strumień wierzchołków \textit{vertex\_stream},
 	\item jednolity bufor geometrii \textit{unified\_geometry\_buffer} (dane globalne współdzielone przez klatki w locie),
-	\item teksture \textit{textures},
+	\item tekstury \textit{textures},
 	\item jednolity bufor stałych \textit{unified\_constant\_buffer},
 	\item deskryptory \textit{descriptors},
 	\item synchronizacja \textit{sync}.
 \end{itemize}
 
-Podział ten jest spowodowany obsługą odtwarzania łańcucha wymiany - większość stanu przebiegów renderowania, w przeciwieństwie od stanu renderera, zależy od wielkości łańcucha wymiany i dlatego musi być niszczony i ponownie tworzony przez renderer wraz z łańuchem wymiany.
+Podział ten jest spowodowany obsługą odtwarzania łańcucha wymiany - większość stanu przebiegów renderowania, w przeciwieństwie od stanu renderera, zależy od wielkości łańcucha wymiany i dlatego musi być niszczony i ponownie tworzony przez renderer wraz z łańcuchem wymiany.
 
 Metody \textit{update()} i \textit{send\_to\_device()} wywołuje analogiczne metody obiektów renderera.
 
@@ -1692,7 +1690,7 @@ Dodane obrazy są przechowywane w liście struktur \textit{render\_graph\_resour
 \begin{itemize}
 	\item nazwę zasobu;
 	\item typ obrazu;
-	\item identyfikator tekstury pozaekranowej: obsługa klatek w locie wymaga wewnętrznej duplikacji używanych tekstury pozaekranowych, dlatego indeks obrazu nalezącego do obecnej klatki jest przekazywany w jednolitym buforze stałych do shaderów chcących je próbkować;
+	\item identyfikator tekstury pozaekranowej: obsługa klatek w locie wymaga wewnętrznej duplikacji używanych tekstury pozaekranowych, dlatego indeks obrazu należącego do obecnej klatki jest przekazywany w jednolitym buforze stałych do shaderów chcących je próbkować;
 	\item harmonogram użycia \textit{image\_render\_pass\_usage\_timeline}
 \end{itemize}
 
@@ -1810,9 +1808,9 @@ Generacja kodu źródłowego sprowadza się do konkatenacji:
 
 
 \subsubsection{Przykładowa scena main}
-Plik wykonwywealny \textit{main} demonstruje działanie silnika poprzez wyrenderowanie sceny zdefiniowanej w konfiguracji globalnej używając grafu renderowania.
+Plik wykonywalny \textit{main} demonstruje działanie silnika poprzez wyrenderowanie sceny zdefiniowanej w konfiguracji globalnej używając grafu renderowania.
 
-Diagram \ref{render_graph_final} przedstawia używany graf renderowania opisujący cieniowane odrocznone zintegrowane z okluzję otoczenia \cite{PureDepthSSAO} i dwoma efektami post-processingu: skybox i tekst debugujący.
+Diagram \ref{render_graph_final} przedstawia używany graf renderowania opisujący cieniowane odroczone zintegrowane z okluzję otoczenia \cite{PureDepthSSAO} i dwoma dodatkowymi efektami post-processingu: skybox i tekst debugujący.
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[node distance=1cm]

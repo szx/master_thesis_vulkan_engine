@@ -59,10 +59,10 @@
 \contentsline {subsection}{\numberline {2.3.1}Zasoby wejściowe}{37}{subsection.2.3.1}%
 \contentsline {subsubsection}{Formaty opisu sceny glTF}{38}{subsubsection*.49}%
 \contentsline {subsection}{\numberline {2.3.2}Zasoby wyjściowe}{39}{subsection.2.3.2}%
-\contentsline {subsection}{\numberline {2.3.3}Potok zasobów}{39}{subsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.3.3}Potok zasobów}{40}{subsection.2.3.3}%
 \contentsline {section}{\numberline {2.4}Graf sceny}{40}{section.2.4}%
-\contentsline {section}{\numberline {2.5}Graf renderowania}{40}{section.2.5}%
-\contentsline {section}{\numberline {2.6}Fizycznie poprawny rendering}{41}{section.2.6}%
+\contentsline {section}{\numberline {2.5}Graf renderowania}{41}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Renderowanie oparte na fizyce}{42}{section.2.6}%
 \contentsline {section}{\numberline {2.7}Renderowanie odroczone i efekty post-processingu}{42}{section.2.7}%
 \contentsline {chapter}{\numberline {3}Narzędzia, architektura i implementacja}{44}{chapter.3}%
 \contentsline {section}{\numberline {3.1}Narzędzia}{44}{section.3.1}%
@@ -135,7 +135,7 @@
 \contentsline {section}{\numberline {4.2}Pomiary wydajnościowe}{86}{section.4.2}%
 \contentsline {section}{\numberline {4.3}Analiza pomiarów}{88}{section.4.3}%
 \contentsline {chapter}{\numberline {5}Podsumowanie}{89}{chapter.5}%
-\contentsline {chapter}{Wykaz literatury}{91}{chapter*.119}%
-\contentsline {chapter}{Spis rysunk\'ow}{92}{chapter*.120}%
-\contentsline {chapter}{Spis tablic}{93}{chapter*.121}%
+\contentsline {chapter}{Wykaz literatury}{92}{chapter*.119}%
+\contentsline {chapter}{Spis rysunk\'ow}{93}{chapter*.120}%
+\contentsline {chapter}{Spis tablic}{94}{chapter*.121}%
 \contentsfinish 

@@ -43,7 +43,7 @@ Zbadano wydajność implementacji cieniowania odroczonego poprzez renderowania s
 \end{itemize}
 
 Zmierzono liczbę klatek na sekundę podczas $60$ sekund działania programu używając narzędzia MangoHud \cite{MANGOHUD}.
-W przeciwieństwie do prostego licznika FPS silnika w lewym górnym rogu okna i warstwy \textit{VK\_LAYER\_MESA\_overlay}, MangoHud pozwala na pomiar percentylów FPS, które ilustują problemy przycinania (ang. stuttering) lepiej od minimalnej, średniej i maksymalnej wartości FPS \cite{NVSTUTTER}.
+W przeciwieństwie do prostego licznika FPS silnika w lewym górnym rogu okna i warstwy \textit{VK\_LAYER\_MESA\_overlay}, MangoHud pozwala na pomiar percentyli FPS, które ilustrują problemy przycinania (ang. stuttering) lepiej od minimalnej, średniej i maksymalnej wartości FPS \cite{NVSTUTTER}.
 Tabela \ref{results_fps} przedstawia wyniki pomiarów FPS.
 \begin{table}[!ht]
 	\centering
@@ -78,8 +78,8 @@ Tabela \ref{results_fps} przedstawia wyniki pomiarów FPS.
 
 
 Zmierzono udział poszczególnych etapów potoku graficznego podczas wykonywania poleceń rysowania poprzez przechwycenie 10 klatki aplikacji narzędziem RenderDoc i zbadanie liczników wydajności.
-Po porównianiu wartości liczników wydajności z przechwyconych klatek okazało się, że największe zmierzone zmiany, które nie mogą być wytłumaczone błędem przypadkowym spowodowanym nieprzewidywalnością działania potoku graficznego GPU, zachodzą tylko dla liczników wydajności najdłużej wykonującego się polecenia rysowania w przebiegu oświetlenia G-bufora:
-W pomiarach zostały uzględnione poniższe liczniki:
+Po porównaniu wartości liczników wydajności z przechwyconych klatek okazało się, że największe zmierzone zmiany, które nie mogą być wytłumaczone błędem przypadkowym spowodowanym nieprzewidywalnością działania potoku graficznego GPU, zachodzą tylko dla liczników wydajności najdłużej wykonującego się polecenia rysowania w przebiegu oświetlenia G-bufora:
+W pomiarach zostały uwzględnione poniższe liczniki:
 \begin{itemize}
 	\item \textit{GPU Time Elapsed ($\mu$)}: czas jaki upłynął na GPU podczas wykonywania polecenia;
 	\item \textit{L3 Shader Throughput (bytes)}: całkowita liczba bajtów pamięci GPU przesyłanych pomiędzy shaderami a pamięcią podręczną L3;
@@ -125,10 +125,10 @@ Wyniki pomiarów wydajności prezentuje tabela \ref{results_sponza}.
 
 Działanie renderera spowalnia wraz z zwiększającą się liczbą świateł oraz rozdzielczością okna.
 
-Spowolnienie spowodowane zmianią rozdzielczości może być wytłumaczone zmianą wielkości G-bufora i tym samym zwiększeniem liczby wykonywanych shaderów fragmentów.
+Spowolnienie spowodowane zmianą rozdzielczości może być wytłumaczone zmianą wielkości G-bufora i tym samym zwiększeniem liczby wykonywanych shaderów fragmentów.
 
 Zwiększenie liczby świateł zwiększa liczbę obiegów pętli w przebiegu oświetlania pobierających informacje o każdym świetle z bufora uniform, co tłumaczy rosnącą liczbę dostępów do pamięci i malejący udział procentowy czasu spędzonego na próbkowaniu G-bufora.
 
-Wartość FPS zachowuje się na wskroś wszystkcih eksperymentów w podobny sposób: jest stabilna z wyjątkiem pojawiających się sporadycznie co kilkanaście lub kiladziesiąt sekund zacięć mających formę pojedynczych dłużej wykonujących się klatek.
-Podobne zacięcia zostały zaobserwowane dla innych aplikacji Vulkan uruchamianych na maszynie testowej (vkcube z Vulkan SDK i przykłady od Sascha Willems \cite{SaschaWillems}).
+Wartość FPS zachowuje się na wskroś wszystkich eksperymentów w podobny sposób: jest stabilna z wyjątkiem pojawiających się sporadycznie co kilkanaście lub kilkadziesiąt sekund zacięć mających formę pojedynczych dłużej wykonujących się klatek.
+Podobne zacięcia zostały zaobserwowane dla innych aplikacji Vulkan uruchamianych na maszynie testowej (aplikacja vkcube z Vulkan SDK i przykłady od Sascha Willems \cite{SaschaWillems}).
 
