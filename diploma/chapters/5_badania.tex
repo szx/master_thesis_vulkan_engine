@@ -44,12 +44,13 @@ Zbadano wydajność implementacji cieniowania odroczonego poprzez renderowania s
 
 Zmierzono liczbę klatek na sekundę podczas $60$ sekund działania programu używając narzędzia MangoHud \cite{MANGOHUD}.
 W przeciwieństwie do prostego licznika FPS silnika w lewym górnym rogu okna i warstwy \textit{VK\_LAYER\_MESA\_overlay}, MangoHud pozwala na pomiar percentyli FPS, które ilustrują problemy przycinania (ang. stuttering) lepiej od minimalnej, średniej i maksymalnej wartości FPS \cite{NVSTUTTER}.
+Przykładowo percentyl $97$ równy $45$ FPS oznacza, że $97\%$ klatek wykonało się wolniej (mniejsza wartość FPS), a $3\%$ wykonało się szybciej (większa wartość FPS).
 Tabela \ref{results_fps} przedstawia wyniki pomiarów FPS.
 \begin{table}[!ht]
 	\centering
-	\begin{tabular}{ |p{2cm}|p{1.1cm}||p{0.7cm}|p{0.7cm}|p{0.7cm}|p{0.7cm}|}
+	\begin{tabular}{ |p{2cm}|p{1.1cm}||>{\RaggedRight}p{2cm}|>{\RaggedRight}p{2cm}|>{\RaggedRight}p{2cm}|>{\RaggedRight}p{2cm}|}
 		\hline
-		Rozdzielczość okna & Liczba świateł & 0.1\% FPS & 1\% FPS & 97\% FPS  & FPS Avg \\
+		Rozdzielczość okna & Liczba świateł & percentyl $0.1$ FPS & percentyl $1$ FPS & percentyl $97$ FPS  & średnia arytmetyczna FPS \\
 		\hline \hline
 		640x480 & 1 & 27.5  & 45.4 & 162.4 & 118.2 \\
 		\hline 

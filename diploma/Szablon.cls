@@ -261,7 +261,7 @@
 
 % Silnik bibliografii
 \usepackage[backend=biber, style=numeric, bibstyle=ieee,
-           sorting=none, isbn=false, urldate=ymd,
+           sorting=none, isbn=false, urldate=long,
            doi=false, url=true]{biblatex}
 \addbibresource{bibliography/bibliography.bib}
 \renewbibmacro{in:}{}
@@ -269,8 +269,8 @@
 
 % Ustawienie wyglądu parametru urldate
 \NewBibliographyString{urldate}
-\DefineBibliographyStrings{english}{ urldate = {Dostęp}}
-\DeclareFieldFormat{urldate}{\mkbibparens{\addcomma\bibstring{urldate}\space#1}}
+\DefineBibliographyStrings{polish}{ urldate = {dostęp}}
+\DeclareFieldFormat{urldate}{\mkbibparens{\bibstring{urldate}\space#1}}
 
 % Nazwy wykazów
 \renewcommand{\listfigurename}{Wykaz rysunków}

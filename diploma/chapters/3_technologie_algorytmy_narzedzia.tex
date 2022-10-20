@@ -1444,7 +1444,7 @@ shaderc_result_release(result);
 shaderc_compiler_release(compiler)
 \end{lstlisting}
 
-Moduł shadera jest on uzyskiwany poprzez kompilację kodu bajtowego SPIR-V funkcją vkCreateShaderModule(), który jest też używany do uzyskania obiektu \textit{shader\_reflect}.
+Moduł shadera jest uzyskiwany poprzez kompilację kodu bajtowego SPIR-V funkcją vkCreateShaderModule(), który jest też używany do uzyskania obiektu \textit{shader\_reflect}.
 
 Obiekt \textit{shader\_reflect} reprezentuje mechanizm refleksji shadera pozwalający na badanie jego struktury.
 Operuje on na kodzie bajtowym SPIR-V i jest on używany podczas testów oraz do logowania informacji debugujących.
@@ -1517,7 +1517,8 @@ Obiekty biorące udział w procesie konwersji sceny są przedstawione na diagram
 \subsubsection{Dane sceny scene\_data}
 Obiekt \textit{scene\_data} reprezentuje dane sceny wczytane z bazy zasobów. Jest one używany przez moduł sceny do konstrukcji grafu sceny \textit{scene\_graph}.
 
-Obiekt utrzymuje on dla każdego typu obiektu zasobu osobną listę dwukierunkową zawierającą wszystkie obiekty używane przez scenę oraz ich domyślne warianty. Przykładowo domyślny obraz \textit{asset\_image} to obraz 2D o rozmiarze 1x1 mający 4 8-bitowe komponenty o wartości 255.
+Obiekt utrzymuje listy dwukierunkowe zawierającą wszystkie utworzone obiekty zasobów, w tym ich domyślne warianty.
+Przykładowo domyślny obraz \textit{asset\_image} to obraz 2D o rozmiarze 1x1 mający 4 8-bitowe komponenty o wartości 255.
 
 Wśród wszystkich obiektów zasobów składających się na dane sceny dodatkowo wyróżnia się:
 \begin{itemize}
@@ -1529,7 +1530,7 @@ Wśród wszystkich obiektów zasobów składających się na dane sceny dodatko
 
 Metody \textit{serialize()} i \textit{deserialize()} podobnie jak analogiczne metody obiektów zasobów pozwalają na zapis i odczyt danych sceny do bazy zasobów.
 
-Metoda \textit{create\_with\_gltf\_file()} jest wywoływane wyłącznie przez potok zasobów.
+Metoda \textit{create\_with\_gltf\_file()} jest wywoływana wyłącznie przez potok zasobów.
 Jej wejściem jest nazwa tworzonej sceny i ścieżka do katalogu zawierającego zasób 3D w formacie \textit{glTF} wraz z konfiguracją zasobów.
 Oba zasoby wejściowe są parsowane przy użyciu biblioteki \textit{cgltf} i obiektu \textit{config}.
 Wynik parsowania jest używany do stworzenia i wypełnienia danych sceny.
@@ -1541,7 +1542,7 @@ Metoda \textit{create\_with\_asset\_db()} jest wywoływana w czasie wykonywania 
 Obiekty \textit{scene\_graph} i \textit{scene\_tree} reprezentują kolejno graf i drzewo sceny.
 Są one tworzone na podstawie danych sceny używając metody \textit{create\_with\_scene\_data()}.
 
-Implementacja została zainspirowana techniką modelowania hierarchicznego opracowana w firmie Nvidia \cite{ADVANCEDSCENEGRAPH}.
+Implementacja została zainspirowana techniką modelowania hierarchicznego opracowaną w firmie Nvidia \cite{ADVANCEDSCENEGRAPH}.
 Graf sceny jest konwertowany na formę pośrednią zwaną drzewem sceny w sposób zapewniający unikalną ścieżkę z korzenia drzewa do jego liści.
 Uprasza to klasyczny proces konwersji sceny algorytmem \ref{RenderujGrafSceny} - podczas przechodzenia drzewa sceny każdy węzeł może być napotkany tylko raz.
 Właściwość ta pozwala na wprowadzenie do węzła stanu nagromadzonego (struktura \textit{scene\_tree\_node\_accumulated}) zawierającego aktualny wynik działania algorytmu.

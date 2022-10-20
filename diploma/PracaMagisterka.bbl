@@ -90,7 +90,11 @@
       \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
       \field{labeltitlesource}{title}
       \field{title}{Konferencja SIGGRAPH}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://www.siggraph.org/
       \endverb
@@ -103,7 +107,11 @@
       \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
       \field{labeltitlesource}{title}
       \field{title}{Advances in Real-Time Rendering in 3D Graphics and Games}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://advances.realtimerendering.com/
       \endverb
@@ -131,7 +139,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Vulkan 1.2.225 - A Specification (with KHR extensions)}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://registry.khronos.org/vulkan/specs/1.2-khr-extensions/html/
       \endverb
@@ -156,7 +168,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Godon Engine}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://godotengine.org
       \endverb
@@ -181,8 +197,12 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Unreal Engine}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{version}{5}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://www.unrealengine.com
       \endverb
@@ -207,7 +227,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Vulkan SDK}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://www.lunarg.com/vulkan-sdk/
       \endverb
@@ -220,7 +244,11 @@
       \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
       \field{labeltitlesource}{title}
       \field{title}{Khronos Vulkan, OpenGL, and OpenGL ES Conformance Tests}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://github.com/KhronosGroup/VK-GL-CTS
       \endverb
@@ -248,7 +276,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{SPIR-V Specification}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://registry.khronos.org/SPIR-V/specs/unified1/SPIRV.html
       \endverb
@@ -275,7 +307,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{OpenGL Is Broken}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb http://www.joshbarczak.com/blog/?p=154
       \endverb
@@ -302,7 +338,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Vulkan SDK}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://vulkan-tutorial.com/
       \endverb
@@ -315,7 +355,11 @@
       \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labeltitlesource}{title}
       \field{title}{Architecture of the Vulkan Loader Interfaces}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://github.com/KhronosGroup/Vulkan-Loader/blob/master/docs/LoaderInterfaceArchitecture.md
       \endverb
@@ -328,7 +372,11 @@
       \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labeltitlesource}{title}
       \field{title}{GLFW: An OpenGL library}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://www.glfw.org/
       \endverb
@@ -341,7 +389,11 @@
       \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labeltitlesource}{title}
       \field{title}{Simple DirectMedia Layer (SDL)}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://www.libsdl.org/
       \endverb
@@ -354,7 +406,11 @@
       \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labeltitlesource}{title}
       \field{title}{LLVMpipe - The Mesa 3D Graphics Library}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://docs.mesa3d.org/drivers/llvmpipe.html
       \endverb
@@ -367,7 +423,11 @@
       \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
       \field{labeltitlesource}{title}
       \field{title}{SwiftShader}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://github.com/google/swiftshader
       \endverb
@@ -392,7 +452,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Debugger graficzny RenderDoc}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://renderdoc.org/
       \endverb
@@ -420,7 +484,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{glTF Sample Models}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://github.com/KhronosGroup/glTF-Sample-Models
       \endverb
@@ -447,7 +515,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Descriptors are hard}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://www.jlekstrand.net/jason/blog/2022/08/descriptors-are-hard/
       \endverb
@@ -460,7 +532,11 @@
       \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
       \field{labeltitlesource}{title}
       \field{title}{Vulkan Hardware Database - GPUinfo.org}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://vulkan.gpuinfo.org/
       \endverb
@@ -548,7 +624,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Modeler 3D Blender}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://www.blender.org/
       \endverb
@@ -576,7 +656,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{glTF 2.0 Specification}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html
       \endverb
@@ -601,7 +685,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Narzędzie do ekstrakcji archiw gier UnArch}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb www.alprogramming.com
       \endverb
@@ -628,7 +716,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{FrameGraph: Extensible Rendering Architecture in Frostbite}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://kayru.org/publications/
       \endverb
@@ -651,12 +743,16 @@
       \strng{authornamehash}{638160ae56a17712d83fafc12a740c80}
       \strng{authorfullhash}{638160ae56a17712d83fafc12a740c80}
       \field{extraname}{5}
-      \field{sortinit}{4}
-      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Physically-Based Rendering in glTF 2.0 using WebGL}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://github.com/KhronosGroup/glTF-Sample-Viewer/tree/glTF-WebGL-PBR
       \endverb
@@ -669,7 +765,11 @@
       \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
       \field{labeltitlesource}{title}
       \field{title}{C11 Reference}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://en.cppreference.com/w/c/11/
       \endverb
@@ -682,7 +782,11 @@
       \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
       \field{labeltitlesource}{title}
       \field{title}{The Python Standard Library}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://docs.python.org/3/library/index.html#library-index
       \endverb
@@ -707,7 +811,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{CLion: A Cross-Platform IDE for C and C++ by JetBrains}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://www.jetbrains.com/clion
       \endverb
@@ -732,7 +840,10 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{GitHub}
-      \field{year}{2011}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://github.com/
       \endverb
@@ -757,7 +868,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{CMake}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://cmake.org
       \endverb
@@ -770,7 +885,11 @@
       \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
       \field{labeltitlesource}{title}
       \field{title}{PEP 405 – Python Virtual Environments}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2011}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://peps.python.org/pep-0405/
       \endverb
@@ -795,7 +914,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Baza danych SQLite}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://www.sqlite.org
       \endverb
@@ -804,11 +927,15 @@
       \endverb
     \endentry
     \entry{UTHASH}{misc}{}
-      \field{sortinit}{5}
-      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
       \field{labeltitlesource}{title}
       \field{title}{uthash: C macros for hash tables and more}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://github.com/troydhanson/uthash
       \endverb
@@ -821,7 +948,11 @@
       \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
       \field{labeltitlesource}{title}
       \field{title}{xxHash - Extremely fast hash algorithm}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://github.com/Cyan4973/xxHash
       \endverb
@@ -834,7 +965,11 @@
       \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
       \field{labeltitlesource}{title}
       \field{title}{clgtf: Single-file glTF 2.0 loader and writer written in C99}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://github.com/jkuhlmann/cgltf
       \endverb
@@ -847,7 +982,11 @@
       \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
       \field{labeltitlesource}{title}
       \field{title}{cglm: Highly Optimized Graphics Math (glm) for C}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://github.com/recp/cglm
       \endverb
@@ -860,7 +999,11 @@
       \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
       \field{labeltitlesource}{title}
       \field{title}{stb: single-file public domain libraries for C/C++}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://github.com/nothings/stb
       \endverb
@@ -873,7 +1016,11 @@
       \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
       \field{labeltitlesource}{title}
       \field{title}{POSIX (The GNU C Library)}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://www.gnu.org/software/libc/manual/html_node/POSIX.html
       \endverb
@@ -886,7 +1033,11 @@
       \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
       \field{labeltitlesource}{title}
       \field{title}{Windows API index}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://learn.microsoft.com/en-us/windows/win32/apiindex/windows-api-list
       \endverb
@@ -895,11 +1046,15 @@
       \endverb
     \endentry
     \entry{LIBCLANG}{misc}{}
-      \field{sortinit}{6}
-      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
+      \field{sortinit}{7}
+      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
       \field{labeltitlesource}{title}
       \field{title}{libclang: Clang Python Bindings}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://pypi.org/project/libclang/
       \endverb
@@ -926,7 +1081,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Metaprogramming custom control structures in C}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://www.chiark.greenend.org.uk/~sgtatham/mp/
       \endverb
@@ -939,7 +1098,11 @@
       \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
       \field{labeltitlesource}{title}
       \field{title}{configparser — Configuration file parser}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://docs.python.org/3/library/configparser.html
       \endverb
@@ -966,7 +1129,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{The X Macro}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2010}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://digitalmars.com/articles/b51.html
       \endverb
@@ -993,7 +1160,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Rendering 'Rainbow Six | Siege'}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2018}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://www.gdcvault.com/play/1022990/Rendering-Rainbow-Six-Siege
       \endverb
@@ -1020,7 +1191,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Bit Twiddling Hacks}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb http://graphics.stanford.edu/~seander/bithacks.html
       \endverb
@@ -1033,7 +1208,11 @@
       \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
       \field{labeltitlesource}{title}
       \field{title}{SQLite As An Application File Format}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://www.sqlite.org/appfileformat.html
       \endverb
@@ -1057,12 +1236,16 @@
       \strng{authorbibnamehash}{fc84d61e76c10b73ad2bb05de01d4802}
       \strng{authornamehash}{fc84d61e76c10b73ad2bb05de01d4802}
       \strng{authorfullhash}{fc84d61e76c10b73ad2bb05de01d4802}
-      \field{sortinit}{7}
-      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
+      \field{sortinit}{8}
+      \field{sortinithash}{a231b008ebf0ecbe0b4d96dcc159445f}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Go fonts}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://go.dev/blog/go-fonts
       \endverb
@@ -1089,7 +1272,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Advanced Scenegraph Rendering Pipeline}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2013}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://on-demand.gputechconf.com/gtc/2013/presentations/S3032-Advanced-Scenegraph-Rendering-Pipeline.pdf
       \endverb
@@ -1116,7 +1303,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Pure Depth SSAO}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2011}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://theorangeduck.com/page/pure-depth-ssao
       \endverb
@@ -1141,7 +1332,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{MangoHud: A Vulkan and OpenGL overlay for monitoring FPS, temperatures, CPU/GPU load and more.}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://github.com/flightlessmango/MangoHud
       \endverb
@@ -1163,12 +1358,16 @@
       \strng{authorbibnamehash}{f637e6f0c313a6bb26a6a3406d2fc12f}
       \strng{authornamehash}{f637e6f0c313a6bb26a6a3406d2fc12f}
       \strng{authorfullhash}{f637e6f0c313a6bb26a6a3406d2fc12f}
-      \field{sortinit}{8}
-      \field{sortinithash}{a231b008ebf0ecbe0b4d96dcc159445f}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Analysing Stutter – Mining More from Percentiles}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2014}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://developer.nvidia.com/content/analysing-stutter-%E2%80%93-mining-more-percentiles-0
       \endverb
@@ -1195,7 +1394,11 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Vulkan C++ examples and demos}
+      \field{urlday}{20}
+      \field{urlmonth}{10}
+      \field{urlyear}{2022}
       \field{year}{2022}
+      \field{urldateera}{ce}
       \verb{urlraw}
       \verb https://github.com/SaschaWillems/Vulkan
       \endverb
