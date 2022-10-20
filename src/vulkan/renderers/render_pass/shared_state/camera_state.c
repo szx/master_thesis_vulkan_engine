@@ -18,15 +18,15 @@ void render_pass_camera_state_reinit_with_new_swap_chain(render_pass_camera_stat
 }
 
 void render_pass_camera_state_update(render_pass_camera_state *camera) {
-    glm_mat4_identity(camera->user.transform);
+  glm_mat4_identity(camera->user.transform);
 
-    mat4 translation;
-    glm_translate_make(translation, camera->user.position);
+  mat4 translation;
+  glm_translate_make(translation, camera->user.position);
 
-    mat4 rotation;
-    glm_euler_yxz((vec3) {camera->user.pitch, camera->user.yaw, camera->user.roll}, rotation);
+  mat4 rotation;
+  glm_euler_yxz((vec3){camera->user.pitch, camera->user.yaw, camera->user.roll}, rotation);
 
-    glm_mat4_mul(translation, rotation, camera->user.transform);
+  glm_mat4_mul(translation, rotation, camera->user.transform);
 }
 
 void render_pass_camera_state_select(render_pass_camera_state *camera, size_t cameraIdx) {

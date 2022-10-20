@@ -1,62 +1,5 @@
 #include "renderer.h"
 
-renderer *renderer_create(data_config *config, asset_db *assetDb, swap_chain *vks,
-                          UT_string *sceneName) {
-  renderer *renderer = core_alloc(sizeof(struct renderer));
-
-  renderer->config = config;
-  renderer->assetDb = assetDb;
-  renderer->data = scene_data_create_with_asset_db(config, renderer->assetDb, sceneName);
-  renderer->vkd = vks->vkd;
-  renderer->vks = vks;
-
-  renderer->rendererCache = renderer_cache_create(
-      renderer->data, renderer->config->global.graphicsMaxPrimitiveElementCount);
-
-  renderer->sceneGraph = scene_graph_create(renderer->data, renderer->rendererCache);
-
-  renderer->renderState =
-      render_state_create(renderer->vks, renderer->rendererCache, renderer->config,
-                          renderer_update_unified_constant_buffer_callback);
-
-  renderer->renderGraph = render_graph_create(renderer->renderState);
-
-  return renderer;
-}
-
-void renderer_destroy(renderer *renderer) {
-  render_graph_destroy(renderer->renderGraph);
-  render_state_destroy(renderer->renderState);
-
-  scene_graph_destroy(renderer->sceneGraph);
-  renderer_cache_destroy(renderer->rendererCache);
-  scene_data_destroy(renderer->data);
-
-  core_free(renderer);
-}
-
-void renderer_recreate_swap_chain(renderer *renderer) {
-  int width = 0, height = 0;
-  glfwGetFramebufferSize(renderer->vkd->window, &width, &height);
-  while (width == 0 || height == 0) {
-    glfwGetFramebufferSize(renderer->vkd->window, &width, &height);
-    glfwWaitEvents();
-  }
-
-  vkDeviceWaitIdle(renderer->vkd->device);
-
-  render_graph_start_swap_chain_recreation(renderer->renderGraph);
-  swap_chain_deinit(renderer->vks);
-
-  swap_chain_init(renderer->vks, renderer->vkd);
-  render_graph_finish_swap_chain_recreation(renderer->renderGraph);
-}
-
-void renderer_update(renderer *renderer) {
-  render_graph_update(renderer->renderGraph);
-  render_state_update(renderer->renderState, renderer);
-}
-
 void renderer_update_unified_constant_buffer_callback(
     void *data, size_t currentFrameInFlight, global_uniform_buffer_data *globalData,
     instances_uniform_buffer_data *instancesData) {
@@ -85,6 +28,70 @@ void renderer_update_unified_constant_buffer_callback(
     size_t materialId = primitiveElement->materialElement->materialIdx;
     element->materialId = materialId;
   }
+}
+
+renderer *renderer_create() {
+  renderer *renderer = core_alloc(sizeof(struct renderer));
+
+  renderer->config = data_config_create(globals.assetConfigFilepath, data_config_type_global);
+  renderer->assetDb = asset_db_create();
+
+  UT_string *sceneName = renderer->config->global.settingsStartScene;
+  renderer->data = scene_data_create_with_asset_db(renderer->config, renderer->assetDb, sceneName);
+
+  renderer->vkd = device_create(renderer->config, renderer->assetDb);
+  renderer->vks = swap_chain_create(renderer->vkd);
+
+  renderer->rendererCache = renderer_cache_create(
+      renderer->data, renderer->config->global.graphicsMaxPrimitiveElementCount);
+
+  renderer->sceneGraph = scene_graph_create(renderer->data, renderer->rendererCache);
+
+  renderer->renderState =
+      render_state_create(renderer->vks, renderer->rendererCache, renderer->config,
+                          renderer_update_unified_constant_buffer_callback);
+
+  renderer->renderGraph = render_graph_create(renderer->renderState);
+
+  return renderer;
+}
+
+void renderer_destroy(renderer *renderer) {
+  render_graph_destroy(renderer->renderGraph);
+  render_state_destroy(renderer->renderState);
+
+  scene_graph_destroy(renderer->sceneGraph);
+  renderer_cache_destroy(renderer->rendererCache);
+  scene_data_destroy(renderer->data);
+
+  swap_chain_destroy(renderer->vks);
+  device_destroy(renderer->vkd);
+  asset_db_destroy(renderer->assetDb);
+  data_config_destroy(renderer->config);
+
+  core_free(renderer);
+}
+
+void renderer_recreate_swap_chain(renderer *renderer) {
+  int width = 0, height = 0;
+  glfwGetFramebufferSize(renderer->vkd->window, &width, &height);
+  while (width == 0 || height == 0) {
+    glfwGetFramebufferSize(renderer->vkd->window, &width, &height);
+    glfwWaitEvents();
+  }
+
+  vkDeviceWaitIdle(renderer->vkd->device);
+
+  render_graph_start_swap_chain_recreation(renderer->renderGraph);
+  swap_chain_deinit(renderer->vks);
+
+  swap_chain_init(renderer->vks, renderer->vkd);
+  render_graph_finish_swap_chain_recreation(renderer->renderGraph);
+}
+
+void renderer_update(renderer *renderer) {
+  render_graph_update(renderer->renderGraph);
+  render_state_update(renderer->renderState, renderer);
 }
 
 void renderer_send_to_device(renderer *renderer) {

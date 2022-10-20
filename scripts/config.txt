@@ -26,7 +26,8 @@ graphics.WindowTitle = "engine"
 graphics.EnabledInstancing = 1
 graphics.MaxPrimitiveElementCount = 1000
 graphics.Font = "Go-Mono"
-controls.Enabled = 1
+controls.Enabled = 0
+controls.LightNum = 1
 settings.StartScene = "Sponza"
 
 [ASSET.CONFIG]

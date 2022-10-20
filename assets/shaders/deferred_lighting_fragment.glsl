@@ -21,10 +21,10 @@ vec3 worldNormal = gBuffer2Texture.xyz;
 float perceptualRoughness = gBuffer2Texture.w;
 
 float ambientOcclusion = 1.0;
-#if OFFSCREEN_TEXTURE_ssaoRaw == 1
-uint ssaoRawId = global[globalIdx].offscreenTextures.textureId[ssaoRawOffscreenTextureIdx];
-vec4 ssaoRawIdTexture = texture(textures2D[ssaoRawId], texCoord);
-ambientOcclusion = ssaoRawIdTexture.x;
+#if OFFSCREEN_TEXTURE_aoBuffer == 1
+uint aoBufferId = global[globalIdx].offscreenTextures.textureId[aoBufferOffscreenTextureIdx];
+vec4 aoBufferIdTexture = texture(textures2D[aoBufferId], texCoord);
+ambientOcclusion = aoBufferIdTexture.x;
 #endif
 
 vec3 cameraPosition = (inverse(global[globalIdx].viewMat) * vec4(0, 0, 0, 1)).xyz; // PERF: Move to global[globalIdx].

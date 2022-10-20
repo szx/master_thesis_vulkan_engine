@@ -180,11 +180,8 @@ void render_pass_record_skybox_draw(render_pass *renderPass, render_pass_frame_s
 
 int main(int argc, char *argv[]) {
   platform_create(argc, argv);
-  data_config *config = data_config_create(globals.assetConfigFilepath, data_config_type_global);
-  asset_db *assetDb = asset_db_create();
-  device *vkd = device_create(config, assetDb);
-  swap_chain *vks = swap_chain_create(vkd);
-  renderer *renderer = renderer_create(config, assetDb, vks, config->global.settingsStartScene);
+
+  renderer *renderer = renderer_create();
 
   // TODO: HDR rendering (requires support for loading floating-point skyboxes)
   render_graph_add_image_resource(renderer->renderGraph, "depthBuffer",
@@ -192,7 +189,7 @@ int main(int argc, char *argv[]) {
   render_graph_add_image_resource(renderer->renderGraph, "gBuffer0", image_type_offscreen_f16);
   render_graph_add_image_resource(renderer->renderGraph, "gBuffer1", image_type_offscreen_f16);
   render_graph_add_image_resource(renderer->renderGraph, "gBuffer2", image_type_offscreen_f16);
-  render_graph_add_image_resource(renderer->renderGraph, "ssaoRaw", image_type_offscreen_r8);
+  render_graph_add_image_resource(renderer->renderGraph, "aoBuffer", image_type_offscreen_r8);
 
   /*
     // forward renderer
@@ -254,7 +251,7 @@ int main(int argc, char *argv[]) {
           .offscreenColorAttachmentCount = 1,
           .offscreenColorAttachments =
               {
-                  {.name = "ssaoRaw", .clearValue = {{1.0f, 0.0f, 0.0f, 1.0f}}},
+                  {.name = "aoBuffer", .clearValue = {{1.0f, 0.0f, 0.0f, 1.0f}}},
               },
           .offscreenDepthAttachment =
               {
@@ -280,7 +277,7 @@ int main(int argc, char *argv[]) {
                   {.name = "gBuffer0"},
                   {.name = "gBuffer1"},
                   {.name = "gBuffer2"},
-                  {.name = "ssaoRaw"},
+                  {.name = "aoBuffer"},
               },
           .offscreenDepthAttachment =
               {
@@ -319,10 +316,7 @@ int main(int argc, char *argv[]) {
   renderer_run_main_loop(renderer, update_func);
 
   renderer_destroy(renderer);
-  swap_chain_destroy(vks);
-  device_destroy(vkd);
-  asset_db_destroy(assetDb);
-  data_config_destroy(config);
+
   platform_destroy();
   return 0;
 }

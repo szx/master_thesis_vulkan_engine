@@ -9,31 +9,28 @@
 /// Creates and destroys Vulkan objects used to draw scene described by scene graph.
 typedef struct renderer {
   /* CPU state */
-  data_config *config; ///< Pointer.
-  asset_db *assetDb;   ///< Pointer.
+  data_config *config;
+  asset_db *assetDb;
+
   scene_data *data;
   renderer_cache *rendererCache;
   scene_graph *sceneGraph;
 
   /* GPU state */
-  device *vkd;     ///< Pointer.
-  swap_chain *vks; ///< Pointer.
+  device *vkd;
+  swap_chain *vks;
+
   render_state *renderState;
   render_graph *renderGraph;
 
 } renderer;
 
-renderer *renderer_create(data_config *config, asset_db *assetDb, swap_chain *vks,
-                          UT_string *sceneName);
+renderer *renderer_create();
 void renderer_destroy(renderer *renderer);
 
 void renderer_recreate_swap_chain(renderer *renderer);
 
 void renderer_update(renderer *renderer);
-
-void renderer_update_unified_constant_buffer_callback(void *data, size_t currentFrameInFlight,
-                                                      global_uniform_buffer_data *globalData,
-                                                      instances_uniform_buffer_data *instancesData);
 
 void renderer_send_to_device(renderer *renderer);
 
