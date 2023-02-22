@@ -46,6 +46,9 @@ buffer *buffer_create(device *vkd, buffer_type type) {
     buffer->memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     buffer->name = "vertex geometry buffer";
   } else if (buffer->type == buffer_type_uniform) {
+    // TODO: Nvidia RTX UBOs are too small.
+    //       Can be easily replaced with SSBOs (change Vulkan flags and replace 'uniform' with
+    //       'readonly buffer' in codegen).
     buffer->bufferUsageFlags = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
     buffer->memoryPropertyFlags =
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
@@ -100,8 +103,8 @@ void buffer_make_resident(buffer *buffer) {
   if (!buffer->resident) {
     verify(buffer->totalSize > 0);
     device_create_buffer(buffer->vkd, buffer->totalSize, buffer->bufferUsageFlags,
-                         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &buffer->buffer,
-                         &buffer->bufferMemory, buffer->name);
+                         buffer->memoryPropertyFlags, &buffer->buffer, &buffer->bufferMemory,
+                         buffer->name);
     buffer->resident = true;
   }
 }
